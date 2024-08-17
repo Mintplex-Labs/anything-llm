@@ -21,11 +21,10 @@ export default function FolderRow({
   };
   return (
     <>
-      <tr
+      <div
         onClick={onRowClick}
-        className={`text-white/80 text-xs grid grid-cols-7 py-2 pl-3.5 pr-8 bg-dark-highlight hover:bg-sky-500/20 cursor-pointer w-full file-row ${
-          selected ? "selected" : ""
-        }`}
+        className={`text-white/80 text-xs grid grid-cols-7 py-2 pl-3.5 pr-8 bg-dark-highlight hover:bg-sky-500/20 cursor-pointer w-full file-row ${selected ? "selected" : ""
+          }`}
       >
         <div className="flex gap-x-[4px] items-center">
           <div
@@ -42,9 +41,8 @@ export default function FolderRow({
           </div>
           <div
             onClick={handleExpandClick}
-            className={`transform transition-transform duration-200 ${
-              expanded ? "rotate-360" : " rotate-270"
-            }`}
+            className={`transform transition-transform duration-200 ${expanded ? "rotate-360" : " rotate-270"
+              }`}
           >
             <CaretDown className="text-base font-bold w-4 h-4" />
           </div>
@@ -60,11 +58,9 @@ export default function FolderRow({
           return (
             <div
               key={key}
-              className="flex gap-x-[4px] items-center justify-end"
+              className="flex gap-x-[4px] items-center"
             >
               <p className="whitespace-nowrap overflow-show place-self-end ml-auto">
-                {console.log(key, item?.metadata?.[key])}
-                {/* {middleTruncate(item?.metadata?.[key], 35)} */}
                 {item?.metadata?.[key]}
               </p>
               {index === Object.keys(folderColumns).length - 1 && (
@@ -78,7 +74,7 @@ export default function FolderRow({
             </div>
           );
         })}
-      </tr>
+      </div>
       {expanded && (
         <>
           {item.items.map((fileItem) => (

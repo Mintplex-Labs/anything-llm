@@ -21,7 +21,7 @@ export default function NewFolderModal({ closeModal, setFiles, existingData }) {
       setFormData({
         folderName: existingData.name || "",
         numExp: existingData.metadata?.numExp || "",
-        año: existingData.metadata?.ano || "",
+        ano: existingData.metadata?.ano || "",
         cliente: existingData.metadata?.cliente || "",
         juzgadoPrincipal: existingData.metadata?.juzgadoPrincipal || "",
         fechaAlta: existingData.metadata?.fechaAlta || "",
