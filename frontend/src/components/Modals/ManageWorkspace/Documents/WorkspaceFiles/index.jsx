@@ -47,7 +47,6 @@ export default function WorkspaceFiles({ workspace }) {
     const workspaceDocs = {
       ...localFiles,
       items: localFiles.items.map((folder) => {
-        console.log({ folder });
         if (folder.items && folder.type === "folder") {
           return {
             ...folder,

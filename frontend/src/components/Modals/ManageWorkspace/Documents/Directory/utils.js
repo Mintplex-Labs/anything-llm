@@ -50,7 +50,7 @@ export function filterFileSearchResults(files = [], searchTerm = "") {
 
 export const folderColumns = {
   numExp: { label: "Num. Exp", value: "numExp" },
-  año: { label: "AÑO", value: "año" },
+  ano: { label: "AÑO", value: "ano" },
   cliente: { label: "Cliente", value: "cliente" },
   juzgadoPrincipal: { label: "Juzgado Principal", value: "juzgadoPrincipal" },
   fechaAlta: { label: "Fecha Alta", value: "fechaAlta" },

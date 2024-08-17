@@ -231,7 +231,7 @@ function Directory({
             ))}
           </div>
 
-          <div className="overflow-y-auto h-full pt-8">
+          <div className="overflow-y-auto h-full pt-12">
             {loading ? (
               <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
                 <PreLoader />
