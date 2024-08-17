@@ -6,6 +6,13 @@ const {
 } = require("../utils/middleware/validBrowserExtensionApiKey");
 const { CollectorApi } = require("../utils/collectorApi");
 const { reqBody } = require("../utils/http");
+const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const {
+  flexUserRoleValid,
+  ROLES,
+} = require("../utils/middleware/multiUserProtected");
+
+const MAX_ACTIVE_REGISTRATIONS = 3;
 
 function browserExtensionEndpoints(app) {
   if (!app) return;
@@ -15,8 +22,16 @@ function browserExtensionEndpoints(app) {
     [validBrowserExtensionApiKey],
     async (request, response) => {
       try {
+        const auth = request.header("Authorization");
+        const bearerKey = auth ? auth.split(" ")[1] : null;
+        const apiKey = await BrowserExtensionApiKey.get({ key: bearerKey });
         const workspaces = await Workspace.where();
-        response.status(200).json({ connected: true, workspaces });
+        response.status(200).json({
+          connected: true,
+          workspaces,
+          accepted: apiKey.accepted,
+          verificationCode: apiKey.verificationCode,
+        });
       } catch (error) {
         console.error(error);
         response
@@ -28,9 +43,22 @@ function browserExtensionEndpoints(app) {
 
   app.post("/browser-extension/register", async (request, response) => {
     try {
+      const activeKeys = await BrowserExtensionApiKey.where({
+        accepted: false,
+      });
+      if (activeKeys.length >= MAX_ACTIVE_REGISTRATIONS) {
+        response.status(429).json({
+          error: "Maximum number of active registrations reached",
+        });
+        return;
+      }
+
       const { apiKey, error } = await BrowserExtensionApiKey.create();
       if (error) throw new Error(error);
-      response.status(200).json({ apiKey: apiKey.key });
+      response.status(200).json({
+        apiKey: apiKey.key,
+        verificationCode: apiKey.verificationCode,
+      });
     } catch (error) {
       console.error(error);
       response
@@ -73,7 +101,6 @@ function browserExtensionEndpoints(app) {
     }
   );
 
-  // TODO: Fix this, it always returns "Failed to embed content"
   app.post(
     "/browser-extension/embed-content",
     [validBrowserExtensionApiKey],
@@ -111,6 +138,56 @@ function browserExtensionEndpoints(app) {
       } catch (error) {
         console.error(error);
         response.status(500).json({ error: "Failed to embed content" });
+      }
+    }
+  );
+
+  // Internal endpoints for managing API keys
+  app.get(
+    "/browser-extension/api-keys",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const apiKeys = await BrowserExtensionApiKey.where();
+        response.status(200).json({ success: true, apiKeys });
+      } catch (error) {
+        console.error(error);
+        response
+          .status(500)
+          .json({ success: false, error: "Failed to fetch API keys" });
+      }
+    }
+  );
+
+  app.post(
+    "/browser-extension/api-keys/accept",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { key } = reqBody(request);
+        const { success, apiKey, error } =
+          await BrowserExtensionApiKey.accept(key);
+        if (!success) throw new Error(error);
+        response.status(200).json({ success: true, apiKey });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: "Failed to accept API key" });
+      }
+    }
+  );
+
+  app.post(
+    "/browser-extension/api-keys/revoke",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { key } = reqBody(request);
+        const { success, error } = await BrowserExtensionApiKey.delete(key);
+        if (!success) throw new Error(error);
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: "Failed to revoke API key" });
       }
     }
   );

@@ -50,7 +50,7 @@ const GeneralVectorDatabase = lazy(
 );
 const GeneralSecurity = lazy(() => import("@/pages/GeneralSettings/Security"));
 const GeneralBrowserExtension = lazy(
-  () => import("@/pages/GeneralSettings/BrowserExtension")
+  () => import("@/pages/GeneralSettings/BrowserExtensionApiKey")
 );
 const WorkspaceSettings = lazy(() => import("@/pages/WorkspaceSettings"));
 const EmbedConfigSetup = lazy(

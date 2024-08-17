@@ -299,8 +299,10 @@ model document_sync_executions {
 }
 
 model browser_extension_api_keys {
-  id        Int      @id @default(autoincrement())
-  key       String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  key              String   @unique
+  accepted         Boolean  @default(false)
+  verificationCode String
+  createdAt        DateTime @default(now())
+  lastUpdatedAt        DateTime @updatedAt
 }

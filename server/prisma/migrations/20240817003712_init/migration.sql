@@ -2,8 +2,10 @@
 CREATE TABLE "browser_extension_api_keys" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "key" TEXT NOT NULL,
+    "accepted" BOOLEAN NOT NULL DEFAULT false,
+    "verificationCode" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "lastUpdatedAt" DATETIME NOT NULL
 );
 
 -- CreateIndex

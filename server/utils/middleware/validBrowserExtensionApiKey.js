@@ -16,9 +16,18 @@ async function validBrowserExtensionApiKey(request, response, next) {
     return;
   }
 
-  if (!(await BrowserExtensionApiKey.validate(bearerKey))) {
+  const apiKey = await BrowserExtensionApiKey.validate(bearerKey);
+  if (!apiKey) {
     response.status(403).json({
       error: "No valid API key found.",
+    });
+    return;
+  }
+
+  if (!apiKey.accepted) {
+    response.status(401).json({
+      error: "API key not yet accepted.",
+      verificationCode: apiKey.verificationCode,
     });
     return;
   }

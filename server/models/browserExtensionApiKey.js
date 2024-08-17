@@ -9,11 +9,17 @@ const BrowserExtensionApiKey = {
     return `brx-${uuidAPIKey.create().apiKey}`;
   },
 
+  generateVerificationCode: () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  },
+
   create: async function () {
     try {
       const apiKey = await prisma.browser_extension_api_keys.create({
         data: {
           key: this.makeSecret(),
+          verificationCode: this.generateVerificationCode(),
+          accepted: false,
         },
       });
       return { apiKey, error: null };
@@ -28,7 +34,7 @@ const BrowserExtensionApiKey = {
     const apiKey = await prisma.browser_extension_api_keys.findUnique({
       where: { key },
     });
-    return !!apiKey;
+    return apiKey;
   },
 
   get: async function (clause = {}) {
@@ -65,6 +71,19 @@ const BrowserExtensionApiKey = {
     } catch (error) {
       console.error("FAILED TO GET BROWSER EXTENSION API KEYS.", error.message);
       return [];
+    }
+  },
+
+  accept: async function (key) {
+    try {
+      const updatedApiKey = await prisma.browser_extension_api_keys.update({
+        where: { key },
+        data: { accepted: true },
+      });
+      return { success: true, apiKey: updatedApiKey, error: null };
+    } catch (error) {
+      console.error("Failed to accept browser extension API key", error);
+      return { success: false, apiKey: null, error: error.message };
     }
   },
 };
