@@ -23,7 +23,7 @@ import German from "./de/common.js";
 import Russian from "./ru/common.js";
 import Italian from "./it/common.js";
 import Portuguese from "./pt_BR/common.js";
-import Hebrew from "./iw/common.js";
+import Hebrew from "./he/common.js";
 
 export const defaultNS = "common";
 export const resources = {
@@ -54,7 +54,7 @@ export const resources = {
   pt: {
     common: Portuguese,
   },
-  iw: {
+  he: {
     common: Hebrew,
   },
 };

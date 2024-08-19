@@ -57,12 +57,10 @@ cd server && npx prisma migrate deploy --schema=./prisma/schema.prisma
 ```
 
 4. Boot the server in production
-`cd server && NODE_ENV=production node index.js &`
-For Windows `cd server && set NODE_ENV=production && node index.js`
+`cd server && NODE_ENV=production node index.js &` 
 
-6. Boot the collection in another process
-`cd collector && NODE_ENV=production node index.js &`
-For Windows `cd collector && set NODE_ENV=production && node index.js`
+5. Boot the collection in another process
+`cd collector && NODE_ENV=production node index.js &` 
 
 AnythingLLM should now be running on `http://localhost:3001`!
 
