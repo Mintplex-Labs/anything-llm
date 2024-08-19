@@ -59,6 +59,7 @@ const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 const axios = require("axios");
 const querystring = require("querystring");
 const crypto = require("crypto");
+const { Workspace } = require("../models/workspace");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -186,6 +187,7 @@ function systemEndpoints(app) {
         existingUser = await User._get({
           username: String(userInfo.user.username),
         });
+        Workspace.new(userInfo.user.username + "'sWorkspace", existingUser.id);
       }
 
       const fullAuthResponse = {
