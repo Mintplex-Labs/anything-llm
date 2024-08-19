@@ -52,7 +52,12 @@ function useIsAuthenticated() {
         setIsAuthed(isValid);
         return;
       }
-      const token = Cookies.get("token");
+
+      var token = localStorage.getItem(AUTH_TOKEN, token);
+      if (!token) token = Cookies.get("token");
+
+      var user = localStorage.getItem(AUTH_USER, token);
+      if (!user) user = Cookies.get("user");
 
       if (!token) {
         setIsAuthed(false);
@@ -60,8 +65,7 @@ function useIsAuthenticated() {
       }
 
       if (token) {
-        alert("invoked here 1");
-        localStorage.setItem(AUTH_USER, Cookies.get("user"));
+        localStorage.setItem(AUTH_USER, user);
         localStorage.setItem(AUTH_TOKEN, token);
         localStorage.setItem(AUTH_TIMESTAMP, Date.now());
         Cookies.remove("token");
@@ -71,14 +75,12 @@ function useIsAuthenticated() {
       const localUser = localStorage.getItem(AUTH_USER);
       const localAuthToken = localStorage.getItem(AUTH_TOKEN);
       if (!localUser || !localAuthToken) {
-        alert("here 3")
         setIsAuthed(true);
         return;
       }
 
       const isValid = await validateSessionTokenForUser();
       if (!isValid) {
-        alert("invoked here 2");
         localStorage.removeItem(AUTH_USER);
         localStorage.removeItem(AUTH_TOKEN);
         localStorage.removeItem(AUTH_TIMESTAMP);
@@ -139,10 +141,10 @@ export default function PrivateRoute({ Component }) {
   const getCookie = async () => {
     const cookie = Cookies.get("token");
     console.log("cookie is the following", cookie);
-  }
+  };
   useEffect(() => {
-    getCookie()
-  }, [])
+    getCookie();
+  }, []);
   const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
   if (isAuthd === null) return <FullScreenLoader />;
 

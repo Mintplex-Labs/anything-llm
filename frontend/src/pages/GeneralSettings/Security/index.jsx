@@ -48,12 +48,11 @@ function MultiUserMode() {
         showToast("Multi-User mode enabled successfully.", "success");
         setSaving(false);
         setTimeout(() => {
-          alert("setTimeout")
           window.localStorage.removeItem(AUTH_USER);
           window.localStorage.removeItem(AUTH_TOKEN);
           window.localStorage.removeItem(AUTH_TIMESTAMP);
           window.location = paths.settings.users();
-        }, 2_000);
+        }, 2000);
         return;
       }
 
@@ -225,7 +224,6 @@ function PasswordProtection() {
       showToast("Your page will refresh in a few seconds.", "success");
       setSaving(false);
       setTimeout(() => {
-        alert("setTimeout")
         window.localStorage.removeItem(AUTH_USER);
         window.localStorage.removeItem(AUTH_TOKEN);
         window.localStorage.removeItem(AUTH_TIMESTAMP);

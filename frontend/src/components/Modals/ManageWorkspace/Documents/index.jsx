@@ -28,11 +28,12 @@ export default function DocumentSettings({ workspace, systemSettings }) {
 
   async function fetchKeys(refetchWorkspace = false) {
     setLoading(true);
-    const localFiles = await System.localFiles();
+
     const currentWorkspace = refetchWorkspace
       ? await Workspace.bySlug(workspace.slug)
       : workspace;
 
+    const localFiles = await System.localFiles(workspace.slug);
     const documentsInWorkspace =
       currentWorkspace.documents.map((doc) => doc.docpath) || [];
 

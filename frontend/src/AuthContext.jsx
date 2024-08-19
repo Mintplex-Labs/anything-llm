@@ -1,10 +1,17 @@
 import React, { useState, createContext } from "react";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import Cookies from 'js-cookie';
 
 export const AuthContext = createContext(null);
+
 export function ContextWrapper(props) {
-  const localUser = localStorage.getItem(AUTH_USER);
-  const localAuthToken = localStorage.getItem(AUTH_TOKEN);
+
+  var localUser = localStorage.getItem(AUTH_USER);
+  var localAuthToken = localStorage.getItem(AUTH_TOKEN);
+
+  if (!localAuthToken) localAuthToken = Cookies.get("token");
+  if (!localUser) localUser = Cookies.get("user");
+
   const [store, setStore] = useState({
     user: localUser ? JSON.parse(localUser) : null,
     authToken: localAuthToken ? localAuthToken : null,
@@ -17,7 +24,6 @@ export function ContextWrapper(props) {
       setStore({ user, authToken });
     },
     unsetUser: () => {
-      alert("unsetUser")
       localStorage.removeItem(AUTH_USER);
       localStorage.removeItem(AUTH_TOKEN);
       localStorage.removeItem(AUTH_TIMESTAMP);

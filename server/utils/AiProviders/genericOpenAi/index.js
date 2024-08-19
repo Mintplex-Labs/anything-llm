@@ -16,6 +16,9 @@ class GenericOpenAiLLM {
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
+      defaultHeaders: {
+        "api-key": process.env.GENERIC_OPEN_AI_API_KEY ?? null,
+      },
     });
     this.model =
       modelPreference ?? process.env.GENERIC_OPEN_AI_MODEL_PREF ?? null;

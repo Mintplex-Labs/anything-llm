@@ -39,12 +39,6 @@ services:
       - "8888:8888"
     env_file:
       - .env
-    environment:
-      DATABASE_URL: "postgresql://user:password@postgres:5432/midhun"
-      KEYCLOAK_URL: "https://dev2.digixt.ae/auth/realms/Datalake/protocol/openid-connect/auth"
-      KEYCLOAK_REALM: "Datalake"
-      KEYCLOAK_CLIENT_ID: "dataprism"
-      SESSION_SECRET": "Qk2MPaU6QadK5u3RnbsiEXkkmmyYqJbX"
     networks:
       - anything-llm
     extra_hosts:

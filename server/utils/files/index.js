@@ -65,50 +65,54 @@ async function viewLocalFiles() {
       directory.items.push(subdocs);
     }
   }
+}
+async function viewLocalFilesByWorkspace(workspace) {
+  if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
 
-// async function viewLocalFilesByWorkspace(workspace) {
-//   if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
+  const directory = {
+    name: "documents",
+    type: "folder",
+    items: [],
+  };
+  const documentsPathWorkspace = documentsPath;
 
-//   const directory = {
-//     name: "documents",
-//     type: "folder",
-//     items: [],
-//   };
-//   documentsPathWorkspace = documentsPath + "/" + workspace;
+  console.log(documentsPathWorkspace);
+  for (const file of fs.readdirSync(documentsPathWorkspace)) {
+    if (path.extname(file) === ".md") continue;
+    const folderPath = path.resolve(documentsPathWorkspace, file);
+    const isFolder = fs.lstatSync(folderPath).isDirectory();
+    if (isFolder) {
+      const subdocs = {
+        name: file,
+        type: "folder",
+        items: [],
+      };
+      const subfiles = fs.readdirSync(folderPath);
+      if (!workspace) { /* empty */ }
+      
+      if (folderPath.endsWith(workspace)){
+        for (const subfile of subfiles) {
+          if (path.extname(subfile) !== ".json") continue;
+          const filePath = path.join(folderPath, subfile);
+          const rawData = fs.readFileSync(filePath, "utf8");
+          const cachefilename = `${file}/${subfile}`;
+          const { pageContent, ...metadata } = JSON.parse(rawData);
 
-//   for (const file of fs.readdirSync(documentsPathWorkspace)) {
-//     if (path.extname(file) === ".md") continue;
-//     const folderPath = path.resolve(documentsPathWorkspace, file);
-//     const isFolder = fs.lstatSync(folderPath).isDirectory();
-//     if (isFolder) {
-//       const subdocs = {
-//         name: file,
-//         type: "folder",
-//         items: [],
-//       };
-//       const subfiles = fs.readdirSync(folderPath);
-
-//       for (const subfile of subfiles) {
-//         if (path.extname(subfile) !== ".json") continue;
-//         const filePath = path.join(folderPath, subfile);
-//         const rawData = fs.readFileSync(filePath, "utf8");
-//         const cachefilename = `${file}/${subfile}`;
-//         const { pageContent, ...metadata } = JSON.parse(rawData);
-
-//         subdocs.items.push({
-//           name: subfile,
-//           type: "file",
-//           ...metadata,
-//           cached: await cachedVectorInformation(cachefilename, true),
-//           pinnedWorkspaces: await Document.getPins({
-//             docpath: cachefilename,
-//             pinned: true,
-//           }),
-//         });
-//       }
-//       directory.items.push(subdocs);
-//     }
-//   }
+          subdocs.items.push({
+            name: subfile,
+            type: "file",
+            ...metadata,
+            cached: await cachedVectorInformation(cachefilename, true),
+            pinnedWorkspaces: await Document.getPins({
+              docpath: cachefilename,
+              pinned: true,
+            }),
+          });
+        }
+        directory.items.push(subdocs);
+      }
+    }
+  }
 
   // Make sure custom-documents is always the first folder in picker
   directory.items = [
@@ -253,7 +257,7 @@ module.exports = {
   findDocumentInDocuments,
   cachedVectorInformation,
   viewLocalFiles,
-  // viewLocalFilesByWorkspace,
+  viewLocalFilesByWorkspace,
   purgeSourceDocument,
   purgeVectorCache,
   storeVectorResult,
@@ -261,5 +265,5 @@ module.exports = {
   normalizePath,
   isWithin,
   documentsPath,
-  hasVectorCachedFiles,
-};
+    hasVectorCachedFiles,
+}

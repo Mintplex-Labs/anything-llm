@@ -5,7 +5,7 @@ const {
   viewLocalFiles,
   normalizePath,
   isWithin,
-
+  viewLocalFilesByWorkspace
 } = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
@@ -58,7 +58,6 @@ const {
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 const axios = require("axios");
 const querystring = require("querystring");
-const session = require('express-session');
 const crypto = require("crypto");
 
 function systemEndpoints(app) {
@@ -90,12 +89,19 @@ function systemEndpoints(app) {
   });
 
   const config = {
-    clientId: "dataprism",
-    clientSecret: "Ipsth2PKgDD0exwie9967p4RJZBJYa0l",
-    redirectUri: "http://localhost:3001/api/callback",
-    authServerUrl:
-      "https://dev2.digixt.ae/auth/realms/Datalake/protocol/openid-connect",
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    redirectUri: process.env.REDIRECT_URI,
+    authServerUrl: process.env.AUTH_SERVER_URL,
   };
+
+  console.log("env keys ");
+
+  Object.keys(process.env).forEach((key) => {
+    console.log(`${key}: ${process.env[key]}`);
+  });
+
+  console.log("config, ", config);
 
   app.get(
     "/system/check-token",
@@ -154,16 +160,16 @@ function systemEndpoints(app) {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         }
       );
-      console.log("midhun -> ", response.status);
+
       console.log(response.data);
       const token = response.data.access_token;
-      console.log("midhun -> " + token);
-
-      const userinfoResponse = await axios.get(`${config.authServerUrl}/userinfo`, {
+      const userinfoResponse = await axios.get(
+        `${config.authServerUrl}/userinfo`,
+        {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+      console.log(userinfoResponse)
       const userInfo = userinfoResponse.data;
       console.log(userInfo)
       var existingUser = await User._get({
@@ -182,7 +188,7 @@ function systemEndpoints(app) {
         });
       }
 
-      retp = {
+      const fullAuthResponse = {
         valid: true,
         user: User.filterFields(existingUser),
         token: makeJWT(
@@ -192,9 +198,9 @@ function systemEndpoints(app) {
         message: null,
       };
 
-      req.session.token = retp.token;
+      req.session.token = fullAuthResponse.token;
 
-      res.cookie("token", retp.token, {
+      res.cookie("token", fullAuthResponse.token, {
         maxAge: 900000,
         httpOnly: false,
         secure: false,
@@ -232,7 +238,6 @@ function systemEndpoints(app) {
   // Protected route
   app.get("/token", async (req, res) => {
     const token = req.session.token;
-    console.log("login -> " + token);
     if (!token) {
       return res.status(401).send("Not authenticated");
     }
@@ -504,6 +509,7 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (_, response) => {
       try {
+        console.log("inside local-files");
         const localFiles = await viewLocalFiles();
         response.status(200).json({ localFiles });
       } catch (e) {
@@ -513,21 +519,23 @@ function systemEndpoints(app) {
     }
   );
 
-  // app.get(
-  //   "/system/local-files/:workflowfolder",
-  //   // [validatedRequest, flexUserRoleValid([ROLES.all])],
-  //   [validatedRequest, flexUserRoleValid([ROLES.all])],
-  //   async (request, response) => {
-  //     try {
-  //       const { workflowfolder } = request.params;
-  //       const localFiles = await viewLocalFilesByWorkspace(workflowfolder);
-  //       response.status(200).json({ localFiles });
-  //     } catch (e) {
-  //       console.log(e.message, e);
-  //       response.sendStatus(500).end();
-  //     }
-  //   }
-  // );
+  app.get(
+    "/system/local-files/:workflowfolder",
+    // [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+
+        const { workflowfolder } = request.params;
+
+        const localFiles = await viewLocalFilesByWorkspace(workflowfolder);
+        response.status(200).json({ localFiles });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 
   app.get(
     "/system/document-processing-status",

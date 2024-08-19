@@ -36,8 +36,8 @@ const System = {
       .then((res) => res.results)
       .catch(() => null);
   },
-  localFiles: async function () {
-    return await fetch(`${API_BASE}/system/local-files`, {
+  localFiles: async function (ws) {
+    return await fetch(`${API_BASE}/system/local-files/${ws}`, {
       headers: baseHeaders(),
     })
       .then((res) => {
@@ -55,13 +55,11 @@ const System = {
   },
 
   checkAuth: async function (currentToken = null) {
-    alert("checkAuth ")
     const valid = await fetch(`${API_BASE}/system/check-token`, {
       headers: baseHeaders(currentToken),
     })
       .then((res) => res.ok)
       .catch(() => false);
-    alert("checkAuth ", valid)
     window.localStorage.setItem(AUTH_TIMESTAMP, Number(new Date()));
     return valid;
   },

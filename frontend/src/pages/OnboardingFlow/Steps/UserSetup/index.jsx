@@ -249,7 +249,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
     const { user, token } = await System.requestToken(data);
     window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
     window.localStorage.setItem(AUTH_TOKEN, token);
-    window.localStorage.removeItem(AUTH_TIMESTAMP);
+    window.localStorage.setItem(AUTH_TIMESTAMP, Date.now());
   };
 
   const setNewUsername = (e) => setUsername(e.target.value);
