@@ -8,11 +8,9 @@ import SearXNGSearchIcon from "./icons/searxng.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
-  X,
-  ListMagnifyingGlass,
+  X
 } from "@phosphor-icons/react";
 import SearchProviderItem from "./SearchProviderItem";
-import WebSearchImage from "@/media/agents/scrape-websites.png";
 import {
   SerperDotDevOptions,
   GoogleSearchOptions,
@@ -73,11 +71,15 @@ const SEARCH_PROVIDERS = [
 ];
 
 export default function AgentWebSearchSelection({
+  title,
+  description,
   skill,
   settings,
   toggleSkill,
   enabled = false,
   setHasChanges,
+  icon,
+  image
 }) {
   const searchInputRef = useRef(null);
   const [filteredResults, setFilteredResults] = useState([]);
@@ -120,9 +122,14 @@ export default function AgentWebSearchSelection({
     <div className="p-2">
       <div className="flex flex-col gap-y-[18px] max-w-[500px]">
         <div className="flex items-center gap-x-2">
-          <ListMagnifyingGlass size={24} color="white" weight="bold" />
+          {icon &&
+            React.createElement(icon, {
+              size: 24,
+              color: "white",
+              weight: "bold",
+            })}
           <label htmlFor="name" className="text-white text-md font-bold">
-            Live web search and browsing
+            {title}
           </label>
           <label className="border-none relative inline-flex cursor-pointer items-center ml-auto">
             <input
@@ -136,14 +143,12 @@ export default function AgentWebSearchSelection({
           </label>
         </div>
         <img
-          src={WebSearchImage}
-          alt="Web Search"
+          src={image}
+          alt={title}
           className="w-full rounded-md"
         />
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          Enable your agent to search the web to answer your questions by
-          connecting to a web-search (SERP) provider. Web search during agent
-          sessions will not work until this is set up.
+          {description}
         </p>
         <div hidden={!enabled}>
           <div className="relative">

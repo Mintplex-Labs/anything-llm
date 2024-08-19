@@ -21,7 +21,7 @@ export default function FolderRow({
   };
   return (
     <>
-      <div
+      <tr
         onClick={onRowClick}
         className={`text-white/80 text-xs grid grid-cols-7 py-2 pl-3.5 pr-8 bg-dark-highlight hover:bg-sky-500/20 cursor-pointer w-full file-row ${selected ? "selected" : ""
           }`}
@@ -74,7 +74,7 @@ export default function FolderRow({
             </div>
           );
         })}
-      </div>
+      </tr>
       {expanded && (
         <>
           {item.items.map((fileItem) => (
