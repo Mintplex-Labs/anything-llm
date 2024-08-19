@@ -1,3 +1,4 @@
+import { useLanguageOptions } from "@/hooks/useLanguageOptions";
 import usePfp from "@/hooks/usePfp";
 import System from "@/models/system";
 import { AUTH_USER } from "@/utils/constants";
@@ -6,6 +7,7 @@ import { Plus, X } from "@phosphor-icons/react";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
+
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return false;
@@ -132,6 +134,10 @@ export default function AccountModal({ user, hideModal }) {
                 required
                 autoComplete="off"
               />
+              <p className="mt-2 text-xs text-white/60">
+                Username must be only contain lowercase letters, numbers,
+                underscores, and hyphens with no spaces
+              </p>
             </div>
             <div>
               <label
@@ -142,11 +148,16 @@ export default function AccountModal({ user, hideModal }) {
               </label>
               <input
                 name="password"
-                type="password"
+                type="text"
                 className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 placeholder={`${user.username}'s new password`}
+                minLength={8}
               />
+              <p className="mt-2 text-xs text-white/60">
+                Password must be at least 8 characters long
+              </p>
             </div>
+            <LanguagePreference />
           </div>
           <div className="flex justify-between items-center border-t border-gray-500/50 pt-4 p-6">
             <button
@@ -165,6 +176,40 @@ export default function AccountModal({ user, hideModal }) {
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+function LanguagePreference() {
+  const {
+    currentLanguage,
+    supportedLanguages,
+    getLanguageName,
+    changeLanguage,
+  } = useLanguageOptions();
+
+  return (
+    <div>
+      <label
+        htmlFor="userLang"
+        className="block mb-2 text-sm font-medium text-white"
+      >
+        Preferred language
+      </label>
+      <select
+        name="userLang"
+        className="bg-zinc-900 w-fit mt-2 px-4 border-gray-500 text-white text-sm rounded-lg block py-2"
+        defaultValue={currentLanguage || "en"}
+        onChange={(e) => changeLanguage(e.target.value)}
+      >
+        {supportedLanguages.map((lang) => {
+          return (
+            <option key={lang} value={lang}>
+              {getLanguageName(lang)}
+            </option>
+          );
+        })}
+      </select>
     </div>
   );
 }

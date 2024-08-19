@@ -9,34 +9,36 @@ const { tokenizeString } = require("../../tokenizer");
 const path = require("path");
 const fs = require("fs");
 
-async function discoverLinks(startUrl, depth = 1, maxLinks = 20) {
-  const baseUrl = new URL(startUrl).origin;
-  const discoveredLinks = new Set();
-  const pendingLinks = [startUrl];
-  let currentLevel = 0;
-  depth = depth < 1 ? 1 : depth;
-  maxLinks = maxLinks < 1 ? 1 : maxLinks;
+async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
+  const baseUrl = new URL(startUrl);
+  const discoveredLinks = new Set([startUrl]);
+  let queue = [[startUrl, 0]]; // [url, currentDepth]
+  const scrapedUrls = new Set();
 
-  // Check depth and if there are any links left to scrape
-  while (currentLevel < depth && pendingLinks.length > 0) {
-    const newLinks = await getPageLinks(pendingLinks[0], baseUrl);
-    pendingLinks.shift();
+  for (let currentDepth = 0; currentDepth < maxDepth; currentDepth++) {
+    const levelSize = queue.length;
+    const nextQueue = [];
 
-    for (const link of newLinks) {
-      if (!discoveredLinks.has(link)) {
-        discoveredLinks.add(link);
-        pendingLinks.push(link);
-      }
+    for (let i = 0; i < levelSize && discoveredLinks.size < maxLinks; i++) {
+      const [currentUrl, urlDepth] = queue[i];
 
-      // Exit out if we reach maxLinks
-      if (discoveredLinks.size >= maxLinks) {
-        return Array.from(discoveredLinks).slice(0, maxLinks);
+      if (!scrapedUrls.has(currentUrl)) {
+        scrapedUrls.add(currentUrl);
+        const newLinks = await getPageLinks(currentUrl, baseUrl);
+
+        for (const link of newLinks) {
+          if (!discoveredLinks.has(link) && discoveredLinks.size < maxLinks) {
+            discoveredLinks.add(link);
+            if (urlDepth + 1 < maxDepth) {
+              nextQueue.push([link, urlDepth + 1]);
+            }
+          }
+        }
       }
     }
 
-    if (pendingLinks.length === 0) {
-      currentLevel++;
-    }
+    queue = nextQueue;
+    if (queue.length === 0 || discoveredLinks.size >= maxLinks) break;
   }
 
   return Array.from(discoveredLinks);
@@ -66,8 +68,12 @@ function extractLinks(html, baseUrl) {
   for (const link of links) {
     const href = link.getAttribute("href");
     if (href) {
-      const absoluteUrl = new URL(href, baseUrl).href;
-      if (absoluteUrl.startsWith(baseUrl)) {
+      const absoluteUrl = new URL(href, baseUrl.href).href;
+      if (
+        absoluteUrl.startsWith(
+          baseUrl.origin + baseUrl.pathname.split("/").slice(0, -1).join("/")
+        )
+      ) {
         extractedLinks.add(absoluteUrl);
       }
     }

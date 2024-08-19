@@ -20,29 +20,29 @@ export default function App() {
   if (!embedSettings.loaded) return null;
 
   const positionClasses = {
-    "bottom-left": "bottom-0 left-0 ml-4",
-    "bottom-right": "bottom-0 right-0 mr-4",
-    "top-left": "top-0 left-0 ml-4 mt-4",
-    "top-right": "top-0 right-0 mr-4 mt-4",
+    "bottom-left": "allm-bottom-0 allm-left-0 allm-ml-4",
+    "bottom-right": "allm-bottom-0 allm-right-0 allm-mr-4",
+    "top-left": "allm-top-0 allm-left-0 allm-ml-4 allm-mt-4",
+    "top-right": "allm-top-0 allm-right-0 allm-mr-4 allm-mt-4",
   };
 
   const position = embedSettings.position || "bottom-right";
-  const windowWidth = embedSettings.windowWidth
-    ? `max-w-[${embedSettings.windowWidth}]`
-    : "max-w-[400px]";
-  const windowHeight = embedSettings.windowHeight
-    ? `max-h-[${embedSettings.windowHeight}]`
-    : "max-h-[700px]";
+  const windowWidth = embedSettings.windowWidth ?? "400px";
+  const windowHeight = embedSettings.windowHeight ?? "700px";
 
   return (
     <>
       <Head />
       <div
         id="anything-llm-embed-chat-container"
-        className={`fixed inset-0 z-50 ${isChatOpen ? "block" : "hidden"}`}
+        className={`allm-fixed allm-inset-0 allm-z-50 ${isChatOpen ? "allm-block" : "allm-hidden"}`}
       >
         <div
-          className={`${windowHeight} ${windowWidth} h-full w-full bg-white fixed bottom-0 right-0 mb-4 md:mr-4 rounded-2xl border border-gray-300 shadow-[0_4px_14px_rgba(0,0,0,0.25)] ${positionClasses[position]}`}
+          style={{
+            maxWidth: windowWidth,
+            maxHeight: windowHeight,
+          }}
+          className={`allm-h-full allm-w-full allm-bg-white allm-fixed allm-bottom-0 allm-right-0 allm-mb-4 allm-md:mr-4 allm-rounded-2xl allm-border allm-border-gray-300 allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)] ${positionClasses[position]}`}
           id="anything-llm-chat"
         >
           {isChatOpen && (
@@ -57,7 +57,7 @@ export default function App() {
       {!isChatOpen && (
         <div
           id="anything-llm-embed-chat-button-container"
-          className={`fixed bottom-0 ${positionClasses[position]} mb-4 z-50`}
+          className={`allm-fixed allm-bottom-0 ${positionClasses[position]} allm-mb-4 allm-z-50`}
         >
           <OpenButton
             settings={embedSettings}

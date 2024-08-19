@@ -96,6 +96,13 @@ class NativeLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(_modelName) {
+    const limit = process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No NativeAI token context limit was set.");
+    return Number(limit);
+  }
+
   // Ensure the user set a value for the token limit
   promptWindowLimit() {
     const limit = process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT || 4096;
@@ -115,11 +122,6 @@ class NativeLLM {
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
-  }
-
-  async isSafe(_input = "") {
-    // Not implemented so must be stubbed
-    return { safe: true, reasons: [] };
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

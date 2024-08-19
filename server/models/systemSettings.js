@@ -6,6 +6,7 @@ const { default: slugify } = require("slugify");
 const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
 const { v4 } = require("uuid");
+const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -15,19 +16,26 @@ function isNullOrNaN(value) {
 const SystemSettings = {
   protectedFields: ["multi_user_mode"],
   supportedFields: [
-    "users_can_delete_workspaces",
     "limit_user_messages",
     "message_limit",
     "logo_filename",
     "telemetry_id",
     "footer_data",
     "support_email",
+
     "text_splitter_chunk_size",
     "text_splitter_chunk_overlap",
     "agent_search_provider",
     "default_agent_skills",
     "agent_sql_connections",
     "custom_app_name",
+
+    // Meta page customization
+    "meta_page_title",
+    "meta_page_favicon",
+
+    // beta feature flags
+    "experimental_live_file_sync",
   ],
   validations: {
     footer_data: (updates) => {
@@ -76,6 +84,7 @@ const SystemSettings = {
             "serper-dot-dev",
             "bing-search",
             "serply-engine",
+            "searxng-engine",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -113,6 +122,33 @@ const SystemSettings = {
         return JSON.stringify(existingConnections ?? []);
       }
     },
+    experimental_live_file_sync: (update) => {
+      if (typeof update === "boolean")
+        return update === true ? "enabled" : "disabled";
+      if (!["enabled", "disabled"].includes(update)) return "disabled";
+      return String(update);
+    },
+    meta_page_title: (newTitle) => {
+      try {
+        if (typeof newTitle !== "string" || !newTitle) return null;
+        return String(newTitle);
+      } catch {
+        return null;
+      } finally {
+        new MetaGenerator().clearConfig();
+      }
+    },
+    meta_page_favicon: (faviconUrl) => {
+      if (!faviconUrl) return null;
+      try {
+        const url = new URL(faviconUrl);
+        return url.toString();
+      } catch {
+        return null;
+      } finally {
+        new MetaGenerator().clearConfig();
+      }
+    },
   },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
@@ -139,6 +175,8 @@ const SystemSettings = {
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      GenericOpenAiEmbeddingApiKey:
+        !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
@@ -171,15 +209,19 @@ const SystemSettings = {
       // Eleven Labs TTS
       TTSElevenLabsKey: !!process.env.TTS_ELEVEN_LABS_KEY,
       TTSElevenLabsVoiceModel: process.env.TTS_ELEVEN_LABS_VOICE_MODEL,
+      // Piper TTS
+      TTSPiperTTSVoiceModel:
+        process.env.TTS_PIPER_VOICE_MODEL ?? "en_US-hfc_female-medium",
 
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
-      AgentGoogleSearchEngineKey: process.env.AGENT_GSE_KEY || null,
-      AgentSerperApiKey: process.env.AGENT_SERPER_DEV_KEY || null,
-      AgentBingSearchApiKey: process.env.AGENT_BING_SEARCH_API_KEY || null,
-      AgentSerplyApiKey: process.env.AGENT_SERPLY_API_KEY || null,
+      AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
+      AgentSerperApiKey: !!process.env.AGENT_SERPER_DEV_KEY || null,
+      AgentBingSearchApiKey: !!process.env.AGENT_BING_SEARCH_API_KEY || null,
+      AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
+      AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
     };
   },
 
@@ -289,16 +331,6 @@ const SystemSettings = {
     }
   },
 
-  canDeleteWorkspaces: async function () {
-    try {
-      const setting = await this.get({ label: "users_can_delete_workspaces" });
-      return setting?.value === "true";
-    } catch (error) {
-      console.error(error.message);
-      return false;
-    }
-  },
-
   hasEmbeddings: async function () {
     try {
       const { Document } = require("./documents");
@@ -382,6 +414,8 @@ const SystemSettings = {
       OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
       OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
       OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
+      OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
+      OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
 
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
@@ -394,6 +428,7 @@ const SystemSettings = {
       // OpenRouter Keys
       OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
       OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
+      OpenRouterTimeout: process.env.OPENROUTER_TIMEOUT_MS,
 
       // Mistral AI (API) Keys
       MistralApiKey: !!process.env.MISTRAL_API_KEY,
@@ -435,6 +470,12 @@ const SystemSettings = {
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
       GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
 
+      AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+      AwsBedrockLLMAccessKey: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+      AwsBedrockLLMRegion: process.env.AWS_BEDROCK_LLM_REGION,
+      AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
+      AwsBedrockLLMTokenLimit: process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT,
+
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,
       CohereModelPref: process.env.COHERE_MODEL_PREF,
@@ -456,6 +497,13 @@ const SystemSettings = {
         return rest;
       });
     },
+  },
+  getFeatureFlags: async function () {
+    return {
+      experimental_live_file_sync:
+        (await SystemSettings.get({ label: "experimental_live_file_sync" }))
+          ?.value === "enabled",
+    };
   },
 };
 

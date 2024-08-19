@@ -13,10 +13,11 @@ import System from "@/models/system";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 export default function AdminApiKeys() {
   const { isOpen, openModal, closeModal } = useModal();
-
+  const { t } = useTranslation();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -27,11 +28,12 @@ export default function AdminApiKeys() {
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
-              <p className="text-lg leading-6 font-bold text-white">API Keys</p>
+              <p className="text-lg leading-6 font-bold text-white">
+                {t("api.title")}
+              </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              API keys allow the holder to programmatically access and manage
-              this AnythingLLM instance.
+              {t("api.description")}
             </p>
             <a
               href={paths.apiDocs()}
@@ -39,13 +41,13 @@ export default function AdminApiKeys() {
               rel="noreferrer"
               className="text-xs leading-[18px] font-base text-blue-300 hover:underline"
             >
-              Read the API documentation &rarr;
+              {t("api.link")} &rarr;
             </a>
           </div>
           <div className="w-full justify-end flex">
             <CTAButton onClick={openModal} className="mt-3 mr-0 -mb-14 z-10">
-              <PlusCircle className="h-4 w-4" weight="bold" /> Generate New API
-              Key
+              <PlusCircle className="h-4 w-4" weight="bold" />{" "}
+              {t("api.generate")}
             </CTAButton>
           </div>
           <ApiKeysContainer />
@@ -61,6 +63,7 @@ export default function AdminApiKeys() {
 function ApiKeysContainer() {
   const [loading, setLoading] = useState(true);
   const [apiKeys, setApiKeys] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchExistingKeys() {
@@ -92,13 +95,13 @@ function ApiKeysContainer() {
       <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            API Key
+            {t("api.table.key")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Created By
+            {t("api.table.by")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Created
+            {t("api.table.created")}
           </th>
           <th scope="col" className="px-6 py-3 rounded-tr-lg">
             {" "}

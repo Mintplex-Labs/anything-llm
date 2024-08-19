@@ -40,6 +40,7 @@ function workspaceThreadEndpoints(app) {
             LLMSelection: process.env.LLM_PROVIDER || "openai",
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+            TTSSelection: process.env.TTS_PROVIDER || "native",
           },
           user?.id
         );
@@ -53,7 +54,7 @@ function workspaceThreadEndpoints(app) {
         );
         response.status(200).json({ thread, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -72,7 +73,7 @@ function workspaceThreadEndpoints(app) {
         });
         response.status(200).json({ threads });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -91,7 +92,7 @@ function workspaceThreadEndpoints(app) {
         await WorkspaceThread.delete({ id: thread.id });
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -114,7 +115,7 @@ function workspaceThreadEndpoints(app) {
         });
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -145,7 +146,7 @@ function workspaceThreadEndpoints(app) {
 
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -168,7 +169,7 @@ function workspaceThreadEndpoints(app) {
         );
         response.status(200).json({ thread, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -197,7 +198,7 @@ function workspaceThreadEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -239,7 +240,7 @@ function workspaceThreadEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }

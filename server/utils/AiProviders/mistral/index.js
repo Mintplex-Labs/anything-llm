@@ -41,6 +41,10 @@ class MistralLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit() {
+    return 32000;
+  }
+
   promptWindowLimit() {
     return 32000;
   }
@@ -60,10 +64,6 @@ class MistralLLM {
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
-  }
-
-  async isSafe(_ = "") {
-    return { safe: true, reasons: [] };
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

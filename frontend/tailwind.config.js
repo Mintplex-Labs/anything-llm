@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'false',
+  darkMode: "false",
   content: {
     relative: true,
     files: [
@@ -11,7 +11,7 @@ export default {
       "./src/utils/**/*.js",
       "./src/*.jsx",
       "./index.html",
-      './node_modules/@tremor/**/*.{js,ts,jsx,tsx}'
+      "./node_modules/@tremor/**/*.{js,ts,jsx,tsx}"
     ]
   },
   theme: {
@@ -27,7 +27,23 @@ export default {
         sidebar: "#25272C",
         "historical-msg-system": "rgba(255, 255, 255, 0.05);",
         "historical-msg-user": "#2C2F35",
-        outline: "#4E5153"
+        outline: "#4E5153",
+        "primary-button": "#46C8FF",
+        secondary: "#2C2F36",
+        "dark-input": "#18181B",
+        "mobile-onboarding": "#2C2F35",
+        "dark-highlight": "#1C1E21",
+        "dark-text": "#222628",
+        description: "#D2D5DB",
+        "x-button": "#9CA3AF",
+        royalblue: "#065986",
+        purple: "#4A1FB8",
+        magenta: "#9E165F",
+        danger: "#F04438",
+        error: "#B42318",
+        warn: "#854708",
+        success: "#05603A",
+        darker: "#F4F4F4"
       },
       backgroundImage: {
         "preference-gradient":
@@ -70,7 +86,8 @@ export default {
         ]
       },
       animation: {
-        sweep: "sweep 0.5s ease-in-out"
+        sweep: "sweep 0.5s ease-in-out",
+        "pulse-glow": "pulse-glow 1.5s infinite"
       },
       keyframes: {
         sweep: {
@@ -84,6 +101,26 @@ export default {
         fadeOut: {
           "0%": { opacity: 1 },
           "100%": { opacity: 0 }
+        },
+        "pulse-glow": {
+          "0%": {
+            opacity: 1,
+            transform: "scale(1)",
+            boxShadow: "0 0 0 rgba(255, 255, 255, 0.0)",
+            backgroundColor: "rgba(255, 255, 255, 0.0)"
+          },
+          "50%": {
+            opacity: 1,
+            transform: "scale(1.1)",
+            boxShadow: "0 0 15px rgba(255, 255, 255, 0.2)",
+            backgroundColor: "rgba(255, 255, 255, 0.1)"
+          },
+          "100%": {
+            opacity: 1,
+            transform: "scale(1)",
+            boxShadow: "0 0 0 rgba(255, 255, 255, 0.0)",
+            backgroundColor: "rgba(255, 255, 255, 0.0)"
+          }
         }
       }
     }
@@ -93,30 +130,30 @@ export default {
     {
       pattern:
         /^(bg-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
-      variants: ['hover', 'ui-selected'],
+      variants: ["hover", "ui-selected"]
     },
     {
       pattern:
         /^(text-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
-      variants: ['hover', 'ui-selected'],
+      variants: ["hover", "ui-selected"]
     },
     {
       pattern:
         /^(border-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
-      variants: ['hover', 'ui-selected'],
+      variants: ["hover", "ui-selected"]
     },
     {
       pattern:
-        /^(ring-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+        /^(ring-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/
     },
     {
       pattern:
-        /^(stroke-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+        /^(stroke-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/
     },
     {
       pattern:
-        /^(fill-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
-    },
+        /^(fill-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/
+    }
   ],
   plugins: []
 }

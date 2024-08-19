@@ -9,6 +9,8 @@ import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
+import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
+import TTSMessage from "./Actions/TTSButton";
 
 const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = ({
@@ -17,14 +19,20 @@ const HistoricalMessage = ({
   role,
   workspace,
   sources = [],
+  attachments = [],
   error = false,
   feedbackScore = null,
   chatId = null,
   isLastMessage = false,
   regenerateMessage,
   saveEditedMessage,
+  forkThread,
 }) => {
   const { isEditing } = useEditMessage({ chatId, role });
+  const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
+    chatId,
+    role,
+  });
   const adjustTextArea = (event) => {
     const element = event.target;
     element.style.height = "auto";
@@ -39,7 +47,7 @@ const HistoricalMessage = ({
           role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
         }`}
       >
-        <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+        <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
           <div className="flex gap-x-5">
             <ProfileImage role={role} workspace={workspace} />
             <div className="p-2 rounded-lg bg-red-50 text-red-500">
@@ -57,35 +65,51 @@ const HistoricalMessage = ({
     );
   }
 
+  if (completeDelete) return null;
   return (
     <div
       key={uuid}
-      className={`flex justify-center items-end w-full group ${
+      onAnimationEnd={onEndAnimation}
+      className={`${
+        isDeleted ? "animate-remove" : ""
+      } flex justify-center items-end w-full group ${
         role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
       }`}
     >
       <div className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}>
         <div className="flex gap-x-5">
-          <ProfileImage role={role} workspace={workspace} />
+          <div className="flex flex-col items-center">
+            <ProfileImage role={role} workspace={workspace} />
+            <div className="mt-1 -mb-10">
+              <TTSMessage
+                slug={workspace?.slug}
+                chatId={chatId}
+                message={message}
+              />
+            </div>
+          </div>
           {isEditing ? (
             <EditMessageForm
               role={role}
               chatId={chatId}
               message={message}
+              attachments={attachments}
               adjustTextArea={adjustTextArea}
               saveChanges={saveEditedMessage}
             />
           ) : (
-            <span
-              className={`flex flex-col gap-y-1`}
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(renderMarkdown(message)),
-              }}
-            />
+            <div>
+              <span
+                className={`flex flex-col gap-y-1`}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(renderMarkdown(message)),
+                }}
+              />
+              <ChatAttachments attachments={attachments} />
+            </div>
           )}
         </div>
-        <div className="flex gap-x-5">
-          <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
+        <div className="flex gap-x-5 ml-14">
           <Actions
             message={message}
             feedbackScore={feedbackScore}
@@ -95,6 +119,7 @@ const HistoricalMessage = ({
             regenerateMessage={regenerateMessage}
             isEditing={isEditing}
             role={role}
+            forkThread={forkThread}
           />
         </div>
         {role === "assistant" && <Citations sources={sources} />}
@@ -140,3 +165,18 @@ export default memo(
     );
   }
 );
+
+function ChatAttachments({ attachments = [] }) {
+  if (!attachments.length) return null;
+  return (
+    <div className="flex flex-wrap gap-2">
+      {attachments.map((item) => (
+        <img
+          key={item.name}
+          src={item.contentString}
+          className="max-w-[300px] rounded-md"
+        />
+      ))}
+    </div>
+  );
+}

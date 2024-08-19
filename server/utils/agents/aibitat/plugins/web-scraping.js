@@ -19,8 +19,8 @@ const webScraping = {
             "Scrapes the content of a webpage or online resource from a provided URL.",
           examples: [
             {
-              prompt: "What is useanything.com about?",
-              call: JSON.stringify({ url: "https://useanything.com" }),
+              prompt: "What is anythingllm.com about?",
+              call: JSON.stringify({ url: "https://anythingllm.com" }),
             },
             {
               prompt: "Scrape https://example.com",
@@ -77,7 +77,11 @@ const webScraping = {
               throw new Error("There was no content to be collected or read.");
             }
 
-            if (content.length < Provider.contextLimit(this.super.provider)) {
+            const { TokenManager } = require("../../../helpers/tiktoken");
+            if (
+              new TokenManager(this.super.model).countFromString(content) <
+              Provider.contextLimit(this.super.provider, this.super.model)
+            ) {
               return content;
             }
 

@@ -1,3 +1,59 @@
+/**
+ * File Attachment for automatic upload on the chat container page.
+ * @typedef Attachment
+ * @property {string} name - the given file name
+ * @property {string} mime - the given file mime
+ * @property {string} contentString - full base64 encoded string of file
+ */
+
+/**
+ * @typedef {Object} BaseLLMProvider - A basic llm provider object
+ * @property {Function} streamingEnabled - Checks if streaming is enabled for chat completions.
+ * @property {Function} promptWindowLimit - Returns the token limit for the current model.
+ * @property {Function} isValidChatCompletionModel - Validates if the provided model is suitable for chat completion.
+ * @property {Function} constructPrompt - Constructs a formatted prompt for the chat completion request.
+ * @property {Function} getChatCompletion - Gets a chat completion response from OpenAI.
+ * @property {Function} streamGetChatCompletion - Streams a chat completion response from OpenAI.
+ * @property {Function} handleStream - Handles the streaming response.
+ * @property {Function} embedTextInput - Embeds the provided text input using the specified embedder.
+ * @property {Function} embedChunks - Embeds multiple chunks of text using the specified embedder.
+ * @property {Function} compressMessages - Compresses chat messages to fit within the token limit.
+ */
+
+/**
+ * @typedef {Object} BaseLLMProviderClass - Class method of provider - not instantiated
+ * @property {function(string): number} promptWindowLimit - Returns the token limit for the provided model.
+ */
+
+/**
+ * @typedef {Object} BaseVectorDatabaseProvider
+ * @property {string} name - The name of the Vector Database instance.
+ * @property {Function} connect - Connects to the Vector Database client.
+ * @property {Function} totalVectors - Returns the total number of vectors in the database.
+ * @property {Function} namespaceCount - Returns the count of vectors in a given namespace.
+ * @property {Function} similarityResponse - Performs a similarity search on a given namespace.
+ * @property {Function} namespace - Retrieves the specified namespace collection.
+ * @property {Function} hasNamespace - Checks if a namespace exists.
+ * @property {Function} namespaceExists - Verifies if a namespace exists in the client.
+ * @property {Function} deleteVectorsInNamespace - Deletes all vectors in a specified namespace.
+ * @property {Function} deleteDocumentFromNamespace - Deletes a document from a specified namespace.
+ * @property {Function} addDocumentToNamespace - Adds a document to a specified namespace.
+ * @property {Function} performSimilaritySearch - Performs a similarity search in the namespace.
+ */
+
+/**
+ * @typedef {Object} BaseEmbedderProvider
+ * @property {string} model - The model used for embedding.
+ * @property {number} maxConcurrentChunks - The maximum number of chunks processed concurrently.
+ * @property {number} embeddingMaxChunkLength - The maximum length of each chunk for embedding.
+ * @property {Function} embedTextInput - Embeds a single text input.
+ * @property {Function} embedChunks - Embeds multiple chunks of text.
+ */
+
+/**
+ * Gets the systems current vector database provider.
+ * @returns { BaseVectorDatabaseProvider}
+ */
 function getVectorDbClass() {
   const vectorSelection = process.env.VECTOR_DB || "lancedb";
   switch (vectorSelection) {
@@ -30,6 +86,11 @@ function getVectorDbClass() {
   }
 }
 
+/**
+ * Returns the LLMProvider with its embedder attached via system or via defined provider.
+ * @param {{provider: string | null, model: string | null} | null} params - Initialize params for LLMs provider
+ * @returns {BaseLLMProvider}
+ */
 function getLLMProvider({ provider = null, model = null } = {}) {
   const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const embedder = getEmbeddingEngineSelection();
@@ -92,6 +153,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "generic-openai":
       const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
       return new GenericOpenAiLLM(embedder, model);
+    case "bedrock":
+      const { AWSBedrockLLM } = require("../AiProviders/bedrock");
+      return new AWSBedrockLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -99,6 +163,10 @@ function getLLMProvider({ provider = null, model = null } = {}) {
   }
 }
 
+/**
+ * Returns the EmbedderProvider by itself to whatever is currently in the system settings.
+ * @returns {BaseEmbedderProvider}
+ */
 function getEmbeddingEngineSelection() {
   const { NativeEmbedder } = require("../EmbeddingEngines/native");
   const engineSelection = process.env.EMBEDDING_ENGINE;
@@ -131,8 +199,85 @@ function getEmbeddingEngineSelection() {
     case "litellm":
       const { LiteLLMEmbedder } = require("../EmbeddingEngines/liteLLM");
       return new LiteLLMEmbedder();
+    case "generic-openai":
+      const {
+        GenericOpenAiEmbedder,
+      } = require("../EmbeddingEngines/genericOpenAi");
+      return new GenericOpenAiEmbedder();
     default:
       return new NativeEmbedder();
+  }
+}
+
+/**
+ * Returns the LLMProviderClass - this is a helper method to access static methods on a class
+ * @param {{provider: string | null} | null} params - Initialize params for LLMs provider
+ * @returns {BaseLLMProviderClass}
+ */
+function getLLMProviderClass({ provider = null } = {}) {
+  switch (provider) {
+    case "openai":
+      const { OpenAiLLM } = require("../AiProviders/openAi");
+      return OpenAiLLM;
+    case "azure":
+      const { AzureOpenAiLLM } = require("../AiProviders/azureOpenAi");
+      return AzureOpenAiLLM;
+    case "anthropic":
+      const { AnthropicLLM } = require("../AiProviders/anthropic");
+      return AnthropicLLM;
+    case "gemini":
+      const { GeminiLLM } = require("../AiProviders/gemini");
+      return GeminiLLM;
+    case "lmstudio":
+      const { LMStudioLLM } = require("../AiProviders/lmStudio");
+      return LMStudioLLM;
+    case "localai":
+      const { LocalAiLLM } = require("../AiProviders/localAi");
+      return LocalAiLLM;
+    case "ollama":
+      const { OllamaAILLM } = require("../AiProviders/ollama");
+      return OllamaAILLM;
+    case "togetherai":
+      const { TogetherAiLLM } = require("../AiProviders/togetherAi");
+      return TogetherAiLLM;
+    case "perplexity":
+      const { PerplexityLLM } = require("../AiProviders/perplexity");
+      return PerplexityLLM;
+    case "openrouter":
+      const { OpenRouterLLM } = require("../AiProviders/openRouter");
+      return OpenRouterLLM;
+    case "mistral":
+      const { MistralLLM } = require("../AiProviders/mistral");
+      return MistralLLM;
+    case "native":
+      const { NativeLLM } = require("../AiProviders/native");
+      return NativeLLM;
+    case "huggingface":
+      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
+      return HuggingFaceLLM;
+    case "groq":
+      const { GroqLLM } = require("../AiProviders/groq");
+      return GroqLLM;
+    case "koboldcpp":
+      const { KoboldCPPLLM } = require("../AiProviders/koboldCPP");
+      return KoboldCPPLLM;
+    case "textgenwebui":
+      const { TextGenWebUILLM } = require("../AiProviders/textGenWebUI");
+      return TextGenWebUILLM;
+    case "cohere":
+      const { CohereLLM } = require("../AiProviders/cohere");
+      return CohereLLM;
+    case "litellm":
+      const { LiteLLM } = require("../AiProviders/liteLLM");
+      return LiteLLM;
+    case "generic-openai":
+      const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
+      return GenericOpenAiLLM;
+    case "bedrock":
+      const { AWSBedrockLLM } = require("../AiProviders/bedrock");
+      return AWSBedrockLLM;
+    default:
+      return null;
   }
 }
 
@@ -160,6 +305,7 @@ module.exports = {
   getEmbeddingEngineSelection,
   maximumChunkLength,
   getVectorDbClass,
+  getLLMProviderClass,
   getLLMProvider,
   toChunks,
 };

@@ -1,5 +1,5 @@
 const prisma = require("../utils/prisma");
-const slugify = require("slugify");
+const slugifyModule = require("slugify");
 const { Document } = require("./documents");
 const { WorkspaceUser } = require("./workspaceUsers");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
@@ -28,16 +28,40 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
   ],
+  /**
+   * The default Slugify module requires some additional mapping to prevent downstream issues
+   * with some vector db providers and instead of building a normalization method for every provider
+   * we can capture this on the table level to not have to worry about it.
+   * @param  {...any} args - slugify args for npm package.
+   * @returns {string}
+   */
+  slugify: function (...args) {
+    slugifyModule.extend({
+      "+": " plus ",
+      "!": " bang ",
+      "@": " at ",
+      "*": " splat ",
+      ".": " dot ",
+      ":": "",
+      "~": "",
+      "(": "",
+      ")": "",
+      "'": "",
+      '"': "",
+      "|": "",
+    });
+    return slugifyModule(...args);
+  },
 
   new: async function (name = null, creatorId = null) {
     if (!name) return { result: null, message: "name cannot be null" };
-    var slug = slugify(name, { lower: true });
+    var slug = this.slugify(name, { lower: true });
     slug = slug || uuidv4();
 
     const existingBySlug = await this.get({ slug });
     if (existingBySlug !== null) {
       const slugSeed = Math.floor(10000000 + Math.random() * 90000000);
-      slug = slugify(`${name}-${slugSeed}`, { lower: true });
+      slug = this.slugify(`${name}-${slugSeed}`, { lower: true });
     }
 
     try {
@@ -232,6 +256,7 @@ const Workspace = {
       const userInfo = usersById.map((user) => {
         const workspaceUser = users.find((u) => u.user_id === user.id);
         return {
+          userId: user.id,
           username: user.username,
           role: user.role,
           lastUpdatedAt: workspaceUser.lastUpdatedAt,
@@ -289,6 +314,37 @@ const Workspace = {
       user?.id
     );
     return;
+  },
+
+  // Direct DB queries for API use only.
+  /**
+   * Generic prisma FindMany query for workspaces collections
+   * @param {import("../node_modules/.prisma/client/index.d.ts").Prisma.TypeMap['model']['workspaces']['operations']['findMany']['args']} prismaQuery
+   * @returns
+   */
+  _findMany: async function (prismaQuery = {}) {
+    try {
+      const results = await prisma.workspaces.findMany(prismaQuery);
+      return results;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  },
+
+  /**
+   * Generic prisma query for .get of workspaces collections
+   * @param {import("../node_modules/.prisma/client/index.d.ts").Prisma.TypeMap['model']['workspaces']['operations']['findFirst']['args']} prismaQuery
+   * @returns
+   */
+  _findFirst: async function (prismaQuery = {}) {
+    try {
+      const results = await prisma.workspaces.findFirst(prismaQuery);
+      return results;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
   },
 };
 

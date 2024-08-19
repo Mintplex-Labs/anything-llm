@@ -129,6 +129,11 @@ function normalizePath(filepath = "") {
   return result;
 }
 
+function sanitizeFileName(fileName) {
+  if (!fileName) return fileName;
+  return fileName.replace(/[<>:"\/\\|?*]/g, "");
+}
+
 module.exports = {
   trashFile,
   isTextType,
@@ -137,4 +142,5 @@ module.exports = {
   wipeCollectorStorage,
   normalizePath,
   isWithin,
+  sanitizeFileName,
 };

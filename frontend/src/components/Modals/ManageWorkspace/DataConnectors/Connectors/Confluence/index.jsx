@@ -65,7 +65,7 @@ export default function ConfluenceOptions() {
                 <input
                   type="url"
                   name="pageUrl"
-                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://example.atlassian.net/wiki/spaces/~7120208c08555d52224113949698b933a3bb56/pages/851969/Test+anythingLLM+page"
                   required={true}
                   autoComplete="off"
@@ -84,7 +84,7 @@ export default function ConfluenceOptions() {
                 <input
                   type="email"
                   name="username"
-                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="jdoe@example.com"
                   required={true}
                   autoComplete="off"
@@ -132,7 +132,7 @@ export default function ConfluenceOptions() {
                 <input
                   type="password"
                   name="accessToken"
-                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="abcd1234"
                   required={true}
                   autoComplete="off"
@@ -146,7 +146,7 @@ export default function ConfluenceOptions() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-[#222628] text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed"
+              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed"
             >
               {loading ? "Collecting pages..." : "Submit"}
             </button>

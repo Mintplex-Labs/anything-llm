@@ -115,7 +115,7 @@ function apiDocumentEndpoints(app) {
         });
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -137,7 +137,7 @@ function apiDocumentEndpoints(app) {
             schema: {
               type: 'object',
               example: {
-                "link": "https://useanything.com"
+                "link": "https://anythingllm.com"
               }
             }
           }
@@ -159,7 +159,7 @@ function apiDocumentEndpoints(app) {
                   "docAuthor": "no author found",
                   "description": "No description found.",
                   "docSource": "URL link uploaded by the user.",
-                  "chunkSource": "https:useanything.com.html",
+                  "chunkSource": "https:anythingllm.com.html",
                   "published": "1/16/2024, 3:46:33 PM",
                   "wordCount": 252,
                   "pageContent": "AnythingLLM is the best....",
@@ -213,7 +213,7 @@ function apiDocumentEndpoints(app) {
         });
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -237,6 +237,7 @@ function apiDocumentEndpoints(app) {
             example: {
               "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
               "metadata": {
+                "title": "This key is required. See in /server/endpoints/api/document/index.js:287",
                 keyOne: "valueOne",
                 keyTwo: "valueTwo",
                 etc: "etc"
@@ -346,7 +347,7 @@ function apiDocumentEndpoints(app) {
         await EventLogs.logEvent("api_raw_document_uploaded");
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -391,7 +392,7 @@ function apiDocumentEndpoints(app) {
       const localFiles = await viewLocalFiles();
       response.status(200).json({ localFiles });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -447,7 +448,7 @@ function apiDocumentEndpoints(app) {
 
         response.status(200).json({ types });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -497,7 +498,7 @@ function apiDocumentEndpoints(app) {
           },
         });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -555,7 +556,7 @@ function apiDocumentEndpoints(app) {
       }
       response.status(200).json({ document });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });

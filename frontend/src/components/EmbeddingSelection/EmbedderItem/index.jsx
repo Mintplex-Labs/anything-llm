@@ -29,7 +29,7 @@ export default function EmbedderItem({
         />
         <div className="flex flex-col">
           <div className="text-sm font-semibold text-white">{name}</div>
-          <div className="mt-1 text-xs text-[#D2D5DB]">{description}</div>
+          <div className="mt-1 text-xs text-description">{description}</div>
         </div>
       </div>
     </div>

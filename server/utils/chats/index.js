@@ -14,17 +14,6 @@ async function grepCommand(message, user = null) {
   const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
   const availableCommands = Object.keys(VALID_COMMANDS);
 
-  // Check if the message starts with any preset command
-  const foundPreset = userPresets.find((p) => message.startsWith(p.command));
-  if (!!foundPreset) {
-    // Replace the preset command with the corresponding prompt
-    const updatedMessage = message.replace(
-      foundPreset.command,
-      foundPreset.prompt
-    );
-    return updatedMessage;
-  }
-
   // Check if the message starts with any built-in command
   for (let i = 0; i < availableCommands.length; i++) {
     const cmd = availableCommands[i];
@@ -34,7 +23,15 @@ async function grepCommand(message, user = null) {
     }
   }
 
-  return message;
+  // Replace all preset commands with their corresponding prompts
+  // Allows multiple commands in one message
+  let updatedMessage = message;
+  for (const preset of userPresets) {
+    const regex = new RegExp(preset.command, "g");
+    updatedMessage = updatedMessage.replace(regex, preset.prompt);
+  }
+
+  return updatedMessage;
 }
 
 async function chatWithWorkspace(
@@ -56,19 +53,6 @@ async function chatWithWorkspace(
     model: workspace?.chatModel,
   });
   const VectorDb = getVectorDbClass();
-  const { safe, reasons = [] } = await LLMConnector.isSafe(message);
-  if (!safe) {
-    return {
-      id: uuid,
-      type: "abort",
-      textResponse: null,
-      sources: [],
-      close: true,
-      error: `This message was moderated and will not be allowed. Violations for ${reasons.join(
-        ", "
-      )} found.`,
-    };
-  }
 
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
@@ -77,15 +61,30 @@ async function chatWithWorkspace(
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
+    const textResponse =
+      workspace?.queryRefusalResponse ??
+      "There is no relevant information in this workspace to answer your query.";
+
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: {
+        text: textResponse,
+        sources: [],
+        type: chatMode,
+      },
+      threadId: thread?.id || null,
+      include: false,
+      user,
+    });
+
     return {
       id: uuid,
       type: "textResponse",
       sources: [],
       close: true,
       error: null,
-      textResponse:
-        workspace?.queryRefusalResponse ??
-        "There is no relevant information in this workspace to answer your query.",
+      textResponse,
     };
   }
 
@@ -172,15 +171,30 @@ async function chatWithWorkspace(
   // If in query mode and no context chunks are found from search, backfill, or pins -  do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early
   if (chatMode === "query" && contextTexts.length === 0) {
+    const textResponse =
+      workspace?.queryRefusalResponse ??
+      "There is no relevant information in this workspace to answer your query.";
+
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: {
+        text: textResponse,
+        sources: [],
+        type: chatMode,
+      },
+      threadId: thread?.id || null,
+      include: false,
+      user,
+    });
+
     return {
       id: uuid,
       type: "textResponse",
       sources: [],
       close: true,
       error: null,
-      textResponse:
-        workspace?.queryRefusalResponse ??
-        "There is no relevant information in this workspace to answer your query.",
+      textResponse,
     };
   }
 

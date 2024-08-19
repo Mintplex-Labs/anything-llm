@@ -1,6 +1,7 @@
 import ConnectorImages from "@/components/DataConnectorOption/media";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import GithubOptions from "./Connectors/Github";
+import GitlabOptions from "./Connectors/Gitlab";
 import YoutubeOptions from "./Connectors/Youtube";
 import ConfluenceOptions from "./Connectors/Confluence";
 import { useState } from "react";
@@ -14,6 +15,13 @@ export const DATA_CONNECTORS = {
     description:
       "Import an entire public or private Github repository in a single click.",
     options: <GithubOptions />,
+  },
+  gitlab: {
+    name: "GitLab Repo",
+    image: ConnectorImages.gitlab,
+    description:
+      "Import an entire public or private GitLab repository in a single click.",
+    options: <GitlabOptions />,
   },
   "youtube-transcript": {
     name: "YouTube Transcript",
@@ -56,7 +64,7 @@ export default function DataConnectors() {
           <input
             type="text"
             placeholder="Search data connectors"
-            className="border-none bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
+            className="border-none bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:outline-primary-button active:outline-primary-button outline-none text-white"
             autoComplete="off"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
