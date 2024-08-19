@@ -3,6 +3,7 @@ import ChatHistory from "./ChatHistory";
 import PromptInput from "./PromptInput";
 import handleChat from "@/utils/chat";
 import ChatService from "@/models/chatService";
+export const SEND_TEXT_EVENT = "anythingllm-embed-send-prompt";
 
 export default function ChatContainer({
   sessionId,
@@ -45,6 +46,45 @@ export default function ChatContainer({
     setLoadingResponse(true);
   };
 
+  const sendCommand = (command, history = [], attachments = []) => {
+    if (!command || command === "") return false;
+
+    let prevChatHistory;
+    if (history.length > 0) {
+      // use pre-determined history chain.
+      prevChatHistory = [
+        ...history,
+        {
+          content: "",
+          role: "assistant",
+          pending: true,
+          userMessage: command,
+          attachments,
+          animate: true,
+        },
+      ];
+    } else {
+      prevChatHistory = [
+        ...chatHistory,
+        {
+          content: command,
+          role: "user",
+          attachments,
+        },
+        {
+          content: "",
+          role: "assistant",
+          pending: true,
+          userMessage: command,
+          animate: true,
+        },
+      ];
+    }
+
+    setChatHistory(prevChatHistory);
+    setLoadingResponse(true);
+  };
+
   useEffect(() => {
     async function fetchReply() {
       const promptMessage =
@@ -75,6 +115,18 @@ export default function ChatContainer({
 
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory]);
+
+  const handleAutofillEvent = (event) => {
+    if (!event.detail.command) return;
+    sendCommand(event.detail.command, [], []);
+  };
+
+  useEffect(() => {
+    window.addEventListener(SEND_TEXT_EVENT, handleAutofillEvent);
+    return () => {
+      window.removeEventListener(SEND_TEXT_EVENT, handleAutofillEvent);
+    };
+  }, []);
 
   return (
     <div className="allm-h-full allm-w-full allm-flex allm-flex-col">
