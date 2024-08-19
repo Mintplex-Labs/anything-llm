@@ -10,6 +10,9 @@ dns.setDefaultResultOrder("verbatim")
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
+    watch: {
+      usePolling: true
+    },
     port: 3000,
     host: "localhost"
   },
