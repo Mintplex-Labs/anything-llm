@@ -28,8 +28,8 @@ const TRANSLATIONS = {
       message_3:
         " Is this like an AI dropbox or something? What about chatting? It is a chatbot isn't it?",
       message_4: {
-        span1: "Bajajcodes is more than a smarter Dropbox.",
-        span2: "Bajajcodes offers two ways of talking with your data:",
+        span1: "OssorioIA is more than a smarter Dropbox.",
+        span2: "OssorioIA offers two ways of talking with your data:",
         query: {
           title: "Query:",
           description:
@@ -103,13 +103,15 @@ const TRANSLATIONS = {
   modal: {
     error: {
       title: "Document Processor Unavailable",
-      description: "We can't upload your files right now because the document processor is offline. Please try again later."
+      description:
+        "We can't upload your files right now because the document processor is offline. Please try again later.",
     },
     upload: {
       title: "Click to upload or drag and drop",
-      description: "supports text files, csv's, spreadsheets, audio files, and more!"
+      description:
+        "supports text files, csv's, spreadsheets, audio files, and more!",
     },
-    info: "These files will be uploaded to the document processor running on this LLM instance. These files are not sent or shared with a third party."
+    info: "These files will be uploaded to the document processor running on this LLM instance. These files are not sent or shared with a third party.",
   },
 
   // Workspace Settings menu items
@@ -137,7 +139,7 @@ const TRANSLATIONS = {
       add: "Add new message",
       save: "Save Messages",
       heading: "Explain to me",
-      body: "the benefits of Bajajcodes",
+      body: "the benefits of OssorioIA",
     },
     pfp: {
       title: "Assistant Profile Image",
@@ -352,7 +354,7 @@ const TRANSLATIONS = {
       system: "system",
       user: "user",
       message: "message",
-      assistant: "Bajajcodes Chat Assistant",
+      assistant: "OssorioIA Chat Assistant",
       "double-click": "Double click to edit...",
       save: "Save Messages",
     },
@@ -369,7 +371,7 @@ const TRANSLATIONS = {
   api: {
     title: "API Keys",
     description:
-      "API keys allow the holder to programmatically access and manage this Bajajcodes instance.",
+      "API keys allow the holder to programmatically access and manage this OssorioIA instance.",
     link: "Read the API documentation",
     generate: "Generate New API Key",
     table: {
@@ -382,7 +384,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM Preference",
     description:
-      "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else Bajajcodes will not function properly.",
+      "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else OssorioIA will not function properly.",
     provider: "LLM Provider",
   },
 
@@ -404,7 +406,7 @@ const TRANSLATIONS = {
       "These are the credentials and settings for your preferred transcription model provider. Its important these keys are current and correct or else media files and audio will not transcribe.",
     provider: "Transcription Provider",
     "warn-start":
-      "Using the local whisper model on machines with limited RAM or CPU can stall Bajajcodes when processing media files.",
+      "Using the local whisper model on machines with limited RAM or CPU can stall OssorioIA when processing media files.",
     "warn-recommend":
       "We recommend at least 2GB of RAM and upload files <10Mb.",
     "warn-end":
@@ -416,11 +418,11 @@ const TRANSLATIONS = {
     "desc-start":
       "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials to for embedding text.",
     "desc-end":
-      "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which Bajajcodes can use to process.",
+      "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which OssorioIA can use to process.",
     provider: {
       title: "Embedding Provider",
       description:
-        "There is no set up required when using Bajajcodes's native embedding engine.",
+        "There is no set up required when using OssorioIA's native embedding engine.",
     },
   },
 
@@ -451,7 +453,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Vector Database",
     description:
-      "These are the credentials and settings for how your Bajajcodes instance will function. It's important these keys are current and correct.",
+      "These are the credentials and settings for how your OssorioIA instance will function. It's important these keys are current and correct.",
     provider: {
       title: "Vector Database Provider",
       description: "There is no configuration needed for LanceDB.",
@@ -499,7 +501,7 @@ const TRANSLATIONS = {
     password: {
       title: "Password Protection",
       description:
-        "Protect your Bajajcodes instance with a password. If you forget this there is no recovery method so ensure you save this password.",
+        "Protect your OssorioIA instance with a password. If you forget this there is no recovery method so ensure you save this password.",
     },
     instance: {
       title: "Password Protect Instance",
@@ -526,7 +528,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Privacy & Data-Handling",
     description:
-      "This is your configuration for how connected third party providers and Bajajcodes handle your data.",
+      "This is your configuration for how connected third party providers and OssorioIA handle your data.",
     llm: "LLM Selection",
     embedding: "Embedding Preference",
     vector: "Vector Database",
