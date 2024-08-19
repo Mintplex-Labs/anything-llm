@@ -1,9 +1,9 @@
 const { v4 } = require("uuid");
-const { chatPrompt } = require("../../chats");
 const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -24,16 +24,12 @@ class AnthropicLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      throw new Error(
-        "INVALID ANTHROPIC SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Anthropic as your LLM."
-      );
-    this.embedder = embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   promptWindowLimit() {
@@ -50,6 +46,8 @@ class AnthropicLLM {
         return 200_000;
       case "claude-3-haiku-20240307":
         return 200_000;
+      case "claude-3-5-sonnet-20240620":
+        return 200_000;
       default:
         return 100_000; // assume a claude-instant-1.2 model
     }
@@ -63,15 +61,33 @@ class AnthropicLLM {
       "claude-3-opus-20240229",
       "claude-3-sonnet-20240229",
       "claude-3-haiku-20240307",
+      "claude-3-5-sonnet-20240620",
     ];
     return validModels.includes(modelName);
   }
 
-  // Moderation can be done with Anthropic, but its not really "exact" so we skip it
-  // https://docs.anthropic.com/claude/docs/content-moderation
-  async isSafe(_input = "") {
-    // Not implemented so must be stubbed
-    return { safe: true, reasons: [] };
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: attachment.mime,
+          data: attachment.contentString.split("base64,")[1],
+        },
+      });
+    }
+    return content.flat();
   }
 
   constructPrompt({
@@ -79,13 +95,21 @@ class AnthropicLLM {
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [], // This is the specific attachment for only this prompt
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
 
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...chatHistory,
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -108,31 +132,6 @@ class AnthropicLLM {
       console.log(error);
       return error;
     }
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Anthropic chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const streamRequest = await this.anthropic.messages.stream({
-      model: this.model,
-      max_tokens: 4096,
-      system: messages[0].content, // Strip out the system message
-      messages: messages.slice(1), // Pop off the system message
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    return streamRequest;
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {

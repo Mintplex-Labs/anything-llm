@@ -1,6 +1,5 @@
 const { Document } = require("../../../../models/documents");
 const { safeJsonParse } = require("../../../http");
-const { validate } = require("uuid");
 const { summarizeContent } = require("../utils/summarize");
 const Provider = require("../providers/ai-provider");
 
@@ -19,6 +18,26 @@ const docSummarizer = {
           controller: new AbortController(),
           description:
             "Can get the list of files available to search with descriptions and can select a single file to open and summarize.",
+          examples: [
+            {
+              prompt: "Summarize example.txt",
+              call: JSON.stringify({
+                action: "summarize",
+                document_filename: "example.txt",
+              }),
+            },
+            {
+              prompt: "What files can you see?",
+              call: JSON.stringify({ action: "list", document_filename: null }),
+            },
+            {
+              prompt: "Tell me about readme.md",
+              call: JSON.stringify({
+                action: "summarize",
+                document_filename: "readme.md",
+              }),
+            },
+          ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
             type: "object",
@@ -135,11 +154,12 @@ const docSummarizer = {
                 this.controller.abort();
               });
 
-              return await summarizeContent(
-                this.super.provider,
-                this.controller.signal,
-                document.content
-              );
+              return await summarizeContent({
+                provider: this.super.provider,
+                model: this.super.model,
+                controllerSignal: this.controller.signal,
+                content: document.content,
+              });
             } catch (error) {
               this.super.handlerProps.log(
                 `document-summarizer.summarizeDoc raised an error. ${error.message}`

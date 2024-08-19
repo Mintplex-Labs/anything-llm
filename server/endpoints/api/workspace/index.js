@@ -71,14 +71,16 @@ function apiWorkspaceEndpoints(app) {
       await Telemetry.sendTelemetry("workspace_created", {
         multiUserMode: multiUserMode(response),
         LLMSelection: process.env.LLM_PROVIDER || "openai",
-        VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+        VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+        TTSSelection: process.env.TTS_PROVIDER || "native",
       });
       await EventLogs.logEvent("api_workspace_created", {
         workspaceName: workspace?.name || "Unknown Workspace",
       });
       response.status(200).json({ workspace, message });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -102,7 +104,8 @@ function apiWorkspaceEndpoints(app) {
                   "openAiTemp": null,
                   "lastUpdatedAt": "2023-08-17 00:45:03",
                   "openAiHistory": 20,
-                  "openAiPrompt": null
+                  "openAiPrompt": null,
+                  "threads": []
                 }
               ],
             }
@@ -117,10 +120,20 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const workspaces = await Workspace.where();
+      const workspaces = await Workspace._findMany({
+        where: {},
+        include: {
+          threads: {
+            select: {
+              user_id: true,
+              slug: true,
+            },
+          },
+        },
+      });
       response.status(200).json({ workspaces });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -151,7 +164,8 @@ function apiWorkspaceEndpoints(app) {
                 "lastUpdatedAt": "2023-08-17 00:45:03",
                 "openAiHistory": 20,
                 "openAiPrompt": null,
-                "documents": []
+                "documents": [],
+                "threads": []
               }
             }
           }
@@ -166,10 +180,24 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const { slug } = request.params;
-      const workspace = await Workspace.get({ slug });
+      const workspace = await Workspace._findMany({
+        where: {
+          slug: String(slug),
+        },
+        include: {
+          documents: true,
+          threads: {
+            select: {
+              user_id: true,
+              slug: true,
+            },
+          },
+        },
+      });
+
       response.status(200).json({ workspace });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -220,7 +248,7 @@ function apiWorkspaceEndpoints(app) {
         }
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -300,7 +328,7 @@ function apiWorkspaceEndpoints(app) {
         );
         response.status(200).json({ workspace, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -361,7 +389,7 @@ function apiWorkspaceEndpoints(app) {
         const history = await WorkspaceChats.forWorkspace(workspace.id);
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -435,13 +463,83 @@ function apiWorkspaceEndpoints(app) {
 
         await Document.removeDocuments(currWorkspace, deletes);
         await Document.addDocuments(currWorkspace, adds);
-        const updatedWorkspace = await Workspace.get(
-          `id = ${Number(currWorkspace.id)}`
-        );
+        const updatedWorkspace = await Workspace.get({
+          id: Number(currWorkspace.id),
+        });
         response.status(200).json({ workspace: updatedWorkspace });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/v1/workspace/:slug/update-pin",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Workspaces']
+      #swagger.description = 'Add or remove pin from a document in a workspace by its unique slug.'
+      #swagger.path = '/workspace/{slug}/update-pin'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace to find',
+          required: true,
+          type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'JSON object with the document path and pin status to update.',
+        required: true,
+        type: 'object',
+        content: {
+          "application/json": {
+            example: {
+              docPath: "custom-documents/my-pdf.pdf-hash.json",
+              pinStatus: true
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        description: 'OK',
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                message: 'Pin status updated successfully'
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[404] = {
+        description: 'Document not found'
+      }
+      #swagger.responses[500] = {
+        description: 'Internal Server Error'
+      }
+      */
+      try {
+        const { slug = null } = request.params;
+        const { docPath, pinStatus = false } = reqBody(request);
+        const workspace = await Workspace.get({ slug });
+
+        const document = await Document.get({
+          workspaceId: workspace.id,
+          docpath: docPath,
+        });
+        if (!document) return response.sendStatus(404).end();
+
+        await Document.update(document.id, { pinned: pinStatus });
+        return response
+          .status(200)
+          .json({ message: "Pin status updated successfully" })
+          .end();
+      } catch (error) {
+        console.error("Error processing the pin status update:", error);
+        return response.status(500).end();
       }
     }
   );
@@ -523,7 +621,9 @@ function apiWorkspaceEndpoints(app) {
         const result = await chatWithWorkspace(workspace, message, mode);
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          TTSSelection: process.env.TTS_PROVIDER || "native",
         });
         await EventLogs.logEvent("api_sent_chat", {
           workspaceName: workspace?.name,
@@ -531,6 +631,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.status(200).json({ ...result });
       } catch (e) {
+        console.error(e.message, e);
         response.status(500).json({
           id: uuidv4(),
           type: "abort",
@@ -645,7 +746,8 @@ function apiWorkspaceEndpoints(app) {
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          TTSSelection: process.env.TTS_PROVIDER || "native",
         });
         await EventLogs.logEvent("api_sent_chat", {
           workspaceName: workspace?.name,
@@ -653,7 +755,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.end();
       } catch (e) {
-        console.error(e);
+        console.error(e.message, e);
         writeResponseChunk(response, {
           id: uuidv4(),
           type: "abort",

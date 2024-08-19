@@ -3,11 +3,7 @@ const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const {
-  toChunks,
-  getLLMProvider,
-  getEmbeddingEngineSelection,
-} = require("../../helpers");
+const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
 
 const PineconeDB = {
@@ -100,7 +96,8 @@ const PineconeDB = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -108,26 +105,28 @@ const PineconeDB = {
       if (!pageContent || pageContent.length == 0) return false;
 
       console.log("Adding new vectorized document into namespace", namespace);
-      const cacheResult = await cachedVectorInformation(fullFilePath);
-      if (cacheResult.exists) {
-        const { pineconeIndex } = await this.connect();
-        const pineconeNamespace = pineconeIndex.namespace(namespace);
-        const { chunks } = cacheResult;
-        const documentVectors = [];
+      if (!skipCache) {
+        const cacheResult = await cachedVectorInformation(fullFilePath);
+        if (cacheResult.exists) {
+          const { pineconeIndex } = await this.connect();
+          const pineconeNamespace = pineconeIndex.namespace(namespace);
+          const { chunks } = cacheResult;
+          const documentVectors = [];
 
-        for (const chunk of chunks) {
-          // Before sending to Pinecone and saving the records to our db
-          // we need to assign the id of each chunk that is stored in the cached file.
-          const newChunks = chunk.map((chunk) => {
-            const id = uuidv4();
-            documentVectors.push({ docId, vectorId: id });
-            return { ...chunk, id };
-          });
-          await pineconeNamespace.upsert([...newChunks]);
+          for (const chunk of chunks) {
+            // Before sending to Pinecone and saving the records to our db
+            // we need to assign the id of each chunk that is stored in the cached file.
+            const newChunks = chunk.map((chunk) => {
+              const id = uuidv4();
+              documentVectors.push({ docId, vectorId: id });
+              return { ...chunk, id };
+            });
+            await pineconeNamespace.upsert([...newChunks]);
+          }
+
+          await DocumentVectors.bulkInsert(documentVectors);
+          return { vectorized: true, error: null };
         }
-
-        await DocumentVectors.bulkInsert(documentVectors);
-        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.
@@ -135,25 +134,29 @@ const PineconeDB = {
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
       // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L167
+      const EmbedderEngine = getEmbeddingEngineSelection();
       const textSplitter = new TextSplitter({
         chunkSize: TextSplitter.determineMaxChunkSize(
           await SystemSettings.getValueOrFallback({
             label: "text_splitter_chunk_size",
           }),
-          getEmbeddingEngineSelection()?.embeddingMaxChunkLength
+          EmbedderEngine?.embeddingMaxChunkLength
         ),
         chunkOverlap: await SystemSettings.getValueOrFallback(
           { label: "text_splitter_chunk_overlap" },
           20
         ),
+        chunkHeaderMeta: {
+          sourceDocument: metadata?.title,
+          published: metadata?.published || "unknown",
+        },
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
-      const LLMConnector = getLLMProvider();
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await LLMConnector.embedChunks(textChunks);
+      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {

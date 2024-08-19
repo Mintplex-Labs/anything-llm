@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useParams } from "react-router-dom";
+import DnDFileUploaderWrapper, {
+  DnDFileUploaderProvider,
+} from "./ChatContainer/DnDWrapper";
 
 export default function WorkspaceChat({ loading, workspace }) {
   const { threadSlug = null } = useParams();
@@ -23,6 +26,7 @@ export default function WorkspaceChat({ loading, workspace }) {
       const chatHistory = threadSlug
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
+
       setHistory(chatHistory);
       setLoadingHistory(false);
     }
@@ -62,7 +66,11 @@ export default function WorkspaceChat({ loading, workspace }) {
   }
 
   setEventDelegatorForCodeSnippets();
-  return <ChatContainer workspace={workspace} knownHistory={history} />;
+  return (
+    <DnDFileUploaderProvider workspace={workspace}>
+      <ChatContainer workspace={workspace} knownHistory={history} />
+    </DnDFileUploaderProvider>
+  );
 }
 
 // Enables us to safely markdown and sanitize all responses without risk of injection

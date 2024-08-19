@@ -62,6 +62,18 @@ const WorkspaceThread = {
       .then((res) => res.ok)
       .catch(() => false);
   },
+  deleteBulk: async function (workspaceSlug, threadSlugs = []) {
+    return await fetch(
+      `${API_BASE()}/workspace/${workspaceSlug}/thread-bulk-delete`,
+      {
+        method: "DELETE",
+        body: JSON.stringify({ slugs: threadSlugs }),
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
   chatHistory: async function (workspaceSlug, threadSlug) {
     const history = await fetch(
       `${API_BASE()}/workspace/${workspaceSlug}/thread/${threadSlug}/chats`,
@@ -78,7 +90,8 @@ const WorkspaceThread = {
   streamChat: async function (
     { workspaceSlug, threadSlug },
     message,
-    handleChat
+    handleChat,
+    attachments = []
   ) {
     const ctrl = new AbortController();
 
@@ -95,7 +108,7 @@ const WorkspaceThread = {
       `${API_BASE()}/workspace/${workspaceSlug}/thread/${threadSlug}/stream-chat`,
       {
         method: "POST",
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, attachments }),
         headers: baseHeaders(),
         signal: ctrl.signal,
         openWhenHidden: true,
@@ -150,6 +163,51 @@ const WorkspaceThread = {
         },
       }
     );
+  },
+  _deleteEditedChats: async function (
+    workspaceSlug = "",
+    threadSlug = "",
+    startingId
+  ) {
+    return await fetch(
+      `${API_BASE()}/workspace/${workspaceSlug}/thread/${threadSlug}/delete-edited-chats`,
+      {
+        method: "DELETE",
+        headers: baseHeaders(),
+        body: JSON.stringify({ startingId }),
+      }
+    )
+      .then((res) => {
+        if (res.ok) return true;
+        throw new Error("Failed to delete chats.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
+  },
+  _updateChatResponse: async function (
+    workspaceSlug = "",
+    threadSlug = "",
+    chatId,
+    newText
+  ) {
+    return await fetch(
+      `${API_BASE()}/workspace/${workspaceSlug}/thread/${threadSlug}/update-chat`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ chatId, newText }),
+      }
+    )
+      .then((res) => {
+        if (res.ok) return true;
+        throw new Error("Failed to update chat.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
   },
 };
 

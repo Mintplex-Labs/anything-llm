@@ -20,3 +20,6 @@ documents
 vector-cache
 yarn-error.log
 storage
+
+# Local SSL Certs for HTTPS
+sslcert

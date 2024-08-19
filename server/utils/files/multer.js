@@ -11,10 +11,18 @@ const fileUploadStorage = multer.diskStorage({
         : path.resolve(process.env.STORAGE_DIR, `hotdir`); // specific for desktop.
     cb(null, uploadOutput);
   },
-  filename: function (_, file, cb) {
+  filename: function (req, file, cb) {
     file.originalname = Buffer.from(file.originalname, "latin1").toString(
       "utf8"
     );
+
+    // Set origin for watching
+    if (
+      req.headers.hasOwnProperty("x-file-origin") &&
+      typeof req.headers["x-file-origin"] === "string"
+    )
+      file.localPath = decodeURI(req.headers["x-file-origin"]);
+
     cb(null, file.originalname);
   },
 });

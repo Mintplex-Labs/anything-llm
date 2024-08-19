@@ -53,13 +53,14 @@ async function scrapeGenericUrl(link, textOnly = false) {
 // that we were waiting for and not squash messages that may be ongoing at the same time.
 // Note: Because we rely on collector to have a parent process (AKA be spawned from main) if
 // you run the collector via yarn dev:collector, this call will always fail.
-async function getPageContent(link) {
+// output: 'text' | 'html' and returns the document.body[innerText | innerHTML]
+async function getPageContent(link, output = "text") {
   try {
     const requestUuid = v4();
     let requestHandler = null;
     process.parentPort?.postMessage({
       message: "process-link",
-      params: { reqId: requestUuid, link },
+      params: { reqId: requestUuid, link, output },
     });
 
     const fetchPageContent = new Promise((resolve) => {
@@ -108,4 +109,5 @@ async function getPageContent(link) {
 
 module.exports = {
   scrapeGenericUrl,
+  getPageContent,
 };

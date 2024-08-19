@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import JAZZ from "@metamask/jazzicon";
 
-export default function Jazzicon({ size = 10, user, role }) {
+export default function UserIcon({ size = 36, user, role }) {
   const divRef = useRef(null);
   const seed = user?.uid
     ? toPseudoRandomInteger(user.uid)

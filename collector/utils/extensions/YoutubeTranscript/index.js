@@ -26,11 +26,13 @@ function validYoutubeVideoUrl(link) {
   return false;
 }
 
-async function loadYouTubeTranscript({ url }) {
+async function fetchVideoTranscriptContent({ url }) {
   if (!validYoutubeVideoUrl(url)) {
     return {
       success: false,
       reason: "Invalid URL. Should be youtu.be or youtube.com/watch.",
+      content: null,
+      metadata: {},
     };
   }
 
@@ -52,6 +54,8 @@ async function loadYouTubeTranscript({ url }) {
     return {
       success: false,
       reason: error ?? "No transcript found for that YouTube video.",
+      content: null,
+      metadata: {},
     };
   }
 
@@ -61,12 +65,34 @@ async function loadYouTubeTranscript({ url }) {
     return {
       success: false,
       reason: "No transcript could be parsed for that YouTube video.",
+      content: null,
+      metadata: {},
     };
   }
 
+  return {
+    success: true,
+    reason: null,
+    content,
+    metadata,
+  };
+}
+
+async function loadYouTubeTranscript({ url }) {
+  const transcriptResults = await fetchVideoTranscriptContent({ url });
+  if (!transcriptResults.success) {
+    return {
+      success: false,
+      reason:
+        transcriptResults.reason ||
+        "An unknown error occurred during transcription retrieval",
+    };
+  }
+  const { content, metadata } = transcriptResults;
   const outFolder = slugify(
     `${metadata.author} YouTube transcripts`
   ).toLowerCase();
+
   const outFolderPath =
     process.env.NODE_ENV === "development"
       ? path.resolve(
@@ -75,7 +101,8 @@ async function loadYouTubeTranscript({ url }) {
         )
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
-  if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath);
+  if (!fs.existsSync(outFolderPath))
+    fs.mkdirSync(outFolderPath, { recursive: true });
 
   const data = {
     id: v4(),
@@ -84,7 +111,7 @@ async function loadYouTubeTranscript({ url }) {
     docAuthor: metadata.author,
     description: metadata.description,
     docSource: url,
-    chunkSource: `link://${url}`,
+    chunkSource: `youtube://${url}`,
     published: new Date().toLocaleString(),
     wordCount: content.split(" ").length,
     pageContent: content,
@@ -109,4 +136,7 @@ async function loadYouTubeTranscript({ url }) {
   };
 }
 
-module.exports = loadYouTubeTranscript;
+module.exports = {
+  loadYouTubeTranscript,
+  fetchVideoTranscriptContent,
+};

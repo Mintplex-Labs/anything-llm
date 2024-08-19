@@ -6,8 +6,12 @@ import useQuery from "../../../hooks/useQuery";
 import ChatRow from "./ChatRow";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
-import { CaretDown, Download } from "@phosphor-icons/react";
+import { CaretDown, Download, Sparkle, Trash } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
+import { refocusApplication } from "@/ipc/node-api";
+import { useTranslation } from "react-i18next";
+import paths from "@/utils/paths";
+import { Link } from "react-router-dom";
 
 const exportOptions = {
   csv: {
@@ -48,6 +52,13 @@ export default function WorkspaceChats() {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef();
   const openMenuButton = useRef();
+  const query = useQuery();
+  const [loading, setLoading] = useState(true);
+  const [chats, setChats] = useState([]);
+  const [offset, setOffset] = useState(Number(query.get("offset") || 0));
+  const [canNext, setCanNext] = useState(false);
+  const { t } = useTranslation();
+
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType);
     if (!!chats) {
@@ -59,6 +70,22 @@ export default function WorkspaceChats() {
     } else {
       showToast("Failed to export chats.", "error");
     }
+  };
+
+  const handleClearAllChats = async () => {
+    if (
+      !window.confirm(
+        `Are you sure you want to clear all chats?\n\nThis action is irreversible.`
+      )
+    ) {
+      refocusApplication();
+      return false;
+    }
+
+    refocusApplication();
+    await System.deleteChat(-1);
+    setChats([]);
+    showToast("Cleared all chats.", "success");
   };
 
   const toggleMenu = () => {
@@ -82,34 +109,44 @@ export default function WorkspaceChats() {
     };
   }, []);
 
+  useEffect(() => {
+    async function fetchChats() {
+      const { chats: _chats, hasPages = false } = await System.chats(offset);
+      setChats(_chats);
+      setCanNext(hasPages);
+      setLoading(false);
+    }
+    fetchChats();
+  }, [offset]);
+
   return (
     <div
       style={{ height: "calc(100vh - 40px)" }}
       className="w-screen overflow-hidden bg-sidebar flex"
     >
       <Sidebar />
-      <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
+      <div className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full overflow-y-scroll border-2 border-outline h-[calc(100vh-72px)]">
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="flex gap-x-4 items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                Workspace Chats
+                {t("recorded.title")}
               </p>
               <div className="relative">
                 <button
                   ref={openMenuButton}
                   onClick={toggleMenu}
-                  className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-[#2C2F36] text-white text-sm hover:bg-[#3D4147] shadow-md border border-[#3D4147]"
+                  className="border-none flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-white text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                 >
                   <Download size={18} weight="bold" />
-                  Export
+                  {t("recorded.export")}
                   <CaretDown size={18} weight="bold" />
                 </button>
                 <div
                   ref={menuRef}
                   className={`${
                     showMenu ? "slide-down" : "slide-up hidden"
-                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-[#2C2F36] mt-2 shadow-md`}
+                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary mt-2 shadow-md`}
                 >
                   <div className="py-2">
                     {Object.entries(exportOptions).map(([key, data]) => (
@@ -127,26 +164,53 @@ export default function WorkspaceChats() {
                   </div>
                 </div>
               </div>
+              {chats.length > 0 && (
+                <>
+                  <button
+                    onClick={handleClearAllChats}
+                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-white/40 text-white/40 rounded-lg bg-transparent hover:text-white text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  >
+                    <Trash size={18} weight="bold" />
+                    Clear Chats
+                  </button>
+                  <Link
+                    to={paths.orderFineTune()}
+                    className="flex items-center gap-x-2 px-4 py-1 border border-solid hover:border-transparent border-yellow-300 text-yellow-300/80 rounded-lg bg-transparent hover:text-white text-xs font-semibold hover:bg-yellow-300/75 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  >
+                    <Sparkle size={18} weight="bold" />
+                    Order Fine-Tune Model
+                  </Link>
+                </>
+              )}
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              These are all the recorded chats and messages that have been sent
-              by users ordered by their creation date.
+              {t("recorded.description")}
             </p>
           </div>
-          <ChatsContainer />
+          <ChatsContainer
+            loading={loading}
+            chats={chats}
+            setChats={setChats}
+            offset={offset}
+            setOffset={setOffset}
+            canNext={canNext}
+            t={t}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function ChatsContainer() {
-  const query = useQuery();
-  const [loading, setLoading] = useState(true);
-  const [chats, setChats] = useState([]);
-  const [offset, setOffset] = useState(Number(query.get("offset") || 0));
-  const [canNext, setCanNext] = useState(false);
-
+function ChatsContainer({
+  loading,
+  chats,
+  setChats,
+  offset,
+  setOffset,
+  canNext,
+  t,
+}) {
   const handlePrevious = () => {
     setOffset(Math.max(offset - 1, 0));
   };
@@ -154,19 +218,10 @@ function ChatsContainer() {
     setOffset(offset + 1);
   };
 
-  const handleDeleteChat = (chatId) => {
+  const handleDeleteChat = async (chatId) => {
+    await System.deleteChat(chatId);
     setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
   };
-
-  useEffect(() => {
-    async function fetchChats() {
-      const { chats: _chats, hasPages = false } = await System.chats(offset);
-      setChats(_chats);
-      setCanNext(hasPages);
-      setLoading(false);
-    }
-    fetchChats();
-  }, [offset]);
 
   if (loading) {
     return (
@@ -188,22 +243,22 @@ function ChatsContainer() {
         <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
-              Id
+              {t("recorded.table.id")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Sent By
+              {t("recorded.table.by")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Workspace
+              {t("recorded.table.workspace")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Prompt
+              {t("recorded.table.prompt")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Response
+              {t("recorded.table.response")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Sent At
+              {t("recorded.table.at")}
             </th>
             <th scope="col" className="px-6 py-3 rounded-tr-lg">
               {" "}

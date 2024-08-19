@@ -3,14 +3,19 @@ import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import WorkspaceLLMItem from "./WorkspaceLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
-import ChatModelSelection from "../ChatModelSelection";
+import ChatModelSelection from "./ChatModelSelection";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
 
-const DISABLED_PROVIDERS = [
+const NO_MODEL_SELECTION = [
+  "default",
   "anythingllm_ollama",
-  "azure",
-  "lmstudio",
-  "native",
+  "huggingface",
+  "generic-openai",
+  "bedrock",
 ];
+const DISABLED_PROVIDERS = ["anythingllm_ollama", "azure", "native"];
 const LLM_DEFAULT = {
   name: "System default",
   value: "default",
@@ -36,7 +41,7 @@ export default function WorkspaceLLMSelection({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
-
+  const { t } = useTranslation();
   function updateLLMChoice(selection) {
     setSearchQuery("");
     setSelectedLLM(selection);
@@ -65,11 +70,10 @@ export default function WorkspaceLLMSelection({
     <div className="border-b border-white/40 pb-8">
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Workspace LLM Provider
+          {t("chat.llm.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          The specific LLM provider & model that will be used for this
-          workspace. By default, it uses the system LLM provider and settings.
+          {t("chat.llm.description")}
         </p>
       </div>
 
@@ -82,9 +86,9 @@ export default function WorkspaceLLMSelection({
           />
         )}
         {searchMenuOpen ? (
-          <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#46C8FF] z-20">
+          <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-dark-input rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
             <div className="w-full flex flex-col gap-y-1">
-              <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-[#18181B]">
+              <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-dark-input">
                 <MagnifyingGlass
                   size={20}
                   weight="bold"
@@ -94,8 +98,8 @@ export default function WorkspaceLLMSelection({
                   type="text"
                   name="llm-search"
                   autoComplete="off"
-                  placeholder="Search all LLM providers"
-                  className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-white placeholder:text-white placeholder:font-medium"
+                  placeholder={t("chat.llm.search")}
+                  className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:outline-primary-button active:outline-primary-button outline-none text-white placeholder:text-white placeholder:font-medium"
                   onChange={(e) => setSearchQuery(e.target.value)}
                   ref={searchInputRef}
                   onKeyDown={(e) => {
@@ -105,7 +109,7 @@ export default function WorkspaceLLMSelection({
                 <X
                   size={20}
                   weight="bold"
-                  className="cursor-pointer text-white hover:text-[#9CA3AF]"
+                  className="cursor-pointer text-white hover:text-x-button"
                   onClick={handleXButton}
                 />
               </div>
@@ -127,7 +131,7 @@ export default function WorkspaceLLMSelection({
           </div>
         ) : (
           <button
-            className="w-full max-w-[640px] h-[64px] bg-[#18181B] rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#46C8FF] transition-all duration-300"
+            className="w-full max-w-[640px] h-[64px] bg-dark-input rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
             type="button"
             onClick={() => setSearchMenuOpen(true)}
           >
@@ -141,7 +145,7 @@ export default function WorkspaceLLMSelection({
                 <div className="text-sm font-semibold text-white">
                   {selectedLLMObject.name}
                 </div>
-                <div className="mt-1 text-xs text-[#D2D5DB]">
+                <div className="mt-1 text-xs text-description">
                   {selectedLLMObject.description}
                 </div>
               </div>
@@ -150,7 +154,22 @@ export default function WorkspaceLLMSelection({
           </button>
         )}
       </div>
-      {selectedLLM !== "default" && (
+      {NO_MODEL_SELECTION.includes(selectedLLM) ? (
+        <>
+          {selectedLLM !== "default" && (
+            <div className="w-full h-10 justify-center items-center flex mt-4">
+              <p className="text-sm font-base text-white text-opacity-60 text-center">
+                Multi-model support is not supported for this provider yet.
+                <br />
+                This workspace will use{" "}
+                <Link to={paths.settings.llmPreference()} className="underline">
+                  the model set for the system.
+                </Link>
+              </p>
+            </div>
+          )}
+        </>
+      ) : (
         <div className="mt-4 flex flex-col gap-y-1">
           <ChatModelSelection
             provider={selectedLLM}

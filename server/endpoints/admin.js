@@ -33,10 +33,7 @@ function adminEndpoints(app) {
     [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_request, response) => {
       try {
-        const users = (await User.where()).map((user) => {
-          const { password, ...rest } = user;
-          return rest;
-        });
+        const users = await User.where();
         response.status(200).json({ users });
       } catch (e) {
         console.error(e);
@@ -320,10 +317,8 @@ function adminEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_, response) => {
       try {
+        const embedder = getEmbeddingEngineSelection();
         const settings = {
-          users_can_delete_workspaces:
-            (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
-              ?.value === "true",
           limit_user_messages:
             (await SystemSettings.get({ label: "limit_user_messages" }))
               ?.value === "true",
@@ -340,22 +335,35 @@ function adminEndpoints(app) {
           text_splitter_chunk_size:
             (await SystemSettings.get({ label: "text_splitter_chunk_size" }))
               ?.value ||
-            getEmbeddingEngineSelection()?.embeddingMaxChunkLength ||
+            embedder?.embeddingMaxChunkLength ||
             null,
           text_splitter_chunk_overlap:
             (await SystemSettings.get({ label: "text_splitter_chunk_overlap" }))
               ?.value || null,
-          max_embed_chunk_size:
-            getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1000,
+          max_embed_chunk_size: embedder?.embeddingMaxChunkLength || 1000,
           agent_search_provider:
             (await SystemSettings.get({ label: "agent_search_provider" }))
               ?.value || null,
+          agent_sql_connections:
+            await SystemSettings.brief.agent_sql_connections(),
           default_agent_skills:
             safeJsonParse(
               (await SystemSettings.get({ label: "default_agent_skills" }))
                 ?.value,
               []
             ) || [],
+          custom_app_name:
+            (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
+            null,
+          feature_flags: (await SystemSettings.getFeatureFlags()) || {},
+          meta_page_title: await SystemSettings.getValueOrFallback(
+            { label: "meta_page_title" },
+            null
+          ),
+          meta_page_favicon: await SystemSettings.getValueOrFallback(
+            { label: "meta_page_favicon" },
+            null
+          ),
         };
         response.status(200).json({ settings });
       } catch (e) {

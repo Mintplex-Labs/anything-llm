@@ -3,7 +3,7 @@ import { Link, useMatch } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import ManageWorkspace, {
   useManageWorkspaceModal,
-} from "../../Modals/MangeWorkspace";
+} from "../../Modals/ManageWorkspace";
 import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
 import { GearSix, SquaresFour, UploadSimple } from "@phosphor-icons/react";
@@ -22,7 +22,6 @@ export default function ActiveWorkspaces() {
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWs, setSelectedWs] = useState(null);
   const [hoverStates, setHoverStates] = useState({});
-  const [uploadHover, setUploadHover] = useState({});
   const isInWorkspaceSettings = !!useMatch("/workspace/:slug/settings/:tab");
 
   useEffect(() => {
@@ -48,14 +47,6 @@ export default function ActiveWorkspaces() {
 
   const handleGearMouseLeave = useCallback((workspaceId) => {
     setSettingHover((prev) => ({ ...prev, [workspaceId]: false }));
-  }, []);
-
-  const handleUploadMouseEnter = useCallback((workspaceId) => {
-    setUploadHover((prev) => ({ ...prev, [workspaceId]: true }));
-  }, []);
-
-  const handleUploadMouseLeave = useCallback((workspaceId) => {
-    setUploadHover((prev) => ({ ...prev, [workspaceId]: false }));
   }, []);
 
   if (loading) {
@@ -128,12 +119,6 @@ export default function ActiveWorkspaces() {
                           setSelectedWs(workspace);
                           showModal();
                         }}
-                        onMouseEnter={() =>
-                          handleUploadMouseEnter(workspace.id)
-                        }
-                        onMouseLeave={() =>
-                          handleUploadMouseLeave(workspace.id)
-                        }
                         className="group p-[2px] hover:bg-[#646768] rounded-[4px] border-none rounded-md flex items-center justify-center"
                       >
                         <UploadSimple
@@ -143,9 +128,13 @@ export default function ActiveWorkspaces() {
                       </button>
                       <Link
                         type="button"
-                        to={paths.workspace.settings.generalAppearance(
-                          workspace.slug
-                        )}
+                        to={
+                          isInWorkspaceSettings
+                            ? paths.workspace.chat(workspace.slug)
+                            : paths.workspace.settings.generalAppearance(
+                                workspace.slug
+                              )
+                        }
                         onMouseEnter={() => handleGearMouseEnter(workspace.id)}
                         onMouseLeave={() => handleGearMouseLeave(workspace.id)}
                         className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto"
@@ -157,8 +146,8 @@ export default function ActiveWorkspaces() {
                               isInWorkspaceSettings && workspace.slug === slug
                                 ? "#46C8FF"
                                 : settingHover[workspace.id]
-                                ? "#FFFFFF"
-                                : "#A7A8A9"
+                                  ? "#FFFFFF"
+                                  : "#A7A8A9"
                             }
                             weight="bold"
                             className="h-[20px] w-[20px]"

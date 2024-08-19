@@ -3,11 +3,7 @@ const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const {
-  toChunks,
-  getLLMProvider,
-  getEmbeddingEngineSelection,
-} = require("../../helpers");
+const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
 
 const QDrant = {
@@ -99,7 +95,7 @@ const QDrant = {
     return {
       name: namespace,
       ...collection,
-      vectorCount: collection.vectors_count,
+      vectorCount: (await client.count(namespace, { exact: true })).count,
     };
   },
   hasNamespace: async function (namespace = null) {
@@ -141,7 +137,8 @@ const QDrant = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -150,84 +147,92 @@ const QDrant = {
       if (!pageContent || pageContent.length == 0) return false;
 
       console.log("Adding new vectorized document into namespace", namespace);
-      const cacheResult = await cachedVectorInformation(fullFilePath);
-      if (cacheResult.exists) {
-        const { client } = await this.connect();
-        const { chunks } = cacheResult;
-        const documentVectors = [];
-        vectorDimension =
-          chunks[0][0]?.vector?.length ?? chunks[0][0]?.values?.length ?? null;
+      if (skipCache) {
+        const cacheResult = await cachedVectorInformation(fullFilePath);
+        if (cacheResult.exists) {
+          const { client } = await this.connect();
+          const { chunks } = cacheResult;
+          const documentVectors = [];
+          vectorDimension =
+            chunks[0][0]?.vector?.length ??
+            chunks[0][0]?.values?.length ??
+            null;
 
-        const collection = await this.getOrCreateCollection(
-          client,
-          namespace,
-          vectorDimension
-        );
-        if (!collection)
-          throw new Error("Failed to create new QDrant collection!", {
+          const collection = await this.getOrCreateCollection(
+            client,
             namespace,
-          });
+            vectorDimension
+          );
+          if (!collection)
+            throw new Error("Failed to create new QDrant collection!", {
+              namespace,
+            });
 
-        for (const chunk of chunks) {
-          const submission = {
-            ids: [],
-            vectors: [],
-            payloads: [],
-          };
+          for (const chunk of chunks) {
+            const submission = {
+              ids: [],
+              vectors: [],
+              payloads: [],
+            };
 
-          // Before sending to Qdrant and saving the records to our db
-          // we need to assign the id of each chunk that is stored in the cached file.
-          // The id property must be defined or else it will be unable to be managed by ALLM.
-          chunk.forEach((chunk) => {
-            const id = uuidv4();
-            if (chunk?.payload?.hasOwnProperty("id")) {
-              const { id: _id, ...payload } = chunk.payload;
-              documentVectors.push({ docId, vectorId: id });
-              submission.ids.push(id);
-              submission.vectors.push(chunk.vector);
-              submission.payloads.push(payload);
-            } else {
-              console.error(
-                "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection."
-              );
-            }
-          });
+            // Before sending to Qdrant and saving the records to our db
+            // we need to assign the id of each chunk that is stored in the cached file.
+            // The id property must be defined or else it will be unable to be managed by ALLM.
+            chunk.forEach((chunk) => {
+              const id = uuidv4();
+              if (chunk?.payload?.hasOwnProperty("id")) {
+                const { id: _id, ...payload } = chunk.payload;
+                documentVectors.push({ docId, vectorId: id });
+                submission.ids.push(id);
+                submission.vectors.push(chunk.vector);
+                submission.payloads.push(payload);
+              } else {
+                console.error(
+                  "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection."
+                );
+              }
+            });
 
-          const additionResult = await client.upsert(namespace, {
-            wait: true,
-            batch: { ...submission },
-          });
-          if (additionResult?.status !== "completed")
-            throw new Error("Error embedding into QDrant", additionResult);
+            const additionResult = await client.upsert(namespace, {
+              wait: true,
+              batch: { ...submission },
+            });
+            if (additionResult?.status !== "completed")
+              throw new Error("Error embedding into QDrant", additionResult);
+          }
+
+          await DocumentVectors.bulkInsert(documentVectors);
+          return { vectorized: true, error: null };
         }
-
-        await DocumentVectors.bulkInsert(documentVectors);
-        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.
       // We have to do this manually as opposed to using LangChains `Qdrant.fromDocuments`
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
+      const EmbedderEngine = getEmbeddingEngineSelection();
       const textSplitter = new TextSplitter({
         chunkSize: TextSplitter.determineMaxChunkSize(
           await SystemSettings.getValueOrFallback({
             label: "text_splitter_chunk_size",
           }),
-          getEmbeddingEngineSelection()?.embeddingMaxChunkLength
+          EmbedderEngine?.embeddingMaxChunkLength
         ),
         chunkOverlap: await SystemSettings.getValueOrFallback(
           { label: "text_splitter_chunk_overlap" },
           20
         ),
+        chunkHeaderMeta: {
+          sourceDocument: metadata?.title,
+          published: metadata?.published || "unknown",
+        },
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
-      const LLMConnector = getLLMProvider();
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await LLMConnector.embedChunks(textChunks);
+      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
       const submission = {
         ids: [],
         vectors: [],

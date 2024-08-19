@@ -1,8 +1,9 @@
+const { EncryptionManager } = require("../EncryptionManager");
+
 // When running locally will occupy the 0.0.0.0 hostname space but when deployed inside
 // of docker/desktop this endpoint is not exposed so it is only on the host machine
 // so no additional security is needed on the endpoint directly. Auth is done however by the express
 // middleware prior to leaving the node-side of the application so that is good enough >:)
-
 class CollectorApi {
   constructor() {
     const { CommunicationKey } = require("../comKey");
@@ -17,6 +18,7 @@ class CollectorApi {
   #attachOptions() {
     return {
       whisperProvider: process.env.WHISPER_PROVIDER || "local",
+      WhisperModelPref: process.env.WHISPER_MODEL_PREF,
       openAiKey: process.env.OPEN_AI_KEY || null,
     };
   }
@@ -40,12 +42,15 @@ class CollectorApi {
       });
   }
 
-  async processDocument(filename = "") {
+  async processDocument(filename = "", localPath = null) {
     if (!filename) return false;
 
     const data = JSON.stringify({
       filename,
-      options: this.#attachOptions(),
+      options: {
+        ...this.#attachOptions(),
+        localPath,
+      },
     });
 
     return await fetch(`${this.endpoint}/process`, {
@@ -53,6 +58,9 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
       },
       body: data,
     })
@@ -76,6 +84,9 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
       },
       body: data,
     })
@@ -97,6 +108,9 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
       },
       body: data,
     })
@@ -121,6 +135,9 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(body),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
       },
     })
       .then((res) => {
@@ -143,6 +160,9 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
       },
       body: data,
     })

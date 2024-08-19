@@ -29,7 +29,7 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   }
 
   function handleBack() {
-    navigate(paths.onboarding.customLogo());
+    navigate(paths.onboarding.llmPreference());
   }
 
   useEffect(() => {
@@ -197,7 +197,7 @@ const JustMe = ({
             <input
               name="password"
               type="password"
-              className="border-none bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5"
+              className="border-none bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
               placeholder="Your admin password"
               minLength={6}
               required={true}
@@ -280,7 +280,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                 <input
                   name="username"
                   type="text"
-                  className="border-none bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
                   placeholder="Your admin username"
                   minLength={6}
                   required={true}
@@ -298,7 +298,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                 <input
                   name="password"
                   type="password"
-                  className="border-none bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
                   placeholder="Your admin password"
                   minLength={8}
                   required={true}

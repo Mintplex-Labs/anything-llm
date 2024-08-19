@@ -1,9 +1,9 @@
-const { chatPrompt } = require("../../chats");
-const { StringOutputParser } = require("langchain/schema/output_parser");
+const { StringOutputParser } = require("@langchain/core/output_parsers");
 const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -13,26 +13,31 @@ class OllamaAILLM {
 
     this.basePath = process.env.OLLAMA_BASE_PATH;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
+    this.performanceMode = process.env.OLLAMA_PERFORMANCE_MODE || "base";
+    this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
+      ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
+      : 300; // Default 5-minute timeout for Ollama model loading.
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      throw new Error(
-        "INVALID OLLAMA SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Ollama as your LLM."
-      );
-    this.embedder = embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
   }
 
   #ollamaClient({ temperature = 0.07 }) {
-    const { ChatOllama } = require("langchain/chat_models/ollama");
+    const { ChatOllama } = require("@langchain/community/chat_models/ollama");
     return new ChatOllama({
       baseUrl: this.basePath,
       model: this.model,
+      keepAlive: this.keepAlive,
       useMLock: true,
+      // There are currently only two performance settings so if its not "base" - its max context.
+      ...(this.performanceMode === "base"
+        ? {}
+        : { numCtx: this.promptWindowLimit() }),
       temperature,
     });
   }
@@ -44,7 +49,7 @@ class OllamaAILLM {
       HumanMessage,
       SystemMessage,
       AIMessage,
-    } = require("langchain/schema");
+    } = require("@langchain/core/messages");
     const langchainChats = [];
     const roleToMessageMap = {
       system: SystemMessage,
@@ -74,7 +79,7 @@ class OllamaAILLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   // Ensure the user set a value for the token limit
@@ -90,69 +95,50 @@ class OllamaAILLM {
     return true;
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return { content: userPrompt };
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: attachment.contentString,
+      });
+    }
+    return { content: content.flat() };
+  }
+
+  /**
+   * Construct the user prompt for this model.
+   * @param {{attachments: import("../../helpers").Attachment[]}} param0
+   * @returns
+   */
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
-  }
-
-  async isSafe(_input = "") {
-    // Not implemented so must be stubbed
-    return { safe: true, reasons: [] };
-  }
-
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const messages = await this.compressMessages(
+    return [
+      prompt,
+      ...chatHistory,
       {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
+        role: "user",
+        ...this.#generateContent({ userPrompt, attachments }),
       },
-      rawHistory
-    );
-
-    const model = this.#ollamaClient({
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    const textResponse = await model
-      .pipe(new StringOutputParser())
-      .invoke(this.#convertToLangchainPrototypes(messages))
-      .catch((e) => {
-        throw new Error(
-          `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
-        );
-      });
-
-    if (!textResponse || !textResponse.length)
-      throw new Error(`Ollama::sendChat text response was empty.`);
-
-    return textResponse;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const model = this.#ollamaClient({
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    const stream = await model
-      .pipe(new StringOutputParser())
-      .stream(this.#convertToLangchainPrototypes(messages));
-    return stream;
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

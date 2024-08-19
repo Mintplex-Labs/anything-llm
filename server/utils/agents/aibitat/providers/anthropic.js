@@ -3,7 +3,7 @@ const { RetryError } = require("../error.js");
 const Provider = require("./ai-provider.js");
 
 /**
- * The provider for the Anthropic API.
+ * The agent provider for the Anthropic API.
  * By default, the model is set to 'claude-2'.
  */
 class AnthropicProvider extends Provider {

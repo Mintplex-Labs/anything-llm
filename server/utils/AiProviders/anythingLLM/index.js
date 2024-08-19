@@ -1,5 +1,4 @@
-const { chatPrompt } = require("../../chats");
-const { StringOutputParser } = require("langchain/schema/output_parser");
+const { StringOutputParser } = require("@langchain/core/output_parsers");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -91,10 +90,12 @@ class AnythingLLMOllama {
   }
 
   #ollamaClient({ temperature = 0.07 }) {
-    const { ChatOllama } = require("langchain/chat_models/ollama");
+    const { ChatOllama } = require("@langchain/community/chat_models/ollama");
     return new ChatOllama({
       baseUrl: this.basePath(),
       model: this.model,
+      keepAlive: 600, // 10 min to keep in memory
+      useMLock: true,
       temperature,
     });
   }
@@ -106,7 +107,7 @@ class AnythingLLMOllama {
       HumanMessage,
       SystemMessage,
       AIMessage,
-    } = require("langchain/schema");
+    } = require("@langchain/core/messages");
     const langchainChats = [];
     const roleToMessageMap = {
       system: SystemMessage,
@@ -263,6 +264,72 @@ class AnythingLLMOllama {
     }
   }
 
+  async createModel(
+    modelFileLocation = null,
+    progressCallback,
+    successCallback,
+    errorCallback
+  ) {
+    const fs = require("fs");
+    if (!modelFileLocation || !fs.existsSync(modelFileLocation)) {
+      errorCallback?.(
+        `Could not find a model at file location: ${modelFileLocation}.`
+      );
+      return;
+    }
+
+    if (!this.#supportedPlatform()) {
+      errorCallback?.(`${this.process.APP_PLATFORM} is not supported.`);
+      return;
+    }
+    await this.bootOrContinue();
+
+    const modelName = (
+      modelFileLocation.includes("\\")
+        ? modelFileLocation.split("\\") // split for windows
+        : modelFileLocation.split("/")
+    ).splice(-1)[0];
+
+    this.#log(
+      `Starting creation of model ${modelName} from "${modelFileLocation}".`
+    );
+    const response = await fetch(`${this.basePath()}/api/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: modelName,
+        modelfile: `FROM ${modelFileLocation}`,
+        stream: true,
+      }),
+    });
+
+    const reader = response.body.getReader();
+    let chunks = [];
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) break;
+
+      chunks.push(value);
+      const receivedText = new TextDecoder("utf-8").decode(value);
+      try {
+        const parsedResult = safeJsonParse(receivedText);
+        const responses = Array.isArray(parsedResult)
+          ? parsedResult
+          : [parsedResult];
+        for (let json of responses) {
+          if (json?.status) progressCallback?.(json?.status, "OK");
+          if (json?.status === "success") successCallback?.();
+        }
+      } catch (e) {
+        console.error("Error parsing JSON", e);
+        errorCallback?.(e.message);
+      }
+    }
+  }
+
   async deleteModel(modelName = null) {
     if (!this.#supportedPlatform()) return [];
     if (!modelName) return true;
@@ -288,83 +355,97 @@ class AnythingLLMOllama {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   promptWindowLimit() {
-    const limit = 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No AnythingLLM token context limit was set.");
-    return Number(limit);
+    switch (this.model) {
+      case "llama3.1:latest":
+      case "phi3:latest":
+        return 131072;
+
+      case "gemma2:latest":
+      case "gemma:2b":
+      case "gemma:7b":
+      case "llama3:latest":
+      case "llava-llama3:latest":
+        return 8192;
+
+      case "llama2:latest":
+      case "llama2:13b":
+      case "llama2-uncensored:latest":
+      case "codellama:7b":
+        return 4096;
+
+      case "mistral:latest":
+      case "mixtral:latest":
+      case "dolphin-mixtral:latest":
+        return 32768;
+
+      case "phi:latest":
+      case "orca-mini:3b":
+      case "orca-mini:7b":
+      case "orca-mini:13b":
+        return 2048;
+
+      default:
+        return 4096;
+    }
   }
 
   async isValidChatCompletionModel(_ = "") {
     return true;
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return { content: userPrompt };
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: attachment.contentString,
+      });
+    }
+    return { content: content.flat() };
+  }
+
+  /**
+   * Construct the user prompt for this model.
+   * @param {{attachments: import("../../helpers").Attachment[]}} param0
+   * @returns
+   */
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...chatHistory,
+      {
+        role: "user",
+        ...this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async isSafe(_input = "") {
     // Not implemented so must be stubbed
     return { safe: true, reasons: [] };
-  }
-
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const model = this.#ollamaClient({
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    const textResponse = await model
-      .pipe(new StringOutputParser())
-      .invoke(this.#convertToLangchainPrototypes(messages))
-      .catch((e) => {
-        throw new Error(
-          `AnythingLLM::getChatCompletion failed to communicate with Ollama. ${e.message}`
-        );
-      });
-
-    if (!textResponse || !textResponse.length)
-      throw new Error(`AnythingLLM::sendChat text response was empty.`);
-
-    return textResponse;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const model = this.#ollamaClient({
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    const stream = await model
-      .pipe(new StringOutputParser())
-      .stream(this.#convertToLangchainPrototypes(messages));
-    return stream;
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, NavLink, useParams } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Workspace from "@/models/workspace";
-import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
+import { usePasswordModal } from "@/components/Modals/Password";
 import { FullScreenLoader } from "@/components/Preloader";
 import {
   ArrowUUpLeft,
@@ -19,6 +19,7 @@ import VectorDatabase from "./VectorDatabase";
 import Members from "./Members";
 import WorkspaceAgentConfiguration from "./AgentConfig";
 import useUser from "@/hooks/useUser";
+import { useTranslation } from "react-i18next";
 
 const TABS = {
   "general-appearance": GeneralAppearance,
@@ -29,17 +30,13 @@ const TABS = {
 };
 
 export default function WorkspaceSettings() {
-  const { loading, requiresAuth, mode } = usePasswordModal();
-
+  const { loading } = usePasswordModal();
   if (loading) return <FullScreenLoader />;
-  if (requiresAuth !== false) {
-    return <>{requiresAuth !== null && <PasswordModal mode={mode} />}</>;
-  }
-
   return <ShowWorkspaceChat />;
 }
 
 function ShowWorkspaceChat() {
+  const { t } = useTranslation();
   const { slug, tab } = useParams();
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
@@ -62,7 +59,7 @@ function ShowWorkspaceChat() {
       setLoading(false);
     }
     getWorkspace();
-  }, [slug]);
+  }, [slug, tab]);
 
   if (loading) return <FullScreenLoader />;
 
@@ -73,7 +70,7 @@ function ShowWorkspaceChat() {
       className="w-screen overflow-hidden bg-sidebar flex"
     >
       <Sidebar />
-      <div className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
+      <div className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full overflow-y-scroll border-2 border-outline h-[calc(100vh-72px)]">
         <div className="flex gap-x-10 pt-6 pb-4 ml-16 mr-8 border-b-2 border-white border-opacity-10">
           <Link
             to={paths.workspace.chat(slug)}
@@ -82,28 +79,28 @@ function ShowWorkspaceChat() {
             <ArrowUUpLeft className="h-5 w-5" weight="fill" />
           </Link>
           <TabItem
-            title="General Settings"
+            title={t("workspaces—settings.general")}
             icon={<Wrench className="h-6 w-6" />}
             to={paths.workspace.settings.generalAppearance(slug)}
           />
           <TabItem
-            title="Chat Settings"
+            title={t("workspaces—settings.chat")}
             icon={<ChatText className="h-6 w-6" />}
             to={paths.workspace.settings.chatSettings(slug)}
           />
           <TabItem
-            title="Vector Database"
+            title={t("workspaces—settings.vector")}
             icon={<Database className="h-6 w-6" />}
             to={paths.workspace.settings.vectorDatabase(slug)}
           />
           <TabItem
-            title="Members"
+            title={t("workspaces—settings.members")}
             icon={<User className="h-6 w-6" />}
             to={paths.workspace.settings.members(slug)}
             visible={["admin", "manager"].includes(user?.role)}
           />
           <TabItem
-            title="Agent Configuration"
+            title={t("workspaces—settings.agent")}
             icon={<Robot className="h-6 w-6" />}
             to={paths.workspace.settings.agentConfig(slug)}
           />

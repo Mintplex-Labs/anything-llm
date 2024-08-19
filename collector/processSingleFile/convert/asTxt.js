@@ -7,8 +7,9 @@ const {
   writeToServerDocuments,
 } = require("../../utils/files");
 const { default: slugify } = require("slugify");
+const { generateLocalfileChunkSource } = require("../../utils/metadata");
 
-async function asTxt({ fullFilePath = "", filename = "" }) {
+async function asText({ fullFilePath = "", filename = "", options = {} }) {
   let content = "";
   try {
     content = fs.readFileSync(fullFilePath, "utf8");
@@ -34,7 +35,7 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
     docAuthor: "Unknown", // TODO: Find a better author
     description: "Unknown", // TODO: Find a better description
     docSource: "a text file uploaded by the user.",
-    chunkSource: "",
+    chunkSource: generateLocalfileChunkSource({ filename, ...options }, ""),
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
@@ -50,4 +51,26 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
   return { success: true, reason: null, documents: [document] };
 }
 
-module.exports = asTxt;
+async function resyncText({ fullFilePath = "", filename = "" }) {
+  let content = "";
+  try {
+    content = fs.readFileSync(fullFilePath, "utf8");
+  } catch (err) {
+    console.error("Could not read file!", err);
+  }
+
+  if (!content?.length) {
+    console.error(`Resulting text content was empty for ${filename}.`);
+    return {
+      success: false,
+      reason: `No text content found in ${filename}.`,
+      content: null,
+    };
+  }
+
+  console.log(`-- Syncing ${filename} --`);
+  console.log(`[SYNC SUCCESS]: ${filename} content was able to be synced.\n`);
+  return { success: true, reason: null, content: content };
+}
+
+module.exports = { asText, resyncText };

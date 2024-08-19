@@ -10,19 +10,41 @@ import AvailableAgentsButton, {
   AvailableAgents,
   useAvailableAgents,
 } from "./AgentMenu";
+import TextSizeButton from "./TextSizeMenu";
+import { Tooltip } from "react-tooltip";
+import AttachmentManager from "./Attachments";
+import AttachItem from "./AttachItem";
+import SpeechToTextWhisper from "./SpeechToTextWhisper";
+
+export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
-  message,
   submit,
   onChange,
   inputDisabled,
   buttonDisabled,
   sendCommand,
+  attachments = [],
 }) {
+  const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
+
+  // To prevent too many re-renders we remotely listen for updates from the parent
+  // via an event cycle. Otherwise, using message as a prop leads to a re-render every
+  // change on the input.
+  function handlePromptUpdate(e) {
+    setPromptInput(e?.detail ?? "");
+  }
+
+  useEffect(() => {
+    if (!!window)
+      window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+    return () =>
+      window?.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+  }, []);
 
   useEffect(() => {
     if (!inputDisabled && textareaRef.current) {
@@ -87,10 +109,11 @@ export default function PromptInput({
       />
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl border-none"
+        className="flex flex-col items-center gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl border-none"
       >
-        <div className="flex items-center rounded-lg md:mb-4">
-          <div className="border-none w-[600px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+        <div className="flex w-fit items-center rounded-lg md:mb-4">
+          <div className="border-none w-[640px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+            <AttachmentManager attachments={attachments} />
             <div className="flex items-center w-full border-bb-only border-b border-solid border-gray-500/50">
               <textarea
                 ref={textareaRef}
@@ -99,6 +122,7 @@ export default function PromptInput({
                   watchForSlash(e);
                   watchForAt(e);
                   adjustTextArea(e);
+                  setPromptInput(e.target.value);
                 }}
                 onKeyDown={captureEnter}
                 required={true}
@@ -108,25 +132,37 @@ export default function PromptInput({
                   setFocused(false);
                   adjustTextArea(e);
                 }}
-                value={message}
-                className="font-normal border-none cursor-text max-h-[100px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
+                value={promptInput}
+                className="font-normal border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
                 placeholder={"Send a message"}
               />
               {buttonDisabled ? (
                 <StopGenerationButton />
               ) : (
-                <button
-                  ref={formRef}
-                  type="submit"
-                  className="border-none inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
-                >
-                  <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
-                  <span className="sr-only">Send message</span>
-                </button>
+                <>
+                  <button
+                    ref={formRef}
+                    type="submit"
+                    className="border-none inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
+                    data-tooltip-id="send-prompt"
+                    data-tooltip-content="Send prompt message to workspace"
+                    aria-label="Send prompt message to workspace"
+                  >
+                    <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
+                    <span className="sr-only">Send message</span>
+                  </button>
+                  <Tooltip
+                    id="send-prompt"
+                    place="bottom"
+                    delayShow={300}
+                    className="tooltip !text-xs z-99"
+                  />
+                </>
               )}
             </div>
             <div className="flex justify-between py-3.5">
               <div className="flex gap-x-2">
+                <AttachItem />
                 <SlashCommandsButton
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}
@@ -135,6 +171,10 @@ export default function PromptInput({
                   showing={showAgents}
                   setShowAgents={setShowAgents}
                 />
+                <TextSizeButton />
+              </div>
+              <div className="flex gap-x-2">
+                <SpeechToTextWhisper sendCommand={sendCommand} />
               </div>
             </div>
           </div>

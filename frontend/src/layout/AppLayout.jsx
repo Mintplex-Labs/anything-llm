@@ -5,8 +5,11 @@ import VersionStatus from "./VersionStatus";
 export default function AppLayout({ children }) {
   return (
     <div>
-      <div className="relative h-[40px] bg-sidebar w-full flex flex-col">
-        <div className="w-full h-full flex items-center">
+      <div
+        id="titlebar"
+        className="relative h-[40px] bg-sidebar w-full flex flex-col"
+      >
+        <div className="w-full h-full flex items-center bg-sidebar z-[999]">
           {/* To prevent building on top of stoplights */}
           <div className="frame-header flex h-full w-[6%] shrink-0" />
           <div
@@ -27,7 +30,7 @@ export default function AppLayout({ children }) {
             <UserButton />
           </div>
         </div>
-        <div className="w-full absolute bottom-0 h-[1px] bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800" />
+        <div className="w-full absolute bottom-0 h-[1px] bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 z-[1000]" />
       </div>
       <>{children}</>
     </div>

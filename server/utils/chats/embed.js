@@ -29,23 +29,10 @@ async function streamChatWithForEmbed(
 
   const uuid = uuidv4();
   const LLMConnector = getLLMProvider({
+    provider: embed?.workspace?.chatProvider,
     model: chatModel ?? embed.workspace?.chatModel,
   });
   const VectorDb = getVectorDbClass();
-  const { safe, reasons = [] } = await LLMConnector.isSafe(message);
-  if (!safe) {
-    writeResponseChunk(response, {
-      id: uuid,
-      type: "abort",
-      textResponse: null,
-      sources: [],
-      close: true,
-      error: `This message was moderated and will not be allowed. Violations for ${reasons.join(
-        ", "
-      )} found.`,
-    });
-    return;
-  }
 
   const messageLimit = 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(embed.workspace.slug);
@@ -77,11 +64,10 @@ async function streamChatWithForEmbed(
     chatMode
   );
 
-  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
-  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
+  // See stream.js comment for more information on this implementation.
   await new DocumentManager({
     workspace: embed.workspace,
-    maxTokens: LLMConnector.limits.system,
+    maxTokens: LLMConnector.promptWindowLimit(),
   })
     .pinnedDocs()
     .then((pinnedDocs) => {
@@ -132,11 +118,16 @@ async function streamChatWithForEmbed(
 
   // If in query mode and no sources are found, do not
   // let the LLM try to hallucinate a response or use general knowledge
-  if (chatMode === "query" && sources.length === 0) {
+  if (
+    chatMode === "query" &&
+    sources.length === 0 &&
+    pinnedDocIdentifiers.length === 0
+  ) {
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
       textResponse:
+        embed.workspace?.queryRefusalResponse ??
         "There is no relevant information in this workspace to answer your query.",
       sources: [],
       close: true,

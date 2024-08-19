@@ -89,6 +89,7 @@ export function AvailableAgents({
                   <AbilityTag text="save-file-to-browser" />
                   <AbilityTag text="list-documents" />
                   <AbilityTag text="summarize-document" />
+                  <AbilityTag text="chart-generation" />
                 </div>
               </div>
             </button>
@@ -160,10 +161,6 @@ function FirstTimeAgentUser() {
                 Now you can use agents for real-time web search and scraping,
                 saving documents to your browser, summarizing documents, and
                 more.
-                <br />
-                <br />
-                Currently, agents only work with OpenAI as your agent LLM. All
-                LLM providers will be supported in the future.
               </p>
               <p className="text-green-300/60 text-xs md:text-sm">
                 This feature is currently early access and fully custom agents

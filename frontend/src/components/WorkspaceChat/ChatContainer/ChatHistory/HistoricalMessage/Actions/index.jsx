@@ -1,17 +1,23 @@
 import React, { memo, useState } from "react";
 import useCopyText from "@/hooks/useCopyText";
-import {
-  Check,
-  ClipboardText,
-  ThumbsUp,
-  ThumbsDown,
-} from "@phosphor-icons/react";
+import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
+import { EditMessageAction } from "./EditMessage";
+import ActionMenu from "./ActionMenu";
 
-const Actions = ({ message, feedbackScore, chatId, slug }) => {
+const Actions = ({
+  message,
+  feedbackScore,
+  chatId,
+  slug,
+  isLastMessage,
+  regenerateMessage,
+  forkThread,
+  isEditing,
+  role,
+}) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
-
   const handleFeedback = async (newFeedback) => {
     const updatedFeedback =
       selectedFeedback === newFeedback ? null : newFeedback;
@@ -20,26 +26,39 @@ const Actions = ({ message, feedbackScore, chatId, slug }) => {
   };
 
   return (
-    <div className="flex justify-start items-center">
-      <CopyMessage message={message} />
-      {chatId && (
-        <>
-          <FeedbackButton
-            isSelected={selectedFeedback === true}
-            handleFeedback={() => handleFeedback(true)}
-            tooltipId={`${chatId}-thumbs-up`}
-            tooltipContent="Good response"
-            IconComponent={ThumbsUp}
+    <div className="flex w-full justify-between items-center">
+      <div className="flex justify-start items-center">
+        <CopyMessage message={message} />
+        <div className="md:group-hover:opacity-100 transition-all duration-300 md:opacity-0 flex justify-start items-center">
+          <EditMessageAction
+            chatId={chatId}
+            role={role}
+            isEditing={isEditing}
           />
-          <FeedbackButton
-            isSelected={selectedFeedback === false}
-            handleFeedback={() => handleFeedback(false)}
-            tooltipId={`${chatId}-thumbs-down`}
-            tooltipContent="Bad response"
-            IconComponent={ThumbsDown}
+          {isLastMessage && !isEditing && (
+            <RegenerateMessage
+              regenerateMessage={regenerateMessage}
+              slug={slug}
+              chatId={chatId}
+            />
+          )}
+          {chatId && role !== "user" && !isEditing && (
+            <FeedbackButton
+              isSelected={selectedFeedback === true}
+              handleFeedback={() => handleFeedback(true)}
+              tooltipId={`${chatId}-thumbs-up`}
+              tooltipContent="Good response"
+              IconComponent={ThumbsUp}
+            />
+          )}
+          <ActionMenu
+            chatId={chatId}
+            forkThread={forkThread}
+            isEditing={isEditing}
+            role={role}
           />
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 };
@@ -61,7 +80,7 @@ function FeedbackButton({
         aria-label={tooltipContent}
       >
         <IconComponent
-          size={18}
+          size={20}
           className="mb-1"
           weight={isSelected ? "fill" : "regular"}
         />
@@ -90,9 +109,9 @@ function CopyMessage({ message }) {
           aria-label="Copy"
         >
           {copied ? (
-            <Check size={18} className="mb-1" />
+            <Check size={20} className="mb-1" />
           ) : (
-            <ClipboardText size={18} className="mb-1" />
+            <Copy size={20} className="mb-1" />
           )}
         </button>
         <Tooltip
@@ -103,6 +122,29 @@ function CopyMessage({ message }) {
         />
       </div>
     </>
+  );
+}
+
+function RegenerateMessage({ regenerateMessage, chatId }) {
+  if (!chatId) return null;
+  return (
+    <div className="mt-3 relative">
+      <button
+        onClick={() => regenerateMessage(chatId)}
+        data-tooltip-id="regenerate-assistant-text"
+        data-tooltip-content="Regenerate response"
+        className="border-none text-zinc-300"
+        aria-label="Regenerate"
+      >
+        <ArrowsClockwise size={20} className="mb-1" weight="fill" />
+      </button>
+      <Tooltip
+        id="regenerate-assistant-text"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+    </div>
   );
 }
 

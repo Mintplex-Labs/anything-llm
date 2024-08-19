@@ -5,6 +5,7 @@ import { DOWNLOADABLE_MODELS } from "../downloadable";
 import { middleTruncate } from "@/utils/directories";
 import showToast from "@/utils/toast";
 import { openElectronWindow } from "@/ipc/node-api";
+import CustomLLMIcon from "@/assets/logo/custom-llm.png";
 
 export default function ModelCard({
   model,
@@ -14,6 +15,7 @@ export default function ModelCard({
   downloading = false,
   handleClick,
   uninstallModel,
+  isCustom = false,
 }) {
   const onClick = (e) => {
     if (disabled) {
@@ -27,9 +29,11 @@ export default function ModelCard({
     handleClick(e);
   };
 
-  const modelInfo = DOWNLOADABLE_MODELS.find(
-    (availableModel) => availableModel.id === model?.id
-  );
+  const modelInfo = !isCustom
+    ? DOWNLOADABLE_MODELS.find(
+        (availableModel) => availableModel.id === model?.id
+      )
+    : model;
   if (!modelInfo) return null;
 
   return (
@@ -40,14 +44,18 @@ export default function ModelCard({
           isActive
             ? "border-[#46C8FF] hover:border-[#46C8FF] "
             : "border-transparent hover:border-white "
-        } bg-zinc-900 p-[12px]`}
+        } bg-zinc-900 p-[12px] pt-[12px]`}
       >
         {/* Model Header */}
         <div className="flex items-center justify-between">
           {/* Model Header details */}
           <div className="flex items-center gap-x-[9px]">
             <img
-              src="https://avatars.githubusercontent.com/u/151674099?s=48&v=4"
+              src={
+                isCustom
+                  ? CustomLLMIcon
+                  : "https://avatars.githubusercontent.com/u/151674099?s=48&v=4"
+              }
               className="w-[28px] h-[28px] rounded-[6px] bg-white"
             />
             <div className="flex flex-col">
@@ -62,7 +70,7 @@ export default function ModelCard({
                 </p>
               </div>
               <p className="text-[10px] italic text-gray-300">
-                Compiled by Ollama
+                {isCustom ? "Imported locally" : "Compiled by Ollama"}
               </p>
             </div>
           </div>
@@ -74,26 +82,9 @@ export default function ModelCard({
           )}
         </div>
         {/* End Model Header */}
-        <ModelDescription description={modelInfo.description} />
+        <ModelDescription modelInfo={modelInfo} />
         <div className="flex w-full items-center justify-between">
-          {modelInfo.licenses?.length > 0 ? (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                modelInfo.licenses.forEach(({ link }) =>
-                  openElectronWindow(link)
-                );
-                return;
-              }}
-              className="p-0 border-none gap-x-[2px] items-center flex text-[#58A6FF]"
-            >
-              <FileText size={20} />
-              <p className="font-base text-[12px]">View Licenses</p>
-            </button>
-          ) : (
-            <div className="invisible" />
-          )}
+          <ModalityBadge tag={model.tag} />
           {downloaded ? (
             <button
               type="button"
@@ -109,8 +100,12 @@ export default function ModelCard({
             </button>
           ) : (
             <>
-              {downloading && (
+              {downloading ? (
                 <CircleNotch size={20} className="animate-spin text-white" />
+              ) : (
+                <div className="invisible px-2 py-1 items-center border-[1px] rounded-full flex text-white">
+                  -
+                </div>
               )}
             </>
           )}
@@ -120,28 +115,80 @@ export default function ModelCard({
   );
 }
 
-function ModelDescription({ description }) {
+function ModalityBadge({ tag = null }) {
+  switch (tag) {
+    case "text-and-vision":
+      return (
+        <p className="px-[8px] py-[1.5px] rounded-full bg-[#BDF04F]/10 text-[#BDF04F] text-xs">
+          Multimodal
+        </p>
+      );
+    default:
+      return (
+        <p className="px-[8px] py-[1.5px] rounded-full bg-[#F4FFD0]/10 text-[#F4FFD0] text-xs">
+          Text only
+        </p>
+      );
+  }
+}
+
+const TRUNCATION_LIMIT = 70;
+function ModelDescription({ modelInfo = {} }) {
   const [expanded, setExpanded] = useState(false);
+  const { description = "", licenses = [] } = modelInfo;
 
   return (
-    <div className="py-[8px]">
-      <p className="text-gray-400 text-[12px]">
-        {truncate(description, expanded ? Number.POSITIVE_INFINITY : 70)}
+    <>
+      <div className="py-[8px]">
+        <p className="text-gray-400 text-[12px]">
+          {truncate(description, expanded ? Number.POSITIVE_INFINITY : 70)}
+          {description.length > TRUNCATION_LIMIT ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setExpanded(!expanded);
+                return;
+              }}
+              className="border-none"
+            >
+              <p className="text-white font-bold text-[12px]">
+                {expanded ? "Show less" : "Read more"}
+              </p>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                licenses.forEach(({ link }) => openElectronWindow(link));
+                return;
+              }}
+              className="border-none"
+            >
+              <p className="text-white font-bold text-[12px]">View licenses</p>
+            </button>
+          )}
+        </p>
+      </div>
+      {expanded && licenses?.length > 0 ? (
         <button
-          type="button"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            setExpanded(!expanded);
+            modelInfo.licenses.forEach(({ link }) => openElectronWindow(link));
             return;
           }}
-          className="border-none"
+          className="px-0 mb-2 border-none gap-x-[2px] items-center flex text-[#58A6FF]"
         >
-          <p className="text-white font-bold text-[12px]">
-            {expanded ? "Show less" : "Read more"}
-          </p>
+          <FileText size={20} />
+          <p className="font-base text-[12px]">View Licenses</p>
         </button>
-      </p>
-    </div>
+      ) : (
+        <div className="invisible" />
+      )}
+    </>
   );
 }

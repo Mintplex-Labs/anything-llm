@@ -41,6 +41,7 @@ class AIbitat {
       ...rest,
     };
     this.provider = this.defaultProvider.provider;
+    this.model = this.defaultProvider.model;
   }
 
   /**
@@ -480,7 +481,7 @@ Read the following conversation.
 CHAT HISTORY
 ${history.map((c) => `@${c.from}: ${c.content}`).join("\n")}
 
-Then select the next role from that is going to speak next. 
+Then select the next role from that is going to speak next.
 Only return the role.
 `,
       },
@@ -496,6 +497,17 @@ Only return the role.
 
     // if the name is not in the nodes, return a random node
     return availableNodes[Math.floor(Math.random() * availableNodes.length)];
+  }
+
+  /**
+   *
+   * @param {string} pluginName this name of the plugin being called
+   * @returns string of the plugin to be called compensating for children denoted by # in the string.
+   * eg: sql-agent:list-database-connections
+   */
+  #parseFunctionName(pluginName = "") {
+    if (!pluginName.includes("#")) return pluginName;
+    return pluginName.split("#")[1];
   }
 
   /**
@@ -522,7 +534,7 @@ Only return the role.
         ? [
             {
               role: "user",
-              content: `You are in a whatsapp group. Read the following conversation and then reply. 
+              content: `You are in a whatsapp group. Read the following conversation and then reply.
 Do not add introduction or conclusion to your reply because this will be a continuous conversation. Don't introduce yourself.
 
 CHAT HISTORY
@@ -550,7 +562,7 @@ ${this.getHistory({ to: route.to })
 
     // get the functions that the node can call
     const functions = fromConfig.functions
-      ?.map((name) => this.functions.get(name))
+      ?.map((name) => this.functions.get(this.#parseFunctionName(name)))
       .filter((a) => !!a);
 
     const provider = this.getProviderForConfig({
@@ -603,6 +615,18 @@ ${this.getHistory({ to: route.to })
 
       // Execute the function and return the result to the provider
       fn.caller = byAgent || "agent";
+
+      // For OSS LLMs we really need to keep tabs on what they are calling
+      // so we can log it here.
+      if (provider?.verbose) {
+        this?.introspect?.(
+          `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
+        );
+        this.handlerProps.log(
+          `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
+        );
+      }
+
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
       return await this.handleExecution(
@@ -723,10 +747,38 @@ ${this.getHistory({ to: route.to })
     }
 
     switch (config.provider) {
+      case "anythingllm_ollama":
+        return new Providers.AnythingLLMOllamaProvider({ model: config.model });
       case "openai":
         return new Providers.OpenAIProvider({ model: config.model });
       case "anthropic":
         return new Providers.AnthropicProvider({ model: config.model });
+      case "lmstudio":
+        return new Providers.LMStudioProvider({});
+      case "ollama":
+        return new Providers.OllamaProvider({ model: config.model });
+      case "groq":
+        return new Providers.GroqProvider({ model: config.model });
+      case "togetherai":
+        return new Providers.TogetherAIProvider({ model: config.model });
+      case "azure":
+        return new Providers.AzureOpenAiProvider({ model: config.model });
+      case "koboldcpp":
+        return new Providers.KoboldCPPProvider({});
+      case "localai":
+        return new Providers.LocalAIProvider({ model: config.model });
+      case "openrouter":
+        return new Providers.OpenRouterProvider({ model: config.model });
+      case "mistral":
+        return new Providers.MistralProvider({ model: config.model });
+      case "generic-openai":
+        return new Providers.GenericOpenAiProvider({ model: config.model });
+      case "perplexity":
+        return new Providers.PerplexityProvider({ model: config.model });
+      case "textgenwebui":
+        return new Providers.TextWebGenUiProvider({});
+      case "bedrock":
+        return new Providers.AWSBedrockProvider({});
 
       default:
         throw new Error(

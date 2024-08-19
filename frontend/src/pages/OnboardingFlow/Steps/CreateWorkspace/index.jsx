@@ -4,6 +4,7 @@ import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
 import Workspace from "@/models/workspace";
+import { useTranslation } from "react-i18next";
 
 const TITLE = "Create your first workspace";
 const DESCRIPTION =
@@ -17,6 +18,7 @@ export default function CreateWorkspace({
   const [workspaceName, setWorkspaceName] = useState("");
   const navigate = useNavigate();
   const createWorkspaceRef = useRef();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
@@ -24,7 +26,7 @@ export default function CreateWorkspace({
   }, []);
 
   useEffect(() => {
-    if (workspaceName.length > 3) {
+    if (workspaceName.length > 0) {
       setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
     } else {
       setForwardBtn({ showing: true, disabled: true, onClick: handleForward });
@@ -71,21 +73,17 @@ export default function CreateWorkspace({
             htmlFor="name"
             className="block mb-3 text-sm font-medium text-white"
           >
-            Workspace Name
+            {t("common.workspaces-name")}
           </label>
           <input
             name="name"
             type="text"
             className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg block w-full p-2.5"
             placeholder="My Workspace"
-            minLength={4}
             required={true}
             autoComplete="off"
             onChange={(e) => setWorkspaceName(e.target.value)}
           />
-          <div className="mt-4 text-white text-opacity-80 text-xs font-base -mb-2">
-            Workspace name must be at least 4 characters.
-          </div>
         </div>
       </div>
       <button

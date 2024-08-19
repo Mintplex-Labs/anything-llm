@@ -1,11 +1,12 @@
 import { encode as HTMLEncode } from "he";
 import markdownIt from "markdown-it";
+import markdownItKatex from "markdown-it-katex";
 import hljs from "highlight.js";
 import "highlight.js/styles/github-dark-dimmed.min.css";
 import { v4 } from "uuid";
 
 const markdown = markdownIt({
-  html: true,
+  html: false,
   typographer: true,
   highlight: function (code, lang) {
     const uuid = v4();
@@ -43,7 +44,7 @@ const markdown = markdownIt({
       "</pre></div>"
     );
   },
-});
+}).use(markdownItKatex);
 
 export default function renderMarkdown(text = "") {
   return markdown.render(text);

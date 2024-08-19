@@ -6,7 +6,12 @@
 
 #frontend
 frontend/bundleinspector.html
+frontend/src/utils/whisperSTT/transformers-electron/*
 **/dist
 
 #server
 server/swagger/openapi.json
+
+#embed
+**/static/**
+embed/src/utils/chat/hljs.js

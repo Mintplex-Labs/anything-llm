@@ -17,15 +17,7 @@
           "Authentication"
         ],
         "description": "Verify the attached Authentication header contains a valid API token.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Valid auth token was found.",
@@ -64,15 +56,7 @@
           "Admin"
         ],
         "description": "Check to see if the instance is in multi-user-mode first. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -111,15 +95,7 @@
           "Admin"
         ],
         "description": "Check to see if the instance is in multi-user-mode first. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -169,15 +145,7 @@
           "Admin"
         ],
         "description": "Create a new user with username and password. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -196,6 +164,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Instance is not in Multi-User mode. Method denied"
@@ -250,13 +221,6 @@
               "type": "string"
             },
             "description": "id of the user in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -326,13 +290,6 @@
               "type": "string"
             },
             "description": "id of the user in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -380,15 +337,7 @@
           "Admin"
         ],
         "description": "List all existing invitations to instance regardless of status. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -440,15 +389,7 @@
           "Admin"
         ],
         "description": "Create a new invite code for someone to use to register with instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -523,13 +464,6 @@
               "type": "string"
             },
             "description": "id of the invite in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -542,6 +476,70 @@
                   "example": {
                     "success": true,
                     "error": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/workspaces/{workspaceId}/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "Retrieve a list of users with permissions to access the specified workspace.",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id of the workspace."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "users": [
+                      {
+                        "userId": 1,
+                        "role": "admin"
+                      },
+                      {
+                        "userId": 2,
+                        "role": "member"
+                      }
+                    ]
                   }
                 }
               }
@@ -586,13 +584,6 @@
               "type": "string"
             },
             "description": "id of the workspace in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -657,15 +648,7 @@
           "Admin"
         ],
         "description": "All chats in the system ordered by most recent. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -720,15 +703,7 @@
           "Admin"
         ],
         "description": "Show all multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -738,7 +713,6 @@
                   "type": "object",
                   "example": {
                     "settings": {
-                      "users_can_delete_workspaces": true,
                       "limit_user_messages": false,
                       "message_limit": 10
                     }
@@ -775,15 +749,7 @@
           "Admin"
         ],
         "description": "Update multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -828,7 +794,6 @@
           "content": {
             "application/json": {
               "example": {
-                "users_can_delete_workspaces": false,
                 "limit_user_messages": true,
                 "message_limit": 5
               }
@@ -843,15 +808,7 @@
           "Documents"
         ],
         "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -927,15 +884,7 @@
           "Documents"
         ],
         "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -954,7 +903,7 @@
                         "docAuthor": "no author found",
                         "description": "No description found.",
                         "docSource": "URL link uploaded by the user.",
-                        "chunkSource": "https:useanything.com.html",
+                        "chunkSource": "https:anythingllm.com.html",
                         "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
                         "pageContent": "AnythingLLM is the best....",
@@ -995,7 +944,7 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "link": "https://useanything.com"
+                  "link": "https://anythingllm.com"
                 }
               }
             }
@@ -1009,15 +958,7 @@
           "Documents"
         ],
         "description": "Upload a file by specifying its raw text content and metadata values without having to upload a file.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1082,6 +1023,7 @@
                 "example": {
                   "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
                   "metadata": {
+                    "title": "This key is required. See in /server/endpoints/api/document/index.js:287",
                     "keyOne": "valueOne",
                     "keyTwo": "valueTwo",
                     "etc": "etc"
@@ -1099,15 +1041,7 @@
           "Documents"
         ],
         "description": "List of all locally-stored documents in instance",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1162,15 +1096,7 @@
           "Documents"
         ],
         "description": "Check available filetypes and MIMEs that can be uploaded.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1232,15 +1158,7 @@
           "Documents"
         ],
         "description": "Get the known available metadata schema for when doing a raw-text upload and the acceptable type of value for each key.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1296,13 +1214,6 @@
               "type": "string"
             },
             "description": "Unique document name to find (name in /documents)"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1362,15 +1273,7 @@
           "Documents"
         ],
         "description": "Create a new folder inside the documents storage directory.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1428,15 +1331,7 @@
           "Documents"
         ],
         "description": "Move files within the documents storage directory.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1499,15 +1394,7 @@
           "Workspaces"
         ],
         "description": "Create a new workspace",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1571,15 +1458,7 @@
           "Workspaces"
         ],
         "description": "List all current workspaces",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1597,7 +1476,8 @@
                         "openAiTemp": null,
                         "lastUpdatedAt": "2023-08-17 00:45:03",
                         "openAiHistory": 20,
-                        "openAiPrompt": null
+                        "openAiPrompt": null,
+                        "threads": []
                       }
                     ]
                   }
@@ -1641,13 +1521,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1667,7 +1540,8 @@
                       "lastUpdatedAt": "2023-08-17 00:45:03",
                       "openAiHistory": 20,
                       "openAiPrompt": null,
-                      "documents": []
+                      "documents": [],
+                      "threads": []
                     }
                   }
                 }
@@ -1708,13 +1582,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to delete"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1760,13 +1627,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1848,13 +1708,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1925,13 +1778,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -2000,6 +1846,62 @@
         }
       }
     },
+    "/workspace/{slug}/update-pin": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Add or remove pin from a document in a workspace by its unique slug.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace to find"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Pin status updated successfully"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object with the document path and pin status to update.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "docPath": "custom-documents/my-pdf.pdf-hash.json",
+                "pinStatus": true
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/workspace/{slug}/chat": {
       "post": {
         "tags": [
@@ -2011,13 +1913,6 @@
             "name": "slug",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -2095,13 +1990,6 @@
             "name": "slug",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -2189,6 +2077,7 @@
           "System Settings"
         ],
         "description": "Dump all settings to file storage",
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -2220,15 +2109,7 @@
           "System Settings"
         ],
         "description": "Get all current system settings that are defined.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -2276,15 +2157,7 @@
           "System Settings"
         ],
         "description": "Number of all vectors in connected vector database",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -2326,15 +2199,7 @@
           "System Settings"
         ],
         "description": "Update a system setting or preference.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -2394,13 +2259,6 @@
         "description": "Export all of the chats from the system in a known format. Output depends on the type sent. Will be send with the correct header for the output.",
         "parameters": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "type",
             "in": "query",
             "description": "Export format jsonl, json, csv, jsonAlpaca",
@@ -2445,6 +2303,1045 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/system/remove-documents": {
+      "delete": {
+        "tags": [
+          "System Settings"
+        ],
+        "description": "Permanently remove documents from the system.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Documents removed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "message": "Documents removed successfully"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Array of document names to be removed permanently.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "names": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "custom-documents/file.txt-fc4beeeb-e436-454d-8bb4-e5b8979cb48f.json"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/thread/new": {
+      "post": {
+        "tags": [
+          "Workspace Threads"
+        ],
+        "description": "Create a new workspace thread",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "thread": {
+                      "id": 1,
+                      "name": "Thread",
+                      "slug": "thread-uuid",
+                      "user_id": 1,
+                      "workspace_id": 1
+                    },
+                    "message": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Optional userId associated with the thread",
+          "required": false,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "userId": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/thread/{threadSlug}/update": {
+      "post": {
+        "tags": [
+          "Workspace Threads"
+        ],
+        "description": "Update thread name by its unique slug.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace"
+          },
+          {
+            "name": "threadSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of thread"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "thread": {
+                      "id": 1,
+                      "name": "Updated Thread Name",
+                      "slug": "thread-uuid",
+                      "user_id": 1,
+                      "workspace_id": 1
+                    },
+                    "message": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object containing new name to update the thread.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Updated Thread Name"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/thread/{threadSlug}": {
+      "delete": {
+        "tags": [
+          "Workspace Threads"
+        ],
+        "description": "Delete a workspace thread",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace"
+          },
+          {
+            "name": "threadSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of thread"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thread deleted successfully"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/thread/{threadSlug}/chats": {
+      "get": {
+        "tags": [
+          "Workspace Threads"
+        ],
+        "description": "Get chats for a workspace thread",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace"
+          },
+          {
+            "name": "threadSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of thread"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "history": [
+                      {
+                        "role": "user",
+                        "content": "What is AnythingLLM?",
+                        "sentAt": 1692851630
+                      },
+                      {
+                        "role": "assistant",
+                        "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                        "sources": [
+                          {
+                            "source": "object about source document and snippets used"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/thread/{threadSlug}/chat": {
+      "post": {
+        "tags": [
+          "Workspace Threads"
+        ],
+        "description": "Chat with a workspace thread",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace"
+          },
+          {
+            "name": "threadSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of thread"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "id": "chat-uuid",
+                    "type": "abort | textResponse",
+                    "textResponse": "Response to your query",
+                    "sources": [
+                      {
+                        "title": "anythingllm.txt",
+                        "chunk": "This is a context chunk used in the answer of the prompt by the LLM."
+                      }
+                    ],
+                    "close": true,
+                    "error": "null | text string of the failure mode."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Send a prompt to the workspace thread and the type of conversation (query or chat).",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "message": "What is AnythingLLM?",
+                "mode": "query | chat",
+                "userId": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/thread/{threadSlug}/stream-chat": {
+      "post": {
+        "tags": [
+          "Workspace Threads"
+        ],
+        "description": "Stream chat with a workspace thread",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace"
+          },
+          {
+            "name": "threadSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of thread"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "array",
+                  "example": [
+                    {
+                      "id": "uuid-123",
+                      "type": "abort | textResponseChunk",
+                      "textResponse": "First chunk",
+                      "sources": [],
+                      "close": false,
+                      "error": "null | text string of the failure mode."
+                    },
+                    {
+                      "id": "uuid-123",
+                      "type": "abort | textResponseChunk",
+                      "textResponse": "chunk two",
+                      "sources": [],
+                      "close": false,
+                      "error": "null | text string of the failure mode."
+                    },
+                    {
+                      "id": "uuid-123",
+                      "type": "abort | textResponseChunk",
+                      "textResponse": "final chunk of LLM output!",
+                      "sources": [
+                        {
+                          "title": "anythingllm.txt",
+                          "chunk": "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."
+                        }
+                      ],
+                      "close": true,
+                      "error": "null | text string of the failure mode."
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Send a prompt to the workspace thread and the type of conversation (query or chat).",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "message": "What is AnythingLLM?",
+                "mode": "query | chat",
+                "userId": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users": {
+      "get": {
+        "tags": [
+          "User Management"
+        ],
+        "description": "List all users",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "users": [
+                      {
+                        "id": 1,
+                        "username": "john_doe",
+                        "role": "admin"
+                      },
+                      {
+                        "id": 2,
+                        "username": "jane_smith",
+                        "role": "default"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Permission denied."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/openai/models": {
+      "get": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Get all available \"models\" which are workspaces you can use for chatting.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "models": [
+                      {
+                        "name": "Sample workspace",
+                        "model": "sample-workspace",
+                        "llm": {
+                          "provider": "ollama",
+                          "model": "llama3:8b"
+                        }
+                      },
+                      {
+                        "name": "Second workspace",
+                        "model": "workspace-2",
+                        "llm": {
+                          "provider": "openai",
+                          "model": "gpt-3.5-turbo"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/openai/chat/completions": {
+      "post": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Execute a chat with a workspace with OpenAI compatibility. Supports streaming as well. Model must be a workspace slug from /models.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a helpful assistant"
+                  },
+                  {
+                    "role": "user",
+                    "content": "What is AnythingLLM?"
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "AnythingLLM is...."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Follow up question..."
+                  }
+                ],
+                "model": "sample-workspace",
+                "stream": true,
+                "temperature": 0.7
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/openai/embeddings": {
+      "post": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Get the embeddings of any arbitrary text string. This will use the embedder provider set in the system. Please ensure the token length of each string fits within the context of your embedder model.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "The input string(s) to be embedded. If the text is too long for the embedder model context, it will fail to embed. The vector and associated chunk metadata will be returned in the array order provided",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "input": [
+                  "This is my first string to embed",
+                  "This is my second string to embed"
+                ],
+                "model": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/openai/vector_stores": {
+      "get": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "List all the vector database collections connected to AnythingLLM. These are essentially workspaces but return their unique vector db identifier - this is the same as the workspace slug.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "data": [
+                      {
+                        "id": "slug-here",
+                        "object": "vector_store",
+                        "name": "My workspace",
+                        "file_counts": {
+                          "total": 3
+                        },
+                        "provider": "LanceDB"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/embed": {
+      "get": {
+        "tags": [
+          "Embed"
+        ],
+        "description": "List all active embeds",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "embeds": [
+                      {
+                        "id": 1,
+                        "uuid": "embed-uuid-1",
+                        "enabled": true,
+                        "chat_mode": "query",
+                        "createdAt": "2023-04-01T12:00:00Z",
+                        "workspace": {
+                          "id": 1,
+                          "name": "Workspace 1"
+                        },
+                        "chat_count": 10
+                      },
+                      {
+                        "id": 2,
+                        "uuid": "embed-uuid-2",
+                        "enabled": false,
+                        "chat_mode": "chat",
+                        "createdAt": "2023-04-02T14:30:00Z",
+                        "workspace": {
+                          "id": 1,
+                          "name": "Workspace 1"
+                        },
+                        "chat_count": 10
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/embed/{embedUuid}/chats": {
+      "get": {
+        "tags": [
+          "Embed"
+        ],
+        "description": "Get all chats for a specific embed",
+        "parameters": [
+          {
+            "name": "embedUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "UUID of the embed"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "chats": [
+                      {
+                        "id": 1,
+                        "session_id": "session-uuid-1",
+                        "prompt": "Hello",
+                        "response": "Hi there!",
+                        "createdAt": "2023-04-01T12:00:00Z"
+                      },
+                      {
+                        "id": 2,
+                        "session_id": "session-uuid-2",
+                        "prompt": "How are you?",
+                        "response": "I'm doing well, thank you!",
+                        "createdAt": "2023-04-02T14:30:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Embed not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/embed/{embedUuid}/chats/{sessionUuid}": {
+      "get": {
+        "tags": [
+          "Embed"
+        ],
+        "description": "Get chats for a specific embed and session",
+        "parameters": [
+          {
+            "name": "embedUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "UUID of the embed"
+          },
+          {
+            "name": "sessionUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "UUID of the session"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "chats": [
+                      {
+                        "id": 1,
+                        "prompt": "Hello",
+                        "response": "Hi there!",
+                        "createdAt": "2023-04-01T12:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Embed or session not found"
           },
           "500": {
             "description": "Internal Server Error"

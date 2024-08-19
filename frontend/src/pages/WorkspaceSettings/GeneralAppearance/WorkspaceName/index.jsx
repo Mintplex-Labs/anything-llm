@@ -1,12 +1,15 @@
+import { useTranslation } from "react-i18next";
+
 export default function WorkspaceName({ workspace, setHasChanges }) {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Workspace Name
+          {t("common.workspaces-name")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          This will only change the display name of your workspace.
+          {t("general.names.description")}
         </p>
       </div>
       <input

@@ -2,6 +2,7 @@ import { useModal } from "@/hooks/useModal";
 import { HandCoins, X } from "@phosphor-icons/react";
 import ModalWrapper from "../ModalWrapper";
 import System from "@/models/system";
+import { ToolTipWrapper } from ".";
 
 const SUPPORTER_LINK = import.meta.env.DEV
   ? "https://buy.stripe.com/test_3csfZUbXIaYD6Mo148"
@@ -32,14 +33,18 @@ export default function SupporterLink() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={handleInterest}
-        className="transition-all duration-300 flex w-fit h-fit p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-        aria-label="Support AnythingLLM's development"
-      >
-        <HandCoins weight="fill" className="h-5 w-5 " />
-      </button>
+      <ToolTipWrapper id="supporter-payment">
+        <button
+          type="button"
+          onClick={handleInterest}
+          className="transition-all duration-300 flex w-fit h-fit p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+          aria-label="Support AnythingLLM's development"
+          data-tooltip-id="supporter-payment"
+          data-tooltip-content="Support AnythingLLM's development"
+        >
+          <HandCoins weight="fill" className="h-5 w-5 " />
+        </button>
+      </ToolTipWrapper>
       <ModalWrapper isOpen={isOpen}>
         <div className="relative w-full md:max-w-2xl max-h-full bg-main-gradient rounded-lg shadow p-4">
           <button

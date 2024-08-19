@@ -7,8 +7,26 @@ import LogRow from "./LogRow";
 import showToast from "@/utils/toast";
 import { refocusApplication } from "@/ipc/node-api";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 export default function AdminLogs() {
+  const query = useQuery();
+  const [loading, setLoading] = useState(true);
+  const [logs, setLogs] = useState([]);
+  const [offset, setOffset] = useState(Number(query.get("offset") || 0));
+  const [canNext, setCanNext] = useState(false);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    async function fetchLogs() {
+      const { logs: _logs, hasPages = false } = await System.eventLogs(offset);
+      setLogs(_logs);
+      setCanNext(hasPages);
+      setLoading(false);
+    }
+    fetchLogs();
+  }, [offset]);
+
   const handleResetLogs = async () => {
     if (
       !window.confirm(
@@ -23,30 +41,38 @@ export default function AdminLogs() {
     const { success, error } = await System.clearEventLogs();
     if (success) {
       showToast("Event logs cleared successfully.", "success");
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      setLogs([]);
+      setCanNext(false);
+      setOffset(0);
     } else {
       showToast(`Failed to clear logs: ${error}`, "error");
     }
   };
+
+  const handlePrevious = () => {
+    setOffset(Math.max(offset - 1, 0));
+  };
+
+  const handleNext = () => {
+    setOffset(offset + 1);
+  };
+
   return (
     <div
       style={{ height: "calc(100vh - 40px)" }}
       className="w-screen overflow-hidden bg-sidebar flex"
     >
       <Sidebar />
-      <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
+      <div className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full overflow-y-scroll border-2 border-outline h-[calc(100vh-72px)]">
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="flex gap-x-4 items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                Event Logs
+                {t("event.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              View all actions and events happening on this instance for
-              monitoring.
+              {t("event.description")}
             </p>
           </div>
           <div className="w-full justify-end flex">
@@ -54,40 +80,32 @@ export default function AdminLogs() {
               onClick={handleResetLogs}
               className="mt-3 mr-0 -mb-14 z-10"
             >
-              Clear Event Logs
+              {t("event.clear")}
             </CTAButton>
           </div>
-          <LogsContainer />
+          <LogsContainer
+            loading={loading}
+            logs={logs}
+            offset={offset}
+            canNext={canNext}
+            handleNext={handleNext}
+            handlePrevious={handlePrevious}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function LogsContainer() {
-  const query = useQuery();
-  const [loading, setLoading] = useState(true);
-  const [logs, setLogs] = useState([]);
-  const [offset, setOffset] = useState(Number(query.get("offset") || 0));
-  const [canNext, setCanNext] = useState(false);
-
-  const handlePrevious = () => {
-    setOffset(Math.max(offset - 1, 0));
-  };
-  const handleNext = () => {
-    setOffset(offset + 1);
-  };
-
-  useEffect(() => {
-    async function fetchLogs() {
-      const { logs: _logs, hasPages = false } = await System.eventLogs(offset);
-      setLogs(_logs);
-      setCanNext(hasPages);
-      setLoading(false);
-    }
-    fetchLogs();
-  }, [offset]);
-
+function LogsContainer({
+  loading,
+  logs,
+  offset,
+  canNext,
+  handleNext,
+  handlePrevious,
+}) {
+  const { t } = useTranslation();
   if (loading) {
     return (
       <Skeleton.default
@@ -108,13 +126,13 @@ function LogsContainer() {
         <thead className="text-white text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
-              Event Type
+              {t("event.table.type")}
             </th>
             <th scope="col" className="px-6 py-3">
-              User
+              {t("event.table.user")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Occurred At
+              {t("event.table.occurred")}
             </th>
             <th scope="col" className="px-6 py-3 rounded-tr-lg">
               {" "}
@@ -131,14 +149,14 @@ function LogsContainer() {
           className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
           disabled={offset === 0}
         >
-          Previous Page
+          {t("common.previous")}
         </button>
         <button
           onClick={handleNext}
           className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
           disabled={!canNext}
         >
-          Next Page
+          {t("common.next")}
         </button>
       </div>
     </>

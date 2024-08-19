@@ -1,7 +1,8 @@
 const { AnythingLLMOllama } = require("../AiProviders/anythingLLM");
-const { openRouterModels } = require("../AiProviders/openRouter");
+const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
+const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
   "localai",
@@ -12,6 +13,10 @@ const SUPPORT_CUSTOM_MODELS = [
   "openrouter",
   "anythingllm_ollama",
   "lmstudio",
+  "koboldcpp",
+  "litellm",
+  "elevenlabs-tts",
+  "groq",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -39,26 +44,41 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getAnythingOllamaModels();
     case "lmstudio":
       return await getLMStudioModels(basePath);
+    case "koboldcpp":
+      return await getKoboldCPPModels(basePath);
+    case "litellm":
+      return await liteLLMModels(basePath, apiKey);
+    case "elevenlabs-tts":
+      return await getElevenLabsModels(apiKey);
+    case "groq":
+      return await getGroqAiModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
 }
 
 async function openAiModels(apiKey = null) {
-  const { Configuration, OpenAIApi } = require("openai");
-  const config = new Configuration({
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
     apiKey: apiKey || process.env.OPEN_AI_KEY,
   });
-  const openai = new OpenAIApi(config);
-  const allModels = await openai
-    .listModels()
-    .then((res) => res.data.data)
+  const allModels = await openai.models
+    .list()
+    .then((results) => results.data)
     .catch((e) => {
       console.error(`OpenAI:listModels`, e.message);
       return [
         {
           name: "gpt-3.5-turbo",
           id: "gpt-3.5-turbo",
+          object: "model",
+          created: 1677610602,
+          owned_by: "openai",
+          organization: "OpenAi",
+        },
+        {
+          name: "gpt-4o",
+          id: "gpt-4o",
           object: "model",
           created: 1677610602,
           owned_by: "openai",
@@ -132,15 +152,14 @@ async function openAiModels(apiKey = null) {
 }
 
 async function localAIModels(basePath = null, apiKey = null) {
-  const { Configuration, OpenAIApi } = require("openai");
-  const config = new Configuration({
-    basePath: basePath || process.env.LOCAL_AI_BASE_PATH,
-    apiKey: apiKey || process.env.LOCAL_AI_API_KEY,
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    baseURL: basePath || process.env.LOCAL_AI_BASE_PATH,
+    apiKey: apiKey || process.env.LOCAL_AI_API_KEY || null,
   });
-  const openai = new OpenAIApi(config);
-  const models = await openai
-    .listModels()
-    .then((res) => res.data.data)
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
     .catch((e) => {
       console.error(`LocalAI:listModels`, e.message);
       return [];
@@ -151,16 +170,62 @@ async function localAIModels(basePath = null, apiKey = null) {
   return { models, error: null };
 }
 
+async function getGroqAiModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.GROQ_API_KEY
+      : _apiKey || process.env.GROQ_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://api.groq.com/openai/v1",
+    apiKey,
+  });
+  const models = (
+    await openai.models
+      .list()
+      .then((results) => results.data)
+      .catch((e) => {
+        console.error(`GroqAi:listModels`, e.message);
+        return [];
+      })
+  ).filter(
+    (model) => !model.id.includes("whisper") && !model.id.includes("tool-use")
+  );
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.GROQ_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function liteLLMModels(basePath = null, apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    baseURL: basePath || process.env.LITE_LLM_BASE_PATH,
+    apiKey: apiKey || process.env.LITE_LLM_API_KEY || null,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`LiteLLM:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.LITE_LLM_API_KEY = apiKey;
+  return { models, error: null };
+}
+
 async function getLMStudioModels(basePath = null) {
   try {
-    const { Configuration, OpenAIApi } = require("openai");
-    const config = new Configuration({
-      basePath: basePath || process.env.LMSTUDIO_BASE_PATH,
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: basePath || process.env.LMSTUDIO_BASE_PATH,
+      apiKey: null,
     });
-    const openai = new OpenAIApi(config);
-    const models = await openai
-      .listModels()
-      .then((res) => res.data.data)
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
       .catch((e) => {
         console.error(`LMStudio:listModels`, e.message);
         return [];
@@ -170,6 +235,28 @@ async function getLMStudioModels(basePath = null) {
   } catch (e) {
     console.error(`LMStudio:getLMStudioModels`, e.message);
     return { models: [], error: "Could not fetch LMStudio Models" };
+  }
+}
+
+async function getKoboldCPPModels(basePath = null) {
+  try {
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: basePath || process.env.KOBOLD_CPP_BASE_PATH,
+      apiKey: null,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .catch((e) => {
+        console.error(`KoboldCPP:listModels`, e.message);
+        return [];
+      });
+
+    return { models, error: null };
+  } catch (e) {
+    console.error(`KoboldCPP:getKoboldCPPModels`, e.message);
+    return { models: [], error: "Could not fetch KoboldCPP Models" };
   }
 }
 
@@ -235,7 +322,7 @@ async function getPerplexityModels() {
 }
 
 async function getOpenRouterModels() {
-  const knownModels = openRouterModels();
+  const knownModels = await fetchOpenRouterModels();
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 
@@ -262,15 +349,16 @@ async function getAnythingOllamaModels() {
 }
 
 async function getMistralModels(apiKey = null) {
-  const { Configuration, OpenAIApi } = require("openai");
-  const config = new Configuration({
-    apiKey: apiKey || process.env.MISTRAL_API_KEY,
-    basePath: "https://api.mistral.ai/v1",
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.MISTRAL_API_KEY || null,
+    baseURL: "https://api.mistral.ai/v1",
   });
-  const openai = new OpenAIApi(config);
-  const models = await openai
-    .listModels()
-    .then((res) => res.data.data.filter((model) => !model.id.includes("embed")))
+  const models = await openai.models
+    .list()
+    .then((results) =>
+      results.data.filter((model) => !model.id.includes("embed"))
+    )
     .catch((e) => {
       console.error(`Mistral:listModels`, e.message);
       return [];
@@ -278,6 +366,32 @@ async function getMistralModels(apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.MISTRAL_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getElevenLabsModels(apiKey = null) {
+  const models = (await ElevenLabsTTS.voices(apiKey)).map((model) => {
+    return {
+      id: model.voice_id,
+      organization: model.category,
+      name: model.name,
+    };
+  });
+
+  if (models.length === 0) {
+    return {
+      models: [
+        {
+          id: "21m00Tcm4TlvDq8ikWAM",
+          organization: "premade",
+          name: "Rachel (default)",
+        },
+      ],
+      error: null,
+    };
+  }
+
+  if (models.length > 0 && !!apiKey) process.env.TTS_ELEVEN_LABS_KEY = apiKey;
   return { models, error: null };
 }
 

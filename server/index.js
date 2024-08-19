@@ -5,6 +5,7 @@ require("dotenv").config({
     : `${path.join(__dirname, ".env")}`,
 });
 
+require("./utils/logger")();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -19,6 +20,7 @@ const { utilEndpoints } = require("./endpoints/utils");
 const { developerEndpoints } = require("./endpoints/api");
 const { extensionEndpoints } = require("./endpoints/extensions");
 const { documentEndpoints } = require("./endpoints/document");
+const { piperTTSStaticEndpoint } = require("./utils/piper");
 const setupTelemetry = require("./utils/telemetry");
 const { Telemetry } = require("./models/telemetry");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
@@ -27,6 +29,10 @@ const {
 } = require("./utils/AiProviders/anythingLLM/utils/preload");
 const { CommunicationKey } = require("./utils/comKey");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
+const { experimentalEndpoints } = require("./endpoints/experimental");
+const { EncryptionManager } = require("./utils/EncryptionManager");
+const { BackgroundService } = require("./utils/BackgroundWorkers");
+const { whisperSTTStaticEndpoint } = require("./utils/whisper");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -41,7 +47,12 @@ app.use(
   })
 );
 
-require("express-ws")(app);
+if (!!process.env.ENABLE_HTTPS) {
+  bootSSL(app, process.env.SERVER_PORT || 3001);
+} else {
+  require("@mintplex-labs/express-ws").default(app); // load WebSockets in non-SSL mode.
+}
+
 app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
 extensionEndpoints(apiRouter);
@@ -54,7 +65,10 @@ embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
 documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
+experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
+piperTTSStaticEndpoint(app);
+whisperSTTStaticEndpoint(app);
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
@@ -68,6 +82,8 @@ app
     await setupTelemetry();
     await preloadOllamaService();
     new CommunicationKey(true);
+    new EncryptionManager();
+    new BackgroundService().boot();
     console.log(
       `[${
         process.env.NODE_ENV || "development"

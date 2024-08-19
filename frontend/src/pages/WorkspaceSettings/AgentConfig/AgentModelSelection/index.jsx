@@ -1,6 +1,9 @@
 import useGetProviderModels, {
   DISABLED_PROVIDERS,
 } from "@/hooks/useGetProvidersModels";
+import paths from "@/utils/paths";
+import { useTranslation } from "react-i18next";
+import { Link, useParams } from "react-router-dom";
 
 // These models do NOT support function calling
 function supportedModel(provider, model = "") {
@@ -17,30 +20,52 @@ export default function AgentModelSelection({
   workspace,
   setHasChanges,
 }) {
+  const { slug } = useParams();
   const { defaultModels, customModels, loading } =
     useGetProviderModels(provider);
-  if (DISABLED_PROVIDERS.includes(provider)) return null;
+
+  const { t } = useTranslation();
+  if (DISABLED_PROVIDERS.includes(provider)) {
+    return (
+      <div className="w-full h-10 justify-center items-center flex">
+        <p className="text-sm font-base text-white text-opacity-60 text-center">
+          Multi-model support is not supported for this provider yet.
+          <br />
+          Agent's will use{" "}
+          <Link
+            to={paths.workspace.settings.chatSettings(slug)}
+            className="underline"
+          >
+            the model set for the workspace
+          </Link>{" "}
+          or{" "}
+          <Link to={paths.settings.llmPreference()} className="underline">
+            the model set for the system.
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
       <div>
         <div className="flex flex-col">
           <label htmlFor="name" className="block input-label">
-            Workspace Agent Chat model
+            {t("agent.mode.chat.title")}
           </label>
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-            The specific chat model that will be used for this workspace's
-            @agent agent.
+            {t("agent.mode.chat.description")}
           </p>
         </div>
         <select
           name="agentModel"
           required={true}
           disabled={true}
-          className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            -- waiting for models --
+            {t("agent.mode.wait")}
           </option>
         </select>
       </div>
@@ -51,11 +76,10 @@ export default function AgentModelSelection({
     <div>
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Workspace Agent model
+          {t("agent.mode.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          The specific LLM model that will be used for this workspace's @agent
-          agent.
+          {t("agent.mode.description")}
         </p>
       </div>
 
@@ -65,7 +89,7 @@ export default function AgentModelSelection({
         onChange={() => {
           setHasChanges(true);
         }}
-        className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
       >
         {defaultModels.length > 0 && (
           <optgroup label="General models">

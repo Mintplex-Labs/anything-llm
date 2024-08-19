@@ -24,16 +24,18 @@ model api_keys {
 }
 
 model workspace_documents {
-  id            Int        @id @default(autoincrement())
-  docId         String     @unique
-  filename      String
-  docpath       String
-  workspaceId   Int
-  metadata      String?
-  pinned        Boolean?   @default(false)
-  createdAt     DateTime   @default(now())
-  lastUpdatedAt DateTime   @default(now())
-  workspace     workspaces @relation(fields: [workspaceId], references: [id])
+  id                   Int                   @id @default(autoincrement())
+  docId                String                @unique
+  filename             String
+  docpath              String
+  workspaceId          Int
+  metadata             String?
+  pinned               Boolean?              @default(false)
+  watched              Boolean?              @default(false)
+  createdAt            DateTime              @default(now())
+  lastUpdatedAt        DateTime              @default(now())
+  workspace            workspaces            @relation(fields: [workspaceId], references: [id])
+  document_sync_queues document_sync_queues?
 }
 
 model invites {
@@ -62,6 +64,7 @@ model users {
   pfpFilename                 String?
   role                        String                        @default("default")
   suspended                   Int                           @default(0)
+  seen_recovery_codes         Boolean?                      @default(false)
   createdAt                   DateTime                      @default(now())
   lastUpdatedAt               DateTime                      @default(now())
   workspace_chats             workspace_chats[]
@@ -69,7 +72,31 @@ model users {
   embed_configs               embed_configs[]
   embed_chats                 embed_chats[]
   threads                     workspace_threads[]
+  recovery_codes              recovery_codes[]
+  password_reset_tokens       password_reset_tokens[]
   workspace_agent_invocations workspace_agent_invocations[]
+  slash_command_presets       slash_command_presets[]
+}
+
+model recovery_codes {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  code_hash String
+  createdAt DateTime @default(now())
+  user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model password_reset_tokens {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
 }
 
 model document_vectors {
@@ -106,6 +133,7 @@ model workspaces {
   pfpFilename                  String?
   agentProvider                String?
   agentModel                   String?
+  queryRefusalResponse         String?
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
@@ -234,4 +262,39 @@ model event_logs {
   occurredAt DateTime @default(now())
 
   @@index([event])
+}
+
+model slash_command_presets {
+  id            Int      @id @default(autoincrement())
+  command       String
+  prompt        String
+  description   String
+  uid           Int      @default(0) // 0 is null user
+  userId        Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+  user          users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([uid, command])
+}
+
+model document_sync_queues {
+  id             Int                        @id @default(autoincrement())
+  staleAfterMs   Int                        @default(604800000) // 7 days
+  nextSyncAt     DateTime
+  createdAt      DateTime                   @default(now())
+  lastSyncedAt   DateTime                   @default(now())
+  type           String                     @default("remote")
+  workspaceDocId Int                        @unique
+  workspaceDoc   workspace_documents?       @relation(fields: [workspaceDocId], references: [id], onDelete: Cascade)
+  runs           document_sync_executions[]
+}
+
+model document_sync_executions {
+  id        Int                  @id @default(autoincrement())
+  queueId   Int
+  status    String               @default("unknown")
+  result    String?
+  createdAt DateTime             @default(now())
+  queue     document_sync_queues @relation(fields: [queueId], references: [id], onDelete: Cascade)
 }

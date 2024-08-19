@@ -73,10 +73,7 @@ function apiAdminEndpoints(app) {
         return;
       }
 
-      const users = (await User.where()).map((user) => {
-        const { password, ...rest } = user;
-        return rest;
-      });
+      const users = await User.where();
       response.status(200).json({ users });
     } catch (e) {
       console.error(e);
@@ -136,7 +133,7 @@ function apiAdminEndpoints(app) {
 
       const newUserParams = reqBody(request);
       const { user: newUser, error } = await User.create(newUserParams);
-      response.status(200).json({ user: newUser, error });
+      response.status(newUser ? 200 : 400).json({ user: newUser, error });
     } catch (e) {
       console.error(e);
       response.sendStatus(500).end();
@@ -429,7 +426,61 @@ function apiAdminEndpoints(app) {
       }
     }
   );
+  app.get(
+    "/v1/admin/workspaces/:workspaceId/users",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Admin']
+      #swagger.path = '/v1/admin/workspaces/{workspaceId}/users'
+      #swagger.parameters['workspaceId'] = {
+        in: 'path',
+        description: 'id of the workspace.',
+        required: true,
+        type: 'string'
+      }
+      #swagger.description = 'Retrieve a list of users with permissions to access the specified workspace.'
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                users: [
+                  {"userId": 1, "role": "admin"},
+                  {"userId": 2, "role": "member"}
+                ]
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+       #swagger.responses[401] = {
+        description: "Instance is not in Multi-User mode. Method denied",
+      }
+      */
 
+      try {
+        if (!multiUserMode(response)) {
+          response.sendStatus(401).end();
+          return;
+        }
+
+        const workspaceId = request.params.workspaceId;
+        const users = await Workspace.workspaceUsers(workspaceId);
+
+        response.status(200).json({ users });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
   app.post(
     "/v1/admin/workspaces/:workspaceId/update-users",
     [validApiKey],
@@ -497,7 +548,6 @@ function apiAdminEndpoints(app) {
       }
     }
   );
-
   app.post(
     "/v1/admin/workspace-chats",
     [validApiKey],
@@ -566,7 +616,6 @@ function apiAdminEndpoints(app) {
             type: 'object',
             example: {
               settings: {
-                users_can_delete_workspaces: true,
                 limit_user_messages: false,
                 message_limit: 10,
               }
@@ -591,9 +640,6 @@ function apiAdminEndpoints(app) {
       }
 
       const settings = {
-        users_can_delete_workspaces:
-          (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
-            ?.value === "true",
         limit_user_messages:
           (await SystemSettings.get({ label: "limit_user_messages" }))
             ?.value === "true",
@@ -623,7 +669,6 @@ function apiAdminEndpoints(app) {
       content: {
         "application/json": {
           example: {
-            users_can_delete_workspaces: false,
             limit_user_messages: true,
             message_limit: 5,
           }

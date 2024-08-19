@@ -13,7 +13,7 @@ const {
 const path = require("path");
 const port = 3000;
 const app = express();
-require("express-ws")(app);
+require("@mintplex-labs/express-ws").default(app); // load WebSockets in non-SSL mode.
 require("dotenv").config({ path: `../../../../../.env.development` });
 
 // Debugging echo function if this is working for you.
@@ -69,7 +69,7 @@ async function runAIbitat(socket) {
   console.log(chalk.blue("Booting AIbitat class & starting agent(s)"));
   const aibitat = new AIbitat({
     provider: "openai",
-    model: "gpt-3.5-turbo",
+    model: "gpt-4o",
   })
     .use(websocket.plugin({ socket }))
     .use(webBrowsing.plugin())

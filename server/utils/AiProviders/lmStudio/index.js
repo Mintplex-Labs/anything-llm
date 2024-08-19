@@ -1,6 +1,7 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
-const { chatPrompt } = require("../../chats");
-const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
+const {
+  handleDefaultStreamResponseV2,
+} = require("../../helpers/chat/responses");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
@@ -8,11 +9,11 @@ class LMStudioLLM {
     if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
 
-    const { Configuration, OpenAIApi } = require("openai");
-    const config = new Configuration({
-      basePath: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
+    const { OpenAI: OpenAIApi } = require("openai");
+    this.lmstudio = new OpenAIApi({
+      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
+      apiKey: null,
     });
-    this.lmstudio = new OpenAIApi(config);
 
     // Prior to LMStudio 0.2.17 the `model` param was not required and you could pass anything
     // into that field and it would work. On 0.2.17 LMStudio introduced multi-model chat
@@ -44,7 +45,7 @@ class LMStudioLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   // Ensure the user set a value for the token limit
@@ -62,85 +63,53 @@ class LMStudioLLM {
     return true;
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+          detail: "auto",
+        },
+      });
+    }
+    return content.flat();
+  }
+
+  /**
+   * Construct the user prompt for this model.
+   * @param {{attachments: import("../../helpers").Attachment[]}} param0
+   * @returns
+   */
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
-  }
-
-  async isSafe(_input = "") {
-    // Not implemented so must be stubbed
-    return { safe: true, reasons: [] };
-  }
-
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.model)
-      throw new Error(
-        `LMStudio chat: ${this.model} is not valid or defined for chat completion!`
-      );
-
-    const textResponse = await this.lmstudio
-      .createChatCompletion({
-        model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
-      })
-      .then((json) => {
-        const res = json.data;
-        if (!res.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
-        if (res.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
-        return res.choices[0].message.content;
-      })
-      .catch((error) => {
-        throw new Error(
-          `LMStudio::createChatCompletion failed with: ${error.message}`
-        );
-      });
-
-    return textResponse;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.model)
-      throw new Error(
-        `LMStudio chat: ${this.model} is not valid or defined for chat completion!`
-      );
-
-    const streamRequest = await this.lmstudio.createChatCompletion(
+    return [
+      prompt,
+      ...chatHistory,
       {
-        model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
-        stream: true,
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
       },
-      { responseType: "stream" }
-    );
-    return streamRequest;
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -149,14 +118,15 @@ class LMStudioLLM {
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const { data } = await this.lmstudio.createChatCompletion({
+    const result = await this.lmstudio.chat.completions.create({
       model: this.model,
       messages,
       temperature,
     });
 
-    if (!data.hasOwnProperty("choices")) return null;
-    return data.choices[0].message.content;
+    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+      return null;
+    return result.choices[0].message.content;
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -165,20 +135,17 @@ class LMStudioLLM {
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const streamRequest = await this.lmstudio.createChatCompletion(
-      {
-        model: this.model,
-        stream: true,
-        messages,
-        temperature,
-      },
-      { responseType: "stream" }
-    );
+    const streamRequest = await this.lmstudio.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+      temperature,
+    });
     return streamRequest;
   }
 
   handleStream(response, stream, responseProps) {
-    return handleDefaultStreamResponse(response, stream, responseProps);
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

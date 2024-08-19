@@ -16,6 +16,32 @@ const saveFileInBrowser = {
           name: this.name,
           description:
             "Save content to a file when the user explicity asks for a download of the file.",
+          examples: [
+            {
+              prompt: "Save me that to a file named 'output'",
+              call: JSON.stringify({
+                file_content:
+                  "<content of the file we will write previous conversation>",
+                filename: "output.txt",
+              }),
+            },
+            {
+              prompt: "Save me that to my desktop",
+              call: JSON.stringify({
+                file_content:
+                  "<content of the file we will write previous conversation>",
+                filename: "<relevant filename>.txt",
+              }),
+            },
+            {
+              prompt: "Save me that to a file",
+              call: JSON.stringify({
+                file_content:
+                  "<content of the file we will write from previous conversation>",
+                filename: "<descriptive filename>.txt",
+              }),
+            },
+          ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
             type: "object",

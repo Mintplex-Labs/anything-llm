@@ -1,20 +1,63 @@
 import { useEffect, useRef, useState } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
-import { useManageWorkspaceModal } from "@/components/Modals/MangeWorkspace";
-import ManageWorkspace from "@/components/Modals/MangeWorkspace";
+import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
+import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import useUser from "@/hooks/useUser";
+import Chartable from "./Chartable";
+import Workspace from "@/models/workspace";
+import { useParams } from "react-router-dom";
+import paths from "@/utils/paths";
+import { THREAD_FORK_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 
-export default function ChatHistory({ history = [], workspace, sendCommand }) {
+export default function ChatHistory({
+  history = [],
+  workspace,
+  sendCommand,
+  updateHistory,
+  regenerateAssistantMessage,
+  hasAttachments = false,
+}) {
   const { user } = useUser();
+  const { threadSlug = null } = useParams();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
+  const [textSize, setTextSize] = useState("normal");
+
+  const getTextSizeClass = (size) => {
+    switch (size) {
+      case "small":
+        return "text-[12px]";
+      case "large":
+        return "text-[18px]";
+      default:
+        return "text-[14px]";
+    }
+  };
 
   useEffect(() => {
-    scrollToBottom();
+    const storedTextSize = window.localStorage.getItem("anythingllm_text_size");
+    if (storedTextSize) {
+      setTextSize(getTextSizeClass(storedTextSize));
+    }
+
+    const handleTextSizeChange = (event) => {
+      const size = event.detail;
+      setTextSize(getTextSizeClass(size));
+    };
+
+    window.addEventListener("textSizeChange", handleTextSizeChange);
+
+    return () => {
+      window.removeEventListener("textSizeChange", handleTextSizeChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom) scrollToBottom();
   }, [history]);
 
   const handleScroll = () => {
@@ -51,7 +94,69 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
     sendCommand(`${heading} ${message}`, true);
   };
 
-  if (history.length === 0) {
+  const saveEditedMessage = async ({
+    editedMessage,
+    chatId,
+    role,
+    attachments = [],
+  }) => {
+    if (!editedMessage) return; // Don't save empty edits.
+
+    // if the edit was a user message, we will auto-regenerate the response and delete all
+    // messages post modified message
+    if (role === "user") {
+      // remove all messages after the edited message
+      // technically there are two chatIds per-message pair, this will split the first.
+      const updatedHistory = history.slice(
+        0,
+        history.findIndex((msg) => msg.chatId === chatId) + 1
+      );
+
+      // update last message in history to edited message
+      updatedHistory[updatedHistory.length - 1].content = editedMessage;
+      // remove all edited messages after the edited message in backend
+      await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
+      sendCommand(editedMessage, true, updatedHistory, attachments);
+      return;
+    }
+
+    // If role is an assistant we simply want to update the comment and save on the backend as an edit.
+    if (role === "assistant") {
+      const updatedHistory = [...history];
+      const targetIdx = history.findIndex(
+        (msg) => msg.chatId === chatId && msg.role === role
+      );
+      if (targetIdx < 0) return;
+      updatedHistory[targetIdx].content = editedMessage;
+      updateHistory(updatedHistory);
+      await Workspace.updateChatResponse(
+        workspace.slug,
+        threadSlug,
+        chatId,
+        editedMessage
+      );
+      return;
+    }
+  };
+
+  const forkThread = async (chatId) => {
+    const newThreadSlug = await Workspace.forkThread(
+      workspace.slug,
+      threadSlug,
+      chatId
+    );
+    window.location.hash = paths.workspace.thread(
+      workspace.slug,
+      newThreadSlug
+    );
+    window.dispatchEvent(
+      new CustomEvent(THREAD_FORK_EVENT, {
+        detail: { threadSlug: newThreadSlug },
+      })
+    );
+  };
+
+  if (history.length === 0 && !hasAttachments) {
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
@@ -91,7 +196,7 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
 
   return (
     <div
-      className="markdown text-white/80 font-light text-sm h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
+      className={`markdown text-white/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll`}
       id="chat-history"
       ref={chatHistoryRef}
     >
@@ -101,6 +206,12 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
 
         if (props?.type === "statusResponse" && !!props.content) {
           return <StatusResponse key={props.uuid} props={props} />;
+        }
+
+        if (props.type === "rechartVisualize" && !!props.content) {
+          return (
+            <Chartable key={props.uuid} workspace={workspace} props={props} />
+          );
         }
 
         if (isLastBotReply && props.animate) {
@@ -128,6 +239,11 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
             feedbackScore={props.feedbackScore}
             chatId={props.chatId}
             error={props.error}
+            attachments={props.attachments}
+            regenerateMessage={regenerateAssistantMessage}
+            isLastMessage={isLastBotReply}
+            saveEditedMessage={saveEditedMessage}
+            forkThread={forkThread}
           />
         );
       })}
@@ -154,7 +270,7 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
 function StatusResponse({ props }) {
   return (
     <div className="flex justify-center items-end w-full">
-      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <span
             className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line`}

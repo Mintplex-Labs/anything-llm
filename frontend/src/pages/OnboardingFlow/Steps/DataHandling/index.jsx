@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import PreLoader from "@/components/Preloader";
 import System from "@/models/system";
+
 import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
+import GenericOpenAiLogo from "@/assets/llmprovider/generic-openai.png";
 import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
 import AnthropicLogo from "@/assets/llmprovider/anthropic.png";
 import GeminiLogo from "@/assets/llmprovider/gemini.png";
@@ -15,6 +17,11 @@ import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
 import PerplexityLogo from "@/assets/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/assets/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/assets/llmprovider/groq.png";
+import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
+import CohereLogo from "@/assets/llmprovider/cohere.png";
+import TextGenWebUILogo from "@/assets/llmprovider/text-generation-webui.png";
+import LiteLLMLogo from "@/assets/llmprovider/litellm.png";
+import AWSBedrockLogo from "@/assets/llmprovider/bedrock.png";
 
 import ZillizLogo from "@/assets/vectordbs/zilliz.png";
 import AstraDBLogo from "@/assets/vectordbs/astraDB.png";
@@ -24,6 +31,7 @@ import LanceDbLogo from "@/assets/vectordbs/lancedb.png";
 import WeaviateLogo from "@/assets/vectordbs/weaviate.png";
 import QDrantLogo from "@/assets/vectordbs/qdrant.png";
 import MilvusLogo from "@/assets/vectordbs/milvus.png";
+import VoyageAiLogo from "@/assets/embeddingprovider/voyageai.png";
 
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -138,6 +146,48 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: GroqLogo,
   },
+  koboldcpp: {
+    name: "KoboldCPP",
+    description: [
+      "Your model and chats are only accessible on the server running KoboldCPP",
+    ],
+    logo: KoboldCPPLogo,
+  },
+  textgenwebui: {
+    name: "Oobabooga Web UI",
+    description: [
+      "Your model and chats are only accessible on the server running the Oobabooga Text Generation Web UI",
+    ],
+    logo: TextGenWebUILogo,
+  },
+  "generic-openai": {
+    name: "Generic OpenAI compatible service",
+    description: [
+      "Data is shared according to the terms of service applicable with your generic endpoint provider.",
+    ],
+    logo: GenericOpenAiLogo,
+  },
+  cohere: {
+    name: "Cohere",
+    description: [
+      "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
+    ],
+    logo: CohereLogo,
+  },
+  litellm: {
+    name: "LiteLLM",
+    description: [
+      "Your model and chats are only accessible on the server running LiteLLM",
+    ],
+    logo: LiteLLMLogo,
+  },
+  bedrock: {
+    name: "AWS Bedrock",
+    description: [
+      "You model and chat contents are subject to the agreed EULA for AWS and the model provider on aws.amazon.com",
+    ],
+    logo: AWSBedrockLogo,
+  },
 };
 
 export const VECTOR_DB_PRIVACY = {
@@ -239,6 +289,41 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: OllamaLogo,
   },
+  lmstudio: {
+    name: "LMStudio",
+    description: [
+      "Your document text is embedded privately on the server running LMStudio",
+    ],
+    logo: LMStudioLogo,
+  },
+  cohere: {
+    name: "Cohere",
+    description: [
+      "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
+    ],
+    logo: CohereLogo,
+  },
+  voyageai: {
+    name: "Voyage AI",
+    description: [
+      "Data sent to Voyage AI's servers is shared according to the terms of service of voyageai.com.",
+    ],
+    logo: VoyageAiLogo,
+  },
+  litellm: {
+    name: "LiteLLM",
+    description: [
+      "Your document text is only accessible on the server running LiteLLM and to the providers you configured in LiteLLM.",
+    ],
+    logo: LiteLLMLogo,
+  },
+  "generic-openai": {
+    name: "Generic OpenAI compatible service",
+    description: [
+      "Data is shared according to the terms of service applicable with your generic endpoint provider.",
+    ],
+    logo: GenericOpenAiLogo,
+  },
 };
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
@@ -255,7 +340,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
     async function fetchKeys() {
       const _settings = await System.keys();
       setLLMChoice(_settings?.LLMProvider || "openai");
-      setVectorDb(_settings?.VectorDB || "pinecone");
+      setVectorDb(_settings?.VectorDB || "lancedb");
       setEmbeddingEngine(_settings?.EmbeddingEngine || "openai");
 
       setLoading(false);
@@ -268,7 +353,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   }
 
   function handleBack() {
-    navigate(paths.onboarding.vectorDatabase());
+    navigate(paths.onboarding.llmPreference());
   }
 
   if (loading)
@@ -300,7 +385,9 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
           </ul>
         </div>
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-white text-base font-bold">Embedding Engine</div>
+          <div className="text-white text-base font-bold">
+            Embedding Preference
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={EMBEDDING_ENGINE_PRIVACY[embeddingEngine].logo}
@@ -339,6 +426,9 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
           </ul>
         </div>
       </div>
+      <p className="text-white/60 text-sm font-medium py-1">
+        These preferences can be reconfigured at any time in the settings.
+      </p>
     </div>
   );
 }

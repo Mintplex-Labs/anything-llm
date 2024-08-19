@@ -16,7 +16,7 @@ const KEY_MAPPING = {
   // Azure OpenAI Settings
   AzureOpenAiEndpoint: {
     envKey: "AZURE_OPENAI_ENDPOINT",
-    checks: [isNotEmpty, validAzureURL],
+    checks: [isNotEmpty],
   },
   AzureOpenAiTokenLimit: {
     envKey: "AZURE_OPENAI_TOKEN_LIMIT",
@@ -52,6 +52,10 @@ const KEY_MAPPING = {
   GeminiLLMModelPref: {
     envKey: "GEMINI_LLM_MODEL_PREF",
     checks: [isNotEmpty, validGeminiModel],
+  },
+  GeminiSafetySetting: {
+    envKey: "GEMINI_SAFETY_SETTING",
+    checks: [validGeminiSafetySetting],
   },
 
   // LMStudio Settings
@@ -98,6 +102,14 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  OllamaLLMPerformanceMode: {
+    envKey: "OLLAMA_PERFORMANCE_MODE",
+    checks: [],
+  },
+  OllamaLLMKeepAliveSeconds: {
+    envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
+    checks: [isInteger],
+  },
 
   // Mistral AI API Settings
   MistralApiKey: {
@@ -129,6 +141,96 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // KoboldCPP Settings
+  KoboldCPPBasePath: {
+    envKey: "KOBOLD_CPP_BASE_PATH",
+    checks: [isNotEmpty, isValidURL],
+  },
+  KoboldCPPModelPref: {
+    envKey: "KOBOLD_CPP_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  KoboldCPPTokenLimit: {
+    envKey: "KOBOLD_CPP_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // Text Generation Web UI Settings
+  TextGenWebUIBasePath: {
+    envKey: "TEXT_GEN_WEB_UI_BASE_PATH",
+    checks: [isValidURL],
+  },
+  TextGenWebUITokenLimit: {
+    envKey: "TEXT_GEN_WEB_UI_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  TextGenWebUIAPIKey: {
+    envKey: "TEXT_GEN_WEB_UI_API_KEY",
+    checks: [],
+  },
+
+  // LiteLLM Settings
+  LiteLLMModelPref: {
+    envKey: "LITE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  LiteLLMTokenLimit: {
+    envKey: "LITE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  LiteLLMBasePath: {
+    envKey: "LITE_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  LiteLLMApiKey: {
+    envKey: "LITE_LLM_API_KEY",
+    checks: [],
+  },
+
+  // Generic OpenAI InferenceSettings
+  GenericOpenAiBasePath: {
+    envKey: "GENERIC_OPEN_AI_BASE_PATH",
+    checks: [isValidURL],
+  },
+  GenericOpenAiModelPref: {
+    envKey: "GENERIC_OPEN_AI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  GenericOpenAiTokenLimit: {
+    envKey: "GENERIC_OPEN_AI_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  GenericOpenAiKey: {
+    envKey: "GENERIC_OPEN_AI_API_KEY",
+    checks: [],
+  },
+  GenericOpenAiMaxTokens: {
+    envKey: "GENERIC_OPEN_AI_MAX_TOKENS",
+    checks: [nonZero],
+  },
+
+  // AWS Bedrock LLM InferenceSettings
+  AwsBedrockLLMAccessKeyId: {
+    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMAccessKey: {
+    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMRegion: {
+    envKey: "AWS_BEDROCK_LLM_REGION",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMModel: {
+    envKey: "AWS_BEDROCK_LLM_MODEL_PREFERENCE",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMTokenLimit: {
+    envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
@@ -144,6 +246,12 @@ const KEY_MAPPING = {
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
+  },
+
+  // Generic OpenAI Embedding Settings
+  GenericOpenAiEmbeddingApiKey: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",
+    checks: [],
   },
 
   // Vector Database Selection Settings
@@ -258,6 +366,10 @@ const KEY_MAPPING = {
     envKey: "OPENROUTER_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  OpenRouterTimeout: {
+    envKey: "OPENROUTER_TIMEOUT_MS",
+    checks: [],
+  },
 
   // Groq Options
   GroqApiKey: {
@@ -269,17 +381,38 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Cohere Options
+  CohereApiKey: {
+    envKey: "COHERE_API_KEY",
+    checks: [isNotEmpty],
+  },
+  CohereModelPref: {
+    envKey: "COHERE_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // VoyageAi Options
+  VoyageAiApiKey: {
+    envKey: "VOYAGEAI_API_KEY",
+    checks: [isNotEmpty],
+  },
+
   // Whisper (transcription) providers
   WhisperProvider: {
     envKey: "WHISPER_PROVIDER",
     checks: [isNotEmpty, supportedTranscriptionProvider],
     postUpdate: [],
   },
+  WhisperModelPref: {
+    envKey: "WHISPER_MODEL_PREF",
+    checks: [validLocalWhisper],
+    postUpdate: [],
+  },
 
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
-    checks: [requiresForceMode],
+    checks: [requiresForceMode, noRestrictedChars],
   },
   JWTSecret: {
     envKey: "JWT_SECRET",
@@ -303,6 +436,59 @@ const KEY_MAPPING = {
     envKey: "AGENT_SERPER_DEV_KEY",
     checks: [],
   },
+  AgentBingSearchApiKey: {
+    envKey: "AGENT_BING_SEARCH_API_KEY",
+    checks: [],
+  },
+  AgentSerplyApiKey: {
+    envKey: "AGENT_SERPLY_API_KEY",
+    checks: [],
+  },
+  AgentSearXNGApiUrl: {
+    envKey: "AGENT_SEARXNG_API_URL",
+    checks: [],
+  },
+
+  // TTS/STT Integration ENVS
+  TextToSpeechProvider: {
+    envKey: "TTS_PROVIDER",
+    checks: [supportedTTSProvider],
+  },
+
+  // TTS OpenAI
+  TTSOpenAIKey: {
+    envKey: "TTS_OPEN_AI_KEY",
+    checks: [validOpenAIKey],
+  },
+  TTSOpenAIVoiceModel: {
+    envKey: "TTS_OPEN_AI_VOICE_MODEL",
+    checks: [],
+  },
+
+  // TTS ElevenLabs
+  TTSElevenLabsKey: {
+    envKey: "TTS_ELEVEN_LABS_KEY",
+    checks: [isNotEmpty],
+  },
+  TTSElevenLabsVoiceModel: {
+    envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
+    checks: [],
+  },
+
+  // PiperTTS Local
+  TTSPiperTTSVoiceModel: {
+    envKey: "TTS_PIPER_VOICE_MODEL",
+    checks: [],
+  },
+
+  SpeechToTextProvider: {
+    envKey: "STT_PROVIDER",
+    checks: [supportedSTTProvider],
+  },
+  SpeechToTextLocalWhisperModel: {
+    envKey: "STT_LOCAL_WHISPER_MODEL",
+    checks: [validLocalWhisper],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -312,6 +498,11 @@ function isNotEmpty(input = "") {
 function nonZero(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
   return Number(input) <= 0 ? "Value must be greater than zero" : null;
+}
+
+function isInteger(input = "") {
+  if (isNaN(Number(input))) return "Value must be a number";
+  return Number(input);
 }
 
 function isValidURL(input = "") {
@@ -356,6 +547,33 @@ function validOllamaLLMBasePath(input = "") {
   }
 }
 
+function supportedTTSProvider(input = "") {
+  const validSelection = [
+    "native",
+    "openai",
+    "elevenlabs",
+    "piper_local",
+  ].includes(input);
+  return validSelection ? null : `${input} is not a valid TTS provider.`;
+}
+
+function supportedSTTProvider(input = "") {
+  const validSelection = ["local_whisper"].includes(input);
+  return validSelection ? null : `${input} is not a valid STT provider.`;
+}
+
+function validLocalWhisper(input = "") {
+  const validSelection = [
+    "Xenova/whisper-tiny",
+    "Xenova/whisper-small",
+    "Xenova/whisper-base",
+    "Xenova/whisper-large",
+  ].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid Whisper model selection.`;
+}
+
 function supportedLLM(input = "") {
   const validSelection = [
     "anythingllm_ollama",
@@ -372,6 +590,12 @@ function supportedLLM(input = "") {
     "perplexity",
     "openrouter",
     "groq",
+    "koboldcpp",
+    "textgenwebui",
+    "cohere",
+    "litellm",
+    "generic-openai",
+    "bedrock",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -384,10 +608,28 @@ function supportedTranscriptionProvider(input = "") {
 }
 
 function validGeminiModel(input = "") {
-  const validModels = ["gemini-pro"];
+  const validModels = [
+    "gemini-pro",
+    "gemini-1.0-pro",
+    "gemini-1.5-pro-latest",
+    "gemini-1.5-flash-latest",
+    "gemini-1.5-pro-exp-0801",
+  ];
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
+}
+
+function validGeminiSafetySetting(input = "") {
+  const validModes = [
+    "BLOCK_NONE",
+    "BLOCK_ONLY_HIGH",
+    "BLOCK_MEDIUM_AND_ABOVE",
+    "BLOCK_LOW_AND_ABOVE",
+  ];
+  return validModes.includes(input)
+    ? null
+    : `Invalid Safety setting. Must be one of ${validModes.join(", ")}.`;
 }
 
 function validAnthropicModel(input = "") {
@@ -398,6 +640,7 @@ function validAnthropicModel(input = "") {
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
+    "claude-3-5-sonnet-20240620",
   ];
   return validModels.includes(input)
     ? null
@@ -405,7 +648,18 @@ function validAnthropicModel(input = "") {
 }
 
 function supportedEmbeddingModel(input = "") {
-  const supported = ["openai", "azure", "localai", "native", "ollama"];
+  const supported = [
+    "openai",
+    "azure",
+    "localai",
+    "native",
+    "ollama",
+    "lmstudio",
+    "cohere",
+    "voyageai",
+    "litellm",
+    "generic-openai",
+  ];
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;
@@ -431,17 +685,6 @@ function validChromaURL(input = "") {
   return input.slice(-1) === "/"
     ? `Chroma Instance URL should not end in a trailing slash.`
     : null;
-}
-
-function validAzureURL(input = "") {
-  try {
-    new URL(input);
-    if (!input.includes("openai.azure.com") && !input.includes("microsoft.com"))
-      return "Valid Azure endpoints must contain openai.azure.com OR microsoft.com";
-    return null;
-  } catch {
-    return "Not a valid URL";
-  }
 }
 
 function validOpenAiTokenLimit(input = "") {
@@ -507,6 +750,13 @@ async function manageOllamaService(_key, prev, next) {
   }
 }
 
+function noRestrictedChars(input = "") {
+  const regExp = new RegExp(/^[a-zA-Z0-9_\-!@$%^&*();]+$/);
+  return !regExp.test(input)
+    ? `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`
+    : null;
+}
+
 // This will force update .env variables which for any which reason were not able to be parsed or
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
@@ -538,6 +788,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   }
 
   await logChangesToEventLog(newValues, userId);
+  if (process.env.NODE_ENV === "production") dumpENV();
   return { newValues, error: error?.length > 0 ? error : false };
 }
 
@@ -563,16 +814,21 @@ async function logChangesToEventLog(newValues = {}, userId = null) {
   return;
 }
 
-async function dumpENV() {
+function dumpENV() {
   const fs = require("fs");
   const path = require("path");
 
   const frozenEnvs = {};
   const protectedKeys = [
     ...Object.values(KEY_MAPPING).map((values) => values.envKey),
+    // Manually Add Keys here which are not already defined in KEY_MAPPING
+    // and are either managed or manually set ENV key:values.
     "STORAGE_DIR",
     "SERVER_PORT",
     "COLLECTOR_PORT",
+    // For persistent data encryption
+    "SIG_KEY",
+    "SIG_SALT",
     // Password Schema Keys if present.
     "PASSWORDMINCHAR",
     "PASSWORDMAXCHAR",
@@ -585,14 +841,6 @@ async function dumpENV() {
     "ENABLE_HTTPS",
     "HTTPS_CERT_PATH",
     "HTTPS_KEY_PATH",
-    // DISABLED TELEMETRY
-    "DISABLE_TELEMETRY",
-
-    // Agent Integrations
-    // Search engine integrations
-    "AGENT_GSE_CTX",
-    "AGENT_GSE_KEY",
-    "AGENT_SERPER_DEV_KEY",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
