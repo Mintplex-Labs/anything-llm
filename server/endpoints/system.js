@@ -167,7 +167,7 @@ function systemEndpoints(app) {
       });
 
       if (!existingUser) {
-        User.create({
+        await User.create({
           username: userInfo.user.username,
           password: crypto.randomUUID(),
           role: ROLES.default,
