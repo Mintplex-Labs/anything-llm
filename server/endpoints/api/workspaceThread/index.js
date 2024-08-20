@@ -110,7 +110,6 @@ function apiWorkspaceThreadEndpoints(app) {
       /*
       #swagger.tags = ['Workspace Threads']
       #swagger.description = 'Update thread name by its unique slug.'
-      #swagger.path = '/v1/workspace/{slug}/thread/{threadSlug}/update'
       #swagger.parameters['slug'] = {
           in: 'path',
           description: 'Unique slug of workspace',

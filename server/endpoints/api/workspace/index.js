@@ -142,7 +142,6 @@ function apiWorkspaceEndpoints(app) {
     /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Get a workspace by its unique slug.'
-    #swagger.path = '/v1/workspace/{slug}'
     #swagger.parameters['slug'] = {
         in: 'path',
         description: 'Unique slug of workspace to find',
@@ -209,7 +208,6 @@ function apiWorkspaceEndpoints(app) {
       /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Deletes a workspace by its slug.'
-    #swagger.path = '/v1/workspace/{slug}'
     #swagger.parameters['slug'] = {
         in: 'path',
         description: 'Unique slug of workspace to delete',
@@ -261,7 +259,6 @@ function apiWorkspaceEndpoints(app) {
       /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Update workspace settings by its unique slug.'
-    #swagger.path = '/v1/workspace/{slug}/update'
     #swagger.parameters['slug'] = {
         in: 'path',
         description: 'Unique slug of workspace to find',
@@ -341,7 +338,6 @@ function apiWorkspaceEndpoints(app) {
       /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Get a workspaces chats regardless of user by its unique slug.'
-    #swagger.path = '/v1/workspace/{slug}/chats'
     #swagger.parameters['slug'] = {
         in: 'path',
         description: 'Unique slug of workspace to find',
@@ -402,7 +398,6 @@ function apiWorkspaceEndpoints(app) {
       /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Add or remove documents from a workspace by its unique slug.'
-    #swagger.path = '/v1/workspace/{slug}/update-embeddings'
     #swagger.parameters['slug'] = {
         in: 'path',
         description: 'Unique slug of workspace to find',
@@ -481,7 +476,6 @@ function apiWorkspaceEndpoints(app) {
       /*
       #swagger.tags = ['Workspaces']
       #swagger.description = 'Add or remove pin from a document in a workspace by its unique slug.'
-      #swagger.path = '/workspace/{slug}/update-pin'
       #swagger.parameters['slug'] = {
           in: 'path',
           description: 'Unique slug of workspace to find',

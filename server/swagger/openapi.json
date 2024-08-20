@@ -1846,7 +1846,7 @@
         }
       }
     },
-    "/workspace/{slug}/update-pin": {
+    "/v1/workspace/{slug}/update-pin": {
       "post": {
         "tags": [
           "Workspaces"
