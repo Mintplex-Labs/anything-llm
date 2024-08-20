@@ -21,7 +21,7 @@ export default function FolderRow({
   };
   return (
     <>
-      <tr
+      <div
         onClick={onRowClick}
         className={`text-white/80 text-xs grid grid-cols-7 py-2 pl-3.5 pr-8 bg-dark-highlight hover:bg-sky-500/20 cursor-pointer w-full file-row ${selected ? "selected" : ""
           }`}
@@ -56,10 +56,7 @@ export default function FolderRow({
         </div>
         {Object.keys(folderColumns).map((key, index) => {
           return (
-            <div
-              key={key}
-              className="flex gap-x-[4px] items-center"
-            >
+            <div key={key} className="flex gap-x-[4px] items-center">
               <p className="whitespace-nowrap overflow-show place-self-end ml-auto">
                 {item?.metadata?.[key]}
               </p>
@@ -74,7 +71,7 @@ export default function FolderRow({
             </div>
           );
         })}
-      </tr>
+      </div>
       {expanded && (
         <>
           {item.items.map((fileItem) => (
