@@ -40,7 +40,7 @@ const TRANSLATIONS = {
       "placeholder-username": "Username",
       "placeholder-password": "Password",
       login: "Login",
-      keyclock_login: "Keyclock Login",
+      keyclock_login: "Sign In with DigiXT",
       validating: "Validating...",
       "forgot-pass": "Forgot password",
       reset: "Reset",

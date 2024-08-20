@@ -1100,7 +1100,7 @@ dialog::backdrop {
 
 .markdown strong {
   font-weight: 600;
-  color: #fff;
+  color: #000;
 }
 
 .file-row:nth-child(even) {

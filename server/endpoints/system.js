@@ -96,14 +96,6 @@ function systemEndpoints(app) {
     authServerUrl: process.env.AUTH_SERVER_URL,
   };
 
-  console.log("env keys ");
-
-  Object.keys(process.env).forEach((key) => {
-    console.log(`${key}: ${process.env[key]}`);
-  });
-
-  console.log("config, ", config);
-
   app.get(
     "/system/check-token",
     [validatedRequest],
@@ -142,7 +134,7 @@ function systemEndpoints(app) {
 
   app.get("/callback", async (req, res) => {
     const code = req.query.code;
-    console.log(code);
+   
     if (!code) {
       return res.status(400).send("No code found");
     }
@@ -161,8 +153,6 @@ function systemEndpoints(app) {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         }
       );
-
-      console.log(response.data);
       const token = response.data.access_token;
       const userinfoResponse = await axios.get(
         `${config.authServerUrl}/userinfo`,
@@ -170,9 +160,8 @@ function systemEndpoints(app) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(userinfoResponse)
+
       const userInfo = userinfoResponse.data;
-      console.log(userInfo)
       var existingUser = await User._get({
         username: String(userInfo.user.username),
       });
@@ -511,7 +500,6 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (_, response) => {
       try {
-        console.log("inside local-files");
         const localFiles = await viewLocalFiles();
         response.status(200).json({ localFiles });
       } catch (e) {
@@ -527,9 +515,7 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
-
         const { workflowfolder } = request.params;
-
         const localFiles = await viewLocalFilesByWorkspace(workflowfolder);
         response.status(200).json({ localFiles });
       } catch (e) {
