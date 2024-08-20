@@ -152,7 +152,7 @@ const TRANSLATIONS = {
       title: "聊天模式",
       chat: {
         title: "聊天",
-        "desc-start": "将提供法学硕士的一般知识",
+        "desc-start": "将提供 LLM 的一般知识",
         and: "和",
         "desc-end": "找到的文档上下文的答案。",
       },
@@ -182,7 +182,7 @@ const TRANSLATIONS = {
       "desc-end": "模式时，当未找到上下文时，您可能希望返回自定义拒绝响应。",
     },
     temperature: {
-      title: "LLM Temperature",
+      title: "LLM 温度",
       "desc-start": "此设置控制您的 LLM 回答的“创意”程度",
       "desc-end":
         "数字越高越有创意。对于某些模型，如果设置得太高，可能会导致响应不一致。",
@@ -277,11 +277,11 @@ const TRANSLATIONS = {
     export: "导出",
     table: {
       id: "Id",
-      by: "Sent By",
-      workspace: "Workspace",
-      prompt: "Prompt",
-      response: "Response",
-      at: "Sent At",
+      by: "发送者",
+      workspace: "工作区",
+      prompt: "提示",
+      response: "响应",
+      at: "发送时间",
     },
   },
 
