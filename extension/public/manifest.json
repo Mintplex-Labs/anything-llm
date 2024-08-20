@@ -10,6 +10,7 @@
     "128": "icon128.png"
   },
   "permissions": ["contextMenus", "activeTab", "storage"],
+  "host_permissions": ["http://localhost:3001/"],
   "background": {
     "service_worker": "background.js"
   },

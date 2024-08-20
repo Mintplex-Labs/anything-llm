@@ -48,7 +48,8 @@ function browserExtensionEndpoints(app) {
       });
       if (activeKeys.length >= MAX_ACTIVE_REGISTRATIONS) {
         response.status(429).json({
-          error: "Maximum number of active registrations reached",
+          error:
+            "Maximum number of active registrations reached. Clear them in the AnythingLLM: Tools/Browser Extension.",
         });
         return;
       }
@@ -67,25 +68,40 @@ function browserExtensionEndpoints(app) {
     }
   });
 
-  app.post(
-    "/browser-extension/unregister",
-    [validBrowserExtensionApiKey],
-    async (request, response) => {
-      try {
-        const auth = request.header("Authorization");
-        const bearerKey = auth ? auth.split(" ")[1] : null;
-        const { success, error } =
-          await BrowserExtensionApiKey.delete(bearerKey);
-        if (!success) throw new Error(error);
-        response.status(200).json({ success: true });
-      } catch (error) {
-        console.error(error);
-        response
-          .status(500)
-          .json({ error: "Failed to unregister browser extension" });
+  app.post("/browser-extension/unregister", async (request, response) => {
+    try {
+      const auth = request.header("Authorization");
+      const bearerKey = auth ? auth.split(" ")[1] : null;
+
+      if (!bearerKey) {
+        response.status(403).json({
+          error: "No API key provided.",
+        });
+        return;
       }
+
+      const apiKey = await BrowserExtensionApiKey.get({ key: bearerKey });
+
+      if (!apiKey) {
+        response.status(403).json({
+          error: "No valid API key found.",
+        });
+        return;
+      }
+
+      // Delete regardless of whether the key is accepted or pending
+      const { success, error } = await BrowserExtensionApiKey.delete(bearerKey);
+
+      if (!success) throw new Error(error);
+
+      response.status(200).json({ success: true });
+    } catch (error) {
+      console.error(error);
+      response
+        .status(500)
+        .json({ error: "Failed to unregister browser extension" });
     }
-  );
+  });
 
   app.get(
     "/browser-extension/workspaces",
