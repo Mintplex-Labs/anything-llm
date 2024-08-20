@@ -176,7 +176,7 @@ function systemEndpoints(app) {
         existingUser = await User._get({
           username: String(userInfo.user.username),
         });
-        Workspace.new(userInfo.user.username + "'sWorkspace", existingUser.id);
+        Workspace.new(userInfo.user.username + "-workspace", existingUser.id);
       }
 
       const fullAuthResponse = {
