@@ -11,6 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@azure/msal-browser": "^3.20.0",
+    "@azure/msal-react": "^2.0.22",
     "@metamask/jazzicon": "^2.0.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@phosphor-icons/react": "^2.1.7",
