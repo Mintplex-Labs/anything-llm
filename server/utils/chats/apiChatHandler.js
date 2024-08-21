@@ -23,6 +23,7 @@ const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
  *  mode: "chat"|"query",
  *  user: import("@prisma/client").users|null,
  *  thread: import("@prisma/client").workspace_threads|null,
+ *  sessionId: string|null,
  * }} parameters
  * @returns {Promise<ResponseObject>}
  */
@@ -32,6 +33,7 @@ async function chatSync({
   mode = "chat",
   user = null,
   thread = null,
+  sessionId = null,
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
@@ -60,6 +62,7 @@ async function chatSync({
         type: chatMode,
       },
       include: false,
+      apiSessionId: sessionId,
     });
 
     return {
@@ -83,7 +86,7 @@ async function chatSync({
     workspace,
     thread,
     messageLimit,
-    chatMode,
+    apiSessionId: sessionId,
   });
 
   await new DocumentManager({
@@ -168,6 +171,7 @@ async function chatSync({
       },
       threadId: thread?.id || null,
       include: false,
+      apiSessionId: sessionId,
       user,
     });
 
@@ -214,6 +218,7 @@ async function chatSync({
     prompt: message,
     response: { text: textResponse, sources, type: chatMode },
     threadId: thread?.id || null,
+    apiSessionId: sessionId,
     user,
   });
 
@@ -237,6 +242,7 @@ async function chatSync({
  *  mode: "chat"|"query",
  *  user: import("@prisma/client").users|null,
  *  thread: import("@prisma/client").workspace_threads|null,
+ *  sessionId: string|null,
  * }} parameters
  * @returns {Promise<VoidFunction>}
  */
@@ -247,6 +253,7 @@ async function streamChat({
   mode = "chat",
   user = null,
   thread = null,
+  sessionId = null,
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
@@ -285,6 +292,7 @@ async function streamChat({
         attachments: [],
       },
       threadId: thread?.id || null,
+      apiSessionId: sessionId,
       include: false,
       user,
     });
@@ -303,6 +311,7 @@ async function streamChat({
     workspace,
     thread,
     messageLimit,
+    apiSessionId: sessionId,
   });
 
   // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
@@ -402,6 +411,7 @@ async function streamChat({
         attachments: [],
       },
       threadId: thread?.id || null,
+      apiSessionId: sessionId,
       include: false,
       user,
     });
@@ -453,6 +463,7 @@ async function streamChat({
       prompt: message,
       response: { text: completeText, sources, type: chatMode },
       threadId: thread?.id || null,
+      apiSessionId: sessionId,
       user,
     });
 
