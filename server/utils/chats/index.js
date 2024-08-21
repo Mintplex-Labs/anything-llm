@@ -37,6 +37,7 @@ async function recentChatHistory({
   workspace,
   thread = null,
   messageLimit = 20,
+  apiSessionId = null,
 }) {
   const rawHistory = (
     await WorkspaceChats.where(
@@ -44,6 +45,7 @@ async function recentChatHistory({
         workspaceId: workspace.id,
         user_id: user?.id || null,
         thread_id: thread?.id || null,
+        api_session_id: apiSessionId || null,
         include: true,
       },
       messageLimit,

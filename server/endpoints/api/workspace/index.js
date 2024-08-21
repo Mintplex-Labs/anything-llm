@@ -550,7 +550,8 @@ function apiWorkspaceEndpoints(app) {
          "application/json": {
            example: {
              message: "What is AnythingLLM?",
-             mode: "query | chat"
+             mode: "query | chat",
+             sessionId: "identifier-to-partition-chats-by-external-id"
            }
          }
        }
@@ -580,7 +581,7 @@ function apiWorkspaceEndpoints(app) {
    */
       try {
         const { slug } = request.params;
-        const { message, mode = "query" } = reqBody(request);
+        const { message, mode = "query", sessionId = null } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
@@ -615,6 +616,7 @@ function apiWorkspaceEndpoints(app) {
           mode,
           user: null,
           thread: null,
+          sessionId: !!sessionId ? String(sessionId) : null,
         });
 
         await Telemetry.sendTelemetry("sent_chat", {
@@ -658,7 +660,8 @@ function apiWorkspaceEndpoints(app) {
          "application/json": {
            example: {
              message: "What is AnythingLLM?",
-             mode: "query | chat"
+             mode: "query | chat",
+             sessionId: "identifier-to-partition-chats-by-external-id"
            }
          }
        }
@@ -706,7 +709,7 @@ function apiWorkspaceEndpoints(app) {
    */
       try {
         const { slug } = request.params;
-        const { message, mode = "query" } = reqBody(request);
+        const { message, mode = "query", sessionId = null } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
@@ -748,6 +751,7 @@ function apiWorkspaceEndpoints(app) {
           mode,
           user: null,
           thread: null,
+          sessionId: !!sessionId ? String(sessionId) : null,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection:
