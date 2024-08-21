@@ -138,6 +138,7 @@ function workspaceThreadEndpoints(app) {
             workspaceId: workspace.id,
             user_id: user?.id || null,
             thread_id: thread.id,
+            api_session_id: null, // Do not include API session chats.
             include: true,
           },
           null,

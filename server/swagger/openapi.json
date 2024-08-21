@@ -1833,7 +1833,7 @@
         }
       }
     },
-    "/workspace/{slug}/update-pin": {
+    "/v1/workspace/{slug}/update-pin": {
       "post": {
         "tags": [
           "Workspaces"
@@ -1957,7 +1957,8 @@
             "application/json": {
               "example": {
                 "message": "What is AnythingLLM?",
-                "mode": "query | chat"
+                "mode": "query | chat",
+                "sessionId": "identifier-to-partition-chats-by-external-id"
               }
             }
           }
@@ -2051,7 +2052,8 @@
             "application/json": {
               "example": {
                 "message": "What is AnythingLLM?",
-                "mode": "query | chat"
+                "mode": "query | chat",
+                "sessionId": "identifier-to-partition-chats-by-external-id"
               }
             }
           }
