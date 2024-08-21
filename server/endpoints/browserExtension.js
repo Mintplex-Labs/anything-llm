@@ -11,6 +11,8 @@ const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
+const { Telemetry } = require("../models/telemetry");
+const { EventLogs } = require("../models/eventLogs");
 
 const MAX_ACTIVE_REGISTRATIONS = 3;
 
@@ -150,6 +152,7 @@ function browserExtensionEndpoints(app) {
           return;
         }
 
+        await Telemetry.sendTelemetry("browser_extension_embed_content");
         response.status(200).json({ success: true });
       } catch (error) {
         console.error(error);
@@ -181,10 +184,45 @@ function browserExtensionEndpoints(app) {
           return;
         }
 
+        await Telemetry.sendTelemetry("browser_extension_upload_content");
         response.status(200).json({ success: true });
       } catch (error) {
         console.error(error);
         response.status(500).json({ error: "Failed to embed content" });
+      }
+    }
+  );
+
+  app.post(
+    "/browser-extension/upload-link",
+    [validBrowserExtensionApiKey],
+    async (request, response) => {
+      try {
+        const Collector = new CollectorApi();
+        const { link = "" } = reqBody(request);
+        const processingOnline = await Collector.online();
+
+        if (!processingOnline) {
+          response
+            .status(500)
+            .json({
+              success: false,
+              error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
+            })
+            .end();
+          return;
+        }
+
+        const { success, reason } = await Collector.processLink(link);
+        if (!success) {
+          response.status(500).json({ success: false, error: reason }).end();
+          return;
+        }
+        await Telemetry.sendTelemetry("browser_extension_link_uploaded");
+        response.status(200).json({ success: true, error: null });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
       }
     }
   );
