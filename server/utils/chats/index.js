@@ -73,7 +73,6 @@ function sourceIdentifier(sourceDocument) {
 module.exports = {
   sourceIdentifier,
   recentChatHistory,
-  chatWithWorkspace,
   chatPrompt,
   grepCommand,
   VALID_COMMANDS,
