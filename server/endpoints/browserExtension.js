@@ -123,7 +123,7 @@ function browserExtensionEndpoints(app) {
     async (request, response) => {
       try {
         const { workspaceId, textContent, metadata } = reqBody(request);
-        const workspace = await Workspace.get({ id: workspaceId });
+        const workspace = await Workspace.get({ id: parseInt(workspaceId) });
         if (!workspace) {
           response.status(404).json({ error: "Workspace not found" });
           return;
@@ -142,11 +142,42 @@ function browserExtensionEndpoints(app) {
 
         const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
           workspace,
-          documents
+          [documents[0].location]
         );
 
         if (failedToEmbed.length > 0) {
           response.status(500).json({ success: false, error: errors[0] });
+          return;
+        }
+
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: "Failed to embed content" });
+      }
+    }
+  );
+
+  app.post(
+    "/browser-extension/upload-content",
+    [validBrowserExtensionApiKey],
+    async (request, response) => {
+      try {
+        const { workspaceId, textContent, metadata } = reqBody(request);
+        const workspace = await Workspace.get({ id: workspaceId });
+        if (!workspace) {
+          response.status(404).json({ error: "Workspace not found" });
+          return;
+        }
+
+        const Collector = new CollectorApi();
+        const { success, reason, documents } = await Collector.processRawText(
+          textContent,
+          metadata
+        );
+
+        if (!success) {
+          response.status(500).json({ success: false, error: reason });
           return;
         }
 

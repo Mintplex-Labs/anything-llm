@@ -76,9 +76,12 @@ export default function Config({ status, extensionId, onStatusChange }) {
 
       {status === "approved" && (
         <div>
-          <div className="flex items-center justify-center gap-x-2 mb-4">
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <p className="text-green-400">Connected to AnythingLLM</p>
+          <div className="flex flex-col justify-center items-center">
+            <div className="flex items-center justify-center gap-x-2">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <p className="text-green-400">Connected to AnythingLLM</p>
+            </div>
+            <p className="mb-4">Extension ID: {extensionId}</p>
           </div>
           <button
             onClick={handleUnregister}

@@ -20,6 +20,7 @@ function App() {
       setStatus("notRegistered");
       return;
     }
+    setExtensionId(extensionId);
 
     try {
       const { response, data } = await BrowserExtension.checkApiKey(apiKey);
