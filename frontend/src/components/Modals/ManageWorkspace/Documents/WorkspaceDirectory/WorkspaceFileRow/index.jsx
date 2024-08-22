@@ -287,7 +287,6 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
 // };
 
 export const DownloadFileButton = ({ item }) => {
-  console.log(item)
   const downloadFile = async () => {
     try {
       let fileUrl = item.url;
