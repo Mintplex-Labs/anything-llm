@@ -52,6 +52,10 @@ function writeToServerDocuments(
   filename,
   destinationOverride = null
 ) {
+  // FUTUREREFERENCE: SEARCH WHERE writeToServerDoc is being called and make a asImage page and handle there
+  // if (filename.includes(".png") || filename.includes(".jpg") || filename.includes(".jpeg") || filename.includes(".pdf")) {
+  //   console.log("using ocr")
+  // }
   const destination = destinationOverride
     ? path.resolve(destinationOverride)
     : path.resolve(
