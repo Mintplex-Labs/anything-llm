@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
 import BrowserExtensionApiKey from "@/models/browserExtensionApiKey";
-import { API_BASE } from "@/utils/constants";
+import { fullApiUrl } from "@/utils/constants";
 
 export default function NewBrowserExtensionApiKeyModal({
   closeModal,
@@ -18,7 +18,7 @@ export default function NewBrowserExtensionApiKeyModal({
     const { apiKey: newApiKey, error } =
       await BrowserExtensionApiKey.generateKey();
     if (!!newApiKey) {
-      const fullApiKey = `${API_BASE}|${newApiKey}`;
+      const fullApiKey = `${fullApiUrl()}|${newApiKey}`;
       setApiKey(fullApiKey);
       onSuccess();
 

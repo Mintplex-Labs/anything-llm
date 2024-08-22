@@ -21,9 +21,6 @@ function browserExtensionEndpoints(app) {
     [validBrowserExtensionApiKey],
     async (request, response) => {
       try {
-        // const auth = request.header("Authorization");
-        // const bearerKey = auth ? auth.split(" ")[1] : null;
-        // const apiKey = await BrowserExtensionApiKey.get({ key: bearerKey });
         const workspaces = await Workspace.where();
         response.status(200).json({
           connected: true,

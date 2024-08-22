@@ -1,7 +1,6 @@
 {
-  "name": "extension",
-  "private": true,
-  "version": "0.0.0",
+  "name": "anything-llm-extension",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "nodemon --watch src --watch public -e js,jsx,css,html --exec \"yarn dev:build\"",

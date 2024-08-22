@@ -10,7 +10,7 @@ import CTAButton from "@/components/lib/CTAButton";
 import NewBrowserExtensionApiKeyModal from "./NewBrowserExtensionApiKeyModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
-import { API_BASE } from "@/utils/constants";
+import { fullApiUrl } from "@/utils/constants";
 
 export default function BrowserExtensionApiKeys() {
   const [loading, setLoading] = useState(true);
@@ -101,7 +101,7 @@ export default function BrowserExtensionApiKeys() {
                       key={apiKey.key}
                       apiKey={apiKey}
                       removeApiKey={removeApiKey}
-                      connectionString={`${API_BASE}|${apiKey.key}`}
+                      connectionString={`${fullApiUrl()}|${apiKey.key}`}
                     />
                   ))
                 )}
