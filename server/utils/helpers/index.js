@@ -21,6 +21,11 @@
  */
 
 /**
+ * @typedef {Object} BaseLLMProviderClass - Class method of provider - not instantiated
+ * @property {function(string): number} promptWindowLimit - Returns the token limit for the provided model.
+ */
+
+/**
  * @typedef {Object} BaseVectorDatabaseProvider
  * @property {string} name - The name of the Vector Database instance.
  * @property {Function} connect - Connects to the Vector Database client.
@@ -204,6 +209,78 @@ function getEmbeddingEngineSelection() {
   }
 }
 
+/**
+ * Returns the LLMProviderClass - this is a helper method to access static methods on a class
+ * @param {{provider: string | null} | null} params - Initialize params for LLMs provider
+ * @returns {BaseLLMProviderClass}
+ */
+function getLLMProviderClass({ provider = null } = {}) {
+  switch (provider) {
+    case "openai":
+      const { OpenAiLLM } = require("../AiProviders/openAi");
+      return OpenAiLLM;
+    case "azure":
+      const { AzureOpenAiLLM } = require("../AiProviders/azureOpenAi");
+      return AzureOpenAiLLM;
+    case "anthropic":
+      const { AnthropicLLM } = require("../AiProviders/anthropic");
+      return AnthropicLLM;
+    case "gemini":
+      const { GeminiLLM } = require("../AiProviders/gemini");
+      return GeminiLLM;
+    case "lmstudio":
+      const { LMStudioLLM } = require("../AiProviders/lmStudio");
+      return LMStudioLLM;
+    case "localai":
+      const { LocalAiLLM } = require("../AiProviders/localAi");
+      return LocalAiLLM;
+    case "ollama":
+      const { OllamaAILLM } = require("../AiProviders/ollama");
+      return OllamaAILLM;
+    case "togetherai":
+      const { TogetherAiLLM } = require("../AiProviders/togetherAi");
+      return TogetherAiLLM;
+    case "perplexity":
+      const { PerplexityLLM } = require("../AiProviders/perplexity");
+      return PerplexityLLM;
+    case "openrouter":
+      const { OpenRouterLLM } = require("../AiProviders/openRouter");
+      return OpenRouterLLM;
+    case "mistral":
+      const { MistralLLM } = require("../AiProviders/mistral");
+      return MistralLLM;
+    case "native":
+      const { NativeLLM } = require("../AiProviders/native");
+      return NativeLLM;
+    case "huggingface":
+      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
+      return HuggingFaceLLM;
+    case "groq":
+      const { GroqLLM } = require("../AiProviders/groq");
+      return GroqLLM;
+    case "koboldcpp":
+      const { KoboldCPPLLM } = require("../AiProviders/koboldCPP");
+      return KoboldCPPLLM;
+    case "textgenwebui":
+      const { TextGenWebUILLM } = require("../AiProviders/textGenWebUI");
+      return TextGenWebUILLM;
+    case "cohere":
+      const { CohereLLM } = require("../AiProviders/cohere");
+      return CohereLLM;
+    case "litellm":
+      const { LiteLLM } = require("../AiProviders/liteLLM");
+      return LiteLLM;
+    case "generic-openai":
+      const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
+      return GenericOpenAiLLM;
+    case "bedrock":
+      const { AWSBedrockLLM } = require("../AiProviders/bedrock");
+      return AWSBedrockLLM;
+    default:
+      return null;
+  }
+}
+
 // Some models have lower restrictions on chars that can be encoded in a single pass
 // and by default we assume it can handle 1,000 chars, but some models use work with smaller
 // chars so here we can override that value when embedding information.
@@ -228,6 +305,7 @@ module.exports = {
   getEmbeddingEngineSelection,
   maximumChunkLength,
   getVectorDbClass,
+  getLLMProviderClass,
   getLLMProvider,
   toChunks,
 };

@@ -43,6 +43,12 @@ class AzureOpenAiLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(_modelName) {
+    return !!process.env.AZURE_OPENAI_TOKEN_LIMIT
+      ? Number(process.env.AZURE_OPENAI_TOKEN_LIMIT)
+      : 4096;
+  }
+
   // Sure the user selected a proper value for the token limit
   // could be any of these https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-4-models
   // and if undefined - assume it is the lowest end.

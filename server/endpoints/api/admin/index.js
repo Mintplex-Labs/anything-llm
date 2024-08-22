@@ -143,7 +143,6 @@ function apiAdminEndpoints(app) {
   app.post("/v1/admin/users/:id", [validApiKey], async (request, response) => {
     /*
     #swagger.tags = ['Admin']
-    #swagger.path = '/v1/admin/users/{id}'
     #swagger.parameters['id'] = {
       in: 'path',
       description: 'id of the user in the database.',
@@ -221,7 +220,6 @@ function apiAdminEndpoints(app) {
       /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Delete existing user by id. Methods are disabled until multi user mode is enabled via the UI.'
-    #swagger.path = '/v1/admin/users/{id}'
     #swagger.parameters['id'] = {
       in: 'path',
       description: 'id of the user in the database.',
@@ -382,7 +380,6 @@ function apiAdminEndpoints(app) {
       /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Deactivates (soft-delete) invite by id. Methods are disabled until multi user mode is enabled via the UI.'
-    #swagger.path = '/v1/admin/invite/{id}'
     #swagger.parameters['id'] = {
       in: 'path',
       description: 'id of the invite in the database.',
@@ -432,7 +429,6 @@ function apiAdminEndpoints(app) {
     async (request, response) => {
       /*
       #swagger.tags = ['Admin']
-      #swagger.path = '/v1/admin/workspaces/{workspaceId}/users'
       #swagger.parameters['workspaceId'] = {
         in: 'path',
         description: 'id of the workspace.',
@@ -487,7 +483,6 @@ function apiAdminEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Admin']
-    #swagger.path = '/v1/admin/workspaces/{workspaceId}/update-users'
     #swagger.parameters['workspaceId'] = {
       in: 'path',
       description: 'id of the workspace in the database.',

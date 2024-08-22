@@ -77,7 +77,11 @@ const webScraping = {
               throw new Error("There was no content to be collected or read.");
             }
 
-            if (content.length < Provider.contextLimit(this.super.provider)) {
+            const { TokenManager } = require("../../../helpers/tiktoken");
+            if (
+              new TokenManager(this.super.model).countFromString(content) <
+              Provider.contextLimit(this.super.provider, this.super.model)
+            ) {
               return content;
             }
 

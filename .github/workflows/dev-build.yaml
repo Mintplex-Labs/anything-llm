@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['pipertts-support'] # put your current branch to create a build. Core team only.
+    branches: ['encrypt-jwt-value'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

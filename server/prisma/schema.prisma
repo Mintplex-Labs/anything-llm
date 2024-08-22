@@ -170,17 +170,18 @@ model workspace_suggested_messages {
 }
 
 model workspace_chats {
-  id            Int      @id @default(autoincrement())
-  workspaceId   Int
-  prompt        String
-  response      String
-  include       Boolean  @default(true)
-  user_id       Int?
-  thread_id     Int? // No relation to prevent whole table migration
-  createdAt     DateTime @default(now())
-  lastUpdatedAt DateTime @default(now())
-  feedbackScore Boolean?
-  users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id             Int      @id @default(autoincrement())
+  workspaceId    Int
+  prompt         String
+  response       String
+  include        Boolean  @default(true)
+  user_id        Int?
+  thread_id      Int? // No relation to prevent whole table migration
+  api_session_id String? // String identifier for only the dev API to parition chats in any mode.
+  createdAt      DateTime @default(now())
+  lastUpdatedAt  DateTime @default(now())
+  feedbackScore  Boolean?
+  users          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model workspace_agent_invocations {

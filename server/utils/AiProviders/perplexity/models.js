@@ -64,6 +64,11 @@ const MODELS = {
     name: "llama-3.1-70b-instruct",
     maxLength: 131072,
   },
+  "llama-3.1-sonar-huge-128k-chat": {
+    id: "llama-3.1-sonar-huge-128k-chat",
+    name: "llama-3.1-sonar-huge-128k-chat",
+    maxLength: 127072,
+  },
 };
 
 module.exports.MODELS = MODELS;
