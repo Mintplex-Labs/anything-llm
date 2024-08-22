@@ -12,9 +12,6 @@ const {
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { Telemetry } = require("../models/telemetry");
-const { EventLogs } = require("../models/eventLogs");
-
-const MAX_ACTIVE_REGISTRATIONS = 3;
 
 function browserExtensionEndpoints(app) {
   if (!app) return;
@@ -31,8 +28,6 @@ function browserExtensionEndpoints(app) {
         response.status(200).json({
           connected: true,
           workspaces,
-          accepted: apiKey.accepted,
-          verificationCode: apiKey.verificationCode,
         });
       } catch (error) {
         console.error(error);
@@ -42,68 +37,6 @@ function browserExtensionEndpoints(app) {
       }
     }
   );
-
-  app.post("/browser-extension/register", async (request, response) => {
-    try {
-      const activeKeys = await BrowserExtensionApiKey.where({
-        accepted: false,
-      });
-      if (activeKeys.length >= MAX_ACTIVE_REGISTRATIONS) {
-        response.status(429).json({
-          error:
-            "Maximum number of active registrations reached. Clear them in the AnythingLLM: Tools/Browser Extension.",
-        });
-        return;
-      }
-
-      const { apiKey, error } = await BrowserExtensionApiKey.create();
-      if (error) throw new Error(error);
-      response.status(200).json({
-        apiKey: apiKey.key,
-        verificationCode: apiKey.verificationCode,
-      });
-    } catch (error) {
-      console.error(error);
-      response
-        .status(500)
-        .json({ error: "Failed to register browser extension" });
-    }
-  });
-
-  app.post("/browser-extension/unregister", async (request, response) => {
-    try {
-      const auth = request.header("Authorization");
-      const bearerKey = auth ? auth.split(" ")[1] : null;
-
-      if (!bearerKey) {
-        response.status(403).json({
-          error: "No API key provided.",
-        });
-        return;
-      }
-
-      const apiKey = await BrowserExtensionApiKey.get({ key: bearerKey });
-
-      if (!apiKey) {
-        response.status(403).json({
-          error: "No valid API key found.",
-        });
-        return;
-      }
-
-      // Delete regardless of whether the key is accepted or pending
-      const { success, error } = await BrowserExtensionApiKey.delete(bearerKey);
-
-      if (!success) throw new Error(error);
-
-      response.status(200).json({ success: true });
-    } catch (error) {
-      console.error(error);
-      response
-        .status(500)
-        .json({ error: "Failed to unregister browser extension" });
-    }
-  });
 
   app.get(
     "/browser-extension/workspaces",
@@ -245,18 +178,28 @@ function browserExtensionEndpoints(app) {
   );
 
   app.post(
-    "/browser-extension/api-keys/accept",
+    "/browser-extension/api-keys/new",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { key } = reqBody(request);
-        const { success, apiKey, error } =
-          await BrowserExtensionApiKey.accept(key);
-        if (!success) throw new Error(error);
-        response.status(200).json({ success: true, apiKey });
+        const activeKeys = await BrowserExtensionApiKey.where();
+        const MAX_ACTIVE_REGISTRATIONS = 3;
+        if (activeKeys.length >= MAX_ACTIVE_REGISTRATIONS) {
+          response.status(429).json({
+            error:
+              "Maximum number of active API keys reached. Revoke existing keys before creating new ones.",
+          });
+          return;
+        }
+
+        const { apiKey, error } = await BrowserExtensionApiKey.create();
+        if (error) throw new Error(error);
+        response.status(200).json({
+          apiKey: apiKey.key,
+        });
       } catch (error) {
         console.error(error);
-        response.status(500).json({ error: "Failed to accept API key" });
+        response.status(500).json({ error: "Failed to create API key" });
       }
     }
   );

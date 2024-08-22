@@ -4,7 +4,6 @@ import AnythingLLMLogo from "./media/anything-llm.png";
 import BrowserExtension from "./models/browserExtension";
 
 function App() {
-  const [extensionId, setExtensionId] = useState("");
   const [status, setStatus] = useState("loading");
 
   useEffect(() => {
@@ -12,34 +11,34 @@ function App() {
   }, []);
 
   const checkApiKeyStatus = async () => {
-    const { apiKey, extensionId } = await chrome.storage.sync.get([
+    const { apiBase, apiKey } = await chrome.storage.sync.get([
+      "apiBase",
       "apiKey",
-      "extensionId",
     ]);
-    if (!apiKey) {
-      setStatus("notRegistered");
+    if (!apiBase || !apiKey) {
+      setStatus("notConnected");
       return;
     }
-    setExtensionId(extensionId);
 
     try {
-      const { response, data } = await BrowserExtension.checkApiKey(apiKey);
+      const { online } = await BrowserExtension.checkOnline(apiBase);
+      if (!online) {
+        setStatus("offline");
+        return;
+      }
 
-      if (response.status === 401) {
-        setStatus("pending");
-        setExtensionId(data.verificationCode);
-      } else if (response.ok) {
-        setStatus(
-          data.connected && data.accepted ? "approved" : "notConnected"
-        );
-        if (!data.connected || !data.accepted) {
-          await chrome.storage.sync.remove(["apiKey", "extensionId"]);
-        }
-      } else if (response.status === 403) {
-        await chrome.storage.sync.remove(["apiKey", "extensionId"]);
-        setStatus("notRegistered");
+      const { response, data } = await BrowserExtension.checkApiKey(
+        apiBase,
+        apiKey
+      );
+
+      if (response.ok) {
+        setStatus("connected");
+        chrome.runtime.sendMessage({ action: "connectionUpdated" });
       } else {
-        throw new Error(data.error || "Unexpected response");
+        await chrome.storage.sync.remove(["apiBase", "apiKey"]);
+        setStatus("notConnected");
+        chrome.runtime.sendMessage({ action: "connectionUpdated" });
       }
     } catch (error) {
       setStatus("error");
@@ -54,11 +53,7 @@ function App() {
           Select text on any webpage, right-click, and choose "Save to
           AnythingLLM".
         </p>
-        <Config
-          status={status}
-          extensionId={extensionId}
-          onStatusChange={checkApiKeyStatus}
-        />
+        <Config status={status} onStatusChange={checkApiKeyStatus} />
       </div>
     </div>
   );

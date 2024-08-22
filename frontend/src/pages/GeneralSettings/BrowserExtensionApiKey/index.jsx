@@ -3,10 +3,39 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { PlusCircle } from "@phosphor-icons/react";
 import BrowserExtensionApiKey from "@/models/browserExtensionApiKey";
 import BrowserExtensionApiKeyRow from "./BrowserExtensionApiKeyRow";
+import CTAButton from "@/components/lib/CTAButton";
+import NewBrowserExtensionApiKeyModal from "./NewBrowserExtensionApiKeyModal";
+import ModalWrapper from "@/components/ModalWrapper";
+import { useModal } from "@/hooks/useModal";
+import { API_BASE } from "@/utils/constants";
 
 export default function BrowserExtensionApiKeys() {
+  const [loading, setLoading] = useState(true);
+  const [apiKeys, setApiKeys] = useState([]);
+  const [error, setError] = useState(null);
+  const { isOpen, openModal, closeModal } = useModal();
+
+  useEffect(() => {
+    fetchExistingKeys();
+  }, []);
+
+  const fetchExistingKeys = async () => {
+    const result = await BrowserExtensionApiKey.getAll();
+    if (result.success) {
+      setApiKeys(result.apiKeys);
+    } else {
+      setError(result.error || "Failed to fetch API keys");
+    }
+    setLoading(false);
+  };
+
+  const removeApiKey = (key) => {
+    setApiKeys((prevKeys) => prevKeys.filter((apiKey) => apiKey.key !== key));
+  };
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -26,101 +55,67 @@ export default function BrowserExtensionApiKeys() {
               AnythingLLM instance.
             </p>
           </div>
-          <BrowserExtensionApiKeysContainer />
+          <div className="w-full justify-end flex">
+            <CTAButton onClick={openModal} className="mt-3 mr-0 -mb-6 z-10">
+              <PlusCircle className="h-4 w-4" weight="bold" />
+              Generate New API Key
+            </CTAButton>
+          </div>
+          {loading ? (
+            <Skeleton.default
+              height="80vh"
+              width="100%"
+              highlightColor="#3D4147"
+              baseColor="#2C2F35"
+              count={1}
+              className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+              containerClassName="flex w-full"
+            />
+          ) : error ? (
+            <div className="text-red-500 mt-6">Error: {error}</div>
+          ) : (
+            <table className="w-full text-sm text-left rounded-lg mt-6">
+              <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+                <tr>
+                  <th scope="col" className="px-6 py-3 rounded-tl-lg">
+                    Extension Connection String
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Created At
+                  </th>
+                  <th scope="col" className="px-6 py-3 rounded-tr-lg">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {apiKeys.length === 0 ? (
+                  <tr className="bg-transparent text-white text-opacity-80 text-sm font-medium">
+                    <td colSpan="3" className="px-6 py-4 text-center">
+                      No API keys found
+                    </td>
+                  </tr>
+                ) : (
+                  apiKeys.map((apiKey) => (
+                    <BrowserExtensionApiKeyRow
+                      key={apiKey.key}
+                      apiKey={apiKey}
+                      removeApiKey={removeApiKey}
+                      connectionString={`${API_BASE}|${apiKey.key}`}
+                    />
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
+      <ModalWrapper isOpen={isOpen}>
+        <NewBrowserExtensionApiKeyModal
+          closeModal={closeModal}
+          onSuccess={fetchExistingKeys}
+        />
+      </ModalWrapper>
     </div>
-  );
-}
-
-function BrowserExtensionApiKeysContainer() {
-  const [loading, setLoading] = useState(true);
-  const [apiKeys, setApiKeys] = useState([]);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetchExistingKeys();
-  }, []);
-
-  const fetchExistingKeys = async () => {
-    const result = await BrowserExtensionApiKey.getAll();
-    if (result.success) {
-      setApiKeys(result.apiKeys);
-    } else {
-      setError(result.error || "Failed to fetch API keys");
-    }
-    setLoading(false);
-  };
-
-  const updateApiKeyStatus = (key, accepted) => {
-    setApiKeys((prevKeys) =>
-      prevKeys.map((apiKey) =>
-        apiKey.key === key ? { ...apiKey, accepted } : apiKey
-      )
-    );
-  };
-
-  const removeApiKey = (key) => {
-    setApiKeys((prevKeys) => prevKeys.filter((apiKey) => apiKey.key !== key));
-  };
-
-  if (loading) {
-    return (
-      <Skeleton.default
-        height="80vh"
-        width="100%"
-        highlightColor="#3D4147"
-        baseColor="#2C2F35"
-        count={1}
-        className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
-        containerClassName="flex w-full"
-      />
-    );
-  }
-
-  if (error) {
-    return <div className="text-red-500 mt-6">Error: {error}</div>;
-  }
-
-  return (
-    <table className="w-full text-sm text-left rounded-lg mt-6">
-      <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
-        <tr>
-          <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            API Key
-          </th>
-          <th scope="col" className="px-6 py-3">
-            Status
-          </th>
-          <th scope="col" className="px-6 py-3">
-            Verification Code
-          </th>
-          <th scope="col" className="px-6 py-3">
-            Created At
-          </th>
-          <th scope="col" className="px-6 py-3 rounded-tr-lg">
-            Actions
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {apiKeys.length === 0 ? (
-          <tr className="bg-transparent text-white text-opacity-80 text-sm font-medium">
-            <td colSpan="5" className="px-6 py-4 text-center">
-              No API keys found
-            </td>
-          </tr>
-        ) : (
-          apiKeys.map((apiKey) => (
-            <BrowserExtensionApiKeyRow
-              key={apiKey.key}
-              apiKey={apiKey}
-              updateApiKeyStatus={updateApiKeyStatus}
-              removeApiKey={removeApiKey}
-            />
-          ))
-        )}
-      </tbody>
-    </table>
   );
 }

@@ -9,17 +9,11 @@ const BrowserExtensionApiKey = {
     return `brx-${uuidAPIKey.create().apiKey}`;
   },
 
-  generateVerificationCode: () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-  },
-
   create: async function () {
     try {
       const apiKey = await prisma.browser_extension_api_keys.create({
         data: {
           key: this.makeSecret(),
-          verificationCode: this.generateVerificationCode(),
-          accepted: false,
         },
       });
       return { apiKey, error: null };

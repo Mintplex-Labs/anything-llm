@@ -24,14 +24,6 @@ async function validBrowserExtensionApiKey(request, response, next) {
     return;
   }
 
-  if (!apiKey.accepted) {
-    response.status(401).json({
-      error: "API key not yet accepted.",
-      verificationCode: apiKey.verificationCode,
-    });
-    return;
-  }
-
   next();
 }
 

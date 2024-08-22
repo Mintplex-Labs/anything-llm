@@ -1,183 +1,122 @@
-const ANYTHING_LLM_API_URL = "http://localhost:3001/api";
-
-const BrowserExtension = {
-  async register() {
-    try {
-      const response = await fetch(
-        `${ANYTHING_LLM_API_URL}/browser-extension/register`,
-        { method: "POST" }
-      );
-      return await response.json();
-    } catch (error) {
-      console.error("Registration error:", error);
-      return { error: error.message };
-    }
-  },
-
-  async checkApiKey(apiKey) {
-    try {
-      const response = await fetch(
-        `${ANYTHING_LLM_API_URL}/browser-extension/check`,
-        { headers: { Authorization: `Bearer ${apiKey}` } }
-      );
-      return { response, data: await response.json() };
-    } catch (error) {
-      console.error("API key check error:", error);
-      return { error: error.message };
-    }
-  },
-
-  async saveContent(apiKey, textContent, metadata) {
-    try {
-      const response = await fetch(
-        `${ANYTHING_LLM_API_URL}/browser-extension/upload-content`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({ textContent, metadata }),
-        }
-      );
-      return { response, data: await response.json() };
-    } catch (error) {
-      console.error("Save content error:", error);
-      return { error: error.message };
-    }
-  },
-
-  async embedContent(apiKey, workspaceId, textContent, metadata) {
-    try {
-      const response = await fetch(
-        `${ANYTHING_LLM_API_URL}/browser-extension/embed-content`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({ workspaceId, textContent, metadata }),
-        }
-      );
-      return { response, data: await response.json() };
-    } catch (error) {
-      console.error("Embed content error:", error);
-      return { error: error.message };
-    }
-  },
-
-  async uploadLink(apiKey, link) {
-    try {
-      const response = await fetch(
-        `${ANYTHING_LLM_API_URL}/browser-extension/upload-link`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({ link }),
-        }
-      );
-      return { response, data: await response.json() };
-    } catch (error) {
-      console.error("Upload link error:", error);
-      return { error: error.message };
-    }
-  },
-};
-
 const ContextMenuModel = {
   async create(workspaces) {
     await chrome.contextMenus.removeAll();
 
     chrome.contextMenus.create({
       id: "saveToAnythingLLM",
-      title: "Save to AnythingLLM",
+      title: "Save selected to AnythingLLM",
       contexts: ["selection"],
     });
 
-    chrome.contextMenus.create({
-      id: "embedToWorkspace",
-      title: "Embed content to workspace",
-      contexts: ["selection"],
-    });
+    if (workspaces && workspaces.length > 0) {
+      chrome.contextMenus.create({
+        id: "embedToWorkspace",
+        title: "Embed selected content to workspace",
+        contexts: ["selection"],
+      });
+
+      workspaces.forEach((workspace) => {
+        chrome.contextMenus.create({
+          id: `workspace-${workspace.id}`,
+          parentId: "embedToWorkspace",
+          title: workspace.name,
+          contexts: ["selection"],
+        });
+      });
+    } else {
+      chrome.contextMenus.create({
+        id: "noWorkspaces",
+        title: "No available workspaces",
+        contexts: ["selection"],
+        enabled: false,
+      });
+    }
 
     chrome.contextMenus.create({
       id: "sendPageToAnythingLLM",
-      title: "Send page to AnythingLLM",
-      contexts: ["page"],
+      title: "Save entire page to AnythingLLM",
+      contexts: ["page", "selection"],
     });
+  },
 
-    workspaces.forEach((workspace) => {
-      chrome.contextMenus.create({
-        id: `workspace-${workspace.id}`,
-        parentId: "embedToWorkspace",
-        title: workspace.name,
-        contexts: ["selection"],
-      });
-    });
+  async remove() {
+    await chrome.contextMenus.removeAll();
   },
 };
 
 const ExtensionModel = {
-  async attemptRegistration() {
-    const { apiKey } = await chrome.storage.sync.get(["apiKey"]);
-    if (!apiKey) {
-      const result = await BrowserExtension.register();
-      if (!result.error) {
-        await chrome.storage.sync.set({
-          apiKey: result.apiKey,
-          extensionId: result.verificationCode,
-        });
-        await this.updateWorkspaces();
+  async checkApiKeyValidity() {
+    const { apiBase, apiKey } = await chrome.storage.sync.get([
+      "apiBase",
+      "apiKey",
+    ]);
+    if (apiBase && apiKey) {
+      const response = await fetch(`${apiBase}/browser-extension/check`, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        await ContextMenuModel.create(data.workspaces);
+        return true;
+      } else {
+        await chrome.storage.sync.remove(["apiBase", "apiKey"]);
+        await ContextMenuModel.remove();
+        return false;
       }
     } else {
-      await this.checkApiKeyValidity();
-    }
-  },
-
-  async checkApiKeyValidity() {
-    const { apiKey } = await chrome.storage.sync.get(["apiKey"]);
-    if (apiKey) {
-      const { response, data } = await BrowserExtension.checkApiKey(apiKey);
-      if (response.status === 403 || !response.ok) {
-        await chrome.storage.sync.remove(["apiKey", "extensionId"]);
-      } else {
-        await ContextMenuModel.create(data.workspaces);
-      }
+      await ContextMenuModel.remove();
+      return false;
     }
   },
 
   async updateWorkspaces() {
-    const { apiKey } = await chrome.storage.sync.get(["apiKey"]);
-    if (apiKey) {
-      const { data } = await BrowserExtension.checkApiKey(apiKey);
-      if (data && data.workspaces) {
+    const { apiBase, apiKey } = await chrome.storage.sync.get([
+      "apiBase",
+      "apiKey",
+    ]);
+    if (apiBase && apiKey) {
+      const response = await fetch(`${apiBase}/browser-extension/check`, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
         await ContextMenuModel.create(data.workspaces);
+      } else {
+        await ContextMenuModel.remove();
       }
+    } else {
+      await ContextMenuModel.remove();
     }
   },
 
   async saveToAnythingLLM(selectedText, pageTitle, pageUrl) {
-    const { apiKey } = await chrome.storage.sync.get(["apiKey"]);
-    if (!apiKey) return;
+    const { apiBase, apiKey } = await chrome.storage.sync.get([
+      "apiBase",
+      "apiKey",
+    ]);
+    if (!apiBase || !apiKey) return;
 
-    const { response, data } = await BrowserExtension.saveContent(
-      apiKey,
-      selectedText,
+    const response = await fetch(
+      `${apiBase}/browser-extension/upload-content`,
       {
-        title: pageTitle,
-        url: pageUrl,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          textContent: selectedText,
+          metadata: { title: pageTitle, url: pageUrl },
+        }),
       }
     );
 
     if (response.status === 401 || response.status === 403) {
-      await chrome.storage.sync.remove(["apiKey", "extensionId"]);
+      await chrome.storage.sync.remove(["apiBase", "apiKey"]);
+      await ContextMenuModel.remove();
       this.showNotification(
         "Error",
-        "Authentication failed. Please re-register the extension."
+        "Authentication failed. Please reconnect the extension."
       );
     } else if (!response.ok) {
       await this.checkApiKeyValidity();
@@ -194,24 +133,31 @@ const ExtensionModel = {
   },
 
   async embedToWorkspace(workspaceId, selectedText, pageTitle, pageUrl) {
-    const { apiKey } = await chrome.storage.sync.get(["apiKey"]);
-    if (!apiKey) return;
+    const { apiBase, apiKey } = await chrome.storage.sync.get([
+      "apiBase",
+      "apiKey",
+    ]);
+    if (!apiBase || !apiKey) return;
 
-    const { response, data } = await BrowserExtension.embedContent(
-      apiKey,
-      workspaceId,
-      selectedText,
-      {
-        title: pageTitle,
-        url: pageUrl,
-      }
-    );
+    const response = await fetch(`${apiBase}/browser-extension/embed-content`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        workspaceId,
+        textContent: selectedText,
+        metadata: { title: pageTitle, url: pageUrl },
+      }),
+    });
 
     if (response.status === 401 || response.status === 403) {
-      await chrome.storage.sync.remove(["apiKey", "extensionId"]);
+      await chrome.storage.sync.remove(["apiBase", "apiKey"]);
+      await ContextMenuModel.remove();
       this.showNotification(
         "Error",
-        "Authentication failed. Please re-register the extension."
+        "Authentication failed. Please reconnect the extension."
       );
     } else if (!response.ok) {
       await this.checkApiKeyValidity();
@@ -228,19 +174,27 @@ const ExtensionModel = {
   },
 
   async sendPageToAnythingLLM(pageUrl) {
-    const { apiKey } = await chrome.storage.sync.get(["apiKey"]);
-    if (!apiKey) return;
+    const { apiBase, apiKey } = await chrome.storage.sync.get([
+      "apiBase",
+      "apiKey",
+    ]);
+    if (!apiBase || !apiKey) return;
 
-    const { response, data } = await BrowserExtension.uploadLink(
-      apiKey,
-      pageUrl
-    );
+    const response = await fetch(`${apiBase}/browser-extension/upload-link`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({ link: pageUrl }),
+    });
 
     if (response.status === 401 || response.status === 403) {
-      await chrome.storage.sync.remove(["apiKey", "extensionId"]);
+      await chrome.storage.sync.remove(["apiBase", "apiKey"]);
+      await ContextMenuModel.remove();
       this.showNotification(
         "Error",
-        "Authentication failed. Please re-register the extension."
+        "Authentication failed. Please reconnect the extension."
       );
     } else if (!response.ok) {
       await this.checkApiKeyValidity();
@@ -269,13 +223,12 @@ const ExtensionModel = {
 
 // Event Listeners
 chrome.runtime.onInstalled.addListener(async () => {
-  await ExtensionModel.attemptRegistration();
-  chrome.alarms.create("updateWorkspaces", { periodInMinutes: 1 });
+  await ExtensionModel.checkApiKeyValidity();
 });
 
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === "updateWorkspaces") {
-    ExtensionModel.updateWorkspaces();
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "connectionUpdated") {
+    ExtensionModel.checkApiKeyValidity();
   }
 });
 
@@ -292,5 +245,23 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     );
   } else if (info.menuItemId === "sendPageToAnythingLLM") {
     ExtensionModel.sendPageToAnythingLLM(tab.url);
+  }
+});
+
+// Remove context menu items when connection is lost
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === "sync" && (changes.apiBase || changes.apiKey)) {
+    if (!changes.apiBase?.newValue || !changes.apiKey?.newValue) {
+      ContextMenuModel.remove();
+    }
+  }
+});
+
+// Update workspaces periodically
+chrome.alarms.create("updateWorkspaces", { periodInMinutes: 1 });
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === "updateWorkspaces") {
+    ExtensionModel.updateWorkspaces();
   }
 });
