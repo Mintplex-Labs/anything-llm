@@ -4,6 +4,7 @@ const fs = require("fs");
 const { writeToServerDocuments, createdDate, trashFile } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const path = require("path")
 
 
 
@@ -31,6 +32,39 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
         extractedText += line.content + "\n";
       }
     }
+
+    console.log(`-- Working ${filename} --`);
+
+    const destinationDirectory = path.resolve(__dirname, "../../../server/storage/downloadFiles");
+
+    const destinationPath = path.join(destinationDirectory, filename);
+
+    // Ensure destination directory exists
+    try {
+      fs.mkdirSync(destinationDirectory, { recursive: true });
+    } catch (err) {
+      console.error("Could not create destination directory!", err);
+      return {
+        success: false,
+        reason: `Failed to create destination directory.`,
+        documents: [],
+      };
+    }
+
+    // Write the content to the new file
+    try {
+      // fs.writeFileSync(destinationPath, content, "utf8");
+      fs.copyFileSync(fullFilePath, destinationPath);
+      console.log(`[SUCCESS]: File written to ${destinationPath}`);
+    } catch (err) {
+      console.error("Could not write file!", err);
+      return {
+        success: false,
+        reason: `Failed to write file to ${destinationPath}.`,
+        documents: [],
+      };
+    }
+
     const data = {
       id: v4(),
       url: "file://" + fullFilePath,
@@ -51,10 +85,6 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
       `${slugify(filename)}-${data.id}`
     );
     trashFile(fullFilePath);
-    console.log(extractedText);
-    console.log(fullFilePath)
-    console.log(filename)
-    console.log(document)
     return { success: true, reason: null, documents: [document] };
   } catch (error) {
     console.error("An error occurred while processing the document:", error);
