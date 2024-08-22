@@ -25,6 +25,9 @@ app.use(
     extended: true,
   })
 );
+const downlodDir = path.resolve("../server/storage/downloadFiles")
+console.log(downlodDir)
+app.use('/files', express.static(downlodDir));
 
 app.post(
   "/process",
