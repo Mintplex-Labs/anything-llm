@@ -37,7 +37,7 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".rst": "./convert/asTxt.js",
 
   ".html": "./convert/asTxt.js",
-  // TODO: for using ocr as we dont know if the content of the pdf if in text or image
+  // FUTUREREFERENCE: using OCR for PDFs as we don't know if the content of the PDF will be in text or image
   // ".pdf": "./convert/asPDF.js",
 
   ".docx": "./convert/asDocx.js",
