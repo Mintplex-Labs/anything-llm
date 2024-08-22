@@ -4,10 +4,10 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
-const { EphemeralAgentHandler } = require("../agents/ephemeral");
 const {
+  EphemeralAgentHandler,
   EphemeralEventListener,
-} = require("../agents/aibitat/utils/ephemeralEventListner");
+} = require("../agents/ephemeral");
 const { Telemetry } = require("../../models/telemetry");
 
 /**
