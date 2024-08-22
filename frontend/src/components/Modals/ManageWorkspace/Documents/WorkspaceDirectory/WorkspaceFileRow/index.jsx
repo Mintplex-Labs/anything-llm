@@ -258,27 +258,80 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
   );
 };
 
-export const DownloadFileButton = ({ item }) => {
-  const downloadFile = () => {
-    const blob = new Blob([item.content], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
+// export const DownloadFileButton = ({ item }) => {
+//   console.log(item)
+//   const downloadFile = () => {
+//     const blob = new Blob([item.content], { type: "application/pdf" });
+//     const url = URL.createObjectURL(blob);
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", item.title);
-    document.body.appendChild(link);
-    link.click();
-    URL.revokeObjectURL(url);
-    link.remove();
+//     const link = document.createElement("a");
+//     link.href = url;
+//     link.setAttribute("download", item.title);
+//     document.body.appendChild(link);
+//     link.click();
+//     URL.revokeObjectURL(url);
+//     link.remove();
+//   };
+//   return (
+//     <Download
+//       data-tooltip-id={`download-${item.id}`}
+//       data-tooltip-content="Download file"
+//       size={16}
+//       onClick={(e) => {
+//         e.stopPropagation()
+//         downloadFile()
+//       }}
+//       className="text-base font-bold flex-shrink-0 cursor-pointer ml-2"
+//     />
+//   );
+// };
+
+export const DownloadFileButton = ({ item }) => {
+  console.log(item)
+  const downloadFile = async () => {
+    try {
+      let fileUrl = item.url;
+
+      if (fileUrl.startsWith("file://")) {
+        const fileName = fileUrl.replace("file://", "").split('/').pop();
+        const encodedTitle = encodeURIComponent(item.title);
+
+        fileUrl = `http://localhost:8888/files/${encodedTitle}`;
+        console.log(fileUrl)
+      }
+
+      const response = await fetch(fileUrl, { mode: 'cors' });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      //TODO: FILES ARE STORED IN D:\anything-llm-collab\server\storage\documents\custom-documents
+      // NO THEY ARE STORED IN D:\anything-llm-collab\server\storage\downloadFiles
+      //TODO: npx http-server D:\anything-llm-collab\server\storage\documents\custom-documents -p 8080 --cors
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", item.title || "download");
+      document.body.appendChild(link);
+      link.click();
+
+      URL.revokeObjectURL(url);
+      link.remove();
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      showToast("Failed to download file", "error", { clear: true });
+    }
   };
+
   return (
     <Download
       data-tooltip-id={`download-${item.id}`}
       data-tooltip-content="Download file"
       size={16}
       onClick={(e) => {
-        e.stopPropagation()
-        downloadFile()
+        e.stopPropagation();
+        downloadFile();
       }}
       className="text-base font-bold flex-shrink-0 cursor-pointer ml-2"
     />
