@@ -38,6 +38,25 @@ const BrowserExtension = {
       return { success: false, error: error.message };
     }
   },
+
+  disconnect: async function (apiBase, apiKey) {
+    return await fetch(`${apiBase}/browser-extension/disconnect`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}` },
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          return { success: true };
+        } else {
+          const data = await res.json();
+          throw new Error(data.error || "Failed to disconnect");
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default BrowserExtension;

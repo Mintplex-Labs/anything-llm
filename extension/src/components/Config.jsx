@@ -47,6 +47,21 @@ export default function Config({ status, onStatusChange }) {
 
   const handleDisconnect = async () => {
     try {
+      const { apiBase, apiKey } = await chrome.storage.sync.get([
+        "apiBase",
+        "apiKey",
+      ]);
+
+      if (apiBase && apiKey) {
+        const { success, error } = await BrowserExtension.disconnect(
+          apiBase,
+          apiKey
+        );
+        if (!success) {
+          throw new Error(error || "Failed to disconnect from the server");
+        }
+      }
+
       await chrome.storage.sync.remove(["apiBase", "apiKey"]);
       onStatusChange();
       setSaveStatus("Successfully disconnected from AnythingLLM");

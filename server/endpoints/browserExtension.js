@@ -21,9 +21,9 @@ function browserExtensionEndpoints(app) {
     [validBrowserExtensionApiKey],
     async (request, response) => {
       try {
-        const auth = request.header("Authorization");
-        const bearerKey = auth ? auth.split(" ")[1] : null;
-        const apiKey = await BrowserExtensionApiKey.get({ key: bearerKey });
+        // const auth = request.header("Authorization");
+        // const bearerKey = auth ? auth.split(" ")[1] : null;
+        // const apiKey = await BrowserExtensionApiKey.get({ key: bearerKey });
         const workspaces = await Workspace.where();
         response.status(200).json({
           connected: true,
@@ -34,6 +34,26 @@ function browserExtensionEndpoints(app) {
         response
           .status(500)
           .json({ connected: false, error: "Failed to fetch workspaces" });
+      }
+    }
+  );
+
+  app.post(
+    "/browser-extension/disconnect",
+    [validBrowserExtensionApiKey],
+    async (request, response) => {
+      try {
+        const auth = request.header("Authorization");
+        const bearerKey = auth ? auth.split(" ")[1] : null;
+        const { success, error } =
+          await BrowserExtensionApiKey.delete(bearerKey);
+        if (!success) throw new Error(error);
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error(error);
+        response
+          .status(500)
+          .json({ error: "Failed to disconnect and revoke API key" });
       }
     }
   );
