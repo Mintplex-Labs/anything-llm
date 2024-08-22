@@ -28,5 +28,11 @@
       "48": "icon48.png",
       "128": "icon128.png"
     }
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"]
+    }
+  ]
 }

@@ -229,6 +229,12 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "connectionUpdated") {
     ExtensionModel.checkApiKeyValidity();
+  } else if (message.action === "newApiKey") {
+    const [apiBase, apiKey] = message.apiKey.split("|");
+    chrome.storage.sync.set({ apiBase, apiKey }, () => {
+      ExtensionModel.checkApiKeyValidity();
+      chrome.action.openPopup();
+    });
   }
 });
 

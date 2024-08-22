@@ -8,6 +8,13 @@ function App() {
 
   useEffect(() => {
     checkApiKeyStatus();
+
+    // Listen for messages from the background script
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.action === "newApiKey") {
+        checkApiKeyStatus();
+      }
+    });
   }, []);
 
   const checkApiKeyStatus = async () => {
@@ -50,8 +57,8 @@ function App() {
       <img src={AnythingLLMLogo} alt="AnythingLLM Logo" className="w-40 mb-6" />
       <div className="bg-[#2C2E33] p-6 rounded-lg shadow-lg w-full max-w-md">
         <p className="text-white text-sm font-medium mb-6">
-          Select text on any webpage, right-click, and choose "Save to
-          AnythingLLM".
+          Right click on any page and send selected text or entire pages to
+          AnythingLLM.
         </p>
         <Config status={status} onStatusChange={checkApiKeyStatus} />
       </div>

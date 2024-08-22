@@ -18,8 +18,15 @@ export default function NewBrowserExtensionApiKeyModal({
     const { apiKey: newApiKey, error } =
       await BrowserExtensionApiKey.generateKey();
     if (!!newApiKey) {
-      setApiKey(`${API_BASE}|${newApiKey}`);
+      const fullApiKey = `${API_BASE}|${newApiKey}`;
+      setApiKey(fullApiKey);
       onSuccess();
+
+      // Send message to Chrome extension
+      window.postMessage(
+        { type: "NEW_BROWSER_EXTENSION_CONNECTION", apiKey: fullApiKey },
+        "*"
+      );
     }
     setError(error);
   };
@@ -69,8 +76,14 @@ export default function NewBrowserExtensionApiKeyModal({
                 />
               )}
               <p className="text-white text-xs md:text-sm">
-                Once created, the API key can be used to connect your browser
-                extension to this AnythingLLM instance.
+                Pressing "Create API key" will have AnythingLLM attempt to
+                connect to your browser extension. If you see "Connected to
+                AnythingLLM" in the extension, it means the connection was
+                successful.
+              </p>
+              <p className="text-white text-xs md:text-sm">
+                If the extension still says "Paste connection string here" copy
+                the connection string and paste into the extension.
               </p>
             </div>
           </div>

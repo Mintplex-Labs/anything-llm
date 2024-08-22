@@ -37,6 +37,11 @@ export default function BrowserExtensionApiKeyRow({
     showToast("Connection string copied to clipboard", "success", {
       clear: true,
     });
+    // Send message to Chrome extension
+    window.postMessage(
+      { type: "NEW_BROWSER_EXTENSION_CONNECTION", apiKey: connectionString },
+      "*"
+    );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
