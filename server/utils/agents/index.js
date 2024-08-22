@@ -10,7 +10,7 @@ const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 class AgentHandler {
   #invocationUUID;
   #funcsToLoad = [];
-  #noProviderModelDefault = {
+  noProviderModelDefault = {
     azure: "OPEN_MODEL_PREF",
     lmstudio: "LMSTUDIO_MODEL_PREF",
     textgenwebui: null, // does not even use `model` in API req
@@ -74,7 +74,7 @@ class AgentHandler {
     }
   }
 
-  #checkSetup() {
+  checkSetup() {
     switch (this.provider) {
       case "openai":
         if (!process.env.OPEN_AI_KEY)
@@ -163,7 +163,7 @@ class AgentHandler {
     }
   }
 
-  #providerDefault() {
+  providerDefault() {
     switch (this.provider) {
       case "openai":
         return "gpt-4o";
@@ -210,24 +210,24 @@ class AgentHandler {
    * @returns {string} the model preference value to use in API calls
    */
   #fetchModel() {
-    if (!Object.keys(this.#noProviderModelDefault).includes(this.provider))
-      return this.invocation.workspace.agentModel || this.#providerDefault();
+    if (!Object.keys(this.noProviderModelDefault).includes(this.provider))
+      return this.invocation.workspace.agentModel || this.providerDefault();
 
     // Provider has no reliable default (cant load many models) - so we need to look at system
     // for the model param.
-    const sysModelKey = this.#noProviderModelDefault[this.provider];
+    const sysModelKey = this.noProviderModelDefault[this.provider];
     if (!!sysModelKey)
-      return process.env[sysModelKey] ?? this.#providerDefault();
+      return process.env[sysModelKey] ?? this.providerDefault();
 
     // If all else fails - look at the provider default list
-    return this.#providerDefault();
+    return this.providerDefault();
   }
 
   #providerSetupAndCheck() {
     this.provider = this.invocation.workspace.agentProvider;
     this.model = this.#fetchModel();
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
-    this.#checkSetup();
+    this.checkSetup();
   }
 
   async #validInvocation() {
@@ -239,7 +239,7 @@ class AgentHandler {
     this.invocation = invocation ?? null;
   }
 
-  #parseCallOptions(args, config = {}, pluginName) {
+  parseCallOptions(args, config = {}, pluginName) {
     const callOpts = {};
     for (const [param, definition] of Object.entries(config)) {
       if (
@@ -280,7 +280,7 @@ class AgentHandler {
           continue;
         }
 
-        const callOpts = this.#parseCallOptions(
+        const callOpts = this.parseCallOptions(
           args,
           childPlugin?.startupConfig?.params,
           name
@@ -300,7 +300,7 @@ class AgentHandler {
         continue;
       }
 
-      const callOpts = this.#parseCallOptions(
+      const callOpts = this.parseCallOptions(
         args,
         AgentPlugins[name].startupConfig.params
       );

@@ -4,6 +4,11 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
+const {
+  EphemeralAgentHandler,
+  EphemeralEventListener,
+} = require("../agents/ephemeral");
+const { Telemetry } = require("../../models/telemetry");
 
 /**
  * @typedef ResponseObject
@@ -37,6 +42,59 @@ async function chatSync({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+
+  if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+    await Telemetry.sendTelemetry("agent_chat_started");
+
+    // Initialize the EphemeralAgentHandler to handle non-continuous
+    // conversations with agents since this is over REST.
+    const agentHandler = new EphemeralAgentHandler({
+      uuid,
+      workspace,
+      prompt: message,
+      userId: user?.id || null,
+      threadId: thread?.id || null,
+      sessionId,
+    });
+
+    // Establish event listener that emulates websocket calls
+    // in Aibitat so that we can keep the same interface in Aibitat
+    // but use HTTP.
+    const eventListener = new EphemeralEventListener();
+    await agentHandler.init();
+    await agentHandler.createAIbitat({ handler: eventListener });
+    agentHandler.startAgentCluster();
+
+    // The cluster has started and now we wait for close event since
+    // this is a synchronous call for an agent, so we return everything at once.
+    // After this, we conclude the call as we normally do.
+    return await eventListener
+      .waitForClose()
+      .then(async ({ thoughts, textResponse }) => {
+        await WorkspaceChats.new({
+          workspaceId: workspace.id,
+          prompt: String(message),
+          response: {
+            text: textResponse,
+            sources: [],
+            type: chatMode,
+            thoughts,
+          },
+          include: false,
+          apiSessionId: sessionId,
+        });
+        return {
+          id: uuid,
+          type: "textResponse",
+          sources: [],
+          close: true,
+          error: null,
+          textResponse,
+          thoughts,
+        };
+      });
+  }
+
   const LLMConnector = getLLMProvider({
     provider: workspace?.chatProvider,
     model: workspace?.chatModel,
@@ -257,6 +315,58 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+
+  if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+    await Telemetry.sendTelemetry("agent_chat_started");
+
+    // Initialize the EphemeralAgentHandler to handle non-continuous
+    // conversations with agents since this is over REST.
+    const agentHandler = new EphemeralAgentHandler({
+      uuid,
+      workspace,
+      prompt: message,
+      userId: user?.id || null,
+      threadId: thread?.id || null,
+      sessionId,
+    });
+
+    // Establish event listener that emulates websocket calls
+    // in Aibitat so that we can keep the same interface in Aibitat
+    // but use HTTP.
+    const eventListener = new EphemeralEventListener();
+    await agentHandler.init();
+    await agentHandler.createAIbitat({ handler: eventListener });
+    agentHandler.startAgentCluster();
+
+    // The cluster has started and now we wait for close event since
+    // and stream back any results we get from agents as they come in.
+    return eventListener
+      .streamAgentEvents(response, uuid)
+      .then(async ({ thoughts, textResponse }) => {
+        console.log({ thoughts, textResponse });
+        await WorkspaceChats.new({
+          workspaceId: workspace.id,
+          prompt: String(message),
+          response: {
+            text: textResponse,
+            sources: [],
+            type: chatMode,
+            thoughts,
+          },
+          include: false,
+          apiSessionId: sessionId,
+        });
+        writeResponseChunk(response, {
+          uuid,
+          type: "finalizeResponseStream",
+          textResponse,
+          thoughts,
+          close: true,
+          error: false,
+        });
+      });
+  }
+
   const LLMConnector = getLLMProvider({
     provider: workspace?.chatProvider,
     model: workspace?.chatModel,
