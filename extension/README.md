@@ -19,7 +19,7 @@
 
 ## Features
 
-- 🔗 Connect to your AnythingLLM instance with a simple connection string/automatic browser extension registration
+- 🔗 Connect to your AnythingLLM instance with a simple connection string or automatic browser extension registration
 - 📑 Save selected text to AnythingLLM directly from any webpage
 - 📄 Upload entire web pages to AnythingLLM for processing
 - 🗂️ Embed content into specific workspaces
@@ -73,5 +73,5 @@ Contributions are welcome! Feel free to submit a PR.
 
 ---
 
-Copyright © 2024 [Mintplex Labs][https://github.com/Mintplex-Labs]. <br />
+Copyright © 2024 [Mintplex Labs](https://github.com/Mintplex-Labs). <br />
 This project is [MIT](../LICENSE) licensed.
