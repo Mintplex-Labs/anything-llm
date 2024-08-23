@@ -58,7 +58,7 @@ export default function NewBrowserExtensionApiKeyModal({
           <button
             onClick={closeModal}
             type="button"
-            className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+            className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border border-none"
             data-modal-hide="staticModal"
           >
             <X className="text-gray-300 text-lg" />
@@ -73,7 +73,7 @@ export default function NewBrowserExtensionApiKeyModal({
                   type="text"
                   defaultValue={apiKey}
                   disabled={true}
-                  className="rounded-lg px-4 py-2 text-white bg-zinc-900 border border-gray-500/50"
+                  className="rounded-lg px-4 py-2 text-white bg-zinc-900 border border-gray-500/50 border-none"
                 />
               )}
               <p className="text-white text-xs md:text-sm">
@@ -94,13 +94,13 @@ export default function NewBrowserExtensionApiKeyModal({
                 <button
                   onClick={closeModal}
                   type="button"
-                  className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
+                  className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300 border-none"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                  className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 border-none"
                 >
                   Create API key
                 </button>
@@ -110,7 +110,7 @@ export default function NewBrowserExtensionApiKeyModal({
                 onClick={copyApiKey}
                 type="button"
                 disabled={copied}
-                className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center"
+                className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center border-none"
               >
                 {copied ? "Copied API key" : "Copy API key"}
               </button>
