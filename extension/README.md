@@ -73,5 +73,5 @@ Contributions are welcome! Feel free to submit a PR.
 
 ---
 
-Copyright © 2024 [Mintplex Labs][profile-link]. <br />
+Copyright © 2024 [Mintplex Labs][https://github.com/Mintplex-Labs]. <br />
 This project is [MIT](../LICENSE) licensed.
