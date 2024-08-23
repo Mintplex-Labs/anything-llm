@@ -2,9 +2,6 @@ const prisma = require("../utils/prisma");
 const uuidAPIKey = require("uuid-apikey");
 
 const BrowserExtensionApiKey = {
-  tablename: "browser_extension_api_keys",
-  writable: [],
-
   makeSecret: () => {
     return `brx-${uuidAPIKey.create().apiKey}`;
   },
