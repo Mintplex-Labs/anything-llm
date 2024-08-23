@@ -121,6 +121,7 @@ export default function DocumentSettings({
     await fetchKeys(true);
     setLoading(false);
     setLoadingMessage("");
+    window.location.reload()
   };
 
   const moveSelectedItemsToWorkspace = () => {
