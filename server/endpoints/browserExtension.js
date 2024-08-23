@@ -37,15 +37,14 @@ function browserExtensionEndpoints(app) {
     }
   );
 
-  app.post(
+  app.delete(
     "/browser-extension/disconnect",
     [validBrowserExtensionApiKey],
     async (request, response) => {
       try {
-        const auth = request.header("Authorization");
-        const bearerKey = auth ? auth.split(" ")[1] : null;
+        const apiKeyId = request.apiKey.id;
         const { success, error } =
-          await BrowserExtensionApiKey.delete(bearerKey);
+          await BrowserExtensionApiKey.delete(apiKeyId);
         if (!success) throw new Error(error);
         response.status(200).json({ success: true });
       } catch (error) {

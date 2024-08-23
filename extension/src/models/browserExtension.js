@@ -41,18 +41,10 @@ const BrowserExtension = {
 
   disconnect: async function (apiBase, apiKey) {
     try {
-      // Get API key ID
-      const checkResult = await this.checkApiKey(apiBase, apiKey);
-      if (checkResult.error || !checkResult.data.apiKeyId) {
-        throw new Error(checkResult.error || "Failed to get API key ID");
-      }
-      const response = await fetch(
-        `${apiBase}/browser-extension/api-keys/${checkResult.data.apiKeyId}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${apiKey}` },
-        }
-      );
+      const response = await fetch(`${apiBase}/browser-extension/disconnect`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${apiKey}` },
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
