@@ -23,7 +23,7 @@ const BrowserExtensionApiKey = {
   validate: async function (key) {
     if (!key.startsWith("brx-")) return false;
     const apiKey = await prisma.browser_extension_api_keys.findUnique({
-      where: { key },
+      where: { key: key.toString() },
     });
     return apiKey;
   },
@@ -62,19 +62,6 @@ const BrowserExtensionApiKey = {
     } catch (error) {
       console.error("FAILED TO GET BROWSER EXTENSION API KEYS.", error.message);
       return [];
-    }
-  },
-
-  accept: async function (key) {
-    try {
-      const updatedApiKey = await prisma.browser_extension_api_keys.update({
-        where: { key },
-        data: { accepted: true },
-      });
-      return { success: true, apiKey: updatedApiKey, error: null };
-    } catch (error) {
-      console.error("Failed to accept browser extension API key", error);
-      return { success: false, apiKey: null, error: error.message };
     }
   },
 };
