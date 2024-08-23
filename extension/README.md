@@ -23,7 +23,6 @@
 - 📑 Save selected text to AnythingLLM directly from any webpage
 - 📄 Upload entire web pages to AnythingLLM for processing
 - 🗂️ Embed content into specific workspaces
-- 🎨 Custom UI that matches AnythingLLM's design
 - 🔄 Automatic logo synchronization with your AnythingLLM instance
 
 ## Installation
