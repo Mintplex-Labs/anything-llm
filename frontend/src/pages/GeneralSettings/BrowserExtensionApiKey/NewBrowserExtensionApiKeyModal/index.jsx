@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
 import BrowserExtensionApiKey from "@/models/browserExtensionApiKey";
-import { fullApiUrl } from "@/utils/constants";
+import { fullApiUrl, POPUP_BROWSER_EXTENSION_EVENT } from "@/utils/constants";
 
 export default function NewBrowserExtensionApiKeyModal({
   closeModal,
@@ -22,9 +22,10 @@ export default function NewBrowserExtensionApiKeyModal({
       setApiKey(fullApiKey);
       onSuccess();
 
-      // Send message to Chrome extension
+      // Sending a message to Chrome extension to pop up the extension window
+      // This will open the extension window and attempt to connect with the new API key
       window.postMessage(
-        { type: "NEW_BROWSER_EXTENSION_CONNECTION", apiKey: fullApiKey },
+        { type: POPUP_BROWSER_EXTENSION_EVENT, apiKey: fullApiKey },
         "*"
       );
     }

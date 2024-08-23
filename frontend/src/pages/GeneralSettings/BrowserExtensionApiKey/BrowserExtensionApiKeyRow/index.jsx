@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import BrowserExtensionApiKey from "@/models/browserExtensionApiKey";
 import showToast from "@/utils/toast";
 import { Trash, Copy, Check } from "@phosphor-icons/react";
+import { POPUP_BROWSER_EXTENSION_EVENT } from "@/utils/constants";
 
 export default function BrowserExtensionApiKeyRow({
   apiKey,
@@ -37,9 +38,10 @@ export default function BrowserExtensionApiKeyRow({
     showToast("Connection string copied to clipboard", "success", {
       clear: true,
     });
-    // Send message to Chrome extension
+    // Sending a message to Chrome extension to pop up the extension window
+    // This will open the extension window and attempt to connect with the API key being copied
     window.postMessage(
-      { type: "NEW_BROWSER_EXTENSION_CONNECTION", apiKey: connectionString },
+      { type: POPUP_BROWSER_EXTENSION_EVENT, apiKey: connectionString },
       "*"
     );
     setCopied(true);
