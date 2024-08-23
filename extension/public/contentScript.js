@@ -6,3 +6,9 @@ window.addEventListener("message", (event) => {
     });
   }
 });
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "getPageContent") {
+    sendResponse({ content: document.body.innerText });
+  }
+});

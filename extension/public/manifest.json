@@ -16,7 +16,7 @@
     "notifications",
     "alarms"
   ],
-  "host_permissions": ["http://localhost:3001/"],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },

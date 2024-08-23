@@ -8,35 +8,47 @@ const ContextMenuModel = {
       contexts: ["selection"],
     });
 
-    if (workspaces && workspaces.length > 0) {
-      chrome.contextMenus.create({
-        id: "embedToWorkspace",
-        title: "Embed selected content to workspace",
-        contexts: ["selection"],
-      });
+    chrome.contextMenus.create({
+      id: "embedToWorkspace",
+      title: "Embed selected content to workspace",
+      contexts: ["selection"],
+    });
 
+    chrome.contextMenus.create({
+      id: "saveEntirePageToAnythingLLM",
+      title: "Save entire page to AnythingLLM",
+      contexts: ["page"],
+    });
+
+    chrome.contextMenus.create({
+      id: "embedEntirePageToWorkspace",
+      title: "Embed entire page to workspace",
+      contexts: ["page"],
+    });
+
+    if (workspaces && workspaces.length > 0) {
       workspaces.forEach((workspace) => {
         chrome.contextMenus.create({
-          id: `workspace-${workspace.id}`,
+          id: `workspace-selected-${workspace.id}`,
           parentId: "embedToWorkspace",
           title: workspace.name,
           contexts: ["selection"],
+        });
+        chrome.contextMenus.create({
+          id: `workspace-page-${workspace.id}`,
+          parentId: "embedEntirePageToWorkspace",
+          title: workspace.name,
+          contexts: ["page"],
         });
       });
     } else {
       chrome.contextMenus.create({
         id: "noWorkspaces",
         title: "No available workspaces",
-        contexts: ["selection"],
+        contexts: ["selection", "page"],
         enabled: false,
       });
     }
-
-    chrome.contextMenus.create({
-      id: "sendPageToAnythingLLM",
-      title: "Save entire page to AnythingLLM",
-      contexts: ["page", "selection"],
-    });
   },
 
   async remove() {
@@ -111,25 +123,7 @@ const ExtensionModel = {
       }
     );
 
-    if (response.status === 401 || response.status === 403) {
-      await chrome.storage.sync.remove(["apiBase", "apiKey"]);
-      await ContextMenuModel.remove();
-      this.showNotification(
-        "Error",
-        "Authentication failed. Please reconnect the extension."
-      );
-    } else if (!response.ok) {
-      await this.checkApiKeyValidity();
-      this.showNotification(
-        "Error",
-        "Failed to save content. Please try again."
-      );
-    } else {
-      this.showNotification(
-        "Success",
-        "Content saved to AnythingLLM successfully."
-      );
-    }
+    this.handleResponse(response, "save content");
   },
 
   async embedToWorkspace(workspaceId, selectedText, pageTitle, pageUrl) {
@@ -152,43 +146,63 @@ const ExtensionModel = {
       }),
     });
 
-    if (response.status === 401 || response.status === 403) {
-      await chrome.storage.sync.remove(["apiBase", "apiKey"]);
-      await ContextMenuModel.remove();
-      this.showNotification(
-        "Error",
-        "Authentication failed. Please reconnect the extension."
-      );
-    } else if (!response.ok) {
-      await this.checkApiKeyValidity();
-      this.showNotification(
-        "Error",
-        "Failed to embed content. Please try again."
-      );
-    } else {
-      this.showNotification(
-        "Success",
-        "Content embedded in workspace successfully."
-      );
-    }
+    this.handleResponse(response, "embed content");
   },
 
-  async sendPageToAnythingLLM(pageUrl) {
+  async saveEntirePageToAnythingLLM(pageContent, pageTitle, pageUrl) {
     const { apiBase, apiKey } = await chrome.storage.sync.get([
       "apiBase",
       "apiKey",
     ]);
     if (!apiBase || !apiKey) return;
 
-    const response = await fetch(`${apiBase}/browser-extension/upload-link`, {
+    const response = await fetch(
+      `${apiBase}/browser-extension/upload-content`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          textContent: pageContent,
+          metadata: { title: pageTitle, url: pageUrl },
+        }),
+      }
+    );
+
+    this.handleResponse(response, "save entire page");
+  },
+
+  async embedEntirePageToWorkspace(
+    workspaceId,
+    pageContent,
+    pageTitle,
+    pageUrl
+  ) {
+    const { apiBase, apiKey } = await chrome.storage.sync.get([
+      "apiBase",
+      "apiKey",
+    ]);
+    if (!apiBase || !apiKey) return;
+
+    const response = await fetch(`${apiBase}/browser-extension/embed-content`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({ link: pageUrl }),
+      body: JSON.stringify({
+        workspaceId,
+        textContent: pageContent,
+        metadata: { title: pageTitle, url: pageUrl },
+      }),
     });
 
+    this.handleResponse(response, "embed entire page");
+  },
+
+  async handleResponse(response, action) {
     if (response.status === 401 || response.status === 403) {
       await chrome.storage.sync.remove(["apiBase", "apiKey"]);
       await ContextMenuModel.remove();
@@ -198,11 +212,11 @@ const ExtensionModel = {
       );
     } else if (!response.ok) {
       await this.checkApiKeyValidity();
-      this.showNotification("Error", "Failed to send page. Please try again.");
+      this.showNotification("Error", `Failed to ${action}. Please try again.`);
     } else {
       this.showNotification(
         "Success",
-        "Page sent to AnythingLLM successfully."
+        "Successfully saved content to AnythingLLM."
       );
     }
   },
@@ -216,7 +230,7 @@ const ExtensionModel = {
     chrome.action.setTitle({ title: `${title}: ${message}` });
     setTimeout(() => {
       chrome.action.setBadgeText({ text: "" });
-      chrome.action.setTitle({ title: "AnythingLLM Browser Extension" });
+      chrome.action.setTitle({ title: "AnythingLLM Extension" });
     }, 5000);
   },
 };
@@ -238,19 +252,61 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+function getPageContent(tabId) {
+  return new Promise((resolve, reject) => {
+    chrome.tabs.sendMessage(tabId, { action: "getPageContent" }, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else if (response && response.content) {
+        resolve(response.content);
+      } else {
+        reject(new Error("Failed to get page content"));
+      }
+    });
+  });
+}
+
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "saveToAnythingLLM") {
     ExtensionModel.saveToAnythingLLM(info.selectionText, tab.title, tab.url);
-  } else if (info.menuItemId.startsWith("workspace-")) {
-    const workspaceId = info.menuItemId.split("-")[1];
+  } else if (info.menuItemId.startsWith("workspace-selected-")) {
+    const workspaceId = info.menuItemId.split("-")[2];
     ExtensionModel.embedToWorkspace(
       workspaceId,
       info.selectionText,
       tab.title,
       tab.url
     );
-  } else if (info.menuItemId === "sendPageToAnythingLLM") {
-    ExtensionModel.sendPageToAnythingLLM(tab.url);
+  } else if (info.menuItemId === "saveEntirePageToAnythingLLM") {
+    getPageContent(tab.id)
+      .then((content) => {
+        ExtensionModel.saveEntirePageToAnythingLLM(content, tab.title, tab.url);
+      })
+      .catch((error) => {
+        console.error("Error getting page content:", error);
+        ExtensionModel.showNotification(
+          "Error",
+          "Failed to get page content. Please try again."
+        );
+      });
+  } else if (info.menuItemId.startsWith("workspace-page-")) {
+    const workspaceId = info.menuItemId.split("-")[2];
+    getPageContent(tab.id)
+      .then((content) => {
+        ExtensionModel.embedEntirePageToWorkspace(
+          workspaceId,
+          content,
+          tab.title,
+          tab.url
+        );
+      })
+      .catch((error) => {
+        console.error("Error getting page content:", error);
+        ExtensionModel.showNotification(
+          "Error",
+          "Failed to get page content. Please try again."
+        );
+      });
   }
 });
 

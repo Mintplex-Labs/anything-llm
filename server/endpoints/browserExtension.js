@@ -143,40 +143,6 @@ function browserExtensionEndpoints(app) {
     }
   );
 
-  app.post(
-    "/browser-extension/upload-link",
-    [validBrowserExtensionApiKey],
-    async (request, response) => {
-      try {
-        const Collector = new CollectorApi();
-        const { link = "" } = reqBody(request);
-        const processingOnline = await Collector.online();
-
-        if (!processingOnline) {
-          response
-            .status(500)
-            .json({
-              success: false,
-              error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
-            })
-            .end();
-          return;
-        }
-
-        const { success, reason } = await Collector.processLink(link);
-        if (!success) {
-          response.status(500).json({ success: false, error: reason }).end();
-          return;
-        }
-        await Telemetry.sendTelemetry("browser_extension_link_uploaded");
-        response.status(200).json({ success: true, error: null });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
   // Internal endpoints for managing API keys
   app.get(
     "/browser-extension/api-keys",
