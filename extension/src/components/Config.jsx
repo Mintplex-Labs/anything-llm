@@ -51,15 +51,16 @@ export default function Config({ status, onStatusChange }) {
         "apiBase",
         "apiKey",
       ]);
+      if (!apiBase || !apiKey) {
+        throw new Error("No connection found");
+      }
 
-      if (apiBase && apiKey) {
-        const { success, error } = await BrowserExtension.disconnect(
-          apiBase,
-          apiKey
-        );
-        if (!success) {
-          throw new Error(error || "Failed to disconnect from the server");
-        }
+      const { success, error } = await BrowserExtension.disconnect(
+        apiBase,
+        apiKey
+      );
+      if (!success) {
+        throw new Error(error || "Failed to disconnect from the server");
       }
 
       await chrome.storage.sync.remove(["apiBase", "apiKey"]);

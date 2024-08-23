@@ -19,9 +19,9 @@ export default function BrowserExtensionApiKeyRow({
     )
       return false;
 
-    const result = await BrowserExtensionApiKey.revoke(apiKey.key);
+    const result = await BrowserExtensionApiKey.revoke(apiKey.id);
     if (result.success) {
-      removeApiKey(apiKey.key);
+      removeApiKey(apiKey.id);
       showToast("Browser Extension API Key permanently revoked", "info", {
         clear: true,
       });

@@ -36,10 +36,7 @@ const App = () => {
         return;
       }
 
-      const { response, data } = await BrowserExtension.checkApiKey(
-        apiBase,
-        apiKey
-      );
+      const { response } = await BrowserExtension.checkApiKey(apiBase, apiKey);
 
       if (response.ok) {
         setStatus("connected");

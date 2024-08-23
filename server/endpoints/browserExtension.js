@@ -22,9 +22,11 @@ function browserExtensionEndpoints(app) {
     async (request, response) => {
       try {
         const workspaces = await Workspace.where();
+        const apiKeyId = request.apiKey.id;
         response.status(200).json({
           connected: true,
           workspaces,
+          apiKeyId,
         });
       } catch (error) {
         console.error(error);
@@ -187,13 +189,13 @@ function browserExtensionEndpoints(app) {
     }
   );
 
-  app.post(
-    "/browser-extension/api-keys/revoke",
+  app.delete(
+    "/browser-extension/api-keys/:id",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { key } = reqBody(request);
-        const { success, error } = await BrowserExtensionApiKey.delete(key);
+        const { id } = request.params;
+        const { success, error } = await BrowserExtensionApiKey.delete(id);
         if (!success) throw new Error(error);
         response.status(200).json({ success: true });
       } catch (error) {

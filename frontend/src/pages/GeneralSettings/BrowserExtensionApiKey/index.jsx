@@ -32,8 +32,8 @@ export default function BrowserExtensionApiKeys() {
     setLoading(false);
   };
 
-  const removeApiKey = (key) => {
-    setApiKeys((prevKeys) => prevKeys.filter((apiKey) => apiKey.key !== key));
+  const removeApiKey = (id) => {
+    setApiKeys((prevKeys) => prevKeys.filter((apiKey) => apiKey.id !== id));
   };
 
   return (
@@ -98,7 +98,7 @@ export default function BrowserExtensionApiKeys() {
                 ) : (
                   apiKeys.map((apiKey) => (
                     <BrowserExtensionApiKeyRow
-                      key={apiKey.key}
+                      key={apiKey.id}
                       apiKey={apiKey}
                       removeApiKey={removeApiKey}
                       connectionString={`${fullApiUrl()}|${apiKey.key}`}

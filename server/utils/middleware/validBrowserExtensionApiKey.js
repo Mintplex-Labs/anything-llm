@@ -23,6 +23,7 @@ async function validBrowserExtensionApiKey(request, response, next) {
     });
     return;
   }
+  request.apiKey = apiKey;
 
   next();
 }

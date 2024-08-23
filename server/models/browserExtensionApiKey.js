@@ -43,10 +43,10 @@ const BrowserExtensionApiKey = {
     }
   },
 
-  delete: async function (key) {
+  delete: async function (id) {
     try {
       await prisma.browser_extension_api_keys.delete({
-        where: { key },
+        where: { id: parseInt(id) },
       });
       return { success: true, error: null };
     } catch (error) {

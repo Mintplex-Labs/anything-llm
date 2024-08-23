@@ -26,11 +26,10 @@ const BrowserExtensionApiKey = {
       });
   },
 
-  revoke: async (key) => {
-    return await fetch(`${API_BASE}/browser-extension/api-keys/revoke`, {
-      method: "POST",
+  revoke: async (id) => {
+    return await fetch(`${API_BASE}/browser-extension/api-keys/${id}`, {
+      method: "DELETE",
       headers: baseHeaders(),
-      body: JSON.stringify({ key }),
     })
       .then((res) => res.json())
       .catch((e) => {

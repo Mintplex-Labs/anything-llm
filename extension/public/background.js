@@ -244,7 +244,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "connectionUpdated") {
     ExtensionModel.checkApiKeyValidity();
   } else if (message.action === "newApiKey") {
-    const [apiBase, apiKey] = message.apiKey.split("|");
+    const [apiBase, apiKey] = message.connectionString.split("|");
     chrome.storage.sync.set({ apiBase, apiKey }, () => {
       ExtensionModel.checkApiKeyValidity();
       chrome.action.openPopup();
