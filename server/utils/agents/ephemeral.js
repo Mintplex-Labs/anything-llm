@@ -188,6 +188,7 @@ class EphemeralAgentHandler extends AgentHandler {
     );
 
     this.#funcsToLoad = [
+      AgentPlugins.memory.name,
       AgentPlugins.docSummarizer.name,
       AgentPlugins.webScraping.name,
       ...(await agentSkillsFromSystemSettings()),
@@ -209,6 +210,10 @@ class EphemeralAgentHandler extends AgentHandler {
       model: this.model ?? "gpt-4o",
       chats: await this.#chatHistory(20),
       handlerProps: {
+        invocation: {
+          workspace: this.#workspace,
+          workspace_id: this.#workspace.id,
+        },
         log: this.log,
       },
     });
