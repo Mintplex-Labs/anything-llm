@@ -26,6 +26,10 @@ const ACCEPTED_MIMES = {
 };
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
+  ".jpg": "./convert/asImage.js",
+  ".png": "./convert/asImage.js",
+  ".jpeg": "./convert/asImage.js",
+  ".pdf": "./convert/asImage.js",
   ".txt": "./convert/asTxt.js",
   ".md": "./convert/asTxt.js",
   ".org": "./convert/asTxt.js",
@@ -33,7 +37,8 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".rst": "./convert/asTxt.js",
 
   ".html": "./convert/asTxt.js",
-  ".pdf": "./convert/asPDF.js",
+  // FUTUREREFERENCE: using OCR for PDFs as we don't know if the content of the PDF will be in text or image
+  // ".pdf": "./convert/asPDF.js",
 
   ".docx": "./convert/asDocx.js",
   ".pptx": "./convert/asOfficeMime.js",

@@ -104,6 +104,7 @@ export default function WorkspaceFiles({ workspace }) {
     await fetchKeys(true);
     setLoading(false);
     setLoadingMessage("");
+    window.location.reload()
   };
 
   if (!workspace) return null;

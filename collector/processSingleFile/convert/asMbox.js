@@ -1,5 +1,4 @@
 const { v4 } = require("uuid");
-const fs = require("fs");
 const { mboxParser } = require("mbox-parser");
 const {
   createdDate,
@@ -8,6 +7,8 @@ const {
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const path = require("path")
+const fs = require("fs");
 
 async function asMbox({ fullFilePath = "", filename = "" }) {
   console.log(`-- Working ${filename} --`);
@@ -31,6 +32,39 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
 
   let item = 1;
   const documents = [];
+  console.log(`-- Working ${filename} --`);
+
+  const destinationDirectory = path.resolve(__dirname, "../../../server/storage/downloadFiles");
+
+  const destinationPath = path.join(destinationDirectory, filename);
+
+  // Ensure destination directory exists
+  try {
+    fs.mkdirSync(destinationDirectory, { recursive: true });
+  } catch (err) {
+    console.error("Could not create destination directory!", err);
+    return {
+      success: false,
+      reason: `Failed to create destination directory.`,
+      documents: [],
+    };
+  }
+
+  // Write the content to the new file
+  try {
+    // fs.writeFileSync(destinationPath, content, "utf8");
+    fs.copyFileSync(fullFilePath, destinationPath);
+    console.log(`[SUCCESS]: File written to ${destinationPath}`);
+  } catch (err) {
+    console.error("Could not write file!", err);
+    return {
+      success: false,
+      reason: `Failed to write file to ${destinationPath}.`,
+      documents: [],
+    };
+  }
+
+
   for (const mail of mails) {
     if (!mail.hasOwnProperty("text")) continue;
 

@@ -121,6 +121,7 @@ export default function DocumentSettings({
     await fetchKeys(true);
     setLoading(false);
     setLoadingMessage("");
+    window.location.reload()
   };
 
   const moveSelectedItemsToWorkspace = () => {
@@ -151,7 +152,7 @@ export default function DocumentSettings({
     if (systemSettings?.EmbeddingEngine === "openai") {
       const COST_PER_TOKEN =
         MODEL_COSTS[
-          systemSettings?.EmbeddingModelPref || "text-embedding-ada-002"
+        systemSettings?.EmbeddingModelPref || "text-embedding-ada-002"
         ];
 
       const dollarAmount = (totalTokenCount / 1000) * COST_PER_TOKEN;
