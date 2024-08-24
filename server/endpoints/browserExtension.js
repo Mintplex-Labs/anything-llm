@@ -166,16 +166,6 @@ function browserExtensionEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const activeKeys = await BrowserExtensionApiKey.where();
-        const MAX_ACTIVE_REGISTRATIONS = 3;
-        if (activeKeys.length >= MAX_ACTIVE_REGISTRATIONS) {
-          response.status(429).json({
-            error:
-              "Maximum number of active API keys reached. Revoke existing keys before creating new ones.",
-          });
-          return;
-        }
-
         const { apiKey, error } = await BrowserExtensionApiKey.create();
         if (error) throw new Error(error);
         response.status(200).json({
