@@ -294,11 +294,13 @@ const TRANSLATIONS = {
       },
       web: {
         title: "Búsqueda en vivo en la web y navegación",
-        "desc-start":
-          "Permitir que tu agente busque en la web para responder tus preguntas conectándose a un proveedor de búsqueda en la web (SERP).",
-        "desc-end":
-          "La búsqueda en la web durante las sesiones del agente no funcionará hasta que esto esté configurado.",
+        description: "Habilita a su agente para buscar en la web para responder a sus preguntas conectándose a un proveedor de búsqueda web (SERP). La búsqueda web durante las sesiones del agente no funcionará hasta que se configure."
       },
+      connector: {
+        title: "Conector SQL",
+        description: "Habilita a su agente para poder utilizar SQL para responder a sus preguntas conectándose a varios proveedores de bases de datos SQL.",
+        p: "Tus conexiones a la base de datos"
+      }
     },
   },
 
@@ -379,6 +381,17 @@ const TRANSLATIONS = {
     description:
       "Estas son las credenciales y configuraciones para tu proveedor preferido de chat y incrustación de LLM. Es importante que estas claves estén actualizadas y correctas, de lo contrario OssorioIA no funcionará correctamente.",
     provider: "Proveedor de LLM",
+  },
+
+  support: {
+    speech_to_text: {
+      title: "Preferencia de reconocimiento de voz",
+      description: "Aquí puedes especificar qué tipo de proveedores de reconocimiento de voz y conversión de texto a voz te gustaría usar en tu experiencia con bajajcodes. Por defecto, usamos el soporte integrado del navegador para estos servicios, pero es posible que desees usar otros."
+    },
+    text_to_speech: {
+      title: "Preferencia de conversión de texto a voz",
+      description: "Aquí puedes especificar qué tipo de proveedores de conversión de texto a voz te gustaría usar en tu experiencia con bajajcodes. Por defecto, usamos el soporte integrado del navegador para estos servicios, pero es posible que desees usar otros."
+    }
   },
 
   transcription: {
@@ -509,7 +522,11 @@ const TRANSLATIONS = {
     llm: "Selección de LLM",
     embedding: "Preferencia de incrustación",
     vector: "Base de datos de vectores",
-    anonymous: "Telemetría anónima habilitada",
+    anonymous: {
+      title: "Telemetría Anónima Habilitada",
+      eventTagsDescription: "Todos los eventos no registran la dirección IP y no contienen contenido identificable, configuraciones, chats u otra información basada en uso. Para ver la lista de etiquetas de eventos recopilados, puedes consultar en",
+      telemetryOptOutDescription: "Como un proyecto de código abierto, respetamos tu derecho a la privacidad. Estamos dedicados a construir la mejor solución para integrar IA y documentos de manera privada y segura. Si decides desactivar la telemetría, solo te pedimos que consideres enviarnos comentarios y opiniones para que podamos seguir mejorando bajajcodes para ti."
+    },
   },
 };
 

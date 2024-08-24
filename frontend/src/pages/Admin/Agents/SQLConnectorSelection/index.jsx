@@ -1,29 +1,40 @@
 import React, { useState } from "react";
 import DBConnection from "./DBConnection";
-import { Plus, Database } from "@phosphor-icons/react";
+import { Plus } from "@phosphor-icons/react";
 import NewSQLConnection from "./NewConnectionModal";
 import { useModal } from "@/hooks/useModal";
-import SQLAgentImage from "@/media/agents/sql-agent.png";
+import { useTranslation } from "react-i18next";
 
 export default function AgentSQLConnectorSelection({
+  title,
+  description,
   skill,
   settings,
   toggleSkill,
   enabled = false,
   setHasChanges,
+  image,
+  icon
 }) {
   const { isOpen, openModal, closeModal } = useModal();
   const [connections, setConnections] = useState(
     settings?.preferences?.agent_sql_connections || []
   );
+
+  const { t } = useTranslation();
   return (
     <>
       <div className="p-2">
         <div className="flex flex-col gap-y-[18px] max-w-[500px]">
           <div className="flex items-center gap-x-2">
-            <Database size={24} color="white" weight="bold" />
+            {icon &&
+              React.createElement(icon, {
+                size: 24,
+                color: "white",
+                weight: "bold",
+              })}
             <label htmlFor="name" className="text-white text-md font-bold">
-              SQL Agent
+              {title}
             </label>
             <label className="border-none relative inline-flex cursor-pointer items-center ml-auto">
               <input
@@ -37,13 +48,12 @@ export default function AgentSQLConnectorSelection({
             </label>
           </div>
           <img
-            src={SQLAgentImage}
-            alt="SQL Agent"
+            src={image}
+            alt={title}
             className="w-full rounded-md"
           />
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-            Enable your agent to be able to leverage SQL to answer you questions
-            by connecting to various SQL database providers.
+            {description}
           </p>
           {enabled && (
             <>
@@ -60,7 +70,7 @@ export default function AgentSQLConnectorSelection({
               />
               <div className="flex flex-col mt-2 gap-y-2">
                 <p className="text-white font-semibold text-sm">
-                  Your database connections
+                  {t("agent.skill.connector.p")}
                 </p>
                 <div className="flex flex-col gap-y-3">
                   {connections

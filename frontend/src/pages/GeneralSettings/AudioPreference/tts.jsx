@@ -10,6 +10,7 @@ import ElevenLabsIcon from "@/media/ttsproviders/elevenlabs.png";
 import BrowserNative from "@/components/TextToSpeech/BrowserNative";
 import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
 import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
+import { useTranslation } from "react-i18next";
 
 const PROVIDERS = [
   {
@@ -45,6 +46,7 @@ export default function TextToSpeechProvider({ settings }) {
   );
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
@@ -98,14 +100,11 @@ export default function TextToSpeechProvider({ settings }) {
         <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
           <div className="flex gap-x-4 items-center">
             <p className="text-lg leading-6 font-bold text-white">
-              Text-to-speech Preference
+              {t("support.text_to_speech.title")}
             </p>
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-            Here you can specify what kind of text-to-speech providers you would
-            want to use in your AnythingLLM experience. By default, we use the
-            browser's built in support for these services, but you may want to
-            use others.
+            {t("support.text_to_speech.description")}
           </p>
         </div>
         <div className="w-full justify-end flex">

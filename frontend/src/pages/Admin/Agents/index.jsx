@@ -19,6 +19,8 @@ export default function AdminAgents() {
   const [loading, setLoading] = useState(true);
   const [showSkillModal, setShowSkillModal] = useState(false);
   const formEl = useRef(null);
+  const skills = defaultSkills();
+  const configSkills = configurableSkills();
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {
@@ -98,8 +100,8 @@ export default function AdminAgents() {
   };
 
   const SelectedSkillComponent =
-    configurableSkills[selectedSkill]?.component ||
-    defaultSkills[selectedSkill]?.component;
+    configSkills[selectedSkill]?.component ||
+    skills[selectedSkill]?.component;
 
   if (loading) {
     return (
@@ -140,7 +142,7 @@ export default function AdminAgents() {
             {/* Default skills */}
             <SkillList
               isDefault={true}
-              skills={defaultSkills}
+              skills={skills}
               selectedSkill={selectedSkill}
               handleClick={(skill) => {
                 setSelectedSkill(skill);
@@ -149,7 +151,7 @@ export default function AdminAgents() {
             />
             {/* Configurable skills */}
             <SkillList
-              skills={configurableSkills}
+              skills={configSkills}
               selectedSkill={selectedSkill}
               handleClick={(skill) => {
                 setSelectedSkill(skill);
@@ -182,15 +184,15 @@ export default function AdminAgents() {
                   <div className="bg-[#303237] text-white rounded-xl p-4">
                     {SelectedSkillComponent ? (
                       <SelectedSkillComponent
-                        skill={configurableSkills[selectedSkill]?.skill}
+                        skill={configSkills[selectedSkill]?.skill}
                         settings={settings}
                         toggleSkill={toggleAgentSkill}
                         enabled={agentSkills.includes(
-                          configurableSkills[selectedSkill]?.skill
+                          configSkills[selectedSkill]?.skill
                         )}
                         setHasChanges={setHasChanges}
-                        {...(configurableSkills[selectedSkill] ||
-                          defaultSkills[selectedSkill])}
+                        {...(configSkills[selectedSkill] ||
+                          skills[selectedSkill])}
                       />
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full text-white/60">
@@ -236,13 +238,13 @@ export default function AdminAgents() {
           {/* Default skills list */}
           <SkillList
             isDefault={true}
-            skills={defaultSkills}
+            skills={skills}
             selectedSkill={selectedSkill}
             handleClick={setSelectedSkill}
           />
           {/* Configurable skills */}
           <SkillList
-            skills={configurableSkills}
+            skills={configSkills}
             selectedSkill={selectedSkill}
             handleClick={setSelectedSkill}
             activeSkills={agentSkills}
@@ -254,15 +256,15 @@ export default function AdminAgents() {
           <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
             {SelectedSkillComponent ? (
               <SelectedSkillComponent
-                skill={configurableSkills[selectedSkill]?.skill}
+                skill={configSkills[selectedSkill]?.skill}
                 settings={settings}
                 toggleSkill={toggleAgentSkill}
                 enabled={agentSkills.includes(
-                  configurableSkills[selectedSkill]?.skill
+                  configSkills[selectedSkill]?.skill
                 )}
                 setHasChanges={setHasChanges}
-                {...(configurableSkills[selectedSkill] ||
-                  defaultSkills[selectedSkill])}
+                {...(configSkills[selectedSkill] ||
+                  skills[selectedSkill])}
               />
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-white/60">
@@ -310,22 +312,18 @@ function SkillList({
 
   return (
     <div
-      className={`bg-white/5 text-white rounded-xl ${
-        isMobile ? "w-full" : "min-w-[360px] w-fit"
-      }`}
+      className={`bg-white/5 text-white rounded-xl ${isMobile ? "w-full" : "min-w-[360px] w-fit"
+        }`}
     >
       {Object.entries(skills).map(([skill, settings], index) => (
         <div
           key={skill}
-          className={`py-3 px-4 flex items-center justify-between ${
-            index === 0 ? "rounded-t-xl" : ""
-          } ${
-            index === Object.keys(skills).length - 1
+          className={`py-3 px-4 flex items-center justify-between ${index === 0 ? "rounded-t-xl" : ""
+            } ${index === Object.keys(skills).length - 1
               ? "rounded-b-xl"
               : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
-            selectedSkill === skill ? "bg-white/10" : ""
-          }`}
+            } cursor-pointer transition-all duration-300  hover:bg-white/5 ${selectedSkill === skill ? "bg-white/10" : ""
+            }`}
           onClick={() => handleClick?.(skill)}
         >
           <div className="text-sm font-light">{settings.title}</div>

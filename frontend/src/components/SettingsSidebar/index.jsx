@@ -57,23 +57,22 @@ export default function SettingsSidebar() {
   if (isMobile) {
     return (
       <>
-        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-sidebar text-slate-200 shadow-lg h-16">
+        <div className="fixed top-0 left-0 right-0 z-20 flex justify-between items-center px-4 py-2 bg-sidebar text-slate-200 shadow-lg h-16">
           <button
             onClick={() => setShowSidebar(true)}
             className="rounded-md p-2 flex items-center justify-center text-slate-200"
           >
             <List className="h-6 w-6" />
           </button>
-          <div className="flex items-center justify-center flex-grow">
+          <div className="flex gap-2 items-center">
             <img
               src={"/logo.jpeg"}
               alt="Logo"
               className="block mx-auto h-6 w-auto"
               style={{ maxHeight: "40px", objectFit: "contain" }}
             />
-            <div className="w-12">OssorioIA</div>
+            <h1 className="text-2xl font-medium text-white">OssorioIA</h1>
           </div>
-          <div className="w-12">OssorioIA</div>
         </div>
         <div
           style={{
@@ -102,7 +101,7 @@ export default function SettingsSidebar() {
                     className="rounded w-full max-h-[40px]"
                     style={{ objectFit: "contain" }}
                   />
-                  <div className="w-12">OssorioIA</div>
+                  <h1 className="text-2xl font-medium text-white">OssorioIA</h1>
                 </div>
                 <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
                   <a

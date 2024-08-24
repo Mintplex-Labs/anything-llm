@@ -46,9 +46,8 @@ export default function WorkspaceFileRow({
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
   return (
     <div
-      className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer ${
-        isMovedItem ? "bg-green-800/40" : "file-row"
-      }`}
+      className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer ${isMovedItem ? "bg-green-800/40" : "file-row"
+        }`}
     >
       <div
         data-tooltip-id={`directory-item-${item.url}`}
@@ -196,10 +195,9 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
       }
 
       showToast(
-        `Document ${
-          !watched
-            ? "will be watched for changes"
-            : "will no longer be watched for changes"
+        `Document ${!watched
+          ? "will be watched for changes"
+          : "will no longer be watched for changes"
         }.`,
         "success",
         { clear: true }
@@ -260,7 +258,7 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
   );
 };
 
-const DownloadFileButton = ({ item }) => {
+export const DownloadFileButton = ({ item }) => {
   const downloadFile = () => {
     const blob = new Blob([item.content], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
@@ -278,7 +276,10 @@ const DownloadFileButton = ({ item }) => {
       data-tooltip-id={`download-${item.id}`}
       data-tooltip-content="Download file"
       size={16}
-      onClick={downloadFile}
+      onClick={(e) => {
+        e.stopPropagation()
+        downloadFile()
+      }}
       className="text-base font-bold flex-shrink-0 cursor-pointer ml-2"
     />
   );

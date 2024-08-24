@@ -56,10 +56,7 @@ export default function FolderRow({
         </div>
         {Object.keys(folderColumns).map((key, index) => {
           return (
-            <div
-              key={key}
-              className="flex gap-x-[4px] items-center"
-            >
+            <div key={key} className="flex gap-x-[4px] items-center">
               <p className="whitespace-nowrap overflow-show place-self-end ml-auto">
                 {item?.metadata?.[key]}
               </p>
