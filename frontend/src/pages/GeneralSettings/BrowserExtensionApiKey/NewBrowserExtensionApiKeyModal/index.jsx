@@ -59,7 +59,6 @@ export default function NewBrowserExtensionApiKeyModal({
             onClick={closeModal}
             type="button"
             className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border border-none"
-            data-modal-hide="staticModal"
           >
             <X className="text-gray-300 text-lg" />
           </button>
