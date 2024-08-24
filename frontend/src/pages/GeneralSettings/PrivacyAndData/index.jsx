@@ -179,7 +179,7 @@ function TelemetryLogs({ settings }) {
         </div>
         <div className="flex flex-col items-left space-y-2">
           <p className="text-white/80 text-xs rounded-lg w-96">
-            {t("privacy.anonymous.description1")}{" "}
+            {t("privacy.anonymous.eventTagsDescription")}{" "}
             <a
               href="https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code"
               className="underline text-blue-400"
@@ -190,7 +190,7 @@ function TelemetryLogs({ settings }) {
             .
           </p>
           <p className="text-white/80 text-xs rounded-lg w-96">
-            {t("privacy.anonymous.description2")}{" "}
+            {t("privacy.anonymous.telemetryOptOutDescription")}{" "}
             <a
               href="mailto:team@mintplexlabs.com"
               className="underline text-blue-400"

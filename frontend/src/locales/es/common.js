@@ -524,8 +524,8 @@ const TRANSLATIONS = {
     vector: "Base de datos de vectores",
     anonymous: {
       title: "Telemetría Anónima Habilitada",
-      description1: "Todos los eventos no registran la dirección IP y no contienen contenido identificable, configuraciones, chats u otra información basada en uso. Para ver la lista de etiquetas de eventos recopilados, puedes consultar en",
-      description2: "Como un proyecto de código abierto, respetamos tu derecho a la privacidad. Estamos dedicados a construir la mejor solución para integrar IA y documentos de manera privada y segura. Si decides desactivar la telemetría, solo te pedimos que consideres enviarnos comentarios y opiniones para que podamos seguir mejorando AnythingLLM para ti."
+      eventTagsDescription: "Todos los eventos no registran la dirección IP y no contienen contenido identificable, configuraciones, chats u otra información basada en uso. Para ver la lista de etiquetas de eventos recopilados, puedes consultar en",
+      telemetryOptOutDescription: "Como un proyecto de código abierto, respetamos tu derecho a la privacidad. Estamos dedicados a construir la mejor solución para integrar IA y documentos de manera privada y segura. Si decides desactivar la telemetría, solo te pedimos que consideres enviarnos comentarios y opiniones para que podamos seguir mejorando AnythingLLM para ti."
     },
   },
 };
