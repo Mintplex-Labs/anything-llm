@@ -12,7 +12,7 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
   const DOCUMENT_INTELLIGENCE_ENDPOINT = process.env.DOCUMENT_INTELLIGENCE_ENDPOINT
   const DOCUMENT_INTELLIGENCE_KEY = process.env.DOCUMENT_INTELLIGENCE_KEY
   if (!DOCUMENT_INTELLIGENCE_ENDPOINT || !DOCUMENT_INTELLIGENCE_KEY) {
-    return { success: false, reason: "Missing env keys." };
+    return { success: false, reason: "Missing environment variables for Document Intelligence." };
   }
   try {
     const client = new DocumentAnalysisClient(
@@ -78,7 +78,7 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
       pageContent: extractedText,
       token_count_estimate: tokenizeString(extractedText).length,
     };
-
+    // TODO: REMOVE FUTUREREF COMMENTS
     // FUTUREREFERENCE: HANDLE OCR HERE FOR PDF PNG JPG JPEG AND STORE USING WRITETOSERVERDOCUMENTS FUNCTION AND USE JSON
     const document = writeToServerDocuments(
       data,
