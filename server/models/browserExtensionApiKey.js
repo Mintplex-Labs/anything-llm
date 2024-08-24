@@ -1,16 +1,18 @@
 const prisma = require("../utils/prisma");
 const uuidAPIKey = require("uuid-apikey");
+const { SystemSettings } = require("./systemSettings");
 
 const BrowserExtensionApiKey = {
   makeSecret: () => {
     return `brx-${uuidAPIKey.create().apiKey}`;
   },
 
-  create: async function () {
+  create: async function (userId = null) {
     try {
       const apiKey = await prisma.browser_extension_api_keys.create({
         data: {
           key: this.makeSecret(),
+          user_id: userId,
         },
       });
       return { apiKey, error: null };
@@ -24,8 +26,15 @@ const BrowserExtensionApiKey = {
     if (!key.startsWith("brx-")) return false;
     const apiKey = await prisma.browser_extension_api_keys.findUnique({
       where: { key: key.toString() },
+      include: { user: true },
     });
-    return apiKey;
+    if (!apiKey) return false;
+
+    const multiUserMode = await SystemSettings.isMultiUserMode();
+    if (!multiUserMode) return apiKey; // In single-user mode, all keys are valid
+
+    // In multi-user mode, check if the key is associated with a user
+    return apiKey.user_id ? apiKey : false;
   },
 
   get: async function (clause = {}) {
@@ -57,11 +66,28 @@ const BrowserExtensionApiKey = {
       const apiKeys = await prisma.browser_extension_api_keys.findMany({
         where: clause,
         take: limit,
+        include: { user: true },
       });
       return apiKeys;
     } catch (error) {
       console.error("FAILED TO GET BROWSER EXTENSION API KEYS.", error.message);
       return [];
+    }
+  },
+
+  migrateApiKeysToMultiUser: async function (userId) {
+    try {
+      await prisma.browser_extension_api_keys.updateMany({
+        where: {
+          user_id: null,
+        },
+        data: {
+          user_id: userId,
+        },
+      });
+      console.log("Successfully migrated API keys to multi-user mode");
+    } catch (error) {
+      console.error("Error migrating API keys to multi-user mode:", error);
     }
   },
 };
