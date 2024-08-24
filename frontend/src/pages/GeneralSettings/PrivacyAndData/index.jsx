@@ -181,7 +181,7 @@ function TelemetryLogs({ settings }) {
           <p className="text-white/80 text-xs rounded-lg w-96">
             {t("privacy.anonymous.eventTagsDescription")}{" "}
             <a
-              href="https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code"
+              href="https://github.com/bajajcodes"
               className="underline text-blue-400"
               target="_blank"
             >
@@ -196,7 +196,7 @@ function TelemetryLogs({ settings }) {
               className="underline text-blue-400"
               target="_blank"
             >
-              team@mintplexlabs.com
+              bajajcodes
             </a>
             .
           </p>

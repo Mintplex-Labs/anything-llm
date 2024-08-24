@@ -386,11 +386,11 @@ const TRANSLATIONS = {
   support: {
     speech_to_text: {
       title: "Preferencia de reconocimiento de voz",
-      description: "Aquí puedes especificar qué tipo de proveedores de reconocimiento de voz y conversión de texto a voz te gustaría usar en tu experiencia con AnythingLLM. Por defecto, usamos el soporte integrado del navegador para estos servicios, pero es posible que desees usar otros."
+      description: "Aquí puedes especificar qué tipo de proveedores de reconocimiento de voz y conversión de texto a voz te gustaría usar en tu experiencia con bajajcodes. Por defecto, usamos el soporte integrado del navegador para estos servicios, pero es posible que desees usar otros."
     },
     text_to_speech: {
       title: "Preferencia de conversión de texto a voz",
-      description: "Aquí puedes especificar qué tipo de proveedores de conversión de texto a voz te gustaría usar en tu experiencia con AnythingLLM. Por defecto, usamos el soporte integrado del navegador para estos servicios, pero es posible que desees usar otros."
+      description: "Aquí puedes especificar qué tipo de proveedores de conversión de texto a voz te gustaría usar en tu experiencia con bajajcodes. Por defecto, usamos el soporte integrado del navegador para estos servicios, pero es posible que desees usar otros."
     }
   },
 
@@ -525,7 +525,7 @@ const TRANSLATIONS = {
     anonymous: {
       title: "Telemetría Anónima Habilitada",
       eventTagsDescription: "Todos los eventos no registran la dirección IP y no contienen contenido identificable, configuraciones, chats u otra información basada en uso. Para ver la lista de etiquetas de eventos recopilados, puedes consultar en",
-      telemetryOptOutDescription: "Como un proyecto de código abierto, respetamos tu derecho a la privacidad. Estamos dedicados a construir la mejor solución para integrar IA y documentos de manera privada y segura. Si decides desactivar la telemetría, solo te pedimos que consideres enviarnos comentarios y opiniones para que podamos seguir mejorando AnythingLLM para ti."
+      telemetryOptOutDescription: "Como un proyecto de código abierto, respetamos tu derecho a la privacidad. Estamos dedicados a construir la mejor solución para integrar IA y documentos de manera privada y segura. Si decides desactivar la telemetría, solo te pedimos que consideres enviarnos comentarios y opiniones para que podamos seguir mejorando bajajcodes para ti."
     },
   },
 };

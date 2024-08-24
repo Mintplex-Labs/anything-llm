@@ -392,11 +392,11 @@ const TRANSLATIONS = {
   support: {
     speech_to_text: {
       title: "Speech-to-text Preference",
-      description: "Here you can specify what kind of text-to-speech and speech-to-text providers you would want to use in your AnythingLLM experience. By default, we use the browser's built in support for these services, but you may want to use others."
+      description: "Here you can specify what kind of text-to-speech and speech-to-text providers you would want to use in your bajajcodes experience. By default, we use the browser's built in support for these services, but you may want to use others."
     },
     text_to_speech: {
       title: "Text-to-speech Preference",
-      description: "Here you can specify what kind of text-to-speech providers you would want to use in your AnythingLLM experience. By default, we use the browser's built in support for these services, but you may want to use others."
+      description: "Here you can specify what kind of text-to-speech providers you would want to use in your bajajcodes experience. By default, we use the browser's built in support for these services, but you may want to use others."
     }
   },
 
@@ -535,7 +535,7 @@ const TRANSLATIONS = {
     anonymous: {
       title: "Anonymous Telemetry Enabled",
       eventTagsDescription: "All events do not record IP-address and contain no identifying content, settings, chats, or other non-usage based information. To see the list of event tags collected you can look on",
-      telemetryOptOutDescription: "As an open-source project we respect your right to privacy. We are dedicated to building the best solution for integrating AI and documents privately and securely. If you do decide to turn off telemetry all we ask is to consider sending us feedback and thoughts so that we can continue to improve AnythingLLM for you."
+      telemetryOptOutDescription: "As an open-source project we respect your right to privacy. We are dedicated to building the best solution for integrating AI and documents privately and securely. If you do decide to turn off telemetry all we ask is to consider sending us feedback and thoughts so that we can continue to improve bajajcodes for you."
     },
   },
 };
