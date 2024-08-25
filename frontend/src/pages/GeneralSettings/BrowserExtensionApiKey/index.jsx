@@ -125,6 +125,7 @@ export default function BrowserExtensionApiKeys() {
         <NewBrowserExtensionApiKeyModal
           closeModal={closeModal}
           onSuccess={fetchExistingKeys}
+          isMultiUser={isMultiUser}
         />
       </ModalWrapper>
     </div>

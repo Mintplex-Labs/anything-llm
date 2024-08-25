@@ -6,6 +6,7 @@ import { fullApiUrl, POPUP_BROWSER_EXTENSION_EVENT } from "@/utils/constants";
 export default function NewBrowserExtensionApiKeyModal({
   closeModal,
   onSuccess,
+  isMultiUser,
 }) {
   const [apiKey, setApiKey] = useState(null);
   const [error, setError] = useState(null);
@@ -22,8 +23,6 @@ export default function NewBrowserExtensionApiKeyModal({
       setApiKey(fullApiKey);
       onSuccess();
 
-      // Sending a message to Chrome extension to pop up the extension window
-      // This will open the extension window and attempt to connect with the new API key
       window.postMessage(
         { type: POPUP_BROWSER_EXTENSION_EVENT, apiKey: fullApiKey },
         "*"
@@ -53,7 +52,7 @@ export default function NewBrowserExtensionApiKeyModal({
       <div className="relative bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
           <h3 className="text-xl font-semibold text-white">
-            New Browser Extension API key
+            New Browser Extension API Key
           </h3>
           <button
             onClick={closeModal}
@@ -75,15 +74,21 @@ export default function NewBrowserExtensionApiKeyModal({
                   className="rounded-lg px-4 py-2 text-white bg-zinc-900 border border-gray-500/50 border-none"
                 />
               )}
+              {isMultiUser && (
+                <p className="text-yellow-300 text-xs md:text-sm font-semibold">
+                  Warning: You are in multi-user mode, this API key will allow
+                  access to all workspaces associated with your account. Please
+                  share it cautiously.
+                </p>
+              )}
               <p className="text-white text-xs md:text-sm">
-                Pressing "Create API key" will have AnythingLLM attempt to
-                connect to your browser extension. If you see "Connected to
-                AnythingLLM" in the extension, it means the connection was
-                successful.
+                After clicking "Create API Key", AnythingLLM will attempt to
+                connect to your browser extension automatically.
               </p>
               <p className="text-white text-xs md:text-sm">
-                If the extension still says "Paste connection string here" copy
-                the connection string and paste into the extension.
+                If you see "Connected to AnythingLLM" in the extension, the
+                connection was successful. If not, please copy the connection
+                string and paste it into the extension manually.
               </p>
             </div>
           </div>
@@ -101,7 +106,7 @@ export default function NewBrowserExtensionApiKeyModal({
                   type="submit"
                   className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 border-none"
                 >
-                  Create API key
+                  Create API Key
                 </button>
               </>
             ) : (
@@ -111,7 +116,7 @@ export default function NewBrowserExtensionApiKeyModal({
                 disabled={copied}
                 className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center border-none cursor-pointer"
               >
-                {copied ? "Copied API key" : "Copy API key"}
+                {copied ? "API Key Copied!" : "Copy API Key"}
               </button>
             )}
           </div>

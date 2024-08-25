@@ -2,31 +2,31 @@ const ContextMenuModel = {
   async create(workspaces) {
     await chrome.contextMenus.removeAll();
 
-    chrome.contextMenus.create({
-      id: "saveToAnythingLLM",
-      title: "Save selected to AnythingLLM",
-      contexts: ["selection"],
-    });
-
-    chrome.contextMenus.create({
-      id: "embedToWorkspace",
-      title: "Embed selected content to workspace",
-      contexts: ["selection"],
-    });
-
-    chrome.contextMenus.create({
-      id: "saveEntirePageToAnythingLLM",
-      title: "Save entire page to AnythingLLM",
-      contexts: ["page"],
-    });
-
-    chrome.contextMenus.create({
-      id: "embedEntirePageToWorkspace",
-      title: "Embed entire page to workspace",
-      contexts: ["page"],
-    });
-
     if (workspaces && workspaces.length > 0) {
+      chrome.contextMenus.create({
+        id: "saveToAnythingLLM",
+        title: "Save selected to AnythingLLM",
+        contexts: ["selection"],
+      });
+
+      chrome.contextMenus.create({
+        id: "embedToWorkspace",
+        title: "Embed selected content to workspace",
+        contexts: ["selection"],
+      });
+
+      chrome.contextMenus.create({
+        id: "saveEntirePageToAnythingLLM",
+        title: "Save entire page to AnythingLLM",
+        contexts: ["page"],
+      });
+
+      chrome.contextMenus.create({
+        id: "embedEntirePageToWorkspace",
+        title: "Embed entire page to workspace",
+        contexts: ["page"],
+      });
+
       workspaces.forEach((workspace) => {
         chrome.contextMenus.create({
           id: `workspace-selected-${workspace.id}`,
