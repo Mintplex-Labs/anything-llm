@@ -17,6 +17,7 @@ export default function BrowserExtensionApiKeys() {
   const [apiKeys, setApiKeys] = useState([]);
   const [error, setError] = useState(null);
   const { isOpen, openModal, closeModal } = useModal();
+  const [isMultiUser, setIsMultiUser] = useState(false);
 
   useEffect(() => {
     fetchExistingKeys();
@@ -26,6 +27,7 @@ export default function BrowserExtensionApiKeys() {
     const result = await BrowserExtensionApiKey.getAll();
     if (result.success) {
       setApiKeys(result.apiKeys);
+      setIsMultiUser(result.apiKeys.some((key) => key.user !== null));
     } else {
       setError(result.error || "Failed to fetch API keys");
     }
@@ -80,6 +82,11 @@ export default function BrowserExtensionApiKeys() {
                   <th scope="col" className="px-6 py-3 rounded-tl-lg">
                     Extension Connection String
                   </th>
+                  {isMultiUser && (
+                    <th scope="col" className="px-6 py-3">
+                      Created By
+                    </th>
+                  )}
                   <th scope="col" className="px-6 py-3">
                     Created At
                   </th>
@@ -91,7 +98,10 @@ export default function BrowserExtensionApiKeys() {
               <tbody>
                 {apiKeys.length === 0 ? (
                   <tr className="bg-transparent text-white text-opacity-80 text-sm font-medium">
-                    <td colSpan="3" className="px-6 py-4 text-center">
+                    <td
+                      colSpan={isMultiUser ? "4" : "3"}
+                      className="px-6 py-4 text-center"
+                    >
                       No API keys found
                     </td>
                   </tr>
@@ -102,6 +112,7 @@ export default function BrowserExtensionApiKeys() {
                       apiKey={apiKey}
                       removeApiKey={removeApiKey}
                       connectionString={`${fullApiUrl()}|${apiKey.key}`}
+                      isMultiUser={isMultiUser}
                     />
                   ))
                 )}

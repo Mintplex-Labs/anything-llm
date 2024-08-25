@@ -8,6 +8,7 @@ export default function BrowserExtensionApiKeyRow({
   apiKey,
   removeApiKey,
   connectionString,
+  isMultiUser,
 }) {
   const rowRef = useRef(null);
   const [copied, setCopied] = useState(false);
@@ -82,7 +83,14 @@ export default function BrowserExtensionApiKeyRow({
           </button>
         </div>
       </td>
-      <td className="px-6 py-4">{apiKey.createdAt}</td>
+      {isMultiUser && (
+        <td className="px-6 py-4">
+          {apiKey.user ? apiKey.user.username : "N/A"}
+        </td>
+      )}
+      <td className="px-6 py-4">
+        {new Date(apiKey.createdAt).toLocaleString()}
+      </td>
       <td className="px-6 py-4">
         <button
           onClick={handleRevoke}

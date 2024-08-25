@@ -163,7 +163,7 @@ function browserExtensionEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const apiKeys = (await multiUserMode(response))
+        const apiKeys = multiUserMode(response)
           ? await BrowserExtensionApiKey.whereWithUser(user)
           : await BrowserExtensionApiKey.where();
 
@@ -183,8 +183,7 @@ function browserExtensionEndpoints(app) {
     async (request, response) => {
       try {
         const user = response.locals.user;
-        const multiUserMode = multiUserMode(response);
-        const userId = multiUserMode ? user.id : null;
+        const userId = multiUserMode(response) ? user.id : null;
 
         const { apiKey, error } = await BrowserExtensionApiKey.create(userId);
         if (error) throw new Error(error);
@@ -205,9 +204,8 @@ function browserExtensionEndpoints(app) {
       try {
         const { id } = request.params;
         const user = response.locals.user;
-        const multiUserMode = multiUserMode(response);
 
-        if (multiUserMode && user.role !== ROLES.admin) {
+        if (multiUserMode(response) && user.role !== ROLES.admin) {
           const apiKey = await BrowserExtensionApiKey.get({
             id: parseInt(id),
             user_id: user.id,
