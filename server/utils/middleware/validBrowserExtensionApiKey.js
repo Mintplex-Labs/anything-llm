@@ -2,6 +2,7 @@ const {
   BrowserExtensionApiKey,
 } = require("../../models/browserExtensionApiKey");
 const { SystemSettings } = require("../../models/systemSettings");
+const { User } = require("../../models/user");
 
 async function validBrowserExtensionApiKey(request, response, next) {
   const multiUserMode = await SystemSettings.isMultiUserMode();
@@ -23,6 +24,11 @@ async function validBrowserExtensionApiKey(request, response, next) {
     });
     return;
   }
+
+  if (multiUserMode) {
+    response.locals.user = await User.get({ id: apiKey.user_id });
+  }
+
   request.apiKey = apiKey;
 
   next();

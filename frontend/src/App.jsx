@@ -162,7 +162,7 @@ export default function App() {
                 />
                 <Route
                   path="/settings/browser-extension"
-                  element={<AdminRoute Component={GeneralBrowserExtension} />}
+                  element={<ManagerRoute Component={GeneralBrowserExtension} />}
                 />
                 <Route
                   path="/settings/workspace-chats"

@@ -5,14 +5,13 @@ const {
   validBrowserExtensionApiKey,
 } = require("../utils/middleware/validBrowserExtensionApiKey");
 const { CollectorApi } = require("../utils/collectorApi");
-const { reqBody } = require("../utils/http");
+const { reqBody, multiUserMode, userFromSession } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { Telemetry } = require("../models/telemetry");
-const { SystemSettings } = require("../models/systemSettings");
 
 function browserExtensionEndpoints(app) {
   if (!app) return;
@@ -22,19 +21,11 @@ function browserExtensionEndpoints(app) {
     [validBrowserExtensionApiKey],
     async (request, response) => {
       try {
-        const multiUserMode = await SystemSettings.isMultiUserMode();
-        let workspaces;
+        const user = await userFromSession(request, response);
 
-        if (multiUserMode) {
-          if (!request.apiKey.user_id) {
-            return response.status(403).json({ error: "Unauthorized" });
-          }
-          workspaces = await Workspace.where({
-            user_id: request.apiKey.user_id,
-          });
-        } else {
-          workspaces = await Workspace.where();
-        }
+        const workspaces = multiUserMode(response)
+          ? await Workspace.whereWithUser(user)
+          : await Workspace.where();
 
         const apiKeyId = request.apiKey.id;
         response.status(200).json({
@@ -75,7 +66,12 @@ function browserExtensionEndpoints(app) {
     [validBrowserExtensionApiKey],
     async (request, response) => {
       try {
-        const workspaces = await Workspace.where();
+        const user = await userFromSession(request, response);
+
+        const workspaces = multiUserMode(response)
+          ? await Workspace.whereWithUser(user)
+          : await Workspace.where();
+
         response.status(200).json({ workspaces });
       } catch (error) {
         console.error(error);
@@ -89,6 +85,7 @@ function browserExtensionEndpoints(app) {
     [validBrowserExtensionApiKey],
     async (request, response) => {
       try {
+        const user = await userFromSession(request, response);
         const { workspaceId, textContent, metadata } = reqBody(request);
         const workspace = await Workspace.get({ id: parseInt(workspaceId) });
         if (!workspace) {
@@ -109,7 +106,8 @@ function browserExtensionEndpoints(app) {
 
         const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
           workspace,
-          [documents[0].location]
+          [documents[0].location],
+          user?.id
         );
 
         if (failedToEmbed.length > 0) {
@@ -139,7 +137,7 @@ function browserExtensionEndpoints(app) {
         }
 
         const Collector = new CollectorApi();
-        const { success, reason, documents } = await Collector.processRawText(
+        const { success, reason } = await Collector.processRawText(
           textContent,
           metadata
         );
@@ -164,19 +162,10 @@ function browserExtensionEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const user = response.locals.user;
-        const multiUserMode = await SystemSettings.isMultiUserMode();
-        let apiKeys;
-
-        if (multiUserMode) {
-          if (user.role === ROLES.admin) {
-            apiKeys = await BrowserExtensionApiKey.where();
-          } else {
-            apiKeys = await BrowserExtensionApiKey.where({ user_id: user.id });
-          }
-        } else {
-          apiKeys = await BrowserExtensionApiKey.where();
-        }
+        const user = await userFromSession(request, response);
+        const apiKeys = (await multiUserMode(response))
+          ? await BrowserExtensionApiKey.whereWithUser(user)
+          : await BrowserExtensionApiKey.where();
 
         response.status(200).json({ success: true, apiKeys });
       } catch (error) {
@@ -194,7 +183,7 @@ function browserExtensionEndpoints(app) {
     async (request, response) => {
       try {
         const user = response.locals.user;
-        const multiUserMode = await SystemSettings.isMultiUserMode();
+        const multiUserMode = multiUserMode(response);
         const userId = multiUserMode ? user.id : null;
 
         const { apiKey, error } = await BrowserExtensionApiKey.create(userId);
@@ -216,7 +205,7 @@ function browserExtensionEndpoints(app) {
       try {
         const { id } = request.params;
         const user = response.locals.user;
-        const multiUserMode = await SystemSettings.isMultiUserMode();
+        const multiUserMode = multiUserMode(response);
 
         if (multiUserMode && user.role !== ROLES.admin) {
           const apiKey = await BrowserExtensionApiKey.get({

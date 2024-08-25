@@ -1,6 +1,7 @@
 const prisma = require("../utils/prisma");
 const uuidAPIKey = require("uuid-apikey");
 const { SystemSettings } = require("./systemSettings");
+const { ROLES } = require("../utils/middleware/multiUserProtected");
 
 const BrowserExtensionApiKey = {
   makeSecret: () => {
@@ -61,16 +62,43 @@ const BrowserExtensionApiKey = {
     }
   },
 
-  where: async function (clause = {}, limit) {
+  where: async function (clause = {}, limit = null, orderBy = null) {
     try {
       const apiKeys = await prisma.browser_extension_api_keys.findMany({
         where: clause,
-        take: limit,
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
         include: { user: true },
       });
       return apiKeys;
     } catch (error) {
       console.error("FAILED TO GET BROWSER EXTENSION API KEYS.", error.message);
+      return [];
+    }
+  },
+
+  whereWithUser: async function (
+    user,
+    clause = {},
+    limit = null,
+    orderBy = null
+  ) {
+    if ([ROLES.admin].includes(user.role))
+      return await this.where(clause, limit, orderBy);
+
+    try {
+      const apiKeys = await prisma.browser_extension_api_keys.findMany({
+        where: {
+          ...clause,
+          user_id: user.id,
+        },
+        include: { user: true },
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
+      });
+      return apiKeys;
+    } catch (error) {
+      console.error(error.message);
       return [];
     }
   },

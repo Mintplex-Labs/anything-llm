@@ -49,7 +49,7 @@ export default function BrowserExtensionApiKeyRow({
       { type: POPUP_BROWSER_EXTENSION_EVENT, apiKey: connectionString },
       "*"
     );
-    showToast("Attempting to connect to browser extension", "info", {
+    showToast("Attempting to connect to browser extension...", "info", {
       clear: true,
     });
   };
