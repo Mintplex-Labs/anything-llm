@@ -496,7 +496,6 @@ function systemEndpoints(app) {
           limit_user_messages: false,
           message_limit: 25,
         });
-
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
 
         await updateENV(

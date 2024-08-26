@@ -29,8 +29,7 @@ async function validBrowserExtensionApiKey(request, response, next) {
     response.locals.user = await User.get({ id: apiKey.user_id });
   }
 
-  request.apiKey = apiKey;
-
+  response.locals.apiKey = apiKey;
   next();
 }
 

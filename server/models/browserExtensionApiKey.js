@@ -1,13 +1,22 @@
 const prisma = require("../utils/prisma");
-const uuidAPIKey = require("uuid-apikey");
 const { SystemSettings } = require("./systemSettings");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
 
 const BrowserExtensionApiKey = {
+  /**
+   * Creates a new secret for a browser extension API key.
+   * @returns {string} brx-*** API key to use with extension
+   */
   makeSecret: () => {
+    const uuidAPIKey = require("uuid-apikey");
     return `brx-${uuidAPIKey.create().apiKey}`;
   },
 
+  /**
+   * Creates a new api key for the browser Extension
+   * @param {number|null} userId - User id to associate creation of key with.
+   * @returns {Promise<{apiKey: import("@prisma/client").browser_extension_api_keys|null, error:string|null}>}
+   */
   create: async function (userId = null) {
     try {
       const apiKey = await prisma.browser_extension_api_keys.create({
@@ -23,6 +32,11 @@ const BrowserExtensionApiKey = {
     }
   },
 
+  /**
+   * Validated existing API key
+   * @param {string} key
+   * @returns {Promise<{apiKey: import("@prisma/client").browser_extension_api_keys|boolean}>}
+   */
   validate: async function (key) {
     if (!key.startsWith("brx-")) return false;
     const apiKey = await prisma.browser_extension_api_keys.findUnique({
@@ -38,6 +52,11 @@ const BrowserExtensionApiKey = {
     return apiKey.user_id ? apiKey : false;
   },
 
+  /**
+   * Fetches browser api key by params.
+   * @param {object} clause - Prisma props for search
+   * @returns {Promise<{apiKey: import("@prisma/client").browser_extension_api_keys|boolean}>}
+   */
   get: async function (clause = {}) {
     try {
       const apiKey = await prisma.browser_extension_api_keys.findFirst({
@@ -50,6 +69,11 @@ const BrowserExtensionApiKey = {
     }
   },
 
+  /**
+   * Deletes browser api key by db id.
+   * @param {number} id - database id of browser key
+   * @returns {Promise<{success: boolean, error:string|null}>}
+   */
   delete: async function (id) {
     try {
       await prisma.browser_extension_api_keys.delete({
@@ -62,6 +86,13 @@ const BrowserExtensionApiKey = {
     }
   },
 
+  /**
+   * Gets browser keys by params
+   * @param {object} clause 
+   * @param {number|null} limit 
+   * @param {object|null} orderBy 
+   * @returns {Promise<import("@prisma/client").browser_extension_api_keys[]>}
+   */
   where: async function (clause = {}, limit = null, orderBy = null) {
     try {
       const apiKeys = await prisma.browser_extension_api_keys.findMany({
@@ -77,12 +108,21 @@ const BrowserExtensionApiKey = {
     }
   },
 
+  /**
+   * Get browser API keys for user
+   * @param {import("@prisma/client").users} user
+   * @param {object} clause 
+   * @param {number|null} limit 
+   * @param {object|null} orderBy 
+   * @returns {Promise<import("@prisma/client").browser_extension_api_keys[]>}
+   */
   whereWithUser: async function (
     user,
     clause = {},
     limit = null,
     orderBy = null
   ) {
+    // Admin can view and use any keys
     if ([ROLES.admin].includes(user.role))
       return await this.where(clause, limit, orderBy);
 
@@ -103,6 +143,11 @@ const BrowserExtensionApiKey = {
     }
   },
 
+  /**
+   * Updates owner of all DB ids to new admin.
+   * @param {number} userId
+   * @returns {Promise<void>}
+   */
   migrateApiKeysToMultiUser: async function (userId) {
     try {
       await prisma.browser_extension_api_keys.updateMany({

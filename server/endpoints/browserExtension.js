@@ -22,12 +22,11 @@ function browserExtensionEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-
         const workspaces = multiUserMode(response)
           ? await Workspace.whereWithUser(user)
           : await Workspace.where();
 
-        const apiKeyId = request.apiKey.id;
+        const apiKeyId = response.locals.apiKey.id;
         response.status(200).json({
           connected: true,
           workspaces,
@@ -45,9 +44,9 @@ function browserExtensionEndpoints(app) {
   app.delete(
     "/browser-extension/disconnect",
     [validBrowserExtensionApiKey],
-    async (request, response) => {
+    async (_request, response) => {
       try {
-        const apiKeyId = request.apiKey.id;
+        const apiKeyId = response.locals.apiKey.id;
         const { success, error } =
           await BrowserExtensionApiKey.delete(apiKeyId);
         if (!success) throw new Error(error);
@@ -67,7 +66,6 @@ function browserExtensionEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-
         const workspaces = multiUserMode(response)
           ? await Workspace.whereWithUser(user)
           : await Workspace.where();
@@ -85,9 +83,12 @@ function browserExtensionEndpoints(app) {
     [validBrowserExtensionApiKey],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
         const { workspaceId, textContent, metadata } = reqBody(request);
-        const workspace = await Workspace.get({ id: parseInt(workspaceId) });
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { id: parseInt(workspaceId) })
+          : await Workspace.get({ id: parseInt(workspaceId) });
+
         if (!workspace) {
           response.status(404).json({ error: "Workspace not found" });
           return;
@@ -129,13 +130,7 @@ function browserExtensionEndpoints(app) {
     [validBrowserExtensionApiKey],
     async (request, response) => {
       try {
-        const { workspaceId, textContent, metadata } = reqBody(request);
-        const workspace = await Workspace.get({ id: workspaceId });
-        if (!workspace) {
-          response.status(404).json({ error: "Workspace not found" });
-          return;
-        }
-
+        const { textContent, metadata } = reqBody(request);
         const Collector = new CollectorApi();
         const { success, reason } = await Collector.processRawText(
           textContent,
@@ -182,10 +177,10 @@ function browserExtensionEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const user = response.locals.user;
-        const userId = multiUserMode(response) ? user.id : null;
-
-        const { apiKey, error } = await BrowserExtensionApiKey.create(userId);
+        const user = await userFromSession(request, response);
+        const { apiKey, error } = await BrowserExtensionApiKey.create(
+          user?.id || null
+        );
         if (error) throw new Error(error);
         response.status(200).json({
           apiKey: apiKey.key,
@@ -203,12 +198,12 @@ function browserExtensionEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
-        const user = response.locals.user;
+        const user = await userFromSession(request, response);
 
         if (multiUserMode(response) && user.role !== ROLES.admin) {
           const apiKey = await BrowserExtensionApiKey.get({
             id: parseInt(id),
-            user_id: user.id,
+            user_id: user?.id,
           });
           if (!apiKey) {
             return response.status(403).json({ error: "Unauthorized" });
