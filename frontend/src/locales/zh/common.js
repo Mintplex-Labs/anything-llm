@@ -115,7 +115,7 @@ const TRANSLATIONS = {
       add: "添加新消息",
       save: "保存消息",
       heading: "向我解释",
-      body: "AnythingLLM的好处",
+      body: "AnythingLLM 的好处",
     },
     pfp: {
       title: "助理头像",
@@ -186,7 +186,7 @@ const TRANSLATIONS = {
       "desc-start": "此设置控制您的 LLM 回答的“创意”程度",
       "desc-end":
         "数字越高越有创意。对于某些模型，如果设置得太高，可能会导致响应不一致。",
-      hint: "大多数法学硕士都有各种可接受的有效值范围。请咨询您的法学硕士提供商以获取该信息。",
+      hint: "大多数 LLM 都有各种可接受的有效值范围。请咨询您的吗 LLM 提供商以获取该信息。",
     },
   },
 
