@@ -22,4 +22,3 @@ yarn-error.log
 
 # Local SSL Certs for HTTPS
 sslcert
-storage/downloadFiles

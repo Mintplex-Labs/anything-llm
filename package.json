@@ -27,5 +27,8 @@
     "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
     "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs"
   },
-  "private": false
+  "private": false,
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.637.0"
+  }
 }
