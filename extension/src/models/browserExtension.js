@@ -3,19 +3,26 @@ const BrowserExtension = {
     return await fetch(`${apiBase}/browser-extension/check`, {
       headers: { Authorization: `Bearer ${apiKey}` },
     })
-      .then(async (res) => ({ response: res, data: await res.json() }))
+      .then((res) => {
+        if (!res.ok) throw new Error("Bad response to /check");
+        return res.json();
+      })
+      .then((data) => ({ response: { ok: true }, data, error: null }))
       .catch((e) => {
         console.error(e);
-        return { error: e.message };
+        return { response: { ok: false }, data: null, error: e.message };
       });
   },
 
   checkOnline: async function (apiBase) {
     return await fetch(`${apiBase}/ping`)
-      .then(async (res) => ({ online: res.ok, data: await res.json() }))
+      .then((res) => {
+        if (!res.ok) throw new Error("Bad response to /ping");
+        return res.json();
+      })
+      .then((data) => ({ online: true, data, error: null }))
       .catch((e) => {
-        console.error(e);
-        return { online: false, error: e.message };
+        return { online: false, data: null, error: e.message };
       });
   },
 
@@ -29,29 +36,29 @@ const BrowserExtension = {
       if (response.ok && response.status !== 204) {
         const blob = await response.blob();
         const logoURL = URL.createObjectURL(blob);
-        return { success: true, logoURL };
+        return { success: true, error: null, logoURL };
       } else {
-        return { success: false, error: "Logo not available" };
+        return { success: false, error: "Logo not available", logoURL: null };
       }
     } catch (error) {
       console.error("Error fetching logo:", error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message, logoURL: null };
     }
   },
 
   disconnect: async function (apiBase, apiKey) {
     try {
-      const response = await fetch(`${apiBase}/browser-extension/disconnect`, {
+      await fetch(`${apiBase}/browser-extension/disconnect`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${apiKey}` },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to disconnect");
-      }
-
-      return { success: true };
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (!!data.error)
+            throw new Error(errorData.error || "Failed to disconnect");
+          return;
+        });
+      return { success: true, error: null };
     } catch (error) {
       console.error("Disconnect error:", error);
       return { success: false, error: error.message };

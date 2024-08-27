@@ -6,7 +6,7 @@
     "dev": "nodemon --watch src --watch public -e js,jsx,css,html --exec \"yarn dev:build\"",
     "dev:build": "vite build && cp public/background.js dist/",
     "build": "vite build && cp public/background.js dist/",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./src",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -18,12 +18,9 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.3",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-react-refresh": "^0.4.7",
     "nodemon": "^3.1.4",
     "postcss": "^8.4.40",
+    "prettier": "^3.0.3",
     "tailwindcss": "^3.4.7",
     "vite": "^5.3.4"
   }
