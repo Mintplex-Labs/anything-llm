@@ -1,7 +1,7 @@
-[submodule "embed"]
-	branch = main
-	path = embed
-	url = git@github.com:Mintplex-Labs/anythingllm-embed.git
 [submodule "browser-extension"]
 	path = browser-extension
 	url = git@github.com:Mintplex-Labs/anythingllm-extension.git
+[submodule "embed"]
+	path = embed
+	url = git@github.com:Mintplex-Labs/anythingllm-embed.git
+	branch = main
