@@ -4,7 +4,7 @@ const fs = require("fs");
 const { writeToServerDocuments, createdDate, trashFile } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
-const path = require("path")
+const { S3Service } = require("../../utils/s3");
 
 
 
@@ -34,36 +34,8 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
     }
 
     console.log(`-- Working ${filename} --`);
-
-    const destinationDirectory = path.resolve(__dirname, "../../../server/storage/downloadFiles");
-
-    const destinationPath = path.join(destinationDirectory, filename);
-
-    // Ensure destination directory exists
-    try {
-      fs.mkdirSync(destinationDirectory, { recursive: true });
-    } catch (err) {
-      console.error("Could not create destination directory!", err);
-      return {
-        success: false,
-        reason: `Failed to create destination directory.`,
-        documents: [],
-      };
-    }
-
-    // Write the content to the new file
-    try {
-      // fs.writeFileSync(destinationPath, content, "utf8");
-      fs.copyFileSync(fullFilePath, destinationPath);
-      console.log(`[SUCCESS]: File written to ${destinationPath}`);
-    } catch (err) {
-      console.error("Could not write file!", err);
-      return {
-        success: false,
-        reason: `Failed to write file to ${destinationPath}.`,
-        documents: [],
-      };
-    }
+    const s3Service = new S3Service()
+    await s3Service.uploadFileToS3(fullFilePath, 'dev1.bucket.ossorioia')
 
     const data = {
       id: v4(),
