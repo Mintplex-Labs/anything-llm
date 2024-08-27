@@ -422,6 +422,10 @@ const KEY_MAPPING = {
     envKey: "DISABLE_TELEMETRY",
     checks: [],
   },
+  NetworkDiscovery: {
+    envKey: "APP_DISCOVERABLE",
+    checks: [],
+  },
 
   // Agent Integration ENVs
   AgentGoogleSearchEngineId: {
@@ -826,6 +830,7 @@ function dumpENV() {
     "STORAGE_DIR",
     "SERVER_PORT",
     "COLLECTOR_PORT",
+    "APP_DISCOVERABLE",
     // For persistent data encryption
     "SIG_KEY",
     "SIG_SALT",

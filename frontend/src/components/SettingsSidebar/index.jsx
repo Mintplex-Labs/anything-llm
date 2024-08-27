@@ -139,6 +139,12 @@ const SidebarOptions = ({ user = null, t }) => (
       user={user}
       childOptions={[
         {
+          btnText: t("settings.system"),
+          href: paths.settings.system(),
+          flex: true,
+          roles: ["admin", "manager"],
+        },
+        {
           btnText: t("settings.workspace-chats"),
           href: paths.settings.chats(),
           flex: true,

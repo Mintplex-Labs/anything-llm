@@ -135,16 +135,20 @@ app.all("*", function (_, response) {
 });
 
 app
-  .listen(process.env.COLLECTOR_PORT || 8888, async () => {
-    await wipeCollectorStorage();
-    console.log(
-      `[${
-        process.env.NODE_ENV || "development"
-      }] AnythingLLM Standalone Document processor listening on port ${
-        process.env.COLLECTOR_PORT || 8888
-      }`
-    );
-  })
+  .listen(
+    process.env.COLLECTOR_PORT || 8888,
+    "127.0.0.1", // Network discovery of document collector is always off.
+    async () => {
+      await wipeCollectorStorage();
+      console.log(
+        `[${
+          process.env.NODE_ENV || "development"
+        }] AnythingLLM Standalone Document processor listening on port ${
+          process.env.COLLECTOR_PORT || 8888
+        }.`
+      );
+    }
+  )
   .on("error", function (_) {
     process.once("SIGUSR2", function () {
       process.kill(process.pid, "SIGUSR2");

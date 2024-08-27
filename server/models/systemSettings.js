@@ -167,6 +167,7 @@ const SystemSettings = {
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
+      NetworkDiscovery: process.env.APP_DISCOVERABLE || "false",
 
       // --------------------------------------------------------
       // Embedder Provider Selection Settings & Configs

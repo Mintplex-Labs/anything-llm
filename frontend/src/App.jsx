@@ -19,6 +19,7 @@ import Login from "./pages/Login";
 import Main from "./pages/Main";
 import WorkspaceChat from "./pages/WorkspaceChat";
 import GeneralApiKeys from "./pages/GeneralSettings/ApiKeys";
+import GeneralSettings from "@/pages/Admin/System";
 import GeneralChats from "./pages/GeneralSettings/Chats";
 import GeneralAppearance from "./pages/GeneralSettings/Appearance";
 import GeneralLLMPreference from "./pages/GeneralSettings/LLMPreference";
@@ -110,6 +111,10 @@ export default function App() {
                   <Route
                     path="/settings/api-keys"
                     element={<ManagerRoute Component={GeneralApiKeys} />}
+                  />
+                  <Route
+                    path="/settings/system-preferences"
+                    element={<ManagerRoute Component={GeneralSettings} />}
                   />
                   <Route
                     path="/settings/workspace-chats"

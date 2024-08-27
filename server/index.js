@@ -78,20 +78,24 @@ app.all("*", function (_, response) {
 });
 
 app
-  .listen(process.env.SERVER_PORT || 3001, async () => {
-    await setupTelemetry();
-    await preloadOllamaService();
-    new CommunicationKey(true);
-    new EncryptionManager();
-    new BackgroundService().boot();
-    console.log(
-      `[${
-        process.env.NODE_ENV || "development"
-      }] AnythingLLM Standalone Backend listening on port ${
-        process.env.SERVER_PORT || 3001
-      }`
-    );
-  })
+  .listen(
+    process.env.SERVER_PORT || 3001,
+    process.env.APP_DISCOVERABLE === "true" ? "0.0.0.0" : "127.0.0.1",
+    async () => {
+      await setupTelemetry();
+      await preloadOllamaService();
+      new CommunicationKey(true);
+      new EncryptionManager();
+      new BackgroundService().boot();
+      console.log(
+        `[${
+          process.env.NODE_ENV || "development"
+        }] AnythingLLM Standalone Backend listening on port ${
+          process.env.SERVER_PORT || 3001
+        }. Network discovery is ${process.env.APP_DISCOVERABLE === "true" ? "enabled" : "disabled"}.`
+      );
+    }
+  )
   .on("error", function (err) {
     process.once("SIGUSR2", function () {
       Telemetry.flush();
