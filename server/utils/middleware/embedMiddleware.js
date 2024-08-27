@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require("uuid");
+const { v4: uuidv4, validate } = require("uuid");
 const { VALID_CHAT_MODE } = require("../chats/stream");
 const { EmbedChats } = require("../../models/embedChats");
 const { EmbedConfig } = require("../../models/embedConfig");
@@ -78,6 +78,17 @@ async function canRespond(request, response, next) {
     }
 
     const { sessionId, message } = reqBody(request);
+    if (typeof sessionId !== "string" || !validate(String(sessionId))) {
+      response.status(404).json({
+        id: uuidv4(),
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: "Invalid session ID.",
+      });
+      return;
+    }
 
     if (!message?.length || !VALID_CHAT_MODE.includes(embed.chat_mode)) {
       response.status(400).json({
