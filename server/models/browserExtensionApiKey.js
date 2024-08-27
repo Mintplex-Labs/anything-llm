@@ -88,9 +88,9 @@ const BrowserExtensionApiKey = {
 
   /**
    * Gets browser keys by params
-   * @param {object} clause 
-   * @param {number|null} limit 
-   * @param {object|null} orderBy 
+   * @param {object} clause
+   * @param {number|null} limit
+   * @param {object|null} orderBy
    * @returns {Promise<import("@prisma/client").browser_extension_api_keys[]>}
    */
   where: async function (clause = {}, limit = null, orderBy = null) {
@@ -111,9 +111,9 @@ const BrowserExtensionApiKey = {
   /**
    * Get browser API keys for user
    * @param {import("@prisma/client").users} user
-   * @param {object} clause 
-   * @param {number|null} limit 
-   * @param {object|null} orderBy 
+   * @param {object} clause
+   * @param {number|null} limit
+   * @param {object|null} orderBy
    * @returns {Promise<import("@prisma/client").browser_extension_api_keys[]>}
    */
   whereWithUser: async function (
