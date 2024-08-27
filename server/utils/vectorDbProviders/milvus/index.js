@@ -184,8 +184,13 @@ const Milvus = {
               });
 
               if (insertResult?.status.error_code !== "Success") {
-                console.error(`Error embedding into Milvus: ${insertResult?.status.reason}`);
-                return { vectorized: false, error: insertResult?.status.reason };
+                console.error(
+                  `Error embedding into Milvus: ${insertResult?.status.reason}`
+                );
+                return {
+                  vectorized: false,
+                  error: insertResult?.status.reason,
+                };
               }
             }
             await DocumentVectors.bulkInsert(documentVectors);
@@ -194,7 +199,10 @@ const Milvus = {
             });
             return { vectorized: true, error: null };
           } catch (insertError) {
-            console.error("Error inserting cached chunks:", insertError.message);
+            console.error(
+              "Error inserting cached chunks:",
+              insertError.message
+            );
             return { vectorized: false, error: insertError.message };
           }
         }
@@ -264,7 +272,9 @@ const Milvus = {
             });
 
             if (insertResult?.status.error_code !== "Success") {
-              console.error(`Error embedding into Milvus: ${insertResult?.status.reason}`);
+              console.error(
+                `Error embedding into Milvus: ${insertResult?.status.reason}`
+              );
               return { vectorized: false, error: insertResult?.status.reason };
             }
           }
