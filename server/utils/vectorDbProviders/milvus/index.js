@@ -121,14 +121,6 @@ const Milvus = {
             decription: "metadata",
             data_type: DataType.JSON,
           },
-          {
-            name: "text",
-            description: "text",
-            data_type: DataType.VarChar,
-            // Max length of a text field in Milvus is 65535
-            // https://milvus.io/docs/limitations.md
-            max_length: 65535,
-          },
         ],
       });
       await client.createIndex({
@@ -164,47 +156,30 @@ const Milvus = {
           vectorDimension = chunks[0][0].values.length || null;
 
           await this.getOrCreateCollection(client, namespace, vectorDimension);
-          try {
-            for (const chunk of chunks) {
-              // Before sending to Milvus and saving the records to our db
-              // we need to assign the id of each chunk that is stored in the cached file.
-              const newChunks = chunk.map((chunk) => {
-                const id = uuidv4();
-                documentVectors.push({ docId, vectorId: id });
-                return {
-                  id,
-                  vector: chunk.values,
-                  metadata: chunk.metadata,
-                  text: chunk.text,
-                };
-              });
-              const insertResult = await client.insert({
-                collection_name: this.normalize(namespace),
-                data: newChunks,
-              });
-
-              if (insertResult?.status.error_code !== "Success") {
-                console.error(
-                  `Error embedding into Milvus: ${insertResult?.status.reason}`
-                );
-                return {
-                  vectorized: false,
-                  error: insertResult?.status.reason,
-                };
-              }
-            }
-            await DocumentVectors.bulkInsert(documentVectors);
-            await client.flushSync({
-              collection_names: [this.normalize(namespace)],
+          for (const chunk of chunks) {
+            // Before sending to Milvus and saving the records to our db
+            // we need to assign the id of each chunk that is stored in the cached file.
+            const newChunks = chunk.map((chunk) => {
+              const id = uuidv4();
+              documentVectors.push({ docId, vectorId: id });
+              return { id, vector: chunk.values, metadata: chunk.metadata };
             });
-            return { vectorized: true, error: null };
-          } catch (insertError) {
-            console.error(
-              "Error inserting cached chunks:",
-              insertError.message
-            );
-            return { vectorized: false, error: insertError.message };
+            const insertResult = await client.insert({
+              collection_name: this.normalize(namespace),
+              data: newChunks,
+            });
+
+            if (insertResult?.status.error_code !== "Success") {
+              throw new Error(
+                `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
+              );
+            }
           }
+          await DocumentVectors.bulkInsert(documentVectors);
+          await client.flushSync({
+            collection_names: [this.normalize(namespace)],
+          });
+          return { vectorized: true, error: null };
         }
       }
 
@@ -258,40 +233,33 @@ const Milvus = {
         await this.getOrCreateCollection(client, namespace, vectorDimension);
 
         console.log("Inserting vectorized chunks into Milvus.");
-        try {
-          for (const chunk of toChunks(vectors, 100)) {
-            chunks.push(chunk);
-            const insertResult = await client.insert({
-              collection_name: this.normalize(namespace),
-              data: chunk.map((item) => ({
-                id: item.id,
-                vector: item.values,
-                metadata: JSON.stringify(item.metadata),
-                text: item.metadata.text,
-              })),
-            });
-
-            if (insertResult?.status.error_code !== "Success") {
-              console.error(
-                `Error embedding into Milvus: ${insertResult?.status.reason}`
-              );
-              return { vectorized: false, error: insertResult?.status.reason };
-            }
-          }
-          await storeVectorResult(chunks, fullFilePath);
-          await client.flushSync({
-            collection_names: [this.normalize(namespace)],
+        for (const chunk of toChunks(vectors, 100)) {
+          chunks.push(chunk);
+          const insertResult = await client.insert({
+            collection_name: this.normalize(namespace),
+            data: chunk.map((item) => ({
+              id: item.id,
+              vector: item.values,
+              metadata: chunk.metadata,
+            })),
           });
-        } catch (insertError) {
-          console.error("Error inserting new chunks:", insertError.message);
-          return { vectorized: false, error: insertError.message };
+
+          if (insertResult?.status.error_code !== "Success") {
+            throw new Error(
+              `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
+            );
+          }
         }
+        await storeVectorResult(chunks, fullFilePath);
+        await client.flushSync({
+          collection_names: [this.normalize(namespace)],
+        });
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace error:", e.message);
+      console.error("addDocumentToNamespace", e.message);
       return { vectorized: false, error: e.message };
     }
   },
@@ -374,7 +342,6 @@ const Milvus = {
       collection_name: this.normalize(namespace),
       vectors: queryVector,
       limit: topN,
-      output_fields: ["id", "metadata", "text"],
     });
     response.results.forEach((match) => {
       if (match.score < similarityThreshold) return;
@@ -385,11 +352,8 @@ const Milvus = {
         return;
       }
 
-      result.contextTexts.push(match.text);
-      result.sourceDocuments.push({
-        ...match,
-        metadata: JSON.parse(match.metadata),
-      });
+      result.contextTexts.push(match.metadata.text);
+      result.sourceDocuments.push(match);
       result.scores.push(match.score);
     });
     return result;
@@ -421,14 +385,17 @@ const Milvus = {
   curateSources: function (sources = []) {
     const documents = [];
     for (const source of sources) {
-      const { metadata = {}, text } = source;
-      if (Object.keys(metadata).length > 0 || text) {
+      const { metadata = {} } = source;
+      if (Object.keys(metadata).length > 0) {
         documents.push({
           ...metadata,
-          text: text || source.pageContent,
+          ...(source.hasOwnProperty("pageContent")
+            ? { text: source.pageContent }
+            : {}),
         });
       }
     }
+
     return documents;
   },
 };
