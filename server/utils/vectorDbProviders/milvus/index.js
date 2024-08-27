@@ -121,6 +121,14 @@ const Milvus = {
             decription: "metadata",
             data_type: DataType.JSON,
           },
+          {
+            name: "text",
+            description: "text",
+            data_type: DataType.VarChar,
+            // Max length of a text field in Milvus is 65535
+            // https://milvus.io/docs/limitations.md
+            max_length: 65535,
+          },
         ],
       });
       await client.createIndex({
@@ -157,12 +165,17 @@ const Milvus = {
 
           await this.getOrCreateCollection(client, namespace, vectorDimension);
           for (const chunk of chunks) {
-            // Before sending to Pinecone and saving the records to our db
+            // Before sending to Milvus and saving the records to our db
             // we need to assign the id of each chunk that is stored in the cached file.
             const newChunks = chunk.map((chunk) => {
               const id = uuidv4();
               documentVectors.push({ docId, vectorId: id });
-              return { id, vector: chunk.values, metadata: chunk.metadata };
+              return {
+                id,
+                vector: chunk.values,
+                metadata: chunk.metadata,
+                text: chunk.text,
+              };
             });
             const insertResult = await client.insert({
               collection_name: this.normalize(namespace),
@@ -240,7 +253,8 @@ const Milvus = {
             data: chunk.map((item) => ({
               id: item.id,
               vector: item.values,
-              metadata: chunk.metadata,
+              metadata: JSON.stringify(item.metadata),
+              text: item.metadata.text,
             })),
           });
 
@@ -342,6 +356,7 @@ const Milvus = {
       collection_name: this.normalize(namespace),
       vectors: queryVector,
       limit: topN,
+      output_fields: ["id", "metadata", "text"],
     });
     response.results.forEach((match) => {
       if (match.score < similarityThreshold) return;
@@ -352,8 +367,11 @@ const Milvus = {
         return;
       }
 
-      result.contextTexts.push(match.metadata.text);
-      result.sourceDocuments.push(match);
+      result.contextTexts.push(match.text);
+      result.sourceDocuments.push({
+        ...match,
+        metadata: JSON.parse(match.metadata),
+      });
       result.scores.push(match.score);
     });
     return result;
@@ -385,17 +403,14 @@ const Milvus = {
   curateSources: function (sources = []) {
     const documents = [];
     for (const source of sources) {
-      const { metadata = {} } = source;
-      if (Object.keys(metadata).length > 0) {
+      const { metadata = {}, text } = source;
+      if (Object.keys(metadata).length > 0 || text) {
         documents.push({
           ...metadata,
-          ...(source.hasOwnProperty("pageContent")
-            ? { text: source.pageContent }
-            : {}),
+          text: text || source.pageContent,
         });
       }
     }
-
     return documents;
   },
 };
