@@ -21,7 +21,8 @@ on:
       - '**/.env.example'
       - '.github/ISSUE_TEMPLATE/**/*'
       - '.devcontainer/**/*'
-      - 'embed/**/*' # Embed should be published to frontend (yarn build:publish) if any changes are introduced
+      - 'embed/**/*' # Embed is submodule
+      - 'browser-extension/**/*' # Chrome extension is submodule
       - 'server/utils/agents/aibitat/example/**/*' # Do not push new image for local dev testing of new aibitat images.
 
 jobs:
