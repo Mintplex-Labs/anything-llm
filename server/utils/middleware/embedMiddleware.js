@@ -41,31 +41,112 @@ async function validEmbedConfigId(request, response, next) {
 }
 
 async function canRespond(request, response, next) {
-  const embed = response.locals.embedConfig;
-  if (!embed) {
-    response.sendStatus(404).end();
-    return;
-  }
+  try {
+    const embed = response.locals.embedConfig;
+    if (!embed) {
+      response.sendStatus(404).end();
+      return;
+    }
 
-  // Block if disabled by admin.
-  if (!embed.enabled) {
-    response.status(503).json({
-      id: uuidv4(),
-      type: "abort",
-      textResponse: null,
-      sources: [],
-      close: true,
-      error:
-        "This chat has been disabled by the administrator - try again later.",
-    });
-    return;
-  }
+    // Block if disabled by admin.
+    if (!embed.enabled) {
+      response.status(503).json({
+        id: uuidv4(),
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error:
+          "This chat has been disabled by the administrator - try again later.",
+      });
+      return;
+    }
 
-  // Check if requester hostname is in the valid allowlist of domains.
-  const host = request.headers.origin ?? "";
-  const allowedHosts = EmbedConfig.parseAllowedHosts(embed);
-  if (allowedHosts !== null && !allowedHosts.includes(host)) {
-    response.status(401).json({
+    // Check if requester hostname is in the valid allowlist of domains.
+    const host = request.headers.origin ?? "";
+    const allowedHosts = EmbedConfig.parseAllowedHosts(embed);
+    if (allowedHosts !== null && !allowedHosts.includes(host)) {
+      response.status(401).json({
+        id: uuidv4(),
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: "Invalid request.",
+      });
+      return;
+    }
+
+    const { sessionId, message } = reqBody(request);
+
+    if (!message?.length || !VALID_CHAT_MODE.includes(embed.chat_mode)) {
+      response.status(400).json({
+        id: uuidv4(),
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: !message?.length
+          ? "Message is empty."
+          : `${embed.chat_mode} is not a valid mode.`,
+      });
+      return;
+    }
+
+    if (
+      !isNaN(embed.max_chats_per_day) &&
+      Number(embed.max_chats_per_day) > 0
+    ) {
+      const dailyChatCount = await EmbedChats.count({
+        embed_id: embed.id,
+        createdAt: {
+          gte: new Date(new Date() - 24 * 60 * 60 * 1000),
+        },
+      });
+
+      if (dailyChatCount >= Number(embed.max_chats_per_day)) {
+        response.status(429).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error:
+            "The quota for this chat has been reached. Try again later or contact the site owner.",
+        });
+        return;
+      }
+    }
+
+    if (
+      !isNaN(embed.max_chats_per_session) &&
+      Number(embed.max_chats_per_session) > 0
+    ) {
+      const dailySessionCount = await EmbedChats.count({
+        embed_id: embed.id,
+        session_id: sessionId,
+        createdAt: {
+          gte: new Date(new Date() - 24 * 60 * 60 * 1000),
+        },
+      });
+
+      if (dailySessionCount >= Number(embed.max_chats_per_session)) {
+        response.status(429).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error:
+            "Your quota for this chat has been reached. Try again later or contact the site owner.",
+        });
+        return;
+      }
+    }
+
+    next();
+  } catch (e) {
+    response.status(500).json({
       id: uuidv4(),
       type: "abort",
       textResponse: null,
@@ -75,72 +156,6 @@ async function canRespond(request, response, next) {
     });
     return;
   }
-
-  const { sessionId, message } = reqBody(request);
-
-  if (!message?.length || !VALID_CHAT_MODE.includes(embed.chat_mode)) {
-    response.status(400).json({
-      id: uuidv4(),
-      type: "abort",
-      textResponse: null,
-      sources: [],
-      close: true,
-      error: !message?.length
-        ? "Message is empty."
-        : `${embed.chat_mode} is not a valid mode.`,
-    });
-    return;
-  }
-
-  if (!isNaN(embed.max_chats_per_day) && Number(embed.max_chats_per_day) > 0) {
-    const dailyChatCount = await EmbedChats.count({
-      embed_id: embed.id,
-      createdAt: {
-        gte: new Date(new Date() - 24 * 60 * 60 * 1000),
-      },
-    });
-
-    if (dailyChatCount >= Number(embed.max_chats_per_day)) {
-      response.status(429).json({
-        id: uuidv4(),
-        type: "abort",
-        textResponse: null,
-        sources: [],
-        close: true,
-        error:
-          "The quota for this chat has been reached. Try again later or contact the site owner.",
-      });
-      return;
-    }
-  }
-
-  if (
-    !isNaN(embed.max_chats_per_session) &&
-    Number(embed.max_chats_per_session) > 0
-  ) {
-    const dailySessionCount = await EmbedChats.count({
-      embed_id: embed.id,
-      session_id: sessionId,
-      createdAt: {
-        gte: new Date(new Date() - 24 * 60 * 60 * 1000),
-      },
-    });
-
-    if (dailySessionCount >= Number(embed.max_chats_per_session)) {
-      response.status(429).json({
-        id: uuidv4(),
-        type: "abort",
-        textResponse: null,
-        sources: [],
-        close: true,
-        error:
-          "Your quota for this chat has been reached. Try again later or contact the site owner.",
-      });
-      return;
-    }
-  }
-
-  next();
 }
 
 module.exports = {
