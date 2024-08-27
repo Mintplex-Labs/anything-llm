@@ -98,7 +98,7 @@ const HistoricalMessage = ({
               saveChanges={saveEditedMessage}
             />
           ) : (
-            <div>
+            <div className={'overflow-x-scroll break-words'}>
               <span
                 className={`flex flex-col gap-y-1`}
                 dangerouslySetInnerHTML={{
