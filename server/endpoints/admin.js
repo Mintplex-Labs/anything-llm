@@ -364,6 +364,9 @@ function adminEndpoints(app) {
             { label: "meta_page_favicon" },
             null
           ),
+          show_scrollbar:
+            (await SystemSettings.get({ label: "show_scrollbar" }))?.value ===
+            "true",
         };
         response.status(200).json({ settings });
       } catch (e) {

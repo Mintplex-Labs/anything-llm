@@ -1,6 +1,6 @@
+import React, { useEffect, useRef, useState } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
-import { useEffect, useRef, useState } from "react";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -10,6 +10,7 @@ import Chartable from "./Chartable";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
+import System from "@/models/system";
 
 export default function ChatHistory({
   history = [],
@@ -25,6 +26,15 @@ export default function ChatHistory({
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
   const [textSize, setTextSize] = useState("normal");
+  const [showScrollbar, setShowScrollbar] = useState(false);
+
+  useEffect(() => {
+    async function fetchShowScrollbar() {
+      const { showScrollbar } = await System.fetchShowScrollbar();
+      setShowScrollbar(showScrollbar);
+    }
+    fetchShowScrollbar();
+  }, []);
 
   const getTextSizeClass = (size) => {
     switch (size) {
@@ -64,7 +74,6 @@ export default function ChatHistory({
       chatHistoryRef.current.scrollHeight -
       chatHistoryRef.current.scrollTop -
       chatHistoryRef.current.clientHeight;
-    // Fuzzy margin for what qualifies as "bottom". Stronger than straight comparison since that may change over time.
     const isBottom = diff <= 10;
     setIsAtBottom(isBottom);
   };
@@ -99,27 +108,20 @@ export default function ChatHistory({
     role,
     attachments = [],
   }) => {
-    if (!editedMessage) return; // Don't save empty edits.
+    if (!editedMessage) return;
 
-    // if the edit was a user message, we will auto-regenerate the response and delete all
-    // messages post modified message
     if (role === "user") {
-      // remove all messages after the edited message
-      // technically there are two chatIds per-message pair, this will split the first.
       const updatedHistory = history.slice(
         0,
         history.findIndex((msg) => msg.chatId === chatId) + 1
       );
 
-      // update last message in history to edited message
       updatedHistory[updatedHistory.length - 1].content = editedMessage;
-      // remove all edited messages after the edited message in backend
       await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
       sendCommand(editedMessage, true, updatedHistory, attachments);
       return;
     }
 
-    // If role is an assistant we simply want to update the comment and save on the backend as an edit.
     if (role === "assistant") {
       const updatedHistory = [...history];
       const targetIdx = history.findIndex(
@@ -190,7 +192,9 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`markdown text-white/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll`}
+      className={`markdown text-white/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
+        showScrollbar ? 'white-scrollbar' : 'no-scroll'
+      }`}
       id="chat-history"
       ref={chatHistoryRef}
     >

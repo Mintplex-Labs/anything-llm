@@ -342,6 +342,19 @@ const System = {
     );
     return { appName: customAppName, error: null };
   },
+  fetchShowScrollbar: async function () {
+    return await fetch(`${API_BASE}/system/show-scrollbar`, {
+      method: "GET",
+      cache: "no-cache",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { showScrollbar: false };
+      });
+  },
+
   fetchLogo: async function () {
     return await fetch(`${API_BASE}/system/logo`, {
       method: "GET",

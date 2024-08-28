@@ -590,6 +590,21 @@ function systemEndpoints(app) {
     }
   });
 
+  app.get("/system/show-scrollbar", [validatedRequest], async (_, response) => {
+    try {
+      const showScrollbar =
+        (
+          await SystemSettings.get({
+            label: "show_scrollbar",
+          })
+        )?.value === "true";
+      response.status(200).json({ showScrollbar });
+    } catch (error) {
+      console.error("Error fetching show scrollbar:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // No middleware protection in order to get this on the login page
   app.get("/system/custom-app-name", async (_, response) => {
     try {
