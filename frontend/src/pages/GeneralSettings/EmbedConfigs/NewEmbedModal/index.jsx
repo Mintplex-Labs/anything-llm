@@ -250,6 +250,25 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
     setDomains(validDomains);
   };
 
+  const handleBlur = (event) => {
+    const currentInput = event.target.value;
+    if (!currentInput) return;
+
+    const validDomains = [...domains, currentInput].map((input) => {
+      let url = input;
+      if (!url.includes("http://") && !url.includes("https://"))
+        url = `https://${url}`;
+      try {
+        new URL(url);
+        return url;
+      } catch {
+        return null;
+      }
+    });
+    event.target.value = "";
+    setDomains(validDomains);
+  };
+
   return (
     <div>
       <div className="flex flex-col mb-2">
@@ -270,6 +289,7 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
       <TagsInput
         value={domains}
         onChange={handleChange}
+        onBlur={handleBlur}
         placeholder="https://mysite.com, https://anythingllm.com"
         classNames={{
           tag: "bg-blue-300/10 text-zinc-800 m-1",
