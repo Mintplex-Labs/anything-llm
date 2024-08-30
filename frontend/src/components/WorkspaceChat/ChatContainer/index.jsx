@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import ChatHistory from "./ChatHistory";
+import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, { PROMPT_INPUT_EVENT } from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
@@ -12,6 +13,10 @@ import handleSocketResponse, {
   AGENT_SESSION_END,
   AGENT_SESSION_START,
 } from "@/utils/chat/agent";
+import DnDFileUploaderWrapper from "./DnDWrapper";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -20,11 +25,16 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
+  const { files, parseAttachments } = useContext(DndUploaderContext);
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
+
+  const { listening, resetTranscript } = useSpeechRecognition({
+    clearTranscriptOnListen: true,
+  });
 
   // Emit an update to the state of the prompt input without directly
   // passing a prop in so that it does not re-render constantly.
@@ -40,7 +50,11 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     if (!message || message === "") return false;
     const prevChatHistory = [
       ...chatHistory,
-      { content: message, role: "user" },
+      {
+        content: message,
+        role: "user",
+        attachments: parseAttachments(),
+      },
       {
         content: "",
         role: "assistant",
@@ -50,20 +64,41 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       },
     ];
 
+    if (listening) {
+      // Stop the mic if the send button is clicked
+      endTTSSession();
+    }
     setChatHistory(prevChatHistory);
     setMessageEmit("");
     setLoadingResponse(true);
   };
 
+  function endTTSSession() {
+    SpeechRecognition.stopListening();
+    resetTranscript();
+  }
+
   const regenerateAssistantMessage = (chatId) => {
     const updatedHistory = chatHistory.slice(0, -1);
     const lastUserMessage = updatedHistory.slice(-1)[0];
     Workspace.deleteChats(workspace.slug, [chatId])
-      .then(() => sendCommand(lastUserMessage.content, true, updatedHistory))
+      .then(() =>
+        sendCommand(
+          lastUserMessage.content,
+          true,
+          updatedHistory,
+          lastUserMessage?.attachments
+        )
+      )
       .catch((e) => console.error(e));
   };
 
-  const sendCommand = async (command, submit = false, history = []) => {
+  const sendCommand = async (
+    command,
+    submit = false,
+    history = [],
+    attachments = []
+  ) => {
     if (!command || command === "") return false;
     if (!submit) {
       setMessageEmit(command);
@@ -80,13 +115,18 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           role: "assistant",
           pending: true,
           userMessage: command,
+          attachments,
           animate: true,
         },
       ];
     } else {
       prevChatHistory = [
         ...chatHistory,
-        { content: command, role: "user" },
+        {
+          content: command,
+          role: "user",
+          attachments,
+        },
         {
           content: "",
           role: "assistant",
@@ -121,37 +161,28 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         return;
       }
 
-      // TODO: Simplify this
       if (!promptMessage || !promptMessage?.userMessage) return false;
-      if (!!threadSlug) {
-        await Workspace.threads.streamChat(
-          { workspaceSlug: workspace.slug, threadSlug },
-          promptMessage.userMessage,
-          (chatResult) =>
-            handleChat(
-              chatResult,
-              setLoadingResponse,
-              setChatHistory,
-              remHistory,
-              _chatHistory,
-              setSocketId
-            )
-        );
-      } else {
-        await Workspace.streamChat(
-          workspace,
-          promptMessage.userMessage,
-          (chatResult) =>
-            handleChat(
-              chatResult,
-              setLoadingResponse,
-              setChatHistory,
-              remHistory,
-              _chatHistory,
-              setSocketId
-            )
-        );
-      }
+
+      // If running and edit or regeneration, this history will already have attachments
+      // so no need to parse the current state.
+      const attachments = promptMessage?.attachments ?? parseAttachments();
+      window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
+
+      await Workspace.multiplexStream({
+        workspaceSlug: workspace.slug,
+        threadSlug,
+        prompt: promptMessage.userMessage,
+        chatHandler: (chatResult) =>
+          handleChat(
+            chatResult,
+            setLoadingResponse,
+            setChatHistory,
+            remHistory,
+            _chatHistory,
+            setSocketId
+          ),
+        attachments,
+      });
       return;
     }
     loadingResponse === true && fetchReply();
@@ -205,6 +236,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         });
         setWebsocket(socket);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
+        window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
       } catch (e) {
         setChatHistory((prev) => [
           ...prev.filter((msg) => !!msg.content),
@@ -231,16 +263,17 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline"
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline no-scroll"
     >
       {isMobile && <SidebarMobileHeader />}
-      <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
+      <DnDFileUploaderWrapper>
         <ChatHistory
           history={chatHistory}
           workspace={workspace}
           sendCommand={sendCommand}
           updateHistory={setChatHistory}
           regenerateAssistantMessage={regenerateAssistantMessage}
+          hasAttachments={files.length > 0}
         />
         <PromptInput
           submit={handleSubmit}
@@ -248,8 +281,9 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           inputDisabled={loadingResponse}
           buttonDisabled={loadingResponse}
           sendCommand={sendCommand}
+          attachments={files}
         />
-      </div>
+      </DnDFileUploaderWrapper>
     </div>
   );
 }

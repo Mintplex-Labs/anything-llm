@@ -131,7 +131,7 @@ export default function AdminSystem() {
               </div>
             )}
           </div>
-          
+
           <div className="mb-8">
             <div className="flex flex-col gap-y-1">
               <h2 className="text-base leading-6 font-bold text-white">

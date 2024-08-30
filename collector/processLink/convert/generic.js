@@ -57,6 +57,7 @@ async function getPageContent(link) {
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
+        ignoreHTTPSErrors: true,
       },
       gotoOptions: {
         waitUntil: "domcontentloaded",

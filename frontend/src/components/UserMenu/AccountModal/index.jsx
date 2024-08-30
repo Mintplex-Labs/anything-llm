@@ -7,6 +7,7 @@ import { Plus, X } from "@phosphor-icons/react";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
+
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return false;
@@ -133,6 +134,10 @@ export default function AccountModal({ user, hideModal }) {
                 required
                 autoComplete="off"
               />
+              <p className="mt-2 text-xs text-white/60">
+                Username must be only contain lowercase letters, numbers,
+                underscores, and hyphens with no spaces
+              </p>
             </div>
             <div>
               <label
@@ -143,10 +148,14 @@ export default function AccountModal({ user, hideModal }) {
               </label>
               <input
                 name="password"
-                type="password"
+                type="text"
                 className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 placeholder={`${user.username}'s new password`}
+                minLength={8}
               />
+              <p className="mt-2 text-xs text-white/60">
+                Password must be at least 8 characters long
+              </p>
             </div>
             <LanguagePreference />
           </div>

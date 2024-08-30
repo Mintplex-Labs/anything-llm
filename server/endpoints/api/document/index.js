@@ -686,6 +686,12 @@ function apiDocumentEndpoints(app) {
           const sourcePath = path.join(documentsPath, normalizePath(from));
           const destinationPath = path.join(documentsPath, normalizePath(to));
           return new Promise((resolve, reject) => {
+            if (
+              !isWithin(documentsPath, sourcePath) ||
+              !isWithin(documentsPath, destinationPath)
+            )
+              return reject("Invalid file location");
+
             fs.rename(sourcePath, destinationPath, (err) => {
               if (err) {
                 console.error(`Error moving file ${from} to ${to}:`, err);

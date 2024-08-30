@@ -46,7 +46,7 @@ export default function WorkspaceFileRow({
       }`}
     >
       <div
-        data-tooltip-id={`directory-item-${item.url}`}
+        data-tooltip-id={`ws-directory-item-${item.url}`}
         className="col-span-10 w-fit flex gap-x-[4px] items-center relative"
       >
         <File
@@ -77,7 +77,7 @@ export default function WorkspaceFileRow({
         )}
       </div>
       <Tooltip
-        id={`directory-item-${item.url}`}
+        id={`ws-directory-item-${item.url}`}
         place="bottom"
         delayShow={800}
         className="tooltip invert z-99"

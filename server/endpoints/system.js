@@ -51,6 +51,8 @@ const {
   generateRecoveryCodes,
 } = require("../utils/PasswordRecovery");
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
+const { EncryptionManager } = require("../utils/EncryptionManager");
+const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -252,7 +254,10 @@ function systemEndpoints(app) {
         });
         response.status(200).json({
           valid: true,
-          token: makeJWT({ p: password }, "30d"),
+          token: makeJWT(
+            { p: new EncryptionManager().encrypt(password) },
+            "30d"
+          ),
           message: null,
         });
       }
@@ -493,11 +498,21 @@ function systemEndpoints(app) {
           password,
           role: ROLES.admin,
         });
+
+        if (error || !user) {
+          response.status(400).json({
+            success: false,
+            error: error || "Failed to enable multi-user mode.",
+          });
+          return;
+        }
+
         await SystemSettings._updateSettings({
           multi_user_mode: true,
           limit_user_messages: false,
           message_limit: 25,
         });
+        await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
 
         await updateENV(
           {

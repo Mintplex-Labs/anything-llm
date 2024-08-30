@@ -23,13 +23,13 @@ const TRANSLATIONS = {
     customization: "外观",
     "api-keys": "API 密钥",
     llm: "LLM 首选项",
-    transcription: "Transcription 模型",
+    transcription: "转录模型",
     embedder: "Embedder 首选项",
     "text-splitting": "文本分割",
     "voice-speech": "语音和讲话",
     "vector-database": "向量数据库",
     embeds: "嵌入式对话",
-    "embed-chats": "嵌入式对话历史",
+    "embed-chats": "嵌入式对话历史记录",
     security: "用户与安全",
     "event-logs": "事件日志",
     privacy: "隐私与数据",
@@ -39,6 +39,7 @@ const TRANSLATIONS = {
     tools: "工具",
     "experimental-features": "实验功能",
     contact: "联系支持",
+    "browser-extension": "浏览器扩展",
   },
 
   // Page Definitions
@@ -115,7 +116,7 @@ const TRANSLATIONS = {
       add: "添加新消息",
       save: "保存消息",
       heading: "向我解释",
-      body: "AnythingLLM的好处",
+      body: "AnythingLLM 的好处",
     },
     pfp: {
       title: "助理头像",
@@ -137,7 +138,7 @@ const TRANSLATIONS = {
   // Chat Settings
   chat: {
     llm: {
-      title: "工作区LLM提供者",
+      title: "工作区 LLM 提供者",
       description:
         "将用于此工作区的特定 LLM 提供商和模型。默认情况下，它使用系统 LLM 提供程序和设置。",
       search: "搜索所有 LLM 提供商",
@@ -145,14 +146,14 @@ const TRANSLATIONS = {
     model: {
       title: "工作区聊天模型",
       description:
-        "将用于此工作区的特定聊天模型。如果为空，将使用系统LLM首选项。",
+        "将用于此工作区的特定聊天模型。如果为空，将使用系统 LLM 首选项。",
       wait: "-- 等待模型 --",
     },
     mode: {
       title: "聊天模式",
       chat: {
         title: "聊天",
-        "desc-start": "将提供法学硕士的一般知识",
+        "desc-start": "将提供 LLM 的一般知识",
         and: "和",
         "desc-end": "找到的文档上下文的答案。",
       },
@@ -182,11 +183,11 @@ const TRANSLATIONS = {
       "desc-end": "模式时，当未找到上下文时，您可能希望返回自定义拒绝响应。",
     },
     temperature: {
-      title: "LLM Temperature",
+      title: "LLM 温度",
       "desc-start": "此设置控制您的 LLM 回答的“创意”程度",
       "desc-end":
         "数字越高越有创意。对于某些模型，如果设置得太高，可能会导致响应不一致。",
-      hint: "大多数法学硕士都有各种可接受的有效值范围。请咨询您的法学硕士提供商以获取该信息。",
+      hint: "大多数 LLM 都有各种可接受的有效值范围。请咨询您的吗 LLM 提供商以获取该信息。",
     },
   },
 
@@ -240,7 +241,7 @@ const TRANSLATIONS = {
       description:
         "使用这些预构建的技能提高默认代理的自然能力。此设置适用于所有工作区。",
       rag: {
-        title: "RAG和长期记忆",
+        title: "RAG 和长期记忆",
         description:
           '允许代理利用您的本地文档来回答查询，或要求代理"记住"长期记忆检索的内容片段。',
       },
@@ -277,11 +278,11 @@ const TRANSLATIONS = {
     export: "导出",
     table: {
       id: "Id",
-      by: "Sent By",
-      workspace: "Workspace",
-      prompt: "Prompt",
-      response: "Response",
-      at: "Sent At",
+      by: "发送者",
+      workspace: "工作区",
+      prompt: "提示",
+      response: "响应",
+      at: "发送时间",
     },
   },
 
@@ -330,14 +331,14 @@ const TRANSLATIONS = {
 
   // LLM Preferences
   llm: {
-    title: "LLM 偏好",
+    title: "LLM 首选项",
     description:
       "这些是您首选的 LLM 聊天和嵌入提供商的凭据和设置。重要的是，这些密钥是最新的和正确的，否则 AnythingLLM 将无法正常运行。",
     provider: "LLM 提供商",
   },
 
   transcription: {
-    title: "转录模型偏好",
+    title: "转录模型首选项",
     description:
       "这些是您的首选转录模型提供商的凭据和设置。重要的是这些密钥是最新且正确的，否则媒体文件和音频将无法转录。",
     provider: "转录提供商",
@@ -404,14 +405,14 @@ const TRANSLATIONS = {
 
   // Embeddable Chat History
   "embed-chats": {
-    title: "嵌入聊天",
+    title: "嵌入的聊天历史纪录",
     description: "这些是您发布的任何嵌入的所有记录的聊天和消息。",
     table: {
       embed: "嵌入",
       sender: "发送者",
       message: "消息",
       response: "响应",
-      at: "发送于",
+      at: "发送时间",
     },
   },
 
@@ -456,8 +457,8 @@ const TRANSLATIONS = {
     title: "隐私和数据处理",
     description:
       "这是您对如何处理连接的第三方提供商和AnythingLLM的数据的配置。",
-    llm: "LLM选择",
-    embedding: "嵌入偏好",
+    llm: "LLM 选择",
+    embedding: "嵌入首选项",
     vector: "向量数据库",
     anonymous: "启用匿名遥测",
   },

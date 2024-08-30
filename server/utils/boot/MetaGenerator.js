@@ -166,7 +166,7 @@ class MetaGenerator {
   }
 
   async #fetchConfg() {
-    this.#log(`fetching custome meta tag settings...`);
+    this.#log(`fetching custom meta tag settings...`);
     const { SystemSettings } = require("../../models/systemSettings");
     const customTitle = await SystemSettings.getValueOrFallback(
       { label: "meta_page_title" },

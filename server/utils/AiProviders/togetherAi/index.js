@@ -48,6 +48,11 @@ class TogetherAiLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    const availableModels = togetherAiModels();
+    return availableModels[modelName]?.maxLength || 4096;
+  }
+
   // Ensure the user set a value for the token limit
   // and if undefined - assume 4096 window.
   promptWindowLimit() {
