@@ -41,6 +41,10 @@ class MistralLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit() {
+    return 32000;
+  }
+
   promptWindowLimit() {
     return 32000;
   }

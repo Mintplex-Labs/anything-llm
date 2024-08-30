@@ -36,6 +36,13 @@ export default {
         "dark-text": "#222628",
         description: "#D2D5DB",
         "x-button": "#9CA3AF",
+        royalblue: "#065986",
+        purple: "#4A1FB8",
+        magenta: "#9E165F",
+        danger: "#F04438",
+        error: "#B42318",
+        warn: "#854708",
+        success: "#05603A",
         darker: "#F4F4F4"
       },
       backgroundImage: {
@@ -79,7 +86,8 @@ export default {
         ]
       },
       animation: {
-        sweep: "sweep 0.5s ease-in-out"
+        sweep: "sweep 0.5s ease-in-out",
+        "pulse-glow": "pulse-glow 1.5s infinite"
       },
       keyframes: {
         sweep: {
@@ -93,6 +101,26 @@ export default {
         fadeOut: {
           "0%": { opacity: 1 },
           "100%": { opacity: 0 }
+        },
+        "pulse-glow": {
+          "0%": {
+            opacity: 1,
+            transform: "scale(1)",
+            boxShadow: "0 0 0 rgba(255, 255, 255, 0.0)",
+            backgroundColor: "rgba(255, 255, 255, 0.0)"
+          },
+          "50%": {
+            opacity: 1,
+            transform: "scale(1.1)",
+            boxShadow: "0 0 15px rgba(255, 255, 255, 0.2)",
+            backgroundColor: "rgba(255, 255, 255, 0.1)"
+          },
+          "100%": {
+            opacity: 1,
+            transform: "scale(1)",
+            boxShadow: "0 0 0 rgba(255, 255, 255, 0.0)",
+            backgroundColor: "rgba(255, 255, 255, 0.0)"
+          }
         }
       }
     }

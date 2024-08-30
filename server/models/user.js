@@ -2,6 +2,7 @@ const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
 
 const User = {
+  usernameRegex: new RegExp(/^[a-z0-9_-]+$/),
   writable: [
     // Used for generic updates so we can validate keys in request body
     "username",
@@ -32,7 +33,6 @@ const User = {
       return String(role);
     },
   },
-
   // validations for the above writable fields.
   castColumnValue: function (key, value) {
     switch (key) {
@@ -55,6 +55,12 @@ const User = {
     }
 
     try {
+      // Do not allow new users to bypass validation
+      if (!this.usernameRegex.test(username))
+        throw new Error(
+          "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
+        );
+
       const bcrypt = require("bcrypt");
       const hashedPassword = bcrypt.hashSync(password, 10);
       const user = await prisma.users.create({
@@ -70,7 +76,6 @@ const User = {
       return { user: null, error: error.message };
     }
   },
-
   createWithAzureAuthProviders: async function ({ username }) {
     try {
       const user = await prisma.users.create({
@@ -85,7 +90,6 @@ const User = {
       return { user: null, error: error.message };
     }
   },
-
   // Log the changes to a user object, but omit sensitive fields
   // that are not meant to be logged.
   loggedChanges: function (updates, prev = {}) {
@@ -108,7 +112,6 @@ const User = {
         where: { id: parseInt(userId) },
       });
       if (!currentUser) return { success: false, error: "User not found" };
-
       // Removes non-writable fields for generic updates
       // and force-casts to the proper type;
       Object.entries(updates).forEach(([key, value]) => {
@@ -137,6 +140,17 @@ const User = {
         const bcrypt = require("bcrypt");
         updates.password = bcrypt.hashSync(updates.password, 10);
       }
+
+      if (
+        updates.hasOwnProperty("username") &&
+        currentUser.username !== updates.username &&
+        !this.usernameRegex.test(updates.username)
+      )
+        return {
+          success: false,
+          error:
+            "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+        };
 
       const user = await prisma.users.update({
         where: { id: parseInt(userId) },
@@ -185,7 +199,6 @@ const User = {
       return null;
     }
   },
-
   // Returns user object with all fields
   _get: async function (clause = {}) {
     try {
