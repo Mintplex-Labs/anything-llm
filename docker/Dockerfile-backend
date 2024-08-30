@@ -116,18 +116,6 @@ RUN echo "Running common build flow of AnythingLLM image for all architectures"
 USER anythingllm
 WORKDIR /app
 
-# Install & Build frontend layer
-# FROM build AS frontend-build
-# COPY --chown=anythingllm:anythingllm ./frontend /app/frontend/
-# WORKDIR /app/frontend
-# RUN yarn install --network-timeout 100000 && yarn cache clean
-# RUN yarn build && \
-#    cp -r dist /tmp/frontend-build && \
-#    rm -rf * && \
-#    cp -r /tmp/frontend-build dist && \
-#    rm -rf /tmp/frontend-build
-# WORKDIR /app
-
 # Install server layer & build node-llama-cpp
 # Also pull and build collector deps (chromium issues prevent bad bindings)
 FROM build AS backend-build
@@ -158,12 +146,6 @@ USER root
 RUN chown -R anythingllm:anythingllm /app/server && \
     chown -R anythingllm:anythingllm /app/collector
 USER anythingllm
-
-# No longer needed? (deprecated)
-# WORKDIR /app/server
-# RUN npx prisma generate --schema=./prisma/schema.prisma && \
-#     npx prisma migrate deploy --schema=./prisma/schema.prisma
-# WORKDIR /app
 
 # Setup the environment
 ENV NODE_ENV=production
