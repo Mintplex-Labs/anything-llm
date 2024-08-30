@@ -26,7 +26,7 @@ import OrderPlaced from "./OrderPlaced";
 
 const FineTuningSteps = {
   intro: {
-    name: "Introduction to Fine-Tuning",
+    name: "1. Introduction to Fine-Tuning",
     next: () => "privacy",
     component: ({ settings, setSettings, setStep }) => (
       <Introduction
@@ -37,7 +37,7 @@ const FineTuningSteps = {
     ),
   },
   privacy: {
-    name: "How your data is handled",
+    name: "2. How your data is handled",
     next: () => "tos",
     component: ({ settings, setSettings, setStep }) => (
       <PrivacyPolicy
@@ -48,7 +48,7 @@ const FineTuningSteps = {
     ),
   },
   tos: {
-    name: "Terms of service",
+    name: "3. Terms of service",
     next: () => "fulfillment",
     component: ({ settings, setSettings, setStep }) => (
       <TermsAndConditions
@@ -59,7 +59,7 @@ const FineTuningSteps = {
     ),
   },
   fulfillment: {
-    name: "Fulfillment terms",
+    name: "4. Fulfillment terms",
     next: () => "order-details",
     component: ({ settings, setSettings, setStep }) => (
       <Fulfillment
@@ -70,7 +70,7 @@ const FineTuningSteps = {
     ),
   },
   "order-details": {
-    name: "Model details & information",
+    name: "5. Model details & information",
     next: () => "data-selection",
     component: ({ settings, setSettings, setStep }) => (
       <OrderDetails
@@ -81,7 +81,7 @@ const FineTuningSteps = {
     ),
   },
   "data-selection": {
-    name: "Data selection",
+    name: "6. Data selection",
     next: () => "confirmation",
     component: ({ settings, setSettings, setStep }) => (
       <DataUpload
@@ -92,7 +92,7 @@ const FineTuningSteps = {
     ),
   },
   confirmation: {
-    name: "Review and Submit",
+    name: "7. Review and Submit",
     next: () => "done",
     component: ({ settings, setSettings, setStep }) => (
       <Confirmation
@@ -103,7 +103,7 @@ const FineTuningSteps = {
     ),
   },
   done: {
-    name: "Order placed",
+    name: "8. Order placed",
     next: () => "done",
     component: ({ settings }) => <OrderPlaced settings={settings} />,
   },
@@ -133,7 +133,7 @@ export function FineTuningCreationLayout({ setStep, children }) {
   return (
     <div
       id="fine-tune-create-order-container"
-      className="w-screen h-screen overflow-y-auto bg-sidebar flex"
+      className="w-screen h-screen overflow-hidden bg-sidebar flex md:mt-0 mt-6"
     >
       <Sidebar />
       <div

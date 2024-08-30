@@ -30,7 +30,16 @@ export const KOBOLDCPP_COMMON_URLS = [
   "http://172.17.0.1:5000/v1",
 ];
 
+export const LOCALAI_COMMON_URLS = [
+  "http://127.0.0.1:8080/v1",
+  "http://localhost:8080/v1",
+  "http://host.docker.internal:8080/v1",
+  "http://172.17.0.1:8080/v1",
+];
+
 export function fullApiUrl() {
   if (API_BASE !== "/api") return API_BASE;
   return `${window.location.origin}/api`;
 }
+
+export const POPUP_BROWSER_EXTENSION_EVENT = "NEW_BROWSER_EXTENSION_CONNECTION";

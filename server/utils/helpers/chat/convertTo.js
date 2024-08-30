@@ -50,7 +50,11 @@ async function prepareWorkspaceChatsForExport(format = "jsonl") {
       const responseJson = JSON.parse(chat.response);
       return {
         id: chat.id,
-        username: chat.user ? chat.user.username : "unknown user",
+        username: chat.user
+          ? chat.user.username
+          : chat.api_session_id !== null
+            ? "API"
+            : "unknown user",
         workspace: chat.workspace ? chat.workspace.name : "unknown workspace",
         prompt: chat.prompt,
         response: responseJson.text,
