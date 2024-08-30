@@ -27,9 +27,5 @@
     "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
     "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs"
   },
-  "private": false,
-  "dependencies": {
-    "@azure/msal-browser": "^3.20.0",
-    "@azure/msal-react": "^2.0.22"
-  }
+  "private": false
 }
