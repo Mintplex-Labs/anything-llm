@@ -506,7 +506,9 @@ Only return the role.
    * eg: sql-agent:list-database-connections
    */
   #parseFunctionName(pluginName = "") {
-    if (!pluginName.includes("#")) return pluginName;
+    if (!pluginName.includes("#") && !pluginName.startsWith("@@"))
+      return pluginName;
+    if (pluginName.startsWith("@@")) return pluginName.replace("@@", "");
     return pluginName.split("#")[1];
   }
 
