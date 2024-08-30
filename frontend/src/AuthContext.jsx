@@ -13,6 +13,7 @@ export function ContextWrapper(props) {
     authToken: localAuthToken ? localAuthToken : null,
   });
   const [settings, setSettings] = useState(null);
+  const [msalInstanceSetup, setMsalInstanceSetup] = useState(null);
   const [msalInstance, setMsalInstance] = useState(null);
 
   const [actions] = useState({
@@ -50,16 +51,16 @@ export function ContextWrapper(props) {
           storeAuthStateInCookie: false,
         },
       };
-
       setMsalInstance(new PublicClientApplication(msalConfig));
     }
+    setMsalInstanceSetup("Done");
   }, [settings]);
 
-  if (!msalInstance) {
+  if (!msalInstanceSetup) {
     return <div>Loading...</div>; // or return null
   }
 
-  if (settings?.AzureADClientId) {
+  if (msalInstance) {
     return (
       <MsalProvider instance={msalInstance}>
         <AuthContext.Provider value={{ store, actions }}>

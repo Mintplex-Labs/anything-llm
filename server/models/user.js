@@ -76,7 +76,6 @@ const User = {
       return { user: null, error: error.message };
     }
   },
-
   createWithAzureAuthProviders: async function ({ username }) {
     try {
       const user = await prisma.users.create({
@@ -91,7 +90,6 @@ const User = {
       return { user: null, error: error.message };
     }
   },
-
   // Log the changes to a user object, but omit sensitive fields
   // that are not meant to be logged.
   loggedChanges: function (updates, prev = {}) {

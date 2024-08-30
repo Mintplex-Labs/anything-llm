@@ -179,8 +179,6 @@ const SystemSettings = {
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
 
-
-
       // --------------------------------------------------------
       // Azure Providers
       // --------------------------------------------------------

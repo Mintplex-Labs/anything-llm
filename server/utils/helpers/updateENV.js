@@ -451,7 +451,7 @@ const KEY_MAPPING = {
     envKey: "AGENT_SEARXNG_API_URL",
     checks: [],
   },
-
+  
   // Azure Login Providers
   AzureADClientId: {
     envKey: "AZURE_AD_CLIENT_ID",
