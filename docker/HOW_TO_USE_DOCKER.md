@@ -168,6 +168,12 @@ After setting that up install the AnythingLLM docker backend to the Midori AI Su
 
 Once that is done, you are all set!
 
+### Run on runtipi
+
+[Runtipi](https://runtipi.io) is an open source personal homeserver orchestrator that enables you to manage and run multiple services on a single server. Free and open-source, runtipi lets you install all your favorite self-hosted apps without the hassle of configuring and managing each service. One-click installs and updates for more than 200 popular apps.
+
+Install Runtipi on your server and open the App Store. Locate AnythingLLM in the list, navigate to its store page, and click "Install". In a few moments AnythingLLM will be running (and exposed to the internet, if so configured) and ready for initial on-boarding.
+
 ## Common questions and fixes
 
 ### Cannot connect to service running on localhost!
