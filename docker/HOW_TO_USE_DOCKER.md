@@ -117,6 +117,8 @@ services:
       - WHISPER_PROVIDER=local
       - TTS_PROVIDER=native
       - PASSWORDMINCHAR=8
+      - AGENT_SEARCHAPI_API_KEY="SearchApi API KEY"
+      - AGENT_SEARCHAPI_ENGINE=google
       - AGENT_SERPER_DEV_KEY="SERPER DEV API KEY"
       - AGENT_SERPLY_API_KEY="Serply.io API KEY"
     volumes:

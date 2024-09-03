@@ -50,6 +50,56 @@ export function GoogleSearchOptions({ settings }) {
   );
 }
 
+export function SearchApiOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        You can get a free API key{" "}
+        <a
+          href="https://www.searchapi.io/"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from SearchApi.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentSearchApiKey"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="SearchApi API Key"
+            defaultValue={settings?.AgentSearchApiKey ? "*".repeat(20) : ""}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Engine
+          </label>
+          <input
+            type="text"
+            name="env::AgentSearchApiEngine"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="SearchApi engine (Google, Bing...)"
+            defaultValue={settings?.AgentSearchApiEngine || "google"}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function SerperDotDevOptions({ settings }) {
   return (
     <>
