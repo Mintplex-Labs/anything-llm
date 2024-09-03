@@ -617,7 +617,260 @@ const TRANSLATIONS = {
     embedding: "임베딩 기본 설정",
     vector: "벡터 데이터베이스",
     anonymous: "익명 원격 분석 활성화",
+    info1:
+      "모든 이벤트는 IP 주소를 기록하지 않으며 <b>식별 가능한</b> 콘텐츠, 설정, 채팅 또는 기타 비사용 기반 정보를 포함하지 않습니다. 수집된 이벤트 태그 목록을 보려면 <a href='https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code' target='_blank' class='underline text-blue-400'>여기에서 Github</a>를 확인하세요.",
+    info2:
+      "오픈 소스 프로젝트로서 우리는 귀하의 개인정보 보호 권리를 존중합니다. 우리는 AI와 문서를 비공개 및 안전하게 통합할 수 있는 최고의 솔루션을 제공하는 데 전념하고 있습니다. 텔레메트리를 끄기로 결정하셨다면, 저희에게 피드백과 의견을 보내주시길 바랍니다. <a href='mailto:team@mintplexlabs.com' class='underline text-blue-400' target='_blank'>team@mintplexlabs.com</a>.",
+    enabledMessage: "익명 원격 분석이 활성화되었습니다.",
+    disabledMessage: "익명 원격 분석이 비활성화되었습니다.",
+  },
+
+  //Data Handling & Privacy
+  handlingPrivacy: {
+    title: "데이터 처리 및 개인정보 보호",
+    description:
+      "귀하의 개인 데이터에 대해 투명성과 통제권을 제공하는 데 전념하고 있습니다.",
+    setting: "이 설정은 언제든지 설정에서 재구성할 수 있습니다.",
+    llmSelectionPrivacy: {
+      openai: {
+        name: "OpenAI",
+        description: [
+          "귀하의 채팅은 훈련에 사용되지 않습니다.",
+          "응답 생성에 사용된 프롬프트와 문서 텍스트는 OpenAI에 표시됩니다.",
+        ],
+      },
+      azure: {
+        name: "Azure OpenAI",
+        description: [
+          "귀하의 채팅은 훈련에 사용되지 않습니다.",
+          "귀하의 텍스트 및 임베딩 텍스트는 OpenAI 또는 Microsoft에 표시되지 않습니다.",
+        ],
+      },
+      anthropic: {
+        name: "Anthropic",
+        description: [
+          "귀하의 채팅은 훈련에 사용되지 않습니다.",
+          "응답 생성에 사용된 프롬프트와 문서 텍스트는 Anthropic에 표시됩니다.",
+        ],
+      },
+      gemini: {
+        name: "Google Gemini",
+        description: [
+          "귀하의 채팅은 익명화되어 훈련에 사용됩니다.",
+          "응답 생성에 사용된 프롬프트와 문서 텍스트는 Google에 표시됩니다.",
+        ],
+      },
+      lmstudio: {
+        name: "LMStudio",
+        description: [
+          "모델과 채팅은 LMStudio를 실행하는 서버에서만 액세스할 수 있습니다.",
+        ],
+      },
+      localai: {
+        name: "LocalAI",
+        description: [
+          "모델과 채팅은 LocalAI를 실행하는 서버에서만 액세스할 수 있습니다.",
+        ],
+      },
+      ollama: {
+        name: "Ollama",
+        description: [
+          "모델과 채팅은 Ollama 모델을 실행하는 기기에서만 액세스할 수 있습니다.",
+        ],
+      },
+      native: {
+        name: "Custom Llama Model",
+        description: [
+          "모델과 채팅은 이 AnythingLLM 인스턴스에서만 액세스할 수 있습니다.",
+        ],
+      },
+      togetherai: {
+        name: "TogetherAI",
+        description: [
+          "귀하의 채팅은 훈련에 사용되지 않습니다.",
+          "응답 생성에 사용된 프롬프트와 문서 텍스트는 TogetherAI에 표시됩니다.",
+        ],
+      },
+      mistral: {
+        name: "Mistral",
+        description: [
+          "응답 생성에 사용된 프롬프트와 문서 텍스트는 Mistral에 표시됩니다.",
+        ],
+      },
+      huggingface: {
+        name: "HuggingFace",
+        description: [
+          "응답에 사용된 프롬프트와 문서 텍스트는 귀하의 HuggingFace 관리 엔드포인트로 전송됩니다.",
+        ],
+      },
+      perplexity: {
+        name: "Perplexity AI",
+        description: [
+          "귀하의 채팅은 훈련에 사용되지 않습니다.",
+          "응답 생성에 사용된 프롬프트와 문서 텍스트는 Perplexity AI에 표시됩니다.",
+        ],
+      },
+      openrouter: {
+        name: "OpenRouter",
+        description: [
+          "귀하의 채팅은 훈련에 사용되지 않습니다.",
+          "응답 생성에 사용된 프롬프트와 문서 텍스트는 OpenRouter에 표시됩니다.",
+        ],
+      },
+      groq: {
+        name: "Groq",
+        description: [
+          "귀하의 채팅은 훈련에 사용되지 않습니다.",
+          "응답 생성에 사용된 프롬프트와 문서 텍스트는 Groq에 표시됩니다.",
+        ],
+      },
+      koboldcpp: {
+        name: "KoboldCPP",
+        description: [
+          "모델과 채팅은 KoboldCPP를 실행하는 서버에서만 액세스할 수 있습니다.",
+        ],
+      },
+      textgenwebui: {
+        name: "Oobabooga Web UI",
+        description: [
+          "모델과 채팅은 Oobabooga 텍스트 생성 웹 UI를 실행하는 서버에서만 액세스할 수 있습니다.",
+        ],
+      },
+      "generic-openai": {
+        name: "Generic OpenAI compatible service",
+        description: [
+          "데이터는 귀하의 일반 엔드포인트 제공업체의 서비스 약관에 따라 공유됩니다.",
+        ],
+      },
+      cohere: {
+        name: "Cohere",
+        description: [
+          "데이터는 cohere.com의 서비스 약관 및 귀하의 지역 개인정보 보호법에 따라 공유됩니다.",
+        ],
+      },
+      litellm: {
+        name: "LiteLLM",
+        description: [
+          "모델과 채팅은 LiteLLM을 실행하는 서버에서만 액세스할 수 있습니다.",
+        ],
+      },
+    },
+    vectorDbPrivacy: {
+      chroma: {
+        name: "Chroma",
+        description: [
+          "벡터와 문서 텍스트는 Chroma 인스턴스에 저장됩니다.",
+          "인스턴스 접근은 귀하가 관리합니다.",
+        ],
+      },
+      pinecone: {
+        name: "Pinecone",
+        description: [
+          "벡터와 문서 텍스트는 Pinecone의 서버에 저장됩니다.",
+          "귀하의 데이터 접근은 Pinecone이 관리합니다.",
+        ],
+      },
+      qdrant: {
+        name: "Qdrant",
+        description: [
+          "벡터와 문서 텍스트는 귀하의 Qdrant 인스턴스(클라우드 또는 자체 호스팅)에 저장됩니다.",
+        ],
+      },
+      weaviate: {
+        name: "Weaviate",
+        description: [
+          "벡터와 문서 텍스트는 귀하의 Weaviate 인스턴스(클라우드 또는 자체 호스팅)에 저장됩니다.",
+        ],
+      },
+      milvus: {
+        name: "Milvus",
+        description: [
+          "벡터와 문서 텍스트는 귀하의 Milvus 인스턴스(클라우드 또는 자체 호스팅)에 저장됩니다.",
+        ],
+      },
+      zilliz: {
+        name: "Zilliz Cloud",
+        description: [
+          "벡터와 문서 텍스트는 귀하의 Zilliz 클라우드 클러스터에 저장됩니다.",
+        ],
+      },
+      astra: {
+        name: "AstraDB",
+        description: [
+          "벡터와 문서 텍스트는 귀하의 클라우드 AstraDB 데이터베이스에 저장됩니다.",
+        ],
+      },
+      lancedb: {
+        name: "LanceDB",
+        description: [
+          "벡터와 문서 텍스트는 이 AnythingLLM 인스턴스에 비공개로 저장됩니다.",
+        ],
+      },
+    },
+    embeddingEnginePrivacy: {
+      native: {
+        name: "AnythingLLM Embedder",
+        description: [
+          "문서 텍스트는 이 AnythingLLM 인스턴스에서 비공개로 임베딩됩니다.",
+        ],
+      },
+      openai: {
+        name: "OpenAI",
+        description: [
+          "문서 텍스트는 OpenAI 서버로 전송됩니다.",
+          "문서는 훈련에 사용되지 않습니다.",
+        ],
+      },
+      azure: {
+        name: "Azure OpenAI",
+        description: [
+          "문서 텍스트는 Microsoft Azure 서비스로 전송됩니다.",
+          "문서는 훈련에 사용되지 않습니다.",
+        ],
+      },
+      localai: {
+        name: "LocalAI",
+        description: [
+          "문서 텍스트는 LocalAI를 실행하는 서버에서 비공개로 임베딩됩니다.",
+        ],
+      },
+      ollama: {
+        name: "Ollama",
+        description: [
+          "문서 텍스트는 Ollama를 실행하는 서버에서 비공개로 임베딩됩니다.",
+        ],
+      },
+      lmstudio: {
+        name: "LMStudio",
+        description: [
+          "문서 텍스트는 LMStudio를 실행하는 서버에서 비공개로 임베딩됩니다.",
+        ],
+      },
+      cohere: {
+        name: "Cohere",
+        description: [
+          "데이터는 cohere.com의 서비스 약관 및 귀하의 지역 개인정보 보호법에 따라 공유됩니다.",
+        ],
+      },
+      voyageai: {
+        name: "Voyage AI",
+        description: [
+          "데이터는 voyageai.com의 서비스 약관에 따라 Voyage AI의 서버로 전송됩니다.",
+        ],
+      },
+      litellm: {
+        name: "LiteLLM",
+        description: [
+          "문서 텍스트는 LiteLLM을 실행하는 서버에서만 접근할 수 있으며, LiteLLM에 설정된 공급자에게만 전달됩니다.",
+        ],
+      },
+      "generic-openai": {
+        name: "Generic OpenAI compatible service",
+        description: [
+          "데이터는 귀하의 일반 엔드포인트 제공업체의 서비스 약관에 따라 공유됩니다.",
+        ],
+      },
+    },
   },
 };
-
 export default TRANSLATIONS;
