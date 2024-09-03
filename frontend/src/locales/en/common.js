@@ -627,6 +627,260 @@ const TRANSLATIONS = {
     embedding: "Embedding Preference",
     vector: "Vector Database",
     anonymous: "Anonymous Telemetry Enabled",
+    info1:
+      "All events do not record IP-address and contain <b>no identifying</b> content, settings, chats, or other non-usage based information. To see the list of event tags collected you can look on <a href='https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code' target='_blank' class='underline text-blue-400'>Github here</a>.",
+    info2:
+      "As an open-source project we respect your right to privacy. We are dedicated to building the best solution for integrating AI and documents privately and securely. If you do decide to turn off telemetry all we ask is to consider sending us feedback and thoughts so that we can continue to improve AnythingLLM for you. <a href='mailto:team@mintplexlabs.com' class='underline text-blue-400' target='_blank'>team@mintplexlabs.com</a>.",
+    enabledMessage: "Anonymous Telemetry has been enabled.",
+    disabledMessage: "Anonymous Telemetry has been disabled.",
+  },
+
+  //Data Handling & Privacy
+  handlingPrivacy: {
+    title: "Data Handling & Privacy",
+    description:
+      "We are committed to transparency and control when it comes to your personal data.",
+    setting: " These settings can be reconfigured at any time in the settings.",
+    llmSelectionPrivacy: {
+      openai: {
+        name: "OpenAI",
+        description: [
+          "Your chats will not be used for training",
+          "Your prompts and document text used in response creation are visible to OpenAI",
+        ],
+      },
+      azure: {
+        name: "Azure OpenAI",
+        description: [
+          "Your chats will not be used for training",
+          "Your text and embedding text are not visible to OpenAI or Microsoft",
+        ],
+      },
+      anthropic: {
+        name: "Anthropic",
+        description: [
+          "Your chats will not be used for training",
+          "Your prompts and document text used in response creation are visible to Anthropic",
+        ],
+      },
+      gemini: {
+        name: "Google Gemini",
+        description: [
+          "Your chats are de-identified and used in training",
+          "Your prompts and document text used in response creation are visible to Google",
+        ],
+      },
+      lmstudio: {
+        name: "LMStudio",
+        description: [
+          "Your model and chats are only accessible on the server running LMStudio",
+        ],
+      },
+      localai: {
+        name: "LocalAI",
+        description: [
+          "Your model and chats are only accessible on the server running LocalAI",
+        ],
+      },
+      ollama: {
+        name: "Ollama",
+        description: [
+          "Your model and chats are only accessible on the machine running Ollama models",
+        ],
+      },
+      native: {
+        name: "Custom Llama Model",
+        description: [
+          "Your model and chats are only accessible on this AnythingLLM instance",
+        ],
+      },
+      togetherai: {
+        name: "TogetherAI",
+        description: [
+          "Your chats will not be used for training",
+          "Your prompts and document text used in response creation are visible to TogetherAI",
+        ],
+      },
+      mistral: {
+        name: "Mistral",
+        description: [
+          "Your prompts and document text used in response creation are visible to Mistral",
+        ],
+      },
+      huggingface: {
+        name: "HuggingFace",
+        description: [
+          "Your prompts and document text used in response are sent to your HuggingFace managed endpoint",
+        ],
+      },
+      perplexity: {
+        name: "Perplexity AI",
+        description: [
+          "Your chats will not be used for training",
+          "Your prompts and document text used in response creation are visible to Perplexity AI",
+        ],
+      },
+      openrouter: {
+        name: "OpenRouter",
+        description: [
+          "Your chats will not be used for training",
+          "Your prompts and document text used in response creation are visible to OpenRouter",
+        ],
+      },
+      groq: {
+        name: "Groq",
+        description: [
+          "Your chats will not be used for training",
+          "Your prompts and document text used in response creation are visible to Groq",
+        ],
+      },
+      koboldcpp: {
+        name: "KoboldCPP",
+        description: [
+          "Your model and chats are only accessible on the server running KoboldCPP",
+        ],
+      },
+      textgenwebui: {
+        name: "Oobabooga Web UI",
+        description: [
+          "Your model and chats are only accessible on the server running the Oobabooga Text Generation Web UI",
+        ],
+      },
+      "generic-openai": {
+        name: "Generic OpenAI compatible service",
+        description: [
+          "Data is shared according to the terms of service applicable with your generic endpoint provider.",
+        ],
+      },
+      cohere: {
+        name: "Cohere",
+        description: [
+          "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
+        ],
+      },
+      litellm: {
+        name: "LiteLLM",
+        description: [
+          "Your model and chats are only accessible on the server running LiteLLM",
+        ],
+      },
+    },
+    vectorDbPrivacy: {
+      chroma: {
+        name: "Chroma",
+        description: [
+          "Your vectors and document text are stored on your Chroma instance",
+          "Access to your instance is managed by you",
+        ],
+      },
+      pinecone: {
+        name: "Pinecone",
+        description: [
+          "Your vectors and document text are stored on Pinecone's servers",
+          "Access to your data is managed by Pinecone",
+        ],
+      },
+      qdrant: {
+        name: "Qdrant",
+        description: [
+          "Your vectors and document text are stored on your Qdrant instance (cloud or self-hosted)",
+        ],
+      },
+      weaviate: {
+        name: "Weaviate",
+        description: [
+          "Your vectors and document text are stored on your Weaviate instance (cloud or self-hosted)",
+        ],
+      },
+      milvus: {
+        name: "Milvus",
+        description: [
+          "Your vectors and document text are stored on your Milvus instance (cloud or self-hosted)",
+        ],
+      },
+      zilliz: {
+        name: "Zilliz Cloud",
+        description: [
+          "Your vectors and document text are stored on your Zilliz cloud cluster.",
+        ],
+      },
+      astra: {
+        name: "AstraDB",
+        description: [
+          "Your vectors and document text are stored on your cloud AstraDB database.",
+        ],
+      },
+      lancedb: {
+        name: "LanceDB",
+        description: [
+          "Your vectors and document text are stored privately on this instance of AnythingLLM",
+        ],
+      },
+    },
+    embeddingEnginePrivacy: {
+      native: {
+        name: "AnythingLLM Embedder",
+        description: [
+          "Your document text is embedded privately on this instance of AnythingLLM",
+        ],
+      },
+      openai: {
+        name: "OpenAI",
+        description: [
+          "Your document text is sent to OpenAI servers",
+          "Your documents are not used for training",
+        ],
+      },
+      azure: {
+        name: "Azure OpenAI",
+        description: [
+          "Your document text is sent to your Microsoft Azure service",
+          "Your documents are not used for training",
+        ],
+      },
+      localai: {
+        name: "LocalAI",
+        description: [
+          "Your document text is embedded privately on the server running LocalAI",
+        ],
+      },
+      ollama: {
+        name: "Ollama",
+        description: [
+          "Your document text is embedded privately on the server running Ollama",
+        ],
+      },
+      lmstudio: {
+        name: "LMStudio",
+        description: [
+          "Your document text is embedded privately on the server running LMStudio",
+        ],
+      },
+      cohere: {
+        name: "Cohere",
+        description: [
+          "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
+        ],
+      },
+      voyageai: {
+        name: "Voyage AI",
+        description: [
+          "Data sent to Voyage AI's servers is shared according to the terms of service of voyageai.com.",
+        ],
+      },
+      litellm: {
+        name: "LiteLLM",
+        description: [
+          "Your document text is only accessible on the server running LiteLLM and to the providers you configured in LiteLLM.",
+        ],
+      },
+      "generic-openai": {
+        name: "Generic OpenAI compatible service",
+        description: [
+          "Data is shared according to the terms of service applicable with your generic endpoint provider.",
+        ],
+      },
+    },
   },
 };
 

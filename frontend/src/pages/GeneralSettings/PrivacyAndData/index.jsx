@@ -5,9 +5,9 @@ import showToast from "@/utils/toast";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import {
-  EMBEDDING_ENGINE_PRIVACY,
-  LLM_SELECTION_PRIVACY,
-  VECTOR_DB_PRIVACY,
+  LLM_LOGOS,
+  VECTOR_LOGOS,
+  EMBEDDING_LOGOS,
 } from "@/pages/OnboardingFlow/Steps/DataHandling";
 import { useTranslation } from "react-i18next";
 
@@ -66,7 +66,32 @@ function ThirdParty({ settings }) {
   const embeddingEngine = settings?.EmbeddingEngine || "openai";
   const vectorDb = settings?.VectorDB || "lancedb";
   const { t } = useTranslation();
-
+  const llmName = t(`handlingPrivacy.llmSelectionPrivacy.${llmChoice}.name`);
+  const llmDescription = t(
+    `handlingPrivacy.llmSelectionPrivacy.${llmChoice}.description`,
+    {
+      returnObjects: true,
+    }
+  );
+  const llmLogo = LLM_LOGOS[llmChoice];
+  const vectorName = t(`handlingPrivacy.vectorDbPrivacy.${vectorDb}.name`);
+  const vectorDescription = t(
+    `handlingPrivacy.vectorDbPrivacy.${vectorDb}.description`,
+    {
+      returnObjects: true,
+    }
+  );
+  const vectorLogo = VECTOR_LOGOS[vectorDb];
+  const embaddingName = t(
+    `handlingPrivacy.embeddingEnginePrivacy.${embeddingEngine}.name`
+  );
+  const embaddingDescription = t(
+    `handlingPrivacy.embeddingEnginePrivacy.${embeddingEngine}.description`,
+    {
+      returnObjects: true,
+    }
+  );
+  const embeddingLogo = EMBEDDING_LOGOS[embeddingEngine];
   return (
     <div className="py-8 w-full flex items-start justify-center flex-col gap-y-6 border-b-2 border-white/10">
       <div className="flex flex-col gap-8">
@@ -75,18 +100,14 @@ function ThirdParty({ settings }) {
             {t("privacy.llm")}
           </div>
           <div className="flex items-center gap-2.5">
-            <img
-              src={LLM_SELECTION_PRIVACY[llmChoice].logo}
-              alt="LLM Logo"
-              className="w-8 h-8 rounded"
-            />
-            <p className="text-white text-sm font-bold">
-              {LLM_SELECTION_PRIVACY[llmChoice].name}
-            </p>
+            <img src={llmLogo} alt="LLM Logo" className="w-8 h-8 rounded" />
+            <p className="text-white text-sm font-bold">{llmName}</p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {LLM_SELECTION_PRIVACY[llmChoice].description.map((desc) => (
-              <li className="text-white/90 text-sm">{desc}</li>
+            {llmDescription.map((desc, index) => (
+              <li key={index} className="text-white/90 text-sm">
+                {desc}
+              </li>
             ))}
           </ul>
         </div>
@@ -96,20 +117,18 @@ function ThirdParty({ settings }) {
           </div>
           <div className="flex items-center gap-2.5">
             <img
-              src={EMBEDDING_ENGINE_PRIVACY[embeddingEngine].logo}
+              src={embeddingLogo}
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-white text-sm font-bold">
-              {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].name}
-            </p>
+            <p className="text-white text-sm font-bold">{embaddingName}</p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].description.map(
-              (desc) => (
-                <li className="text-white/90 text-sm">{desc}</li>
-              )
-            )}
+            {embaddingDescription.map((desc, index) => (
+              <li key={index} className="text-white/90 text-sm">
+                {desc}
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -118,18 +137,14 @@ function ThirdParty({ settings }) {
             {t("privacy.vector")}
           </div>
           <div className="flex items-center gap-2.5">
-            <img
-              src={VECTOR_DB_PRIVACY[vectorDb].logo}
-              alt="LLM Logo"
-              className="w-8 h-8 rounded"
-            />
-            <p className="text-white text-sm font-bold">
-              {VECTOR_DB_PRIVACY[vectorDb].name}
-            </p>
+            <img src={vectorLogo} alt="LLM Logo" className="w-8 h-8 rounded" />
+            <p className="text-white text-sm font-bold">{vectorName}</p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {VECTOR_DB_PRIVACY[vectorDb].description.map((desc) => (
-              <li className="text-white/90 text-sm">{desc}</li>
+            {vectorDescription.map((desc, index) => (
+              <li key={index} className="text-white/90 text-sm">
+                {desc}
+              </li>
             ))}
           </ul>
         </div>
@@ -148,11 +163,10 @@ function TelemetryLogs({ settings }) {
       DisableTelemetry: !telemetry ? "false" : "true",
     });
     setTelemetry(!telemetry);
-    showToast(
-      `Anonymous Telemetry has been ${!telemetry ? "enabled" : "disabled"}.`,
-      "info",
-      { clear: true }
-    );
+    const message = telemetry
+      ? t("privacy.disabledMessage")
+      : t("privacy.enabledMessage");
+    showToast(message, "info", { clear: true });
   }
 
   return (
@@ -178,35 +192,14 @@ function TelemetryLogs({ settings }) {
           </div>
         </div>
         <div className="flex flex-col items-left space-y-2">
-          <p className="text-white/80 text-xs rounded-lg w-96">
-            All events do not record IP-address and contain{" "}
-            <b>no identifying</b> content, settings, chats, or other non-usage
-            based information. To see the list of event tags collected you can
-            look on{" "}
-            <a
-              href="https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code"
-              className="underline text-blue-400"
-              target="_blank"
-            >
-              Github here
-            </a>
-            .
-          </p>
-          <p className="text-white/80 text-xs rounded-lg w-96">
-            As an open-source project we respect your right to privacy. We are
-            dedicated to building the best solution for integrating AI and
-            documents privately and securely. If you do decide to turn off
-            telemetry all we ask is to consider sending us feedback and thoughts
-            so that we can continue to improve AnythingLLM for you.{" "}
-            <a
-              href="mailto:team@mintplexlabs.com"
-              className="underline text-blue-400"
-              target="_blank"
-            >
-              team@mintplexlabs.com
-            </a>
-            .
-          </p>
+          <p
+            className="text-white/80 text-xs rounded-lg w-96"
+            dangerouslySetInnerHTML={{ __html: t("privacy.info1") }}
+          ></p>
+          <p
+            className="text-white/80 text-xs rounded-lg w-96"
+            dangerouslySetInnerHTML={{ __html: t("privacy.info2") }}
+          ></p>
         </div>
       </div>
     </div>
