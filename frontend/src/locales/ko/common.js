@@ -872,5 +872,32 @@ const TRANSLATIONS = {
       },
     },
   },
+  //language preference
+  displayLanguage: {
+    title: "언어 설정",
+    description: "AnythingLLM의 UI에서 사용할 언어를 선택하세요.",
+  },
+
+  //supportEmail
+  supportEmail: {
+    title: "지원 이메일",
+    description:
+      "이 인스턴스에 로그인한 동안 사용자 메뉴에 표시될 지원 이메일 주소를 설정하세요.",
+    clearButton: "지우기",
+    saveButton: "저장",
+    updateFailed: "지원 이메일을 업데이트하지 못했습니다: {{error}}",
+    updateSuccess: "지원 이메일이 성공적으로 업데이트되었습니다.",
+  },
+
+  //customAppName
+  customAppName: {
+    title: "앱 이름 설정",
+    description: "로그인 페이지에 표시될 앱 이름을 설정하세요.",
+    placeholder: "AnythingLLM",
+    clearButton: "지우기",
+    saveButton: "저장",
+    updateFailed: "앱 이름 업데이트 실패: {{error}}",
+    updateSuccess: "앱 이름이 성공적으로 업데이트되었습니다.",
+  },
 };
 export default TRANSLATIONS;
