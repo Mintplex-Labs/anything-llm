@@ -76,6 +76,7 @@ model users {
   password_reset_tokens       password_reset_tokens[]
   workspace_agent_invocations workspace_agent_invocations[]
   slash_command_presets       slash_command_presets[]
+  browser_extension_api_keys  browser_extension_api_keys[]
 }
 
 model recovery_codes {
@@ -297,4 +298,15 @@ model document_sync_executions {
   result    String?
   createdAt DateTime             @default(now())
   queue     document_sync_queues @relation(fields: [queueId], references: [id], onDelete: Cascade)
+}
+
+model browser_extension_api_keys {
+  id            Int      @id @default(autoincrement())
+  key           String   @unique
+  user_id       Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @updatedAt
+  user          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
 }

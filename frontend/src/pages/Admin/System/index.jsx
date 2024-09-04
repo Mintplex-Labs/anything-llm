@@ -115,7 +115,6 @@ export default function AdminSystem() {
                     }}
                     value={messageLimit.limit}
                     min={1}
-                    max={300}
                     className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-60 p-2.5"
                   />
                 </div>
