@@ -882,6 +882,35 @@ const TRANSLATIONS = {
       },
     },
   },
+
+  //language preference
+  displayLanguage: {
+    title: "Display Language",
+    description:
+      "Select the preferred language to render AnythingLLM's UI in, when applicable.",
+  },
+
+  //supportEmail
+  supportEmail: {
+    title: "Support Email",
+    description:
+      "Set the support email address that shows up in the user menu while logged into this instance.",
+    clearButton: "Clear",
+    saveButton: "Save",
+    updateFailed: "Failed to update support email: {{error}}",
+    updateSuccess: "Successfully updated support semail.",
+  },
+
+  //customAppName
+  customAppName: {
+    title: "Custom App Name",
+    description: "Set a custom app name that is displayed on the login page.",
+    placeholder: "AnythingLLM",
+    clearButton: "Clear",
+    saveButton: "Save",
+    updateFailed: "Failed to update custom app name: {{error}}",
+    updateSuccess: "Successfully updated custom app name.",
+  },
 };
 
 export default TRANSLATIONS;

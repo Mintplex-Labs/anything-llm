@@ -2,14 +2,14 @@ import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
-
+import { useTranslation } from "react-i18next";
 export default function CustomAppName() {
   const [loading, setLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
   const [customAppName, setCustomAppName] = useState("");
   const [originalAppName, setOriginalAppName] = useState("");
   const [canCustomize, setCanCustomize] = useState(false);
-
+  const { t } = useTranslation();
   useEffect(() => {
     const fetchInitialParams = async () => {
       const settings = await System.keys();
@@ -38,10 +38,10 @@ export default function CustomAppName() {
       custom_app_name,
     });
     if (!success) {
-      showToast(`Failed to update custom app name: ${error}`, "error");
+      showToast(t("customAppName.updateFailed"), "error");
       return;
     } else {
-      showToast("Successfully updated custom app name.", "success");
+      showToast(t("customAppName.updateSuccess"), "success");
       window.localStorage.removeItem(System.cacheKeys.customAppName);
       setCustomAppName(custom_app_name);
       setOriginalAppName(custom_app_name);
@@ -60,10 +60,10 @@ export default function CustomAppName() {
     <form className="mb-6" onSubmit={updateCustomAppName}>
       <div className="flex flex-col gap-y-1">
         <h2 className="text-base leading-6 font-bold text-white">
-          Custom App Name
+          {t("customAppName.title")}
         </h2>
         <p className="text-xs leading-[18px] font-base text-white/60">
-          Set a custom app name that is displayed on the login page.
+          {t("customAppName.description")}
         </p>
       </div>
       <div className="flex items-center gap-x-4">
@@ -83,7 +83,7 @@ export default function CustomAppName() {
             onClick={(e) => updateCustomAppName(e, "")}
             className="mt-4 text-white text-base font-medium hover:text-opacity-60"
           >
-            Clear
+            {t("customAppName.clearButton")}
           </button>
         )}
       </div>
@@ -92,7 +92,7 @@ export default function CustomAppName() {
           type="submit"
           className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
         >
-          Save
+          {t("customAppName.saveButton")}
         </button>
       )}
     </form>
