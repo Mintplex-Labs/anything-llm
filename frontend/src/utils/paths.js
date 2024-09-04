@@ -34,7 +34,7 @@ export default {
     },
   },
   github: () => {
-    return "https://github.com/Mintplex-Labs/anything-llm";
+    return "https://github.com/likw99/anything-llm";
   },
   discord: () => {
     return "https://discord.com/invite/6UyHPeGZAC";
