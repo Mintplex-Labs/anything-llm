@@ -40,65 +40,63 @@ const EMBEDDERS = [
     value: "native",
     logo: AnythingLLMIcon,
     options: (settings) => <NativeEmbeddingOptions settings={settings} />,
-    description:
-      "Use the built-in embedding provider for AnythingLLM. Zero setup!",
+    description: (t) => t("embedding.providers.native"),
   },
   {
     name: "OpenAI",
     value: "openai",
     logo: OpenAiLogo,
     options: (settings) => <OpenAiOptions settings={settings} />,
-    description: "The standard option for most non-commercial use.",
+    description: (t) => t("embedding.providers.openai"),
   },
   {
     name: "Azure OpenAI",
     value: "azure",
     logo: AzureOpenAiLogo,
     options: (settings) => <AzureAiOptions settings={settings} />,
-    description: "The enterprise option of OpenAI hosted on Azure services.",
+    description: (t) => t("embedding.providers.azure"),
   },
   {
     name: "Local AI",
     value: "localai",
     logo: LocalAiLogo,
     options: (settings) => <LocalAiOptions settings={settings} />,
-    description: "Run embedding models locally on your own machine.",
+    description: (t) => t("embedding.providers.localai"),
   },
   {
     name: "Ollama",
     value: "ollama",
     logo: OllamaLogo,
     options: (settings) => <OllamaEmbeddingOptions settings={settings} />,
-    description: "Run embedding models locally on your own machine.",
+    description: (t) => t("embedding.providers.ollama"),
   },
   {
     name: "LM Studio",
     value: "lmstudio",
     logo: LMStudioLogo,
     options: (settings) => <LMStudioEmbeddingOptions settings={settings} />,
-    description:
-      "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+    description: (t) => t("embedding.providers.lmstudio"),
   },
   {
     name: "Cohere",
     value: "cohere",
     logo: CohereLogo,
     options: (settings) => <CohereEmbeddingOptions settings={settings} />,
-    description: "Run powerful embedding models from Cohere.",
+    description: (t) => t("embedding.providers.cohere"),
   },
   {
     name: "Voyage AI",
     value: "voyageai",
     logo: VoyageAiLogo,
     options: (settings) => <VoyageAiOptions settings={settings} />,
-    description: "Run powerful embedding models from Voyage AI.",
+    description: (t) => t("embedding.providers.voyageai"),
   },
   {
     name: "LiteLLM",
     value: "litellm",
     logo: LiteLLMLogo,
     options: (settings) => <LiteLLMOptions settings={settings} />,
-    description: "Run powerful embedding models from LiteLLM.",
+    description: (t) => t("embedding.providers.litellm"),
   },
   {
     name: "Generic OpenAI",
@@ -107,7 +105,7 @@ const EMBEDDERS = [
     options: (settings) => (
       <GenericOpenAiEmbeddingOptions settings={settings} />
     ),
-    description: "Run embedding models from any OpenAI compatible API service.",
+    description: (t) => t("embedding.providers.generic-openai"),
   },
 ];
 
@@ -161,10 +159,10 @@ export default function GeneralEmbeddingPreference() {
 
     const { error } = await System.updateSystem(settingsData);
     if (error) {
-      showToast(`Failed to save embedding settings: ${error}`, "error");
+      showToast(t("embedding.error", { error }), "error");
       setHasChanges(true);
     } else {
-      showToast("Embedding preferences saved successfully.", "success");
+      showToast(t("embedding.success"), "success");
       setHasChanges(false);
     }
     setSaving(false);
@@ -278,7 +276,7 @@ export default function GeneralEmbeddingPreference() {
                           type="text"
                           name="embedder-search"
                           autoComplete="off"
-                          placeholder="Search all embedding providers"
+                          placeholder={t("embedding.searchPlaceholder")}
                           className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-white placeholder:text-white placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
@@ -300,7 +298,7 @@ export default function GeneralEmbeddingPreference() {
                             name={embedder.name}
                             value={embedder.value}
                             image={embedder.logo}
-                            description={embedder.description}
+                            description={embedder.description(t)}
                             checked={selectedEmbedder === embedder.value}
                             onClick={() => updateChoice(embedder.value)}
                           />
@@ -325,7 +323,7 @@ export default function GeneralEmbeddingPreference() {
                           {selectedEmbedderObject.name}
                         </div>
                         <div className="mt-1 text-xs text-description">
-                          {selectedEmbedderObject.description}
+                          {selectedEmbedderObject.description(t)}
                         </div>
                       </div>
                     </div>
@@ -352,7 +350,7 @@ export default function GeneralEmbeddingPreference() {
       )}
       <ModalWrapper isOpen={isOpen}>
         <ChangeWarningModal
-          warningText="Switching the embedding model will break previously embedded documents from working during chat. They will need to un-embed from every workspace and fully removed and re-uploaded so they can be embed by the new embedding model."
+          warningText={t("embedding.modalWarning")}
           onClose={closeModal}
           onConfirm={handleSaveSettings}
         />

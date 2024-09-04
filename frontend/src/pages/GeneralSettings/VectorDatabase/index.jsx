@@ -61,10 +61,10 @@ export default function GeneralVectorDatabase() {
 
     const { error } = await System.updateSystem(settingsData);
     if (error) {
-      showToast(`Failed to save vector database settings: ${error}`, "error");
+      showToast(t("vector.saveError", { error }), "error");
       setHasChanges(true);
     } else {
-      showToast("Vector database preferences saved successfully.", "success");
+      showToast(t("vector.saveSuccess"), "success");
       setHasChanges(false);
     }
     setSaving(false);
@@ -99,76 +99,74 @@ export default function GeneralVectorDatabase() {
   }, []);
 
   useEffect(() => {
-    const filtered = VECTOR_DBS.filter((vdb) =>
+    const filtered = VECTOR_DBS(t).filter((vdb) =>
       vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredVDBs(filtered);
-  }, [searchQuery, selectedVDB]);
+  }, [searchQuery, selectedVDB, t]);
 
-  const VECTOR_DBS = [
+  const VECTOR_DBS = (t) => [
     {
       name: "LanceDB",
       value: "lancedb",
       logo: LanceDbLogo,
       options: <LanceDBOptions />,
-      description:
-        "100% local vector DB that runs on the same instance as AnythingLLM.",
+      description: t("vector.providers.lancedb"),
     },
     {
       name: "Chroma",
       value: "chroma",
       logo: ChromaLogo,
       options: <ChromaDBOptions settings={settings} />,
-      description:
-        "Open source vector database you can host yourself or on the cloud.",
+      description: t("vector.providers.chroma"),
     },
     {
       name: "Pinecone",
       value: "pinecone",
       logo: PineconeLogo,
       options: <PineconeDBOptions settings={settings} />,
-      description: "100% cloud-based vector database for enterprise use cases.",
+      description: t("vector.providers.pinecone"),
     },
     {
       name: "Zilliz Cloud",
       value: "zilliz",
       logo: ZillizLogo,
       options: <ZillizCloudOptions settings={settings} />,
-      description:
-        "Cloud hosted vector database built for enterprise with SOC 2 compliance.",
+      description: t("vector.providers.zilliz"),
     },
     {
       name: "QDrant",
       value: "qdrant",
       logo: QDrantLogo,
       options: <QDrantDBOptions settings={settings} />,
-      description: "Open source local and distributed cloud vector database.",
+      description: t("vector.providers.qdrant"),
     },
     {
       name: "Weaviate",
       value: "weaviate",
       logo: WeaviateLogo,
       options: <WeaviateDBOptions settings={settings} />,
-      description:
-        "Open source local and cloud hosted multi-modal vector database.",
+      description: t("vector.providers.weaviate"),
     },
     {
       name: "Milvus",
       value: "milvus",
       logo: MilvusLogo,
       options: <MilvusDBOptions settings={settings} />,
-      description: "Open-source, highly scalable, and blazing fast.",
+      description: t("vector.providers.milvus"),
     },
     {
       name: "AstraDB",
       value: "astra",
       logo: AstraDBLogo,
       options: <AstraDBOptions settings={settings} />,
-      description: "Vector Search for Real-world GenAI.",
+      description: t("vector.providers.astra"),
     },
   ];
 
-  const selectedVDBObject = VECTOR_DBS.find((vdb) => vdb.value === selectedVDB);
+  const selectedVDBObject = VECTOR_DBS(t).find(
+    (vdb) => vdb.value === selectedVDB
+  );
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
@@ -236,7 +234,7 @@ export default function GeneralVectorDatabase() {
                           type="text"
                           name="vdb-search"
                           autoComplete="off"
-                          placeholder="Search all vector database providers"
+                          placeholder={t("vector.provider.searchPlaceholder")}
                           className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-white placeholder:text-white placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
@@ -300,7 +298,8 @@ export default function GeneralVectorDatabase() {
                 className="mt-4 flex flex-col gap-y-1"
               >
                 {selectedVDB &&
-                  VECTOR_DBS.find((vdb) => vdb.value === selectedVDB)?.options}
+                  VECTOR_DBS(t).find((vdb) => vdb.value === selectedVDB)
+                    ?.options}
               </div>
             </div>
           </form>
@@ -308,7 +307,7 @@ export default function GeneralVectorDatabase() {
       )}
       <ModalWrapper isOpen={isOpen}>
         <ChangeWarningModal
-          warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
+          warningText={t("vector.changeWarning")}
           onClose={closeModal}
           onConfirm={handleSaveSettings}
         />

@@ -19,14 +19,14 @@ const PROVIDERS = [
     value: "openai",
     logo: OpenAiLogo,
     options: (settings) => <OpenAiWhisperOptions settings={settings} />,
-    description: "Leverage the OpenAI Whisper-large model using your API key.",
+    description: (t) => t("transcription.providers.openai"),
   },
   {
     name: "AnythingLLM Built-In",
     value: "local",
     logo: AnythingLLMIcon,
     options: (settings) => <NativeTranscriptionOptions settings={settings} />,
-    description: "Run a built-in whisper model on this instance privately.",
+    description: (t) => t("transcription.providers.local"),
   },
 ];
 
@@ -53,9 +53,9 @@ export default function TranscriptionModelPreference() {
     setSaving(true);
 
     if (error) {
-      showToast(`Failed to save preferences: ${error}`, "error");
+      showToast(t("transcription.error", { error }), "error");
     } else {
-      showToast("Transcription preferences saved successfully.", "success");
+      showToast(t("transcription.success"), "success");
     }
     setSaving(false);
     setHasChanges(!!error);
@@ -133,7 +133,9 @@ export default function TranscriptionModelPreference() {
                     onClick={() => handleSubmit()}
                     className="mt-3 mr-0 -mb-14 z-10"
                   >
-                    {saving ? "Saving..." : "Save changes"}
+                    {saving
+                      ? t("transcription.saving")
+                      : t("transcription.saveChanges")}
                   </CTAButton>
                 )}
               </div>
@@ -160,7 +162,7 @@ export default function TranscriptionModelPreference() {
                           type="text"
                           name="provider-search"
                           autoComplete="off"
-                          placeholder="Search audio transcription providers"
+                          placeholder={t("transcription.searchPlaceholder")}
                           className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:outline-primary-button active:outline-primary-button outline-none text-white placeholder:text-white placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
@@ -182,7 +184,7 @@ export default function TranscriptionModelPreference() {
                             name={provider.name}
                             value={provider.value}
                             image={provider.logo}
-                            description={provider.description}
+                            description={provider.description(t)}
                             checked={selectedProvider === provider.value}
                             onClick={() => updateProviderChoice(provider.value)}
                           />
@@ -207,7 +209,7 @@ export default function TranscriptionModelPreference() {
                           {selectedProviderObject.name}
                         </div>
                         <div className="mt-1 text-xs text-description">
-                          {selectedProviderObject.description}
+                          {selectedProviderObject.description(t)}
                         </div>
                       </div>
                     </div>

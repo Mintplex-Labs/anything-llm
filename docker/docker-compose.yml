@@ -28,6 +28,8 @@ services:
       - "3001:3001"
     env_file:
       - .env
+    environment:
+      - JWT_SECRET="your-secure-random-string-here"
     networks:
       - anything-llm
     extra_hosts:

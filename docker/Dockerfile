@@ -38,6 +38,7 @@ RUN groupadd -g "$ARG_GID" anythingllm && \
 COPY ./docker/docker-entrypoint.sh /usr/local/bin/
 COPY ./docker/docker-healthcheck.sh /usr/local/bin/
 COPY --chown=anythingllm:anythingllm ./docker/.env.example /app/server/.env
+RUN chmod 644 /app/server/.env
 
 # Ensure the scripts are executable
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \

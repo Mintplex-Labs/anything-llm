@@ -281,17 +281,27 @@ const TRANSLATIONS = {
 
   // Workspace Chats
   recorded: {
-    title: "워크스페이스 채팅",
-    description:
-      "이것들은 사용자들이 보낸 모든 채팅과 메시지입니다. 생성 날짜별로 정렬되어 있습니다.",
-    export: "내보내기",
-    table: {
-      id: "ID",
-      by: "보낸 사람",
-      workspace: "워크스페이스",
-      prompt: "프롬프트",
-      response: "응답",
-      at: "보낸 시각",
+    recorded: {
+      title: "워크스페이스 채팅",
+      description:
+        "이것들은 사용자들이 보낸 모든 채팅과 메시지입니다. 생성 날짜별로 정렬되어 있습니다.",
+      export: "내보내기",
+      exportSuccess: "{{name}} 형식으로 채팅이 성공적으로 내보내졌습니다.",
+      exportError: "채팅 내보내기에 실패했습니다.",
+      clearChats: "채팅 삭제",
+      confirmClear:
+        "모든 채팅을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.",
+      clearSuccess: "모든 채팅이 삭제되었습니다.",
+      table: {
+        id: "ID",
+        by: "보낸 사람",
+        workspace: "워크스페이스",
+        prompt: "프롬프트",
+        response: "응답",
+        at: "보낸 시각",
+      },
+      previous: "이전 페이지",
+      next: "다음 페이지",
     },
   },
 
@@ -497,18 +507,47 @@ const TRANSLATIONS = {
       "RAM 또는 CPU 성능이 제한된 머신에서 로컬 위스퍼 모델을 사용하면 미디어 파일을 처리할 때 AnythingLLM이 중단될 수 있습니다.",
     "warn-recommend": "최소 2GB RAM과 10Mb 보다 작은 파일 업로드를 권장합니다.",
     "warn-end": "내장된 모델은 첫 번째 사용 시 자동으로 다운로드됩니다.",
+    searchPlaceholder: "텍스트 변환 제공자를 검색하십시오",
+    error: "환경 설정 저장 실패: {{error}}",
+    success: "텍스트 변환 기본 설정이 성공적으로 저장되었습니다.",
+    saving: "저장 중...",
+    saveChanges: "변경 사항 저장",
+    providers: {
+      openai: "API 키를 사용하여 OpenAI Whisper-large 모델을 활용합니다.",
+      local: "이 인스턴스에서 로컬로 위스퍼 모델을 실행합니다.",
+    },
   },
 
   embedding: {
     title: "임베딩 기본 설정",
     "desc-start":
-      "임베딩 엔진을 지원하지 않는 LLM을 사용할 때 텍스트를 임베딩하는 데 다른 임베딩 엔진 제공자의 인증이 필요할 수 있습니다.",
+      "임베딩 엔진을 지원하지 않는 LLM을 사용할 때 다른 임베딩 엔진 제공자의 인증이 필요할 수 있습니다.",
     "desc-end":
-      "임베딩은 텍스트를 벡터로 변환하는 과정입니다. 파일과 프롬프트를 AnythingLLM이 처리할 수 있는 형식으로 변환하려면 이러한 인증이 필요합니다.",
+      "임베딩은 텍스트를 벡터로 변환하는 과정입니다. 이 인증은 파일과 프롬프트를 AnythingLLM이 처리할 수 있는 형식으로 변환하기 위해 필요합니다.",
     provider: {
       title: "임베딩 제공자",
       description:
         "AnythingLLM의 기본 임베딩 엔진을 사용할 때는 설정이 필요하지 않습니다.",
+    },
+    error: "임베딩 설정을 저장하지 못했습니다: {{error}}",
+    success: "임베딩 기본 설정이 성공적으로 저장되었습니다.",
+    searchPlaceholder: "모든 임베딩 제공자를 검색하십시오",
+    modalWarning:
+      "임베딩 모델을 변경하면 채팅에서 이전에 임베딩된 문서가 작동하지 않게 됩니다. 모든 작업 공간에서 문서를 임베딩 해제하고 완전히 제거한 후 새 임베딩 모델로 다시 업로드해야 합니다.",
+    providers: {
+      native:
+        "AnythingLLM을 위한 기본 임베딩 제공자를 사용합니다. 설정이 필요하지 않습니다.",
+      openai: "비상업적 사용에 적합한 표준 옵션입니다.",
+      azure: "Azure 서비스에서 호스팅되는 OpenAI의 엔터프라이즈 옵션입니다.",
+      localai: "자신의 머신에서 임베딩 모델을 로컬로 실행합니다.",
+      ollama: "자신의 머신에서 임베딩 모델을 로컬로 실행합니다.",
+      lmstudio:
+        "수천 개의 최신 LLM을 몇 번의 클릭만으로 발견, 다운로드, 실행하십시오.",
+      cohere: "Cohere에서 강력한 임베딩 모델을 실행합니다.",
+      voyageai: "Voyage AI에서 강력한 임베딩 모델을 실행합니다.",
+      litellm: "LiteLLM에서 강력한 임베딩 모델을 실행합니다.",
+      "generic-openai":
+        "모든 OpenAI 호환 API 서비스에서 임베딩 모델을 실행합니다.",
     },
   },
 
@@ -542,6 +581,45 @@ const TRANSLATIONS = {
     provider: {
       title: "벡터 데이터베이스 제공자",
       description: "LanceDB를 선택하면 설정이 필요 없습니다.",
+      searchPlaceholder: "모든 벡터 데이터베이스 제공자 검색",
+    },
+    providers: {
+      lancedb:
+        "AnythingLLM과 동일한 인스턴스에서 실행되는 100% 로컬 벡터 DB입니다.",
+      chroma:
+        "오픈 소스 벡터 데이터베이스로 직접 호스팅하거나 클라우드에서 사용할 수 있습니다.",
+      pinecone:
+        "기업 사용 사례에 적합한 100% 클라우드 기반 벡터 데이터베이스입니다.",
+      zilliz:
+        "SOC 2 준수를 갖춘 엔터프라이즈용 클라우드 호스팅 벡터 데이터베이스입니다.",
+      qdrant: "로컬 및 분산 클라우드용 오픈 소스 벡터 데이터베이스입니다.",
+      weaviate:
+        "로컬 및 클라우드에서 호스팅되는 멀티모달 오픈 소스 벡터 데이터베이스입니다.",
+      milvus:
+        "오픈 소스, 고도로 확장 가능하며 매우 빠른 벡터 데이터베이스입니다.",
+      astra: "실제 GenAI 응용 프로그램을 위한 벡터 검색을 제공합니다.",
+    },
+    changeWarning:
+      "벡터 데이터베이스를 변경하면 이전에 임베딩된 문서와 향후 유사성 검색 결과가 무시됩니다. 각 워크스페이스에 다시 추가해야 합니다.",
+  },
+
+  //common
+  common: {
+    save: "저장",
+    saving: "저장 중...",
+  },
+
+  //stt
+  stt: {
+    title: "음성-텍스트 변환 기본 설정",
+    description:
+      "여기에서 AnythingLLM 경험에 사용할 텍스트 변환 및 음성-텍스트 변환 제공자를 지정할 수 있습니다. 기본적으로 브라우저의 내장 서비스를 사용하지만 다른 서비스를 사용할 수도 있습니다.",
+    provider: "제공자",
+    searchPlaceholder: "음성-텍스트 변환 제공자를 검색하십시오",
+    error: "환경 설정을 저장하지 못했습니다: {{error}}",
+    success: "음성-텍스트 변환 기본 설정이 성공적으로 저장되었습니다.",
+    providers: {
+      native: "브라우저의 내장 STT 서비스를 지원하는 경우 사용합니다.",
     },
   },
 
