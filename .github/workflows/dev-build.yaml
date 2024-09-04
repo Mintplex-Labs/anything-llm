@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['encrypt-jwt-value'] # put your current branch to create a build. Core team only.
+    branches: ['chrome-extension'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

@@ -38,6 +38,7 @@ const TRANSLATIONS = {
     tools: "Ferramentas",
     "experimental-features": "Recursos Experimentais",
     contact: "Contato com Suporte",
+    "browser-extension": "Extensão do navegador",
   },
 
   // Page Definitions
