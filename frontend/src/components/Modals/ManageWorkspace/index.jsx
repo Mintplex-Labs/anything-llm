@@ -32,6 +32,20 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
     fetchWorkspace();
   }, [providedSlug, slug]);
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        hideModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [hideModal]);
+
   if (!workspace) return null;
 
   if (isMobile) {
