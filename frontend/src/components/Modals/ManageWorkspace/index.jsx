@@ -32,20 +32,6 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
     fetchWorkspace();
   }, [providedSlug, slug]);
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        hideModal();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [hideModal]);
-
   if (!workspace) return null;
 
   if (isMobile) {
@@ -141,19 +127,32 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
     </div>
   );
 };
+
 export function useManageWorkspaceModal() {
   const { user } = useUser();
   const [showing, setShowing] = useState(false);
 
-  const showModal = () => {
+  function showModal() {
     if (user?.role !== "default") {
       setShowing(true);
     }
-  };
+  }
 
-  const hideModal = () => {
+  function hideModal() {
     setShowing(false);
-  };
+  }
+
+  useEffect(() => {
+    function onEscape(event) {
+      if (!showing || event.key !== "Escape") return;
+      setShowing(false);
+    }
+
+    document.addEventListener("keydown", onEscape);
+    return () => {
+      document.removeEventListener("keydown", onEscape);
+    };
+  }, [showing]);
 
   return { showing, showModal, hideModal };
 }
