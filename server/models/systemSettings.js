@@ -81,6 +81,7 @@ const SystemSettings = {
         if (
           ![
             "google-search-engine",
+            "searchapi",
             "serper-dot-dev",
             "bing-search",
             "serply-engine",
@@ -218,6 +219,8 @@ const SystemSettings = {
       // --------------------------------------------------------
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
       AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
+      AgentSearchApiKey: !!process.env.AGENT_SEARCHAPI_API_KEY || null,
+      AgentSearchApiEngine: process.env.AGENT_SEARCHAPI_ENGINE || "google",
       AgentSerperApiKey: !!process.env.AGENT_SERPER_DEV_KEY || null,
       AgentBingSearchApiKey: !!process.env.AGENT_BING_SEARCH_API_KEY || null,
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
