@@ -50,6 +50,21 @@ export function GoogleSearchOptions({ settings }) {
   );
 }
 
+const SearchApiEngines = [
+  { name: "Google Search", value: "google" },
+  { name: "Google Maps", value: "google_maps" },
+  { name: "Google Shopping", value: "google_shopping" },
+  { name: "Google News", value: "google_news" },
+  { name: "Google Jobs", value: "google_jobs" },
+  { name: "Google Scholar", value: "google_scholar" },
+  { name: "Google Finance", value: "google_finance" },
+  { name: "Google Patents", value: "google_patents" },
+  { name: "YouTube", value: "youtube" },
+  { name: "Bing", value: "bing" },
+  { name: "Bing News", value: "bing_news" },
+  { name: "Amazon Product Search", value: "amazon_search" },
+  { name: "Baidu", value: "baidu" },
+];
 export function SearchApiOptions({ settings }) {
   return (
     <>
@@ -84,7 +99,19 @@ export function SearchApiOptions({ settings }) {
           <label className="text-white text-sm font-semibold block mb-3">
             Engine
           </label>
-          <input
+          <select
+            name="env::AgentSearchApiEngine"
+            required={true}
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            defaultValue={settings?.AgentSearchApiEngine || "google"}
+          >
+            {SearchApiEngines.map(({ name, value }) => (
+              <option key={name} value={value}>
+                {name}
+              </option>
+            ))}
+          </select>
+          {/* <input
             type="text"
             name="env::AgentSearchApiEngine"
             className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
@@ -93,7 +120,7 @@ export function SearchApiOptions({ settings }) {
             required={true}
             autoComplete="off"
             spellCheck={false}
-          />
+          /> */}
         </div>
       </div>
     </>

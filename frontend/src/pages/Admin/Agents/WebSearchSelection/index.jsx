@@ -46,7 +46,7 @@ const SEARCH_PROVIDERS = [
     logo: SearchApiIcon,
     options: (settings) => <SearchApiOptions settings={settings} />,
     description:
-      "SearchApi delivers structured data from search engines like Google Search, Bing Search, Baidu Search, Google News, YouTube, and many more. Free for 100 queries, but then paid. ",
+      "SearchApi delivers structured data from multiple search engines. Free for 100 queries, but then paid. ",
   },
   {
     name: "Serper.dev",
