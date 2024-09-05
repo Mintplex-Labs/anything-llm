@@ -69,7 +69,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 
 ### Supported LLMs, Embedder Models, Speech models, and Vector Databases
 
-**Language Learning Models:**
+**Large Language Models (LLMs):**
 
 - [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
