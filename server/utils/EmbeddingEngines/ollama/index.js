@@ -36,6 +36,13 @@ class OllamaEmbedder {
     return result?.[0] || [];
   }
 
+  /**
+   * This function takes an array of text chunks and embeds them using the Ollama API.
+   * chunks are processed sequentially to avoid overwhelming the API with too many requests
+   * or running out of resources on the endpoint running the ollama instance.
+   * @param {string[]} textChunks - An array of text chunks to embed.
+   * @returns {Promise<Array<number[]>>} - A promise that resolves to an array of embeddings.
+   */
   async embedChunks(textChunks = []) {
     if (!(await this.#isAlive()))
       throw new Error(
@@ -60,8 +67,12 @@ class OllamaEmbedder {
         });
 
         const { embedding } = await res.json();
+        if (!Array.isArray(embedding) || embedding.length === 0)
+          throw new Error("Ollama returned an empty embedding for chunk!");
+
         data.push(embedding);
       } catch (err) {
+        this.log(err.message);
         error = err.message;
         data = [];
         break;
