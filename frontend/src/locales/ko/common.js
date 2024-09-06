@@ -977,5 +977,165 @@ const TRANSLATIONS = {
     updateFailed: "앱 이름 업데이트 실패: {{error}}",
     updateSuccess: "앱 이름이 성공적으로 업데이트되었습니다.",
   },
+
+  //Agentskills
+  agentSkills: {
+    "rag-memory": {
+      title: "RAG & 장기 기억",
+      description:
+        "에이전트가 로컬 문서를 활용하여 쿼리에 응답하거나, 장기 기억 검색을 위해 특정 콘텐츠를 '기억'하도록 요청할 수 있습니다.",
+    },
+    "view-summarize": {
+      title: "문서 보기 및 요약",
+      description:
+        "에이전트가 현재 임베디드된 작업 공간 파일의 내용을 나열하고 요약할 수 있습니다.",
+    },
+    "scrape-websites": {
+      title: "웹사이트 스크래핑",
+      description:
+        "에이전트가 웹사이트를 방문하고 그 내용을 스크랩하도록 허용합니다.",
+    },
+    "save-file-to-browser": {
+      title: "파일 생성 및 브라우저에 저장",
+      description:
+        "기본 에이전트가 파일을 생성하고 컴퓨터에 저장할 수 있도록 허용합니다.",
+      skill: "save-file-to-browser",
+    },
+    "create-chart": {
+      title: "차트 생성",
+      description:
+        "기본 에이전트가 제공된 데이터 또는 채팅에서 받은 데이터를 바탕으로 다양한 차트를 생성할 수 있도록 허용합니다.",
+      skill: "create-chart",
+    },
+    "web-browsing": {
+      title: "웹 검색",
+      skill: "web-browsing",
+    },
+    "sql-agent": {
+      title: "SQL 커넥터",
+      skill: "sql-agent",
+    },
+    saveFailed: "에이전트 설정 저장에 실패했습니다.",
+    saveSuccess: "에이전트 설정이 성공적으로 저장되었습니다.",
+    title: "에이전트 스킬",
+    description: "에이전트 스킬을 선택하세요",
+    default: "기본",
+  },
+
+  //contextSaveBar
+  contextSaveBar: {
+    unsaved: "저장되지 않은 변경 사항",
+    cancel: "취소",
+    save: "저장",
+  },
+
+  //agentDbConnection
+  agentDbConnection: {
+    title: "SQL 에이전트",
+    confirmDelete:
+      "{{database_id}}을(를) 사용 가능한 SQL 연결 목록에서 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    description:
+      "에이전트가 다양한 SQL 데이터베이스 제공자에 연결하여 질문에 답변할 수 있도록 SQL을 활용할 수 있게 합니다.",
+    connection: "데이터베이스 연결 목록",
+    add: "새 SQL 연결",
+    fillOutFields: "모든 필드를 작성해 주세요.",
+    addDescription:
+      "아래에 데이터베이스 연결 정보를 추가하면, 이후 SQL 에이전트 호출 시 사용할 수 있습니다.",
+    warningMessage: `
+    <b>경고:</b> SQL 에이전트는 <i>비수정</i> 쿼리만 수행하도록 설정되었습니다. 
+    하지만 이 설정은 예기치 않은 동작으로 인해 데이터가 삭제되는 것을 <b>방지하지 못합니다</b>. 
+    반드시 <b>READ_ONLY</b> 권한이 있는 사용자로만 연결하세요.
+  `,
+    selectEngine: "SQL 엔진 선택",
+    connectionName: "연결 이름",
+    namePlaceholder: "이 SQL 연결을 식별할 고유 이름",
+    username: "데이터베이스 사용자",
+    password: "데이터베이스 비밀번호",
+    host: "서버 엔드포인트",
+    hostPlaceholder: "데이터베이스의 호스트 이름 또는 엔드포인트",
+    port: "포트",
+    database: "데이터베이스",
+    databasePlaceholder: "에이전트가 상호작용할 데이터베이스",
+    cancel: "취소",
+    saveConnection: "연결 저장",
+  },
+
+  //searchProvidesOption
+  searchProviders: {
+    none: {
+      name: "선택해 주세요",
+      description: "웹 검색이 제공자와 키가 설정될 때까지 비활성화됩니다.",
+    },
+    googleSearch: {
+      name: "구글 검색 엔진",
+      description:
+        "사용자 지정 구글 검색 엔진을 통한 웹 검색. 하루 100회 무료 검색 가능.",
+    },
+    serperDotDev: {
+      name: "Serper.dev",
+      description: "Serper.dev 웹 검색. 2,500회 무료 사용, 이후 유료 전환.",
+    },
+    bingSearch: {
+      name: "빙 검색",
+      description:
+        "빙 검색 API로 구동되는 웹 검색. 한 달에 1,000회 무료 검색 가능.",
+    },
+    serply: {
+      name: "Serply.io",
+      description: "Serply.io 웹 검색. 월 100회 무료 검색 제공.",
+    },
+    searxng: {
+      name: "SearXNG",
+      description:
+        "개인 정보 추적 없이 사용할 수 있는 무료 오픈 소스 메타 검색 엔진.",
+    },
+    title: "실시간 웹 검색 및 탐색",
+    description:
+      " 에이전트가 웹 검색 엔진(SERP)과 연결되어 웹에서 정보를 검색하고 질문에 답할 수 있도록 설정하세요. 이 설정을 완료하지 않으면 에이전트가 웹 검색을 수행할 수 없습니다.",
+    searchPlaceholder: "사용 가능한 웹 검색 제공자를 검색하세요",
+  },
+  //searchProvidesOption
+  searchProvidesOption: {
+    googleSearch: {
+      description:
+        '무료 검색 엔진과 API 키를 <a href="https://programmablesearchengine.google.com/controlpanel/create" target="_blank" rel="noreferrer" class="text-blue-300 underline">여기에서 구글로부터 받을 수 있습니다.</a>',
+      searchEngineId: "검색 엔진 ID",
+      apiKey: "프로그래매틱 액세스 API 키",
+      placeholderEngineId: "구글 검색 엔진 ID",
+      placeholderApiKey: "구글 검색 엔진 API 키",
+    },
+    serperDotDev: {
+      description:
+        '무료 API 키를 <a href="https://serper.dev" target="_blank" rel="noreferrer" class="text-blue-300 underline">Serper.dev에서 받을 수 있습니다.</a>',
+      apiKey: "API 키",
+      placeholderApiKey: "Serper.dev API 키",
+    },
+    bingSearch: {
+      description:
+        'Bing 웹 검색 API 구독 키를 <a href="https://portal.azure.com/" target="_blank" rel="noreferrer" class="text-blue-300 underline">Azure 포털에서 받을 수 있습니다.</a>',
+      apiKey: "API 키",
+      placeholderApiKey: "Bing 웹 검색 API 키",
+      setupDescription: "Bing 웹 검색 API 구독 설정 방법:",
+      steps: {
+        step1:
+          'Azure 포털로 이동: <a href="https://portal.azure.com/" target="_blank" rel="noreferrer" class="text-blue-300 underline">https://portal.azure.com/</a>',
+        step2: "새로운 Azure 계정을 만들거나 기존 계정으로 로그인하세요.",
+        step3: '"리소스 생성" 섹션으로 이동하여 "Bing Search v7"을 검색하세요.',
+        step4: '"Bing Search v7" 리소스를 선택하고 새 구독을 만드세요.',
+        step5: "필요한 요금제를 선택하세요 (무료 요금제 사용 가능).",
+        step6: "Bing 웹 검색 구독에 대한 API 키를 받으세요.",
+      },
+    },
+    serply: {
+      description:
+        '무료 API 키를 <a href="https://serply.io" target="_blank" rel="noreferrer" class="text-blue-300 underline">Serply.io에서 받을 수 있습니다.</a>',
+      apiKey: "API 키",
+      placeholderApiKey: "Serply API 키",
+    },
+    searxng: {
+      baseUrl: "SearXNG API 기본 URL",
+      placeholderUrl: "SearXNG API 키",
+    },
+  },
 };
 export default TRANSLATIONS;

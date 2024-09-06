@@ -4,7 +4,7 @@ import { Plus, Database } from "@phosphor-icons/react";
 import NewSQLConnection from "./NewConnectionModal";
 import { useModal } from "@/hooks/useModal";
 import SQLAgentImage from "@/media/agents/sql-agent.png";
-
+import { useTranslation } from "react-i18next";
 export default function AgentSQLConnectorSelection({
   skill,
   settings,
@@ -16,6 +16,7 @@ export default function AgentSQLConnectorSelection({
   const [connections, setConnections] = useState(
     settings?.preferences?.agent_sql_connections || []
   );
+  const { t } = useTranslation();
   return (
     <>
       <div className="p-2">
@@ -23,7 +24,7 @@ export default function AgentSQLConnectorSelection({
           <div className="flex items-center gap-x-2">
             <Database size={24} color="white" weight="bold" />
             <label htmlFor="name" className="text-white text-md font-bold">
-              SQL Agent
+              {t("agentDbConnection.title")}
             </label>
             <label className="border-none relative inline-flex cursor-pointer items-center ml-auto">
               <input
@@ -42,8 +43,7 @@ export default function AgentSQLConnectorSelection({
             className="w-full rounded-md"
           />
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-            Enable your agent to be able to leverage SQL to answer you questions
-            by connecting to various SQL database providers.
+            {t("agentDbConnection.description")}
           </p>
           {enabled && (
             <>
@@ -60,7 +60,7 @@ export default function AgentSQLConnectorSelection({
               />
               <div className="flex flex-col mt-2 gap-y-2">
                 <p className="text-white font-semibold text-sm">
-                  Your database connections
+                  {t("agentDbConnection.connection")}
                 </p>
                 <div className="flex flex-col gap-y-3">
                   {connections
@@ -95,7 +95,7 @@ export default function AgentSQLConnectorSelection({
                         />
                       </div>
                       <p className="text-left text-slate-100 text-sm">
-                        New SQL connection
+                        {t("agentDbConnection.add")}
                       </p>
                     </div>
                   </button>

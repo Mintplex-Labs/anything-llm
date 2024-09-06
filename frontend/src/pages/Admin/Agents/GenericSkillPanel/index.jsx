@@ -1,5 +1,5 @@
 import React from "react";
-
+import { useTranslation } from "react-i18next";
 export default function GenericSkillPanel({
   title,
   description,
@@ -10,6 +10,7 @@ export default function GenericSkillPanel({
   image,
   icon,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="p-2">
       <div className="flex flex-col gap-y-[18px] max-w-[500px]">
@@ -21,7 +22,7 @@ export default function GenericSkillPanel({
               weight: "bold",
             })}
           <label htmlFor="name" className="text-white text-md font-bold">
-            {title}
+            {t(title)}
           </label>
           <label
             className={`border-none relative inline-flex items-center ml-auto ${
@@ -41,7 +42,7 @@ export default function GenericSkillPanel({
         </div>
         <img src={image} alt={title} className="w-full rounded-md" />
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          {description}
+          {t(description)}
         </p>
       </div>
     </div>

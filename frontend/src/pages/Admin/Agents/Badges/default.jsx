@@ -1,6 +1,7 @@
 import { Tooltip } from "react-tooltip";
-
+import { useTranslation } from "react-i18next";
 export function DefaultBadge({ title }) {
+  const { t } = useTranslation();
   return (
     <>
       <span
@@ -10,7 +11,7 @@ export function DefaultBadge({ title }) {
       >
         <div className="flex items-center gap-x-1 w-fit rounded-full bg-[#F4FFD0]/10 px-2.5 py-0.5 text-sm font-medium text-sky-400 shadow-sm cursor-pointer">
           <div className="text-[#F4FFD0] text-[12px] leading-[15px]">
-            Default
+            {t("agentSkills.default")}
           </div>
         </div>
       </span>
