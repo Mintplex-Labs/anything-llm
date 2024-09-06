@@ -1,35 +1,42 @@
-import React, { useRef, useEffect } from "react";
-import JAZZ from "@metamask/jazzicon";
+import React, { memo } from "react";
 import usePfp from "../../hooks/usePfp";
+import UserDefaultPfp from "./user.svg";
+import WorkspaceDefaultPfp from "./workspace.svg";
 
-export default function UserIcon({ size = 36, user, role }) {
+const UserIcon = memo(({ role }) => {
   const { pfp } = usePfp();
-  const divRef = useRef(null);
-  const seed = user?.uid
-    ? toPseudoRandomInteger(user.uid)
-    : Math.floor(100000 + Math.random() * 900000);
-
-  useEffect(() => {
-    if (!divRef.current || (role === "user" && pfp)) return;
-
-    const result = JAZZ(size, seed);
-    divRef.current.appendChild(result);
-  }, [pfp, role, seed, size]);
 
   return (
     <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden">
-      <div ref={divRef} />
-      {role === "user" && pfp && (
+      {role === "user" && <RenderUserPfp pfp={pfp} />}
+      {role !== "user" && (
         <img
-          src={pfp}
-          alt="User profile picture"
-          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
+          src={WorkspaceDefaultPfp}
+          alt="system profile picture"
+          className="flex items-center justify-center rounded-full border border-white/40"
         />
       )}
     </div>
   );
+});
+
+function RenderUserPfp({ pfp }) {
+  if (!pfp)
+    return (
+      <img
+        src={UserDefaultPfp}
+        alt="User profile picture"
+        className="rounded-full border-none"
+      />
+    );
+
+  return (
+    <img
+      src={pfp}
+      alt="User profile picture"
+      className="absolute top-0 left-0 w-full h-full object-cover rounded-full border-none"
+    />
+  );
 }
 
-function toPseudoRandomInteger(uidString = "") {
-  return uidString.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-}
+export default UserIcon;
