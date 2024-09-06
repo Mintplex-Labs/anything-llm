@@ -25,13 +25,14 @@ export default function AzureAuthProviders({
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log(AUTH_TOKEN, AUTH_USER);
         if (accounts.length > 0) {
           setError(null);
           setLoading(true);
           const account = accounts[0];
   
           const response = await instance.acquireTokenSilent({
-            scopes: ["user.read"],
+            scopes: ["user.read", "group.read.all"],
             account: account
           });
   
@@ -66,7 +67,7 @@ export default function AzureAuthProviders({
 
   const handleLogin = async () => {
     instance.loginRedirect({
-      scopes: ["user.read"],
+      scopes: ["user.read", "group.read.all"],
     });
   };
 
