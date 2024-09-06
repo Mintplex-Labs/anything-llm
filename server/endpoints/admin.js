@@ -352,9 +352,6 @@ function adminEndpoints(app) {
                 ?.value,
               []
             ) || [],
-          users_can_login_with_azure:
-            (await SystemSettings.get({ label: "users_can_login_with_azure" }))
-              ?.value === "true",
           custom_app_name:
             (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
             null,

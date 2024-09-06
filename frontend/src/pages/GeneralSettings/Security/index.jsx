@@ -8,6 +8,7 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import AzureAuthProviders from "./AzureAuthProviders";
 
 export default function GeneralSecurity() {
   return (
@@ -136,7 +137,8 @@ function MultiUserMode() {
                 </div>
                 {useMultiUserMode && (
                   <div className="w-full flex flex-col gap-y-2 my-5">
-                    <div className="w-80">
+                    <AzureAuthProviders/>
+                    <div className="mt-4 w-80">
                       <label
                         htmlFor="username"
                         className="block mb-3 font-medium text-white"
