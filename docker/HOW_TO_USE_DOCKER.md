@@ -117,8 +117,8 @@ services:
       - WHISPER_PROVIDER=local
       - TTS_PROVIDER=native
       - PASSWORDMINCHAR=8
-      - AGENT_SERPER_DEV_KEY="SERPER DEV API KEY"
-      - AGENT_SERPLY_API_KEY="Serply.io API KEY"
+      # Add any other keys here for services or settings
+      # you can find in the docker/.env.example file
     volumes:
       - anythingllm_storage:/app/server/storage
     restart: always
