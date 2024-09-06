@@ -103,28 +103,22 @@ function MultiUserMode() {
 
         const accessToken = response.accessToken;
         const { success, error } = await System.setupMultiUserAzureAD({'accessToken': accessToken});
-        if (success) {
-          showToast("Multi-User mode enabled successfully.", "success");
-          setSaving(false);
-          setTimeout(() => {
-            for (let i = 0; i < localStorage.length; i++) {
-              const key = localStorage.key(i);
-              if (key.includes('login.windows.net') || key.includes('msal.token.keys' || key.includes('msal.account.keys'))){
-                window.localStorage.removeItem(key);
-              }
-            }
-            window.localStorage.removeItem(AUTH_USER);
-            window.localStorage.removeItem(AUTH_TOKEN);
-            window.localStorage.removeItem(AUTH_TIMESTAMP);
-            window.location = paths.login();
-          }, 1_000);
-          return;
-        }
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
           if (key.includes('login.windows.net') || key.includes('msal.token.keys' || key.includes('msal.account.keys'))){
             window.localStorage.removeItem(key);
           }
+        }
+        if (success) {
+          showToast("Multi-User mode enabled successfully.", "success");
+          setSaving(false);
+          setTimeout(() => {
+            window.localStorage.removeItem(AUTH_USER);
+            window.localStorage.removeItem(AUTH_TOKEN);
+            window.localStorage.removeItem(AUTH_TIMESTAMP);
+            window.location = paths.login();
+          }, 2_000);
+          return;
         }
         
         showToast(`Failed to enable Multi-User mode: ${error}`, "error");
