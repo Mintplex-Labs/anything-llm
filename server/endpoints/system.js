@@ -53,6 +53,7 @@ const {
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 const { EncryptionManager } = require("../utils/EncryptionManager");
 const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
+const { AzureAuthProviders } = require("../utils/AzureAuthProviders");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -473,6 +474,66 @@ function systemEndpoints(app) {
         }
         response.status(200).json({ success: !error, error });
       } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/enable-multi-user-azure-ad",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (response.locals.multiUserMode) {
+          response.status(200).json({
+            success: false,
+            error: "Multi-user mode is already enabled.",
+          });
+          return;
+        }
+
+        const data = reqBody(request);
+        const azureAuthProviders = new AzureAuthProviders();
+        const { username } = await azureAuthProviders.login(data);
+
+        const { user, error } = await User.createAdminWithAzureAD({
+          username,
+          role: ROLES.admin,
+        });
+
+        if (error || !user) {
+          response.status(400).json({
+            success: false,
+            error: error || "Failed to enable multi-user mode.",
+          });
+          return;
+        }
+
+        await SystemSettings._updateSettings({
+          multi_user_mode: true,
+          limit_user_messages: false,
+          message_limit: 25,
+        });
+        await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
+
+        await updateENV(
+          {
+            JWTSecret: process.env.JWT_SECRET || v4(),
+          },
+          true
+        );
+        await Telemetry.sendTelemetry("enabled_multi_user_mode", {
+          multiUserMode: true,
+        });
+        await EventLogs.logEvent("multi_user_mode_enabled", {}, user?.id);
+        response.status(200).json({ success: !!user, error });
+      } catch (e) {
+        await User.delete({});
+        await SystemSettings._updateSettings({
+          multi_user_mode: false,
+        });
+
         console.error(e.message, e);
         response.sendStatus(500).end();
       }

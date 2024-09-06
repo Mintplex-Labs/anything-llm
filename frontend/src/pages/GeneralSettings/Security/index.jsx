@@ -8,7 +8,8 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
-import AzureAuthProviders from "./AzureAuthProviders";
+import { useMsal } from '@azure/msal-react';
+import logo from "@/media/logo/microsoft-login.png";
 
 export default function GeneralSecurity() {
   return (
@@ -72,6 +73,75 @@ function MultiUserMode() {
     }
     fetchIsMultiUserMode();
   }, []);
+
+
+  const [settings, setSettings] = useState(null);
+  const { instance, accounts } = useMsal();
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const _settings = await System.keys();
+      setSettings(_settings);
+    }
+    fetchSettings();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (multiUserModeEnabled)  return;
+      if (accounts.length > 0) {
+        setSaving(true);
+        setHasChanges(false);
+        setLoading(true);
+        const account = accounts[0];
+        
+
+        const response = await instance.acquireTokenSilent({
+          scopes: ["user.read"],
+          account: account
+        });
+
+        const accessToken = response.accessToken;
+        const { success, error } = await System.setupMultiUserAzureAD({'accessToken': accessToken});
+        if (success) {
+          showToast("Multi-User mode enabled successfully.", "success");
+          setSaving(false);
+          setTimeout(() => {
+            for (let i = 0; i < localStorage.length; i++) {
+              const key = localStorage.key(i);
+              if (key.includes('login.windows.net') || key.includes('msal.token.keys' || key.includes('msal.account.keys'))){
+                window.localStorage.removeItem(key);
+              }
+            }
+            window.localStorage.removeItem(AUTH_USER);
+            window.localStorage.removeItem(AUTH_TOKEN);
+            window.localStorage.removeItem(AUTH_TIMESTAMP);
+            window.location = paths.login();
+          }, 1_000);
+          return;
+        }
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key.includes('login.windows.net') || key.includes('msal.token.keys' || key.includes('msal.account.keys'))){
+            window.localStorage.removeItem(key);
+          }
+        }
+        
+        showToast(`Failed to enable Multi-User mode: ${error}`, "error");
+        setLoading(false);
+        setSaving(false);
+        return;
+      }
+    };
+    
+    fetchData();
+  }, [accounts, instance]);
+
+  const handleLogin = async () => {
+    instance.loginRedirect({
+      scopes: ["user.read"],
+    });
+  };
 
   if (loading) {
     return (
@@ -137,7 +207,14 @@ function MultiUserMode() {
                 </div>
                 {useMultiUserMode && (
                   <div className="w-full flex flex-col gap-y-2 my-5">
-                    <AzureAuthProviders/>
+                    {settings?.AzureADClientId && (
+                      <>
+                        <div>
+                          <button type="button" onClick={handleLogin}><img src={logo} alt="Sign in with microsoft" width="320px" /></button>
+                        </div>
+                        <p className="w-80 block font-medium text-white text-center">or</p>
+                      </>
+                    )}
                     <div className="mt-4 w-80">
                       <label
                         htmlFor="username"
