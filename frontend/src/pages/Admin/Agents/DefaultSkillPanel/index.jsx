@@ -1,7 +1,9 @@
 import React from "react";
 import { DefaultBadge } from "../Badges/default";
+import { useTranslation } from "react-i18next";
 
 export default function DefaultSkillPanel({ title, description, image, icon }) {
+  const { t } = useTranslation();
   return (
     <div className="p-2">
       <div className="flex flex-col gap-y-[18px] max-w-[500px]">
@@ -14,14 +16,14 @@ export default function DefaultSkillPanel({ title, description, image, icon }) {
                 weight: "bold",
               })}
             <label htmlFor="name" className="text-white text-md font-bold">
-              {title}
+              {t(title)}
             </label>
             <DefaultBadge title={title} />
           </div>
         </div>
         <img src={image} alt={title} className="w-full rounded-md" />
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          {description}
+          {t(description)}
         </p>
       </div>
     </div>

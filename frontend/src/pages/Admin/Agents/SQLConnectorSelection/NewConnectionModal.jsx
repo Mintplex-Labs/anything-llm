@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import ModalWrapper from "@/components/ModalWrapper";
 import { WarningOctagon, X } from "@phosphor-icons/react";
 import { DB_LOGOS } from "./DBConnection";
-
+import { useTranslation } from "react-i18next";
 function assembleConnectionString({
   engine,
   username = "",
@@ -11,9 +11,10 @@ function assembleConnectionString({
   host = "",
   port = "",
   database = "",
+  t,
 }) {
   if ([username, password, host, database].every((i) => !!i) === false)
-    return `Please fill out all the fields above.`;
+    return t("agentDbConnection.fillOutFields");
   switch (engine) {
     case "postgresql":
       return `postgres://${username}:${password}@${host}:${port}/${database}`;
@@ -38,6 +39,7 @@ const DEFAULT_CONFIG = {
 export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
   const [engine, setEngine] = useState(DEFAULT_ENGINE);
   const [config, setConfig] = useState(DEFAULT_CONFIG);
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   function handleClose() {
@@ -64,7 +66,11 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
     onSubmit({
       engine,
       database_id: form.get("name"),
-      connectionString: assembleConnectionString({ engine, ...config }),
+      connectionString: assembleConnectionString({
+        engine,
+        ...config,
+        t,
+      }),
     });
     handleClose();
     return false;
@@ -78,7 +84,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
         <div className="relative bg-main-gradient rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.25)] max-h-[85vh] overflow-y-scroll no-scroll">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
             <h3 className="text-xl font-semibold text-white">
-              New SQL Connection
+              {t("agentDbConnection.add")}
             </h3>
             <button
               onClick={handleClose}
@@ -97,22 +103,20 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
           >
             <div className="py-[17px] px-[20px] flex flex-col gap-y-6">
               <p className="text-sm text-white">
-                Add the connection information for your database below and it
-                will be available for future SQL agent calls.
+                {t("agentDbConnection.addDescription")}
               </p>
               <div className="flex flex-col w-full">
                 <div className="border border-red-800 bg-zinc-800 p-4 rounded-lg flex items-center gap-x-2 text-sm text-red-400">
                   <WarningOctagon size={28} className="shrink-0" />
-                  <p>
-                    <b>WARNING:</b> The SQL agent has been <i>instructed</i> to
-                    only perform non-modifying queries. This <b>does not</b>{" "}
-                    prevent a hallucination from still deleting data. Only
-                    connect with a user who has <b>READ_ONLY</b> permissions.
-                  </p>
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: t("agentDbConnection.warningMessage"),
+                    }}
+                  ></p>
                 </div>
 
                 <label className="text-white text-sm font-semibold block my-4">
-                  Select your SQL engine
+                  {t("agentDbConnection.selectEngine")}
                 </label>
                 <div className="grid md:grid-cols-4 gap-4 grid-cols-2">
                   <DBEngine
@@ -135,13 +139,13 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
 
               <div className="flex flex-col w-full">
                 <label className="text-white text-sm font-semibold block mb-3">
-                  Connection name
+                  {t("agentDbConnection.connectionName")}
                 </label>
                 <input
                   type="text"
                   name="name"
                   className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder="a unique name to identify this SQL connection"
+                  placeholder={t("agentDbConnection.namePlaceholder")}
                   required={true}
                   autoComplete="off"
                   spellCheck={false}
@@ -151,7 +155,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col">
                   <label className="text-white text-sm font-semibold block mb-3">
-                    Database user
+                    {t("agentDbConnection.username")}
                   </label>
                   <input
                     type="text"
@@ -165,7 +169,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 </div>
                 <div className="flex flex-col">
                   <label className="text-white text-sm font-semibold block mb-3">
-                    Database user password
+                    {t("agentDbConnection.password")}
                   </label>
                   <input
                     type="text"
@@ -182,13 +186,13 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="sm:col-span-2">
                   <label className="text-white text-sm font-semibold block mb-3">
-                    Server endpoint
+                    {t("agentDbConnection.host")}
                   </label>
                   <input
                     type="text"
                     name="host"
                     className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                    placeholder="the hostname or endpoint for your database"
+                    placeholder={t("agentDbConnection.hostPlaceholder")}
                     required={true}
                     autoComplete="off"
                     spellCheck={false}
@@ -196,7 +200,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 </div>
                 <div>
                   <label className="text-white text-sm font-semibold block mb-3">
-                    Port
+                    {t("agentDbConnection.port")}
                   </label>
                   <input
                     type="text"
@@ -212,20 +216,20 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
 
               <div className="flex flex-col">
                 <label className="text-white text-sm font-semibold block mb-3">
-                  Database
+                  {t("agentDbConnection.database")}
                 </label>
                 <input
                   type="text"
                   name="database"
                   className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder="the database the agent will interact with"
+                  placeholder={t("agentDbConnection.databasePlaceholder")}
                   required={true}
                   autoComplete="off"
                   spellCheck={false}
                 />
               </div>
               <p className="text-white/40 text-sm">
-                {assembleConnectionString({ engine, ...config })}
+                {assembleConnectionString({ engine, ...config, t })}
               </p>
             </div>
             <div className="flex w-full justify-between items-center p-3 space-x-2 border-t rounded-b border-gray-500/50">
@@ -234,14 +238,14 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 onClick={handleClose}
                 className="border-none text-xs px-2 py-1 font-semibold rounded-lg bg-white hover:bg-transparent border-2 border-transparent hover:border-white hover:text-white h-[32px] w-fit -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
               >
-                Cancel
+                {t("agentDbConnection.cancel")}
               </button>
               <button
                 type="submit"
                 form="sql-connection-form"
                 className="border-none text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white h-[32px] w-fit -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
               >
-                Save connection
+                {t("agentDbConnection.saveConnection")}
               </button>
             </div>
           </form>

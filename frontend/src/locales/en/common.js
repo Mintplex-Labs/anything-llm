@@ -911,6 +911,172 @@ const TRANSLATIONS = {
     updateFailed: "Failed to update custom app name: {{error}}",
     updateSuccess: "Successfully updated custom app name.",
   },
+  //Agentskills
+  agentSkills: {
+    "rag-memory": {
+      title: "RAG & long-term memory",
+      description:
+        'Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.',
+    },
+    "view-summarize": {
+      title: "View & summarize documents",
+      description:
+        "Allow the agent to list and summarize the content of workspace files currently embedded.",
+    },
+    "scrape-websites": {
+      title: "Scrape websites",
+      description:
+        "Allow the agent to visit and scrape the content of websites.",
+    },
+    "save-file-to-browser": {
+      title: "Generate & save files to browser",
+      description:
+        "Enable the default agent to generate and write to files that can be saved to your computer.",
+      skill: "save-file-to-browser",
+    },
+    "create-chart": {
+      title: "Generate charts",
+      description:
+        "Enable the default agent to generate various types of charts from data provided or given in chat.",
+      skill: "create-chart",
+    },
+    "web-browsing": {
+      title: "Web Search",
+      skill: "web-browsing",
+    },
+    "sql-agent": {
+      title: "SQL Connector",
+      skill: "sql-agent",
+    },
+    saveFailed: "Agent preferences failed to save.",
+    saveSuccess: "Agent preferences saved successfully.",
+    title: "Agent Skills",
+    description: "Select an agent skill",
+    default: "Default",
+  },
+
+  //contextSaveBar
+  contextSaveBar: {
+    unsaved: "Unsaved Changes",
+    cancel: "Cancel",
+    save: "Save",
+  },
+
+  //agentDbConnection
+  agentDbConnection: {
+    title: "SQL Agent",
+    confirmDelete:
+      "Delete {{database_id}} from the list of available SQL connections? This cannot be undone.",
+    description:
+      "Enable your agent to be able to leverage SQL to answer you questions by connecting to various SQL database providers.",
+    connection: "Your database connections",
+    add: "New SQL connection",
+    fillOutFields: "Please fill out all the fields above.",
+    addDescription:
+      "Add the connection information for your database below and it will be available for future SQL agent calls.",
+    warningMessage: `
+    <b>WARNING:</b> The SQL agent has been <i>instructed</i> to
+    only perform non-modifying queries. This <b>does not</b>
+    prevent a hallucination from still deleting data. Only
+    connect with a user who has <b>READ_ONLY</b> permissions.
+    `,
+    selectEngine: "Select your SQL engine",
+    connectionName: "Connection name",
+    namePlaceholder: "a unique name to identify this SQL connection",
+    username: "Database user",
+    password: "Database user password",
+    host: "Server endpoint",
+    hostPlaceholder: "the hostname or endpoint for your database",
+    port: "Port",
+    database: "Database",
+    databasePlaceholder: "the database the agent will interact with",
+    cancel: "Cancel",
+    saveConnection: "Save connection",
+  },
+
+  //searchProvides
+  searchProviders: {
+    none: {
+      name: "Please make a selection",
+      description:
+        "Web search will be disabled until a provider and keys are provided.",
+    },
+    googleSearch: {
+      name: "Google Search Engine",
+      description:
+        "Web search powered by a custom Google Search Engine. Free for 100 queries per day.",
+    },
+    serperDotDev: {
+      name: "Serper.dev",
+      description:
+        "Serper.dev web-search. Free account with a 2,500 calls, but then paid.",
+    },
+    bingSearch: {
+      name: "Bing Search",
+      description:
+        "Web search powered by the Bing Search API. Free for 1000 queries per month.",
+    },
+    serply: {
+      name: "Serply.io",
+      description:
+        "Serply.io web-search. Free account with a 100 calls/month forever.",
+    },
+    searxng: {
+      name: "SearXNG",
+      description:
+        "Free, open-source, internet meta-search engine with no tracking.",
+    },
+    title: "Live web search and browsing",
+    description:
+      " Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider. Web search during agent sessions will not work until this is set up.",
+    searchPlaceholder: "Search available web-search providers",
+  },
+  //searchProvidesOption
+  searchProvidesOption: {
+    googleSearch: {
+      description:
+        'You can get a free search engine & API key <a href="https://programmablesearchengine.google.com/controlpanel/create" target="_blank" rel="noreferrer" class="text-blue-300 underline">from Google here.</a>',
+      searchEngineId: "Search engine ID",
+      apiKey: "Programmatic Access API Key",
+      placeholderEngineId: "Google Search Engine Id",
+      placeholderApiKey: "Google Search Engine API Key",
+    },
+    serperDotDev: {
+      description:
+        'You can get a free API key <a href="https://serper.dev" target="_blank" rel="noreferrer" class="text-blue-300 underline">from Serper.dev.</a>',
+      apiKey: "API Key",
+      placeholderApiKey: "Serper.dev API Key",
+    },
+    bingSearch: {
+      description:
+        'You can get a Bing Web Search API subscription key <a href="https://portal.azure.com/" target="_blank" rel="noreferrer" class="text-blue-300 underline">from the Azure portal.</a>',
+      apiKey: "API Key",
+      placeholderApiKey: "Bing Web Search API Key",
+      setupDescription: "To set up a Bing Web Search API subscription:",
+      steps: {
+        step1:
+          'Go to the Azure portal: <a href="https://portal.azure.com/" target="_blank" rel="noreferrer" class="text-blue-300 underline">https://portal.azure.com/</a>',
+        step2: "Create a new Azure account or sign in with an existing one.",
+        step3:
+          'Navigate to the "Create a resource" section and search for "Bing Search v7".',
+        step4:
+          'Select the "Bing Search v7" resource and create a new subscription.',
+        step5:
+          "Choose the pricing tier that suits your needs (free tier available).",
+        step6: "Obtain the API key for your Bing Web Search subscription.",
+      },
+    },
+    serply: {
+      description:
+        'You can get a free API key <a href="https://serply.io" target="_blank" rel="noreferrer" class="text-blue-300 underline">from Serply.io.</a>',
+      apiKey: "API Key",
+      placeholderApiKey: "Serply API Key",
+    },
+    searxng: {
+      baseUrl: "SearXNG API base URL",
+      placeholderUrl: "SearXNG API Key",
+    },
+  },
 };
 
 export default TRANSLATIONS;

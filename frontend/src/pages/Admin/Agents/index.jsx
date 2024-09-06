@@ -10,6 +10,7 @@ import { castToType } from "@/utils/types";
 import { FullScreenLoader } from "@/components/Preloader";
 import { defaultSkills, configurableSkills } from "./skills";
 import { DefaultBadge } from "./Badges/default";
+import { useTranslation } from "react-i18next";
 
 export default function AdminAgents() {
   const [hasChanges, setHasChanges] = useState(false);
@@ -19,6 +20,7 @@ export default function AdminAgents() {
   const [loading, setLoading] = useState(true);
   const [showSkillModal, setShowSkillModal] = useState(false);
   const formEl = useRef(null);
+  const { t } = useTranslation();
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {
@@ -87,11 +89,11 @@ export default function AdminAgents() {
       const _preferences = await Admin.systemPreferences();
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
-      showToast(`Agent preferences saved successfully.`, "success", {
+      showToast(t("agentSkills.saveSuccess"), "success", {
         clear: true,
       });
     } else {
-      showToast(`Agent preferences failed to save.`, "error", { clear: true });
+      showToast(t("agentSkills.saveSuccess"), "error", { clear: true });
     }
 
     setHasChanges(false);
@@ -135,7 +137,7 @@ export default function AdminAgents() {
           <div hidden={showSkillModal} className="flex flex-col gap-y-[18px]">
             <div className="text-white flex items-center gap-x-2">
               <Robot size={24} />
-              <p className="text-lg font-medium">Agent Skills</p>
+              <p className="text-lg font-medium">{t("agentSkills.title")}</p>
             </div>
             {/* Default skills */}
             <SkillList
@@ -195,7 +197,9 @@ export default function AdminAgents() {
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full text-white/60">
                         <Robot size={40} />
-                        <p className="font-medium">Select an agent skill</p>
+                        <p className="font-medium">
+                          {t("agentSkills.description")}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -230,7 +234,7 @@ export default function AdminAgents() {
         <div className="flex flex-col gap-y-[18px]">
           <div className="text-white flex items-center gap-x-2">
             <Robot size={24} />
-            <p className="text-lg font-medium">Agent Skills</p>
+            <p className="text-lg font-medium">{t("agentSkills.title")}</p>
           </div>
 
           {/* Default skills list */}
@@ -267,7 +271,7 @@ export default function AdminAgents() {
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-white/60">
                 <Robot size={40} />
-                <p className="font-medium">Select an agent skill</p>
+                <p className="font-medium">{t("agentSkills.description")}</p>
               </div>
             )}
           </div>
@@ -306,6 +310,7 @@ function SkillList({
   handleClick = null,
   activeSkills = [],
 }) {
+  const { t } = useTranslation();
   if (skills.length === 0) return null;
 
   return (
@@ -328,7 +333,7 @@ function SkillList({
           }`}
           onClick={() => handleClick?.(skill)}
         >
-          <div className="text-sm font-light">{settings.title}</div>
+          <div className="text-sm font-light">{t(settings.title)}</div>
           <div className="flex items-center gap-x-2">
             {isDefault ? (
               <DefaultBadge title={skill} />

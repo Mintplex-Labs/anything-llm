@@ -17,24 +17,22 @@ import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 
 export const defaultSkills = {
   "rag-memory": {
-    title: "RAG & long-term memory",
-    description:
-      'Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.',
+    title: "agentSkills.rag-memory.title",
+    description: "agentSkills.rag-memory.description",
     component: DefaultSkillPanel,
     icon: Brain,
     image: RAGImage,
   },
   "view-summarize": {
-    title: "View & summarize documents",
-    description:
-      "Allow the agent to list and summarize the content of workspace files currently embedded.",
+    title: "agentSkills.view-summarize.title",
+    description: "agentSkills.view-summarize.description",
     component: DefaultSkillPanel,
     icon: File,
     image: SummarizeImage,
   },
   "scrape-websites": {
-    title: "Scrape websites",
-    description: "Allow the agent to visit and scrape the content of websites.",
+    title: "agentSkills.scrape-websites.title",
+    description: "agentSkills.scrape-websites.description",
     component: DefaultSkillPanel,
     icon: Browser,
     image: ScrapeWebsitesImage,
@@ -43,31 +41,29 @@ export const defaultSkills = {
 
 export const configurableSkills = {
   "save-file-to-browser": {
-    title: "Generate & save files to browser",
-    description:
-      "Enable the default agent to generate and write to files that can be saved to your computer.",
+    title: "agentSkills.save-file-to-browser.title",
+    description: "agentSkills.save-file-to-browser.description",
     component: GenericSkillPanel,
-    skill: "save-file-to-browser",
+    skill: "agentSkills.save-file-to-browser.skill",
     icon: FileMagnifyingGlass,
     image: GenerateSaveImages,
   },
   "create-chart": {
-    title: "Generate charts",
-    description:
-      "Enable the default agent to generate various types of charts from data provided or given in chat.",
+    title: "agentSkills.create-chart.title",
+    description: "agentSkills.create-chart.description",
     component: GenericSkillPanel,
-    skill: "create-chart",
+    skill: "agentSkills.create-chart.skill",
     icon: ChartBar,
     image: GenerateChartsImage,
   },
   "web-browsing": {
-    title: "Web Search",
+    title: "agentSkills.web-browsing.title",
     component: AgentWebSearchSelection,
-    skill: "web-browsing",
+    skill: "agentSkills.web-browsing.skill",
   },
   "sql-agent": {
-    title: "SQL Connector",
+    title: "agentSkills.sql-agent.title",
     component: AgentSQLConnectorSelection,
-    skill: "sql-agent",
+    skill: "agentSkills.sql-agent.skill",
   },
 };
