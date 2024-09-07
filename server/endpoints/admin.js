@@ -348,43 +348,45 @@ function adminEndpoints(app) {
 
           switch (label) {
             case "limit_user_messages":
-              requestedSettings[label] = setting.value === "true";
+              requestedSettings[label] = setting?.value === "true";
               break;
             case "message_limit":
-              requestedSettings[label] = Number(setting.value) || 10;
+              requestedSettings[label] = setting?.value
+                ? Number(setting.value)
+                : 10;
               break;
             case "footer_data":
-              requestedSettings[label] = setting.value ?? JSON.stringify([]);
+              requestedSettings[label] = setting?.value ?? JSON.stringify([]);
               break;
             case "support_email":
-              requestedSettings[label] = setting.value || null;
+              requestedSettings[label] = setting?.value || null;
               break;
             case "text_splitter_chunk_size":
               requestedSettings[label] =
-                setting.value || embedder?.embeddingMaxChunkLength || null;
+                setting?.value || embedder?.embeddingMaxChunkLength || null;
               break;
             case "text_splitter_chunk_overlap":
-              requestedSettings[label] = setting.value || null;
+              requestedSettings[label] = setting?.value || null;
               break;
             case "max_embed_chunk_size":
               requestedSettings[label] =
                 embedder?.embeddingMaxChunkLength || 1000;
               break;
             case "agent_search_provider":
-              requestedSettings[label] = setting.value || null;
+              requestedSettings[label] = setting?.value || null;
               break;
             case "agent_sql_connections":
               requestedSettings[label] =
                 await SystemSettings.brief.agent_sql_connections();
               break;
             case "default_agent_skills":
-              requestedSettings[label] = safeJsonParse(setting.value, []);
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
               break;
             case "imported_agent_skills":
               requestedSettings[label] = ImportedPlugin.listImportedPlugins();
               break;
             case "custom_app_name":
-              requestedSettings[label] = setting.value || null;
+              requestedSettings[label] = setting?.value || null;
               break;
             case "feature_flags":
               requestedSettings[label] =

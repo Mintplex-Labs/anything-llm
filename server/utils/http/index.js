@@ -48,7 +48,7 @@ async function userFromSession(request, response = null) {
 function decodeJWT(jwtToken) {
   try {
     return JWT.verify(jwtToken, process.env.JWT_SECRET);
-  } catch {}
+  } catch { }
   return { p: null, id: null, username: null };
 }
 
@@ -64,20 +64,22 @@ function parseAuthHeader(headerValue = null, apiKey = null) {
 }
 
 function safeJsonParse(jsonString, fallback = null) {
+  if (jsonString === null) return fallback;
+
   try {
     return JSON.parse(jsonString);
-  } catch {}
+  } catch { }
 
   if (jsonString?.startsWith("[") || jsonString?.startsWith("{")) {
     try {
       const repairedJson = jsonrepair(jsonString);
       return JSON.parse(repairedJson);
-    } catch {}
+    } catch { }
   }
 
   try {
     return extract(jsonString)[0];
-  } catch {}
+  } catch { }
 
   return fallback;
 }
@@ -87,7 +89,7 @@ function isValidUrl(urlString = "") {
     const url = new URL(urlString);
     if (!["http:", "https:"].includes(url.protocol)) return false;
     return true;
-  } catch (e) {}
+  } catch (e) { }
   return false;
 }
 
