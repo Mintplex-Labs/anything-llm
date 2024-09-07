@@ -36,7 +36,6 @@ function apiWorkspaceThreadEndpoints(app) {
       #swagger.requestBody = {
         description: 'Optional userId associated with the thread',
         required: false,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -125,7 +124,6 @@ function apiWorkspaceThreadEndpoints(app) {
       #swagger.requestBody = {
         description: 'JSON object containing new name to update the thread.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -336,7 +334,6 @@ function apiWorkspaceThreadEndpoints(app) {
       #swagger.requestBody = {
         description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -462,7 +459,6 @@ function apiWorkspaceThreadEndpoints(app) {
       #swagger.requestBody = {
         description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -478,6 +474,9 @@ function apiWorkspaceThreadEndpoints(app) {
           "text/event-stream": {
             schema: {
               type: 'array',
+              items: {
+                  type: 'string',
+              },
               example: [
                 {
                   id: 'uuid-123',

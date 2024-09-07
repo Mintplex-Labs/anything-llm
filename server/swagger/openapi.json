@@ -193,7 +193,6 @@
         "requestBody": {
           "description": "Key pair object that will define the new user to add to the system.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -263,7 +262,6 @@
         "requestBody": {
           "description": "Key pair object that will update the found user. All fields are optional and will not update unless specified.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -434,7 +432,6 @@
         "requestBody": {
           "description": "Request body for creation parameters of the invitation",
           "required": false,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -626,7 +623,6 @@
         "requestBody": {
           "description": "Entire array of user ids who can access the workspace. All fields are optional and will not update unless specified.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -686,7 +682,6 @@
         "requestBody": {
           "description": "Page offset to show of workspace chats. All fields are optional and will not update unless specified.",
           "required": false,
-          "type": "integer",
           "content": {
             "application/json": {
               "example": {
@@ -790,7 +785,6 @@
         "requestBody": {
           "description": "Object with setting key and new value to set. All keys are optional and will not update unless specified.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -861,11 +855,11 @@
         "requestBody": {
           "description": "File to be uploaded.",
           "required": true,
-          "type": "file",
           "content": {
             "multipart/form-data": {
               "schema": {
-                "type": "object",
+                "type": "string",
+                "format": "binary",
                 "properties": {
                   "file": {
                     "type": "string",
@@ -938,7 +932,6 @@
         "requestBody": {
           "description": "Link of web address to be scraped.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "schema": {
@@ -1015,7 +1008,6 @@
         "requestBody": {
           "description": "Text content and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "schema": {
@@ -1311,11 +1303,10 @@
         "requestBody": {
           "description": "Name of the folder to create.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
+                "type": "string",
                 "example": {
                   "name": "new-folder"
                 }
@@ -1369,7 +1360,6 @@
         "requestBody": {
           "description": "Array of objects containing source and destination paths of files to move.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "schema": {
@@ -1441,7 +1431,6 @@
         "requestBody": {
           "description": "JSON object containing new display name of workspace.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -1679,7 +1668,6 @@
         "requestBody": {
           "description": "JSON object containing new settings to update a workspace. All keys are optional and will not update unless provided",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -1830,7 +1818,6 @@
         "requestBody": {
           "description": "JSON object of additions and removals of documents to add to update a workspace. The value should be the folder + filename with the exclusions of the top-level documents path.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -1890,7 +1877,6 @@
         "requestBody": {
           "description": "JSON object with the document path and pin status to update.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -1967,7 +1953,6 @@
         "requestBody": {
           "description": "Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -2002,6 +1987,9 @@
               "text/event-stream": {
                 "schema": {
                   "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
                   "example": [
                     {
                       "id": "uuid-123",
@@ -2060,7 +2048,6 @@
         "requestBody": {
           "description": "Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -2241,7 +2228,6 @@
         "requestBody": {
           "description": "Key pair object that matches a valid setting and value. Get keys from GET /v1/system or refer to codebase.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -2440,7 +2426,6 @@
         "requestBody": {
           "description": "Optional userId associated with the thread",
           "required": false,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -2523,7 +2508,6 @@
         "requestBody": {
           "description": "JSON object containing new name to update the thread.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -2742,7 +2726,6 @@
         "requestBody": {
           "description": "Send a prompt to the workspace thread and the type of conversation (query or chat).",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -2787,6 +2770,9 @@
               "text/event-stream": {
                 "schema": {
                   "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
                   "example": [
                     {
                       "id": "uuid-123",
@@ -2845,7 +2831,6 @@
         "requestBody": {
           "description": "Send a prompt to the workspace thread and the type of conversation (query or chat).",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -3012,7 +2997,6 @@
         "requestBody": {
           "description": "Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
@@ -3076,7 +3060,6 @@
         "requestBody": {
           "description": "The input string(s) to be embedded. If the text is too long for the embedder model context, it will fail to embed. The vector and associated chunk metadata will be returned in the array order provided",
           "required": true,
-          "type": "object",
           "content": {
             "application/json": {
               "example": {
