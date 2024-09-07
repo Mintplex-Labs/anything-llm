@@ -88,7 +88,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
         description: 'Key pair object that will define the new user to add to the system.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -153,7 +152,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
         description: 'Key pair object that will update the found user. All fields are optional and will not update unless specified.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -321,7 +319,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
         description: 'Request body for creation parameters of the invitation',
         required: false,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -493,7 +490,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
         description: 'Entire array of user ids who can access the workspace. All fields are optional and will not update unless specified.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -553,7 +549,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
         description: 'Page offset to show of workspace chats. All fields are optional and will not update unless specified.',
         required: false,
-        type: 'integer',
         content: {
           "application/json": {
             example: {
@@ -660,7 +655,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
       description: 'Object with setting key and new value to set. All keys are optional and will not update unless specified.',
       required: true,
-      type: 'object',
       content: {
         "application/json": {
           example: {

@@ -31,11 +31,11 @@ function apiDocumentEndpoints(app) {
     #swagger.requestBody = {
       description: 'File to be uploaded.',
       required: true,
-      type: 'file',
       content: {
         "multipart/form-data": {
           schema: {
-            type: 'object',
+            type: 'string',
+            format: 'binary',
             properties: {
               file: {
                 type: 'string',
@@ -131,7 +131,6 @@ function apiDocumentEndpoints(app) {
     #swagger.requestBody = {
       description: 'Link of web address to be scraped.',
       required: true,
-      type: 'object',
       content: {
           "application/json": {
             schema: {
@@ -229,7 +228,6 @@ function apiDocumentEndpoints(app) {
      #swagger.requestBody = {
       description: 'Text content and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys',
       required: true,
-      type: 'object',
       content: {
         "application/json": {
           schema: {
@@ -571,11 +569,10 @@ function apiDocumentEndpoints(app) {
       #swagger.requestBody = {
         description: 'Name of the folder to create.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             schema: {
-              type: 'object',
+              type: 'string',
               example: {
                 "name": "new-folder"
               }
@@ -638,7 +635,6 @@ function apiDocumentEndpoints(app) {
       #swagger.requestBody = {
         description: 'Array of objects containing source and destination paths of files to move.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             schema: {

@@ -76,7 +76,7 @@ const HistoricalMessage = ({
         role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
       }`}
     >
-      <div className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}>
+      <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <div className="flex flex-col items-center">
             <ProfileImage role={role} workspace={workspace} />
@@ -98,9 +98,9 @@ const HistoricalMessage = ({
               saveChanges={saveEditedMessage}
             />
           ) : (
-            <div className={"overflow-x-scroll break-words"}>
+            <div className="overflow-x-scroll break-words no-scroll">
               <span
-                className={`flex flex-col gap-y-1`}
+                className="flex flex-col gap-y-1"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(renderMarkdown(message)),
                 }}
