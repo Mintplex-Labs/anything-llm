@@ -342,7 +342,6 @@ const System = {
     );
     return { appName: customAppName, error: null };
   },
-
   fetchLogo: async function () {
     return await fetch(`${API_BASE}/system/logo`, {
       method: "GET",

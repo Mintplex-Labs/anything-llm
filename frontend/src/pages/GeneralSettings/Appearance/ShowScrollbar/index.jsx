@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import Appearance from '@/models/appearance';
+import React, { useState, useEffect } from "react";
+import Appearance from "@/models/appearance";
 
 export default function ShowScrollbar() {
   const [saving, setSaving] = useState(false);
