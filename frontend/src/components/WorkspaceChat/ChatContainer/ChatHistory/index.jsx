@@ -74,6 +74,7 @@ export default function ChatHistory({
       chatHistoryRef.current.scrollHeight -
       chatHistoryRef.current.scrollTop -
       chatHistoryRef.current.clientHeight;
+    // Fuzzy margin for what qualifies as "bottom". Stronger than straight comparison since that may change over time.
     const isBottom = diff <= 10;
     setIsAtBottom(isBottom);
   };
@@ -108,20 +109,27 @@ export default function ChatHistory({
     role,
     attachments = [],
   }) => {
-    if (!editedMessage) return;
+    if (!editedMessage) return; // Don't save empty edits.
 
+    // if the edit was a user message, we will auto-regenerate the response and delete all
+    // messages post modified message
     if (role === "user") {
+      // remove all messages after the edited message
+      // technically there are two chatIds per-message pair, this will split the first.
       const updatedHistory = history.slice(
         0,
         history.findIndex((msg) => msg.chatId === chatId) + 1
       );
 
+      // update last message in history to edited message
       updatedHistory[updatedHistory.length - 1].content = editedMessage;
+      // remove all edited messages after the edited message in backend
       await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
       sendCommand(editedMessage, true, updatedHistory, attachments);
       return;
     }
 
+    // If role is an assistant we simply want to update the comment and save on the backend as an edit.
     if (role === "assistant") {
       const updatedHistory = [...history];
       const targetIdx = history.findIndex(
