@@ -48,6 +48,21 @@ const User = {
     return { ...rest };
   },
 
+  createAdminWithAzureAD: async function ({ username, role = "default" }) {
+    try {
+      const user = await prisma.users.create({
+        data: {
+          username: username,
+          use_azure_login_provider: true,
+          role: this.validations.role(role),
+        },
+      });
+      return { user: this.filterFields(user), error: null };
+    } catch (error) {
+      console.error("FAILED TO CREATE USER.", error.message);
+      return { user: null, error: error.message };
+    }
+  },
   create: async function ({ username, password, role = "default" }) {
     const passwordCheck = this.checkPasswordComplexity(password);
     if (!passwordCheck.checkedOK) {

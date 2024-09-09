@@ -36,7 +36,7 @@ export default function AzureAuthProviders({
           });
   
           const accessToken = response.accessToken;
-          const { valid, user, token } = await System.azureAuth({'accessToken': accessToken});
+          const { valid, user, token, message } = await System.azureAuth({'accessToken': accessToken});
           
           if (valid && token && user) {
             setUser(user);
@@ -45,14 +45,15 @@ export default function AzureAuthProviders({
             window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
             window.localStorage.setItem(AUTH_TOKEN, token);
 
-            const items = [];
             for (let i = 0; i < localStorage.length; i++) {
               const key = localStorage.key(i);
-              if (key.includes('login.windows.net') || key.includes('msal.token.keys' || key.includes('msal.account.keys'))){
+              if (key=="msal.account.keys" || key.includes('login.windows.net') || key.includes('msal.token.keys')){
                 window.localStorage.removeItem(key);
               }
             }
             window.location = paths.home();
+          } else {
+            setError(message);
           }
         }
       } catch (error) {

@@ -102,7 +102,25 @@ function apiAuthEndpoints(app) {
 
       const data = reqBody(request);
       const azureAuthProviders = new AzureAuthProviders();
-      const { username } = await azureAuthProviders.login(data);
+      const { username, error } = await azureAuthProviders.login(data);
+      if (error) {
+        await EventLogs.logEvent(
+          "failed_login_error_get_user",
+          {
+            ip: request.ip || "Unknown IP",
+            username: username || "Unknown user",
+          },
+          null
+        );
+        response.status(200).json({
+          user: null,
+          valid: false,
+          token: null,
+          message: error,
+        });
+        return;
+      }
+
       let user = await User.get({ username: String(username) });
 
       if (!user) {
