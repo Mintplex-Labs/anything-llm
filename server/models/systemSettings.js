@@ -22,7 +22,6 @@ const SystemSettings = {
     "telemetry_id",
     "footer_data",
     "support_email",
-    "show_scrollbar",
 
     "text_splitter_chunk_size",
     "text_splitter_chunk_overlap",
