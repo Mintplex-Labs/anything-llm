@@ -1,10 +1,14 @@
+import { useTranslation } from "react-i18next";
+
 export default function HuggingFaceOptions({ settings }) {
+  const { t } = useTranslation();
+
   return (
     <div className="w-full flex flex-col">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            HuggingFace Inference Endpoint
+            {t("llmPreference.huggingface.endpointLabel")}
           </label>
           <input
             type="url"
@@ -19,13 +23,13 @@ export default function HuggingFaceOptions({ settings }) {
         </div>
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            HuggingFace Access Token
+            {t("llmPreference.huggingface.accessTokenLabel")}
           </label>
           <input
             type="password"
             name="HuggingFaceLLMAccessToken"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="HuggingFace Access Token"
+            placeholder={t("llmPreference.huggingface.accessTokenPlaceholder")}
             defaultValue={
               settings?.HuggingFaceLLMAccessToken ? "*".repeat(20) : ""
             }
@@ -36,7 +40,7 @@ export default function HuggingFaceOptions({ settings }) {
         </div>
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Model Token Limit
+            {t("llmPreference.huggingface.tokenLimitLabel")}
           </label>
           <input
             type="number"

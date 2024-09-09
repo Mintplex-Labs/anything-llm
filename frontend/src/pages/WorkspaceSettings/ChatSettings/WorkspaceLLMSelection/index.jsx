@@ -155,11 +155,9 @@ export default function WorkspaceLLMSelection({
           {selectedLLM !== "default" && (
             <div className="w-full h-10 justify-center items-center flex mt-4">
               <p className="text-sm font-base text-white text-opacity-60 text-center">
-                Multi-model support is not supported for this provider yet.
-                <br />
-                This workspace will use{" "}
+                {t("chat.llm.noModelSupport")} <br />
                 <Link to={paths.settings.llmPreference()} className="underline">
-                  the model set for the system.
+                  {t("chat.llm.systemModelLink")}
                 </Link>
               </p>
             </div>

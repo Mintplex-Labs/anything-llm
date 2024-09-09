@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import System from "@/models/system";
 
 export default function LiteLLMOptions({ settings }) {
+  const { t } = useTranslation();
   const [basePathValue, setBasePathValue] = useState(settings?.LiteLLMBasePath);
   const [basePath, setBasePath] = useState(settings?.LiteLLMBasePath);
   const [apiKeyValue, setApiKeyValue] = useState(settings?.LiteLLMAPIKey);
@@ -12,7 +14,7 @@ export default function LiteLLMOptions({ settings }) {
       <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Base URL
+            {t("llmPreference.litellm.baseURL")}
           </label>
           <input
             type="url"
@@ -34,7 +36,7 @@ export default function LiteLLMOptions({ settings }) {
         />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Token context window
+            {t("llmPreference.litellm.tokenLimit")}
           </label>
           <input
             type="number"
@@ -53,7 +55,10 @@ export default function LiteLLMOptions({ settings }) {
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-4">
             <label className="text-white text-sm font-semibold flex items-center gap-x-2">
-              API Key <p className="!text-xs !italic !font-thin">optional</p>
+              {t("llmPreference.litellm.apiKey")}{" "}
+              <p className="!text-xs !italic !font-thin">
+                {t("llmPreference.litellm.optional")}
+              </p>
             </label>
           </div>
           <input
@@ -74,6 +79,7 @@ export default function LiteLLMOptions({ settings }) {
 }
 
 function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
+  const { t } = useTranslation();
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -100,7 +106,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Chat Model Selection
+          {t("llmPreference.litellm.modelSelection")}
         </label>
         <select
           name="LiteLLMModelPref"
@@ -109,8 +115,8 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
-              ? "-- loading available models --"
-              : "-- waiting for URL --"}
+              ? t("llmPreference.litellm.loadingModels")
+              : t("llmPreference.litellm.waitingForURL")}
           </option>
         </select>
       </div>
@@ -120,7 +126,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
-        Chat Model Selection
+        {t("llmPreference.litellm.modelSelection")}
       </label>
       <select
         name="LiteLLMModelPref"
@@ -128,7 +134,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
         className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
-          <optgroup label="Your loaded models">
+          <optgroup label={t("llmPreference.litellm.loadedModels")}>
             {customModels.map((model) => {
               return (
                 <option

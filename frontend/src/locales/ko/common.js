@@ -142,6 +142,8 @@ const TRANSLATIONS = {
       description:
         "이 워크스페이스에서 사용할 특정 LLM 제공자와 모델입니다. 기본적으로 시스템 LLM 제공자와 설정을 사용합니다.",
       search: "모든 LLM 제공자 검색",
+      noModelSupport: "이 제공자는 아직 멀티 모델 지원이 지원되지 않습니다.",
+      systemModelLink: "이 워크스페이스는 시스템에 설정된 모델을 사용합니다.",
     },
     model: {
       title: "워크스페이스 채팅 모델",
@@ -279,29 +281,255 @@ const TRANSLATIONS = {
     },
   },
 
+  //workspace
+
+  workspace: {
+    welcome: "새 작업 공간에 오신 것을 환영합니다.",
+    uploadPrompt: "시작하려면",
+    uploadDocument: "문서를 업로드",
+    orSendMessage: "하거나 채팅을 보내십시오.",
+    sendMessagePrompt: "시작하려면 채팅을 보내십시오.",
+  },
+
+  //prompt
+  promptInput: {
+    placeholder: "메시지 보내기",
+    sendTooltip: "워크스페이스에 프롬프트 메시지 보내기",
+    sendMessage: "메시지 보내기",
+  },
+
+  //thread
+  threadContainer: {
+    loadingThreads: "스레드를 불러오는 중...",
+    defaultThread: "기본",
+    newThread: "새 스레드",
+    startingThread: "스레드 시작 중...",
+    createThreadError: "스레드를 생성할 수 없습니다 - {{error}}",
+    deleteSelected: "선택 삭제",
+  },
+
+  //PromptInput
+  slashCommands: {
+    tooltip: "채팅을 위한 모든 슬래시 명령어 보기",
+    altText: "슬래시 명령어 버튼",
+  },
+
+  availableAgents: {
+    tooltip: "채팅에 사용할 수 있는 모든 에이전트 보기",
+    defaultAgent: "이 워크스페이스의 기본 에이전트입니다.",
+    customAgentsComingSoon: "맞춤 에이전트가 곧 제공됩니다!",
+    firstTime: {
+      title: "에이전트를 발견하셨습니다!",
+      description:
+        "에이전트는 문서와의 채팅을 넘어서는 특별한 기능을 가진 LLM입니다. 이제 에이전트를 사용하여 실시간 웹 검색 및 스크래핑, 문서 브라우저 저장, 문서 요약 등을 할 수 있습니다.",
+      earlyAccess:
+        "이 기능은 현재 얼리 액세스 중이며, 맞춤 통합 및 코드 실행을 포함한 맞춤 에이전트는 이후 업데이트에서 제공될 예정입니다.",
+      continue: "계속",
+    },
+  },
+
+  textSize: {
+    tooltip: "텍스트 크기 변경",
+    small: "작게",
+    normal: "보통",
+    large: "크게",
+  },
+
+  speechToText: {
+    tooltip: "프롬프트를 말하세요",
+    microphoneUnavailable:
+      "AnythingLLM이 마이크에 액세스할 수 없습니다. 이 기능을 사용하려면 이 사이트에 마이크 권한을 부여하십시오.",
+  },
+
+  //system-preferences
+  adminSystem: {
+    title: "시스템 설정",
+    description: "이것은 인스턴스의 전체 설정 및 구성입니다.",
+    saving: "저장 중...",
+    saveChanges: "변경 사항 저장",
+    toastSuccess: "시스템 설정이 성공적으로 업데이트되었습니다.",
+    limitTitle: "사용자당 하루 메시지 제한",
+    limitDescription:
+      "관리자가 아닌 사용자가 24시간 이내에 성공적인 쿼리 또는 채팅의 수를 제한합니다. 사용자가 OpenAI 비용을 증가시키는 것을 방지하기 위해 이 기능을 활성화하세요.",
+    messageLimit: "하루 메시지 제한",
+  },
+
   // Workspace Chats
   recorded: {
-    recorded: {
-      title: "워크스페이스 채팅",
-      description:
-        "이것들은 사용자들이 보낸 모든 채팅과 메시지입니다. 생성 날짜별로 정렬되어 있습니다.",
-      export: "내보내기",
-      exportSuccess: "{{name}} 형식으로 채팅이 성공적으로 내보내졌습니다.",
-      exportError: "채팅 내보내기에 실패했습니다.",
-      clearChats: "채팅 삭제",
-      confirmClear:
-        "모든 채팅을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.",
-      clearSuccess: "모든 채팅이 삭제되었습니다.",
-      table: {
-        id: "ID",
-        by: "보낸 사람",
-        workspace: "워크스페이스",
-        prompt: "프롬프트",
-        response: "응답",
-        at: "보낸 시각",
-      },
-      previous: "이전 페이지",
-      next: "다음 페이지",
+    title: "워크스페이스 채팅",
+    description:
+      "이것들은 사용자들이 보낸 모든 채팅과 메시지입니다. 생성 날짜별로 정렬되어 있습니다.",
+    export: "내보내기",
+    exportSuccess: "{{name}} 형식으로 채팅이 성공적으로 내보내졌습니다.",
+    exportError: "채팅 내보내기에 실패했습니다.",
+    clearChats: "채팅 삭제",
+    confirmClear:
+      "모든 채팅을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.",
+    clearSuccess: "모든 채팅이 삭제되었습니다.",
+    table: {
+      id: "ID",
+      by: "보낸 사람",
+      workspace: "워크스페이스",
+      prompt: "프롬프트",
+      response: "응답",
+      at: "보낸 시각",
+    },
+    previous: "이전 페이지",
+    next: "다음 페이지",
+  },
+
+  //LLM Preference
+  llmPreference: {
+    title: "LLM 기본 설정",
+    description:
+      "AnythingLLM은 다양한 LLM 제공자와 함께 작동할 수 있습니다. 이것은 채팅을 처리하는 서비스가 될 것입니다.",
+    search: "LLM 제공자 검색",
+    toastError: "LLM 설정 저장에 실패했습니다: {{error}}",
+    openai: {
+      apiKey: "API 키",
+      apiKeyPlaceholder: "OpenAI API 키",
+      modelSelection: "채팅 모델 선택",
+      loadingModels: "-- 사용 가능한 모델 로딩 중 --",
+    },
+    gemini: {
+      apiKeyPlaceholder: "Google Gemini API 키",
+      modelLabel: "모델 선택",
+      safetyLabel: "안전 설정",
+      safetyNone: "없음",
+      safetyFew: "적게 차단",
+      safetySome: "중간 차단 (기본값)",
+      safetyMost: "많이 차단",
+    },
+    huggingface: {
+      endpointLabel: "HuggingFace 추론 엔드포인트",
+      accessTokenLabel: "HuggingFace 액세스 토큰",
+      accessTokenPlaceholder: "HuggingFace 액세스 토큰",
+      tokenLimitLabel: "모델 토큰 제한",
+    },
+    ollama: {
+      maxTokens: "최대 토큰 수",
+      maxTokensDescription: "문맥과 응답을 위한 최대 토큰 수입니다.",
+      showManualEndpoint: "수동 엔드포인트 입력 표시",
+      hideManualEndpoint: "수동 엔드포인트 입력 숨기기",
+      baseUrl: "Ollama 기본 URL",
+      baseUrlDescription: "Ollama가 실행되고 있는 URL을 입력하세요.",
+      autoDetect: "자동 감지",
+      modelSelection: "Ollama 모델",
+      loadingModels: "--사용 가능한 모델 로딩 중--",
+      enterBaseUrl: "Ollama URL을 먼저 입력하세요",
+      modelSelectionDescription:
+        "사용할 Ollama 모델을 선택하세요. 유효한 Ollama URL을 입력하면 모델이 로드됩니다.",
+      loadedModels: "로드된 모델",
+      chooseModel: "대화를 위해 사용할 Ollama 모델을 선택하세요.",
+      modelLoadError: "사용자 모델을 가져오는 데 실패했습니다:",
+    },
+    lmstudio: {
+      alertMessage: "LMStudio를 사용하려면 임베딩 서비스를 설정해야 합니다.",
+      manageEmbedding: "임베딩 관리",
+      maxTokens: "최대 토큰 수",
+      maxTokensDescription: "컨텍스트 및 응답에 사용할 최대 토큰 수입니다.",
+      hideAdvancedControls: "수동 엔드포인트 입력 숨기기",
+      showAdvancedControls: "수동 엔드포인트 입력 표시",
+      baseUrlLabel: "LM 스튜디오 기본 URL",
+      autoDetect: "자동 감지",
+      enterUrl: "LM 스튜디오가 실행 중인 URL을 입력하세요.",
+      modelLabel: "LM 스튜디오 모델",
+      loadingModels: "--사용 가능한 모델 로딩 중--",
+      enterUrlFirst: "먼저 LM 스튜디오 URL을 입력하세요.",
+      modelDescription: "대화를 위해 사용할 LM 스튜디오 모델을 선택하세요.",
+      availableModels: "로드된 모델",
+      fetchError: "사용자 정의 모델을 가져오는 데 실패했습니다:",
+    },
+    localai: {
+      alertMessage:
+        "LocalAI를 LLM으로 사용하려면 임베딩 서비스를 설정해야 합니다.",
+      manageEmbedding: "임베딩 관리",
+      baseURL: "Local AI 기본 URL",
+      tokenLimit: "토큰 컨텍스트 창",
+      apiKey: "Local AI API 키",
+      optional: "선택 사항",
+      modelSelection: "채팅 모델 선택",
+      loadingModels: "-- 사용 가능한 모델 로드 중 --",
+      waitingForURL: "-- URL을 기다리는 중 --",
+      loadedModels: "로드된 모델",
+    },
+    togetherAi: {
+      apiKey: "Together AI API 키",
+      apiKeyPlaceholder: "Together AI API 키",
+      modelSelection: "채팅 모델 선택",
+      loadingModels: "-- 사용 가능한 모델 로드 중 --",
+    },
+    mistral: {
+      apiKeyLabel: "Mistral API 키",
+      apiKeyPlaceholder: "Mistral API 키",
+      modelLabel: "모델 선택",
+      loadingModels: "-- 사용 가능한 모델 로드 중 --",
+      waitingApiKey: "-- API 키를 기다리는 중 --",
+      availableModels: "사용 가능한 Mistral 모델",
+    },
+    perplexity: {
+      apiKey: "Perplexity API 키",
+      apiKeyPlaceholder: "Perplexity API 키",
+      modelSelection: "채팅 모델 선택",
+      loadingModels: "-- 사용 가능한 모델 로드 중 --",
+      availableModels: "사용 가능한 Perplexity 모델",
+    },
+    openrouter: {
+      apiKey: "OpenRouter API 키",
+      apiKeyPlaceholder: "OpenRouter API 키",
+      modelSelection: "채팅 모델 선택",
+      loadingModels: "-- 사용 가능한 모델 로드 중 --",
+    },
+    native: {
+      warning: "로컬에서 호스팅된 LLM은 실험적입니다. 주의해서 사용하세요.",
+      modelSelection: "모델 선택",
+      waitingModels: "-- 모델을 기다리는 중 --",
+      loadedModels: "로드된 모델",
+      tokenLimit: "토큰 컨텍스트 창",
+    },
+    litellm: {
+      baseURL: "기본 URL",
+      tokenLimit: "토큰 컨텍스트 창",
+      apiKey: "API 키",
+      optional: "선택 사항",
+      modelSelection: "채팅 모델 선택",
+      loadingModels: "-- 사용 가능한 모델 로드 중 --",
+      waitingForURL: "-- URL을 기다리는 중 --",
+      loadedModels: "로드된 모델",
+    },
+    textgenwebui: {
+      baseUrl: "기본 URL",
+      tokenWindow: "토큰 컨텍스트 창",
+      tokenWindowPlaceholder: "컨텍스트 창 제한 (예: 4096)",
+      apiKeyOptional: "API 키 (선택 사항)",
+      apiKeyPlaceholder: "TextGen Web UI API 키",
+    },
+    llms: {
+      openai: "대부분의 비상업적 사용에 적합한 표준 옵션입니다.",
+      azure: "Azure 서비스에서 호스팅되는 OpenAI의 엔터프라이즈 옵션입니다.",
+      anthropic: "Anthropic에서 호스팅하는 친절한 AI 비서입니다.",
+      gemini: "Google의 가장 크고 강력한 AI 모델입니다.",
+      huggingface:
+        "150,000개 이상의 오픈소스 LLM과 세계적인 AI 커뮤니티에 액세스하세요.",
+      ollama: "자신의 머신에서 LLM을 로컬로 실행합니다.",
+      lmstudio:
+        "수천 개의 최신 LLM을 몇 번의 클릭만으로 발견, 다운로드 및 실행하세요.",
+      localai: "자신의 머신에서 LLM을 로컬로 실행합니다.",
+      koboldcpp: "koboldcpp를 사용하여 로컬 LLM을 실행합니다.",
+      textgenwebui:
+        "Oobabooga의 텍스트 생성 웹 UI를 사용하여 로컬 LLM을 실행합니다.",
+      togetherai: "Together AI의 오픈 소스 모델을 실행합니다.",
+      mistral: "Mistral AI의 오픈 소스 모델을 실행합니다.",
+      perplexity:
+        "Perplexity AI에서 호스팅하는 강력하고 인터넷에 연결된 모델을 실행합니다.",
+      openrouter: "LLM을 위한 통합 인터페이스입니다.",
+      groq: "실시간 AI 애플리케이션을 위한 가장 빠른 LLM 추론입니다.",
+      cohere: "Cohere의 강력한 Command 모델을 실행합니다.",
+      litellm: "LiteLLM의 다양한 LLM을 위한 OpenAI 호환 프록시를 실행합니다.",
+      "generic-openai":
+        "사용자 정의 구성을 통해 모든 OpenAI 호환 서비스에 연결합니다.",
+      native:
+        "이 AnythingLLM 인스턴스에서 채팅을 위한 다운로드된 맞춤형 Llama 모델을 사용합니다.",
     },
   },
 

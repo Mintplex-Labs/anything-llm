@@ -4,8 +4,10 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 export default function AdminSystem() {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [messageLimit, setMessageLimit] = useState({
@@ -22,7 +24,7 @@ export default function AdminSystem() {
     });
     setSaving(false);
     setHasChanges(false);
-    showToast("System preferences updated successfully.", "success");
+    showToast(t("adminSystem.toastSuccess"), "success");
   };
 
   useEffect(() => {
@@ -52,30 +54,29 @@ export default function AdminSystem() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                System Preferences
+                {t("adminSystem.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              These are the overall settings and configurations of your
-              instance.
+              {t("adminSystem.description")}
             </p>
           </div>
           {hasChanges && (
             <div className="flex justify-end">
               <CTAButton onClick={handleSubmit} className="mt-3 mr-0">
-                {saving ? "Saving..." : "Save changes"}
+                {saving
+                  ? t("adminSystem.saving")
+                  : t("adminSystem.saveChanges")}
               </CTAButton>
             </div>
           )}
           <div className="mt-4 mb-8">
             <div className="flex flex-col gap-y-1">
               <h2 className="text-base leading-6 font-bold text-white">
-                Limit messages per user per day
+                {t("adminSystem.limitTitle")}
               </h2>
               <p className="text-xs leading-[18px] font-base text-white/60">
-                Restrict non-admin users to a number of successful queries or
-                chats within a 24 hour window. Enable this to prevent users from
-                running up OpenAI costs.
+                {t("adminSystem.limitDescription")}
               </p>
               <div className="mt-2">
                 <label className="relative inline-flex cursor-pointer items-center">
@@ -93,14 +94,13 @@ export default function AdminSystem() {
                     className="peer sr-only"
                   />
                   <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
-                  <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
                 </label>
               </div>
             </div>
             {messageLimit.enabled && (
               <div className="mt-4">
                 <label className="text-white text-sm font-semibold block mb-4">
-                  Message limit per day
+                  {t("adminSystem.messageLimit")}
                 </label>
                 <div className="relative mt-2">
                   <input

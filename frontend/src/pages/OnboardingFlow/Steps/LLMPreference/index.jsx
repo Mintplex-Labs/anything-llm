@@ -45,6 +45,7 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -56,139 +57,133 @@ const LLMS = [
     value: "openai",
     logo: OpenAiLogo,
     options: (settings) => <OpenAiOptions settings={settings} />,
-    description: "The standard option for most non-commercial use.",
+    description: (t) => t("llmPreference.llms.openai"),
   },
   {
     name: "Azure OpenAI",
     value: "azure",
     logo: AzureOpenAiLogo,
     options: (settings) => <AzureAiOptions settings={settings} />,
-    description: "The enterprise option of OpenAI hosted on Azure services.",
+    description: (t) => t("llmPreference.llms.azure"),
   },
   {
     name: "Anthropic",
     value: "anthropic",
     logo: AnthropicLogo,
     options: (settings) => <AnthropicAiOptions settings={settings} />,
-    description: "A friendly AI Assistant hosted by Anthropic.",
+    description: (t) => t("llmPreference.llms.anthropic"),
   },
   {
     name: "Gemini",
     value: "gemini",
     logo: GeminiLogo,
     options: (settings) => <GeminiLLMOptions settings={settings} />,
-    description: "Google's largest and most capable AI model",
+    description: (t) => t("llmPreference.llms.gemini"),
   },
   {
     name: "HuggingFace",
     value: "huggingface",
     logo: HuggingFaceLogo,
     options: (settings) => <HuggingFaceOptions settings={settings} />,
-    description:
-      "Access 150,000+ open-source LLMs and the world's AI community",
+    description: (t) => t("llmPreference.llms.huggingface"),
   },
   {
     name: "Ollama",
     value: "ollama",
     logo: OllamaLogo,
     options: (settings) => <OllamaLLMOptions settings={settings} />,
-    description: "Run LLMs locally on your own machine.",
+    description: (t) => t("llmPreference.llms.ollama"),
   },
   {
     name: "LM Studio",
     value: "lmstudio",
     logo: LMStudioLogo,
     options: (settings) => <LMStudioOptions settings={settings} />,
-    description:
-      "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+    description: (t) => t("llmPreference.llms.lmstudio"),
   },
   {
     name: "Local AI",
     value: "localai",
     logo: LocalAiLogo,
     options: (settings) => <LocalAiOptions settings={settings} />,
-    description: "Run LLMs locally on your own machine.",
+    description: (t) => t("llmPreference.llms.localai"),
   },
   {
     name: "KoboldCPP",
     value: "koboldcpp",
     logo: KoboldCPPLogo,
     options: (settings) => <KoboldCPPOptions settings={settings} />,
-    description: "Run local LLMs using koboldcpp.",
+    description: (t) => t("llmPreference.llms.koboldcpp"),
   },
   {
     name: "Oobabooga Web UI",
     value: "textgenwebui",
     logo: TextGenWebUILogo,
     options: (settings) => <TextGenWebUIOptions settings={settings} />,
-    description: "Run local LLMs using Oobabooga's Text Generation Web UI.",
+    description: (t) => t("llmPreference.llms.textgenwebui"),
   },
   {
     name: "Together AI",
     value: "togetherai",
     logo: TogetherAILogo,
     options: (settings) => <TogetherAiOptions settings={settings} />,
-    description: "Run open source models from Together AI.",
+    description: (t) => t("llmPreference.llms.togetherai"),
   },
   {
     name: "Mistral",
     value: "mistral",
     logo: MistralLogo,
     options: (settings) => <MistralOptions settings={settings} />,
-    description: "Run open source models from Mistral AI.",
+    description: (t) => t("llmPreference.llms.mistral"),
   },
   {
     name: "Perplexity AI",
     value: "perplexity",
     logo: PerplexityLogo,
     options: (settings) => <PerplexityOptions settings={settings} />,
-    description:
-      "Run powerful and internet-connected models hosted by Perplexity AI.",
+    description: (t) => t("llmPreference.llms.perplexity"),
   },
   {
     name: "OpenRouter",
     value: "openrouter",
     logo: OpenRouterLogo,
     options: (settings) => <OpenRouterOptions settings={settings} />,
-    description: "A unified interface for LLMs.",
+    description: (t) => t("llmPreference.llms.openrouter"),
   },
   {
     name: "Groq",
     value: "groq",
     logo: GroqLogo,
     options: (settings) => <GroqAiOptions settings={settings} />,
-    description:
-      "The fastest LLM inferencing available for real-time AI applications.",
+    description: (t) => t("llmPreference.llms.groq"),
   },
   {
     name: "Cohere",
     value: "cohere",
     logo: CohereLogo,
     options: (settings) => <CohereAiOptions settings={settings} />,
-    description: "Run Cohere's powerful Command models.",
+    description: (t) => t("llmPreference.llms.cohere"),
   },
   {
     name: "LiteLLM",
     value: "litellm",
     logo: LiteLLMLogo,
     options: (settings) => <LiteLLMOptions settings={settings} />,
-    description: "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
+    description: (t) => t("llmPreference.llms.litellm"),
   },
   {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
     options: (settings) => <GenericOpenAiOptions settings={settings} />,
-    description:
-      "Connect to any OpenAi-compatible service via a custom configuration",
+    description: (t) => t("llmPreference.llms.generic-openai"),
   },
   {
     name: "Native",
     value: "native",
     logo: AnythingLLMIcon,
     options: (settings) => <NativeLLMOptions settings={settings} />,
-    description:
-      "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
+    description: (t) => t("llmPreference.llms.native"),
   },
 ];
 
@@ -205,6 +200,7 @@ export default function LLMPreference({
   const hiddenSubmitButtonRef = useRef(null);
   const isHosted = window.location.hostname.includes("useanything.com");
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchKeys() {
@@ -238,14 +234,17 @@ export default function LLMPreference({
 
     const { error } = await System.updateSystem(data);
     if (error) {
-      showToast(`Failed to save LLM settings: ${error}`, "error");
+      showToast(t("llmPreference.toastError", { error }), "error");
       return;
     }
     navigate(paths.onboarding.userSetup());
   };
 
   useEffect(() => {
-    setHeader({ title: TITLE, description: DESCRIPTION });
+    setHeader({
+      title: t("llmPreference.title"),
+      description: t("llmPreference.description"),
+    });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
     setBackBtn({ showing: true, disabled: false, onClick: handleBack });
   }, []);
@@ -270,7 +269,7 @@ export default function LLMPreference({
               />
               <input
                 type="text"
-                placeholder="Search LLM providers"
+                placeholder={t("llmPreference.search")}
                 className="bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:outline-primary-button active:outline-primary-button outline-none text-white"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoComplete="off"
@@ -289,7 +288,7 @@ export default function LLMPreference({
                   name={llm.name}
                   value={llm.value}
                   image={llm.logo}
-                  description={llm.description}
+                  description={llm.description(t)}
                   checked={selectedLLM === llm.value}
                   onClick={() => setSelectedLLM(llm.value)}
                 />

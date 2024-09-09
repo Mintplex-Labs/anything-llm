@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { Flask } from "@phosphor-icons/react";
 import System from "@/models/system";
+import { useTranslation } from "react-i18next";
 
 export default function NativeLLMOptions({ settings }) {
+  const { t } = useTranslation();
+
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-orange-800/30 w-fit rounded-lg px-4 py-2">
         <div className="gap-x-2 flex items-center">
           <Flask size={18} />
           <p className="text-sm md:text-base">
-            Using a locally hosted LLM is experimental. Use with caution.
+            {t("llmPreference.native.warning")}
           </p>
         </div>
       </div>
@@ -21,6 +24,7 @@ export default function NativeLLMOptions({ settings }) {
 }
 
 function NativeModelSelection({ settings }) {
+  const { t } = useTranslation();
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +42,7 @@ function NativeModelSelection({ settings }) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Model Selection
+          {t("llmPreference.native.modelSelection")}
         </label>
         <select
           name="NativeLLMModelPref"
@@ -46,7 +50,7 @@ function NativeModelSelection({ settings }) {
           className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            -- waiting for models --
+            {t("llmPreference.native.waitingModels")}
           </option>
         </select>
       </div>
@@ -57,7 +61,7 @@ function NativeModelSelection({ settings }) {
     <>
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Model Selection
+          {t("llmPreference.native.modelSelection")}
         </label>
         <select
           name="NativeLLMModelPref"
@@ -65,7 +69,7 @@ function NativeModelSelection({ settings }) {
           className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           {customModels.length > 0 && (
-            <optgroup label="Your loaded models">
+            <optgroup label={t("llmPreference.native.loadedModels")}>
               {customModels.map((model) => {
                 return (
                   <option
@@ -83,7 +87,7 @@ function NativeModelSelection({ settings }) {
       </div>
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Token context window
+          {t("llmPreference.native.tokenLimit")}
         </label>
         <input
           type="number"

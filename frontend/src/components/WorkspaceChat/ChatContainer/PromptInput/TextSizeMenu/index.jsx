@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { TextT } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
 
 export default function TextSizeButton() {
+  const { t } = useTranslation();
   const [showTextSizeMenu, setShowTextSizeMenu] = useState(false);
   const buttonRef = useRef(null);
 
@@ -12,8 +14,8 @@ export default function TextSizeButton() {
         ref={buttonRef}
         id="text-size-btn"
         data-tooltip-id="tooltip-text-size-btn"
-        data-tooltip-content="Change text size"
-        aria-label="Change text size"
+        data-tooltip-content={t("textSize.tooltip")}
+        aria-label={t("textSize.tooltip")}
         onClick={() => setShowTextSizeMenu(!showTextSizeMenu)}
         className={`relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
           showTextSizeMenu ? "!opacity-100" : ""
@@ -40,6 +42,7 @@ export default function TextSizeButton() {
 }
 
 function TextSizeMenu({ showing, setShowing, buttonRef }) {
+  const { t } = useTranslation();
   const formRef = useRef(null);
   const [selectedSize, setSelectedSize] = useState(
     window.localStorage.getItem("anythingllm_text_size") || "normal"
@@ -85,7 +88,7 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-white text-xs">Small</div>
+            <div className="text-white text-xs">{t("textSize.small")}</div>
           </div>
         </button>
 
@@ -100,7 +103,7 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-white text-sm">Normal</div>
+            <div className="text-white text-sm">{t("textSize.normal")}</div>
           </div>
         </button>
 
@@ -115,7 +118,7 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-white text-[16px]">Large</div>
+            <div className="text-white text-[16px]">{t("textSize.large")}</div>
           </div>
         </button>
       </div>

@@ -14,7 +14,7 @@ export default function GeminiLLMOptions({ settings }) {
             type="password"
             name="GeminiLLMApiKey"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Google Gemini API Key"
+            placeholder={t("llmPreference.gemini.apiKeyPlaceholder")}
             defaultValue={settings?.GeminiLLMApiKey ? "*".repeat(20) : ""}
             required={true}
             autoComplete="new-password"
@@ -50,7 +50,7 @@ export default function GeminiLLMOptions({ settings }) {
             </div>
             <div className="flex flex-col w-60">
               <label className="text-white text-sm font-semibold block mb-3">
-                Safety Setting
+                {t("llmPreference.gemini.safetyLabel")}
               </label>
               <select
                 name="GeminiSafetySetting"
@@ -60,12 +60,18 @@ export default function GeminiLLMOptions({ settings }) {
                 required={true}
                 className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
               >
-                <option value="BLOCK_NONE">None</option>
-                <option value="BLOCK_ONLY_HIGH">Block few</option>
-                <option value="BLOCK_MEDIUM_AND_ABOVE">
-                  Block some (default)
+                <option value="BLOCK_NONE">
+                  {t("llmPreference.gemini.safetyNone")}
                 </option>
-                <option value="BLOCK_LOW_AND_ABOVE">Block most</option>
+                <option value="BLOCK_ONLY_HIGH">
+                  {t("llmPreference.gemini.safetyFew")}
+                </option>
+                <option value="BLOCK_MEDIUM_AND_ABOVE">
+                  {t("llmPreference.gemini.safetySome")}
+                </option>
+                <option value="BLOCK_LOW_AND_ABOVE">
+                  {t("llmPreference.gemini.safetyMost")}
+                </option>
               </select>
             </div>
           </>

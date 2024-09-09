@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Info } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
+import { useTranslation } from "react-i18next";
 import System from "@/models/system";
 
 export default function LocalAiOptions({ settings, showAlert = false }) {
+  const { t } = useTranslation();
   const [basePathValue, setBasePathValue] = useState(settings?.LocalAiBasePath);
   const [basePath, setBasePath] = useState(settings?.LocalAiBasePath);
   const [apiKeyValue, setApiKeyValue] = useState(settings?.LocalAiApiKey);
@@ -16,22 +18,21 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <div className="gap-x-2 flex items-center">
             <Info size={12} className="hidden md:visible" />
             <p className="text-sm md:text-base">
-              LocalAI as your LLM requires you to set an embedding service to
-              use.
+              {t("llmPreference.localai.alertMessage")}
             </p>
           </div>
           <a
             href={paths.settings.embedder.modelPreference()}
             className="text-sm md:text-base my-2 underline"
           >
-            Manage embedding &rarr;
+            {t("llmPreference.localai.manageEmbedding")} &rarr;
           </a>
         </div>
       )}
       <div className="w-full flex items-center gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Local AI Base URL
+            {t("llmPreference.localai.baseURL")}
           </label>
           <input
             type="url"
@@ -55,7 +56,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             />
             <div className="flex flex-col w-60">
               <label className="text-white text-sm font-semibold block mb-3">
-                Token context window
+                {t("llmPreference.localai.tokenLimit")}
               </label>
               <input
                 type="number"
@@ -76,11 +77,12 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-4">
             <label className="text-white text-sm font-semibold flex items-center gap-x-2">
-              Local AI API Key{" "}
-              <p className="!text-xs !italic !font-thin">optional</p>
+              {t("llmPreference.localai.apiKey")}{" "}
+              <p className="!text-xs !italic !font-thin">
+                {t("llmPreference.localai.optional")}
+              </p>
             </label>
           </div>
-
           <input
             type="password"
             name="LocalAiApiKey"
@@ -99,6 +101,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
 }
 
 function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
+  const { t } = useTranslation();
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -121,11 +124,11 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
     findCustomModels();
   }, [basePath, apiKey]);
 
-  if (loading || customModels.length == 0) {
+  if (loading || customModels.length === 0) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Chat Model Selection
+          {t("llmPreference.localai.modelSelection")}
         </label>
         <select
           name="LocalAiModelPref"
@@ -134,8 +137,8 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
-              ? "-- loading available models --"
-              : "-- waiting for URL --"}
+              ? t("llmPreference.localai.loadingModels")
+              : t("llmPreference.localai.waitingForURL")}
           </option>
         </select>
       </div>
@@ -145,7 +148,7 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
-        Chat Model Selection
+        {t("llmPreference.localai.modelSelection")}
       </label>
       <select
         name="LocalAiModelPref"
@@ -153,7 +156,7 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
         className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
-          <optgroup label="Your loaded models">
+          <optgroup label={t("llmPreference.localai.loadedModels")}>
             {customModels.map((model) => {
               return (
                 <option

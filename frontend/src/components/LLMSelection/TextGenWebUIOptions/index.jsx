@@ -1,9 +1,13 @@
+import { useTranslation } from "react-i18next";
+
 export default function TextGenWebUIOptions({ settings }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex gap-[36px] mt-1.5 flex-wrap">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Base URL
+          {t("llmPreference.textgenwebui.baseUrl")}
         </label>
         <input
           type="url"
@@ -18,13 +22,13 @@ export default function TextGenWebUIOptions({ settings }) {
       </div>
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Token context window
+          {t("llmPreference.textgenwebui.tokenWindow")}
         </label>
         <input
           type="number"
           name="TextGenWebUITokenLimit"
           className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-          placeholder="Content window limit (eg: 4096)"
+          placeholder={t("llmPreference.textgenwebui.tokenWindowPlaceholder")}
           min={1}
           onScroll={(e) => e.target.blur()}
           defaultValue={settings?.TextGenWebUITokenLimit}
@@ -34,13 +38,13 @@ export default function TextGenWebUIOptions({ settings }) {
       </div>
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          API Key (Optional)
+          {t("llmPreference.textgenwebui.apiKeyOptional")}
         </label>
         <input
           type="password"
           name="TextGenWebUIAPIKey"
           className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-          placeholder="TextGen Web UI API Key"
+          placeholder={t("llmPreference.textgenwebui.apiKeyPlaceholder")}
           defaultValue={settings?.TextGenWebUIAPIKey ? "*".repeat(20) : ""}
           autoComplete="new-password"
           spellCheck={false}

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import System from "@/models/system";
 
 export default function MistralOptions({ settings }) {
+  const { t } = useTranslation();
   const [inputValue, setInputValue] = useState(settings?.MistralApiKey);
   const [mistralKey, setMistralKey] = useState(settings?.MistralApiKey);
 
@@ -9,13 +11,13 @@ export default function MistralOptions({ settings }) {
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Mistral API Key
+          {t("llmPreference.mistral.apiKeyLabel")}
         </label>
         <input
           type="password"
           name="MistralApiKey"
           className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-          placeholder="Mistral API Key"
+          placeholder={t("llmPreference.mistral.apiKeyPlaceholder")}
           defaultValue={settings?.MistralApiKey ? "*".repeat(20) : ""}
           required={true}
           autoComplete="new-password"
@@ -32,6 +34,7 @@ export default function MistralOptions({ settings }) {
 }
 
 function MistralModelSelection({ apiKey, settings }) {
+  const { t } = useTranslation();
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,7 +60,7 @@ function MistralModelSelection({ apiKey, settings }) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Chat Model Selection
+          {t("llmPreference.mistral.modelLabel")}
         </label>
         <select
           name="MistralModelPref"
@@ -66,8 +69,8 @@ function MistralModelSelection({ apiKey, settings }) {
         >
           <option disabled={true} selected={true}>
             {!!apiKey
-              ? "-- loading available models --"
-              : "-- waiting for API key --"}
+              ? t("llmPreference.mistral.loadingModels")
+              : t("llmPreference.mistral.waitingApiKey")}
           </option>
         </select>
       </div>
@@ -77,7 +80,7 @@ function MistralModelSelection({ apiKey, settings }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
-        Chat Model Selection
+        {t("llmPreference.mistral.modelLabel")}
       </label>
       <select
         name="MistralModelPref"
@@ -85,7 +88,7 @@ function MistralModelSelection({ apiKey, settings }) {
         className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
-          <optgroup label="Available Mistral Models">
+          <optgroup label={t("llmPreference.mistral.availableModels")}>
             {customModels.map((model) => {
               return (
                 <option

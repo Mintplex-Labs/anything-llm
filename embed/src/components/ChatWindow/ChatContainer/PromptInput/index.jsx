@@ -1,5 +1,6 @@
 import { CircleNotch, PaperPlaneRight } from "@phosphor-icons/react";
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function PromptInput({
   message,
@@ -8,6 +9,7 @@ export default function PromptInput({
   inputDisabled,
   buttonDisabled,
 }) {
+  const { t } = useTranslation();
   const formRef = useRef(null);
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
@@ -71,7 +73,7 @@ export default function PromptInput({
                 }}
                 value={message}
                 className="allm-font-sans allm-border-none allm-cursor-text allm-max-h-[100px] allm-text-[14px] allm-mx-2 allm-py-2 allm-w-full allm-text-black allm-bg-transparent placeholder:allm-text-slate-800/60 allm-resize-none active:allm-outline-none focus:allm-outline-none allm-flex-grow"
-                placeholder={"Send a message"}
+                placeholder={t("promptInput.placeholder")}
                 id="message-input"
               />
               <button
@@ -80,7 +82,7 @@ export default function PromptInput({
                 disabled={buttonDisabled}
                 className="allm-bg-transparent allm-border-none allm-inline-flex allm-justify-center allm-rounded-2xl allm-cursor-pointer allm-text-black group"
                 id="send-message-button"
-                aria-label="Send message"
+                aria-label={t("promptInput.sendMessage")}
               >
                 {buttonDisabled ? (
                   <CircleNotch className="allm-w-4 allm-h-4 allm-animate-spin" />
@@ -91,7 +93,7 @@ export default function PromptInput({
                     weight="fill"
                   />
                 )}
-                <span className="allm-sr-only">Send message</span>
+                <span className="allm-sr-only">{t("promptInput.sendMessage")}</span>
               </button>
             </div>
           </div>

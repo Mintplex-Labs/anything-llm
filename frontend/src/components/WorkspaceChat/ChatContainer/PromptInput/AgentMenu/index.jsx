@@ -4,16 +4,18 @@ import { At, Flask, X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
+import { useTranslation } from "react-i18next";
 
 export default function AvailableAgentsButton({ showing, setShowAgents }) {
+  const { t } = useTranslation();
   const agentSessionActive = useIsAgentSessionActive();
   if (agentSessionActive) return null;
   return (
     <div
       id="agent-list-btn"
       data-tooltip-id="tooltip-agent-list-btn"
-      data-tooltip-content="View all available agents you can use for chatting."
-      aria-label="View all available agents you can use for chatting."
+      data-tooltip-content={t("availableAgents.tooltip")}
+      aria-label={t("availableAgents.tooltip")}
       onClick={() => setShowAgents(!showing)}
       className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
         showing ? "!opacity-100" : ""
@@ -44,6 +46,7 @@ export function AvailableAgents({
   sendCommand,
   promptRef,
 }) {
+  const { t } = useTranslation();
   const formRef = useRef(null);
   const agentSessionActive = useIsAgentSessionActive();
   useEffect(() => {
@@ -80,7 +83,7 @@ export function AvailableAgents({
             >
               <div className="w-full flex-col text-left flex pointer-events-none">
                 <div className="text-white text-sm">
-                  <b>@agent</b> - the default agent for this workspace.
+                  <b>@agent</b> - {t("availableAgents.defaultAgent")}
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <AbilityTag text="rag-search" />
@@ -100,7 +103,7 @@ export function AvailableAgents({
             >
               <div className="w-full flex-col text-center flex pointer-events-none">
                 <div className="text-white text-xs text-white/50 italic">
-                  custom agents are coming soon!
+                  {t("availableAgents.customAgentsComingSoon")}
                 </div>
               </div>
             </button>
@@ -119,6 +122,7 @@ export function useAvailableAgents() {
 
 const SEEN_FT_AGENT_MODAL = "anythingllm_seen_first_time_agent_modal";
 function FirstTimeAgentUser() {
+  const { t } = useTranslation();
   const { isOpen, openModal, closeModal } = useModal();
   useEffect(() => {
     function firstTimeShow() {
@@ -140,7 +144,7 @@ function FirstTimeAgentUser() {
           <div className="flex items-center gap-x-1 justify-between p-4 border-b rounded-t border-gray-600">
             <Flask className="text-green-400" size={24} weight="fill" />
             <h3 className="text-xl font-semibold text-white">
-              You just discovered Agents!
+              {t("availableAgents.firstTime.title")}
             </h3>
             <button
               onClick={dismiss}
@@ -154,18 +158,10 @@ function FirstTimeAgentUser() {
           <div className="p-6 space-y-6 flex h-full w-full">
             <div className="w-full flex flex-col gap-y-4">
               <p className="text-white/80 text-xs md:text-sm">
-                Agents are your LLM, but with special abilities that{" "}
-                <u>do something beyond chatting with your documents</u>.
-                <br />
-                <br />
-                Now you can use agents for real-time web search and scraping,
-                saving documents to your browser, summarizing documents, and
-                more.
+                {t("availableAgents.firstTime.description")}
               </p>
               <p className="text-green-300/60 text-xs md:text-sm">
-                This feature is currently early access and fully custom agents
-                with custom integrations & code execution will be in a future
-                update.
+                {t("availableAgents.firstTime.earlyAccess")}
               </p>
             </div>
           </div>
@@ -176,7 +172,7 @@ function FirstTimeAgentUser() {
               type="button"
               className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
             >
-              Continue
+              {t("availableAgents.firstTime.continue")}
             </button>
           </div>
         </div>

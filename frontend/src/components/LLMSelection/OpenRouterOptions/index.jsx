@@ -1,18 +1,21 @@
 import System from "@/models/system";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function OpenRouterOptions({ settings }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          OpenRouter API Key
+          {t("llmPreference.openrouter.apiKey")}
         </label>
         <input
           type="password"
           name="OpenRouterApiKey"
           className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-          placeholder="OpenRouter API Key"
+          placeholder={t("llmPreference.openrouter.apiKeyPlaceholder")}
           defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
           required={true}
           autoComplete="new-password"
@@ -27,6 +30,7 @@ export default function OpenRouterOptions({ settings }) {
 }
 
 function OpenRouterModelSelection({ settings }) {
+  const { t } = useTranslation();
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -53,7 +57,7 @@ function OpenRouterModelSelection({ settings }) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Chat Model Selection
+          {t("llmPreference.openrouter.modelSelection")}
         </label>
         <select
           name="OpenRouterModelPref"
@@ -61,7 +65,7 @@ function OpenRouterModelSelection({ settings }) {
           className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            -- loading available models --
+            {t("llmPreference.openrouter.loadingModels")}
           </option>
         </select>
       </div>
@@ -71,7 +75,7 @@ function OpenRouterModelSelection({ settings }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
-        Chat Model Selection
+        {t("llmPreference.openrouter.modelSelection")}
       </label>
       <select
         name="OpenRouterModelPref"
