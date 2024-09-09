@@ -10,6 +10,9 @@ import { sentenceCase } from "text-case";
  * @returns {object} - The inputs object
  */
 function inputsFromArgs(setupArgs) {
+  if (!setupArgs || typeof setupArgs !== "object") {
+    return {};
+  }
   return Object.entries(setupArgs).reduce(
     (acc, [key, props]) => ({
       ...acc,
@@ -32,8 +35,12 @@ export default function ImportedSkillConfig({
   const [config, setConfig] = useState(selectedSkill);
   const [hasChanges, setHasChanges] = useState(false);
   const [inputs, setInputs] = useState(
-    inputsFromArgs(selectedSkill.setup_args)
+    inputsFromArgs(selectedSkill?.setup_args)
   );
+
+  const hasSetupArgs =
+    selectedSkill?.setup_args &&
+    Object.keys(selectedSkill.setup_args).length > 0;
 
   async function toggleSkill() {
     const updatedConfig = { ...selectedSkill, active: !config.active };
@@ -122,41 +129,47 @@ export default function ImportedSkillConfig({
             </a>
           </p>
 
-          <div className="flex flex-col gap-y-2">
-            {Object.entries(config.setup_args).map(([key, props]) => (
-              <div key={key} className="flex flex-col gap-y-1">
-                <label htmlFor={key} className="text-white text-sm font-bold">
-                  {key}
-                </label>
-                <input
-                  type={props?.input?.type || "text"}
-                  required={props?.input?.required}
-                  defaultValue={
-                    props.hasOwnProperty("value")
-                      ? props.value
-                      : props?.input?.default || ""
-                  }
-                  onChange={(e) =>
-                    setInputs({ ...inputs, [key]: e.target.value })
-                  }
-                  placeholder={props?.input?.placeholder || ""}
-                  className="bg-transparent border border-white border-opacity-20 rounded-md p-2 text-white text-sm"
-                />
-                <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-                  {props?.input?.hint}
-                </p>
-              </div>
-            ))}
-            {hasChanges && (
-              <button
-                onClick={handleSubmit}
-                type="button"
-                className="bg-blue-500 text-white rounded-md p-2"
-              >
-                Save
-              </button>
-            )}
-          </div>
+          {hasSetupArgs ? (
+            <div className="flex flex-col gap-y-2">
+              {Object.entries(config.setup_args).map(([key, props]) => (
+                <div key={key} className="flex flex-col gap-y-1">
+                  <label htmlFor={key} className="text-white text-sm font-bold">
+                    {key}
+                  </label>
+                  <input
+                    type={props?.input?.type || "text"}
+                    required={props?.input?.required}
+                    defaultValue={
+                      props.hasOwnProperty("value")
+                        ? props.value
+                        : props?.input?.default || ""
+                    }
+                    onChange={(e) =>
+                      setInputs({ ...inputs, [key]: e.target.value })
+                    }
+                    placeholder={props?.input?.placeholder || ""}
+                    className="bg-transparent border border-white border-opacity-20 rounded-md p-2 text-white text-sm"
+                  />
+                  <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                    {props?.input?.hint}
+                  </p>
+                </div>
+              ))}
+              {hasChanges && (
+                <button
+                  onClick={handleSubmit}
+                  type="button"
+                  className="bg-blue-500 text-white rounded-md p-2"
+                >
+                  Save
+                </button>
+              )}
+            </div>
+          ) : (
+            <p className="text-white text-opacity-60 text-sm font-medium py-1.5">
+              There are no options to modify for this skill.
+            </p>
+          )}
         </div>
       </div>
     </>

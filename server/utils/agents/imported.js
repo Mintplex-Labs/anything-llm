@@ -129,6 +129,9 @@ class ImportedPlugin {
 
   parseCallOptions() {
     const callOpts = {};
+    if (!this.config.setup_args || typeof this.config.setup_args !== 'object') {
+      return callOpts;
+    }
     for (const [param, definition] of Object.entries(this.config.setup_args)) {
       if (definition.required && !definition?.value) {
         console.log(
