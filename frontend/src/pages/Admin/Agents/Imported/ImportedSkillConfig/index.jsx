@@ -10,7 +10,10 @@ import { sentenceCase } from "text-case";
  * @returns {object} - The inputs object
  */
 function inputsFromArgs(setupArgs) {
-  if (!setupArgs || typeof setupArgs !== "object") {
+  if (
+    !setupArgs ||
+    setupArgs.constructor?.call?.().toString() !== "[object Object]"
+  ) {
     return {};
   }
   return Object.entries(setupArgs).reduce(
