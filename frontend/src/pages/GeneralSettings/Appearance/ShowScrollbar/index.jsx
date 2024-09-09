@@ -1,32 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from "react-i18next";
-import Admin from '@/models/admin';
+import Appearance from '@/models/appearance';
 
 export default function ShowScrollbar() {
   const [saving, setSaving] = useState(false);
   const [showScrollbar, setShowScrollbar] = useState(false);
-  const { t } = useTranslation();
 
   const handleChange = async (e) => {
     const newValue = e.target.checked;
     setShowScrollbar(newValue);
     setSaving(true);
     try {
-      await Admin.updateSystemPreferences({
-        show_scrollbar: newValue,
-      });
+      Appearance.updateSettings({ showScrollbar: newValue });
     } catch (error) {
-      console.error("Failed to update system preferences:", error);
+      console.error("Failed to update appearance settings:", error);
       setShowScrollbar(!newValue);
     }
     setSaving(false);
   };
 
   useEffect(() => {
-    async function fetchSettings() {
-      const settings = (await Admin.systemPreferences())?.settings;
-      if (!settings) return;
-      setShowScrollbar(settings.show_scrollbar || false);
+    function fetchSettings() {
+      const settings = Appearance.getSettings();
+      setShowScrollbar(settings.showScrollbar);
     }
     fetchSettings();
   }, []);

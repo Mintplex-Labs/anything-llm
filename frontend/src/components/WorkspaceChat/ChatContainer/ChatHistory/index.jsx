@@ -10,7 +10,7 @@ import Chartable from "./Chartable";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
-import System from "@/models/system";
+import Appearance from "@/models/appearance";
 
 export default function ChatHistory({
   history = [],
@@ -30,8 +30,8 @@ export default function ChatHistory({
 
   useEffect(() => {
     async function fetchShowScrollbar() {
-      const { showScrollbar } = await System.fetchShowScrollbar();
-      setShowScrollbar(showScrollbar);
+      const settings = Appearance.getSettings();
+      setShowScrollbar(settings?.showScrollbar ?? false);
     }
     fetchShowScrollbar();
   }, []);
