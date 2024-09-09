@@ -12,13 +12,13 @@ export default function ImportedSkillList({
       <div className="text-white/60 text-center text-xs flex flex-col gap-y-2">
         <p>No imported skills found</p>
         <p>
-          Discover agent skills on the{" "}
+          Learn about agent skills in the{" "}
           <a
-            href="https://community.anythingllm.com/q/category/agent-skills"
+            href="https://docs.anythingllm.com/agent/custom/developer-guide"
             target="_blank"
             className="text-white/80 hover:underline"
           >
-            AnythingLLM Community Hub
+            AnythingLLM Agent Docs
           </a>
           .
         </p>
