@@ -25,14 +25,13 @@ export default function AzureAuthProviders({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(AUTH_TOKEN, AUTH_USER);
         if (accounts.length > 0) {
           setError(null);
           setLoading(true);
           const account = accounts[0];
   
           const response = await instance.acquireTokenSilent({
-            scopes: ["user.read", "group.read.all"],
+            scopes: ["user.read"],
             account: account
           });
   
@@ -46,10 +45,9 @@ export default function AzureAuthProviders({
             window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
             window.localStorage.setItem(AUTH_TOKEN, token);
 
-            const items = [];
             for (let i = 0; i < localStorage.length; i++) {
               const key = localStorage.key(i);
-              if (key.includes('login.windows.net') || key.includes('msal.token.keys' || key.includes('msal.account.keys'))){
+              if (key=="msal.account.keys" || key.includes('login.windows.net') || key.includes('msal.token.keys')){
                 window.localStorage.removeItem(key);
               }
             }
@@ -67,7 +65,7 @@ export default function AzureAuthProviders({
 
   const handleLogin = async () => {
     instance.loginRedirect({
-      scopes: ["user.read", "group.read.all"],
+      scopes: ["user.read"],
     });
   };
 

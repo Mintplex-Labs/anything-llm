@@ -11,7 +11,7 @@ class AzureAuthProviders {
           }
       });
       console.log('response:', response.data);
-      const responseGroup = await axios.get('https://graph.microsoft.com/v1.0/groups', {
+      const responseGroup = await axios.get('https://graph.microsoft.com//v1.0/me/memberOf', {
           headers: {
               Authorization: `Bearer ${accessToken}`,
               'Content-Type': 'application/json'
