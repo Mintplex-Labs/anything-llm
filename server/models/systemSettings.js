@@ -184,6 +184,7 @@ const SystemSettings = {
       AzureADClientId: process.env.AZURE_AD_CLIENT_ID,
       AzureADRedirectUri: process.env.AZURE_AD_REDIRECT_URI,
       AzureADTenantId: process.env.AZURE_AD_TENANT_ID,
+      AzureADGroups: JSON.parse(process.env.AZURE_AD_GROUPS),
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs

@@ -36,7 +36,7 @@ export default function AzureAuthProviders({
           });
   
           const accessToken = response.accessToken;
-          const { valid, user, token } = await System.azureAuth({'accessToken': accessToken});
+          const { valid, user, token, message } = await System.azureAuth({'accessToken': accessToken});
           
           if (valid && token && user) {
             setUser(user);
@@ -52,6 +52,8 @@ export default function AzureAuthProviders({
               }
             }
             window.location = paths.home();
+          } else {
+            setError(message);
           }
         }
       } catch (error) {
