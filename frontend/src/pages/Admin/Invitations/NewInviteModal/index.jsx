@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import Workspace from "@/models/workspace";
+import { useTranslation } from "react-i18next"; // i18n 추가
 
 export default function NewInviteModal({ closeModal }) {
+  const { t } = useTranslation(); // i18n hook 추가
   const [invite, setInvite] = useState(null);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -21,6 +23,7 @@ export default function NewInviteModal({ closeModal }) {
     if (!!newInvite) setInvite(newInvite);
     setError(error);
   };
+
   const copyInviteLink = () => {
     if (!invite) return false;
     window.navigator.clipboard.writeText(
@@ -62,7 +65,7 @@ export default function NewInviteModal({ closeModal }) {
       <div className="relative bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
           <h3 className="text-xl font-semibold text-white">
-            Create new invite
+            {t("adminInvites.newInviteModal.title")}
           </h3>
           <button
             onClick={closeModal}
@@ -76,7 +79,11 @@ export default function NewInviteModal({ closeModal }) {
         <form onSubmit={handleCreate}>
           <div className="p-6 space-y-6 flex h-full w-full">
             <div className="w-full flex flex-col gap-y-4">
-              {error && <p className="text-red-400 text-sm">Error: {error}</p>}
+              {error && (
+                <p className="text-red-400 text-sm">
+                  {t("adminInvites.newInviteModal.error")}: {error}
+                </p>
+              )}
               {invite && (
                 <input
                   type="url"
@@ -86,10 +93,7 @@ export default function NewInviteModal({ closeModal }) {
                 />
               )}
               <p className="text-white text-xs md:text-sm">
-                After creation you will be able to copy the invite and send it
-                to a new user where they can create an account as the{" "}
-                <b>default</b> role and automatically be added to workspaces
-                selected.
+                {t("adminInvites.newInviteModal.afterCreation")}
               </p>
             </div>
           </div>
@@ -102,13 +106,10 @@ export default function NewInviteModal({ closeModal }) {
                     htmlFor="workspaces"
                     className="text-sm font-medium text-white"
                   >
-                    Auto-add invitee to workspaces
+                    {t("adminInvites.newInviteModal.autoAddWorkspace")}
                   </label>
                   <p className="text-white/60 text-xs">
-                    You can optionally automatically assign the user to the
-                    workspaces below by selecting them. By default, the user
-                    will not have any workspaces visible. You can assign
-                    workspaces later post-invite acceptance.
+                    {t("adminInvites.newInviteModal.workspaceInfo")}
                   </p>
                 </div>
 
@@ -134,13 +135,13 @@ export default function NewInviteModal({ closeModal }) {
                   type="button"
                   className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
                 >
-                  Cancel
+                  {t("adminInvites.newInviteModal.cancel")}
                 </button>
                 <button
                   type="submit"
                   className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
                 >
-                  Create Invite
+                  {t("adminInvites.newInviteModal.createInvite")}
                 </button>
               </>
             ) : (
@@ -150,7 +151,9 @@ export default function NewInviteModal({ closeModal }) {
                 disabled={copied}
                 className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center"
               >
-                {copied ? "Copied Link" : "Copy Invite Link"}
+                {copied
+                  ? t("adminInvites.newInviteModal.copiedLink")
+                  : t("adminInvites.newInviteModal.copyInviteLink")}
               </button>
             )}
           </div>

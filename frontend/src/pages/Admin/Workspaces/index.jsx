@@ -10,8 +10,10 @@ import NewWorkspaceModal from "./NewWorkspaceModal";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next"; // i18n hook 추가
 
 export default function AdminWorkspaces() {
+  const { t } = useTranslation(); // i18n 추가
   const { isOpen, openModal, closeModal } = useModal();
 
   return (
@@ -25,17 +27,17 @@ export default function AdminWorkspaces() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-white">
-                Instance Workspaces
+                {t("adminWorkspaces.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              These are all the workspaces that exist on this instance. Removing
-              a workspace will delete all of it's associated chats and settings.
+              {t("adminWorkspaces.description")}
             </p>
           </div>
           <div className="w-full justify-end flex">
             <CTAButton onClick={openModal} className="mt-3 mr-0 -mb-14 z-10">
-              <BookOpen className="h-4 w-4" weight="bold" /> New Workspace
+              <BookOpen className="h-4 w-4" weight="bold" />{" "}
+              {t("adminWorkspaces.newWorkspace")}
             </CTAButton>
           </div>
           <WorkspacesContainer />
@@ -49,6 +51,7 @@ export default function AdminWorkspaces() {
 }
 
 function WorkspacesContainer() {
+  const { t } = useTranslation(); // i18n 추가
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [workspaces, setWorkspaces] = useState([]);
@@ -83,16 +86,16 @@ function WorkspacesContainer() {
       <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            Name
+            {t("adminWorkspaces.name")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Link
+            {t("adminWorkspaces.link")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Users
+            {t("adminWorkspaces.users")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Created On
+            {t("adminWorkspaces.createdOn")}
           </th>
           <th scope="col" className="px-6 py-3 rounded-tr-lg">
             {" "}

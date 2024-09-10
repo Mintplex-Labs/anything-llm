@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
+import { useTranslation } from "react-i18next"; // i18n import 추가
 
 export default function ElevenLabsOptions({ settings }) {
+  const { t } = useTranslation(); // i18n hook 추가
   const [inputValue, setInputValue] = useState(settings?.TTSElevenLabsKey);
   const [openAIKey, setOpenAIKey] = useState(settings?.TTSElevenLabsKey);
 
@@ -9,13 +11,13 @@ export default function ElevenLabsOptions({ settings }) {
     <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          API Key
+          {t("tts.elevenlabs.apiKeyLabel")}
         </label>
         <input
           type="password"
           name="TTSElevenLabsKey"
           className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-          placeholder="ElevenLabs API Key"
+          placeholder={t("tts.elevenlabs.apiKeyPlaceholder")}
           defaultValue={settings?.TTSElevenLabsKey ? "*".repeat(20) : ""}
           required={true}
           autoComplete="off"
@@ -32,6 +34,7 @@ export default function ElevenLabsOptions({ settings }) {
 }
 
 function ElevenLabsModelSelection({ apiKey, settings }) {
+  const { t } = useTranslation(); // i18n hook 추가
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -61,7 +64,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Chat Model Selection
+          {t("tts.elevenlabs.modelSelection")}
         </label>
         <select
           name="TTSElevenLabsVoiceModel"
@@ -69,7 +72,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
           className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            -- loading available models --
+            {t("tts.elevenlabs.loading")}
           </option>
         </select>
       </div>
@@ -79,7 +82,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
-        Chat Model Selection
+        {t("tts.elevenlabs.modelSelection")}
       </label>
       <select
         name="TTSElevenLabsVoiceModel"

@@ -9,7 +9,7 @@ export default function AzureAiOptions({ settings }) {
       <div className="w-full flex items-center gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            A{t("azure.serviceEndpoint")}
+            {t("azure.serviceEndpoint")}
           </label>
           <input
             type="url"

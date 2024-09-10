@@ -28,10 +28,7 @@ export default function EmbeddingTextSplitterPreference() {
       Number(form.get("text_splitter_chunk_overlap")) >=
       Number(form.get("text_splitter_chunk_size"))
     ) {
-      showToast(
-        "Chunk overlap cannot be larger or equal to chunk size.",
-        "error"
-      );
+      showToast(t("text.chunkOverlapError"), "error");
       return;
     }
 
@@ -50,7 +47,7 @@ export default function EmbeddingTextSplitterPreference() {
     });
     setSaving(false);
     setHasChanges(false);
-    showToast("Text chunking strategy settings saved.", "success");
+    showToast(t("text.saveSuccess"), "success");
   };
 
   useEffect(() => {
@@ -125,7 +122,7 @@ export default function EmbeddingTextSplitterPreference() {
                     max={settings?.max_embed_chunk_size || 1000}
                     onWheel={(e) => e?.currentTarget?.blur()}
                     className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                    placeholder="maximum length of vectorized text"
+                    placeholder={t("text.size.placeholder")}
                     defaultValue={
                       isNullOrNaN(settings?.text_splitter_chunk_size)
                         ? 1000
@@ -157,7 +154,7 @@ export default function EmbeddingTextSplitterPreference() {
                     min={0}
                     onWheel={(e) => e?.currentTarget?.blur()}
                     className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                    placeholder="maximum length of vectorized text"
+                    placeholder={t("text.overlap.placeholder")}
                     defaultValue={
                       isNullOrNaN(settings?.text_splitter_chunk_overlap)
                         ? 20

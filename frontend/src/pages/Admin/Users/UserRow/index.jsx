@@ -5,6 +5,7 @@ import EditUserModal from "./EditUserModal";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
+import { useTranslation } from "react-i18next"; // i18n hook 추가
 
 const ModMap = {
   admin: ["admin", "manager", "default"],
@@ -13,14 +14,16 @@ const ModMap = {
 };
 
 export default function UserRow({ currUser, user }) {
+  const { t } = useTranslation(); // i18n hook 추가
   const rowRef = useRef(null);
   const canModify = ModMap[currUser?.role || "default"].includes(user.role);
   const [suspended, setSuspended] = useState(user.suspended === 1);
   const { isOpen, openModal, closeModal } = useModal();
+
   const handleSuspend = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to suspend ${user.username}?\nAfter you do this they will be logged out and unable to log back into this instance of AnythingLLM until unsuspended by an admin.`
+        t("adminUsers.suspendConfirm", { username: user.username })
       )
     )
       return false;
@@ -31,17 +34,20 @@ export default function UserRow({ currUser, user }) {
     if (!success) showToast(error, "error", { clear: true });
     if (success) {
       showToast(
-        `User ${!suspended ? "has been suspended" : "is no longer suspended"}.`,
+        suspended
+          ? t("adminUsers.unsuspendSuccess")
+          : t("adminUsers.suspendSuccess"),
         "success",
         { clear: true }
       );
       setSuspended(!suspended);
     }
   };
+
   const handleDelete = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to delete ${user.username}?\nAfter you do this they will be logged out and unable to use this instance of AnythingLLM.\n\nThis action is irreversible.`
+        t("adminUsers.deleteConfirm", { username: user.username })
       )
     )
       return false;
@@ -49,7 +55,7 @@ export default function UserRow({ currUser, user }) {
     if (!success) showToast(error, "error", { clear: true });
     if (success) {
       rowRef?.current?.remove();
-      showToast("User deleted from system.", "success", { clear: true });
+      showToast(t("adminUsers.deleteSuccess"), "success", { clear: true });
     }
   };
 
@@ -70,7 +76,7 @@ export default function UserRow({ currUser, user }) {
               onClick={openModal}
               className="text-sm font-medium text-white/80 rounded-lg hover:text-white px-2 py-1 hover:bg-white hover:bg-opacity-10"
             >
-              Edit
+              {t("adminUsers.edit")}
             </button>
           )}
           {currUser?.id !== user.id && canModify && (
@@ -79,13 +85,15 @@ export default function UserRow({ currUser, user }) {
                 onClick={handleSuspend}
                 className="text-sm font-medium text-white/80 hover:text-orange-300 rounded-lg px-2 py-1 hover:bg-white hover:bg-opacity-10"
               >
-                {suspended ? "Unsuspend" : "Suspend"}
+                {suspended
+                  ? t("adminUsers.unsuspend")
+                  : t("adminUsers.suspend")}
               </button>
               <button
                 onClick={handleDelete}
                 className="text-sm font-medium text-white/80 hover:text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
               >
-                Delete
+                {t("adminUsers.delete")}
               </button>
             </>
           )}

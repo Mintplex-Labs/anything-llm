@@ -11,8 +11,10 @@ import NewInviteModal from "./NewInviteModal";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next"; // i18n 추가
 
 export default function AdminInvites() {
+  const { t } = useTranslation(); // i18n hook 추가
   const { isOpen, openModal, closeModal } = useModal();
 
   return (
@@ -26,18 +28,17 @@ export default function AdminInvites() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-white">
-                Invitations
+                {t("adminInvites.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              Create invitation links for people in your organization to accept
-              and sign up with. Invitations can only be used by a single user.
+              {t("adminInvites.description")}
             </p>
           </div>
           <div className="w-full justify-end flex">
             <CTAButton onClick={openModal} className="mt-3 mr-0 -mb-12 z-10">
-              <EnvelopeSimple className="h-4 w-4" weight="bold" /> Create Invite
-              Link
+              <EnvelopeSimple className="h-4 w-4" weight="bold" />{" "}
+              {t("adminInvites.createInviteLink")}
             </CTAButton>
           </div>
           <InvitationsContainer />
@@ -51,6 +52,7 @@ export default function AdminInvites() {
 }
 
 function InvitationsContainer() {
+  const { t } = useTranslation(); // i18n hook 추가
   const darkMode = usePrefersDarkMode();
   const [loading, setLoading] = useState(true);
   const [invites, setInvites] = useState([]);
@@ -83,16 +85,16 @@ function InvitationsContainer() {
       <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            Status
+            {t("adminInvites.status")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Accepted By
+            {t("adminInvites.acceptedBy")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Created By
+            {t("adminInvites.createdBy")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Created
+            {t("adminInvites.created")}
           </th>
           <th scope="col" className="px-6 py-3 rounded-tr-lg">
             {" "}

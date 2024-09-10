@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 export default function NewWorkspaceModal({ closeModal }) {
   const [error, setError] = useState(null);
-  const { t } = useTranslation();
+  const { t } = useTranslation(); // i18n hook 추가
   const handleCreate = async (e) => {
     setError(null);
     e.preventDefault();
@@ -20,7 +20,7 @@ export default function NewWorkspaceModal({ closeModal }) {
       <div className="relative bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-600">
           <h3 className="text-xl font-semibold text-white">
-            Create new workspace
+            {t("adminWorkspaces.newWorkspaceTitle")}
           </h3>
           <button
             onClick={closeModal}
@@ -45,16 +45,19 @@ export default function NewWorkspaceModal({ closeModal }) {
                   name="name"
                   type="text"
                   className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  placeholder="My workspace"
+                  placeholder={t("adminWorkspaces.workspaceNamePlaceholder")}
                   minLength={4}
                   required={true}
                   autoComplete="off"
                 />
               </div>
-              {error && <p className="text-red-400 text-sm">Error: {error}</p>}
+              {error && (
+                <p className="text-red-400 text-sm">
+                  {t("adminWorkspaces.error")}: {error}
+                </p>
+              )}
               <p className="text-white text-opacity-60 text-xs md:text-sm">
-                After creating this workspace only admins will be able to see
-                it. You can add users after it has been created.
+                {t("adminWorkspaces.creationInfo")}
               </p>
             </div>
           </div>
@@ -64,13 +67,13 @@ export default function NewWorkspaceModal({ closeModal }) {
               type="button"
               className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
             >
-              Cancel
+              {t("adminWorkspaces.cancel")}
             </button>
             <button
               type="submit"
               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
-              Create workspace
+              {t("adminWorkspaces.createWorkspace")}
             </button>
           </div>
         </form>

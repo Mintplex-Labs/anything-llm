@@ -4,8 +4,11 @@ import PreLoader from "@/components/Preloader";
 import { OLLAMA_COMMON_URLS } from "@/utils/constants";
 import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
+import { useTranslation } from "react-i18next"; // Import i18n
 
 export default function OllamaEmbeddingOptions({ settings }) {
+  const { t } = useTranslation(); // i18n hook
+
   const {
     autoDetecting: loading,
     basePath,
@@ -36,7 +39,7 @@ export default function OllamaEmbeddingOptions({ settings }) {
         />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-2">
-            Max Embedding Chunk Length
+            {t("embedding.ollama.maxChunkLengthLabel")}
           </label>
           <input
             type="number"
@@ -51,7 +54,7 @@ export default function OllamaEmbeddingOptions({ settings }) {
             autoComplete="off"
           />
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Maximum length of text chunks for embedding.
+            {t("embedding.ollama.maxChunkLengthDescription")}
           </p>
         </div>
       </div>
@@ -63,7 +66,9 @@ export default function OllamaEmbeddingOptions({ settings }) {
           }}
           className="text-white hover:text-white/70 flex items-center text-sm"
         >
-          {showAdvancedControls ? "Hide" : "Show"} Manual Endpoint Input
+          {showAdvancedControls
+            ? t("embedding.ollama.hideManualEndpointInput")
+            : t("embedding.ollama.showManualEndpointInput")}
           {showAdvancedControls ? (
             <CaretUp size={14} className="ml-1" />
           ) : (
@@ -77,7 +82,7 @@ export default function OllamaEmbeddingOptions({ settings }) {
           <div className="flex flex-col w-60">
             <div className="flex justify-between items-center mb-2">
               <label className="text-white text-sm font-semibold">
-                Ollama Base URL
+                {t("embedding.ollama.baseUrlLabel")}
               </label>
               {loading ? (
                 <PreLoader size="6" />
@@ -88,7 +93,7 @@ export default function OllamaEmbeddingOptions({ settings }) {
                       onClick={handleAutoDetectClick}
                       className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
                     >
-                      Auto-Detect
+                      {t("embedding.ollama.autoDetect")}
                     </button>
                   )}
                 </>
@@ -107,7 +112,7 @@ export default function OllamaEmbeddingOptions({ settings }) {
               onBlur={basePath.onBlur}
             />
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-              Enter the URL where Ollama is running.
+              {t("embedding.ollama.baseUrlDescription")}
             </p>
           </div>
         </div>
@@ -117,6 +122,7 @@ export default function OllamaEmbeddingOptions({ settings }) {
 }
 
 function OllamaEmbeddingModelSelection({ settings, basePath = null }) {
+  const { t } = useTranslation(); // i18n hook
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -140,11 +146,11 @@ function OllamaEmbeddingModelSelection({ settings, basePath = null }) {
     findCustomModels();
   }, [basePath]);
 
-  if (loading || customModels.length == 0) {
+  if (loading || customModels.length === 0) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-2">
-          Ollama Embedding Model
+          {t("embedding.ollama.modelLabel")}
         </label>
         <select
           name="EmbeddingModelPref"
@@ -153,13 +159,12 @@ function OllamaEmbeddingModelSelection({ settings, basePath = null }) {
         >
           <option disabled={true} selected={true}>
             {!!basePath
-              ? "--loading available models--"
-              : "Enter Ollama URL first"}
+              ? t("embedding.ollama.loadingModels")
+              : t("embedding.ollama.enterUrlFirst")}
           </option>
         </select>
         <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-          Select the Ollama model for embeddings. Models will load after
-          entering a valid Ollama URL.
+          {t("embedding.ollama.modelDescription")}
         </p>
       </div>
     );
@@ -168,7 +173,7 @@ function OllamaEmbeddingModelSelection({ settings, basePath = null }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-2">
-        Ollama Embedding Model
+        {t("embedding.ollama.modelLabel")}
       </label>
       <select
         name="EmbeddingModelPref"
@@ -176,7 +181,7 @@ function OllamaEmbeddingModelSelection({ settings, basePath = null }) {
         className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
-          <optgroup label="Your loaded models">
+          <optgroup label={t("embedding.ollama.loadedModelsLabel")}>
             {customModels.map((model) => {
               return (
                 <option
@@ -192,7 +197,7 @@ function OllamaEmbeddingModelSelection({ settings, basePath = null }) {
         )}
       </select>
       <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-        Choose the Ollama model you want to use for generating embeddings.
+        {t("embedding.ollama.modelDescription")}
       </p>
     </div>
   );

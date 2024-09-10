@@ -10,6 +10,7 @@ import ElevenLabsIcon from "@/media/ttsproviders/elevenlabs.png";
 import BrowserNative from "@/components/TextToSpeech/BrowserNative";
 import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
 import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
+import { useTranslation } from "react-i18next";
 
 const PROVIDERS = [
   {
@@ -17,25 +18,26 @@ const PROVIDERS = [
     value: "native",
     logo: AnythingLLMIcon,
     options: (settings) => <BrowserNative settings={settings} />,
-    description: "Uses your browser's built in TTS service if supported.",
+    description: (t) => t("tts.providers.native"),
   },
   {
     name: "OpenAI",
     value: "openai",
     logo: OpenAiLogo,
     options: (settings) => <OpenAiTTSOptions settings={settings} />,
-    description: "Use OpenAI's text to speech voices.",
+    description: (t) => t("tts.providers.openai"),
   },
   {
     name: "ElevenLabs",
     value: "elevenlabs",
     logo: ElevenLabsIcon,
     options: (settings) => <ElevenLabsTTSOptions settings={settings} />,
-    description: "Use ElevenLabs's text to speech voices and technology.",
+    description: (t) => t("tts.providers.elevenlabs"),
   },
 ];
 
 export default function TextToSpeechProvider({ settings }) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -57,9 +59,9 @@ export default function TextToSpeechProvider({ settings }) {
     setSaving(true);
 
     if (error) {
-      showToast(`Failed to save preferences: ${error}`, "error");
+      showToast(t("tts.error", { error }), "error");
     } else {
-      showToast("Text-to-speech preferences saved successfully.", "success");
+      showToast(t("tts.success"), "success");
     }
     setSaving(false);
     setHasChanges(!!error);
@@ -98,24 +100,23 @@ export default function TextToSpeechProvider({ settings }) {
         <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
           <div className="flex gap-x-4 items-center">
             <p className="text-lg leading-6 font-bold text-white">
-              Text-to-speech Preference
+              {t("tts.title")}
             </p>
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-            Here you can specify what kind of text-to-speech providers you would
-            want to use in your AnythingLLM experience. By default, we use the
-            browser's built in support for these services, but you may want to
-            use others.
+            {t("tts.description")}
           </p>
         </div>
         <div className="w-full justify-end flex">
           {hasChanges && (
             <CTAButton className="mt-3 mr-0 -mb-14 z-10">
-              {saving ? "Saving..." : "Save changes"}
+              {saving ? t("common.saving") : t("common.save")}
             </CTAButton>
           )}
         </div>
-        <div className="text-base font-bold text-white mt-6 mb-4">Provider</div>
+        <div className="text-base font-bold text-white mt-6 mb-4">
+          {t("tts.provider")}
+        </div>
         <div className="relative">
           {searchMenuOpen && (
             <div
@@ -136,7 +137,7 @@ export default function TextToSpeechProvider({ settings }) {
                     type="text"
                     name="tts-provider-search"
                     autoComplete="off"
-                    placeholder="Search text to speech providers"
+                    placeholder={t("tts.searchPlaceholder")}
                     className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-white placeholder:text-white placeholder:font-medium"
                     onChange={(e) => setSearchQuery(e.target.value)}
                     ref={searchInputRef}
@@ -158,7 +159,7 @@ export default function TextToSpeechProvider({ settings }) {
                       name={provider.name}
                       value={provider.value}
                       image={provider.logo}
-                      description={provider.description}
+                      description={provider.description(t)}
                       checked={selectedProvider === provider.value}
                       onClick={() => updateProviderChoice(provider.value)}
                     />
@@ -183,7 +184,7 @@ export default function TextToSpeechProvider({ settings }) {
                     {selectedProviderObject.name}
                   </div>
                   <div className="mt-1 text-xs text-description">
-                    {selectedProviderObject.description}
+                    {selectedProviderObject.description(t)}
                   </div>
                 </div>
               </div>

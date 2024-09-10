@@ -19,7 +19,7 @@ const PROVIDERS = [
 ];
 
 export default function SpeechToTextProvider({ settings }) {
-  const { t } = useTranslation(); // 다국어 번역 적용
+  const { t } = useTranslation(); // i18n 적용
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");

@@ -16,6 +16,7 @@ import SettingsButton from "../SettingsButton";
 import { isMobile } from "react-device-detect";
 import { Tooltip } from "react-tooltip";
 import { v4 } from "uuid";
+import { useTranslation } from "react-i18next"; // i18n 추가
 
 export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
@@ -31,6 +32,7 @@ export const ICON_COMPONENTS = {
 };
 
 export default function Footer() {
+  const { t } = useTranslation(); // i18n hook 추가
   const [footerData, setFooterData] = useState(false);
 
   useEffect(() => {
@@ -55,9 +57,9 @@ export default function Footer() {
               target="_blank"
               rel="noreferrer"
               className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-              aria-label="Find us on Github"
+              aria-label={t("footer.githubAriaLabel")}
               data-tooltip-id="open-github"
-              data-tooltip-content="View source code on Github"
+              data-tooltip-content={t("footer.githubTooltip")}
             >
               <GithubLogo weight="fill" className="h-5 w-5 " />
             </a>
@@ -68,9 +70,9 @@ export default function Footer() {
               target="_blank"
               rel="noreferrer"
               className="w-fit transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-              aria-label="Docs"
+              aria-label={t("footer.docsAriaLabel")}
               data-tooltip-id="open-documentation"
-              data-tooltip-content="Open AnythingLLM help docs"
+              data-tooltip-content={t("footer.docsTooltip")}
             >
               <BookOpen weight="fill" className="h-5 w-5 " />
             </a>
@@ -81,9 +83,9 @@ export default function Footer() {
               target="_blank"
               rel="noreferrer"
               className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-              aria-label="Join our Discord server"
+              aria-label={t("footer.discordAriaLabel")}
               data-tooltip-id="open-discord"
-              data-tooltip-content="Join the AnythingLLM Discord"
+              data-tooltip-content={t("footer.discordTooltip")}
             >
               <DiscordLogo
                 weight="fill"
@@ -107,6 +109,8 @@ export default function Footer() {
             target="_blank"
             rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+            aria-label={item.label}
+            data-tooltip-content={item.tooltip}
           >
             {React.createElement(
               ICON_COMPONENTS?.[item.icon] ?? ICON_COMPONENTS.Info,

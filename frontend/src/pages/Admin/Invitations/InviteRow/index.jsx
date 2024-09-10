@@ -2,24 +2,23 @@ import { useEffect, useRef, useState } from "react";
 import { titleCase } from "text-case";
 import Admin from "@/models/admin";
 import { Trash } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next"; // i18n 추가
 
 export default function InviteRow({ invite }) {
+  const { t } = useTranslation(); // i18n hook 추가
   const rowRef = useRef(null);
   const [status, setStatus] = useState(invite.status);
   const [copied, setCopied] = useState(false);
+
   const handleDelete = async () => {
-    if (
-      !window.confirm(
-        `Are you sure you want to deactivate this invite?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.`
-      )
-    )
-      return false;
+    if (!window.confirm(t("adminInvites.confirmDelete"))) return false;
     if (rowRef?.current) {
-      rowRef.current.children[0].innerText = "Disabled";
+      rowRef.current.children[0].innerText = t("adminInvites.disabled");
     }
     setStatus("disabled");
     await Admin.disableInvite(invite.id);
   };
+
   const copyInviteLink = () => {
     if (!invite) return false;
     window.navigator.clipboard.writeText(
@@ -45,15 +44,17 @@ export default function InviteRow({ invite }) {
         className="bg-transparent text-white text-opacity-80 text-sm font-medium"
       >
         <td scope="row" className="px-6 py-4 whitespace-nowrap">
-          {titleCase(status)}
+          {titleCase(
+            status === "disabled" ? t("adminInvites.disabled") : status
+          )}
         </td>
         <td className="px-6 py-4">
           {invite.claimedBy
-            ? invite.claimedBy?.username || "deleted user"
+            ? invite.claimedBy?.username || t("adminInvites.deletedUser")
             : "--"}
         </td>
         <td className="px-6 py-4">
-          {invite.createdBy?.username || "deleted user"}
+          {invite.createdBy?.username || t("adminInvites.deletedUser")}
         </td>
         <td className="px-6 py-4">{invite.createdAt}</td>
         <td className="px-6 py-4 flex items-center gap-x-6">
@@ -64,7 +65,9 @@ export default function InviteRow({ invite }) {
                 disabled={copied}
                 className="font-medium text-blue-300 rounded-lg hover:text-white hover:text-opacity-60 hover:underline"
               >
-                {copied ? "Copied" : "Copy Invite Link"}
+                {copied
+                  ? t("adminInvites.copied")
+                  : t("adminInvites.copyInviteLink")}
               </button>
               <td className="px-6 py-4 flex items-center gap-x-6">
                 <button
