@@ -26,6 +26,9 @@ const MODEL_MAP = {
     "gemini-1.5-flash-latest": 1_048_576,
     "gemini-1.5-pro-latest": 2_097_152,
     "gemini-1.5-pro-exp-0801": 2_097_152,
+    "gemini-1.5-pro-exp-0827": 2_097_152,
+    "gemini-1.5-flash-exp-0827": 1_048_576,
+    "gemini-1.5-flash-8b-exp-0827": 1_048_576,
   },
   groq: {
     "gemma2-9b-it": 8192,
