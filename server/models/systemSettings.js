@@ -15,6 +15,23 @@ function isNullOrNaN(value) {
 
 const SystemSettings = {
   protectedFields: ["multi_user_mode"],
+  publicFields: [
+    "limit_user_messages",
+    "message_limit",
+    "footer_data",
+    "support_email",
+    "text_splitter_chunk_size",
+    "text_splitter_chunk_overlap",
+    "max_embed_chunk_size",
+    "agent_search_provider",
+    "agent_sql_connections",
+    "default_agent_skills",
+    "imported_agent_skills",
+    "custom_app_name",
+    "feature_flags",
+    "meta_page_title",
+    "meta_page_favicon",
+  ],
   supportedFields: [
     "limit_user_messages",
     "message_limit",

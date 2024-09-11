@@ -2,6 +2,7 @@ const AgentPlugins = require("./aibitat/plugins");
 const { SystemSettings } = require("../../models/systemSettings");
 const { safeJsonParse } = require("../http");
 const Provider = require("./aibitat/providers/ai-provider");
+const ImportedPlugin = require("./imported");
 
 const USER_AGENT = {
   name: "USER",
@@ -27,6 +28,7 @@ const WORKSPACE_AGENT = {
       functions: [
         ...defaultFunctions,
         ...(await agentSkillsFromSystemSettings()),
+        ...(await ImportedPlugin.activeImportedPlugins()),
       ],
     };
   },

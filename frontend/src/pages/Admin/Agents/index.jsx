@@ -4,18 +4,21 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import { CaretLeft, CaretRight, Robot } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, Plug, Robot } from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
 import { FullScreenLoader } from "@/components/Preloader";
 import { defaultSkills, configurableSkills } from "./skills";
 import { DefaultBadge } from "./Badges/default";
+import ImportedSkillList from "./Imported/SkillList";
+import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
 
 export default function AdminAgents() {
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState({});
   const [selectedSkill, setSelectedSkill] = useState("");
   const [agentSkills, setAgentSkills] = useState([]);
+  const [importedSkills, setImportedSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSkillModal, setShowSkillModal] = useState(false);
   const formEl = useRef(null);
@@ -37,9 +40,13 @@ export default function AdminAgents() {
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
-      const _preferences = await Admin.systemPreferences();
+      const _preferences = await Admin.systemPreferencesByFields([
+        "default_agent_skills",
+        "imported_agent_skills",
+      ]);
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
+      setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
       setLoading(false);
     }
     fetchSettings();
@@ -84,9 +91,13 @@ export default function AdminAgents() {
 
     if (success) {
       const _settings = await System.keys();
-      const _preferences = await Admin.systemPreferences();
+      const _preferences = await Admin.systemPreferencesByFields([
+        "default_agent_skills",
+        "imported_agent_skills",
+      ]);
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
+      setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
       showToast(`Agent preferences saved successfully.`, "success", {
         clear: true,
       });
@@ -97,9 +108,10 @@ export default function AdminAgents() {
     setHasChanges(false);
   };
 
-  const SelectedSkillComponent =
-    configurableSkills[selectedSkill]?.component ||
-    defaultSkills[selectedSkill]?.component;
+  const SelectedSkillComponent = selectedSkill.imported
+    ? ImportedSkillConfig
+    : configurableSkills[selectedSkill]?.component ||
+      defaultSkills[selectedSkill]?.component;
 
   if (loading) {
     return (
@@ -157,6 +169,16 @@ export default function AdminAgents() {
               }}
               activeSkills={agentSkills}
             />
+
+            <div className="text-white flex items-center gap-x-2">
+              <Plug size={24} />
+              <p className="text-lg font-medium">Custom Skills</p>
+            </div>
+            <ImportedSkillList
+              skills={importedSkills}
+              selectedSkill={selectedSkill}
+              handleClick={setSelectedSkill}
+            />
           </div>
 
           {/* Selected agent skill modal */}
@@ -181,17 +203,27 @@ export default function AdminAgents() {
                 <div className="flex-1 overflow-y-auto p-4">
                   <div className="bg-[#303237] text-white rounded-xl p-4">
                     {SelectedSkillComponent ? (
-                      <SelectedSkillComponent
-                        skill={configurableSkills[selectedSkill]?.skill}
-                        settings={settings}
-                        toggleSkill={toggleAgentSkill}
-                        enabled={agentSkills.includes(
-                          configurableSkills[selectedSkill]?.skill
+                      <>
+                        {selectedSkill.imported ? (
+                          <ImportedSkillConfig
+                            key={selectedSkill.hubId}
+                            selectedSkill={selectedSkill}
+                            setImportedSkills={setImportedSkills}
+                          />
+                        ) : (
+                          <SelectedSkillComponent
+                            skill={configurableSkills[selectedSkill]?.skill}
+                            settings={settings}
+                            toggleSkill={toggleAgentSkill}
+                            enabled={agentSkills.includes(
+                              configurableSkills[selectedSkill]?.skill
+                            )}
+                            setHasChanges={setHasChanges}
+                            {...(configurableSkills[selectedSkill] ||
+                              defaultSkills[selectedSkill])}
+                          />
                         )}
-                        setHasChanges={setHasChanges}
-                        {...(configurableSkills[selectedSkill] ||
-                          defaultSkills[selectedSkill])}
-                      />
+                      </>
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full text-white/60">
                         <Robot size={40} />
@@ -216,7 +248,7 @@ export default function AdminAgents() {
     >
       <form
         onSubmit={handleSubmit}
-        onChange={() => setHasChanges(true)}
+        onChange={() => !selectedSkill.imported && setHasChanges(true)}
         ref={formEl}
         className="flex-1 flex gap-x-6 p-4 mt-10"
       >
@@ -247,23 +279,43 @@ export default function AdminAgents() {
             handleClick={setSelectedSkill}
             activeSkills={agentSkills}
           />
+
+          <div className="text-white flex items-center gap-x-2">
+            <Plug size={24} />
+            <p className="text-lg font-medium">Custom Skills</p>
+          </div>
+          <ImportedSkillList
+            skills={importedSkills}
+            selectedSkill={selectedSkill}
+            handleClick={setSelectedSkill}
+          />
         </div>
 
         {/* Selected agent skill setting panel */}
         <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
           <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
             {SelectedSkillComponent ? (
-              <SelectedSkillComponent
-                skill={configurableSkills[selectedSkill]?.skill}
-                settings={settings}
-                toggleSkill={toggleAgentSkill}
-                enabled={agentSkills.includes(
-                  configurableSkills[selectedSkill]?.skill
+              <>
+                {selectedSkill.imported ? (
+                  <ImportedSkillConfig
+                    key={selectedSkill.hubId}
+                    selectedSkill={selectedSkill}
+                    setImportedSkills={setImportedSkills}
+                  />
+                ) : (
+                  <SelectedSkillComponent
+                    skill={configurableSkills[selectedSkill]?.skill}
+                    settings={settings}
+                    toggleSkill={toggleAgentSkill}
+                    enabled={agentSkills.includes(
+                      configurableSkills[selectedSkill]?.skill
+                    )}
+                    setHasChanges={setHasChanges}
+                    {...(configurableSkills[selectedSkill] ||
+                      defaultSkills[selectedSkill])}
+                  />
                 )}
-                setHasChanges={setHasChanges}
-                {...(configurableSkills[selectedSkill] ||
-                  defaultSkills[selectedSkill])}
-              />
+              </>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-white/60">
                 <Robot size={40} />

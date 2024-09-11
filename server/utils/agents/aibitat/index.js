@@ -504,9 +504,13 @@ Only return the role.
    * @param {string} pluginName this name of the plugin being called
    * @returns string of the plugin to be called compensating for children denoted by # in the string.
    * eg: sql-agent:list-database-connections
+   * or is a custom plugin
+   * eg: @@custom-plugin-name
    */
   #parseFunctionName(pluginName = "") {
-    if (!pluginName.includes("#")) return pluginName;
+    if (!pluginName.includes("#") && !pluginName.startsWith("@@"))
+      return pluginName;
+    if (pluginName.startsWith("@@")) return pluginName.replace("@@", "");
     return pluginName.split("#")[1];
   }
 
