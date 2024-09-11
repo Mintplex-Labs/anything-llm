@@ -1077,6 +1077,20 @@ const TRANSLATIONS = {
       placeholderUrl: "SearXNG API Key",
     },
   },
+  //agentConfig
+  agentConfig: {
+    title: "Configure Agent Skills",
+    description:
+      "Customize and enhance the default agent's capabilities by enabling or disabling specific skills. These settings will be applied across all workspaces.",
+  },
+
+  //members
+  members: {
+    userName: "Username",
+    role: "Role",
+    dateAdd: "Date Added",
+    workspace: "No workspace members",
+  },
 };
 
 export default TRANSLATIONS;

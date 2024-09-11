@@ -1685,5 +1685,19 @@ const TRANSLATIONS = {
     discordAriaLabel: "Discord 서버에 참여하기",
     discordTooltip: "AnythingLLM Discord에 참여",
   },
+  //agentConfig
+  agentConfig: {
+    title: "에이전트 스킬 설정",
+    description:
+      " 기본 에이전트의 기능을 사용자 지정하고 확장하려면 특정 스킬을 활성화하거나 비활성화하세요. 이 설정은 모든 워크스페이스에 적용됩니다.",
+  },
+
+  //members
+  members: {
+    userName: "사용자 이름",
+    role: "역할",
+    dateAdd: "추가된 날짜",
+    workspace: "워크스페이스 구성원이 없습니다",
+  },
 };
 export default TRANSLATIONS;
