@@ -66,165 +66,53 @@ async function openAiModels(apiKey = null) {
       console.error(`OpenAI:listModels`, e.message);
       return [
         {
-          "name": "gpt-3.5-turbo",
-          "id": "gpt-3.5-turbo",
-          "object": "model",
-          "created": 1677610602,
-          "owned_by": "openai",
-          "organization": "OpenAi"
+          name: "gpt-3.5-turbo",
+          id: "gpt-3.5-turbo",
+          object: "model",
+          created: 1677610602,
+          owned_by: "openai",
+          organization: "OpenAi",
         },
         {
-          "name": "gpt-4o",
-          "id": "gpt-4o",
-          "object": "model",
-          "created": 1677610602,
-          "owned_by": "openai",
-          "organization": "OpenAi"
+          name: "gpt-4o",
+          id: "gpt-4o",
+          object: "model",
+          created: 1677610602,
+          owned_by: "openai",
+          organization: "OpenAi",
         },
         {
-          "name": "gpt-3.5-turbo-16k",
-          "id": "gpt-3.5-turbo-16k",
-          "object": "model",
-          "created": 1683758102,
-          "owned_by": "openai-internal",
-          "organization": "OpenAi"
+          name: "gpt-4",
+          id: "gpt-4",
+          object: "model",
+          created: 1687882411,
+          owned_by: "openai",
+          organization: "OpenAi",
         },
         {
-          "name": "gpt-4-0613",
-          "id": "gpt-4-0613",
-          "object": "model",
-          "created": 1686588896,
-          "owned_by": "openai",
-          "organization": "OpenAi"
+          name: "gpt-4-turbo",
+          id: "gpt-4-turbo",
+          object: "model",
+          created: 1712361441,
+          owned_by: "system",
+          organization: "OpenAi",
         },
         {
-          "name": "gpt-4",
-          "id": "gpt-4",
-          "object": "model",
-          "created": 1687882411,
-          "owned_by": "openai",
-          "organization": "OpenAi"
+          name: "gpt-4-32k",
+          id: "gpt-4-32k",
+          object: "model",
+          created: 1687979321,
+          owned_by: "openai",
+          organization: "OpenAi",
         },
         {
-          "name": "gpt-4-32k",
-          "id": "gpt-4-32k",
-          "object": "model",
-          "created": 1687979321,
-          "owned_by": "openai",
-          "organization": "OpenAi"
+          name: "gpt-3.5-turbo-16k",
+          id: "gpt-3.5-turbo-16k",
+          object: "model",
+          created: 1683758102,
+          owned_by: "openai-internal",
+          organization: "OpenAi",
         },
-        {
-          "name": "gpt-3.5-turbo-instruct",
-          "id": "gpt-3.5-turbo-instruct",
-          "object": "model",
-          "created": 1692901427,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-3.5-turbo-instruct-0914",
-          "id": "gpt-3.5-turbo-instruct-0914",
-          "object": "model",
-          "created": 1694122472,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-4-1106-preview",
-          "id": "gpt-4-1106-preview",
-          "object": "model",
-          "created": 1698957206,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-3.5-turbo-1106",
-          "id": "gpt-3.5-turbo-1106",
-          "object": "model",
-          "created": 1698959748,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-4-0125-preview",
-          "id": "gpt-4-0125-preview",
-          "object": "model",
-          "created": 1706037612,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-4-turbo-preview",
-          "id": "gpt-4-turbo-preview",
-          "object": "model",
-          "created": 1706037777,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-3.5-turbo-0125",
-          "id": "gpt-3.5-turbo-0125",
-          "object": "model",
-          "created": 1706048358,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-4-turbo",
-          "id": "gpt-4-turbo",
-          "object": "model",
-          "created": 1712361441,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-4-turbo-2024-04-09",
-          "id": "gpt-4-turbo-2024-04-09",
-          "object": "model",
-          "created": 1712601677,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-4o-2024-05-13",
-          "id": "gpt-4o-2024-05-13",
-          "object": "model",
-          "created": 1715368132,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-4o-mini-2024-07-18",
-          "id": "gpt-4o-mini-2024-07-18",
-          "object": "model",
-          "created": 1721172717,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-4o-mini",
-          "id": "gpt-4o-mini",
-          "object": "model",
-          "created": 1721172741,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "gpt-4o-2024-08-06",
-          "id": "gpt-4o-2024-08-06",
-          "object": "model",
-          "created": 1722814719,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        },
-        {
-          "name": "chatgpt-4o-latest",
-          "id": "chatgpt-4o-latest",
-          "object": "model",
-          "created": 1723515131,
-          "owned_by": "system",
-          "organization": "OpenAi"
-        }
       ];
     });
 
