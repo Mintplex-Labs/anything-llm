@@ -767,34 +767,6 @@ does not extend the close button beyond the viewport. */
   }
 }
 
-.top-banner {
-  animation: popTop 500ms forwards;
-}
-
-@keyframes popTop {
-  0% {
-    top: -3.5rem;
-  }
-
-  100% {
-    top: 0px;
-  }
-}
-
-.rm-top-banner {
-  animation: rmPopTop 500ms forwards;
-}
-
-@keyframes rmPopTop {
-  0% {
-    top: 0px;
-  }
-
-  100% {
-    top: -3.5rem;
-  }
-}
-
 /* Math/Katex formatting to prevent duplication of content on screen */
 .katex-html[aria-hidden="true"] {
   display: none;
