@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import System from "@/models/system";
 import { Warning } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next"; // Import i18n hook
 
 export default function LiteLLMOptions({ settings }) {
+  const { t } = useTranslation(); // Initialize translation hook
+
   const [basePathValue, setBasePathValue] = useState(settings?.LiteLLMBasePath);
   const [basePath, setBasePath] = useState(settings?.LiteLLMBasePath);
   const [apiKeyValue, setApiKeyValue] = useState(settings?.LiteLLMAPIKey);
@@ -14,13 +17,13 @@ export default function LiteLLMOptions({ settings }) {
       <div className="w-full flex items-center gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Base URL
+            {t("embedding.liteLLMOptions.baseUrlLabel")}
           </label>
           <input
             type="url"
             name="LiteLLMBasePath"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="http://127.0.0.1:4000"
+            placeholder={t("embedding.liteLLMOptions.baseUrlPlaceholder")}
             defaultValue={settings?.LiteLLMBasePath}
             required={true}
             autoComplete="off"
@@ -36,13 +39,13 @@ export default function LiteLLMOptions({ settings }) {
         />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Max embedding chunk length
+            {t("embedding.liteLLMOptions.chunkLengthLabel")}
           </label>
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"
             className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="8192"
+            placeholder={t("embedding.liteLLMOptions.chunkLengthPlaceholder")}
             min={1}
             onScroll={(e) => e.target.blur()}
             defaultValue={settings?.EmbeddingModelMaxChunkLength}
@@ -55,14 +58,17 @@ export default function LiteLLMOptions({ settings }) {
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-4">
             <label className="text-white text-sm font-semibold flex items-center gap-x-2">
-              API Key <p className="!text-xs !italic !font-thin">optional</p>
+              {t("embedding.liteLLMOptions.apiKeyLabel")}{" "}
+              <p className="!text-xs !italic !font-thin">
+                {t("embedding.liteLLMOptions.optional")}
+              </p>
             </label>
           </div>
           <input
             type="password"
             name="LiteLLMAPIKey"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="sk-mysecretkey"
+            placeholder={t("embedding.liteLLMOptions.apiKeyPlaceholder")}
             defaultValue={settings?.LiteLLMAPIKey ? "*".repeat(20) : ""}
             autoComplete="new-password"
             spellCheck={false}
@@ -102,7 +108,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Embedding Model Selection
+          {t("embedding.liteLLMOptions.modelSelectionLabel")}
         </label>
         <select
           name="EmbeddingModelPref"
@@ -111,8 +117,8 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
-              ? "-- loading available models --"
-              : "-- waiting for URL --"}
+              ? t("embedding.liteLLMOptions.loadingModels")
+              : t("embedding.liteLLMOptions.waitingForUrl")}
           </option>
         </select>
       </div>
@@ -123,7 +129,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
     <div className="flex flex-col w-60">
       <div className="flex items-center">
         <label className="text-white text-sm font-semibold block mb-3">
-          Embedding Model Selection
+          {t("embedding.liteLLMOptions.modelSelectionLabel")}
         </label>
         <EmbeddingModelTooltip />
       </div>
@@ -133,7 +139,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
         className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
-          <optgroup label="Your loaded models">
+          <optgroup label={t("embedding.liteLLMOptions.loadedModelsLabel")}>
             {customModels.map((model) => {
               return (
                 <option
@@ -153,6 +159,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
 }
 
 function EmbeddingModelTooltip() {
+  const { t } = useTranslation(); // Initialize translation hook
   return (
     <div className="flex items-center justify-center -mt-3 ml-1">
       <Warning
@@ -168,17 +175,16 @@ function EmbeddingModelTooltip() {
         clickable={true}
       >
         <p className="text-sm">
-          Be sure to select a valid embedding model. Chat models are not
-          embedding models. See{" "}
+          {t("embedding.liteLLMOptions.tooltipMessage")}{" "}
           <a
             href="https://litellm.vercel.app/docs/embedding/supported_embedding"
             target="_blank"
             rel="noreferrer"
             className="underline"
           >
-            this page
+            {t("embedding.liteLLMOptions.tooltipLinkText")}
           </a>{" "}
-          for more information.
+          {t("embedding.liteLLMOptions.tooltipAdditionalInfo")}
         </p>
       </Tooltip>
     </div>

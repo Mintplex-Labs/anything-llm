@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next"; // Import i18n hook
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import { LMSTUDIO_COMMON_URLS } from "@/utils/constants";
@@ -6,6 +7,8 @@ import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 
 export default function LMStudioEmbeddingOptions({ settings }) {
+  const { t } = useTranslation(); // Initialize translation hook
+
   const {
     autoDetecting: loading,
     basePath,
@@ -33,7 +36,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
         <LMStudioModelSelection settings={settings} basePath={basePath.value} />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-2">
-            Max Embedding Chunk Length
+            {t("embedding.lmstudioOptions.maxChunkLengthLabel")}
           </label>
           <input
             type="number"
@@ -48,7 +51,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
             autoComplete="off"
           />
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Maximum length of text chunks for embedding.
+            {t("embedding.lmstudioOptions.maxChunkLengthHelper")}
           </p>
         </div>
       </div>
@@ -60,7 +63,10 @@ export default function LMStudioEmbeddingOptions({ settings }) {
           }}
           className="text-white hover:text-white/70 flex items-center text-sm"
         >
-          {showAdvancedControls ? "Hide" : "Show"} Manual Endpoint Input
+          {showAdvancedControls
+            ? t("embedding.lmstudioOptions.hide")
+            : t("embedding.lmstudioOptions.show")}{" "}
+          {t("embedding.lmstudioOptions.manualEndpointInput")}
           {showAdvancedControls ? (
             <CaretUp size={14} className="ml-1" />
           ) : (
@@ -74,7 +80,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
           <div className="flex flex-col w-60">
             <div className="flex justify-between items-center mb-2">
               <label className="text-white text-sm font-semibold">
-                LM Studio Base URL
+                {t("embedding.lmstudioOptions.baseUrlLabel")}
               </label>
               {loading ? (
                 <PreLoader size="6" />
@@ -85,7 +91,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
                       onClick={handleAutoDetectClick}
                       className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
                     >
-                      Auto-Detect
+                      {t("embedding.lmstudioOptions.autoDetect")}
                     </button>
                   )}
                 </>
@@ -104,7 +110,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
               onBlur={basePath.onBlur}
             />
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-              Enter the URL where LM Studio is running.
+              {t("embedding.lmstudioOptions.baseUrlHelper")}
             </p>
           </div>
         </div>
@@ -114,6 +120,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
 }
 
 function LMStudioModelSelection({ settings, basePath = null }) {
+  const { t } = useTranslation(); // Initialize translation hook
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -145,7 +152,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-2">
-          LM Studio Embedding Model
+          {t("embedding.lmstudioOptions.modelSelectionLabel")}
         </label>
         <select
           name="EmbeddingModelPref"
@@ -154,13 +161,12 @@ function LMStudioModelSelection({ settings, basePath = null }) {
         >
           <option disabled={true} selected={true}>
             {!!basePath
-              ? "--loading available models--"
-              : "Enter LM Studio URL first"}
+              ? t("embedding.lmstudioOptions.loadingModels")
+              : t("embedding.lmstudioOptions.enterBaseUrl")}
           </option>
         </select>
         <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-          Select the LM Studio model for embeddings. Models will load after
-          entering a valid LM Studio URL.
+          {t("embedding.lmstudioOptions.modelSelectionHelper")}
         </p>
       </div>
     );
@@ -169,7 +175,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-2">
-        LM Studio Embedding Model
+        {t("embedding.lmstudioOptions.modelSelectionLabel")}
       </label>
       <select
         name="EmbeddingModelPref"
@@ -177,7 +183,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
         className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
-          <optgroup label="Your loaded models">
+          <optgroup label={t("embedding.lmstudioOptions.loadedModelsLabel")}>
             {customModels.map((model) => {
               return (
                 <option
@@ -193,7 +199,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
         )}
       </select>
       <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-        Choose the LM Studio model you want to use for generating embeddings.
+        {t("embedding.lmstudioOptions.modelSelectionHelper")}
       </p>
     </div>
   );
