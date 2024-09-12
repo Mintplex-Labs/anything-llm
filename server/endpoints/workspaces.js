@@ -793,6 +793,7 @@ function workspaceEndpoints(app) {
             user_id: user?.id,
             include: true, // only duplicate visible chats
             thread_id: threadId,
+            api_session_id: null, // Do not include API session chats.
             id: { lte: Number(chatId) },
           },
           null,

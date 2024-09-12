@@ -119,6 +119,7 @@ class GitHubRepoLoader {
       maxConcurrency: 5,
       unknown: "ignore",
       ignorePaths: this.ignorePaths,
+      verbose: true,
     });
 
     const docs = [];

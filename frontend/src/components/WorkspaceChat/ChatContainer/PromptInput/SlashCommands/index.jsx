@@ -53,7 +53,7 @@ export function SlashCommands({ showing, setShowing, sendCommand }) {
       <div className="w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4">
         <div
           ref={cmdRef}
-          className="w-[600px] overflow-auto p-2 bg-zinc-800 rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"
+          className="w-[600px] bg-zinc-800 rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[300px] no-scroll"
         >
           <ResetCommand sendCommand={sendCommand} setShowing={setShowing} />
           <EndAgentSession sendCommand={sendCommand} setShowing={setShowing} />

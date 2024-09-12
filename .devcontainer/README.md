@@ -41,11 +41,12 @@ Checklist:
 
 :warning: **Important for all developers** :warning:
 
-- [ ] Whe you are using the `NODE_ENV=development` the server will not store the configurations you set for security reasons. Please set the proper config on file `.env.development`. The side-effect if you don't, everytime you restart the server, you will be sent to the "Onboarding" page again.
+- [ ] When you are using the `NODE_ENV=development` the server will not store the configurations you set for security reasons. Please set the proper config on file `.env.development`. The side-effect if you don't, everytime you restart the server, you will be sent to the "Onboarding" page again.
 
-:warning: **Important for Github Codespaces** :warning:
+**Note when using Github Codespaces**
 
-- [ ] When running the "Server" for the first time, its port will be automatically forward, but privately. Read the content of the `.env` file on the frontend folder about this, and make sure the port "Visibility" is set to "Public", so the frontend can reach the backend. Again, this is only needed for developing on Github Codespaces. We appreciate to know if you have a better solution.
+- [ ] When running the "Server" for the first time, it will automatically configure its port to be publicly accessible by default, as this is required for the front end to reach the server backend. To know more, read the content of the `.env` file on the frontend folder about this, and if any issues occur, make sure to manually set the port "Visibility" of the "Server" is set to "Public" if needed. Again, this is only needed for developing on Github Codespaces.
+
 
 **For the Collector:**
 

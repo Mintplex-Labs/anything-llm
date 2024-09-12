@@ -20,6 +20,23 @@ function isNullOrNaN(value) {
 
 const SystemSettings = {
   protectedFields: ["multi_user_mode"],
+  publicFields: [
+    "limit_user_messages",
+    "message_limit",
+    "footer_data",
+    "support_email",
+    "text_splitter_chunk_size",
+    "text_splitter_chunk_overlap",
+    "max_embed_chunk_size",
+    "agent_search_provider",
+    "agent_sql_connections",
+    "default_agent_skills",
+    "imported_agent_skills",
+    "custom_app_name",
+    "feature_flags",
+    "meta_page_title",
+    "meta_page_favicon",
+  ],
   supportedFields: [
     "limit_user_messages",
     "message_limit",
@@ -86,6 +103,7 @@ const SystemSettings = {
         if (
           ![
             "google-search-engine",
+            "searchapi",
             "serper-dot-dev",
             "bing-search",
             "serply-engine",
@@ -223,6 +241,8 @@ const SystemSettings = {
       // --------------------------------------------------------
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
       AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
+      AgentSearchApiKey: !!process.env.AGENT_SEARCHAPI_API_KEY || null,
+      AgentSearchApiEngine: process.env.AGENT_SEARCHAPI_ENGINE || "google",
       AgentSerperApiKey: !!process.env.AGENT_SERPER_DEV_KEY || null,
       AgentBingSearchApiKey: !!process.env.AGENT_BING_SEARCH_API_KEY || null,
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,

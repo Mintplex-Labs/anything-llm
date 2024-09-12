@@ -435,6 +435,14 @@ const KEY_MAPPING = {
     envKey: "AGENT_GSE_KEY",
     checks: [],
   },
+  AgentSearchApiKey: {
+    envKey: "AGENT_SEARCHAPI_API_KEY",
+    checks: [],
+  },
+  AgentSearchApiEngine: {
+    envKey: "AGENT_SEARCHAPI_ENGINE",
+    checks: [],
+  },
   AgentSerperApiKey: {
     envKey: "AGENT_SERPER_DEV_KEY",
     checks: [],
@@ -601,6 +609,9 @@ function validGeminiModel(input = "") {
     "gemini-1.5-pro-latest",
     "gemini-1.5-flash-latest",
     "gemini-1.5-pro-exp-0801",
+    "gemini-1.5-pro-exp-0827",
+    "gemini-1.5-flash-exp-0827",
+    "gemini-1.5-flash-8b-exp-0827",
   ];
   return validModels.includes(input)
     ? null

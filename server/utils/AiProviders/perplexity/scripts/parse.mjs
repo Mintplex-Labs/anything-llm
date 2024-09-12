@@ -8,7 +8,7 @@
 // copy outputs into the export in ../models.js
 
 // Update the date below if you run this again because Perplexity added new models.
-// Last Collected: Jul 31, 2024
+// Last Collected: Sept 12, 2024
 
 import fs from "fs";
 

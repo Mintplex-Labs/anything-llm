@@ -57,6 +57,7 @@ const {
 } = require("../utils/PasswordRecovery");
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 const { EncryptionManager } = require("../utils/EncryptionManager");
+const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -500,6 +501,7 @@ function systemEndpoints(app) {
           limit_user_messages: false,
           message_limit: 25,
         });
+        await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
 
         await updateENV(
           {
