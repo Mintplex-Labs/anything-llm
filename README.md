@@ -55,7 +55,8 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 
 ## Cool features of AnythingLLM
 
-- 🆕 **Multi-modal support (both closed and open-source LLMs!)**
+- 🆕 [**Custom AI Agents**](https://docs.anythingllm.com/agent/custom/introduction)
+- 🖼️ **Multi-modal support (both closed and open-source LLMs!)**
 - 👤 Multi-user instance support and permissioning _Docker version only_
 - 🦾 Agents inside your workspace (browse the web, run code, etc)
 - 💬 [Custom Embeddable Chat widget for your website](./embed/README.md) _Docker version only_
