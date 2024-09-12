@@ -23,6 +23,15 @@ model api_keys {
   lastUpdatedAt DateTime @default(now())
 }
 
+model workspace_documents_year {
+  id        Int      @id @default(autoincrement())
+  filename  String
+  docpath   String
+  docId     String
+  year      String?
+  createdAt DateTime @default(now())
+}
+
 model workspace_documents {
   id                   Int                   @id @default(autoincrement())
   docId                String                @unique

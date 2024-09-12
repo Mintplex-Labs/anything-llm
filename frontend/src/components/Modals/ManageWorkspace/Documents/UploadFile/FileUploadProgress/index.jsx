@@ -6,6 +6,7 @@ import { humanFileSize, milliToHms } from "../../../../../../utils/numbers";
 import PreLoader from "../../../../../Preloader";
 
 function FileUploadProgressComponent({
+  year,
   slug,
   uuid,
   file,
@@ -41,10 +42,10 @@ function FileUploadProgressComponent({
       const start = Number(new Date());
       const formData = new FormData();
       formData.append("file", file, file.name);
+      formData.append("year", year)
       const timer = setInterval(() => {
         setTimerMs(Number(new Date()) - start);
       }, 100);
-
       // Chunk streaming not working in production so we just sit and wait
       const { response, data } = await Workspace.uploadFile(slug, formData);
       if (!response.ok) {

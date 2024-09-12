@@ -33,6 +33,7 @@ const {
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const truncate = require("truncate");
+const prisma = require("../utils/prisma");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -117,7 +118,6 @@ function workspaceEndpoints(app) {
         const Collector = new CollectorApi();
         const { originalname } = request.file;
         const processingOnline = await Collector.online();
-
         if (!processingOnline) {
           response
             .status(500)
@@ -129,12 +129,24 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const { success, reason } =
+        const { success, reason, documents } =
           await Collector.processDocument(originalname);
         if (!success) {
           response.status(500).json({ success: false, error: reason }).end();
           return;
         }
+        let yearFinal = null
+        if (request.body.year !== "") {
+          yearFinal = request.body.year
+        }
+        await prisma.workspace_documents_year.create({
+          data: {
+            docId: documents[0].id,
+            docpath: documents[0].url,
+            filename: documents[0].title,
+            year: yearFinal
+          }
+        })
 
         Collector.log(
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
@@ -231,8 +243,8 @@ function workspaceEndpoints(app) {
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors
-                  .map((msg) => `${msg}`)
-                  .join("\n\n")}`
+                .map((msg) => `${msg}`)
+                .join("\n\n")}`
               : null,
         });
       } catch (e) {
@@ -779,11 +791,11 @@ function workspaceEndpoints(app) {
         // and is a valid thread slug.
         const threadId = !!threadSlug
           ? (
-              await WorkspaceThread.get({
-                slug: String(threadSlug),
-                workspace_id: workspace.id,
-              })
-            )?.id ?? null
+            await WorkspaceThread.get({
+              slug: String(threadSlug),
+              workspace_id: workspace.id,
+            })
+          )?.id ?? null
           : null;
         const chatsToFork = await WorkspaceChats.where(
           {
