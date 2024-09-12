@@ -183,15 +183,12 @@ function Directory({
     setSelectedFile(null);
   };
   return (
-    <div className="px-8 pr-0 pb-8">
+    <div className="px-8 pb-8">
       <div
         className="flex flex-col gap-y-6"
         style={{ maxWidth: !isUploadedDoc ? "43rem" : null }}
       >
-        <div
-          className="flex items-center justify-between w-[70vw] px-5 relative"
-          style={{ maxWidth: !isUploadedDoc ? "97%" : null }}
-        >
+        <div className="flex items-center justify-between w-full px-5 relative">
           <h3 className="text-white text-base font-bold">My Documents</h3>
           <div className="relative">
             <input
@@ -218,20 +215,21 @@ function Directory({
         </div>
 
         <div
-          className={`relative w-[70vw] bg-zinc-900 rounded-2xl overflow-hidden ${isUploadedDoc ? "h-[600px]" : "h-[310px]"
+          className={`relative w-full bg-zinc-900 rounded-2xl overflow-x-auto ${isUploadedDoc ? "h-[600px]" : "h-[310px]"
             }`}
-          style={{ maxWidth: !isUploadedDoc ? "97%" : null }}
         >
-          <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-[1.5fr_repeat(6,1fr)] py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900">
-            <p className="place-self-center">Name</p>
+          <div className="w-max absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs flex gap-3 p-4 border-b border-white/20 shadow-lg bg-zinc-900">
+            <p className="text-center w-44">Name</p>
             {Object.values(folderColumns).map((tag, index) => (
-              <p key={index} className="place-self-center">
+              <p key={index} className="text-start w-44">
                 {tag.label}
               </p>
             ))}
           </div>
 
-          <div className="overflow-y-auto h-full pt-12">
+          <div
+            className={`overflow-y-auto h-full ${filteredFiles.length > 0 ? "w-max" : "w-full"} pt-12`}
+          >
             {loading ? (
               <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
                 <PreLoader />
