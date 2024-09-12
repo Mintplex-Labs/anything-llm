@@ -46,12 +46,22 @@ class ImportedPlugin {
   }
 
   /**
+   * Checks if the plugin folder exists and if it does not, creates the folder.
+   */
+  static checkPluginFolderExists() {
+    const dir = path.resolve(pluginsPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    return;
+  }
+
+  /**
    * Loads plugins from `plugins` folder in storage that are custom loaded and defined.
    * only loads plugins that are active: true.
    * @returns {Promise<string[]>} - array of plugin names to be loaded later.
    */
   static async activeImportedPlugins() {
     const plugins = [];
+    this.checkPluginFolderExists();
     const folders = fs.readdirSync(path.resolve(pluginsPath));
     for (const folder of folders) {
       const configLocation = path.resolve(
@@ -72,6 +82,7 @@ class ImportedPlugin {
    */
   static listImportedPlugins() {
     const plugins = [];
+    this.checkPluginFolderExists();
     if (!fs.existsSync(pluginsPath)) return plugins;
 
     const folders = fs.readdirSync(path.resolve(pluginsPath));
