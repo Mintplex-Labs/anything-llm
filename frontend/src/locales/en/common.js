@@ -1091,6 +1091,97 @@ const TRANSLATIONS = {
     dateAdd: "Date Added",
     workspace: "No workspace members",
   },
+
+  //newEmbadedModel
+  newEmbadedModel: {
+    createNewEmbed: "Create new embed for workspace",
+    errorMessage: "Error: {error}",
+    embedCreationHint:
+      "After creating an embed you will be provided a link that you can publish on your website with a simple {} tag.",
+
+    cancel: "Cancel",
+    createEmbed: "Create embed",
+    workspaceLabel: "Workspace",
+    workspaceDescription:
+      "This is the workspace your chat window will be based on. All defaults will be inherited from the workspace unless overridden by this config.",
+    allowedChatMethod: "Allowed chat method",
+    allowedChatMethodDescription:
+      "Set how your chatbot should operate. Query means it will only respond if a document helps answer the query.<br />Chat opens the chat to even general questions and can answer totally unrelated queries to your workspace.",
+    chatOption: "Chat: Respond to all questions regardless of context",
+    queryOption:
+      "Query: Only respond to chats related to documents in workspace",
+    restrictRequestsFromDomains: "Restrict requests from domains",
+    restrictRequestsDescription:
+      "This filter will block any requests that come from a domain other than the list below.",
+    restrictRequestsLeavingEmpty:
+      "Leaving this empty means anyone can use your embed on any site.",
+    maxChatsPerDay: "Max chats per day",
+    maxChatsPerDayHint:
+      "Limit the amount of chats this embedded chat can process in a 24 hour period. Zero is unlimited.",
+    maxChatsPerSession: "Max chats per session",
+    maxChatsPerSessionHint:
+      "Limit the amount of chats a session user can send with this embed in a 24 hour period. Zero is unlimited.",
+    enableDynamicModelUse: "Enable dynamic model use",
+    enableDynamicModelUseHint:
+      "Allow setting of the preferred LLM model to override the workspace default.",
+    enableDynamicLLMTemperature: "Enable dynamic LLM temperature",
+    enableDynamicLLMTemperatureHint:
+      "Allow setting of the LLM temperature to override the workspace default.",
+    enablePromptOverride: "Enable Prompt Override",
+    enablePromptOverrideHint:
+      "Allow setting of the system prompt to override the workspace default.",
+  },
+
+  //CodeSnippetModal
+  copyEmbedCode: {
+    title: "Copy your embed code",
+    closeButton: "Close",
+    htmlScriptTagLabel: "HTML Script Tag Embed Code",
+    description:
+      "Have your workspace chat embed function like a help desk chat at the bottom corner of your website.",
+    viewOptions: "View all style and configuration options &rarr;",
+  },
+
+  //embedeRow
+  embedMessages: {
+    confirmDisable:
+      "Are you sure you want to disable this embed?\nOnce disabled the embed will no longer respond to any chat requests.",
+    confirmDelete:
+      "Are you sure you want to delete this embed?\nOnce deleted this embed will no longer respond to chats or be active.\n\nThis action is irreversible.",
+    embedDisabled: "Embed has been disabled.",
+    embedActive: "Embed is active.",
+    embedDeleted: "Embed deleted from system.",
+    showCode: "Show Code",
+    disable: "Disable",
+    enable: "Enable",
+    delete: "Delete",
+    all: "all",
+  },
+  //editEmbedModal
+  editEmbedModal: {
+    title: "Update embed",
+    updateSuccessMessage: "Embed updated successfully.",
+    errorMessage: "Error: {error}",
+    maxChatsPerDay: "Max chats per day",
+    maxChatsPerDayHint:
+      "Limit the amount of chats this embedded chat can process in a 24 hour period. Zero is unlimited.",
+    maxChatsPerSession: "Max chats per session",
+    maxChatsPerSessionHint:
+      "Limit the amount of chats a session user can send with this embed in a 24 hour period. Zero is unlimited.",
+    enableDynamicModelUse: "Enable dynamic model use",
+    enableDynamicModelUseHint:
+      "Allow setting of the preferred LLM model to override the workspace default.",
+    enableDynamicLLMTemperature: "Enable dynamic LLM temperature",
+    enableDynamicLLMTemperatureHint:
+      "Allow setting of the LLM temperature to override the workspace default.",
+    enablePromptOverride: "Enable Prompt Override",
+    enablePromptOverrideHint:
+      "Allow setting of the system prompt to override the workspace default.",
+    embedCreationHint:
+      "After creating an embed you will be provided a link that you can publish on your website with a simple {} tag.",
+    cancelButton: "Cancel",
+    updateButton: "Update embed",
+  },
 };
 
 export default TRANSLATIONS;

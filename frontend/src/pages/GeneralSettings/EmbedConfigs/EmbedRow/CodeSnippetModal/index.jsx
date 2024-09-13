@@ -3,14 +3,16 @@ import { CheckCircle, CopySimple, X } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import hljs from "highlight.js";
 import "highlight.js/styles/github-dark-dimmed.min.css";
+import { useTranslation } from "react-i18next";
 
 export default function CodeSnippetModal({ embed, closeModal }) {
+  const { t } = useTranslation();
   return (
     <div className="relative max-w-2xl max-h-full">
       <div className="relative bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
           <h3 className="text-xl font-semibold text-white">
-            Copy your embed code
+            {t("copyEmbedCode.title")}
           </h3>
           <button
             onClick={closeModal}
@@ -33,7 +35,7 @@ export default function CodeSnippetModal({ embed, closeModal }) {
               type="button"
               className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
             >
-              Close
+              {t("copyEmbedCode.closeButton")}
             </button>
             <div hidden={true} />
           </div>
@@ -76,24 +78,24 @@ const ScriptTag = ({ embed }) => {
     }, 2500);
     showToast("Snippet copied to clipboard!", "success", { clear: true });
   };
-
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col mb-2">
         <label className="block text-sm font-medium text-white">
-          HTML Script Tag Embed Code
+          {t("copyEmbedCode.htmlScriptTagLabel")}
         </label>
         <p className="text-slate-300 text-xs">
-          Have your workspace chat embed function like a help desk chat bottom
-          in the corner of your website.
+          {t("copyEmbedCode.description")}
         </p>
         <a
           href="https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md"
           target="_blank"
           className="text-blue-300 hover:underline"
-        >
-          View all style and configuration options &rarr;
-        </a>
+          dangerouslySetInnerHTML={{
+            __html: t("copyEmbedCode.viewOptions"),
+          }}
+        ></a>
       </div>
       <button
         disabled={copied}

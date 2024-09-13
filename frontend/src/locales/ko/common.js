@@ -1699,5 +1699,94 @@ const TRANSLATIONS = {
     dateAdd: "추가된 날짜",
     workspace: "워크스페이스 구성원이 없습니다",
   },
+
+  //newEmbadedModel
+  newEmbadedModel: {
+    createNewEmbed: "워크스페이스에 새 임베드 생성",
+    errorMessage: "오류: {error}",
+    cancel: "취소",
+    createEmbed: "임베드 생성",
+    workspaceLabel: "워크스페이스",
+    workspaceDescription:
+      "이 채팅 창은 선택한 워크스페이스를 기반으로 작동합니다. 기본 설정은 워크스페이스에서 상속되며, 이 설정으로 재정의할 수 있습니다.",
+    allowedChatMethod: "허용된 채팅 방식",
+    allowedChatMethodDescription:
+      "챗봇이 작동할 방식을 설정하세요. '쿼리'는 문서가 질문에 답변을 제공하는 경우에만 응답합니다.<br />'채팅'은 일반적인 질문에도 응답하며, 워크스페이스와 관련 없는 질문에도 답변할 수 있습니다.",
+    chatOption: "채팅: 컨텍스트와 상관없이 모든 질문에 응답",
+    queryOption: "쿼리: 워크스페이스 내 문서와 관련된 질문에만 응답",
+    restrictRequestsFromDomains: "도메인 요청 제한",
+    restrictRequestsDescription:
+      "이 필터는 아래 목록에 있는 도메인 이외의 요청을 차단합니다.",
+    restrictRequestsLeavingEmpty:
+      "이 필드를 비워두면 누구나 임베드를 사용할 수 있습니다.",
+    maxChatsPerDay: "일일 최대 채팅 수",
+    maxChatsPerDayHint:
+      "이 임베드된 채팅이 하루 동안 처리할 수 있는 최대 채팅 수를 설정합니다. 0으로 설정하면 무제한입니다.",
+    maxChatsPerSession: "세션당 최대 채팅 수",
+    maxChatsPerSessionHint:
+      "사용자가 이 임베드를 통해 한 세션에서 보낼 수 있는 최대 채팅 수를 설정합니다. 0으로 설정하면 무제한입니다.",
+    enableDynamicModelUse: "동적 모델 사용 허용",
+    enableDynamicModelUseHint:
+      "워크스페이스 기본값 대신 선호하는 LLM 모델을 설정할 수 있도록 허용합니다.",
+    enableDynamicLLMTemperature: "동적 LLM 온도 설정 허용",
+    enableDynamicLLMTemperatureHint:
+      "워크스페이스 기본값 대신 LLM 온도를 조정할 수 있도록 허용합니다.",
+    enablePromptOverride: "프롬프트 재정의 허용",
+    enablePromptOverrideHint:
+      "워크스페이스 기본값 대신 시스템 프롬프트를 설정할 수 있도록 허용합니다.",
+    embedCreationHint:
+      "임베드를 생성한 후에는 간단한 {} 태그를 통해 웹사이트에 링크를 게시할 수 있습니다.",
+  },
+
+  //CodeSnippetModal
+  copyEmbedCode: {
+    title: "임베드 코드를 복사하세요",
+    closeButton: "닫기",
+    htmlScriptTagLabel: "HTML 스크립트 태그 임베드 코드",
+    description:
+      "워크스페이스 채팅 임베드를 웹사이트 하단 구석에 헬프 데스크 채팅처럼 표시되도록 설정하세요.",
+    viewOptions: "모든 스타일 및 설정 옵션 보기 &rarr;",
+  },
+
+  //embedeRow
+  embedMessages: {
+    confirmDisable:
+      "이 임베드를 비활성화하시겠습니까?\n비활성화되면 임베드는 더 이상 채팅 요청에 응답하지 않습니다.",
+    confirmDelete:
+      "이 임베드를 삭제하시겠습니까?\n삭제되면 이 임베드는 더 이상 채팅에 응답하지 않거나 활성화되지 않습니다.\n\n이 작업은 되돌릴 수 없습니다.",
+    embedDisabled: "임베드가 비활성화되었습니다.",
+    embedActive: "임베드가 활성화되었습니다.",
+    embedDeleted: "시스템에서 임베드가 삭제되었습니다.",
+    showCode: "코드 보기",
+    disable: "비활성화",
+    enable: "활성화",
+    delete: "삭제",
+    all: "전체",
+  },
+  //editEmbedModal
+  editEmbedModal: {
+    title: "임베드 수정",
+    updateSuccessMessage: "임베드가 성공적으로 수정되었습니다.",
+    errorMessage: "오류: {error}",
+    maxChatsPerDay: "일일 최대 채팅 수",
+    maxChatsPerDayHint:
+      "이 임베드된 채팅이 하루 동안 처리할 수 있는 최대 채팅 수를 설정합니다. 0으로 설정하면 무제한입니다.",
+    maxChatsPerSession: "세션당 최대 채팅 수",
+    maxChatsPerSessionHint:
+      "사용자가 이 임베드를 통해 한 세션에서 보낼 수 있는 최대 채팅 수를 설정합니다. 0으로 설정하면 무제한입니다.",
+    enableDynamicModelUse: "동적 모델 사용 허용",
+    enableDynamicModelUseHint:
+      "워크스페이스 기본값 대신 선호하는 LLM 모델을 설정할 수 있도록 허용합니다.",
+    enableDynamicLLMTemperature: "동적 LLM 온도 설정 허용",
+    enableDynamicLLMTemperatureHint:
+      "워크스페이스 기본값 대신 LLM 온도를 조정할 수 있도록 허용합니다.",
+    enablePromptOverride: "프롬프트 재정의 허용",
+    enablePromptOverrideHint:
+      "워크스페이스 기본값 대신 시스템 프롬프트를 설정할 수 있도록 허용합니다.",
+    embedCreationHint:
+      "임베드를 생성한 후에는 간단한 {} 태그를 통해 웹사이트에 링크를 게시할 수 있습니다.",
+    cancelButton: "취소",
+    updateButton: "임베드 수정",
+  },
 };
 export default TRANSLATIONS;
