@@ -3,6 +3,7 @@ import { X } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { TagsInput } from "react-tag-input-component";
 import Embed from "@/models/embed";
+import { useTranslation } from "react-i18next";
 
 export function enforceSubmissionSchema(form) {
   const data = {};
@@ -36,12 +37,13 @@ export default function NewEmbedModal({ closeModal }) {
     setError(error);
   };
 
+  const { t } = useTranslation();
   return (
     <div className="relative w-full max-w-2xl max-h-full">
       <div className="relative bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
           <h3 className="text-xl font-semibold text-white">
-            Create new embed for workspace
+            {t("newEmbadedModel.createNewEmbed")}
           </h3>
           <button
             onClick={closeModal}
@@ -60,38 +62,41 @@ export default function NewEmbedModal({ closeModal }) {
               <PermittedDomains />
               <NumberInput
                 name="max_chats_per_day"
-                title="Max chats per day"
-                hint="Limit the amount of chats this embedded chat can process in a 24 hour period. Zero is unlimited."
+                title={t("newEmbadedModel.maxChatsPerDay")}
+                hint={t("newEmbadedModel.maxChatsPerDayHint")}
               />
               <NumberInput
                 name="max_chats_per_session"
-                title="Max chats per session"
-                hint="Limit the amount of chats a session user can send with this embed in a 24 hour period. Zero is unlimited."
+                title={t("newEmbadedModel.maxChatsPerSession")}
+                hint={t("newEmbadedModel.maxChatsPerSessionHint")}
               />
               <BooleanInput
                 name="allow_model_override"
-                title="Enable dynamic model use"
-                hint="Allow setting of the preferred LLM model to override the workspace default."
+                title={t("newEmbadedModel.enableDynamicModelUse")}
+                hint={t("newEmbadedModel.enableDynamicModelUseHint")}
               />
               <BooleanInput
                 name="allow_temperature_override"
-                title="Enable dynamic LLM temperature"
-                hint="Allow setting of the LLM temperature to override the workspace default."
+                title={t("newEmbadedModel.enableDynamicLLMTemperature")}
+                hint={t("newEmbadedModel.enableDynamicLLMTemperatureHint")}
               />
               <BooleanInput
                 name="allow_prompt_override"
-                title="Enable Prompt Override"
-                hint="Allow setting of the system prompt to override the workspace default."
+                title={t("newEmbadedModel.enablePromptOverride")}
+                hint={t("newEmbadedModel.enablePromptOverrideHint")}
               />
 
-              {error && <p className="text-red-400 text-sm">Error: {error}</p>}
+              {error && (
+                <p className="text-red-400 text-sm">
+                  {t("newEmbadedModel.errorMessage", { error })}
+                </p>
+              )}
               <p className="text-white text-xs md:text-sm pb-8">
-                After creating an embed you will be provided a link that you can
-                publish on your website with a simple
+                {t("newEmbadedModel.embedCreationHint").split("{}")[0]}
                 <code className="bg-stone-800 text-white mx-1 px-1 rounded-sm">
                   &lt;script&gt;
-                </code>{" "}
-                tag.
+                </code>
+                {t("newEmbadedModel.embedCreationHint").split("{}")[1]}
               </p>
             </div>
           </div>
@@ -101,13 +106,13 @@ export default function NewEmbedModal({ closeModal }) {
               type="button"
               className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
             >
-              Cancel
+              {t("newEmbadedModel.cancel")}
             </button>
             <button
               type="submit"
               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
-              Create embed
+              {t("newEmbadedModel.createEmbed")}
             </button>
           </div>
         </form>
@@ -125,7 +130,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
     }
     fetchWorkspaces();
   }, []);
-
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col mb-2">
@@ -133,11 +138,10 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
           htmlFor="workspace_id"
           className="block  text-sm font-medium text-white"
         >
-          Workspace
+          {t("newEmbadedModel.workspaceLabel")}
         </label>
         <p className="text-slate-300 text-xs">
-          This is the workspace your chat window will be based on. All defaults
-          will be inherited from the workspace unless overridden by this config.
+          {t("newEmbadedModel.workspaceDescription")}
         </p>
       </div>
       <select
@@ -163,7 +167,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
 
 export const ChatModeSelection = ({ defaultValue = null }) => {
   const [chatMode, setChatMode] = useState(defaultValue ?? "query");
-
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col mb-2">
@@ -171,15 +175,14 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
           className="block text-sm font-medium text-white"
           htmlFor="chat_mode"
         >
-          Allowed chat method
+          {t("newEmbadedModel.allowedChatMethod")}
         </label>
-        <p className="text-slate-300 text-xs">
-          Set how your chatbot should operate. Query means it will only respond
-          if a document helps answer the query.
-          <br />
-          Chat opens the chat to even general questions and can answer totally
-          unrelated queries to your workspace.
-        </p>
+        <p
+          className="text-slate-300 text-xs"
+          dangerouslySetInnerHTML={{
+            __html: t("newEmbadedModel.allowedChatMethodDescription"),
+          }}
+        ></p>
       </div>
       <div className="mt-2 gap-y-3 flex flex-col">
         <label
@@ -201,7 +204,7 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
             }`}
           ></div>
           <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-            Chat: Respond to all questions regardless of context
+            {t("newEmbadedModel.chatOption")}
           </div>
         </label>
         <label
@@ -223,7 +226,7 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
             }`}
           ></div>
           <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-            Query: Only respond to chats related to documents in workspace
+            {t("newEmbadedModel.queryOption")}
           </div>
         </label>
       </div>
@@ -249,6 +252,7 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
       .filter((u) => !!u);
     setDomains(validDomains);
   };
+  const { t } = useTranslation();
 
   return (
     <div>
@@ -257,13 +261,12 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
           htmlFor="allowlist_domains"
           className="block text-sm font-medium text-white"
         >
-          Restrict requests from domains
+          {t("newEmbadedModel.restrictRequestsFromDomains")}
         </label>
         <p className="text-slate-300 text-xs">
-          This filter will block any requests that come from a domain other than
-          the list below.
+          {t("newEmbadedModel.restrictRequestsDescription")}
           <br />
-          Leaving this empty means anyone can use your embed on any site.
+          {t("newEmbadedModel.restrictRequestsLeavingEmpty")}
         </p>
       </div>
       <input type="hidden" name="allowlist_domains" value={domains.join(",")} />
