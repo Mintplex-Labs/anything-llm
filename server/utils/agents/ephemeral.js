@@ -160,6 +160,27 @@ class EphemeralAgentHandler extends AgentHandler {
         continue;
       }
 
+      // Load imported plugin. This is marked by `@@` in the array of functions to load.
+      // and is the @@hubID of the plugin.
+      if (name.startsWith("@@")) {
+        const hubId = name.replace("@@", "");
+        const valid = ImportedPlugin.validateImportedPluginHandler(hubId);
+        if (!valid) {
+          this.log(
+            `Imported plugin by hubId ${hubId} not found in plugin directory. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        const plugin = ImportedPlugin.loadPluginByHubId(hubId);
+        const callOpts = plugin.parseCallOptions();
+        this.aibitat.use(plugin.plugin(callOpts));
+        this.log(
+          `Attached ${plugin.name} (${hubId}) imported plugin to Agent cluster`
+        );
+        continue;
+      }
+
       // Load single-stage plugin.
       if (!AgentPlugins.hasOwnProperty(name)) {
         this.log(
@@ -192,6 +213,7 @@ class EphemeralAgentHandler extends AgentHandler {
       AgentPlugins.docSummarizer.name,
       AgentPlugins.webScraping.name,
       ...(await agentSkillsFromSystemSettings()),
+      ...(await ImportedPlugin.activeImportedPlugins()),
     ];
   }
 
@@ -257,6 +279,7 @@ class EphemeralAgentHandler extends AgentHandler {
 
 const EventEmitter = require("node:events");
 const { writeResponseChunk } = require("../helpers/chat/responses");
+const ImportedPlugin = require("./imported");
 
 /**
  * This is a special EventEmitter specifically used in the Aibitat agent handler
