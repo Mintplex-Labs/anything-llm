@@ -1,5 +1,6 @@
 const AIbitat = require("./aibitat");
 const AgentPlugins = require("./aibitat/plugins");
+const ImportedPlugin = require("./imported");
 const { httpSocket } = require("./aibitat/plugins/http-socket.js");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
@@ -279,7 +280,6 @@ class EphemeralAgentHandler extends AgentHandler {
 
 const EventEmitter = require("node:events");
 const { writeResponseChunk } = require("../helpers/chat/responses");
-const ImportedPlugin = require("./imported");
 
 /**
  * This is a special EventEmitter specifically used in the Aibitat agent handler
