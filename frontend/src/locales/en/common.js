@@ -616,6 +616,10 @@ const TRANSLATIONS = {
       user: "User",
       occurred: "Occurred At",
     },
+    confirmReset:
+      "Are you sure you want to clear all event logs? This action is irreversible.",
+    resetSuccess: "Event logs cleared successfully.",
+    resetFail: "Failed to clear logs: {error}",
   },
 
   // Privacy & Data-Handling
@@ -1181,6 +1185,28 @@ const TRANSLATIONS = {
       "After creating an embed you will be provided a link that you can publish on your website with a simple {} tag.",
     cancelButton: "Cancel",
     updateButton: "Update embed",
+  },
+
+  //newApiKeyModal
+  newApiKeyModal: {
+    title: "Create new API key",
+    errorMessage: "Error: {error}",
+    apiKeyDescription:
+      "Once created the API key can be used to programmatically access and configure this AnythingLLM instance.",
+    apiDocsLink: "Read the API documentation ",
+    cancelButton: "Cancel",
+    createButton: "Create API key",
+    copyButton: "Copy API key",
+    copiedButton: "Copied API key",
+  },
+
+  apiKeyActions: {
+    confirmDeactivate:
+      "Are you sure you want to deactivate this API key?\nAfter you do this it will no longer be usable.\n\nThis action is irreversible.",
+    deleteSuccess: "API Key permanently deleted",
+    copySuccess: "API Key copied to clipboard",
+    copied: "Copied",
+    copy: "Copy API Key",
   },
 };
 
