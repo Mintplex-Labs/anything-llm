@@ -176,18 +176,23 @@ const Admin = {
    * @returns {Promise<{settings: Object, error: string}>} - System preferences object
    */
   systemPreferencesByFields: async (labels = []) => {
-    return await fetch(
-      `${API_BASE}/admin/system-preferences-for?labels=${labels.join(",")}`,
-      {
-        method: "GET",
-        headers: baseHeaders(),
-      }
-    )
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return null;
-      });
+    try {
+      return await fetch(
+        `${API_BASE}/admin/system-preferences-for?labels=${labels.join(",")}`,
+        {
+          method: "GET",
+          headers: baseHeaders(),
+        }
+      )
+        .then((res) => res.json())
+        .catch((e) => {
+          console.error(e);
+          return null;
+        });
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   },
   updateSystemPreferences: async (updates = {}) => {
     return await fetch(`${API_BASE}/admin/system-preferences`, {

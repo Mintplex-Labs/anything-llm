@@ -121,8 +121,8 @@ export default function AgentWebSearchSelection({
 
   useEffect(() => {
     Admin.systemPreferencesByFields(["agent_search_provider"])
-      .then(({ settings }) =>
-        setSelectedProvider(settings?.agent_search_provider ?? "none")
+      .then((res) =>
+        setSelectedProvider(res?.settings?.agent_search_provider ?? "none")
       )
       .catch(() => setSelectedProvider("none"));
   }, []);

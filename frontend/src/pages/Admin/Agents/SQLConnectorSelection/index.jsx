@@ -17,9 +17,7 @@ export default function AgentSQLConnectorSelection({
   const [connections, setConnections] = useState([]);
   useEffect(() => {
     Admin.systemPreferencesByFields(["agent_sql_connections"])
-      .then(({ settings }) =>
-        setConnections(settings?.agent_sql_connections || [])
-      )
+      .then((res) => setConnections(res?.settings?.agent_sql_connections ?? []))
       .catch(() => setConnections([]));
   }, []);
 
