@@ -1222,6 +1222,10 @@ const TRANSLATIONS = {
       user: "사용자",
       occurred: "발생 시각",
     },
+    confirmReset:
+      "모든 이벤트 로그를 지우시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    resetSuccess: "이벤트 로그가 성공적으로 삭제되었습니다.",
+    resetFail: "로그 삭제 실패: {error}",
   },
 
   // Privacy & Data-Handling
@@ -1787,6 +1791,28 @@ const TRANSLATIONS = {
       "임베드를 생성한 후에는 간단한 {} 태그를 통해 웹사이트에 링크를 게시할 수 있습니다.",
     cancelButton: "취소",
     updateButton: "임베드 수정",
+  },
+
+  //newApiKeyModal
+  newApiKeyModal: {
+    title: "새 API 키 생성",
+    errorMessage: "오류: {error}",
+    apiKeyDescription:
+      "API 키가 생성된 후, 이를 사용하여 이 AnythingLLM 인스턴스를 프로그래밍적으로 접근하고 구성할 수 있습니다.",
+    apiDocsLink: "API 문서 읽기 ",
+    cancelButton: "취소",
+    createButton: "API 키 생성",
+    copyButton: "API 키 복사",
+    copiedButton: "API 키 복사됨",
+  },
+
+  apiKeyActions: {
+    confirmDeactivate:
+      "이 API 키를 비활성화하시겠습니까?\n이 작업을 수행하면 더 이상 사용할 수 없습니다.\n\n이 작업은 되돌릴 수 없습니다.",
+    deleteSuccess: "API 키가 영구적으로 삭제되었습니다",
+    copySuccess: "API 키가 클립보드에 복사되었습니다",
+    copied: "복사됨",
+    copy: "API 키 복사",
   },
 };
 export default TRANSLATIONS;

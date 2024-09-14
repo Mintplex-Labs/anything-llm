@@ -28,20 +28,15 @@ export default function AdminLogs() {
   }, [offset]);
 
   const handleResetLogs = async () => {
-    if (
-      !window.confirm(
-        "Are you sure you want to clear all event logs? This action is irreversible."
-      )
-    )
-      return;
+    if (!window.confirm(t("event.confirmReset"))) return;
     const { success, error } = await System.clearEventLogs();
     if (success) {
-      showToast("Event logs cleared successfully.", "success");
+      showToast(t("event.resetSuccess"), "success");
       setLogs([]);
       setCanNext(false);
       setOffset(0);
     } else {
-      showToast(`Failed to clear logs: ${error}`, "error");
+      showToast(t("event.resetFail", { error }), "error");
     }
   };
 
