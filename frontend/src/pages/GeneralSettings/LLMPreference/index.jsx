@@ -139,7 +139,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <FireworksAiOptions settings={settings} />,
     description:
       "The fastest and most efficient inference engine to build production-ready, compound AI systems.",
-    requiredConfig: ["FireworksAiApiKey"],
+    requiredConfig: ["FireworksAiLLMApiKey"],
   },
   {
     name: "Mistral",

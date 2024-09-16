@@ -351,12 +351,12 @@ const KEY_MAPPING = {
   },
 
   // Fireworks AI Options
-  FireworksAiApiKey: {
-    envKey: "FIREWORKS_AI_API_KEY",
+  FireworksAiLLMApiKey: {
+    envKey: "FIREWORKS_AI_LLM_API_KEY",
     checks: [isNotEmpty],
   },
-  FireworksAiModelPref: {
-    envKey: "FIREWORKS_AI_MODEL_PREF",
+  FireworksAiLLMModelPref: {
+    envKey: "FIREWORKS_AI_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
 

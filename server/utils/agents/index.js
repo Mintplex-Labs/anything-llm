@@ -156,6 +156,15 @@ class AgentHandler {
             "AWS Bedrock Access Keys, model and region must be provided to use agents."
           );
         break;
+      case "fireworksai":
+        if (
+          !process.env.FIREWORKS_AI_LLM_API_KEY ||
+          !process.env.FIREWORKS_AI_LLM_MODEL_PREF
+        )
+          throw new Error(
+            "FireworksAI API Key & model must be provided to use agents."
+          );
+        break;
 
       default:
         throw new Error(
@@ -197,6 +206,8 @@ class AgentHandler {
       case "textgenwebui":
         return null;
       case "bedrock":
+        return null;
+      case "fireworksai":
         return null;
       default:
         return "unknown";

@@ -10,10 +10,10 @@ export default function FireworksAiOptions({ settings }) {
         </label>
         <input
           type="password"
-          name="FireworksAiApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          name="FireworksAiLLMApiKey"
+          className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Fireworks AI API Key"
-          defaultValue={settings?.FireworksAiApiKey ? "*".repeat(20) : ""}
+          defaultValue={settings?.FireworksAiLLMApiKey ? "*".repeat(20) : ""}
           required={true}
           autoComplete="off"
           spellCheck={false}
@@ -56,9 +56,9 @@ function FireworksAiModelSelection({ settings }) {
           Chat Model Selection
         </label>
         <select
-          name="FireworksAiModelPref"
+          name="FireworksAiLLMModelPref"
           disabled={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -74,9 +74,9 @@ function FireworksAiModelSelection({ settings }) {
         Chat Model Selection
       </label>
       <select
-        name="FireworksAiModelPref"
+        name="FireworksAiLLMModelPref"
         required={true}
-        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {Object.keys(groupedModels)
           .sort()
@@ -86,7 +86,7 @@ function FireworksAiModelSelection({ settings }) {
                 <option
                   key={model.id}
                   value={model.id}
-                  selected={settings?.FireworksAiModelPref === model.id}
+                  selected={settings?.FireworksAiLLMModelPref === model.id}
                 >
                   {model.name}
                 </option>

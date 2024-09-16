@@ -245,7 +245,7 @@ function getLLMProviderClass({ provider = null } = {}) {
       return TogetherAiLLM;
     case "fireworksai":
       const { FireworksAiLLM } = require("../AiProviders/fireworksAi");
-      return new FireworksAiLLM(embedder, model);
+      return new FireworksAiLLM();
     case "perplexity":
       const { PerplexityLLM } = require("../AiProviders/perplexity");
       return PerplexityLLM;

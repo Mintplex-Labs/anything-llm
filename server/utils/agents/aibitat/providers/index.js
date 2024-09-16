@@ -13,6 +13,7 @@ const GenericOpenAiProvider = require("./genericOpenAi.js");
 const PerplexityProvider = require("./perplexity.js");
 const TextWebGenUiProvider = require("./textgenwebui.js");
 const AWSBedrockProvider = require("./bedrock.js");
+const FireworksAIProvider = require("./fireworksai.js");
 
 module.exports = {
   OpenAIProvider,
@@ -30,4 +31,5 @@ module.exports = {
   PerplexityProvider,
   TextWebGenUiProvider,
   AWSBedrockProvider,
+  FireworksAIProvider,
 };

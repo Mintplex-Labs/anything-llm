@@ -10,14 +10,14 @@ function fireworksAiModels() {
 
 class FireworksAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    if (!process.env.FIREWORKS_AI_API_KEY)
+    if (!process.env.FIREWORKS_AI_LLM_API_KEY)
       throw new Error("No FireworksAI API key was set.");
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
       baseURL: "https://api.fireworks.ai/inference/v1",
-      apiKey: process.env.FIREWORKS_AI_API_KEY ?? null,
+      apiKey: process.env.FIREWORKS_AI_LLM_API_KEY ?? null,
     });
-    this.model = modelPreference || process.env.FIREWORKS_AI_MODEL_PREF;
+    this.model = modelPreference || process.env.FIREWORKS_AI_LLM_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
