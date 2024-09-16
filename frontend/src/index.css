@@ -251,39 +251,13 @@ a {
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
+#chat-history,
+#chat-container,
 .no-scroll {
   -ms-overflow-style: none !important;
   /* IE and Edge */
   scrollbar-width: none !important;
   /* Firefox */
-}
-
-@layer components {
-  .white-scrollbar {
-    overflow-y: scroll;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.5) #18181b;
-  }
-
-  .white-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  .white-scrollbar::-webkit-scrollbar-track {
-    background-color: #18181b;
-    border-radius: 100vh;
-  }
-
-  .white-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 100vh;
-    border: 2px solid #18181b;
-  }
-
-  .white-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.7);
-  }
 }
 
 .z-99 {

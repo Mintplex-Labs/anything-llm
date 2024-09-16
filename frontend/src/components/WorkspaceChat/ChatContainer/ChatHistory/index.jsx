@@ -26,15 +26,7 @@ export default function ChatHistory({
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
   const [textSize, setTextSize] = useState("normal");
-  const [showScrollbar, setShowScrollbar] = useState(false);
-
-  useEffect(() => {
-    async function fetchShowScrollbar() {
-      const settings = Appearance.getSettings();
-      setShowScrollbar(settings?.showScrollbar ?? false);
-    }
-    fetchShowScrollbar();
-  }, []);
+  const showScrollbar = Appearance.getSettings()?.showScrollbar || false;
 
   const getTextSizeClass = (size) => {
     switch (size) {
@@ -201,7 +193,7 @@ export default function ChatHistory({
   return (
     <div
       className={`markdown text-white/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
-        showScrollbar ? "white-scrollbar" : "no-scroll"
+        showScrollbar ? "" : "no-scroll"
       }`}
       id="chat-history"
       ref={chatHistoryRef}
