@@ -350,6 +350,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Fireworks AI Options
+  FireworksAiLLMApiKey: {
+    envKey: "FIREWORKS_AI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  FireworksAiLLMModelPref: {
+    envKey: "FIREWORKS_AI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Perplexity Options
   PerplexityApiKey: {
     envKey: "PERPLEXITY_API_KEY",
@@ -433,6 +443,14 @@ const KEY_MAPPING = {
   },
   AgentGoogleSearchEngineKey: {
     envKey: "AGENT_GSE_KEY",
+    checks: [],
+  },
+  AgentSearchApiKey: {
+    envKey: "AGENT_SEARCHAPI_API_KEY",
+    checks: [],
+  },
+  AgentSearchApiEngine: {
+    envKey: "AGENT_SEARCHAPI_ENGINE",
     checks: [],
   },
   AgentSerperApiKey: {
@@ -572,6 +590,7 @@ function supportedLLM(input = "") {
     "ollama",
     "native",
     "togetherai",
+    "fireworksai",
     "mistral",
     "huggingface",
     "perplexity",
@@ -601,6 +620,9 @@ function validGeminiModel(input = "") {
     "gemini-1.5-pro-latest",
     "gemini-1.5-flash-latest",
     "gemini-1.5-pro-exp-0801",
+    "gemini-1.5-pro-exp-0827",
+    "gemini-1.5-flash-exp-0827",
+    "gemini-1.5-flash-8b-exp-0827",
   ];
   return validModels.includes(input)
     ? null

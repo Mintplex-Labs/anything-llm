@@ -6,6 +6,7 @@ const {
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
+const ImportedPlugin = require("./imported");
 
 class AgentHandler {
   #invocationUUID;
@@ -155,6 +156,15 @@ class AgentHandler {
             "AWS Bedrock Access Keys, model and region must be provided to use agents."
           );
         break;
+      case "fireworksai":
+        if (
+          !process.env.FIREWORKS_AI_LLM_API_KEY ||
+          !process.env.FIREWORKS_AI_LLM_MODEL_PREF
+        )
+          throw new Error(
+            "FireworksAI API Key & model must be provided to use agents."
+          );
+        break;
 
       default:
         throw new Error(
@@ -196,6 +206,8 @@ class AgentHandler {
       case "textgenwebui":
         return null;
       case "bedrock":
+        return null;
+      case "fireworksai":
         return null;
       default:
         return "unknown";
@@ -288,6 +300,27 @@ class AgentHandler {
         this.aibitat.use(childPlugin.plugin(callOpts));
         this.log(
           `Attached ${parent}:${childPluginName} plugin to Agent cluster`
+        );
+        continue;
+      }
+
+      // Load imported plugin. This is marked by `@@` in the array of functions to load.
+      // and is the @@hubID of the plugin.
+      if (name.startsWith("@@")) {
+        const hubId = name.replace("@@", "");
+        const valid = ImportedPlugin.validateImportedPluginHandler(hubId);
+        if (!valid) {
+          this.log(
+            `Imported plugin by hubId ${hubId} not found in plugin directory. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        const plugin = ImportedPlugin.loadPluginByHubId(hubId);
+        const callOpts = plugin.parseCallOptions();
+        this.aibitat.use(plugin.plugin(callOpts));
+        this.log(
+          `Attached ${plugin.name} (${hubId}) imported plugin to Agent cluster`
         );
         continue;
       }

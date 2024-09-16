@@ -25,7 +25,10 @@ async function grepCommand(message, user = null) {
   // Allows multiple commands in one message
   let updatedMessage = message;
   for (const preset of userPresets) {
-    const regex = new RegExp(preset.command, "g");
+    const regex = new RegExp(
+      `(?:\\b\\s|^)(${preset.command})(?:\\b\\s|$)`,
+      "g"
+    );
     updatedMessage = updatedMessage.replace(regex, preset.prompt);
   }
 

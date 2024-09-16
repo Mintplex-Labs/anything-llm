@@ -8,6 +8,7 @@ import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
+import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
@@ -106,6 +107,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to TogetherAI",
     ],
     logo: TogetherAILogo,
+  },
+  fireworksai: {
+    name: "FireworksAI",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to Fireworks AI",
+    ],
+    logo: FireworksAILogo,
   },
   mistral: {
     name: "Mistral",

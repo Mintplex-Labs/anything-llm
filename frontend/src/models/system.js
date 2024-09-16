@@ -2,6 +2,7 @@ import { API_BASE, AUTH_TIMESTAMP, fullApiUrl } from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import LiveDocumentSync from "./experimental/liveSync";
+import AgentPlugins from "./experimental/agentPlugins";
 
 const System = {
   cacheKeys: {
@@ -675,6 +676,7 @@ const System = {
   },
   experimentalFeatures: {
     liveSync: LiveDocumentSync,
+    agentPlugins: AgentPlugins,
   },
 };
 
