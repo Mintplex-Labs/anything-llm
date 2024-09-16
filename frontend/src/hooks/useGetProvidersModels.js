@@ -35,6 +35,7 @@ const PROVIDER_DEFAULT_MODELS = {
   localai: [],
   ollama: [],
   togetherai: [],
+  fireworksai: [],
   groq: [],
   native: [],
   cohere: [
@@ -50,7 +51,7 @@ const PROVIDER_DEFAULT_MODELS = {
   bedrock: [],
 };
 
-// For togetherAi, which has a large model list - we subgroup the options
+// For providers with large model lists (e.g. togetherAi) - we subgroup the options
 // by their creator organization (eg: Meta, Mistral, etc)
 // which makes selection easier to read.
 function groupModels(models) {
@@ -61,7 +62,7 @@ function groupModels(models) {
   }, {});
 }
 
-const groupedProviders = ["togetherai", "openai", "openrouter"];
+const groupedProviders = ["togetherai", "fireworksai", "openai", "openrouter"];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);

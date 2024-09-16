@@ -78,6 +78,7 @@ AnythingLLM的一些酷炫特性
 - [LM Studio (所有模型)](https://lmstudio.ai)
 - [LocalAi (所有模型)](https://localai.io/)
 - [Together AI (聊天模型)](https://www.together.ai/)
+- [Fireworks AI (聊天模型)](https://fireworks.ai/)
 - [Perplexity (聊天模型)](https://www.perplexity.ai/)
 - [OpenRouter (聊天模型)](https://openrouter.ai/)
 - [Mistral](https://mistral.ai/)
