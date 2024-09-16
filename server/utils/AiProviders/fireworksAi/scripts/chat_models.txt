@@ -1,0 +1,20 @@
+| Organization | Model Name | Model String for API | Context length |
+|--------------|------------|----------------------|----------------|
+| Meta | Llama 3.1 405B Instruct | accounts/fireworks/models/llama-v3p1-405b-instruct | 131072 |
+| Meta | Llama 3.1 70B Instruct | accounts/fireworks/models/llama-v3p1-70b-instruct | 131072 |
+| Meta | Llama 3.1 8B Instruct | accounts/fireworks/models/llama-v3p1-8b-instruct | 131072 |
+| Meta | Llama 3 70B Instruct | accounts/fireworks/models/llama-v3-70b-instruct | 8192 |
+| mistralai | Mixtral MoE 8x22B Instruct | accounts/fireworks/models/mixtral-8x22b-instruct | 65536 |
+| mistralai | Mixtral MoE 8x7B Instruct | accounts/fireworks/models/mixtral-8x7b-instruct | 32768 |
+| Fireworks AI | Firefunction V2 | accounts/fireworks/models/firefunction-v2 | 8192 |
+| Fireworks AI | FireFunction V1 | accounts/fireworks/models/firefunction-v1 | 32768 |
+| Google | Gemma 2 9B Instruct | accounts/fireworks/models/gemma2-9b-it | 8192 |
+| Hugging Face | Llama 3 70B Instruct (HF version) | accounts/fireworks/models/llama-v3-70b-instruct-hf | 8192 |
+| Hugging Face | Llama 3 8B Instruct | accounts/fireworks/models/llama-v3-8b-instruct | 8192 |
+| Hugging Face | Llama 3 8B Instruct (HF version) | accounts/fireworks/models/llama-v3-8b-instruct-hf | 8192 |
+| Hugging Face | Mixtral MoE 8x7B Instruct (HF version) | accounts/fireworks/models/mixtral-8x7b-instruct-hf | 32768 |
+| Gryphe | MythoMax L2 13b | accounts/fireworks/models/mythomax-l2-13b | 4096 |
+| Microsoft | Phi 3.5 Vision Instruct | accounts/fireworks/models/phi-3-vision-128k-instruct | 8192 |
+| BigCode | StarCoder 15.5B | accounts/fireworks/models/starcoder-16b | 8192 |
+| BigCode | StarCoder 7B | accounts/fireworks/models/starcoder-7b | 8192 |
+| 01.AI | Yi-Large | accounts/fireworks/models/yi-01-ai/yi-large | 32768 |

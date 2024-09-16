@@ -350,6 +350,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Fireworks AI Options
+  FireworksAiApiKey: {
+    envKey: "FIREWORKS_AI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  FireworksAiModelPref: {
+    envKey: "FIREWORKS_AI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Perplexity Options
   PerplexityApiKey: {
     envKey: "PERPLEXITY_API_KEY",
@@ -580,6 +590,7 @@ function supportedLLM(input = "") {
     "ollama",
     "native",
     "togetherai",
+    "fireworksai",
     "mistral",
     "huggingface",
     "perplexity",

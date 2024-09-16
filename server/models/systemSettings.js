@@ -441,6 +441,10 @@ const SystemSettings = {
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
 
+      // Fireworks AI API Keys
+      FireworksAiApiKey: !!process.env.FIREWORKS_AI_API_KEY,
+      FireworksAiModelPref: process.env.FIREWORKS_AI_MODEL_PREF,
+
       // Perplexity AI Keys
       PerplexityApiKey: !!process.env.PERPLEXITY_API_KEY,
       PerplexityModelPref: process.env.PERPLEXITY_MODEL_PREF,
