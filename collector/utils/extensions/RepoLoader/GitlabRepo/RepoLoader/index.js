@@ -64,7 +64,7 @@ class GitLabRepoLoader {
       match = pattern.match(this.repo);
     }
     if (!match) return false;
-    const {author, project} = match;
+    const { author, project } = match;
 
     this.projectId = encodeURIComponent(`${author}/${project}`);
     this.apiBase = new URL(this.repo).origin;
