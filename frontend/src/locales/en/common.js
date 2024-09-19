@@ -1208,6 +1208,67 @@ const TRANSLATIONS = {
     copied: "Copied",
     copy: "Copy API Key",
   },
+
+  liveSyncToggle: {
+    title: "Automatic Document Content Sync",
+    description1:
+      'Enable the ability to specify a document to be "watched". Watched document\'s content will be regularly fetched and updated in AnythingLLM.',
+    description2:
+      "Watched documents will automatically update in all workspaces they are referenced in at the same time of update.",
+    descriptionNote:
+      "This feature only applies to web-based content, such as websites, Confluence, YouTube, and GitHub files.",
+    featureDocumentation: "Feature Documentation and Warnings",
+    manageWatchedDocuments: "Manage Watched Documents",
+    toastMessage: {
+      failed: "Failed to update status of feature.",
+      enabled: "Live document content sync has been enabled.",
+      disabled: "Live document content sync has been disabled.",
+    },
+  },
+  liveDocumentSyncManager: {
+    pageTitle: "Watched documents",
+    pageDescription:
+      "These are all the documents that are currently being watched in your instance. The content of these documents will be periodically synced.",
+    tableHeaders: {
+      documentName: "Document Name",
+      lastSynced: "Last Synced",
+      timeUntilNextRefresh: "Time until next refresh",
+      createdOn: "Created On",
+    },
+  },
+
+  experimentalFeatures: {
+    title: "Experimental Features",
+    selectFeaturePrompt: "Select an experimental feature",
+    featureList: {
+      liveDocumentSync: "Live Document Sync",
+      on: "On",
+      off: "Off",
+    },
+    featureVerification: {
+      title: "Terms of use for experimental features",
+      description:
+        "Experimental features of AnythingLLM are features that we are piloting and are <b>opt-in</b>. We proactively will condition or warn you on any potential concerns should any exist prior to approval of any feature.",
+      useWarning: {
+        title:
+          "Use of any feature on this page can result in, but not limited to, the following possibilities:",
+        warnings:
+          "<li>Loss of data.</li><li>Change in quality of results.</li><li>Increased storage.</li><li>Increased resource consumption.</li><li>Increased cost or use of any connected LLM or embedding provider.</li><li>Potential bugs or issues using AnythingLLM.</li>",
+      },
+      conditions: {
+        title:
+          "Use of an experimental feature also comes with the following list of non-exhaustive conditions:",
+        warnings:
+          "<li>Feature may not exist in future updates.</li><li>The feature being used is not currently stable.</li><li>The feature may not be available in future versions, configurations, or subscriptions of AnythingLLM.</li><li>Your privacy settings <b>will be honored</b> with use of any beta feature.</li><li>These conditions may change in future updates.</li>",
+      },
+      accessInfo:
+        "Access to any features requires approval of this modal. If you would like to read more you can refer to <a href='https://docs.useanything.com/beta-preview/overview' class='underline text-blue-500'>docs.useanything.com</a> or email <a href='mailto:team@mintplexlabs.com' class='underline text-blue-500'>team@mintplexlabs.com</a>.",
+      buttons: {
+        reject: "Reject & Close",
+        accept: "I understand",
+      },
+    },
+  },
 };
 
 export default TRANSLATIONS;

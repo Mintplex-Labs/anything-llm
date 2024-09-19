@@ -1838,5 +1838,65 @@ const TRANSLATIONS = {
     copied: "복사됨",
     copy: "API 키 복사",
   },
+
+  liveSyncToggle: {
+    title: "자동 문서 콘텐츠 동기화",
+    description1:
+      '문서를 "감시" 대상으로 지정할 수 있는 기능을 활성화합니다. 감시된 문서의 콘텐츠는 정기적으로 가져와서 AnythingLLM에서 업데이트됩니다.',
+    description2:
+      "감시된 문서는 업데이트 시 참조된 모든 워크스페이스에서 자동으로 업데이트됩니다.",
+    descriptionNote:
+      "이 기능은 웹 기반 콘텐츠에만 적용됩니다. 예: 웹사이트, Confluence, YouTube, GitHub 파일.",
+    featureDocumentation: "기능 설명서 및 경고",
+    manageWatchedDocuments: "감시 문서 관리",
+    toastMessage: {
+      failed: "기능 상태를 업데이트하는 데 실패했습니다.",
+      enabled: "실시간 문서 콘텐츠 동기화가 활성화되었습니다.",
+      disabled: "실시간 문서 콘텐츠 동기화가 비활성화되었습니다.",
+    },
+  },
+  liveDocumentSyncManager: {
+    pageTitle: "감시 중인 문서",
+    pageDescription:
+      "현재 인스턴스에서 감시 중인 모든 문서입니다. 이러한 문서의 콘텐츠는 주기적으로 동기화됩니다.",
+    tableHeaders: {
+      documentName: "문서 이름",
+      lastSynced: "마지막 동기화 시간",
+      timeUntilNextRefresh: "다음 갱신까지 남은 시간",
+      createdOn: "생성일",
+    },
+  },
+  experimentalFeatures: {
+    title: "실험적 기능",
+    selectFeaturePrompt: "실험적 기능을 선택하세요",
+    featureList: {
+      liveDocumentSync: "실시간 문서 동기화",
+      on: "켜짐",
+      off: "꺼짐",
+    },
+    featureVerification: {
+      title: "실험적 기능 이용 약관",
+      description:
+        "AnythingLLM의 실험 기능은 우리가 파일럿 중인 기능이며 <b>선택적 참여</b>가 가능합니다. 기능 승인 전에 발생할 수 있는 문제에 대해 미리 경고하거나 조건을 제시할 것입니다.",
+      useWarning: {
+        title:
+          "이 페이지의 기능을 사용할 경우 발생할 수 있는 가능성(예시)에 대해 경고합니다:",
+        warnings:
+          "<li>데이터 손실.</li><li>결과 품질 변화.</li><li>저장 공간 증가.</li><li>리소스 소비 증가.</li><li>연결된 LLM 또는 임베딩 제공자의 비용 또는 사용량 증가.</li><li>AnythingLLM 사용 시 잠재적인 버그 또는 문제.</li>",
+      },
+      conditions: {
+        title:
+          "실험 기능을 사용할 때 다음과 같은 조건이 있을 수 있습니다(비한정):",
+        warnings:
+          "<li>기능이 향후 업데이트에서 제공되지 않을 수 있습니다.</li><li>현재 기능은 안정적이지 않습니다.</li><li>이 기능은 향후 버전, 구성 또는 구독에서 사용할 수 없을 수 있습니다.</li><li>모든 베타 기능 사용 시 개인정보 보호 설정이 <b>준수됩니다</b>.</li><li>이 조건은 향후 업데이트에서 변경될 수 있습니다.</li>",
+      },
+      accessInfo:
+        "모든 기능에 대한 접근은 이 모달의 승인이 필요합니다. 자세한 내용을 보려면 <a href='https://docs.useanything.com/beta-preview/overview' class='underline text-blue-500'>docs.useanything.com</a>을 참조하거나 <a href='mailto:team@mintplexlabs.com' class='underline text-blue-500'>team@mintplexlabs.com</a>으로 이메일을 보내주세요.",
+      buttons: {
+        reject: "거부 및 닫기",
+        accept: "동의합니다",
+      },
+    },
+  },
 };
 export default TRANSLATIONS;
