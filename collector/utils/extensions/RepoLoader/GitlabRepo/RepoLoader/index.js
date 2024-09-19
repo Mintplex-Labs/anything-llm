@@ -202,6 +202,7 @@ class GitLabRepoLoader {
         page++;
       } catch (err) {
         console.log(`RepoLoader.getRepoBranches`, err);
+        fetching = false;
         return [];
       }
     }
