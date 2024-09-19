@@ -207,9 +207,8 @@ async function fetchConfluencePage({
  */
 function generateAPIBaseUrl(matchResult = {}, isCustomDomain = false) {
   const { subdomain } = matchResult;
-  let subpath = isCustomDomain ? `` : `/wiki`;
-  if (isCustomDomain) return `https://${customDomain}${subpath}`;
-  return `https://${subdomain}.atlassian.net${subpath}`;
+  if (isCustomDomain) return `https://${subdomain}`;
+  return `https://${subdomain}.atlassian.net/wiki`;
 }
 
 /**
