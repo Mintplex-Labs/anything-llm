@@ -159,33 +159,54 @@ class GitLabRepoLoader {
   async getRepoBranches() {
     if (!this.#validGitlabUrl() || !this.projectId) return [];
     await this.#validateAccessToken();
+    this.branches = [];
+    let fetching = true;
+    let page = 1;
+    let perPage = 50;
 
-    try {
-      this.branches = await fetch(
-        `${this.apiBase}/api/v4/projects/${this.projectId}/repository/branches`,
-        {
-          method: "GET",
-          headers: {
-            Accepts: "application/json",
-            ...(this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {}),
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((branches) => {
-          return branches.map((b) => b.name);
-        })
-        .catch((e) => {
-          console.error(e);
-          return [];
+    while (fetching) {
+      try {
+        const params = new URLSearchParams({
+          per_page: perPage,
+          page,
         });
+        const response = await fetch(
+          `${this.apiBase}/api/v4/projects/${
+            this.projectId
+          }/repository/branches?${params.toString()}`,
+          {
+            method: "GET",
+            headers: {
+              Accepts: "application/json",
+              ...(this.accessToken
+                ? { "PRIVATE-TOKEN": this.accessToken }
+                : {}),
+            },
+          }
+        )
+          .then((res) => res.json())
+          .then((branches) => {
+            if (!Array.isArray(branches) || branches.length === 0) {
+              fetching = false;
+              return [];
+            }
+            return branches.map((b) => b.name);
+          })
+          .catch((e) => {
+            console.error(e);
+            fetching = false;
+            return [];
+          });
 
-      return this.#branchPrefSort(this.branches);
-    } catch (err) {
-      console.log(`RepoLoader.getRepoBranches`, err);
-      this.branches = [];
-      return [];
+        this.branches.push(...response);
+        page++;
+      } catch (err) {
+        console.log(`RepoLoader.getRepoBranches`, err);
+        fetching = false;
+        return [];
+      }
     }
+    return this.#branchPrefSort(this.branches);
   }
 
   /**
