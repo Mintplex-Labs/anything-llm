@@ -5,8 +5,9 @@ import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import System from "@/models/system";
 import DocumentSyncQueueRow from "./DocumentSyncQueueRow";
-
+import { useTranslation } from "react-i18next";
 export default function LiveDocumentSyncManager() {
+  const { t } = useTranslation();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -18,13 +19,11 @@ export default function LiveDocumentSyncManager() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-white">
-                Watched documents
+                {t("liveDocumentSyncManager.pageTitle")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              These are all the documents that are currently being watched in
-              your instance. The content of these documents will be periodically
-              synced.
+              {t("liveDocumentSyncManager.pageDescription")}
             </p>
           </div>
           <WatchedDocumentsContainer />
@@ -37,6 +36,7 @@ export default function LiveDocumentSyncManager() {
 function WatchedDocumentsContainer() {
   const [loading, setLoading] = useState(true);
   const [queues, setQueues] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchData() {
@@ -66,16 +66,16 @@ function WatchedDocumentsContainer() {
       <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            Document Name
+            {t("liveDocumentSyncManager.tableHeaders.documentName")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Last Synced
+            {t("liveDocumentSyncManager.tableHeaders.lastSynced")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Time until next refresh
+            {t("liveDocumentSyncManager.tableHeaders.timeUntilNextRefresh")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Created On
+            {t("liveDocumentSyncManager.tableHeaders.createdOn")}
           </th>
           <th scope="col" className="px-6 py-3 rounded-tr-lg">
             {" "}
