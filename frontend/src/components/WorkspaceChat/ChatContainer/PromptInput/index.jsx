@@ -15,6 +15,7 @@ import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
 import AttachItem from "./AttachItem";
+import { PASTE_ATTACHMENT_EVENT } from "../DnDWrapper";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
@@ -91,6 +92,39 @@ export default function PromptInput({
     element.style.height = `${element.scrollHeight}px`;
   };
 
+  const handlePasteEvent = (e) => {
+    e.preventDefault();
+    if (e.clipboardData.items.length === 0) return false;
+
+    // paste any clipboard items that are images.
+    for (const item of e.clipboardData.items) {
+      if (item.type.startsWith("image/")) {
+        const file = item.getAsFile();
+        window.dispatchEvent(
+          new CustomEvent(PASTE_ATTACHMENT_EVENT, {
+            detail: { files: [file] },
+          })
+        );
+        continue;
+      }
+
+      // handle files specifically that are not images as uploads
+      if (item.kind === "file") {
+        const file = item.getAsFile();
+        window.dispatchEvent(
+          new CustomEvent(PASTE_ATTACHMENT_EVENT, {
+            detail: { files: [file] },
+          })
+        );
+        continue;
+      }
+    }
+
+    const pasteText = e.clipboardData.getData("text/plain");
+    if (pasteText) setPromptInput(pasteText.trim());
+    return;
+  };
+
   const watchForSlash = debounce(checkForSlash, 300);
   const watchForAt = debounce(checkForAt, 300);
 
@@ -125,6 +159,7 @@ export default function PromptInput({
                   setPromptInput(e.target.value);
                 }}
                 onKeyDown={captureEnter}
+                onPaste={handlePasteEvent}
                 required={true}
                 disabled={inputDisabled}
                 onFocus={() => setFocused(true)}
