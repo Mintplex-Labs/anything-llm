@@ -9,6 +9,7 @@ import useUser from "@/hooks/useUser";
 export const DndUploaderContext = createContext();
 export const REMOVE_ATTACHMENT_EVENT = "ATTACHMENT_REMOVE";
 export const CLEAR_ATTACHMENTS_EVENT = "ATTACHMENT_CLEAR";
+export const PASTE_ATTACHMENT_EVENT = "ATTACHMENT_PASTED";
 
 /**
  * File Attachment for automatic upload on the chat container page.
@@ -36,10 +37,15 @@ export function DnDFileUploaderProvider({ workspace, children }) {
   useEffect(() => {
     window.addEventListener(REMOVE_ATTACHMENT_EVENT, handleRemove);
     window.addEventListener(CLEAR_ATTACHMENTS_EVENT, resetAttachments);
+    window.addEventListener(PASTE_ATTACHMENT_EVENT, handlePastedAttachment);
 
     return () => {
       window.removeEventListener(REMOVE_ATTACHMENT_EVENT, handleRemove);
       window.removeEventListener(CLEAR_ATTACHMENTS_EVENT, resetAttachments);
+      window.removeEventListener(
+        PASTE_ATTACHMENT_EVENT,
+        handlePastedAttachment
+      );
     };
   }, []);
 
@@ -87,6 +93,39 @@ export function DnDFileUploaderProvider({ workspace, children }) {
   }
 
   /**
+   * Handle pasted attachments.
+   * @param {CustomEvent<{files: File[]}>} event
+   */
+  async function handlePastedAttachment(event) {
+    const { files = [] } = event.detail;
+    if (!files.length) return;
+    const newAccepted = [];
+    for (const file of files) {
+      if (file.type.startsWith("image/")) {
+        newAccepted.push({
+          uid: v4(),
+          file,
+          contentString: await toBase64(file),
+          status: "success",
+          error: null,
+          type: "attachment",
+        });
+      } else {
+        newAccepted.push({
+          uid: v4(),
+          file,
+          contentString: null,
+          status: "in_progress",
+          error: null,
+          type: "upload",
+        });
+      }
+    }
+    setFiles((prev) => [...prev, ...newAccepted]);
+    embedEligibleAttachments(newAccepted);
+  }
+
+  /**
    * Handle dropped files.
    * @param {Attachment[]} acceptedFiles
    * @param {any[]} _rejections
@@ -119,8 +158,15 @@ export function DnDFileUploaderProvider({ workspace, children }) {
     }
 
     setFiles((prev) => [...prev, ...newAccepted]);
+    embedEligibleAttachments(newAccepted);
+  }
 
-    for (const attachment of newAccepted) {
+  /**
+   * Embeds attachments that are eligible for embedding - basically files that are not images.
+   * @param {Attachment[]} newAttachments
+   */
+  function embedEligibleAttachments(newAttachments = []) {
+    for (const attachment of newAttachments) {
       // Images/attachments are chat specific.
       if (attachment.type === "attachment") continue;
 
@@ -200,7 +246,7 @@ export default function DnDFileUploaderWrapper({ children }) {
 /**
  * Convert image types into Base64 strings for requests.
  * @param {File} file
- * @returns {string}
+ * @returns {Promise<string>}
  */
 async function toBase64(file) {
   return new Promise((resolve, reject) => {
