@@ -171,14 +171,19 @@ class GitLabRepoLoader {
           page,
         });
         const response = await fetch(
-          `${this.apiBase}/api/v4/projects/${this.projectId}/repository/branches?${params.toString()}`,
+          `${this.apiBase}/api/v4/projects/${
+            this.projectId
+          }/repository/branches?${params.toString()}`,
           {
             method: "GET",
             headers: {
               Accepts: "application/json",
-              ...(this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {}),
+              ...(this.accessToken
+                ? { "PRIVATE-TOKEN": this.accessToken }
+                : {}),
             },
-          })
+          }
+        )
           .then((res) => res.json())
           .then((branches) => {
             if (!Array.isArray(branches) || branches.length === 0) {
@@ -193,8 +198,8 @@ class GitLabRepoLoader {
             return [];
           });
 
-          this.branches.push(...response);
-          page++;
+        this.branches.push(...response);
+        page++;
       } catch (err) {
         console.log(`RepoLoader.getRepoBranches`, err);
         return [];
