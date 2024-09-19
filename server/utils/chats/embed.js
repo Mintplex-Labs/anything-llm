@@ -7,6 +7,7 @@ const {
   writeResponseChunk,
 } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
+const { i18n } = require("../../i18n"); // Import the i18n library
 
 async function streamChatWithForEmbed(
   response,
@@ -44,8 +45,7 @@ async function streamChatWithForEmbed(
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
-      textResponse:
-        "I do not have enough information to answer that. Try another question.",
+      textResponse: i18n.t("chat.query.noInformation"), // Internationalized message
       sources: [],
       close: true,
       error: null,
@@ -77,8 +77,7 @@ async function streamChatWithForEmbed(
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
+            pageContent.slice(0, 1_000) + i18n.t("chat.query.sourceContinued"), // Internationalized text
           ...metadata,
         });
       });
@@ -108,7 +107,7 @@ async function streamChatWithForEmbed(
       textResponse: null,
       sources: [],
       close: true,
-      error: "Failed to connect to vector database provider.",
+      error: i18n.t("chat.query.vectorDbFailure"), // Internationalized error
     });
     return;
   }
@@ -128,7 +127,7 @@ async function streamChatWithForEmbed(
       type: "textResponse",
       textResponse:
         embed.workspace?.queryRefusalResponse ??
-        "There is no relevant information in this workspace to answer your query.",
+        i18n.t("chat.query.refusalResponse"), // Internationalized response
       sources: [],
       close: true,
       error: null,
@@ -152,8 +151,9 @@ async function streamChatWithForEmbed(
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
     console.log(
-      `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
-    );
+      i18n.t("chat.streaming.disabled"),
+      LLMConnector.constructor.name
+    ); // Internationalized log message
     completeText = await LLMConnector.getChatCompletion(messages, {
       temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });

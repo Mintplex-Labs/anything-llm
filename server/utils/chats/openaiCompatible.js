@@ -4,8 +4,8 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
-
 const { PassThrough } = require("stream");
+const { i18n } = require("../../i18n"); // i18n 추가
 
 async function chatSync({
   workspace,
@@ -28,8 +28,7 @@ async function chatSync({
   // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
     const textResponse =
-      workspace?.queryRefusalResponse ??
-      "There is no relevant information in this workspace to answer your query.";
+      workspace?.queryRefusalResponse ?? i18n.t("chat.query.noInformation"); // i18n 적용
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
@@ -73,8 +72,7 @@ async function chatSync({
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
+            pageContent.slice(0, 1_000) + i18n.t("chat.query.sourceContinued"), // i18n 적용
           ...metadata,
         });
       });
@@ -119,8 +117,7 @@ async function chatSync({
   // let the LLM try to hallucinate a response or use general knowledge and exit early
   if (chatMode === "query" && contextTexts.length === 0) {
     const textResponse =
-      workspace?.queryRefusalResponse ??
-      "There is no relevant information in this workspace to answer your query.";
+      workspace?.queryRefusalResponse ?? i18n.t("chat.query.noInformation"); // i18n 적용
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
@@ -168,7 +165,7 @@ async function chatSync({
         type: "textResponse",
         sources: [],
         close: true,
-        error: "No text completion could be completed with this input.",
+        error: i18n.t("chat.error.noCompletion"), // i18n 적용
         textResponse: null,
       },
       { model: workspace.slug, finish_reason: "no_content" }
@@ -236,8 +233,7 @@ async function streamChat({
   // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
     const textResponse =
-      workspace?.queryRefusalResponse ??
-      "There is no relevant information in this workspace to answer your query.";
+      workspace?.queryRefusalResponse ?? i18n.t("chat.query.noInformation"); // i18n 적용
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
@@ -285,8 +281,7 @@ async function streamChat({
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
+            pageContent.slice(0, 1_000) + i18n.t("chat.query.sourceContinued"), // i18n 적용
           ...metadata,
         });
       });
@@ -335,8 +330,7 @@ async function streamChat({
   // let the LLM try to hallucinate a response or use general knowledge and exit early
   if (chatMode === "query" && contextTexts.length === 0) {
     const textResponse =
-      workspace?.queryRefusalResponse ??
-      "There is no relevant information in this workspace to answer your query.";
+      workspace?.queryRefusalResponse ?? i18n.t("chat.query.noInformation"); // i18n 적용
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
@@ -384,7 +378,7 @@ async function streamChat({
           type: "textResponse",
           sources: [],
           close: true,
-          error: "Streaming is not available for the connected LLM Provider",
+          error: i18n.t("chat.streaming.disabled"), // i18n 적용
           textResponse: null,
         },
         {

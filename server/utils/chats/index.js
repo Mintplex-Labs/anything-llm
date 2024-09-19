@@ -5,6 +5,7 @@ const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { convertToPromptHistory } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
 const { SlashCommandPresets } = require("../../models/slashCommandsPresets");
+const { i18n } = require("../../i18n"); // Import the i18n library
 
 const VALID_COMMANDS = {
   "/reset": resetMemory,
@@ -65,8 +66,7 @@ async function chatWithWorkspace(
   // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
     const textResponse =
-      workspace?.queryRefusalResponse ??
-      "There is no relevant information in this workspace to answer your query.";
+      workspace?.queryRefusalResponse ?? i18n.t("chat.query.noInformation"); // Internationalized response
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
@@ -118,8 +118,7 @@ async function chatWithWorkspace(
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
+            pageContent.slice(0, 1_000) + i18n.t("chat.query.sourceContinued"), // Internationalized text
           ...metadata,
         });
       });
@@ -149,7 +148,7 @@ async function chatWithWorkspace(
       textResponse: null,
       sources: [],
       close: true,
-      error: vectorSearchResults.message,
+      error: i18n.t("chat.query.vectorDbFailure"), // Internationalized error
     };
   }
 
@@ -175,8 +174,7 @@ async function chatWithWorkspace(
   // let the LLM try to hallucinate a response or use general knowledge and exit early
   if (chatMode === "query" && contextTexts.length === 0) {
     const textResponse =
-      workspace?.queryRefusalResponse ??
-      "There is no relevant information in this workspace to answer your query.";
+      workspace?.queryRefusalResponse ?? i18n.t("chat.query.refusalResponse"); // Internationalized refusal response
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
@@ -225,7 +223,7 @@ async function chatWithWorkspace(
       textResponse: null,
       sources: [],
       close: true,
-      error: "No text completion could be completed with this input.",
+      error: i18n.t("chat.error.noCompletion"), // Internationalized error message
     };
   }
 
@@ -270,8 +268,7 @@ async function recentChatHistory({
 
 function chatPrompt(workspace) {
   return (
-    workspace?.openAiPrompt ??
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+    workspace?.openAiPrompt ?? i18n.t("chat.prompt.default") // Internationalized default prompt
   );
 }
 

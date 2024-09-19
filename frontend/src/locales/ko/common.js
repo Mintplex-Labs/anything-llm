@@ -177,12 +177,19 @@ const TRANSLATIONS = {
       title: "프롬프트",
       description:
         "이 워크스페이스에서 사용할 프롬프트입니다. AI가 응답을 생성하기 위해 문맥과 지침을 정의합니다. AI가 질문에 대하여 정확한 응답을 생성할 수 있도록 신중하게 프롬프트를 제공해야 합니다.",
+      placeholder:
+        "다음 대화, 관련 컨텍스트 및 후속 질문을 고려하여 사용자가 현재 묻고 있는 질문에 답변하세요.",
+      default:
+        "다음 대화, 관련 컨텍스트 및 후속 질문을 고려하여 사용자가 묻는 현재 질문에 대한 답변을 제공하세요. 위의 정보를 사용하여 사용자의 지침에 따라 질문에 대한 응답만 반환하세요.",
     },
     refusal: {
       title: "쿼리 모드 거부 응답 메시지",
       "desc-start": "쿼리 모드에서",
       query: "응답에 사용할 수 있는",
       "desc-end": "컨텍스트를 찾을 수 없을 때 거부 응답 내용을 작성합니다.",
+      placeholder:
+        "쿼리 모드에서 적절한 컨텍스트를 찾을 수 없을 때 반환되는 텍스트입니다.",
+      default: "이 워크스페이스에는 질문에 대한 관련 정보가 없습니다.",
     },
     temperature: {
       title: "LLM 온도",
@@ -190,6 +197,19 @@ const TRANSLATIONS = {
       "desc-end":
         "숫자가 높을수록 창의적입니다. 일부 모델에서는 너무 높게 설정하면 일관성 없는 응답이 나올 수 있습니다.",
       hint: "대부분의 LLM은 유효한 값의 다양한 허용 범위를 가지고 있습니다. 해당 정보는 LLM 제공자에게 문의하세요.",
+    },
+    query: {
+      noInformation:
+        "그 질문에 답변할 충분한 정보가 없습니다. 다른 질문을 시도해 보세요.",
+      sourceContinued: "...원본 문서에서 계속됨...",
+      vectorDbFailure: "벡터 데이터베이스 제공자에 연결할 수 없습니다.",
+      refusalResponse: "이 워크스페이스에는 질문에 대한 관련 정보가 없습니다.",
+    },
+    streaming: {
+      disabled: "[스트리밍 비활성화됨] 스트리밍이 사용할 수 없습니다.",
+    },
+    error: {
+      noCompletion: "이 입력으로 완료할 수 있는 텍스트 응답이 없습니다.",
     },
   },
 
@@ -1688,6 +1708,10 @@ const TRANSLATIONS = {
     docsTooltip: "AnythingLLM 도움말 문서 열기",
     discordAriaLabel: "Discord 서버에 참여하기",
     discordTooltip: "AnythingLLM Discord에 참여",
+    homeAriaLabel: "홈으로 돌아가기",
+    homeTooltip: "워크스페이스로 돌아가기",
+    settingsAriaLabel: "설정 열기",
+    settingsTooltip: "설정 열기",
   },
   //agentConfig
   agentConfig: {
