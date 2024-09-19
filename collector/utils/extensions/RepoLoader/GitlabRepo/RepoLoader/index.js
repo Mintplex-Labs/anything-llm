@@ -44,16 +44,16 @@ class GitLabRepoLoader {
   #validGitlabUrl() {
     const UrlPattern = require("url-pattern");
     const validPatterns = [
-      new UrlPattern("https\\://gitlab.com/(:projectId(*))", {
-        segmentValueCharset: "a-zA-Z0-9-._~%/+",
+      new UrlPattern("https\\://gitlab.com/(:author*)/(:project(*))", {
+        segmentValueCharset: "a-zA-Z0-9-._~%+",
       }),
       // This should even match the regular hosted URL, but we may want to know
       // if this was a hosted GitLab (above) or a self-hosted (below) instance
       // since the API interface could be different.
       new UrlPattern(
-        "(:protocol(http|https))\\://(:hostname*)/(:projectId(*))",
+        "(:protocol(http|https))\\://(:hostname*)/(:author*)/(:project(*))",
         {
-          segmentValueCharset: "a-zA-Z0-9-._~%/+",
+          segmentValueCharset: "a-zA-Z0-9-._~%+",
         }
       ),
     ];
@@ -64,9 +64,9 @@ class GitLabRepoLoader {
       match = pattern.match(this.repo);
     }
     if (!match) return false;
-    const [author, project] = match.projectId.split("/");
+    const { author, project } = match;
 
-    this.projectId = encodeURIComponent(match.projectId);
+    this.projectId = encodeURIComponent(`${author}/${project}`);
     this.apiBase = new URL(this.repo).origin;
     this.author = author;
     this.project = project;
