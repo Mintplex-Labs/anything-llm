@@ -122,7 +122,8 @@ async function canRespond(request, response, next) {
           textResponse: null,
           sources: [],
           close: true,
-          error:
+          error: "Rate limit exceeded",
+          errorMsg:
             "The quota for this chat has been reached. Try again later or contact the site owner.",
         });
         return;
