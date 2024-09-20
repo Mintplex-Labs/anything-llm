@@ -34,6 +34,7 @@ export default function GitlabOptions() {
         accessToken: form.get("accessToken"),
         branch: form.get("branch"),
         ignorePaths: ignores,
+        fetchIssues: form.get("fetchIssues"),
       });
 
       if (!!error) {
@@ -111,6 +112,27 @@ export default function GitlabOptions() {
                   onChange={(e) => setAccessToken(e.target.value)}
                   onBlur={() => setSettings({ ...settings, accessToken })}
                 />
+              </div>
+              <div className="flex flex-col pr-10">
+                <div className="flex flex-col gap-y-1 mb-4">
+                  <label className="text-white font-bold text-sm flex gap-x-2 items-center">
+                    <p className="font-bold text-white">Settings</p>{" "}
+                  </label>
+                  <p className="text-xs font-normal text-white/50">
+                    Select additional entities to fetch from the GitLab API.
+                  </p>
+                </div>
+                <div className="flex items-center gap-x-2">
+                  <input
+                    type="checkbox"
+                    name="fetchIssues"
+                    value={true}
+                    className="border-none bg-zinc-900 text-white rounded-lg focus:border-white"
+                  />
+                  <label className="text-white text-sm" htmlFor="fetchIssues">
+                    Fetch issues
+                  </label>
+                </div>
               </div>
               <GitLabBranchSelection
                 repo={settings.repo}

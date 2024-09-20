@@ -50,13 +50,12 @@ async function loadGitlabRepo(args, response) {
     fs.mkdirSync(outFolderPath, { recursive: true });
 
   for (const doc of docs) {
-    if (!doc.pageContent) continue;
+    if (!doc.metadata || (!doc.pageContent && !doc.issue)) continue;
+    let pageContent = null;
+
     const data = {
       id: v4(),
       url: "gitlab://" + doc.metadata.source,
-      title: doc.metadata.source,
-      docAuthor: repo.author,
-      description: "No description found.",
       docSource: doc.metadata.source,
       chunkSource: generateChunkSource(
         repo,
@@ -64,13 +63,32 @@ async function loadGitlabRepo(args, response) {
         response.locals.encryptionWorker
       ),
       published: new Date().toLocaleString(),
-      wordCount: doc.pageContent.split(" ").length,
-      pageContent: doc.pageContent,
-      token_count_estimate: tokenizeString(doc.pageContent).length,
     };
+
+    if (doc.pageContent) {
+      pageContent = doc.pageContent;
+
+      data.title = doc.metadata.source;
+      data.docAuthor = repo.author;
+      data.description = "No description found.";
+    } else if (doc.issue) {
+      pageContent = JSON.stringify(doc.issue);
+
+      data.title = `Issue ${doc.issue.iid}: ${doc.issue.title}`;
+      data.docAuthor = doc.issue.author.username;
+      data.description = doc.issue.description;
+    } else {
+      continue;
+    }
+
+    data.wordCount = pageContent.split(" ").length;
+    data.token_count_estimate = tokenizeString(pageContent).length;
+    data.pageContent = pageContent;
+
     console.log(
-      `[GitLab Loader]: Saving ${doc.metadata.source} to ${outFolder}`
+      `[Github Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
+
     writeToServerDocuments(
       data,
       `${slugify(doc.metadata.source)}-${data.id}`,
