@@ -27,6 +27,9 @@ export default function ChatHistory({
   const chatHistoryRef = useRef(null);
   const [textSize, setTextSize] = useState("normal");
   const showScrollbar = Appearance.getSettings()?.showScrollbar || false;
+  const isStreaming = history[history.length - 1]?.animate;
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const lastScrollTopRef = useRef(0);
 
   const getTextSizeClass = (size) => {
     switch (size) {
@@ -58,36 +61,47 @@ export default function ChatHistory({
   }, []);
 
   useEffect(() => {
-    if (isAtBottom) scrollToBottom();
-  }, [history]);
+    if (!isUserScrolling && (isAtBottom || isStreaming)) {
+      scrollToBottom(false); // Use instant scroll for auto-scrolling
+    }
+  }, [history, isAtBottom, isStreaming, isUserScrolling]);
 
-  const handleScroll = () => {
-    const diff =
-      chatHistoryRef.current.scrollHeight -
-      chatHistoryRef.current.scrollTop -
-      chatHistoryRef.current.clientHeight;
-    // Fuzzy margin for what qualifies as "bottom". Stronger than straight comparison since that may change over time.
-    const isBottom = diff <= 10;
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const isBottom = scrollHeight - scrollTop === clientHeight;
+
+    // Detect if this is a user-initiated scroll
+    if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
+      setIsUserScrolling(!isBottom);
+    }
+
     setIsAtBottom(isBottom);
+    lastScrollTopRef.current = scrollTop;
   };
 
   const debouncedScroll = debounce(handleScroll, 100);
+
   useEffect(() => {
-    function watchScrollEvent() {
-      if (!chatHistoryRef.current) return null;
-      const chatHistoryElement = chatHistoryRef.current;
-      if (!chatHistoryElement) return null;
+    const chatHistoryElement = chatHistoryRef.current;
+    if (chatHistoryElement) {
       chatHistoryElement.addEventListener("scroll", debouncedScroll);
+      return () => chatHistoryElement.removeEventListener("scroll", debouncedScroll);
     }
-    watchScrollEvent();
   }, []);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = (smooth = false) => {
     if (chatHistoryRef.current) {
-      chatHistoryRef.current.scrollTo({
+      const scrollOptions = {
         top: chatHistoryRef.current.scrollHeight,
-        behavior: "smooth",
-      });
+      };
+
+      // Smooth is on when user clicks the button but disabled during auto scroll
+      // We must disable this during auto scroll because it causes issues with
+      // detecting when we are at the bottom of the chat.
+      if (smooth) {
+        scrollOptions.behavior = 'smooth';
+      }
+      chatHistoryRef.current.scrollTo(scrollOptions);
     }
   };
 
@@ -197,6 +211,7 @@ export default function ChatHistory({
       }`}
       id="chat-history"
       ref={chatHistoryRef}
+      onScroll={handleScroll}
     >
       {history.map((props, index) => {
         const isLastBotReply =
@@ -251,12 +266,14 @@ export default function ChatHistory({
       {!isAtBottom && (
         <div className="fixed bottom-40 right-10 md:right-20 z-50 cursor-pointer animate-pulse">
           <div className="flex flex-col items-center">
-            <div className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white">
-              <ArrowDown
-                weight="bold"
-                className="text-white/60 w-5 h-5"
-                onClick={scrollToBottom}
-              />
+            <div
+              className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
+              onClick={() => {
+                scrollToBottom(true);
+                setIsUserScrolling(false);
+              }}
+            >
+              <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
             </div>
           </div>
         </div>
