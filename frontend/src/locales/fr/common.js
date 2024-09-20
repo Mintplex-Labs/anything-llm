@@ -438,6 +438,7 @@ const TRANSLATIONS = {
 
   "embed-chats": {
     title: "Chats intégrés",
+    export: "Exporter",
     description:
       "Voici tous les chats et messages enregistrés de tout widget intégré que vous avez publié.",
     table: {

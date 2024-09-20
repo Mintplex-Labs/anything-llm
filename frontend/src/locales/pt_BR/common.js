@@ -433,6 +433,7 @@ const TRANSLATIONS = {
 
   "embed-chats": {
     title: "Incorporar Chats",
+    export: "Exportar",
     description:
       "Estes são todos os chats e mensagens registrados de qualquer incorporação que você publicou.",
     table: {

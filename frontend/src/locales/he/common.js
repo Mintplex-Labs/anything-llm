@@ -422,6 +422,7 @@ const TRANSLATIONS = {
 
   "embed-chats": {
     title: "הטמעת שיחות",
+    export: "ייצוא",
     description: "אלה כל השיחות וההודעות שנרשמו מכל הטמעה שפרסמת.",
     table: {
       embed: "הטמעה",
