@@ -86,7 +86,7 @@ async function loadGitlabRepo(args, response) {
     data.pageContent = pageContent;
 
     console.log(
-      `[Github Loader]: Saving ${doc.metadata.source} to ${outFolder}`
+      `[GitLab Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
 
     writeToServerDocuments(
