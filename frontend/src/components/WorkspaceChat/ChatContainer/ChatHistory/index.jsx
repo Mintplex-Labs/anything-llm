@@ -85,7 +85,8 @@ export default function ChatHistory({
     const chatHistoryElement = chatHistoryRef.current;
     if (chatHistoryElement) {
       chatHistoryElement.addEventListener("scroll", debouncedScroll);
-      return () => chatHistoryElement.removeEventListener("scroll", debouncedScroll);
+      return () =>
+        chatHistoryElement.removeEventListener("scroll", debouncedScroll);
     }
   }, []);
 
@@ -99,7 +100,7 @@ export default function ChatHistory({
       // We must disable this during auto scroll because it causes issues with
       // detecting when we are at the bottom of the chat.
       if (smooth) {
-        scrollOptions.behavior = 'smooth';
+        scrollOptions.behavior = "smooth";
       }
       chatHistoryRef.current.scrollTo(scrollOptions);
     }
