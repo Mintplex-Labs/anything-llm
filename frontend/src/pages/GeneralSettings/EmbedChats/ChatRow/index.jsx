@@ -4,8 +4,10 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import paths from "@/utils/paths";
 import Embed from "@/models/embed";
+import { useTranslation } from "react-i18next";
 
 export default function ChatRow({ chat, onDelete }) {
+  const { t } = useTranslation();
   const {
     isOpen: isPromptOpen,
     openModal: openPromptModal,
@@ -20,7 +22,9 @@ export default function ChatRow({ chat, onDelete }) {
   const handleDelete = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to delete this chat?\n\nThis action is irreversible.`
+        `${t("modal.chatRow.deleteConfirm")}\n\n${t(
+          "modal.chatRow.deleteWarning"
+        )}`
       )
     )
       return false;
@@ -73,10 +77,15 @@ export default function ChatRow({ chat, onDelete }) {
         </td>
       </tr>
       <ModalWrapper isOpen={isPromptOpen}>
-        <TextPreview text={chat.prompt} closeModal={closePromptModal} />
+        <TextPreview
+          title={t("modal.chatRow.viewingPrompt")}
+          text={chat.prompt}
+          closeModal={closePromptModal}
+        />
       </ModalWrapper>
       <ModalWrapper isOpen={isResponseOpen}>
         <TextPreview
+          title={t("modal.chatRow.viewingResponse")}
           text={JSON.parse(chat.response)?.text}
           closeModal={closeResponseModal}
         />
@@ -85,12 +94,12 @@ export default function ChatRow({ chat, onDelete }) {
   );
 }
 
-const TextPreview = ({ text, closeModal }) => {
+const TextPreview = ({ text, closeModal, title }) => {
   return (
     <div className="relative w-full md:max-w-2xl max-h-full">
       <div className="relative bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-600">
-          <h3 className="text-xl font-semibold text-white">Viewing Text</h3>
+          <h3 className="text-xl font-semibold text-white">{title}</h3>
           <button
             onClick={closeModal}
             type="button"

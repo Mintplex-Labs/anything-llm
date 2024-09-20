@@ -7,6 +7,7 @@ import { useModal } from "@/hooks/useModal";
 import { X } from "@phosphor-icons/react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function WorkspaceLLM({
   llm,
@@ -15,6 +16,7 @@ export default function WorkspaceLLM({
   checked,
   onClick,
 }) {
+  const { t } = useTranslation();
   const { isOpen, openModal, closeModal } = useModal();
   const { name, value, logo, description } = llm;
 
@@ -77,6 +79,7 @@ function SetupProvider({
   closeModal,
   postSubmit,
 }) {
+  const { t } = useTranslation();
   if (!isOpen) return null;
   const LLMOption = availableLLMs.find((llm) => llm.value === provider);
   if (!LLMOption) return null;
@@ -89,7 +92,10 @@ function SetupProvider({
     for (var [key, value] of form.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
     if (error) {
-      showToast(`Failed to save ${LLMOption.name} settings: ${error}`, "error");
+      showToast(
+        t("workspaceLLM.saveError", { name: LLMOption.name, error }),
+        "error"
+      );
       return;
     }
 
@@ -106,7 +112,7 @@ function SetupProvider({
         <div className="relative bg-main-gradient rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.25)]">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
             <h3 className="text-xl font-semibold text-white">
-              Setup {LLMOption.name}
+              {t("workspaceLLM.setupTitle", { name: LLMOption.name })}
             </h3>
             <button
               onClick={closeModal}
@@ -121,8 +127,7 @@ function SetupProvider({
           <form id="provider-form" onSubmit={handleUpdate}>
             <div className="py-[17px] px-[20px] flex flex-col gap-y-6">
               <p className="text-sm text-white">
-                To use {LLMOption.name} as this workspace's LLM you need to set
-                it up first.
+                {t("workspaceLLM.setupInstruction", { name: LLMOption.name })}
               </p>
               <div>{LLMOption.options({ credentialsOnly: true })}</div>
             </div>
@@ -132,14 +137,14 @@ function SetupProvider({
                 onClick={closeModal}
                 className="border-none text-xs px-2 py-1 font-semibold rounded-lg bg-white hover:bg-transparent border-2 border-transparent hover:border-white hover:text-white h-[32px] w-fit -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
               >
-                Cancel
+                {t("workspaceLLM.cancel")}
               </button>
               <button
                 type="submit"
                 form="provider-form"
                 className="border-none text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white h-[32px] w-fit -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
               >
-                Save {LLMOption.name} settings
+                {t("workspaceLLM.save", { name: LLMOption.name })}
               </button>
             </div>
           </form>

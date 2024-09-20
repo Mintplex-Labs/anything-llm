@@ -1898,5 +1898,91 @@ const TRANSLATIONS = {
       },
     },
   },
+
+  //warning
+  modal: {
+    warning: {
+      title: "경고",
+      confirmQuestion: "계속 진행하시겠습니까?",
+      cancelButton: "취소",
+      confirmButton: "확인",
+    },
+    chatRow: {
+      deleteConfirm: "이 채팅을 삭제하시겠습니까?",
+      deleteWarning: "이 작업은 되돌릴 수 없습니다.",
+      viewingPrompt: "프롬프트 보기",
+      viewingResponse: "응답 보기",
+    },
+    newUser: {
+      title: "새 계정 만들기",
+      username: "사용자 이름",
+      usernamePlaceholder: "내 사용자 이름",
+      password: "비밀번호",
+      passwordPlaceholder: "비밀번호를 입력하세요",
+      error: "오류",
+      infoText:
+        "계정을 생성한 후에는 이 자격 증명으로 로그인하여 워크스페이스를 사용할 수 있습니다.",
+      acceptButton: "초대 수락",
+    },
+  },
+
+  //Invite
+  invitePage: {
+    noInviteCode: "초대 코드가 제공되지 않았습니다.",
+    invalidInvite: "초대가 유효하지 않거나 만료되었습니다.",
+  },
+
+  //survey
+  survey: {
+    title: "AnythingLLM에 오신 것을 환영합니다",
+    description:
+      "AnythingLLM을 귀하의 요구에 맞게 만들 수 있도록 도와주세요. 선택 사항입니다.",
+    thankYouMessage: "피드백에 감사드립니다!",
+    emailLabel: "이메일을 알려주세요.",
+    emailPlaceholder: "you@gmail.com",
+    useCaseLabel: "AnythingLLM을 무엇에 사용하시겠습니까?",
+    useCaseOptions: {
+      job: "업무용",
+      personal: "개인 용도",
+      other: "기타",
+    },
+    commentLabel: "팀에게 남길 말씀이 있나요?",
+    optional: "(선택 사항)",
+    commentPlaceholder:
+      "질문이나 의견이 있다면 여기 남겨주세요. team@mintplexlabs.com으로 이메일을 보내실 수도 있습니다.",
+    skip: "설문 건너뛰기",
+  },
+
+  //usersetup
+  userSetup: {
+    title: "사용자 설정",
+    description: "사용자 설정을 구성하세요.",
+    instanceQuestion: "이 인스턴스를 사용할 사람은 몇 명인가요?",
+    justMe: "나만 사용",
+    myTeam: "팀 사용",
+    passwordQuestion: "비밀번호를 설정하시겠습니까?",
+    yes: "네",
+    no: "아니요",
+    passwordLabel: "인스턴스 비밀번호",
+    passwordPlaceholder: "관리자 비밀번호 입력",
+    passwordRequirements:
+      "비밀번호는 최소 8자 이상이어야 합니다. 비밀번호를 꼭 저장하세요, 복구 방법이 없습니다.",
+    passwordError: "비밀번호 설정에 실패했습니다: {{error}}",
+    multiUserUsername: "관리자 계정 사용자 이름",
+    multiUserPassword: "관리자 계정 비밀번호",
+    usernamePlaceholder: "관리자 사용자 이름",
+    multiUserError: "오류 발생: {{error}}",
+    adminWarning:
+      "기본적으로 당신만 관리자입니다. 온보딩이 완료되면 다른 사용자나 관리자를 생성하고 초대할 수 있습니다. 관리자만 비밀번호를 재설정할 수 있으므로 비밀번호를 잃어버리지 않도록 주의하세요.",
+  },
+  //workspacesetting
+  workspaceLLM: {
+    setupTitle: "{{name}} 설정",
+    setupInstruction:
+      "{{name}}를 이 워크스페이스의 LLM으로 사용하려면 먼저 설정이 필요합니다.",
+    saveError: "{{name}} 설정 저장 실패: {{error}}",
+    cancel: "취소",
+    save: "{{name}} 설정 저장",
+  },
 };
 export default TRANSLATIONS;

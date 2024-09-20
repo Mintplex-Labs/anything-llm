@@ -12,6 +12,8 @@ const {
   sourceIdentifier,
 } = require("./index");
 
+const { i18n } = require("../../i18n"); // i18n 모듈 추가
+
 const VALID_CHAT_MODE = ["chat", "query"];
 
 async function streamChatWithWorkspace(
@@ -62,8 +64,7 @@ async function streamChatWithWorkspace(
   // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
     const textResponse =
-      workspace?.queryRefusalResponse ??
-      "There is no relevant information in this workspace to answer your query.";
+      workspace?.queryRefusalResponse ?? i18n.t("chat.query.noInformation"); // i18n 적용
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
@@ -119,8 +120,7 @@ async function streamChatWithWorkspace(
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
+            pageContent.slice(0, 1_000) + i18n.t("chat.query.sourceContinued"), // i18n 적용
           ...metadata,
         });
       });
@@ -177,8 +177,7 @@ async function streamChatWithWorkspace(
   // let the LLM try to hallucinate a response or use general knowledge and exit early
   if (chatMode === "query" && contextTexts.length === 0) {
     const textResponse =
-      workspace?.queryRefusalResponse ??
-      "There is no relevant information in this workspace to answer your query.";
+      workspace?.queryRefusalResponse ?? i18n.t("chat.query.noInformation"); // i18n 적용
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
@@ -219,7 +218,8 @@ async function streamChatWithWorkspace(
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
     console.log(
-      `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
+      i18n.t("chat.streaming.disabled"), // i18n 적용
+      LLMConnector.constructor.name
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,

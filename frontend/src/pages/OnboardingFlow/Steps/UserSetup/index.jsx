@@ -1,15 +1,17 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next"; // i18n 추가
+import debounce from "lodash.debounce";
+import { useNavigate } from "react-router-dom";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import React, { useState, useEffect, useRef } from "react";
-import debounce from "lodash.debounce";
 import paths from "@/utils/paths";
-import { useNavigate } from "react-router-dom";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 
-const TITLE = "User Setup";
-const DESCRIPTION = "Configure your user settings.";
+const TITLE = "userSetup.title";
+const DESCRIPTION = "userSetup.description";
 
 export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
+  const { t } = useTranslation(); // i18n 훅
   const [selectedOption, setSelectedOption] = useState("");
   const [singleUserPasswordValid, setSingleUserPasswordValid] = useState(false);
   const [multiUserLoginValid, setMultiUserLoginValid] = useState(false);
@@ -48,15 +50,15 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   }, [selectedOption, singleUserPasswordValid, multiUserLoginValid]);
 
   useEffect(() => {
-    setHeader({ title: TITLE, description: DESCRIPTION });
+    setHeader({ title: t(TITLE), description: t(DESCRIPTION) });
     setBackBtn({ showing: true, disabled: false, onClick: handleBack });
   }, []);
 
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <div className="flex flex-col border rounded-lg border-white/20 p-8 items-center gap-y-4 w-full max-w-[600px]">
-        <div className=" text-white text-sm font-semibold md:-ml-44">
-          How many people will be using your instance?
+        <div className="text-white text-sm font-semibold md:-ml-44">
+          {t("userSetup.instanceQuestion")}
         </div>
         <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
           <button
@@ -65,9 +67,11 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
               selectedOption === "just_me"
                 ? "text-sky-400 border-sky-400/70"
                 : "text-white border-white/40"
-            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2 justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
-            <div className="text-center text-sm font-bold">Just me</div>
+            <div className="text-center text-sm font-bold">
+              {t("userSetup.justMe")}
+            </div>
           </button>
           <button
             onClick={() => setSelectedOption("my_team")}
@@ -75,9 +79,11 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
               selectedOption === "my_team"
                 ? "text-sky-400 border-sky-400/70"
                 : "text-white border-white/40"
-            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2 justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
-            <div className="text-center text-sm font-bold">My team</div>
+            <div className="text-center text-sm font-bold">
+              {t("userSetup.myTeam")}
+            </div>
           </button>
         </div>
       </div>
@@ -108,6 +114,7 @@ const JustMe = ({
   justMeSubmitRef,
   navigate,
 }) => {
+  const { t } = useTranslation(); // i18n 훅
   const [itemSelected, setItemSelected] = useState(false);
   const [password, setPassword] = useState("");
   const handleSubmit = async (e) => {
@@ -120,7 +127,7 @@ const JustMe = ({
     });
 
     if (error) {
-      showToast(`Failed to set password: ${error}`, "error");
+      showToast(t("userSetup.passwordError", { error }), "error");
       return;
     }
 
@@ -161,8 +168,8 @@ const JustMe = ({
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <div className="flex flex-col border rounded-lg border-white/20 p-8 items-center gap-y-4 w-full max-w-[600px]">
-        <div className=" text-white text-sm font-semibold md:-ml-56">
-          Would you like to set up a password?
+        <div className="text-white text-sm font-semibold md:-ml-56">
+          {t("userSetup.passwordQuestion")}
         </div>
         <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
           <button
@@ -171,9 +178,11 @@ const JustMe = ({
               enablePassword && itemSelected
                 ? "text-sky-400 border-sky-400/70"
                 : "text-white border-white/40"
-            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2 justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
-            <div className="text-center text-sm font-bold">Yes</div>
+            <div className="text-center text-sm font-bold">
+              {t("userSetup.yes")}
+            </div>
           </button>
           <button
             onClick={handleNo}
@@ -181,36 +190,33 @@ const JustMe = ({
               !enablePassword && itemSelected
                 ? "text-sky-400 border-sky-400/70"
                 : "text-white border-white/40"
-            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2 justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
-            <div className="text-center text-sm font-bold">No</div>
+            <div className="text-center text-sm font-bold">
+              {t("userSetup.no")}
+            </div>
           </button>
         </div>
         {enablePassword && (
           <form className="w-full mt-4" onSubmit={handleSubmit}>
             <label
-              htmlFor="name"
+              htmlFor="password"
               className="block mb-3 text-sm font-medium text-white"
             >
-              Instance Password
+              {t("userSetup.passwordLabel")}
             </label>
             <input
               name="password"
               type="password"
-              className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
-              placeholder="Your admin password"
+              className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5"
+              placeholder={t("userSetup.passwordPlaceholder")}
               minLength={6}
               required={true}
               autoComplete="off"
               onChange={handlePasswordChange}
             />
             <div className="mt-4 text-white text-opacity-80 text-xs font-base -mb-2">
-              Passwords must be at least 8 characters.
-              <br />
-              <i>
-                It's important to save this password because there is no
-                recovery method.
-              </i>{" "}
+              {t("userSetup.passwordRequirements")}
             </div>
             <button
               type="submit"
@@ -226,6 +232,7 @@ const JustMe = ({
 };
 
 const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
+  const { t } = useTranslation(); // i18n 훅
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -239,7 +246,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
     };
     const { success, error } = await System.setupMultiUser(data);
     if (!success) {
-      showToast(`Error: ${error}`, "error");
+      showToast(t("userSetup.multiUserError", { error }), "error");
       return;
     }
 
@@ -272,16 +279,16 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
             <div className="w-full flex flex-col gap-y-4">
               <div>
                 <label
-                  htmlFor="name"
+                  htmlFor="username"
                   className="block mb-3 text-sm font-medium text-white"
                 >
-                  Admin account username
+                  {t("userSetup.multiUserUsername")}
                 </label>
                 <input
                   name="username"
                   type="text"
-                  className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
-                  placeholder="Your admin username"
+                  className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5"
+                  placeholder={t("userSetup.usernamePlaceholder")}
                   minLength={6}
                   required={true}
                   autoComplete="off"
@@ -290,16 +297,16 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
               </div>
               <div className="mt-4">
                 <label
-                  htmlFor="name"
+                  htmlFor="password"
                   className="block mb-3 text-sm font-medium text-white"
                 >
-                  Admin account password
+                  {t("userSetup.multiUserPassword")}
                 </label>
                 <input
                   name="password"
                   type="password"
-                  className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
-                  placeholder="Your admin password"
+                  className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5"
+                  placeholder={t("userSetup.passwordPlaceholder")}
                   minLength={8}
                   required={true}
                   autoComplete="off"
@@ -307,17 +314,14 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                 />
               </div>
               <p className="w-96 text-white text-opacity-80 text-xs font-base">
-                Username must be at least 6 characters long. Password must be at
-                least 8 characters long.
+                {t("userSetup.usernameAndPasswordRequirements")}
               </p>
             </div>
           </div>
         </div>
         <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b border-gray-500/50">
-          <div className=" text-white text-opacity-80 text-xs font-base">
-            By default, you will be the only admin. Once onboarding is completed
-            you can create and invite others to be users or admins. Do not lose
-            your password as only admins can reset passwords.
+          <div className="text-white text-opacity-80 text-xs font-base">
+            {t("userSetup.adminWarning")}
           </div>
         </div>
         <button
