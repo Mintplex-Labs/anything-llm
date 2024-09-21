@@ -68,7 +68,6 @@ class MistralLLM {
         image_url: attachment.contentString,
       });
     }
-    console.log(content);
     return content.flat();
   }
 
