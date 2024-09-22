@@ -10,21 +10,22 @@ generator client {
 //   provider = "postgresql"
 //   url      = env("DATABASE_URL")
 // }
+
 datasource db {
-  provider = "sqlite"
-  url      = "file:../storage/anythingllm.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model api_keys {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(uuid())
   secret        String?  @unique
-  createdBy     Int?
+  createdBy     String?
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
 }
 
 model workspace_documents_year {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   filename  String
   docpath   String
   docId     String
@@ -33,11 +34,11 @@ model workspace_documents_year {
 }
 
 model workspace_documents {
-  id                   Int                   @id @default(autoincrement())
+  id                   String                @id @default(uuid())
   docId                String                @unique
   filename             String
   docpath              String
-  workspaceId          Int
+  workspaceId          String
   metadata             String?
   pinned               Boolean?              @default(false)
   watched              Boolean?              @default(false)
@@ -48,18 +49,18 @@ model workspace_documents {
 }
 
 model invites {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(uuid())
   code          String   @unique
   status        String   @default("pending")
-  claimedBy     Int?
+  claimedBy     String?
   workspaceIds  String?
   createdAt     DateTime @default(now())
-  createdBy     Int
+  createdBy     String
   lastUpdatedAt DateTime @default(now())
 }
 
 model system_settings {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(uuid())
   label         String   @unique
   value         String?
   createdAt     DateTime @default(now())
@@ -67,7 +68,7 @@ model system_settings {
 }
 
 model users {
-  id                          Int                           @id @default(autoincrement())
+  id                          String                        @id @default(uuid())
   username                    String?                       @unique
   password                    String
   pfpFilename                 String?
@@ -88,8 +89,8 @@ model users {
 }
 
 model recovery_codes {
-  id        Int      @id @default(autoincrement())
-  user_id   Int
+  id        String   @id @default(uuid())
+  user_id   String
   code_hash String
   createdAt DateTime @default(now())
   user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -98,8 +99,8 @@ model recovery_codes {
 }
 
 model password_reset_tokens {
-  id        Int      @id @default(autoincrement())
-  user_id   Int
+  id        String   @id @default(uuid())
+  user_id   String
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
@@ -109,7 +110,7 @@ model password_reset_tokens {
 }
 
 model document_vectors {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(uuid())
   docId         String
   vectorId      String
   createdAt     DateTime @default(now())
@@ -117,7 +118,7 @@ model document_vectors {
 }
 
 model welcome_messages {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(uuid())
   user       String
   response   String
   orderIndex Int?
@@ -125,7 +126,7 @@ model welcome_messages {
 }
 
 model workspaces {
-  id                           Int                            @id @default(autoincrement())
+  id                           String                         @id @default(uuid())
   name                         String
   slug                         String                         @unique
   vectorTag                    String?
@@ -152,11 +153,11 @@ model workspaces {
 }
 
 model workspace_threads {
-  id            Int        @id @default(autoincrement())
+  id            String     @id @default(uuid())
   name          String
   slug          String     @unique
-  workspace_id  Int
-  user_id       Int?
+  workspace_id  String
+  user_id       String?
   createdAt     DateTime   @default(now())
   lastUpdatedAt DateTime   @default(now())
   workspace     workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
@@ -167,8 +168,8 @@ model workspace_threads {
 }
 
 model workspace_suggested_messages {
-  id            Int        @id @default(autoincrement())
-  workspaceId   Int
+  id            String     @id @default(uuid())
+  workspaceId   String
   heading       String
   message       String
   createdAt     DateTime   @default(now())
@@ -179,13 +180,13 @@ model workspace_suggested_messages {
 }
 
 model workspace_chats {
-  id            Int      @id @default(autoincrement())
-  workspaceId   Int
+  id            String   @id @default(uuid())
+  workspaceId   String
   prompt        String
   response      String
   include       Boolean  @default(true)
-  user_id       Int?
-  thread_id     Int? // No relation to prevent whole table migration
+  user_id       String?
+  thread_id     String? // No relation to prevent whole table migration
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
   feedbackScore Boolean?
@@ -193,13 +194,13 @@ model workspace_chats {
 }
 
 model workspace_agent_invocations {
-  id            Int        @id @default(autoincrement())
+  id            String     @id @default(uuid())
   uuid          String     @unique
   prompt        String // Contains agent invocation to parse + option additional text for seed.
   closed        Boolean    @default(false)
-  user_id       Int?
-  thread_id     Int? // No relation to prevent whole table migration
-  workspace_id  Int
+  user_id       String?
+  thread_id     String? // No relation to prevent whole table migration
+  workspace_id  String
   createdAt     DateTime   @default(now())
   lastUpdatedAt DateTime   @default(now())
   user          users?     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -209,9 +210,9 @@ model workspace_agent_invocations {
 }
 
 model workspace_users {
-  id            Int        @id @default(autoincrement())
-  user_id       Int
-  workspace_id  Int
+  id            String     @id @default(uuid())
+  user_id       String
+  workspace_id  String
   createdAt     DateTime   @default(now())
   lastUpdatedAt DateTime   @default(now())
   workspaces    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -219,18 +220,18 @@ model workspace_users {
 }
 
 model cache_data {
-  id            Int       @id @default(autoincrement())
+  id            String    @id @default(uuid())
   name          String
   data          String
   belongsTo     String?
-  byId          Int?
+  byId          String?
   expiresAt     DateTime?
   createdAt     DateTime  @default(now())
   lastUpdatedAt DateTime  @default(now())
 }
 
 model embed_configs {
-  id                         Int           @id @default(autoincrement())
+  id                         String        @id @default(uuid())
   uuid                       String        @unique
   enabled                    Boolean       @default(false)
   chat_mode                  String        @default("query")
@@ -240,9 +241,9 @@ model embed_configs {
   allow_prompt_override      Boolean       @default(false)
   max_chats_per_day          Int?
   max_chats_per_session      Int?
-  workspace_id               Int
-  createdBy                  Int?
-  usersId                    Int?
+  workspace_id               String
+  createdBy                  String?
+  usersId                    String?
   createdAt                  DateTime      @default(now())
   workspace                  workspaces    @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
   embed_chats                embed_chats[]
@@ -250,36 +251,36 @@ model embed_configs {
 }
 
 model embed_chats {
-  id                     Int           @id @default(autoincrement())
+  id                     String        @id @default(uuid())
   prompt                 String
   response               String
   session_id             String
   include                Boolean       @default(true)
   connection_information String?
-  embed_id               Int
-  usersId                Int?
+  embed_id               String
+  usersId                String?
   createdAt              DateTime      @default(now())
   embed_config           embed_configs @relation(fields: [embed_id], references: [id], onDelete: Cascade)
   users                  users?        @relation(fields: [usersId], references: [id])
 }
 
 model event_logs {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(uuid())
   event      String
   metadata   String?
-  userId     Int?
+  userId     String?
   occurredAt DateTime @default(now())
 
   @@index([event])
 }
 
 model slash_command_presets {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(uuid())
   command       String
   prompt        String
   description   String
-  uid           Int      @default(0) // 0 is null user
-  userId        Int?
+  uid           String   @default("0") // Use String to match UUIDs, if necessary
+  userId        String?
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
   user          users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -288,19 +289,19 @@ model slash_command_presets {
 }
 
 model document_sync_queues {
-  id             Int                        @id @default(autoincrement())
+  id             String                     @id @default(uuid())
   staleAfterMs   Int                        @default(604800000) // 7 days
   nextSyncAt     DateTime
   createdAt      DateTime                   @default(now())
   lastSyncedAt   DateTime                   @default(now())
-  workspaceDocId Int                        @unique
+  workspaceDocId String                     @unique
   workspaceDoc   workspace_documents?       @relation(fields: [workspaceDocId], references: [id], onDelete: Cascade)
   runs           document_sync_executions[]
 }
 
 model document_sync_executions {
-  id        Int                  @id @default(autoincrement())
-  queueId   Int
+  id        String               @id @default(uuid())
+  queueId   String
   status    String               @default("unknown")
   result    String?
   createdAt DateTime             @default(now())

@@ -61,7 +61,7 @@ const SlashCommandPresets = {
     try {
       return (
         await prisma.slash_command_presets.findMany({
-          where: { userId: !!userId ? Number(userId) : null },
+          where: { userId: !!userId ? `${userId}` : null },
           orderBy: { createdAt: "asc" },
         })
       )?.map((preset) => ({

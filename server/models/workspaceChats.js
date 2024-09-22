@@ -193,7 +193,9 @@ const WorkspaceChats = {
           ? { name: workspace.name, slug: workspace.slug }
           : { name: "deleted workspace", slug: null };
 
-        const user = res.user_id ? await User.get({ id: res.user_id }) : null;
+        const stringId = String(res.user_id);
+
+        const user = res.user_id ? await User.get({ id: stringId }) : null;
         res.user = user
           ? { username: user.username }
           : { username: "unknown user" };
