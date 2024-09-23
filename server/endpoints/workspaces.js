@@ -135,18 +135,45 @@ function workspaceEndpoints(app) {
           response.status(500).json({ success: false, error: reason }).end();
           return;
         }
-        let yearFinal = null
-        if (request.body.year !== "") {
-          yearFinal = request.body.year
+        // Assuming documents[0] contains the processed data
+        const doc = documents[0];
+
+        let folder = await prisma.folder.findUnique({
+          where: { name: request.body.folderName || "custom-documents" },
+        });
+
+        if (!folder) {
+          // Create the folder if it doesn't exist
+          folder = await prisma.folder.create({
+            data: {
+              name: request.body.folderName || "custom-documents",
+              numExp: "", // Set default values or collect from request.body
+              ano: "",
+              cliente: "",
+              juzgadoPrincipal: "",
+              fechaAlta: "",
+              estadoDeExpediente: "",
+            },
+          });
         }
-        await prisma.workspace_documents_year.create({
+
+        // Create file record in the database
+        await prisma.file.create({
           data: {
-            docId: documents[0].id,
-            docpath: documents[0].url,
-            filename: documents[0].title,
-            year: yearFinal
-          }
-        })
+            id: doc.id,
+            url: doc.fileUploadUrl,
+            pageContentUrl: doc.pageContentUploadUrl,
+            title: doc.title,
+            docAuthor: doc.docAuthor,
+            description: doc.description,
+            docSource: doc.docSource,
+            chunkSource: doc.chunkSource,
+            published: new Date(doc.published), // Ensure this is a Date object
+            wordCount: doc.wordCount,
+            tokenCountEstimate: doc.token_count_estimate,
+            folderId: folder.id,
+          },
+        });
 
         Collector.log(
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
@@ -243,8 +270,8 @@ function workspaceEndpoints(app) {
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors
-                .map((msg) => `${msg}`)
-                .join("\n\n")}`
+                  .map((msg) => `${msg}`)
+                  .join("\n\n")}`
               : null,
         });
       } catch (e) {
@@ -791,11 +818,11 @@ function workspaceEndpoints(app) {
         // and is a valid thread slug.
         const threadId = !!threadSlug
           ? (
-            await WorkspaceThread.get({
-              slug: String(threadSlug),
-              workspace_id: workspace.id,
-            })
-          )?.id ?? null
+              await WorkspaceThread.get({
+                slug: String(threadSlug),
+                workspace_id: workspace.id,
+              })
+            )?.id ?? null
           : null;
         const chatsToFork = await WorkspaceChats.where(
           {

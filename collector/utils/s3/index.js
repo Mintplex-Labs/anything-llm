@@ -1,6 +1,6 @@
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-const fs = require('fs');
-const path = require('path');
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const fs = require("fs");
+const path = require("path");
 
 class S3Service {
   constructor() {
@@ -27,25 +27,35 @@ class S3Service {
     console.log(`\x1b[32m[S3Service]\x1b[0m ${text}`, ...args);
   }
 
-  async uploadFileToS3(filePath, bucketName) {
-    try {
-      const fileContent = fs.readFileSync(filePath);
-      const fileName = path.basename(filePath);
+  #createDefaultS3Params(filePath, bucketName) {
+    const fileContent = fs.readFileSync(filePath);
+    const fileName = path.basename(filePath);
+    return {
+      Bucket: bucketName,
+      Key: `files/${fileName}`,
+      Body: fileContent,
+    };
+  }
 
-      const params = {
-        Bucket: bucketName,
-        Key: fileName,
-        Body: fileContent,
-      };
+  #constructFileUrl(bucketName, key) {
+    const region = process.env.AWS_REGION;
+    return `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
+  }
+
+  async uploadFileToS3(filePath, bucketName, s3Params) {
+    try {
+      const params =
+        s3Params || this.#createDefaultS3Params(filePath, bucketName);
 
       const command = new PutObjectCommand(params);
       await this.s3.send(command);
 
-      this.#log(`File uploaded successfully to s3: ${fileName}`);
-      // return `https://s3.us-west-1.amazonaws.com/dev1.bucket.ossorioia/${filename}`
-      return
+      const fileUrl = this.#constructFileUrl(params.Bucket, params.Key);
+      this.#log(`File uploaded successfully to S3: ${fileUrl}`);
+
+      return fileUrl;
     } catch (error) {
-      this.#log('Error uploading file:', error);
+      this.#log("Error uploading file:", error);
       throw error;
     }
   }

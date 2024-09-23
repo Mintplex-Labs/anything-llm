@@ -1,13 +1,6 @@
-const { v4 } = require("uuid");
-const path = require("path")
 const fs = require("fs");
 const { tokenizeString } = require("../../utils/tokenizer");
-const {
-  createdDate,
-  trashFile,
-  writeToServerDocuments,
-} = require("../../utils/files");
-const { default: slugify } = require("slugify");
+const { createdDate, trashFile } = require("../../utils/files");
 const { S3Service } = require("../../utils/s3");
 
 async function asTxt({ fullFilePath = "", filename = "" }) {
@@ -29,12 +22,32 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
   }
 
   console.log(`-- Working ${filename} --`);
-  const s3Service = new S3Service()
-  await s3Service.uploadFileToS3(fullFilePath, 'dev1.bucket.ossorioia')
+
+  const s3Service = new S3Service();
+  //TODO: move s3 upload service to server /api/workspace/:slug/upload
+
+  const fileUploadUrl = await s3Service.uploadFileToS3(
+    fullFilePath,
+    "dev1.bucket.ossorioia"
+  );
+
+  const pageContentParams = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: `pageContents/${filename}`,
+    Body: content, // Assuming this is a string
+  };
+
+  //TODO: move s3 upload service to server /api/workspace/:slug/upload
+  const pageContentUploadUrl = await s3Service.uploadFileToS3(
+    undefined,
+    undefined,
+    pageContentParams
+  );
 
   const data = {
-    id: v4(),
     url: "file://" + fullFilePath,
+    pageContentUploadUrl,
+    fileUploadUrl,
     title: filename,
     docAuthor: "Unknown",
     description: "Unknown",
@@ -46,13 +59,9 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
     token_count_estimate: tokenizeString(content).length,
   };
 
-  const document = writeToServerDocuments(
-    data,
-    `${slugify(filename)}-${data.id}`
-  );
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
-  return { success: true, reason: null, documents: [document] };
+  return { success: true, reason: null, documents: [data] };
 }
 
 module.exports = asTxt;

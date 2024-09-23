@@ -317,6 +317,25 @@ model folder {
   juzgadoPrincipal   String
   fechaAlta          String
   estadoDeExpediente String
+  files              file[]   @relation("folderfiles")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model file {
+  id                 String   @id @default(uuid())
+  url                String
+  pageContentUrl     String
+  title              String
+  docAuthor          String
+  description        String
+  docSource          String
+  chunkSource        String
+  published          DateTime
+  wordCount          Int
+  tokenCountEstimate Int
+  folderId           String
+  folder             folder   @relation("folderfiles", fields: [folderId], references: [id])
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 }
