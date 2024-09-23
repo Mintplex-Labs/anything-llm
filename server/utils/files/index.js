@@ -51,10 +51,7 @@ async function viewLocalFiles() {
         const filePath = path.join(folderPath, subfile);
         const rawData = fs.readFileSync(filePath, "utf8");
         const cachefilename = `${file}/${subfile}`;
-        filenames[cachefilename] = subfile;
-
         const { pageContent, ...metadata } = JSON.parse(rawData);
-
         const watchedInWorkspaces = liveSyncAvailable
           ? await Document.getOnlyWorkspaceIds({
               docpath: cachefilename,
@@ -73,6 +70,7 @@ async function viewLocalFiles() {
           // Is file watched in any workspace since sync updates all workspaces where file is referenced
           watched: watchedInWorkspaces.length !== 0,
         });
+        filenames[cachefilename] = subfile;
       }
 
       // Get documents pinned to at least one workspace.
