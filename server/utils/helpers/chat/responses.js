@@ -21,7 +21,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
       // to preserve previously generated content.
       const handleAbort = () => clientAbortedHandler(resolve, fullText);
       response.on("close", handleAbort);
-      
+
       for await (const chunk of stream) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
