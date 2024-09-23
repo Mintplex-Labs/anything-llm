@@ -17,9 +17,7 @@
     },
     "schema": {
       "type": "string",
-      "enum": [
-        "skill-1.0.0"
-      ],
+      "enum": ["skill-1.0.0"],
       "description": "Must be 'skill-1.0.0'. May be updated on manifest spec changes."
     },
     "version": {
@@ -76,9 +74,7 @@
                 "description": "Hint text for the input."
               }
             },
-            "required": [
-              "type"
-            ],
+            "required": ["type"],
             "additionalProperties": false
           },
           "value": {
@@ -86,9 +82,7 @@
             "description": "Preset value of the argument."
           }
         },
-        "required": [
-          "type"
-        ],
+        "required": ["type"],
         "additionalProperties": false
       },
       "description": "Setup arguments used to configure the custom agent skill from the UI and make runtime arguments accessible in the handler.js file when the skill is called."
@@ -107,10 +101,7 @@
             "description": "Expected invocation format matching the input format of the custom agent skill."
           }
         },
-        "required": [
-          "prompt",
-          "call"
-        ],
+        "required": ["prompt", "call"],
         "additionalProperties": false
       },
       "description": "Array of examples used to pre-inject examples into the custom agent skill."
@@ -133,35 +124,23 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "string",
-                  "number",
-                  "boolean"
-                ],
+                "enum": ["string", "number", "boolean"],
                 "description": "Type of the parameter."
               }
             },
-            "required": [
-              "description",
-              "type"
-            ],
+            "required": ["description", "type"],
             "additionalProperties": false
           },
           "description": "Parameters expected by the custom agent skill."
         }
       },
-      "required": [
-        "file",
-        "params"
-      ],
+      "required": ["file", "params"],
       "additionalProperties": false,
       "description": "Defines the entrypoint of the custom agent skill and the expected inputs."
     },
     "imported": {
       "type": "boolean",
-      "enum": [
-        true
-      ],
+      "enum": [true],
       "description": "Must be set to true."
     }
   },
