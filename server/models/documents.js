@@ -76,7 +76,8 @@ const Document = {
     clause = {},
     limit = null,
     orderBy = null,
-    include = null
+    include = null,
+    select = null
   ) {
     try {
       const results = await prisma.workspace_documents.findMany({
@@ -84,6 +85,7 @@ const Document = {
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
         ...(include !== null ? { include } : {}),
+        ...(select !== null ? { select: { ...select } } : {}),
       });
       return results;
     } catch (error) {

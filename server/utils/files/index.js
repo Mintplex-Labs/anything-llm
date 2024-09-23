@@ -44,17 +44,17 @@ async function viewLocalFiles() {
         items: [],
       };
       const subfiles = fs.readdirSync(folderPath);
+      const filenames = {};
 
       for (const subfile of subfiles) {
         if (path.extname(subfile) !== ".json") continue;
         const filePath = path.join(folderPath, subfile);
         const rawData = fs.readFileSync(filePath, "utf8");
         const cachefilename = `${file}/${subfile}`;
+        filenames[cachefilename] = subfile;
+
         const { pageContent, ...metadata } = JSON.parse(rawData);
-        const pinnedInWorkspaces = await Document.getOnlyWorkspaceIds({
-          docpath: cachefilename,
-          pinned: true,
-        });
+
         const watchedInWorkspaces = liveSyncAvailable
           ? await Document.getOnlyWorkspaceIds({
               docpath: cachefilename,
@@ -67,7 +67,6 @@ async function viewLocalFiles() {
           type: "file",
           ...metadata,
           cached: await cachedVectorInformation(cachefilename, true),
-          pinnedWorkspaces: pinnedInWorkspaces,
           canWatch: liveSyncAvailable
             ? DocumentSyncQueue.canWatch(metadata)
             : false,
@@ -75,6 +74,39 @@ async function viewLocalFiles() {
           watched: watchedInWorkspaces.length !== 0,
         });
       }
+
+      // Get documents pinned to at least one workspace.
+      const pinnedWorkspacesByDocument = (
+        await Document.where(
+          {
+            docpath: {
+              in: Object.keys(filenames),
+            },
+            pinned: true,
+          },
+          null,
+          null,
+          null,
+          {
+            workspaceId: true,
+            docpath: true,
+          }
+        )
+      ).reduce((result, { workspaceId, docpath }) => {
+        const filename = filenames[docpath];
+        if (!result[filename]) {
+          result[filename] = [];
+        }
+        if (!result[filename].includes(workspaceId)) {
+          result[filename].push(workspaceId);
+        }
+        return result;
+      }, {});
+
+      for (const item of subdocs.items) {
+        item.pinnedWorkspaces = pinnedWorkspacesByDocument[item.name] || [];
+      }
+
       directory.items.push(subdocs);
     }
   }
