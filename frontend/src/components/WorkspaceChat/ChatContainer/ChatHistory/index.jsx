@@ -20,16 +20,16 @@ export default function ChatHistory({
   regenerateAssistantMessage,
   hasAttachments = false,
 }) {
+  const lastScrollTopRef = useRef(0);
   const { user } = useUser();
   const { threadSlug = null } = useParams();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
   const [textSize, setTextSize] = useState("normal");
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
   const showScrollbar = Appearance.getSettings()?.showScrollbar || false;
   const isStreaming = history[history.length - 1]?.animate;
-  const [isUserScrolling, setIsUserScrolling] = useState(false);
-  const lastScrollTopRef = useRef(0);
 
   const getTextSizeClass = (size) => {
     switch (size) {
@@ -92,17 +92,14 @@ export default function ChatHistory({
 
   const scrollToBottom = (smooth = false) => {
     if (chatHistoryRef.current) {
-      const scrollOptions = {
+      chatHistoryRef.current.scrollTo({
         top: chatHistoryRef.current.scrollHeight,
-      };
 
-      // Smooth is on when user clicks the button but disabled during auto scroll
-      // We must disable this during auto scroll because it causes issues with
-      // detecting when we are at the bottom of the chat.
-      if (smooth) {
-        scrollOptions.behavior = "smooth";
-      }
-      chatHistoryRef.current.scrollTo(scrollOptions);
+        // Smooth is on when user clicks the button but disabled during auto scroll
+        // We must disable this during auto scroll because it causes issues with
+        // detecting when we are at the bottom of the chat.
+        ...(smooth ? { behavior: "smooth" } : {}),
+      });
     }
   };
 

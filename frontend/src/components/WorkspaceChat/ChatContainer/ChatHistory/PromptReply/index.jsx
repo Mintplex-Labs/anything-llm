@@ -62,7 +62,7 @@ const PromptReply = ({
           <WorkspaceProfileImage workspace={workspace} />
           <span
             className={`reply flex flex-col gap-y-1 mt-2`}
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(reply + " █") }}
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
           />
         </div>
         <Citations sources={sources} />
