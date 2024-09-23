@@ -21,7 +21,7 @@ class DocumentManager {
     if (!this.workspace) return [];
     const { Document } = require("../../models/documents");
     return await Document.where({
-      workspaceId: Number(this.workspace.id),
+      workspaceId: this.workspace.id,
       pinned: true,
     });
   }
