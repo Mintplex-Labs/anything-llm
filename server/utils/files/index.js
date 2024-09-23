@@ -12,6 +12,7 @@ const vectorCachePath =
     ? path.resolve(__dirname, `../../storage/vector-cache`)
     : path.resolve(process.env.STORAGE_DIR, `vector-cache`);
 const prisma = require("../prisma");
+const { S3Service } = require("../aws");
 
 // Should take in a folder that is a subfolder of documents
 // eg: youtube-subject/video-123.json
@@ -23,6 +24,74 @@ async function fileData(filePath = null) {
 
   const data = fs.readFileSync(fullFilePath, "utf8");
   return JSON.parse(data);
+}
+
+async function fileDataFromS3(path) {
+  try {
+    // Initialize S3Service
+    const s3Service = new S3Service();
+    const bucketName = process.env.S3_BUCKET_NAME;
+
+    // Extract the folder name and file name from the path
+    const parts = path.split("/");
+    const folderName = parts[0];
+    const fileName = parts.slice(1).join("/");
+
+    // Get the file metadata from the database
+    // Find the folder first
+    const folder = await prisma.folder.findUnique({
+      where: { name: folderName },
+    });
+
+    if (!folder) {
+      console.error(`Folder '${folderName}' not found in database.`);
+      return null;
+    }
+
+    // Then find the file in the folder
+    const file = await prisma.file.findFirst({
+      where: {
+        folderId: folder.id,
+        title: fileName,
+      },
+    });
+
+    if (!file) {
+      console.error(`File '${fileName}' not found in folder '${folderName}'.`);
+      return null;
+    }
+
+    // Build the S3 key for the pageContent file
+    // Assuming pageContent is stored under 'pageContents/{file.id}.txt'
+    const pageContentKey = `pageContents/${file.title}`;
+
+    // Get the pageContent from S3
+    const pageContent = await s3Service.getObject({
+      Bucket: bucketName,
+      Key: pageContentKey,
+    });
+
+    // Construct the data object
+    const data = {
+      id: file.id,
+      url: file.url,
+      pageContentUrl: file.pageContentUrl,
+      title: file.title,
+      docAuthor: file.docAuthor,
+      description: file.description,
+      docSource: file.docSource,
+      chunkSource: file.chunkSource,
+      published: file.published,
+      wordCount: file.wordCount,
+      pageContent: pageContent,
+      token_count_estimate: file.tokenCountEstimate,
+    };
+
+    return data;
+  } catch (error) {
+    console.error(`Error reading file data for path '${path}':`, error);
+    return null;
+  }
 }
 
 async function viewLocalFiles() {
@@ -305,6 +374,7 @@ module.exports = {
   purgeVectorCache,
   storeVectorResult,
   fileData,
+  fileDataFromS3,
   normalizePath,
   isWithin,
   documentsPath,

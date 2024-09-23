@@ -95,43 +95,51 @@ const Document = {
   addDocuments: async function (workspace, additions = [], userId = null) {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
-    const { fileData } = require("../utils/files");
+    const { fileDataFromS3 } = require("../utils/files");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
 
     for (const path of additions) {
-      const data = await fileData(path);
+      const data = await fileDataFromS3(path);
       if (!data) continue;
 
       const docId = uuidv4();
+      // Except pageContent, everything inside the resource is metadata
+      // eslint-disable-next-line no-unused-vars
       const { pageContent, ...metadata } = data;
-      const newDoc = {
+
+      // Prepare data for vectorization
+      const vectorData = {
+        ...data,
         docId,
-        filename: path.split("/")[1],
-        docpath: path,
-        workspaceId: workspace.id,
-        metadata: JSON.stringify(metadata),
       };
 
+      //TODO: get idea of what's happening here
       const { vectorized, error } = await VectorDb.addDocumentToNamespace(
         workspace.slug,
-        { ...data, docId },
+        vectorData,
         path
       );
 
       if (!vectorized) {
-        console.error(
-          "Failed to vectorize",
-          metadata?.title || newDoc.filename
-        );
-        failedToEmbed.push(metadata?.title || newDoc.filename);
+        console.error("Failed to vectorize", metadata?.title || data.title);
+        failedToEmbed.push(metadata?.title || data.title);
         errors.add(error);
         continue;
       }
 
       try {
-        await prisma.workspace_documents.create({ data: newDoc });
+        await prisma.workspace_documents.create({
+          // TODO: check if docId can be created using db
+          data: {
+            docId,
+            filename: metadata.title,
+            docpath: path,
+            workspaceId: workspace.id,
+            metadata: JSON.stringify(metadata),
+          },
+        });
         embedded.push(path);
       } catch (error) {
         console.error(error.message);
