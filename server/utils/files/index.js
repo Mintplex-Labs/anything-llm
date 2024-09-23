@@ -11,6 +11,7 @@ const vectorCachePath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/vector-cache`)
     : path.resolve(process.env.STORAGE_DIR, `vector-cache`);
+const prisma = require("../prisma");
 
 // Should take in a folder that is a subfolder of documents
 // eg: youtube-subject/video-123.json
@@ -95,6 +96,73 @@ async function viewLocalFiles() {
     directory.items.find((folder) => folder.name === "custom-documents"),
     ...directory.items.filter((folder) => folder.name !== "custom-documents"),
   ].filter((i) => !!i);
+  return directory;
+}
+
+async function viewDBFiles() {
+  // Fetch folders with their associated files
+  const folders = await prisma.folder.findMany({
+    include: {
+      files: true,
+    },
+  });
+
+  const directory = {
+    name: "documents",
+    type: "folder",
+    items: [],
+  };
+
+  // Map over each folder to construct the directory structure
+  for (const folder of folders) {
+    const subdocs = {
+      name: folder.name,
+      type: "folder",
+      items: [],
+      metadata: {
+        numExp: folder.numExp,
+        ano: folder.ano,
+        cliente: folder.cliente,
+        juzgadoPrincipal: folder.juzgadoPrincipal,
+        fechaAlta: folder.fechaAlta,
+        estadoDeExpediente: folder.estadoDeExpediente,
+      },
+    };
+
+    // Map over each file in the folder
+    for (const file of folder.files) {
+      const fileItem = {
+        name: file.title, // Assuming 'title' is the filename
+        type: "file",
+        id: file.id,
+        url: file.url,
+        title: file.title,
+        docAuthor: file.docAuthor,
+        description: file.description,
+        docSource: file.docSource,
+        chunkSource: file.chunkSource,
+        published: file.published,
+        wordCount: file.wordCount,
+        token_count_estimate: file.tokenCountEstimate,
+        // TODO: check the logic and need of following properties
+        cached: false, // Update this field as per your caching logic
+        pinnedWorkspaces: [], // Update based on your application logic
+        canWatch: false, // Update based on your application logic
+        watched: false, // Update based on your application logic
+      };
+
+      subdocs.items.push(fileItem);
+    }
+
+    directory.items.push(subdocs);
+  }
+
+  // Optionally, rearrange items if needed (e.g., move 'custom-documents' folder to the top)
+  directory.items = [
+    directory.items.find((folder) => folder.name === "custom-documents"),
+    ...directory.items.filter((folder) => folder.name !== "custom-documents"),
+  ].filter((i) => !!i);
+
   return directory;
 }
 
@@ -232,6 +300,7 @@ module.exports = {
   findDocumentInDocuments,
   cachedVectorInformation,
   viewLocalFiles,
+  viewDBFiles,
   purgeSourceDocument,
   purgeVectorCache,
   storeVectorResult,

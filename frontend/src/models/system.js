@@ -38,7 +38,9 @@ const System = {
       .catch(() => null);
   },
   localFiles: async function () {
-    return await fetch(`${API_BASE}/system/local-files`, {
+    // TODO: create a new function to get db-files
+    // TODO: revert the endpoint back to local-files
+    return await fetch(`${API_BASE}/system/db-files`, {
       headers: baseHeaders(),
     })
       .then((res) => {

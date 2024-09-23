@@ -1,7 +1,12 @@
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
-const { viewLocalFiles, normalizePath, isWithin } = require("../utils/files");
+const {
+  viewLocalFiles,
+  viewDBFiles,
+  normalizePath,
+  isWithin,
+} = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
@@ -364,6 +369,20 @@ function systemEndpoints(app) {
     async (_, response) => {
       try {
         const localFiles = await viewLocalFiles();
+        response.status(200).json({ localFiles });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/system/db-files",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_, response) => {
+      try {
+        const localFiles = await viewDBFiles();
         response.status(200).json({ localFiles });
       } catch (e) {
         console.error(e.message, e);
