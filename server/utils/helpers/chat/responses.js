@@ -11,52 +11,64 @@ function clientAbortedHandler(resolve, fullText) {
 
 function handleDefaultStreamResponseV2(response, stream, responseProps) {
   const { uuid = uuidv4(), sources = [] } = responseProps;
-
   return new Promise(async (resolve) => {
-    let fullText = "";
+    try {
+      let fullText = "";
 
-    // Establish listener to early-abort a streaming response
-    // in case things go sideways or the user does not like the response.
-    // We preserve the generated text but continue as if chat was completed
-    // to preserve previously generated content.
-    const handleAbort = () => clientAbortedHandler(resolve, fullText);
-    response.on("close", handleAbort);
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+      
+      for await (const chunk of stream) {
+        const message = chunk?.choices?.[0];
+        const token = message?.delta?.content;
 
-    for await (const chunk of stream) {
-      const message = chunk?.choices?.[0];
-      const token = message?.delta?.content;
+        if (token) {
+          fullText += token;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: token,
+            close: false,
+            error: false,
+          });
+        }
 
-      if (token) {
-        fullText += token;
-        writeResponseChunk(response, {
-          uuid,
-          sources: [],
-          type: "textResponseChunk",
-          textResponse: token,
-          close: false,
-          error: false,
-        });
+        // LocalAi returns '' and others return null on chunks - the last chunk is not "" or null.
+        // Either way, the key `finish_reason` must be present to determine ending chunk.
+        if (
+          message?.hasOwnProperty("finish_reason") && // Got valid message and it is an object with finish_reason
+          message.finish_reason !== "" &&
+          message.finish_reason !== null
+        ) {
+          writeResponseChunk(response, {
+            uuid,
+            sources,
+            type: "textResponseChunk",
+            textResponse: "",
+            close: true,
+            error: false,
+          });
+          response.removeListener("close", handleAbort);
+          resolve(fullText);
+          break; // Break streaming when a valid finish_reason is first encountered
+        }
       }
-
-      // LocalAi returns '' and others return null on chunks - the last chunk is not "" or null.
-      // Either way, the key `finish_reason` must be present to determine ending chunk.
-      if (
-        message?.hasOwnProperty("finish_reason") && // Got valid message and it is an object with finish_reason
-        message.finish_reason !== "" &&
-        message.finish_reason !== null
-      ) {
-        writeResponseChunk(response, {
-          uuid,
-          sources,
-          type: "textResponseChunk",
-          textResponse: "",
-          close: true,
-          error: false,
-        });
-        response.removeListener("close", handleAbort);
-        resolve(fullText);
-        break; // Break streaming when a valid finish_reason is first encountered
-      }
+    } catch (e) {
+      console.error(e);
+      writeResponseChunk(response, {
+        id: uuidv4(),
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: e.message,
+      });
+      response.end();
     }
   });
 }
