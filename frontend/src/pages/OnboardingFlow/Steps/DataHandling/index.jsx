@@ -34,6 +34,7 @@ import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
 export const LLM_LOGOS = {
   openai: OpenAiLogo,
   azure: AzureOpenAiLogo,
@@ -114,6 +115,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
     }
   );
   const embeddingLogo = EMBEDDING_LOGOS[embeddingEngine];
+
   useEffect(() => {
     setHeader({
       title: t("handlingPrivacy.title"),
@@ -121,14 +123,15 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
     });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
     setBackBtn({ showing: false, disabled: false, onClick: handleBack });
+
     async function fetchKeys() {
       const _settings = await System.keys();
       setLLMChoice(_settings?.LLMProvider || "openai");
       setVectorDb(_settings?.VectorDB || "lancedb");
       setEmbeddingEngine(_settings?.EmbeddingEngine || "openai");
-
       setLoading(false);
     }
+
     fetchKeys();
   }, []);
 
@@ -188,7 +191,9 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
         </div>
 
         <div className="flex flex-col gap-y-2 pb-4">
-          <div className="text-white text-base font-bold">Vector Database</div>
+          <div className="text-white text-base font-bold">
+            {t("privacy.vector")}
+          </div>
           <div className="flex items-center gap-2.5">
             <img src={vectorLogo} alt="LLM Logo" className="w-8 h-8 rounded" />
             <p className="text-white text-sm font-bold">{vectorName}</p>

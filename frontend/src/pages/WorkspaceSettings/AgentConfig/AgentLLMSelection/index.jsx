@@ -26,6 +26,7 @@ const ENABLED_PROVIDERS = [
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
   // "gemini",         // Too rate limited and broken in several ways to use for agents.
 ];
+
 const WARN_PERFORMANCE = [
   "lmstudio",
   "groq",
@@ -67,6 +68,7 @@ export default function AgentLLMSelection({
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { t } = useTranslation();
+
   function updateLLMChoice(selection) {
     setSearchQuery("");
     setSelectedLLM(selection);
@@ -91,13 +93,14 @@ export default function AgentLLMSelection({
   }, [searchQuery, selectedLLM]);
 
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
+
   return (
     <div className="border-b border-white/40 pb-8">
       {WARN_PERFORMANCE.includes(selectedLLM) && (
         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
             <Gauge className="shrink-0" size={25} />
-            <p className="text-sm">{t("agent.performance-warning")}</p>
+            <p className="text-sm">{t("agent.performanceWarning")}</p>
           </div>
         </div>
       )}
@@ -132,7 +135,7 @@ export default function AgentLLMSelection({
                   type="text"
                   name="llm-search"
                   autoComplete="off"
-                  placeholder="Search available LLM providers"
+                  placeholder={t("agent.searchPlaceholder")}
                   className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-white placeholder:text-white placeholder:font-medium"
                   onChange={(e) => setSearchQuery(e.target.value)}
                   ref={searchInputRef}
@@ -172,7 +175,7 @@ export default function AgentLLMSelection({
             <div className="flex gap-x-4 items-center">
               <img
                 src={selectedLLMObject.logo}
-                alt={`${selectedLLMObject.name} logo`}
+                alt={`${selectedLLMObject.name} ${t("agent.logoAlt")}`}
                 className="w-10 h-10 rounded-md"
               />
               <div className="flex flex-col text-left">

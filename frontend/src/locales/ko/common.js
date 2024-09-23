@@ -299,6 +299,9 @@ const TRANSLATIONS = {
           "에이전트 세션 중 웹 검색은 설정되지 않으면 작동하지 않습니다.",
       },
     },
+    performanceWarning: "이 모델은 성능 제한이 있을 수 있습니다.",
+    searchPlaceholder: "사용 가능한 LLM 제공자 검색",
+    logoAlt: "로고",
   },
 
   //workspace
@@ -309,6 +312,15 @@ const TRANSLATIONS = {
     uploadDocument: "문서를 업로드",
     orSendMessage: "하거나 채팅을 보내십시오.",
     sendMessagePrompt: "시작하려면 채팅을 보내십시오.",
+    create: {
+      title: "첫 번째 워크스페이스 생성",
+      description: "첫 번째 워크스페이스를 만들고 AnythingLLM을 시작하세요.",
+      imageAlt: "워크스페이스 생성",
+      placeholder: "내 워크스페이스",
+      successMessage:
+        "워크스페이스가 성공적으로 생성되었습니다! 홈으로 이동 중...",
+      errorMessage: "워크스페이스 생성 실패: {{error}}",
+    },
   },
 
   //prompt
@@ -671,6 +683,12 @@ const TRANSLATIONS = {
       native:
         "이 AnythingLLM 인스턴스에서 채팅을 위한 다운로드된 맞춤형 Llama 모델을 사용합니다.",
     },
+    providers: {
+      defaultName: "시스템 기본값",
+      defaultDescription:
+        "{{name}}을(를) 이 워크스페이스의 LLM으로 사용하려면 먼저 설정이 필요합니다.",
+    },
+    saveError: "{{name}} 설정 저장 실패: {{error}}",
   },
 
   // Appearance
@@ -1136,6 +1154,7 @@ const TRANSLATIONS = {
   common: {
     save: "저장",
     saving: "저장 중...",
+    "workspaces-name": "워크스페이스 이름",
   },
 
   //stt
@@ -1983,6 +2002,11 @@ const TRANSLATIONS = {
     saveError: "{{name}} 설정 저장 실패: {{error}}",
     cancel: "취소",
     save: "{{name}} 설정 저장",
+  },
+  //Home
+  onboarding: {
+    welcome: "환영합니다",
+    getStarted: "시작하기",
   },
 };
 export default TRANSLATIONS;

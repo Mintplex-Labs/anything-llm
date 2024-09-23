@@ -6,10 +6,6 @@ import { useNavigate } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import { useTranslation } from "react-i18next";
 
-const TITLE = "Create your first workspace";
-const DESCRIPTION =
-  "Create your first workspace and get started with AnythingLLM.";
-
 export default function CreateWorkspace({
   setHeader,
   setForwardBtn,
@@ -21,8 +17,15 @@ export default function CreateWorkspace({
   const { t } = useTranslation();
 
   useEffect(() => {
-    setHeader({ title: TITLE, description: DESCRIPTION });
-    setBackBtn({ showing: false, disabled: false, onClick: handleBack });
+    setHeader({
+      title: t("workspace.create.title"),
+      description: t("workspace.create.description"),
+    });
+    setBackBtn({
+      showing: false,
+      disabled: false,
+      onClick: handleBack,
+    });
   }, []);
 
   useEffect(() => {
@@ -41,14 +44,11 @@ export default function CreateWorkspace({
       onboardingComplete: true,
     });
     if (!!workspace) {
-      showToast(
-        "Workspace created successfully! Taking you to home...",
-        "success"
-      );
+      showToast(t("workspace.create.successMessage"), "success");
       await new Promise((resolve) => setTimeout(resolve, 1000));
       navigate(paths.home());
     } else {
-      showToast(`Failed to create workspace: ${error}`, "error");
+      showToast(t("workspace.create.errorMessage", { error }), "error");
     }
   };
 
@@ -65,9 +65,8 @@ export default function CreateWorkspace({
       onSubmit={handleCreate}
       className="w-full flex items-center justify-center flex-col gap-y-2"
     >
-      <img src={illustration} alt="Create workspace" />
+      <img src={illustration} alt={t("workspace.create.imageAlt")} />
       <div className="flex flex-col gap-y-4 w-full max-w-[600px]">
-        {" "}
         <div className="w-full mt-4">
           <label
             htmlFor="name"
@@ -79,7 +78,7 @@ export default function CreateWorkspace({
             name="name"
             type="text"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg block w-full p-2.5"
-            placeholder="My Workspace"
+            placeholder={t("workspace.create.placeholder")}
             required={true}
             autoComplete="off"
             onChange={(e) => setWorkspaceName(e.target.value)}
