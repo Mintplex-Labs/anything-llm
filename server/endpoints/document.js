@@ -1,11 +1,12 @@
 const { Document } = require("../models/documents");
-const { normalizePath, documentsPath, isWithin } = require("../utils/files");
+const { normalizePath, documentsPath } = require("../utils/files");
 const { reqBody } = require("../utils/http");
 const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const prisma = require("../utils/prisma");
 const fs = require("fs");
 const path = require("path");
 
@@ -18,31 +19,61 @@ function documentEndpoints(app) {
     async (request, response) => {
       try {
         const { name, metadata } = reqBody(request);
-        const storagePath = path.join(documentsPath, normalizePath(name));
-        if (!isWithin(path.resolve(documentsPath), path.resolve(storagePath)))
-          throw new Error("Invalid folder name.");
 
-        if (fs.existsSync(storagePath)) {
-          response.status(500).json({
+        // Validate that all required metadata fields are present and are strings
+        const requiredFields = [
+          "numExp",
+          "ano",
+          "cliente",
+          "juzgadoPrincipal",
+          "fechaAlta",
+          "estadoDeExpediente",
+        ];
+
+        for (const field of requiredFields) {
+          if (
+            //TODO: remove eslint rule
+            // eslint-disable-next-line no-prototype-builtins
+            !metadata.hasOwnProperty(field) ||
+            typeof metadata[field] !== "string" ||
+            metadata[field].trim() === ""
+          ) {
+            return response.status(400).json({
+              success: false,
+              message: `Field '${field}' is required and must be a non-empty string.`,
+            });
+          }
+        }
+
+        // Check if folder already exists
+        const existingFolder = await prisma.folder.findUnique({
+          where: { name },
+        });
+        if (existingFolder) {
+          return response.status(400).json({
             success: false,
             message: "Folder by that name already exists",
           });
-          return;
         }
 
-        fs.mkdirSync(storagePath, { recursive: true });
+        // Create new folder entry in the database
+        await prisma.folder.create({
+          data: {
+            name,
+            ...metadata,
+          },
+        });
 
-        // Create metadata.json file
-        const metadataPath = path.join(storagePath, "metadata.json");
-        // const metadata = { clientName, selectedTag };
-        fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+        // Optionally, create a physical folder in the filesystem
+        // const storagePath = path.join(documentsPath, normalizePath(name));
+        // fs.mkdirSync(storagePath, { recursive: true });
 
         response.status(200).json({ success: true, message: null });
       } catch (e) {
         console.error(e);
         response.status(500).json({
           success: false,
-          message: `Failed to create folder: ${e.message} `,
+          message: `Failed to create folder: ${e.message}`,
         });
       }
     }
@@ -55,28 +86,65 @@ function documentEndpoints(app) {
       try {
         const { folderName } = request.params;
         const metadataBody = reqBody(request);
-        const folderPath = path.join(documentsPath, normalizePath(folderName));
-        const metadataPath = path.join(folderPath, "metadata.json");
 
-        if (!fs.existsSync(folderPath)) {
-          response.status(404).json({
+        // Validate provided metadata fields
+        const validFields = [
+          "numExp",
+          "ano",
+          "cliente",
+          "juzgadoPrincipal",
+          "fechaAlta",
+          "estadoDeExpediente",
+        ];
+
+        const dataToUpdate = {};
+
+        for (const field of validFields) {
+          //TODO: remove eslint rule
+          // eslint-disable-next-line no-prototype-builtins
+          if (metadataBody.hasOwnProperty(field)) {
+            if (
+              typeof metadataBody[field] !== "string" ||
+              metadataBody[field].trim() === ""
+            ) {
+              return response.status(400).json({
+                success: false,
+                message: `Field '${field}' must be a non-empty string.`,
+              });
+            }
+            dataToUpdate[field] = metadataBody[field];
+          }
+        }
+
+        if (Object.keys(dataToUpdate).length === 0) {
+          return response.status(400).json({
+            success: false,
+            message: "No valid metadata fields provided for update.",
+          });
+        }
+
+        // Check if folder exists
+        const existingFolder = await prisma.folder.findUnique({
+          where: { name: folderName },
+        });
+        if (!existingFolder) {
+          return response.status(404).json({
             success: false,
             message: "Folder not found",
           });
-          return;
         }
 
-        let metadata = {};
-        if (fs.existsSync(metadataPath)) {
-          const data = fs.readFileSync(metadataPath, "utf8");
-          metadata = JSON.parse(data);
-        }
+        // Update folder metadata in the database
+        await prisma.folder.update({
+          where: { name: folderName },
+          data: dataToUpdate,
+        });
 
-        // metadata.clientName = clientName;
-        // metadata.selectedTag = selectedTag;
-        metadata = { ...metadata, ...metadataBody };
-
-        fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+        // Optionally perform filesystem operations
+        // if (CREATE_PHYSICAL_FOLDER) {
+        //   // If necessary, perform any filesystem updates here
+        //   // For example, if you allow renaming the folder
+        // }
 
         response.status(200).json({
           success: true,

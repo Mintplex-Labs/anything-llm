@@ -13,7 +13,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://anything-llm-db_owner:FDWdgpPcY0M8@ep-plain-sun-a5dkvlj5.us-east-2.aws.neon.tech/anything-llm-db?sslmode=require"
 }
 
 model api_keys {
@@ -306,4 +306,17 @@ model document_sync_executions {
   result    String?
   createdAt DateTime             @default(now())
   queue     document_sync_queues @relation(fields: [queueId], references: [id], onDelete: Cascade)
+}
+
+model folder {
+  id                 String   @id @default(uuid())
+  name               String   @unique
+  numExp             String
+  ano                String
+  cliente            String
+  juzgadoPrincipal   String
+  fechaAlta          String
+  estadoDeExpediente String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
