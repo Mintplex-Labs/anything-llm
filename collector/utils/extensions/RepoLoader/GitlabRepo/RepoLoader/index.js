@@ -270,7 +270,8 @@ class GitLabRepoLoader {
             ...discussionPage.map(({ notes }) =>
               notes.map(
                 ({ body, author, created_at }) =>
-                  `${author.username} at ${created_at}: ${body}`
+                  `${author.username} at ${created_at}:
+${body}`
               )
             )
           );
