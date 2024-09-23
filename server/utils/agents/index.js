@@ -173,8 +173,8 @@ class AgentHandler {
     }
   }
 
-  providerDefault() {
-    switch (this.provider) {
+  providerDefault(provider = this.provider) {
+    switch (provider) {
       case "openai":
         return "gpt-4o";
       case "anthropic":
@@ -214,6 +214,32 @@ class AgentHandler {
     }
   }
 
+  #getFallbackProvider() {
+    // First, fallback to the workspace chat provider and model if they exist
+    if (
+      this.invocation.workspace.chatProvider &&
+      this.invocation.workspace.chatModel
+    ) {
+      return {
+        provider: this.invocation.workspace.chatProvider,
+        model: this.invocation.workspace.chatModel,
+      };
+    }
+
+    // If workspace does not have chat provider and model fallback
+    // to system provider and try to load provider default model
+    const systemProvider = process.env.LLM_PROVIDER;
+    const systemModel = this.providerDefault(systemProvider);
+    if (systemProvider && systemModel) {
+      return {
+        provider: systemProvider,
+        model: systemModel,
+      };
+    }
+
+    return null;
+  }
+
   /**
    * Finds or assumes the model preference value to use for API calls.
    * If multi-model loading is supported, we use their agent model selection of the workspace
@@ -221,24 +247,43 @@ class AgentHandler {
    * and if that fails - we assume a reasonable base model to exist.
    * @returns {string} the model preference value to use in API calls
    */
+
   #fetchModel() {
-    if (!Object.keys(this.noProviderModelDefault).includes(this.provider))
-      return this.invocation.workspace.agentModel || this.providerDefault();
+    if (!this.provider) {
+      const fallback = this.#getFallbackProvider();
+      if (!fallback) {
+        throw new Error("No valid provider found for the agent.");
+      }
+      this.provider = fallback.provider;
+      return fallback.model;
+    }
 
-    // Provider has no reliable default (cant load many models) - so we need to look at system
-    // for the model param.
+    if (this.invocation.workspace.agentModel) {
+      return this.invocation.workspace.agentModel;
+    }
+
+    if (!Object.keys(this.noProviderModelDefault).includes(this.provider)) {
+      return this.providerDefault();
+    }
+
     const sysModelKey = this.noProviderModelDefault[this.provider];
-    if (!!sysModelKey)
+    if (sysModelKey) {
       return process.env[sysModelKey] ?? this.providerDefault();
+    }
 
-    // If all else fails - look at the provider default list
     return this.providerDefault();
   }
 
   #providerSetupAndCheck() {
     this.provider = this.invocation.workspace.agentProvider;
     this.model = this.#fetchModel();
-    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
+    if (!this.provider) {
+      throw new Error("No valid provider found for the agent.");
+    }
+
+    this.log(
+      `Start ${this.#invocationUUID}::${this.provider}:${this.model || "N/A"}`
+    );
     this.checkSetup();
   }
 
