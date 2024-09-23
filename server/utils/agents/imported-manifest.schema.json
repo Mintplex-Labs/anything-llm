@@ -1,0 +1,179 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AnythingLLM Agent Skill Plugin Manifest Schema",
+  "type": "object",
+  "properties": {
+    "active": {
+      "type": "boolean",
+      "description": "Determines if the custom agent skill is active."
+    },
+    "hubId": {
+      "type": "string",
+      "description": "Used to identify the custom agent skill. Must be the same as the parent folder name."
+    },
+    "name": {
+      "type": "string",
+      "description": "The human-readable name of the skill displayed in the AnythingLLM UI."
+    },
+    "schema": {
+      "type": "string",
+      "enum": [
+        "skill-1.0.0"
+      ],
+      "description": "Must be 'skill-1.0.0'. May be updated on manifest spec changes."
+    },
+    "version": {
+      "type": "string",
+      "description": "Version of the custom agent skill, defined by the user."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of the custom agent skill."
+    },
+    "author": {
+      "type": "string",
+      "description": "Author tag of the custom agent skill."
+    },
+    "author_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the author of the custom agent skill."
+    },
+    "license": {
+      "type": "string",
+      "description": "License of the custom agent skill."
+    },
+    "setup_args": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of value expected."
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Indicates if the argument is required."
+          },
+          "input": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Type of input to be rendered."
+              },
+              "default": {
+                "type": "string",
+                "description": "Default value of the input."
+              },
+              "placeholder": {
+                "type": "string",
+                "description": "Placeholder text for the input."
+              },
+              "hint": {
+                "type": "string",
+                "description": "Hint text for the input."
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          "value": {
+            "type": "string",
+            "description": "Preset value of the argument."
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "description": "Setup arguments used to configure the custom agent skill from the UI and make runtime arguments accessible in the handler.js file when the skill is called."
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Example prompt for the custom agent skill."
+          },
+          "call": {
+            "type": "string",
+            "description": "Expected invocation format matching the input format of the custom agent skill."
+          }
+        },
+        "required": [
+          "prompt",
+          "call"
+        ],
+        "additionalProperties": false
+      },
+      "description": "Array of examples used to pre-inject examples into the custom agent skill."
+    },
+    "entrypoint": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Location of the file to be executed relative to the plugin.json file."
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string",
+                "description": "Short description of the parameter's purpose."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "string",
+                  "number",
+                  "boolean"
+                ],
+                "description": "Type of the parameter."
+              }
+            },
+            "required": [
+              "description",
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          "description": "Parameters expected by the custom agent skill."
+        }
+      },
+      "required": [
+        "file",
+        "params"
+      ],
+      "additionalProperties": false,
+      "description": "Defines the entrypoint of the custom agent skill and the expected inputs."
+    },
+    "imported": {
+      "type": "boolean",
+      "enum": [
+        true
+      ],
+      "description": "Must be set to true."
+    }
+  },
+  "required": [
+    "active",
+    "hubId",
+    "name",
+    "schema",
+    "version",
+    "description",
+    "entrypoint",
+    "imported"
+  ],
+  "additionalProperties": true
+}
