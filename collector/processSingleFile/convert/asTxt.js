@@ -31,6 +31,7 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
     "dev1.bucket.ossorioia"
   );
 
+  //TODO: set the fileName ext type to txt because content is of type string
   const pageContentParams = {
     Bucket: process.env.S3_BUCKET_NAME,
     Key: `pageContents/${filename}`,
