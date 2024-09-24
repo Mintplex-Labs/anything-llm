@@ -21,8 +21,10 @@ export default function WorkspaceFileRow({
   movedItems,
   selected,
   toggleSelection,
+  disableSelection,
 }) {
-  const onRemoveClick = async () => {
+  const onRemoveClick = async (e) => {
+    e.stopPropagation();
     setLoading(true);
 
     try {
@@ -43,24 +45,26 @@ export default function WorkspaceFileRow({
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
   return (
     <div
-      className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer ${
-        isMovedItem ? "bg-green-800/40" : "file-row"
-      } ${selected ? "selected" : ""}`}
-      onClick={toggleSelection}
+      className={`items-center h-[34px] text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 ${
+        !disableSelection ? 'hover:bg-sky-500/20 cursor-pointer' : ''
+      } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${selected ? "selected" : ""}`}
+      onClick={!disableSelection ? toggleSelection : undefined}
     >
       <div className="col-span-10 w-fit flex gap-x-[4px] items-center relative">
-        <div
-          className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
-          role="checkbox"
-          aria-checked={selected}
-          tabIndex={0}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleSelection();
-          }}
-        >
-          {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
-        </div>
+        {!disableSelection && (
+          <div
+            className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+            role="checkbox"
+            aria-checked={selected}
+            tabIndex={0}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSelection();
+            }}
+          >
+            {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+          </div>
+        )}
         <File
           className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-3"
           weight="fill"
@@ -117,7 +121,8 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
   const [hover, setHover] = useState(false);
   const pinEvent = new CustomEvent("pinned_document");
 
-  const updatePinStatus = async () => {
+  const updatePinStatus = async (e) => {
+    e.stopPropagation();
     try {
       if (!pinned) window.dispatchEvent(pinEvent);
       const success = await Workspace.setPinForDocument(

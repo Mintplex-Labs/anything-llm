@@ -94,78 +94,82 @@ function WorkspaceDirectory({
             {workspace.name}
           </h3>
         </div>
-        <div
-          className={`relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5 overflow-y-auto border-4 ${
-            highlightWorkspace ? "border-cyan-300/80" : "border-transparent"
-          }`}
-        >
-          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
-            <p className="col-span-10">Name</p>
-            <p className="col-span-2" />
-          </div>
-          <div className="overflow-y-auto h-[calc(100%-40px)]">
-            {files.items.some((folder) => folder.items.length > 0) || movedItems.length > 0 ? (
-              <>
-                {files.items.map((folder) =>
-                  folder.items.map((item) => (
-                    <WorkspaceFileRow
-                      key={item.id}
-                      item={item}
-                      folderName={folder.name}
-                      workspace={workspace}
-                      setLoading={setLoading}
-                      setLoadingMessage={setLoadingMessage}
-                      fetchKeys={fetchKeys}
-                      hasChanges={hasChanges}
-                      movedItems={movedItems}
-                      selected={selectedItems[item.id]}
-                      toggleSelection={() => toggleSelection(item)}
-                    />
-                  ))
-                )}
-              </>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="text-white text-opacity-40 text-sm font-medium">
-                  No Documents
-                </p>
+        <div className="relative w-[560px] h-[445px] mt-5">
+          <div
+            className={`absolute inset-0 rounded-2xl  ${
+              highlightWorkspace ? "border-4 border-cyan-300/80 z-[999]" : ""
+            }`}
+          />
+          <div className="relative w-full h-full bg-zinc-900 rounded-2xl overflow-hidden">
+            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
+              <p className="col-span-10">Name</p>
+              <p className="col-span-2" />
+            </div>
+            <div className="overflow-y-auto h-[calc(100%-40px)]">
+              {files.items.some((folder) => folder.items.length > 0) || movedItems.length > 0 ? (
+                <>
+                  {files.items.map((folder) =>
+                    folder.items.map((item) => (
+                      <WorkspaceFileRow
+                        key={item.id}
+                        item={item}
+                        folderName={folder.name}
+                        workspace={workspace}
+                        setLoading={setLoading}
+                        setLoadingMessage={setLoadingMessage}
+                        fetchKeys={fetchKeys}
+                        hasChanges={hasChanges}
+                        movedItems={movedItems}
+                        selected={selectedItems[item.id]}
+                        toggleSelection={() => toggleSelection(item)}
+                        disableSelection={hasChanges}
+                      />
+                    ))
+                  )}
+                </>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <p className="text-white text-opacity-40 text-sm font-medium">
+                    No Documents
+                  </p>
+                </div>
+              )}
+            </div>
+            {Object.keys(selectedItems).length > 0 && !hasChanges && (
+              <div className="absolute bottom-[12px] left-0 right-0 flex justify-center pointer-events-none">
+                <div className="mx-auto bg-white/40 rounded-lg py-1 px-2 pointer-events-auto">
+                  <div className="flex flex-row items-center gap-x-2">
+                    <button
+                      onClick={() => {
+                        const allItems = files.items.flatMap(folder => folder.items);
+                        const allSelected = allItems.every(item => selectedItems[item.id]);
+                        if (allSelected) {
+                          setSelectedItems({});
+                        } else {
+                          const newSelectedItems = {};
+                          allItems.forEach(item => {
+                            newSelectedItems[item.id] = true;
+                          });
+                          setSelectedItems(newSelectedItems);
+                        }
+                      }}
+                      className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
+                    >
+                      {Object.keys(selectedItems).length === files.items.reduce((sum, folder) => sum + folder.items.length, 0)
+                        ? "Deselect All"
+                        : "Select All"}
+                    </button>
+                    <button
+                      onClick={removeSelectedItems}
+                      className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
+                    >
+                      Remove Selected
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
-          {Object.keys(selectedItems).length > 0 && !hasChanges && (
-            <div className="absolute bottom-[12px] left-0 right-0 flex justify-center pointer-events-none">
-              <div className="mx-auto bg-white/40 rounded-lg py-1 px-2 pointer-events-auto">
-                <div className="flex flex-row items-center gap-x-2">
-                  <button
-                    onClick={() => {
-                      const allItems = files.items.flatMap(folder => folder.items);
-                      const allSelected = allItems.every(item => selectedItems[item.id]);
-                      if (allSelected) {
-                        setSelectedItems({});
-                      } else {
-                        const newSelectedItems = {};
-                        allItems.forEach(item => {
-                          newSelectedItems[item.id] = true;
-                        });
-                        setSelectedItems(newSelectedItems);
-                      }
-                    }}
-                    className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
-                  >
-                    {Object.keys(selectedItems).length === files.items.reduce((sum, folder) => sum + folder.items.length, 0)
-                      ? "Deselect All"
-                      : "Select All"}
-                  </button>
-                  <button
-                    onClick={removeSelectedItems}
-                    className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
-                  >
-                    Remove Selected
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
         {hasChanges && (
           <div className="flex items-center justify-between py-6">
