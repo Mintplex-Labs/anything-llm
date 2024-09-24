@@ -577,9 +577,10 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  exportChats: async (type = "csv") => {
+  exportChats: async (type = "csv", chatType = "workspace") => {
     const url = new URL(`${fullApiUrl()}/system/export-chats`);
     url.searchParams.append("type", encodeURIComponent(type));
+    url.searchParams.append("chatType", encodeURIComponent(chatType));
     return await fetch(url, {
       method: "GET",
       headers: baseHeaders(),

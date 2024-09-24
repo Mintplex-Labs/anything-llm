@@ -44,6 +44,7 @@ async function viewLocalFiles() {
         items: [],
       };
       const subfiles = fs.readdirSync(folderPath);
+      const filenames = {};
 
       for (const subfile of subfiles) {
         if (path.extname(subfile) !== ".json") continue;
@@ -51,30 +52,32 @@ async function viewLocalFiles() {
         const rawData = fs.readFileSync(filePath, "utf8");
         const cachefilename = `${file}/${subfile}`;
         const { pageContent, ...metadata } = JSON.parse(rawData);
-        const pinnedInWorkspaces = await Document.getOnlyWorkspaceIds({
-          docpath: cachefilename,
-          pinned: true,
-        });
-        const watchedInWorkspaces = liveSyncAvailable
-          ? await Document.getOnlyWorkspaceIds({
-              docpath: cachefilename,
-              watched: true,
-            })
-          : [];
-
         subdocs.items.push({
           name: subfile,
           type: "file",
           ...metadata,
           cached: await cachedVectorInformation(cachefilename, true),
-          pinnedWorkspaces: pinnedInWorkspaces,
           canWatch: liveSyncAvailable
             ? DocumentSyncQueue.canWatch(metadata)
             : false,
-          // Is file watched in any workspace since sync updates all workspaces where file is referenced
-          watched: watchedInWorkspaces.length !== 0,
+          // pinnedWorkspaces: [], // This is the list of workspaceIds that have pinned this document
+          // watched: false, // boolean to indicate if this document is watched in ANY workspace
         });
+        filenames[cachefilename] = subfile;
       }
+
+      // Grab the pinned workspaces and watched documents for this folder's documents
+      // at the time of the query so we don't have to re-query the database for each file
+      const pinnedWorkspacesByDocument =
+        await getPinnedWorkspacesByDocument(filenames);
+      const watchedDocumentsFilenames =
+        await getWatchedDocumentFilenames(filenames);
+      for (const item of subdocs.items) {
+        item.pinnedWorkspaces = pinnedWorkspacesByDocument[item.name] || [];
+        item.watched =
+          watchedDocumentsFilenames.hasOwnProperty(item.name) || false;
+      }
+
       directory.items.push(subdocs);
     }
   }
@@ -88,8 +91,13 @@ async function viewLocalFiles() {
   return directory;
 }
 
-// Searches the vector-cache folder for existing information so we dont have to re-embed a
-// document and can instead push directly to vector db.
+/**
+ * Searches the vector-cache folder for existing information so we dont have to re-embed a
+ * document and can instead push directly to vector db.
+ * @param {string} filename - the filename to check for cached vector information
+ * @param {boolean} checkOnly - if true, only check if the file exists, do not return the cached data
+ * @returns {Promise<{exists: boolean, chunks: any[]}>} - a promise that resolves to an object containing the existence of the file and its cached chunks
+ */
 async function cachedVectorInformation(filename = null, checkOnly = false) {
   if (!filename) return checkOnly ? false : { exists: false, chunks: [] };
 
@@ -216,6 +224,61 @@ function hasVectorCachedFiles() {
     );
   } catch {}
   return false;
+}
+
+/**
+ * @param {string[]} filenames - array of filenames to check for pinned workspaces
+ * @returns {Promise<Record<string, string[]>>} - a record of filenames and their corresponding workspaceIds
+ */
+async function getPinnedWorkspacesByDocument(filenames = []) {
+  return (
+    await Document.where(
+      {
+        docpath: {
+          in: Object.keys(filenames),
+        },
+        pinned: true,
+      },
+      null,
+      null,
+      null,
+      {
+        workspaceId: true,
+        docpath: true,
+      }
+    )
+  ).reduce((result, { workspaceId, docpath }) => {
+    const filename = filenames[docpath];
+    if (!result[filename]) result[filename] = [];
+    if (!result[filename].includes(workspaceId))
+      result[filename].push(workspaceId);
+    return result;
+  }, {});
+}
+
+/**
+ * Get a record of filenames and their corresponding workspaceIds that have watched a document
+ * that will be used to determine if a document should be displayed in the watched documents sidebar
+ * @param {string[]} filenames - array of filenames to check for watched workspaces
+ * @returns {Promise<Record<string, string[]>>} - a record of filenames and their corresponding workspaceIds
+ */
+async function getWatchedDocumentFilenames(filenames = []) {
+  return (
+    await Document.where(
+      {
+        docpath: { in: Object.keys(filenames) },
+        watched: true,
+      },
+      null,
+      null,
+      null,
+      { workspaceId: true, docpath: true }
+    )
+  ).reduce((result, { workspaceId, docpath }) => {
+    const filename = filenames[docpath];
+    result[filename] = workspaceId;
+    return result;
+  }, {});
 }
 
 module.exports = {
