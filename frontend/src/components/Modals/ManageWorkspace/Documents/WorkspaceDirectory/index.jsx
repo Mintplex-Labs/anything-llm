@@ -108,24 +108,34 @@ function WorkspaceDirectory({
             <div className="overflow-y-auto h-[calc(100%-40px)]">
               {files.items.some((folder) => folder.items.length > 0) || movedItems.length > 0 ? (
                 <>
-                  {files.items.map((folder) =>
-                    folder.items.map((item) => (
-                      <WorkspaceFileRow
-                        key={item.id}
-                        item={item}
-                        folderName={folder.name}
-                        workspace={workspace}
-                        setLoading={setLoading}
-                        setLoadingMessage={setLoadingMessage}
-                        fetchKeys={fetchKeys}
-                        hasChanges={hasChanges}
-                        movedItems={movedItems}
-                        selected={selectedItems[item.id]}
-                        toggleSelection={() => toggleSelection(item)}
-                        disableSelection={hasChanges}
-                      />
-                    ))
-                  )}
+                  {/* Sort items so that the items being moved are at the top */}
+                  {files.items.flatMap((folder) => folder.items)
+                    .sort((a, b) => {
+                      const aIsMovedItem = movedItems.some((movedItem) => movedItem.id === a.id);
+                      const bIsMovedItem = movedItems.some((movedItem) => movedItem.id === b.id);
+                      if (aIsMovedItem && !bIsMovedItem) return -1;
+                      if (!aIsMovedItem && bIsMovedItem) return 1;
+                      return 0;
+                    })
+                    .map((item) => {
+                      const folder = files.items.find((f) => f.items.includes(item));
+                      return (
+                        <WorkspaceFileRow
+                          key={item.id}
+                          item={item}
+                          folderName={folder.name}
+                          workspace={workspace}
+                          setLoading={setLoading}
+                          setLoadingMessage={setLoadingMessage}
+                          fetchKeys={fetchKeys}
+                          hasChanges={hasChanges}
+                          movedItems={movedItems}
+                          selected={selectedItems[item.id]}
+                          toggleSelection={() => toggleSelection(item)}
+                          disableSelection={hasChanges}
+                        />
+                      );
+                    })}
                 </>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
