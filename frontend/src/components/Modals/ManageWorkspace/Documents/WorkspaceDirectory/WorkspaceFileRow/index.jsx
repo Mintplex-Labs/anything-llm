@@ -19,6 +19,8 @@ export default function WorkspaceFileRow({
   fetchKeys,
   hasChanges,
   movedItems,
+  selected,
+  toggleSelection,
 }) {
   const onRemoveClick = async () => {
     setLoading(true);
@@ -43,12 +45,22 @@ export default function WorkspaceFileRow({
     <div
       className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer ${
         isMovedItem ? "bg-green-800/40" : "file-row"
-      }`}
+      } ${selected ? "selected" : ""}`}
+      onClick={toggleSelection}
     >
-      <div
-        data-tooltip-id={`ws-directory-item-${item.url}`}
-        className="col-span-10 w-fit flex gap-x-[4px] items-center relative"
-      >
+      <div className="col-span-10 w-fit flex gap-x-[4px] items-center relative">
+        <div
+          className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+          role="checkbox"
+          aria-checked={selected}
+          tabIndex={0}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleSelection();
+          }}
+        >
+          {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+        </div>
         <File
           className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-3"
           weight="fill"
