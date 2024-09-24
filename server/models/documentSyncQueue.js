@@ -38,6 +38,13 @@ const DocumentSyncQueue = {
     return new Date(Number(new Date()) + queueRecord.staleAfterMs);
   },
 
+  /**
+   * Check if the document can be watched based on the metadata fields
+   * @param {object} metadata - metadata to check
+   * @param {string} metadata.title - title of the document
+   * @param {string} metadata.chunkSource - chunk source of the document
+   * @returns {boolean} - true if the document can be watched, false otherwise
+   */
   canWatch: function ({ title, chunkSource = null } = {}) {
     if (chunkSource.startsWith("link://") && title.endsWith(".html"))
       return true; // If is web-link material (prior to feature most chunkSources were links://)
