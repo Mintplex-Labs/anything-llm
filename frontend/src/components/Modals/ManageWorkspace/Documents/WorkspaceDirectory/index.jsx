@@ -38,13 +38,13 @@ function WorkspaceDirectory({
   };
 
   const toggleSelectAll = () => {
-    const allItems = files.items.flatMap(folder => folder.items);
-    const allSelected = allItems.every(item => selectedItems[item.id]);
+    const allItems = files.items.flatMap((folder) => folder.items);
+    const allSelected = allItems.every((item) => selectedItems[item.id]);
     if (allSelected) {
       setSelectedItems({});
     } else {
       const newSelectedItems = {};
-      allItems.forEach(item => {
+      allItems.forEach((item) => {
         newSelectedItems[item.id] = true;
       });
       setSelectedItems(newSelectedItems);
@@ -56,7 +56,9 @@ function WorkspaceDirectory({
     setLoadingMessage("Removing selected files from workspace");
 
     const itemsToRemove = Object.keys(selectedItems).map((itemId) => {
-      const folder = files.items.find((f) => f.items.some((i) => i.id === itemId));
+      const folder = files.items.find((f) =>
+        f.items.some((i) => i.id === itemId)
+      );
       const item = folder.items.find((i) => i.id === itemId);
       return `${folder.name}/${item.name}`;
     });
@@ -125,17 +127,26 @@ function WorkspaceDirectory({
           <div className="relative w-full h-full bg-zinc-900 rounded-2xl overflow-hidden">
             <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
               <div className="col-span-10 flex items-center gap-x-[4px]">
-                {!hasChanges && files.items.some((folder) => folder.items.length > 0) ? (
+                {!hasChanges &&
+                files.items.some((folder) => folder.items.length > 0) ? (
                   <div
                     className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
                     role="checkbox"
-                    aria-checked={Object.keys(selectedItems).length === files.items.reduce((sum, folder) => sum + folder.items.length, 0)}
+                    aria-checked={
+                      Object.keys(selectedItems).length ===
+                      files.items.reduce(
+                        (sum, folder) => sum + folder.items.length,
+                        0
+                      )
+                    }
                     tabIndex={0}
                     onClick={toggleSelectAll}
                   >
-                    {Object.keys(selectedItems).length === files.items.reduce((sum, folder) => sum + folder.items.length, 0) && (
-                      <div className="w-2 h-2 bg-white rounded-[2px]" />
-                    )}
+                    {Object.keys(selectedItems).length ===
+                      files.items.reduce(
+                        (sum, folder) => sum + folder.items.length,
+                        0
+                      ) && <div className="w-2 h-2 bg-white rounded-[2px]" />}
                   </div>
                 ) : (
                   <div className="shrink-0 w-3 h-3" />
@@ -145,19 +156,27 @@ function WorkspaceDirectory({
               <p className="col-span-2" />
             </div>
             <div className="overflow-y-auto h-[calc(100%-40px)]">
-              {files.items.some((folder) => folder.items.length > 0) || movedItems.length > 0 ? (
+              {files.items.some((folder) => folder.items.length > 0) ||
+              movedItems.length > 0 ? (
                 <>
                   {/* Sort items so that the items being moved are at the top */}
-                  {files.items.flatMap((folder) => folder.items)
+                  {files.items
+                    .flatMap((folder) => folder.items)
                     .sort((a, b) => {
-                      const aIsMovedItem = movedItems.some((movedItem) => movedItem.id === a.id);
-                      const bIsMovedItem = movedItems.some((movedItem) => movedItem.id === b.id);
+                      const aIsMovedItem = movedItems.some(
+                        (movedItem) => movedItem.id === a.id
+                      );
+                      const bIsMovedItem = movedItems.some(
+                        (movedItem) => movedItem.id === b.id
+                      );
                       if (aIsMovedItem && !bIsMovedItem) return -1;
                       if (!aIsMovedItem && bIsMovedItem) return 1;
                       return 0;
                     })
                     .map((item) => {
-                      const folder = files.items.find((f) => f.items.includes(item));
+                      const folder = files.items.find((f) =>
+                        f.items.includes(item)
+                      );
                       return (
                         <WorkspaceFileRow
                           key={item.id}
@@ -192,7 +211,11 @@ function WorkspaceDirectory({
                       onClick={toggleSelectAll}
                       className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
                     >
-                      {Object.keys(selectedItems).length === files.items.reduce((sum, folder) => sum + folder.items.length, 0)
+                      {Object.keys(selectedItems).length ===
+                      files.items.reduce(
+                        (sum, folder) => sum + folder.items.length,
+                        0
+                      )
                         ? "Deselect All"
                         : "Select All"}
                     </button>

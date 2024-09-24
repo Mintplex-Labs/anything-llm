@@ -46,7 +46,7 @@ export default function WorkspaceFileRow({
   return (
     <div
       className={`items-center h-[34px] text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 ${
-        !disableSelection ? 'hover:bg-sky-500/20 cursor-pointer' : ''
+        !disableSelection ? "hover:bg-sky-500/20 cursor-pointer" : ""
       } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${selected ? "selected" : ""}`}
       onClick={(e) => {
         if (!disableSelection) {
