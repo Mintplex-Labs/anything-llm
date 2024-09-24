@@ -1,3 +1,4 @@
+#sudo su 
 <a name="readme-top"></a>
 
 <p align="center">
