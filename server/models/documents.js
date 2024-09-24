@@ -57,21 +57,6 @@ const Document = {
     }
   },
 
-  getOnlyWorkspaceIds: async function (clause = {}) {
-    try {
-      const workspaceIds = await prisma.workspace_documents.findMany({
-        where: clause,
-        select: {
-          workspaceId: true,
-        },
-      });
-      return workspaceIds.map((record) => record.workspaceId) || [];
-    } catch (error) {
-      console.error(error.message);
-      return [];
-    }
-  },
-
   where: async function (
     clause = {},
     limit = null,
