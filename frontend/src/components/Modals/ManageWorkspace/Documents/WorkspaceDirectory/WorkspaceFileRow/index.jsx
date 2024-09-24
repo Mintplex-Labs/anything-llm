@@ -50,23 +50,25 @@ export default function WorkspaceFileRow({
       } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${selected ? "selected" : ""}`}
       onClick={!disableSelection ? toggleSelection : undefined}
     >
-      <div className="col-span-10 w-fit flex gap-x-[4px] items-center relative">
-        {!disableSelection && (
-          <div
-            className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
-            role="checkbox"
-            aria-checked={selected}
-            tabIndex={0}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleSelection();
-            }}
-          >
-            {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
-          </div>
-        )}
+      <div className="col-span-10 w-fit flex gap-x-[2px] items-center relative">
+        <div className="shrink-0 w-3 h-3">
+          {!disableSelection ? (
+            <div
+              className="w-full h-full rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+              role="checkbox"
+              aria-checked={selected}
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSelection();
+              }}
+            >
+              {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+            </div>
+          ) : null}
+        </div>
         <File
-          className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-3"
+          className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-1"
           weight="fill"
         />
         <p className="whitespace-nowrap overflow-hidden text-ellipsis">
