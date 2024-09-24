@@ -48,9 +48,17 @@ export default function WorkspaceFileRow({
       className={`items-center h-[34px] text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 ${
         !disableSelection ? 'hover:bg-sky-500/20 cursor-pointer' : ''
       } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${selected ? "selected" : ""}`}
-      onClick={!disableSelection ? toggleSelection : undefined}
+      onClick={(e) => {
+        if (!disableSelection) {
+          e.stopPropagation();
+          toggleSelection();
+        }
+      }}
     >
-      <div className="col-span-10 w-fit flex gap-x-[2px] items-center relative">
+      <div
+        className="col-span-10 w-fit flex gap-x-[2px] items-center relative"
+        data-tooltip-id={`ws-directory-item-${item.url}`}
+      >
         <div className="shrink-0 w-3 h-3">
           {!disableSelection ? (
             <div
