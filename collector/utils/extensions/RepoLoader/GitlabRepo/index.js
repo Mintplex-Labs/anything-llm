@@ -202,7 +202,7 @@ function issueToMarkdown(issue) {
   }
 
   if (issue.time_stats) {
-    const timeFields = ["human_time_estimate", "human_total_time_spent"];
+    const timeFields = ["time_estimate", "total_time_spent"];
     for (const timeField of timeFields) {
       const fieldName = `human_${timeField}`;
       if (issue?.time_stats[fieldName]) {
