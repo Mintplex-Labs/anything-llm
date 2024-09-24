@@ -5,7 +5,6 @@
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
-  "private": false,
   "engines": {
     "node": ">=18.12.1"
   },
@@ -15,6 +14,8 @@
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./processSingleFile ./processLink ./utils index.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.654.0",
+    "@aws-sdk/client-textract": "^3.654.0",
     "@azure/ai-form-recognizer": "^5.0.0",
     "@googleapis/youtube": "^9.0.0",
     "@xenova/transformers": "^2.11.0",
