@@ -9,6 +9,7 @@ import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
+import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
@@ -31,6 +32,7 @@ import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
+import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
@@ -129,6 +131,14 @@ const LLMS = [
     logo: TogetherAILogo,
     options: (settings) => <TogetherAiOptions settings={settings} />,
     description: "Run open source models from Together AI.",
+  },
+  {
+    name: "Fireworks AI",
+    value: "fireworksai",
+    logo: FireworksAILogo,
+    options: (settings) => <FireworksAiOptions settings={settings} />,
+    description:
+      "The fastest and most efficient inference engine to build production-ready, compound AI systems.",
   },
   {
     name: "Mistral",

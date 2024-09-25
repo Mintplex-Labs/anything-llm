@@ -58,10 +58,7 @@ async function getPageContent(link) {
       launchOptions: {
         headless: "new",
         ignoreHTTPSErrors: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox'
-        ]
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
       },
       gotoOptions: {
         waitUntil: "domcontentloaded",

@@ -120,6 +120,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "togetherai":
       const { TogetherAiLLM } = require("../AiProviders/togetherAi");
       return new TogetherAiLLM(embedder, model);
+    case "fireworksai":
+      const { FireworksAiLLM } = require("../AiProviders/fireworksAi");
+      return new FireworksAiLLM(embedder, model);
     case "perplexity":
       const { PerplexityLLM } = require("../AiProviders/perplexity");
       return new PerplexityLLM(embedder, model);
@@ -240,6 +243,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "togetherai":
       const { TogetherAiLLM } = require("../AiProviders/togetherAi");
       return TogetherAiLLM;
+    case "fireworksai":
+      const { FireworksAiLLM } = require("../AiProviders/fireworksAi");
+      return FireworksAiLLM;
     case "perplexity":
       const { PerplexityLLM } = require("../AiProviders/perplexity");
       return PerplexityLLM;

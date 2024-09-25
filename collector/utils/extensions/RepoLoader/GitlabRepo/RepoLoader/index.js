@@ -44,16 +44,16 @@ class GitLabRepoLoader {
   #validGitlabUrl() {
     const UrlPattern = require("url-pattern");
     const validPatterns = [
-      new UrlPattern("https\\://gitlab.com/(:projectId(*))", {
-        segmentValueCharset: "a-zA-Z0-9-._~%/+",
+      new UrlPattern("https\\://gitlab.com/(:author*)/(:project(*))", {
+        segmentValueCharset: "a-zA-Z0-9-._~%+",
       }),
       // This should even match the regular hosted URL, but we may want to know
       // if this was a hosted GitLab (above) or a self-hosted (below) instance
       // since the API interface could be different.
       new UrlPattern(
-        "(:protocol(http|https))\\://(:hostname*)/(:projectId(*))",
+        "(:protocol(http|https))\\://(:hostname*)/(:author*)/(:project(*))",
         {
-          segmentValueCharset: "a-zA-Z0-9-._~%/+",
+          segmentValueCharset: "a-zA-Z0-9-._~%+",
         }
       ),
     ];
@@ -64,9 +64,9 @@ class GitLabRepoLoader {
       match = pattern.match(this.repo);
     }
     if (!match) return false;
-    const [author, project] = match.projectId.split("/");
+    const { author, project } = match;
 
-    this.projectId = encodeURIComponent(match.projectId);
+    this.projectId = encodeURIComponent(`${author}/${project}`);
     this.apiBase = new URL(this.repo).origin;
     this.author = author;
     this.project = project;
@@ -159,33 +159,54 @@ class GitLabRepoLoader {
   async getRepoBranches() {
     if (!this.#validGitlabUrl() || !this.projectId) return [];
     await this.#validateAccessToken();
+    this.branches = [];
+    let fetching = true;
+    let page = 1;
+    let perPage = 50;
 
-    try {
-      this.branches = await fetch(
-        `${this.apiBase}/api/v4/projects/${this.projectId}/repository/branches`,
-        {
-          method: "GET",
-          headers: {
-            Accepts: "application/json",
-            ...(this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {}),
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((branches) => {
-          return branches.map((b) => b.name);
-        })
-        .catch((e) => {
-          console.error(e);
-          return [];
+    while (fetching) {
+      try {
+        const params = new URLSearchParams({
+          per_page: perPage,
+          page,
         });
+        const response = await fetch(
+          `${this.apiBase}/api/v4/projects/${
+            this.projectId
+          }/repository/branches?${params.toString()}`,
+          {
+            method: "GET",
+            headers: {
+              Accepts: "application/json",
+              ...(this.accessToken
+                ? { "PRIVATE-TOKEN": this.accessToken }
+                : {}),
+            },
+          }
+        )
+          .then((res) => res.json())
+          .then((branches) => {
+            if (!Array.isArray(branches) || branches.length === 0) {
+              fetching = false;
+              return [];
+            }
+            return branches.map((b) => b.name);
+          })
+          .catch((e) => {
+            console.error(e);
+            fetching = false;
+            return [];
+          });
 
-      return this.#branchPrefSort(this.branches);
-    } catch (err) {
-      console.log(`RepoLoader.getRepoBranches`, err);
-      this.branches = [];
-      return [];
+        this.branches.push(...response);
+        page++;
+      } catch (err) {
+        console.log(`RepoLoader.getRepoBranches`, err);
+        fetching = false;
+        return [];
+      }
     }
+    return this.#branchPrefSort(this.branches);
   }
 
   /**

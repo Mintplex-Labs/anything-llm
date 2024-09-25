@@ -33,7 +33,8 @@ export default function AttachmentManager({ attachments }) {
  * @param {{attachment: import("../../DnDWrapper").Attachment}}
  */
 function AttachmentItem({ attachment }) {
-  const { uid, file, status, error, document, type } = attachment;
+  const { uid, file, status, error, document, type, contentString } =
+    attachment;
   const { iconBgColor, Icon } = displayFromFile(file);
 
   function removeFileFromQueue() {
@@ -127,11 +128,18 @@ function AttachmentItem({ attachment }) {
               />
             </button>
           </div>
-          <div
-            className={`${iconBgColor} rounded-lg flex items-center justify-center flex-shrink-0 p-1`}
-          >
-            <Icon size={30} className="text-white" />
-          </div>
+          {contentString ? (
+            <img
+              src={contentString}
+              className={`${iconBgColor} w-[30px] h-[30px] rounded-lg flex items-center justify-center`}
+            />
+          ) : (
+            <div
+              className={`${iconBgColor} rounded-lg flex items-center justify-center flex-shrink-0 p-1`}
+            >
+              <Icon size={30} className="text-white" />
+            </div>
+          )}
           <div className="flex flex-col w-[130px]">
             <p className="text-white text-xs font-medium truncate">
               {file.name}

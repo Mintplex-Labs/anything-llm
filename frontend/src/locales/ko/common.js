@@ -421,6 +421,7 @@ const TRANSLATIONS = {
 
   "embed-chats": {
     title: "임베드 채팅",
+    export: "내보내기",
     description: "게시한 임베드에서의 모든 채팅과 메시지의 기록입니다.",
     table: {
       embed: "임베드",

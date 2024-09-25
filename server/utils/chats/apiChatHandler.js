@@ -29,6 +29,7 @@ const { Telemetry } = require("../../models/telemetry");
  *  user: import("@prisma/client").users|null,
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
+ *  attachments: { name: string; mime: string; contentString: string }[],
  * }} parameters
  * @returns {Promise<ResponseObject>}
  */
@@ -39,6 +40,7 @@ async function chatSync({
   user = null,
   thread = null,
   sessionId = null,
+  attachments = [],
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
@@ -251,6 +253,7 @@ async function chatSync({
       userPrompt: message,
       contextTexts,
       chatHistory,
+      attachments,
     },
     rawHistory
   );
@@ -301,6 +304,7 @@ async function chatSync({
  *  user: import("@prisma/client").users|null,
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
+ *  attachments: { name: string; mime: string; contentString: string }[],
  * }} parameters
  * @returns {Promise<VoidFunction>}
  */
@@ -312,6 +316,7 @@ async function streamChat({
   user = null,
   thread = null,
   sessionId = null,
+  attachments = [],
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
@@ -536,6 +541,7 @@ async function streamChat({
       userPrompt: message,
       contextTexts,
       chatHistory,
+      attachments,
     },
     rawHistory
   );

@@ -421,6 +421,7 @@ const TRANSLATIONS = {
 
   "embed-chats": {
     title: "Eingebettete Chats",
+    export: "Exportieren",
     description:
       "Dies sind alle aufgezeichneten Chats und Nachrichten von jeder Einbettung, die Sie veröffentlicht haben.",
     table: {

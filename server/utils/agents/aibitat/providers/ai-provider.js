@@ -125,6 +125,11 @@ class Provider {
           },
           ...config,
         });
+      case "fireworksai":
+        return new ChatOpenAI({
+          apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
+          ...config,
+        });
 
       // OSS Model Runners
       // case "anythingllm_ollama":
