@@ -121,7 +121,7 @@ export default function PromptInput({
     }
 
     const pasteText = e.clipboardData.getData("text/plain");
-    if (pasteText) setPromptInput(pasteText.trim());
+    if (pasteText) setPromptInput((prev) => prev + pasteText.trim());
     return;
   };
 
