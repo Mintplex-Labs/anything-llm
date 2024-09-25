@@ -16,6 +16,7 @@ class AgentHandler {
     lmstudio: "LMSTUDIO_MODEL_PREF",
     textgenwebui: null, // does not even use `model` in API req
     "generic-openai": "GENERIC_OPEN_AI_MODEL_PREF",
+    bedrock: "AWS_BEDROCK_LLM_MODEL_PREFERENCE",
   };
   invocation = null;
   aibitat = null;
@@ -149,20 +150,16 @@ class AgentHandler {
         if (
           !process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID ||
           !process.env.AWS_BEDROCK_LLM_ACCESS_KEY ||
-          !process.env.AWS_BEDROCK_LLM_REGION ||
-          !process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE
+          !process.env.AWS_BEDROCK_LLM_REGION
         )
           throw new Error(
-            "AWS Bedrock Access Keys, model and region must be provided to use agents."
+            "AWS Bedrock Access Keys and region must be provided to use agents."
           );
         break;
       case "fireworksai":
-        if (
-          !process.env.FIREWORKS_AI_LLM_API_KEY ||
-          !process.env.FIREWORKS_AI_LLM_MODEL_PREF
-        )
+        if (!process.env.FIREWORKS_AI_LLM_API_KEY)
           throw new Error(
-            "FireworksAI API Key & model must be provided to use agents."
+            "FireworksAI API Key must be provided to use agents."
           );
         break;
 
@@ -247,43 +244,43 @@ class AgentHandler {
    * and if that fails - we assume a reasonable base model to exist.
    * @returns {string} the model preference value to use in API calls
    */
-
   #fetchModel() {
+    // Provider was not explicitly set for workspace, so we are going to run our fallback logic
+    // that will set a provider and model for us to use.
     if (!this.provider) {
       const fallback = this.#getFallbackProvider();
-      if (!fallback) {
-        throw new Error("No valid provider found for the agent.");
-      }
-      this.provider = fallback.provider;
-      return fallback.model;
+      if (!fallback) throw new Error("No valid provider found for the agent.");
+      this.provider = fallback.provider; // re-set the provider to the fallback provider so it is not null.
+      return fallback.model; // set its defined model based on fallback logic.
     }
 
+    // The provider was explicitly set, so check if the workspace has an agent model set.
     if (this.invocation.workspace.agentModel) {
       return this.invocation.workspace.agentModel;
     }
 
+    // If the provider we are using is not supported or does not support multi-model loading
+    // then we use the default model for the provider.
     if (!Object.keys(this.noProviderModelDefault).includes(this.provider)) {
       return this.providerDefault();
     }
 
+    // Load the model from the system environment variable for providers with no multi-model loading.
     const sysModelKey = this.noProviderModelDefault[this.provider];
-    if (sysModelKey) {
-      return process.env[sysModelKey] ?? this.providerDefault();
-    }
+    if (sysModelKey) return process.env[sysModelKey] ?? this.providerDefault();
 
+    // Otherwise, we have no model to use - so guess a default model to use.
     return this.providerDefault();
   }
 
   #providerSetupAndCheck() {
-    this.provider = this.invocation.workspace.agentProvider;
+    this.provider = this.invocation.workspace.agentProvider ?? null; // set provider to workspace agent provider if it exists
     this.model = this.#fetchModel();
-    if (!this.provider) {
-      throw new Error("No valid provider found for the agent.");
-    }
 
-    this.log(
-      `Start ${this.#invocationUUID}::${this.provider}:${this.model || "N/A"}`
-    );
+    if (!this.provider)
+      throw new Error("No valid provider found for the agent.");
+
+    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
   }
 
