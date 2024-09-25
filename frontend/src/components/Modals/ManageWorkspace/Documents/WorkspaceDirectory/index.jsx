@@ -173,6 +173,7 @@ function WorkspaceDirectory({
                       selected={selectedItems[item.id]}
                       toggleSelection={() => toggleSelection(item)}
                       disableSelection={hasChanges}
+                      setSelectedItems={setSelectedItems}
                     />
                   )}
                 </RenderFileRows>

@@ -22,6 +22,7 @@ export default function WorkspaceFileRow({
   selected,
   toggleSelection,
   disableSelection,
+  setSelectedItems,
 }) {
   const onRemoveClick = async (e) => {
     e.stopPropagation();
@@ -37,7 +38,7 @@ export default function WorkspaceFileRow({
     } catch (error) {
       console.error("Failed to remove document:", error);
     }
-
+    setSelectedItems({});
     setLoadingMessage("");
     setLoading(false);
   };
