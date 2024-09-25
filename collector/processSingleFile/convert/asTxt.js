@@ -1,11 +1,8 @@
-const { v4 } = require("uuid");
-const fs = require("fs");
 const path = require("path");
 const { tokenizeString } = require("../../utils/tokenizer");
-const { createdDate, trashFile } = require("../../utils/files");
 const { S3Service } = require("../../utils/s3");
 
-async function asTxt({ fullFilePath = "", filename = "" }) {
+async function asTxt({ fullFilePath = "", filename = "", uploadedFile }) {
   const bucketName = process.env.S3_BUCKET_NAME;
   if (!bucketName) {
     return {
@@ -13,44 +10,19 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
       reason: "Missing environment variables for Document Intelligence.",
     };
   }
-  let content = "";
-  try {
-    content = fs.readFileSync(fullFilePath, "utf8");
-  } catch (err) {
-    console.error("Could not read file!", err);
-  }
-
-  if (!content?.length) {
-    console.error(`Resulting text content was empty for ${filename}.`);
-    trashFile(fullFilePath);
-    return {
-      success: false,
-      reason: `No text content found in ${filename}.`,
-      documents: [],
-    };
-  }
-
   console.log(`-- Working ${filename} --`);
-  const uuid = v4();
-  const uniqueFilename = `${uuid}-${filename}`;
+  const parsedUploadFile = JSON.parse(uploadedFile);
 
   const s3Service = new S3Service();
-  //TODO: move s3 upload service to server /api/workspace/:slug/upload
 
-  const fileUploadUrl = await s3Service.uploadFileToS3(
-    fullFilePath,
-    bucketName,
-    uuid
-  );
-  const fileNameWithoutExt = path.parse(filename).name;
+  const fileNameWithoutExt = path.parse(parsedUploadFile.originalname).name;
 
   const pageContentParams = {
     Bucket: bucketName,
-    Key: `pageContents/${uuid}-${fileNameWithoutExt}.txt`,
-    Body: content,
+    Key: `pageContents/${parsedUploadFile.uuid}-${fileNameWithoutExt}.txt`,
+    Body: parsedUploadFile.content,
   };
 
-  //TODO: move s3 upload service to server /api/workspace/:slug/upload
   const pageContentUploadUrl = await s3Service.uploadFileToS3(
     undefined,
     undefined,
@@ -59,23 +31,26 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
   );
 
   const data = {
-    url: fileUploadUrl,
-    storageKey: uuid,
-    title: filename,
+    url: parsedUploadFile.url,
+    storageKey: parsedUploadFile.uuid,
+    title: parsedUploadFile.originalname,
     pageContentUploadUrl: pageContentUploadUrl,
-    fileUploadUrl: fileUploadUrl,
+    fileUploadUrl: parsedUploadFile.url,
     docAuthor: "Unknown",
     description: "Unknown",
     docSource: "a text file uploaded by the user.",
     chunkSource: "",
-    published: createdDate(fullFilePath),
-    wordCount: content.split(" ").length,
-    pageContent: content,
-    token_count_estimate: tokenizeString(content).length,
+    //TODO: write code for this
+    //don't use prisma migrate date code until breaks or about to break
+    // published: createdDate(fullFilePath),
+    wordCount: parsedUploadFile.content.split(" ").length,
+    pageContent: parsedUploadFile.content,
+    token_count_estimate: tokenizeString(parsedUploadFile.content).length,
   };
 
-  trashFile(fullFilePath);
-  console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
+  console.log(
+    `[SUCCESS]: ${parsedUploadFile.originalname} converted & ready for embedding.\n`
+  );
   return { success: true, reason: null, documents: [data] };
 }
 

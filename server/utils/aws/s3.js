@@ -1,13 +1,6 @@
-const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
-
-async function streamToString(stream) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    stream.on("data", (chunk) => chunks.push(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
-  });
-}
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const fs = require("fs");
+const path = require("path");
 
 class S3Service {
   constructor() {
@@ -34,23 +27,35 @@ class S3Service {
     console.log(`\x1b[32m[S3Service]\x1b[0m ${text}`, ...args);
   }
 
+  #createDefaultS3Params(filePath, bucketName, id) {
+    const fileContent = fs.readFileSync(filePath);
+    const fileName = path.basename(filePath);
+    return {
+      Bucket: bucketName,
+      Key: `${id}-${fileName}`,
+      Body: fileContent,
+    };
+  }
+
   #constructFileUrl(bucketName, key) {
     const region = process.env.AWS_REGION;
     return `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
   }
 
-  async getObject(params) {
+  async uploadFileToS3(filePath, bucketName, id, s3Params) {
     try {
-      const command = new GetObjectCommand(params);
-      const response = await this.s3.send(command);
+      const params =
+        s3Params || this.#createDefaultS3Params(filePath, bucketName, id);
 
-      // Convert the stream to a string
-      const bodyContents = await streamToString(response.Body);
+      const command = new PutObjectCommand(params);
+      await this.s3.send(command);
 
-      this.#log(`File downloaded successfully from S3`);
-      return bodyContents;
+      const fileUrl = this.#constructFileUrl(params.Bucket, params.Key);
+      this.#log(`File uploaded successfully to S3: ${fileUrl}`);
+
+      return fileUrl;
     } catch (error) {
-      this.#log("Error downloading file:", error);
+      this.#log("Error uploading file:", error);
       throw error;
     }
   }

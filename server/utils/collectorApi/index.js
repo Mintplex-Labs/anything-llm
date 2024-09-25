@@ -42,11 +42,12 @@ class CollectorApi {
       });
   }
 
-  async processDocument(filename = "") {
-    if (!filename) return false;
+  async processDocument(filename = "", uploadedFile = null) {
+    if (!filename || !uploadedFile) return false;
 
     const data = JSON.stringify({
       filename,
+      uploadedFile,
       options: this.#attachOptions(),
     });
 

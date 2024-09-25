@@ -116,6 +116,7 @@ function workspaceEndpoints(app) {
     async function (request, response) {
       try {
         const Collector = new CollectorApi();
+        const uploadedFile = request.uploadedFile;
         const { originalname } = request.file;
         const processingOnline = await Collector.online();
         if (!processingOnline) {
@@ -129,8 +130,10 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const { success, reason, documents } =
-          await Collector.processDocument(originalname);
+        const { success, reason, documents } = await Collector.processDocument(
+          originalname,
+          uploadedFile
+        );
         if (!success) {
           response.status(500).json({ success: false, error: reason }).end();
           return;
