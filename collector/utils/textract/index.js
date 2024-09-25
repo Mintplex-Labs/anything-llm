@@ -2,7 +2,7 @@ const {
   TextractClient,
   DetectDocumentTextCommand,
   StartDocumentTextDetectionCommand,
-  GetDocumentTextDetectionCommand
+  GetDocumentTextDetectionCommand,
 } = require("@aws-sdk/client-textract");
 const path = require("path");
 
@@ -58,7 +58,7 @@ class TextractService {
       const data = await this.textract.send(command);
 
       const extractedText = data.Blocks.filter(
-        (block) => block.BlockType === "LINE",
+        (block) => block.BlockType === "LINE"
       )
         .map((block) => block.Text)
         .join("\n");
@@ -91,7 +91,7 @@ class TextractService {
       let jobStatus = "IN_PROGRESS";
       let data;
       while (jobStatus === "IN_PROGRESS") {
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise((resolve) => setTimeout(resolve, 5000));
         const getParams = { JobId: jobId };
         const getCommand = new GetDocumentTextDetectionCommand(getParams);
         data = await this.textract.send(getCommand);
@@ -100,7 +100,7 @@ class TextractService {
 
       if (jobStatus === "SUCCEEDED") {
         const extractedText = data.Blocks.filter(
-          (block) => block.BlockType === "LINE",
+          (block) => block.BlockType === "LINE"
         )
           .map((block) => block.Text)
           .join("\n");

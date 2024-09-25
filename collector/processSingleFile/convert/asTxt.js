@@ -1,9 +1,18 @@
+const { v4 } = require("uuid");
 const fs = require("fs");
+const path = require("path");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { createdDate, trashFile } = require("../../utils/files");
 const { S3Service } = require("../../utils/s3");
 
 async function asTxt({ fullFilePath = "", filename = "" }) {
+  const bucketName = process.env.S3_BUCKET_NAME;
+  if (!bucketName) {
+    return {
+      success: false,
+      reason: "Missing environment variables for Document Intelligence.",
+    };
+  }
   let content = "";
   try {
     content = fs.readFileSync(fullFilePath, "utf8");
@@ -22,34 +31,39 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
   }
 
   console.log(`-- Working ${filename} --`);
+  const uuid = v4();
+  const uniqueFilename = `${uuid}-${filename}`;
 
   const s3Service = new S3Service();
   //TODO: move s3 upload service to server /api/workspace/:slug/upload
 
   const fileUploadUrl = await s3Service.uploadFileToS3(
     fullFilePath,
-    "dev1.bucket.ossorioia"
+    bucketName,
+    uuid
   );
+  const fileNameWithoutExt = path.parse(filename).name;
 
-  //TODO: set the fileName ext type to txt because content is of type string
   const pageContentParams = {
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: `pageContents/${filename}`,
-    Body: content, // Assuming this is a string
+    Bucket: bucketName,
+    Key: `pageContents/${uuid}-${fileNameWithoutExt}.txt`,
+    Body: content,
   };
 
   //TODO: move s3 upload service to server /api/workspace/:slug/upload
   const pageContentUploadUrl = await s3Service.uploadFileToS3(
     undefined,
     undefined,
+    undefined,
     pageContentParams
   );
 
   const data = {
-    url: "file://" + fullFilePath,
-    pageContentUploadUrl,
-    fileUploadUrl,
+    url: fileUploadUrl,
+    storageKey: uuid,
     title: filename,
+    pageContentUploadUrl: pageContentUploadUrl,
+    fileUploadUrl: fileUploadUrl,
     docAuthor: "Unknown",
     description: "Unknown",
     docSource: "a text file uploaded by the user.",

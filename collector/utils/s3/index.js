@@ -27,12 +27,12 @@ class S3Service {
     console.log(`\x1b[32m[S3Service]\x1b[0m ${text}`, ...args);
   }
 
-  #createDefaultS3Params(filePath, bucketName) {
+  #createDefaultS3Params(filePath, bucketName, id) {
     const fileContent = fs.readFileSync(filePath);
     const fileName = path.basename(filePath);
     return {
       Bucket: bucketName,
-      Key: `files/${fileName}`,
+      Key: `${id}-${fileName}`,
       Body: fileContent,
     };
   }
@@ -42,10 +42,10 @@ class S3Service {
     return `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
   }
 
-  async uploadFileToS3(filePath, bucketName, s3Params) {
+  async uploadFileToS3(filePath, bucketName, id, s3Params) {
     try {
       const params =
-        s3Params || this.#createDefaultS3Params(filePath, bucketName);
+        s3Params || this.#createDefaultS3Params(filePath, bucketName, id);
 
       const command = new PutObjectCommand(params);
       await this.s3.send(command);
