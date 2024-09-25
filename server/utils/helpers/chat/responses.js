@@ -12,16 +12,17 @@ function clientAbortedHandler(resolve, fullText) {
 function handleDefaultStreamResponseV2(response, stream, responseProps) {
   const { uuid = uuidv4(), sources = [] } = responseProps;
   return new Promise(async (resolve) => {
+    let fullText = "";
+
+    // Establish listener to early-abort a streaming response
+    // in case things go sideways or the user does not like the response.
+    // We preserve the generated text but continue as if chat was completed
+    // to preserve previously generated content.
+    const handleAbort = () => clientAbortedHandler(resolve, fullText);
+    response.on("close", handleAbort);
+
+    // Now handle the chunks from the streamed response and append to fullText.
     try {
-      let fullText = "";
-
-      // Establish listener to early-abort a streaming response
-      // in case things go sideways or the user does not like the response.
-      // We preserve the generated text but continue as if chat was completed
-      // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
-      response.on("close", handleAbort);
-
       for await (const chunk of stream) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
@@ -68,7 +69,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         close: true,
         error: e.message,
       });
-      resolve(""); // Return empty string to indicate an error occurred and to not save the response.
+      resolve(fullText); // Return what we currently have - if anything.
     }
   });
 }
