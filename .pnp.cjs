@@ -27,6 +27,7 @@ const RAW_RUNTIME_STATE =
       [null, {\
         "packageLocation": "./",\
         "packageDependencies": [\
+          ["@prisma/engines", "npm:5.20.0"],\
           ["pg", "virtual:5cea2b3b031ffc1c67129456bbbed33d4c25843383b798a56394b7e9ba12e0a3521a81628680270e5821d4b7534761583e35e1fd6130f62ae578bc8ebb8a88b0#npm:8.13.0"],\
           ["sqlite3", "virtual:5cea2b3b031ffc1c67129456bbbed33d4c25843383b798a56394b7e9ba12e0a3521a81628680270e5821d4b7534761583e35e1fd6130f62ae578bc8ebb8a88b0#npm:5.1.7"]\
         ],\
@@ -115,6 +116,59 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../../../.yarn/berry/cache/@pkgjs-parseargs-npm-0.11.0-cd2a3fe948-10c0.zip/node_modules/@pkgjs/parseargs/",\
         "packageDependencies": [\
           ["@pkgjs/parseargs", "npm:0.11.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@prisma/debug", [\
+      ["npm:5.20.0", {\
+        "packageLocation": "../../../.yarn/berry/cache/@prisma-debug-npm-5.20.0-b7a5b92680-10c0.zip/node_modules/@prisma/debug/",\
+        "packageDependencies": [\
+          ["@prisma/debug", "npm:5.20.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@prisma/engines", [\
+      ["npm:5.20.0", {\
+        "packageLocation": "./.yarn/unplugged/@prisma-engines-npm-5.20.0-8cbda2dd54/node_modules/@prisma/engines/",\
+        "packageDependencies": [\
+          ["@prisma/engines", "npm:5.20.0"],\
+          ["@prisma/debug", "npm:5.20.0"],\
+          ["@prisma/engines-version", "npm:5.20.0-12.06fc58a368dc7be9fbbbe894adf8d445d208c284"],\
+          ["@prisma/fetch-engine", "npm:5.20.0"],\
+          ["@prisma/get-platform", "npm:5.20.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@prisma/engines-version", [\
+      ["npm:5.20.0-12.06fc58a368dc7be9fbbbe894adf8d445d208c284", {\
+        "packageLocation": "../../../.yarn/berry/cache/@prisma-engines-version-npm-5.20.0-12.06fc58a368dc7be9fbbbe894adf8d445d208c284-1130ad5722-10c0.zip/node_modules/@prisma/engines-version/",\
+        "packageDependencies": [\
+          ["@prisma/engines-version", "npm:5.20.0-12.06fc58a368dc7be9fbbbe894adf8d445d208c284"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@prisma/fetch-engine", [\
+      ["npm:5.20.0", {\
+        "packageLocation": "../../../.yarn/berry/cache/@prisma-fetch-engine-npm-5.20.0-65bafc0083-10c0.zip/node_modules/@prisma/fetch-engine/",\
+        "packageDependencies": [\
+          ["@prisma/fetch-engine", "npm:5.20.0"],\
+          ["@prisma/debug", "npm:5.20.0"],\
+          ["@prisma/engines-version", "npm:5.20.0-12.06fc58a368dc7be9fbbbe894adf8d445d208c284"],\
+          ["@prisma/get-platform", "npm:5.20.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@prisma/get-platform", [\
+      ["npm:5.20.0", {\
+        "packageLocation": "../../../.yarn/berry/cache/@prisma-get-platform-npm-5.20.0-157ce8874e-10c0.zip/node_modules/@prisma/get-platform/",\
+        "packageDependencies": [\
+          ["@prisma/get-platform", "npm:5.20.0"],\
+          ["@prisma/debug", "npm:5.20.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -221,6 +275,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./",\
         "packageDependencies": [\
           ["anything-llm", "workspace:."],\
+          ["@prisma/engines", "npm:5.20.0"],\
           ["pg", "virtual:5cea2b3b031ffc1c67129456bbbed33d4c25843383b798a56394b7e9ba12e0a3521a81628680270e5821d4b7534761583e35e1fd6130f62ae578bc8ebb8a88b0#npm:8.13.0"],\
           ["sqlite3", "virtual:5cea2b3b031ffc1c67129456bbbed33d4c25843383b798a56394b7e9ba12e0a3521a81628680270e5821d4b7534761583e35e1fd6130f62ae578bc8ebb8a88b0#npm:5.1.7"]\
         ],\
