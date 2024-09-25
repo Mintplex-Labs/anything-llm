@@ -546,7 +546,14 @@ function apiWorkspaceEndpoints(app) {
            example: {
              message: "What is AnythingLLM?",
              mode: "query | chat",
-             sessionId: "identifier-to-partition-chats-by-external-id"
+             sessionId: "identifier-to-partition-chats-by-external-id",
+             attachments: [
+               {
+                 name: "image.png",
+                 mime: "image/png",
+                 contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+               }
+             ]
            }
          }
        }
@@ -576,7 +583,7 @@ function apiWorkspaceEndpoints(app) {
    */
       try {
         const { slug } = request.params;
-        const { message, mode = "query", sessionId = null } = reqBody(request);
+        const { message, mode = "query", sessionId = null, attachments = [] } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
@@ -612,6 +619,7 @@ function apiWorkspaceEndpoints(app) {
           user: null,
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
+          attachments,
         });
 
         await Telemetry.sendTelemetry("sent_chat", {
@@ -655,7 +663,14 @@ function apiWorkspaceEndpoints(app) {
            example: {
              message: "What is AnythingLLM?",
              mode: "query | chat",
-             sessionId: "identifier-to-partition-chats-by-external-id"
+             sessionId: "identifier-to-partition-chats-by-external-id",
+             attachments: [
+               {
+                 name: "image.png",
+                 mime: "image/png",
+                 contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+               }
+             ]
            }
          }
        }
@@ -706,7 +721,7 @@ function apiWorkspaceEndpoints(app) {
    */
       try {
         const { slug } = request.params;
-        const { message, mode = "query", sessionId = null } = reqBody(request);
+        const { message, mode = "query", sessionId = null, attachments = [] } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
@@ -749,6 +764,7 @@ function apiWorkspaceEndpoints(app) {
           user: null,
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
+          attachments,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection:
