@@ -160,7 +160,7 @@ function workspaceEndpoints(app) {
         // Create file record in the database
         await prisma.file.create({
           data: {
-            id: doc.id,
+            // id: doc.id,
             url: doc.fileUploadUrl,
             pageContentUrl: doc.pageContentUploadUrl,
             title: doc.title,
@@ -172,6 +172,7 @@ function workspaceEndpoints(app) {
             wordCount: doc.wordCount,
             tokenCountEstimate: doc.token_count_estimate,
             folderId: folder.id,
+            storageKey: doc.storageKey,
           },
         });
 

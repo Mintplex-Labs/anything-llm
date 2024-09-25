@@ -61,9 +61,9 @@ async function fileDataFromS3(path) {
       return null;
     }
 
-    // Build the S3 key for the pageContent file
-    // Assuming pageContent is stored under 'pageContents/{file.id}.txt'
-    const pageContentKey = `pageContents/${file.title}`;
+    const fileNameWithoutExt = file.title.slice(0, file.title.lastIndexOf("."));
+
+    const pageContentKey = `pageContents/${file.storageKey}-${fileNameWithoutExt}.txt`;
 
     // Get the pageContent from S3
     const pageContent = await s3Service.getObject({
@@ -76,6 +76,7 @@ async function fileDataFromS3(path) {
       id: file.id,
       url: file.url,
       pageContentUrl: file.pageContentUrl,
+      storageKey: file.storageKey,
       title: file.title,
       docAuthor: file.docAuthor,
       description: file.description,
@@ -205,6 +206,8 @@ async function viewDBFiles() {
         type: "file",
         id: file.id,
         url: file.url,
+        pageContentUrl: file.pageContentUrl,
+        storageKey: file.storageKey,
         title: file.title,
         docAuthor: file.docAuthor,
         description: file.description,
