@@ -2,7 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const UrlPattern = require("url-pattern");
 const { writeToServerDocuments, sanitizeFileName } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const { ConfluencePagesLoader } = require("./ConfluenceLoader");
