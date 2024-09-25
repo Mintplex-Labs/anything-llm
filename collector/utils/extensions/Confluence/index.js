@@ -13,8 +13,11 @@ const { ConfluencePagesLoader } = require("./ConfluenceLoader");
  * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
  * @returns
  */
-async function loadConfluence({ pageUrl, username, accessToken }, response) {
-  if (!pageUrl || !username || !accessToken) {
+async function loadConfluence(
+  { baseUrl = null, spaceKey = null, username = null, accessToken = null },
+  response
+) {
+  if (!baseUrl || !spaceKey || !username || !accessToken) {
     return {
       success: false,
       reason:
@@ -22,19 +25,24 @@ async function loadConfluence({ pageUrl, username, accessToken }, response) {
     };
   }
 
-  const { valid, result } = validSpaceUrl(pageUrl);
-  if (!valid) {
+  if (!validBaseUrl(baseUrl)) {
     return {
       success: false,
-      reason:
-        "Confluence space URL is not in a valid format. Please check your URL and try again.",
+      reason: "Provided base URL is not a valid URL.",
     };
   }
 
-  const { apiBase: baseUrl, spaceKey, subdomain } = result;
-  console.log(`-- Working Confluence ${baseUrl} --`);
+  if (!spaceKey) {
+    return {
+      success: false,
+      reason: "You need to provide a Confluence space key.",
+    };
+  }
+
+  const { origin, hostname } = new URL(baseUrl);
+  console.log(`-- Working Confluence ${origin} --`);
   const loader = new ConfluencePagesLoader({
-    baseUrl,
+    baseUrl: origin, // Use the origin to avoid issues with subdomains, ports, protocols, etc.
     spaceKey,
     username,
     accessToken,
@@ -59,7 +67,7 @@ async function loadConfluence({ pageUrl, username, accessToken }, response) {
     };
   }
   const outFolder = slugify(
-    `${subdomain}-confluence-${v4().slice(0, 4)}`
+    `confluence-${origin}-${v4().slice(0, 4)}`
   ).toLowerCase();
 
   const outFolderPath =
@@ -80,11 +88,11 @@ async function loadConfluence({ pageUrl, username, accessToken }, response) {
       id: v4(),
       url: doc.metadata.url + ".page",
       title: doc.metadata.title || doc.metadata.source,
-      docAuthor: subdomain,
+      docAuthor: origin,
       description: doc.metadata.title,
-      docSource: `${subdomain} Confluence`,
+      docSource: `${origin} Confluence`,
       chunkSource: generateChunkSource(
-        { doc, baseUrl, accessToken, username },
+        { doc, baseUrl: origin, spaceKey, accessToken, username },
         response.locals.encryptionWorker
       ),
       published: new Date().toLocaleString(),
@@ -120,10 +128,11 @@ async function loadConfluence({ pageUrl, username, accessToken }, response) {
 async function fetchConfluencePage({
   pageUrl,
   baseUrl,
+  spaceKey,
   username,
   accessToken,
 }) {
-  if (!pageUrl || !baseUrl || !username || !accessToken) {
+  if (!pageUrl || !baseUrl || !spaceKey || !username || !accessToken) {
     return {
       success: false,
       content: null,
@@ -132,20 +141,25 @@ async function fetchConfluencePage({
     };
   }
 
-  const { valid, result } = validSpaceUrl(pageUrl);
-  if (!valid) {
+  if (!validBaseUrl(baseUrl)) {
     return {
       success: false,
       content: null,
-      reason:
-        "Confluence space URL is not in a valid format. Please check your URL and try again.",
+      reason: "Provided base URL is not a valid URL.",
+    };
+  }
+
+  if (!spaceKey) {
+    return {
+      success: false,
+      content: null,
+      reason: "You need to provide a Confluence space key.",
     };
   }
 
   console.log(`-- Working Confluence Page ${pageUrl} --`);
-  const { spaceKey } = result;
   const loader = new ConfluencePagesLoader({
-    baseUrl,
+    baseUrl, // Should be the origin of the baseUrl
     spaceKey,
     username,
     accessToken,
@@ -190,132 +204,16 @@ async function fetchConfluencePage({
 }
 
 /**
- * A match result for a url-pattern of a Confluence URL
- * @typedef {Object} ConfluenceMatchResult
- * @property {string} subdomain - the subdomain of an organization's Confluence space
- * @property {string} spaceKey - the spaceKey of an organization that determines the documents to collect.
- * @property {string} apiBase - the correct REST API url to use for loader.
+ * Validates if the provided baseUrl is a valid URL at all.
+ * @param {string} baseUrl
+ * @returns {boolean}
  */
-
-/**
- * Generates the correct API base URL for interfacing with the Confluence REST API
- * depending on the URL pattern being used since there are various ways to host/access a
- * Confluence space.
- * @param {Object} params - Parameters for generating the API base URL
- * @param {boolean} isCustomDomain - determines if we need to coerce the subpath of the provided URL
- * @returns {string} - the resulting REST API URL
- */
-function generateAPIBaseUrl(
-  { subdomain, customDomain, contextPath, port, protocol },
-  isCustomDomain = false
-) {
-  let domain = isCustomDomain
-    ? customDomain || subdomain
-    : `${subdomain}.atlassian.net`;
-  let portString = port ? `:${port}` : "";
-  let contextPathString = contextPath ? `/${contextPath}` : "";
-  let wikiPath = isCustomDomain ? "" : "/wiki";
-
-  return `${
-    protocol || "https"
-  }://${domain}${portString}${contextPathString}${wikiPath}`;
-}
-
-/**
- * Validates and parses the correct information from a given Confluence URL
- * @param {string} spaceUrl - The organization's Confluence URL to parse
- * @returns {{
- *  valid: boolean,
- *  result: (ConfluenceMatchResult|null),
- * }}
- */
-function validSpaceUrl(spaceUrl = "") {
-  let matchResult;
-  const patterns = {
-    default: new UrlPattern(
-      "https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)*"
-    ),
-    subdomain: new UrlPattern(
-      "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)*"
-    ),
-    custom: new UrlPattern(
-      "https\\://(:subdomain.):domain.:tld/display/(:spaceKey)*"
-    ),
-  };
-
-  // Try UrlPattern matching first
-  for (const pattern of Object.values(patterns)) {
-    matchResult = pattern.match(spaceUrl);
-    if (matchResult && matchResult.hasOwnProperty("spaceKey")) {
-      const isCustomDomain =
-        !matchResult.subdomain || matchResult.subdomain.includes(".");
-      return {
-        valid: true,
-        result: {
-          ...matchResult,
-          apiBase: generateAPIBaseUrl(matchResult, isCustomDomain),
-        },
-      };
-    }
-  }
-
-  // If UrlPattern matching fails, fall back to manual URL parsing
+function validBaseUrl(baseUrl) {
   try {
-    const urlObj = new URL(spaceUrl);
-    const pathParts = urlObj.pathname.split("/").filter(Boolean);
-
-    let subdomain, spaceKey, contextPath;
-
-    // Handle Atlassian domain
-    if (urlObj.hostname.endsWith("atlassian.net")) {
-      subdomain = urlObj.hostname.split(".")[0];
-      spaceKey =
-        pathParts[pathParts.indexOf("spaces") + 1] ||
-        pathParts[pathParts.length - 1];
-    }
-    // Handle custom domains
-    else {
-      subdomain = urlObj.hostname;
-      if (pathParts.includes("display")) {
-        spaceKey = pathParts[pathParts.indexOf("display") + 1];
-        contextPath = pathParts
-          .slice(0, pathParts.indexOf("display"))
-          .join("/");
-      } else if (pathParts.includes("spaces")) {
-        spaceKey = pathParts[pathParts.indexOf("spaces") + 1];
-        contextPath = pathParts.slice(0, pathParts.indexOf("spaces")).join("/");
-      } else {
-        spaceKey = pathParts[pathParts.length - 1];
-        contextPath = pathParts.slice(0, -1).join("/");
-      }
-    }
-
-    if (!spaceKey) {
-      return { valid: false, result: null };
-    }
-
-    const apiBase = generateAPIBaseUrl(
-      {
-        subdomain,
-        contextPath,
-        port: urlObj.port,
-        protocol: urlObj.protocol.replace(":", ""),
-      },
-      !urlObj.hostname.endsWith("atlassian.net")
-    );
-
-    return {
-      valid: true,
-      result: {
-        subdomain,
-        spaceKey,
-        apiBase,
-        contextPath: contextPath || "",
-      },
-    };
-  } catch (error) {
-    console.error("Error parsing URL:", error);
-    return { valid: false, result: null };
+    new URL(baseUrl);
+    return true;
+  } catch (e) {
+    return false;
   }
 }
 
@@ -328,11 +226,12 @@ function validSpaceUrl(spaceUrl = "") {
  * @returns {string}
  */
 function generateChunkSource(
-  { doc, baseUrl, accessToken, username },
+  { doc, baseUrl, spaceKey, accessToken, username },
   encryptionWorker
 ) {
   const payload = {
     baseUrl,
+    spaceKey,
     token: accessToken,
     username,
   };

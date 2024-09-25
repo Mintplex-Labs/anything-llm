@@ -22,7 +22,8 @@ export default function ConfluenceOptions() {
         }
       );
       const { data, error } = await System.dataConnectors.confluence.collect({
-        pageUrl: form.get("pageUrl"),
+        baseUrl: form.get("baseUrl"),
+        spaceKey: form.get("spaceKey"),
         username: form.get("username"),
         accessToken: form.get("accessToken"),
       });
@@ -56,17 +57,37 @@ export default function ConfluenceOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                    <p className="font-bold text-white">Confluence Page URL</p>
+                    <p className="font-bold text-white">Confluence base URL</p>
                   </label>
                   <p className="text-xs font-normal text-white/50">
-                    URL of a page in the Confluence space.
+                    This is the base URL of your Confluence space.
                   </p>
                 </div>
                 <input
                   type="url"
-                  name="pageUrl"
+                  name="baseUrl"
                   className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder="https://example.atlassian.net/wiki/spaces/~7120208c08555d52224113949698b933a3bb56/pages/851969/Test+anythingLLM+page"
+                  placeholder="eg: https://example.atlassian.net, http://localhost:8211, etc..."
+                  required={true}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="flex flex-col pr-10">
+                <div className="flex flex-col gap-y-1 mb-4">
+                  <label className="text-white text-sm font-bold">
+                    Confluence space key
+                  </label>
+                  <p className="text-xs font-normal text-white/50">
+                    This is the spaces key of your confluence instance that will
+                    be used. Usually begins with ~
+                  </p>
+                </div>
+                <input
+                  type="text"
+                  name="spaceKey"
+                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  placeholder="eg: ~7120208c08555d52224113949698b933a3bb56"
                   required={true}
                   autoComplete="off"
                   spellCheck={false}

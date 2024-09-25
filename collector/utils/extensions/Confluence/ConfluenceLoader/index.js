@@ -72,8 +72,9 @@ class ConfluencePagesLoader {
     }
   }
 
+  // https://developer.atlassian.com/cloud/confluence/rest/v2/intro/#auth
   async fetchAllPagesInSpace(start = 0, limit = this.limit) {
-    const url = `${this.baseUrl}/rest/api/content?spaceKey=${this.spaceKey}&limit=${limit}&start=${start}&expand=${this.expand}`;
+    const url = `${this.baseUrl}/wiki/rest/api/content?spaceKey=${this.spaceKey}&limit=${limit}&start=${start}&expand=${this.expand}`;
     const data = await this.fetchConfluenceData(url);
     if (data.size === 0) {
       return [];
