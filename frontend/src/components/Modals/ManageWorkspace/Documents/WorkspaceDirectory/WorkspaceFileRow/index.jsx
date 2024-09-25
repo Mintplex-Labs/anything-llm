@@ -42,18 +42,24 @@ export default function WorkspaceFileRow({
     setLoading(false);
   };
 
+  function toggleRowSelection(e) {
+    if (disableSelection) return;
+    e.stopPropagation();
+    toggleSelection();
+  }
+
+  function handleRowSelection(e) {
+    e.stopPropagation();
+    toggleSelection();
+  }
+
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
   return (
     <div
       className={`items-center h-[34px] text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 ${
         !disableSelection ? "hover:bg-sky-500/20 cursor-pointer" : ""
       } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${selected ? "selected" : ""}`}
-      onClick={(e) => {
-        if (!disableSelection) {
-          e.stopPropagation();
-          toggleSelection();
-        }
-      }}
+      onClick={toggleRowSelection}
     >
       <div
         className="col-span-10 w-fit flex gap-x-[2px] items-center relative"
@@ -66,10 +72,7 @@ export default function WorkspaceFileRow({
               role="checkbox"
               aria-checked={selected}
               tabIndex={0}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleSelection();
-              }}
+              onClick={handleRowSelection}
             >
               {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
             </div>
@@ -132,8 +135,8 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
   const pinEvent = new CustomEvent("pinned_document");
 
   const updatePinStatus = async (e) => {
-    e.stopPropagation();
     try {
+      e.stopPropagation();
       if (!pinned) window.dispatchEvent(pinEvent);
       const success = await Workspace.setPinForDocument(
         workspace.slug,
