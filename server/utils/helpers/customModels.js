@@ -1,6 +1,7 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
+const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -8,6 +9,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ollama",
   "native-llm",
   "togetherai",
+  "fireworksai",
   "mistral",
   "perplexity",
   "openrouter",
@@ -31,6 +33,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await ollamaAIModels(basePath);
     case "togetherai":
       return await getTogetherAiModels();
+    case "fireworksai":
+      return await getFireworksAiModels(apiKey);
     case "mistral":
       return await getMistralModels(apiKey);
     case "native-llm":
@@ -291,6 +295,21 @@ async function ollamaAIModels(basePath = null) {
 
 async function getTogetherAiModels() {
   const knownModels = togetherAiModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getFireworksAiModels() {
+  const knownModels = fireworksAiModels();
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 

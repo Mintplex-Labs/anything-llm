@@ -16,7 +16,7 @@ async function streamChatWithForEmbed(
   message,
   /** @type {String} */
   sessionId,
-  { promptOverride, modelOverride, temperatureOverride }
+  { promptOverride, modelOverride, temperatureOverride, username }
 ) {
   const chatMode = embed.chat_mode;
   const chatModel = embed.allow_model_override ? modelOverride : null;
@@ -180,8 +180,11 @@ async function streamChatWithForEmbed(
     prompt: message,
     response: { text: completeText, type: chatMode },
     connection_information: response.locals.connection
-      ? { ...response.locals.connection }
-      : {},
+      ? {
+          ...response.locals.connection,
+          username: !!username ? String(username) : null,
+        }
+      : { username: !!username ? String(username) : null },
     sessionId,
   });
   return;

@@ -38,6 +38,7 @@ const TRANSLATIONS = {
     tools: "Ferramentas",
     "experimental-features": "Recursos Experimentais",
     contact: "Contato com Suporte",
+    "browser-extension": "Extensão do navegador",
   },
 
   // Page Definitions
@@ -432,6 +433,7 @@ const TRANSLATIONS = {
 
   "embed-chats": {
     title: "Incorporar Chats",
+    export: "Exportar",
     description:
       "Estes são todos os chats e mensagens registrados de qualquer incorporação que você publicou.",
     table: {

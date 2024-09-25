@@ -12,6 +12,7 @@ import { useModal } from "@/hooks/useModal";
 import NewFolderModal from "./NewFolderModal";
 import debounce from "lodash.debounce";
 import { filterFileSearchResults } from "./utils";
+import ContextMenu from "./ContextMenu";
 
 function Directory({
   files,
@@ -35,6 +36,11 @@ function Directory({
     openModal: openFolderModal,
     closeModal: closeFolderModal,
   } = useModal();
+  const [contextMenu, setContextMenu] = useState({
+    visible: false,
+    x: 0,
+    y: 0,
+  });
 
   useEffect(() => {
     setAmountSelected(Object.keys(selectedItems).length);
@@ -171,8 +177,18 @@ function Directory({
   }, 500);
 
   const filteredFiles = filterFileSearchResults(files, searchTerm);
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    setContextMenu({ visible: true, x: event.clientX, y: event.clientY });
+  };
+
+  const closeContextMenu = () => {
+    setContextMenu({ visible: false, x: 0, y: 0 });
+  };
+
   return (
-    <div className="px-8 pb-8">
+    <div className="px-8 pb-8" onContextMenu={handleContextMenu}>
       <div className="flex flex-col gap-y-6">
         <div className="flex items-center justify-between w-[560px] px-5 relative">
           <h3 className="text-white text-base font-bold">My Documents</h3>
@@ -298,6 +314,13 @@ function Directory({
           />
         </div>
       )}
+      <ContextMenu
+        contextMenu={contextMenu}
+        closeContextMenu={closeContextMenu}
+        files={files}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
+      />
     </div>
   );
 }

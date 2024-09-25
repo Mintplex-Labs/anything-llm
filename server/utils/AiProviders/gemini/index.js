@@ -3,6 +3,7 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const { MODEL_MAP } = require("../modelMap");
 
 class GeminiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -22,6 +23,9 @@ class GeminiLLM {
           "gemini-1.5-pro-latest",
           "gemini-1.5-flash-latest",
           "gemini-1.5-pro-exp-0801",
+          "gemini-1.5-pro-exp-0827",
+          "gemini-1.5-flash-exp-0827",
+          "gemini-1.5-flash-8b-exp-0827",
         ].includes(this.model)
           ? "v1beta"
           : "v1",
@@ -89,21 +93,12 @@ class GeminiLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    return MODEL_MAP.gemini[modelName] ?? 30_720;
+  }
+
   promptWindowLimit() {
-    switch (this.model) {
-      case "gemini-pro":
-        return 30_720;
-      case "gemini-1.0-pro":
-        return 30_720;
-      case "gemini-1.5-flash-latest":
-        return 1_048_576;
-      case "gemini-1.5-pro-latest":
-        return 2_097_152;
-      case "gemini-1.5-pro-exp-0801":
-        return 2_097_152;
-      default:
-        return 30_720; // assume a gemini-pro model
-    }
+    return MODEL_MAP.gemini[this.model] ?? 30_720;
   }
 
   isValidChatCompletionModel(modelName = "") {
@@ -113,6 +108,9 @@ class GeminiLLM {
       "gemini-1.5-pro-latest",
       "gemini-1.5-flash-latest",
       "gemini-1.5-pro-exp-0801",
+      "gemini-1.5-pro-exp-0827",
+      "gemini-1.5-flash-exp-0827",
+      "gemini-1.5-flash-8b-exp-0827",
     ];
     return validModels.includes(modelName);
   }

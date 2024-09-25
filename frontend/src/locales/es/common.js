@@ -37,6 +37,7 @@ const TRANSLATIONS = {
     tools: "Herramientas",
     "experimental-features": "Funciones Experimentales",
     contact: "Contactar Soporte",
+    "browser-extension": "Extensión del navegador",
   },
 
   login: {
@@ -423,6 +424,7 @@ const TRANSLATIONS = {
 
   "embed-chats": {
     title: "Incrustar chats",
+    export: "Exportar",
     description:
       "Estos son todos los chats y mensajes grabados de cualquier incrustación que hayas publicado.",
     table: {

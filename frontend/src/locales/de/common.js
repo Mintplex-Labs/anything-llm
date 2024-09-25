@@ -37,6 +37,7 @@ const TRANSLATIONS = {
     tools: "Werkzeuge",
     "experimental-features": "Experimentelle Funktionen",
     contact: "Support kontaktieren",
+    "browser-extension": "Browser-Erweiterung",
   },
 
   login: {
@@ -420,6 +421,7 @@ const TRANSLATIONS = {
 
   "embed-chats": {
     title: "Eingebettete Chats",
+    export: "Exportieren",
     description:
       "Dies sind alle aufgezeichneten Chats und Nachrichten von jeder Einbettung, die Sie veröffentlicht haben.",
     table: {

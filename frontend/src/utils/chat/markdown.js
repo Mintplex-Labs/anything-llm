@@ -44,7 +44,19 @@ const markdown = markdownIt({
       "</pre></div>"
     );
   },
-}).use(markdownItKatex);
+});
+
+// Custom renderer for responsive images rendered in markdown
+markdown.renderer.rules.image = function (tokens, idx) {
+  const token = tokens[idx];
+  const srcIndex = token.attrIndex("src");
+  const src = token.attrs[srcIndex][1];
+  const alt = token.content || "";
+
+  return `<div class="w-full max-w-[800px]"><img src="${src}" alt="${alt}" class="w-full h-auto" /></div>`;
+};
+
+markdown.use(markdownItKatex);
 
 export default function renderMarkdown(text = "") {
   return markdown.render(text);

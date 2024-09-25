@@ -15,7 +15,7 @@ const EmbedChats = {
           embed_id: Number(embedId),
           response: JSON.stringify(response),
           connection_information: JSON.stringify(connection_information),
-          session_id: sessionId,
+          session_id: String(sessionId),
         },
       });
       return { chat, message: null };
@@ -36,8 +36,8 @@ const EmbedChats = {
     try {
       const chats = await prisma.embed_chats.findMany({
         where: {
-          embed_id: embedId,
-          session_id: sessionId,
+          embed_id: Number(embedId),
+          session_id: String(sessionId),
           include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
@@ -56,8 +56,8 @@ const EmbedChats = {
     try {
       await prisma.embed_chats.updateMany({
         where: {
-          embed_id: embedId,
-          session_id: sessionId,
+          embed_id: Number(embedId),
+          session_id: String(sessionId),
         },
         data: {
           include: false,

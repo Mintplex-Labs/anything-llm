@@ -22,50 +22,79 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
     const handleAbort = () => clientAbortedHandler(resolve, fullText);
     response.on("close", handleAbort);
 
-    for await (const chunk of stream) {
-      const message = chunk?.choices?.[0];
-      const token = message?.delta?.content;
+    // Now handle the chunks from the streamed response and append to fullText.
+    try {
+      for await (const chunk of stream) {
+        const message = chunk?.choices?.[0];
+        const token = message?.delta?.content;
 
-      if (token) {
-        fullText += token;
-        writeResponseChunk(response, {
-          uuid,
-          sources: [],
-          type: "textResponseChunk",
-          textResponse: token,
-          close: false,
-          error: false,
-        });
-      }
+        if (token) {
+          fullText += token;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: token,
+            close: false,
+            error: false,
+          });
+        }
 
-      // LocalAi returns '' and others return null on chunks - the last chunk is not "" or null.
-      // Either way, the key `finish_reason` must be present to determine ending chunk.
-      if (
-        message?.hasOwnProperty("finish_reason") && // Got valid message and it is an object with finish_reason
-        message.finish_reason !== "" &&
-        message.finish_reason !== null
-      ) {
-        writeResponseChunk(response, {
-          uuid,
-          sources,
-          type: "textResponseChunk",
-          textResponse: "",
-          close: true,
-          error: false,
-        });
-        response.removeListener("close", handleAbort);
-        resolve(fullText);
-        break; // Break streaming when a valid finish_reason is first encountered
+        // LocalAi returns '' and others return null on chunks - the last chunk is not "" or null.
+        // Either way, the key `finish_reason` must be present to determine ending chunk.
+        if (
+          message?.hasOwnProperty("finish_reason") && // Got valid message and it is an object with finish_reason
+          message.finish_reason !== "" &&
+          message.finish_reason !== null
+        ) {
+          writeResponseChunk(response, {
+            uuid,
+            sources,
+            type: "textResponseChunk",
+            textResponse: "",
+            close: true,
+            error: false,
+          });
+          response.removeListener("close", handleAbort);
+          resolve(fullText);
+          break; // Break streaming when a valid finish_reason is first encountered
+        }
       }
+    } catch (e) {
+      console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
+      writeResponseChunk(response, {
+        uuid,
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: e.message,
+      });
+      resolve(fullText); // Return what we currently have - if anything.
     }
   });
 }
 
 function convertToChatHistory(history = []) {
   const formattedHistory = [];
-  history.forEach((history) => {
-    const { prompt, response, createdAt, feedbackScore = null, id } = history;
+  for (const record of history) {
+    const { prompt, response, createdAt, feedbackScore = null, id } = record;
     const data = JSON.parse(response);
+
+    // In the event that a bad response was stored - we should skip its entire record
+    // because it was likely an error and cannot be used in chats and will fail to render on UI.
+    if (typeof prompt !== "string") {
+      console.log(
+        `[convertToChatHistory] ChatHistory #${record.id} prompt property is not a string - skipping record.`
+      );
+      continue;
+    } else if (typeof data.text !== "string") {
+      console.log(
+        `[convertToChatHistory] ChatHistory #${record.id} response.text property is not a string - skipping record.`
+      );
+      continue;
+    }
+
     formattedHistory.push([
       {
         role: "user",
@@ -84,21 +113,36 @@ function convertToChatHistory(history = []) {
         feedbackScore,
       },
     ]);
-  });
+  }
 
   return formattedHistory.flat();
 }
 
 function convertToPromptHistory(history = []) {
   const formattedHistory = [];
-  history.forEach((history) => {
-    const { prompt, response } = history;
+  for (const record of history) {
+    const { prompt, response } = record;
     const data = JSON.parse(response);
+
+    // In the event that a bad response was stored - we should skip its entire record
+    // because it was likely an error and cannot be used in chats and will fail to render on UI.
+    if (typeof prompt !== "string") {
+      console.log(
+        `[convertToPromptHistory] ChatHistory #${record.id} prompt property is not a string - skipping record.`
+      );
+      continue;
+    } else if (typeof data.text !== "string") {
+      console.log(
+        `[convertToPromptHistory] ChatHistory #${record.id} response.text property is not a string - skipping record.`
+      );
+      continue;
+    }
+
     formattedHistory.push([
       { role: "user", content: prompt },
       { role: "assistant", content: data.text },
     ]);
-  });
+  }
   return formattedHistory.flat();
 }
 
