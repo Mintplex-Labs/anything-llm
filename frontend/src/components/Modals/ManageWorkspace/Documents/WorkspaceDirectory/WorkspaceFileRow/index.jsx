@@ -46,8 +46,9 @@ export default function WorkspaceFileRow({
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
   return (
     <div
-      className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer ${isMovedItem ? "bg-green-800/40" : "file-row"
-        }`}
+      className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer ${
+        isMovedItem ? "bg-green-800/40" : "file-row"
+      }`}
     >
       <div
         data-tooltip-id={`directory-item-${item.url}`}
@@ -195,9 +196,10 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
       }
 
       showToast(
-        `Document ${!watched
-          ? "will be watched for changes"
-          : "will no longer be watched for changes"
+        `Document ${
+          !watched
+            ? "will be watched for changes"
+            : "will no longer be watched for changes"
         }.`,
         "success",
         { clear: true }
@@ -258,23 +260,21 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
   );
 };
 
-
 export const DownloadFileButton = ({ item }) => {
   const downloadFile = () => {
     try {
-      const encodedTitle = encodeURIComponent(item.title);
-      const fileUrl = `https://s3.us-west-1.amazonaws.com/dev1.bucket.ossorioia/${encodedTitle}`;
+      const fileUrl = item.url;
 
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = fileUrl;
-      link.setAttribute('download', item.title || 'download');
+      link.setAttribute("download", item.title || "download");
       document.body.appendChild(link);
       link.click();
 
       link.remove();
     } catch (error) {
-      console.error('Error downloading file:', error);
-      showToast('Failed to download file', 'error', { clear: true });
+      console.error("Error downloading file:", error);
+      showToast("Failed to download file", "error", { clear: true });
     }
   };
 
