@@ -59,16 +59,16 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         }
       }
     } catch (e) {
-      console.error(e);
+      console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
       writeResponseChunk(response, {
-        id: uuidv4(),
+        uuid,
         type: "abort",
         textResponse: null,
         sources: [],
         close: true,
         error: e.message,
       });
-      response.end();
+      resolve(""); // Return empty string to indicate an error occurred and to not save the response.
     }
   });
 }
