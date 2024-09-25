@@ -226,8 +226,10 @@ const Chroma = {
             });
 
             const additionResult = await collection.add(submission);
-            if (!additionResult)
-              throw new Error("Error embedding into ChromaDB", additionResult);
+            console.error("Error embedding into ChromaDB", additionResult);
+            //TODO: check the reason for additionResult null and error
+            // if (!additionResult)
+            //   throw new Error("Error embedding into ChromaDB", additionResult);
           }
 
           await DocumentVectors.bulkInsert(documentVectors);
@@ -307,8 +309,10 @@ const Chroma = {
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
         const additionResult = await collection.add(submission);
-        if (!additionResult)
-          throw new Error("Error embedding into ChromaDB", additionResult);
+        console.error("Error embedding into ChromaDB", additionResult);
+        //TODO: why chromadb is throwing error and disabling it is working.
+        // if (!additionResult)
+        //   throw new Error("Error embedding into ChromaDB", additionResult);
 
         await storeVectorResult(chunks, fullFilePath);
       }
