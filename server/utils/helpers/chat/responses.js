@@ -11,6 +11,7 @@ function clientAbortedHandler(resolve, fullText) {
 
 function handleDefaultStreamResponseV2(response, stream, responseProps) {
   const { uuid = uuidv4(), sources = [] } = responseProps;
+
   return new Promise(async (resolve) => {
     let fullText = "";
 
