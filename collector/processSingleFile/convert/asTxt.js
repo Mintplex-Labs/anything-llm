@@ -11,16 +11,15 @@ async function asTxt({ fullFilePath = "", filename = "", uploadedFile }) {
     };
   }
   console.log(`-- Working ${filename} --`);
-  const parsedUploadFile = JSON.parse(uploadedFile);
 
   const s3Service = new S3Service();
 
-  const fileNameWithoutExt = path.parse(parsedUploadFile.originalname).name;
+  const fileNameWithoutExt = path.parse(uploadedFile.originalname).name;
 
   const pageContentParams = {
     Bucket: bucketName,
-    Key: `pageContents/${parsedUploadFile.uuid}-${fileNameWithoutExt}.txt`,
-    Body: parsedUploadFile.content,
+    Key: `pageContents/${uploadedFile.uuid}-${fileNameWithoutExt}.txt`,
+    Body: uploadedFile.content,
   };
 
   const pageContentUploadUrl = await s3Service.uploadFileToS3(
@@ -30,26 +29,26 @@ async function asTxt({ fullFilePath = "", filename = "", uploadedFile }) {
     pageContentParams
   );
 
+  const publishedDate = new Date(); // Use the current date and time
+
   const data = {
-    url: parsedUploadFile.url,
-    storageKey: parsedUploadFile.uuid,
-    title: parsedUploadFile.originalname,
+    url: uploadedFile.url,
+    storageKey: uploadedFile.uuid,
+    title: uploadedFile.originalname,
     pageContentUploadUrl: pageContentUploadUrl,
-    fileUploadUrl: parsedUploadFile.url,
+    fileUploadUrl: uploadedFile.url,
     docAuthor: "Unknown",
     description: "Unknown",
     docSource: "a text file uploaded by the user.",
     chunkSource: "",
-    //TODO: write code for this
-    //don't use prisma migrate date code until breaks or about to break
-    // published: createdDate(fullFilePath),
-    wordCount: parsedUploadFile.content.split(" ").length,
-    pageContent: parsedUploadFile.content,
-    token_count_estimate: tokenizeString(parsedUploadFile.content).length,
+    published: publishedDate,
+    wordCount: uploadedFile.content.split(" ").length,
+    pageContent: uploadedFile.content,
+    token_count_estimate: tokenizeString(uploadedFile.content).length,
   };
 
   console.log(
-    `[SUCCESS]: ${parsedUploadFile.originalname} converted & ready for embedding.\n`
+    `[SUCCESS]: ${uploadedFile.originalname} converted & ready for embedding.\n`
   );
   return { success: true, reason: null, documents: [data] };
 }

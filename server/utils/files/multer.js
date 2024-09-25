@@ -46,6 +46,14 @@ function handleFileUpload(request, response, next) {
   const upload = multer({ storage: multer.memoryStorage() }).single("file");
 
   upload(request, response, async function (err) {
+    if (err) {
+      // Handle Multer errors
+      return response.status(500).json({
+        success: false,
+        error: `Invalid file upload. ${err.message}`,
+      });
+    }
+
     if (!request.file) {
       // Handle case where no file was uploaded
       return response.status(400).json({
@@ -54,44 +62,54 @@ function handleFileUpload(request, response, next) {
       });
     }
 
-    const { originalname, buffer } = request.file;
-    console.log(`-- Working ${originalname} --`);
+    try {
+      const { originalname, buffer } = request.file;
+      console.log(`-- Working ${originalname} --`);
 
-    const uuid = v4();
-    const uniqueFilename = `${uuid}-${originalname}`;
+      const uuid = v4();
+      const uniqueFilename = `${uuid}-${originalname}`;
 
-    // Upload the file buffer to S3
-    //TODO: understand/eval it's a good practice to set the content type?
-    //ref: ContentType: request.file.mimetype
-    const fileUploadUrl = await s3Service.uploadFileToS3(
-      undefined,
-      undefined,
-      undefined,
-      { Bucket: bucketName, Body: buffer, Key: uniqueFilename }
-    );
-    //TODO: add condiditon to upload content if file type is text or markdown only else it might break
-    const content = buffer.toString("utf-8");
+      // Upload the file buffer to S3
+      //TODO: set the ContentType to request.file.mimetype
+      const params = {
+        Bucket: bucketName,
+        Key: uniqueFilename,
+        Body: buffer,
+        // ContentType: request.file.mimetype, // Set the ContentType
+      };
 
-    // Attach variables to the request object
-    request.uploadedFile = {
-      url: fileUploadUrl,
-      filename: uniqueFilename,
-      uuid: uuid,
-      originalname: originalname,
-      content,
-    };
+      const fileUploadUrl = await s3Service.uploadFileToS3(
+        undefined,
+        undefined,
+        undefined,
+        params
+      );
 
-    if (err) {
-      response
-        .status(500)
-        .json({
-          success: false,
-          error: `Invalid file upload. ${err.message}`,
-        })
-        .end();
-      return;
+      // Add condition to upload content if file type is text or markdown only
+      const fileExtension = path.extname(originalname).toLowerCase();
+      let content = null;
+
+      if (fileExtension === ".txt" || fileExtension === ".md") {
+        content = buffer.toString("utf-8");
+      }
+
+      // Attach variables to the request object
+      request.uploadedFile = {
+        url: fileUploadUrl,
+        filename: uniqueFilename,
+        uuid: uuid,
+        originalname: originalname,
+        content, // Will be null if not text or markdown
+      };
+
+      next();
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      return response.status(500).json({
+        success: false,
+        error: "Error processing file upload.",
+      });
     }
-    next();
   });
 }
 

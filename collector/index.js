@@ -32,17 +32,14 @@ app.post(
   async function (request, response) {
     const { filename, uploadedFile, options = {} } = reqBody(request);
     try {
-      const targetFilename = path
-        .normalize(filename)
-        .replace(/^(\.\.(\/|\\|$))+/, "");
       const {
         success,
         reason,
         documents = [],
-      } = await processSingleFile(targetFilename, uploadedFile, options);
+      } = await processSingleFile(undefined, uploadedFile, options);
       response
         .status(200)
-        .json({ filename: targetFilename, success, reason, documents });
+        .json({ filename: undefined, success, reason, documents });
     } catch (e) {
       console.error(e);
       response.status(200).json({
