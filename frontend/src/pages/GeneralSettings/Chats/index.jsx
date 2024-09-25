@@ -59,7 +59,7 @@ export default function WorkspaceChats() {
   const { t } = useTranslation();
 
   const handleDumpChats = async (exportType) => {
-    const chats = await System.exportChats(exportType);
+    const chats = await System.exportChats(exportType, "workspace");
     if (!!chats) {
       const { name, mimeType, fileExtension, filenameFunc } =
         exportOptions[exportType];
