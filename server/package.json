@@ -35,6 +35,7 @@
     "@mintplex-labs/bree": "^9.2.5",
     "@pinecone-database/pinecone": "^2.0.1",
     "@prisma/client": "5.3.1",
+    "@prisma/engines": "^5.20.0",
     "@qdrant/js-client-rest": "^1.9.0",
     "@xenova/transformers": "^2.14.0",
     "@zilliz/milvus2-sdk-node": "^2.3.5",

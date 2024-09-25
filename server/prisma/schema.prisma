@@ -324,6 +324,7 @@ model folder {
 
 model file {
   id                 String   @id @default(uuid())
+  storageKey         String @unique
   url                String
   pageContentUrl     String
   title              String

@@ -28,6 +28,7 @@
     "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs"
   },
   "dependencies": {
+    "@prisma/engines": "^5.20.0",
     "pg": "^8.12.0",
     "sqlite3": "^5.1.7"
   }
