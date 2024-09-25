@@ -583,7 +583,12 @@ function apiWorkspaceEndpoints(app) {
    */
       try {
         const { slug } = request.params;
-        const { message, mode = "query", sessionId = null, attachments = [] } = reqBody(request);
+        const {
+          message,
+          mode = "query",
+          sessionId = null,
+          attachments = [],
+        } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
@@ -721,7 +726,12 @@ function apiWorkspaceEndpoints(app) {
    */
       try {
         const { slug } = request.params;
-        const { message, mode = "query", sessionId = null, attachments = [] } = reqBody(request);
+        const {
+          message,
+          mode = "query",
+          sessionId = null,
+          attachments = [],
+        } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
