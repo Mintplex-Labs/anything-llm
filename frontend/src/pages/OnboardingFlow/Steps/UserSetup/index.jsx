@@ -288,6 +288,11 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                   onChange={handleUsernameChange}
                 />
               </div>
+              <p className=" text-white text-opacity-80 text-xs font-base">
+                Username must be at least 6 characters long and only contain
+                lowercase letters, numbers, underscores, and hyphens with no
+                spaces.
+              </p>
               <div className="mt-4">
                 <label
                   htmlFor="name"
@@ -306,9 +311,8 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                   onChange={handlePasswordChange}
                 />
               </div>
-              <p className="w-96 text-white text-opacity-80 text-xs font-base">
-                Username must be at least 6 characters long. Password must be at
-                least 8 characters long.
+              <p className=" text-white text-opacity-80 text-xs font-base">
+                Password must be at least 8 characters long.
               </p>
             </div>
           </div>

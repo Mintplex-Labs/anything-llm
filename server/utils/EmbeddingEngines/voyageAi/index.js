@@ -21,6 +21,9 @@ class VoyageAiEmbedder {
   // https://docs.voyageai.com/docs/embeddings
   #getMaxEmbeddingLength() {
     switch (this.model) {
+      case "voyage-finance-2":
+      case "voyage-multilingual-2":
+        return 32_000;
       case "voyage-large-2-instruct":
       case "voyage-law-2":
       case "voyage-code-2":

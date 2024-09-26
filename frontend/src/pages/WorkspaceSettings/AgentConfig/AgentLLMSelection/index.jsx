@@ -22,6 +22,7 @@ const ENABLED_PROVIDERS = [
   "textgenwebui",
   "generic-openai",
   "bedrock",
+  "fireworksai",
   // TODO: More agent support.
   // "cohere",         // Has tool calling and will need to build explicit support
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.

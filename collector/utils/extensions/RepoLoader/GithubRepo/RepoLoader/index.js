@@ -119,6 +119,7 @@ class GitHubRepoLoader {
       unknown: "warn",
       accessToken: this.accessToken,
       ignorePaths: this.ignorePaths,
+      verbose: true,
     });
 
     const docs = await loader.load();

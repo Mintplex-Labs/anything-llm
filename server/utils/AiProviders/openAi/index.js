@@ -2,6 +2,7 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const { MODEL_MAP } = require("../modelMap");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -38,23 +39,12 @@ class OpenAiLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    return MODEL_MAP.openai[modelName] ?? 4_096;
+  }
+
   promptWindowLimit() {
-    switch (this.model) {
-      case "gpt-3.5-turbo":
-      case "gpt-3.5-turbo-1106":
-        return 16_385;
-      case "gpt-4o":
-      case "gpt-4-turbo":
-      case "gpt-4-1106-preview":
-      case "gpt-4-turbo-preview":
-        return 128_000;
-      case "gpt-4":
-        return 8_192;
-      case "gpt-4-32k":
-        return 32_000;
-      default:
-        return 4_096; // assume a fine-tune 3.5?
-    }
+    return MODEL_MAP.openai[this.model] ?? 4_096;
   }
 
   // Short circuit if name has 'gpt' since we now fetch models from OpenAI API

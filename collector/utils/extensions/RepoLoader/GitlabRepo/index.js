@@ -50,13 +50,12 @@ async function loadGitlabRepo(args, response) {
     fs.mkdirSync(outFolderPath, { recursive: true });
 
   for (const doc of docs) {
-    if (!doc.pageContent) continue;
+    if (!doc.metadata || (!doc.pageContent && !doc.issue)) continue;
+    let pageContent = null;
+
     const data = {
       id: v4(),
       url: "gitlab://" + doc.metadata.source,
-      title: doc.metadata.source,
-      docAuthor: repo.author,
-      description: "No description found.",
       docSource: doc.metadata.source,
       chunkSource: generateChunkSource(
         repo,
@@ -64,13 +63,32 @@ async function loadGitlabRepo(args, response) {
         response.locals.encryptionWorker
       ),
       published: new Date().toLocaleString(),
-      wordCount: doc.pageContent.split(" ").length,
-      pageContent: doc.pageContent,
-      token_count_estimate: tokenizeString(doc.pageContent).length,
     };
+
+    if (doc.pageContent) {
+      pageContent = doc.pageContent;
+
+      data.title = doc.metadata.source;
+      data.docAuthor = repo.author;
+      data.description = "No description found.";
+    } else if (doc.issue) {
+      pageContent = issueToMarkdown(doc.issue);
+
+      data.title = `Issue ${doc.issue.iid}: ${doc.issue.title}`;
+      data.docAuthor = doc.issue.author.username;
+      data.description = doc.issue.description;
+    } else {
+      continue;
+    }
+
+    data.wordCount = pageContent.split(" ").length;
+    data.token_count_estimate = tokenizeString(pageContent).length;
+    data.pageContent = pageContent;
+
     console.log(
       `[GitLab Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
+
     writeToServerDocuments(
       data,
       `${slugify(doc.metadata.source)}-${data.id}`,
@@ -140,6 +158,95 @@ function generateChunkSource(repo, doc, encryptionWorker) {
   return `gitlab://${repo.repo}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)
   )}`;
+}
+
+function issueToMarkdown(issue) {
+  const metadata = {};
+
+  const userFields = ["author", "assignees", "closed_by"];
+  const userToUsername = ({ username }) => username;
+  for (const userField of userFields) {
+    if (issue[userField]) {
+      if (Array.isArray(issue[userField])) {
+        metadata[userField] = issue[userField].map(userToUsername);
+      } else {
+        metadata[userField] = userToUsername(issue[userField]);
+      }
+    }
+  }
+
+  const singleValueFields = [
+    "web_url",
+    "state",
+    "created_at",
+    "updated_at",
+    "closed_at",
+    "due_date",
+    "type",
+    "merge_request_count",
+    "upvotes",
+    "downvotes",
+    "labels",
+    "has_tasks",
+    "task_status",
+    "confidential",
+    "severity",
+  ];
+
+  for (const singleValueField of singleValueFields) {
+    metadata[singleValueField] = issue[singleValueField];
+  }
+
+  if (issue.milestone) {
+    metadata.milestone = `${issue.milestone.title} (${issue.milestone.id})`;
+  }
+
+  if (issue.time_stats) {
+    const timeFields = ["time_estimate", "total_time_spent"];
+    for (const timeField of timeFields) {
+      const fieldName = `human_${timeField}`;
+      if (issue?.time_stats[fieldName]) {
+        metadata[timeField] = issue.time_stats[fieldName];
+      }
+    }
+  }
+
+  const metadataString = Object.entries(metadata)
+    .map(([name, value]) => {
+      if (!value || value?.length < 1) {
+        return null;
+      }
+      let result = `- ${name.replace("_", " ")}:`;
+
+      if (!Array.isArray(value)) {
+        result += ` ${value}`;
+      } else {
+        result += "\n" + value.map((s) => `  - ${s}`).join("\n");
+      }
+
+      return result;
+    })
+    .filter((item) => item != null)
+    .join("\n");
+
+  let markdown = `# ${issue.title} (${issue.iid})
+
+${issue.description}
+
+## Metadata
+
+${metadataString}`;
+
+  if (issue.discussions.length > 0) {
+    markdown += `
+
+## Activity
+
+${issue.discussions.join("\n\n")}
+`;
+  }
+
+  return markdown;
 }
 
 module.exports = { loadGitlabRepo, fetchGitlabFile };

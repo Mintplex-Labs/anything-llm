@@ -55,6 +55,7 @@ function workspaceEndpoints(app) {
             LLMSelection: process.env.LLM_PROVIDER || "openai",
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+            TTSSelection: process.env.TTS_PROVIDER || "native",
           },
           user?.id
         );
@@ -792,6 +793,7 @@ function workspaceEndpoints(app) {
             user_id: user?.id,
             include: true, // only duplicate visible chats
             thread_id: threadId,
+            api_session_id: null, // Do not include API session chats.
             id: { lte: Number(chatId) },
           },
           null,

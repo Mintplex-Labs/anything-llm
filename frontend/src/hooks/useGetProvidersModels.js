@@ -17,6 +17,9 @@ const PROVIDER_DEFAULT_MODELS = {
     "gemini-1.5-pro-latest",
     "gemini-1.5-flash-latest",
     "gemini-1.5-pro-exp-0801",
+    "gemini-1.5-pro-exp-0827",
+    "gemini-1.5-flash-exp-0827",
+    "gemini-1.5-flash-8b-exp-0827",
   ],
   anthropic: [
     "claude-instant-1.2",
@@ -32,6 +35,7 @@ const PROVIDER_DEFAULT_MODELS = {
   localai: [],
   ollama: [],
   togetherai: [],
+  fireworksai: [],
   groq: [],
   native: [],
   cohere: [
@@ -47,7 +51,7 @@ const PROVIDER_DEFAULT_MODELS = {
   bedrock: [],
 };
 
-// For togetherAi, which has a large model list - we subgroup the options
+// For providers with large model lists (e.g. togetherAi) - we subgroup the options
 // by their creator organization (eg: Meta, Mistral, etc)
 // which makes selection easier to read.
 function groupModels(models) {
@@ -58,7 +62,7 @@ function groupModels(models) {
   }, {});
 }
 
-const groupedProviders = ["togetherai", "openai", "openrouter"];
+const groupedProviders = ["togetherai", "fireworksai", "openai", "openrouter"];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);

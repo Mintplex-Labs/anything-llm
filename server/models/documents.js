@@ -57,26 +57,12 @@ const Document = {
     }
   },
 
-  getOnlyWorkspaceIds: async function (clause = {}) {
-    try {
-      const workspaceIds = await prisma.workspace_documents.findMany({
-        where: clause,
-        select: {
-          workspaceId: true,
-        },
-      });
-      return workspaceIds.map((record) => record.workspaceId) || [];
-    } catch (error) {
-      console.error(error.message);
-      return [];
-    }
-  },
-
   where: async function (
     clause = {},
     limit = null,
     orderBy = null,
-    include = null
+    include = null,
+    select = null
   ) {
     try {
       const results = await prisma.workspace_documents.findMany({
@@ -84,6 +70,7 @@ const Document = {
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
         ...(include !== null ? { include } : {}),
+        ...(select !== null ? { select: { ...select } } : {}),
       });
       return results;
     } catch (error) {
@@ -142,6 +129,7 @@ const Document = {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+      TTSSelection: process.env.TTS_PROVIDER || "native",
     });
     await EventLogs.logEvent(
       "workspace_documents_added",
@@ -185,6 +173,7 @@ const Document = {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+      TTSSelection: process.env.TTS_PROVIDER || "native",
     });
     await EventLogs.logEvent(
       "workspace_documents_removed",
