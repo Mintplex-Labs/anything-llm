@@ -26,6 +26,7 @@ export default function ConfluenceOptions() {
         spaceKey: form.get("spaceKey"),
         username: form.get("username"),
         accessToken: form.get("accessToken"),
+        cloud: form.get("isCloud") === "true",
       });
 
       if (!!error) {
@@ -54,6 +55,31 @@ export default function ConfluenceOptions() {
         <form className="w-full" onSubmit={handleSubmit}>
           <div className="w-full flex flex-col py-2">
             <div className="w-full flex flex-col gap-4">
+              <div className="flex flex-col pr-10">
+                <div className="flex flex-col gap-y-1 mb-4">
+                  <label className="text-white text-sm font-bold flex gap-x-2 items-center">
+                    <p className="font-bold text-white">
+                      Confluence deployment type
+                    </p>
+                  </label>
+                  <p className="text-xs font-normal text-white/50">
+                    Determine if your Confluence instance is hosted on Atlassian
+                    cloud or self-hosted.
+                  </p>
+                </div>
+                <select
+                  name="isCloud"
+                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  required={true}
+                  autoComplete="off"
+                  spellCheck={false}
+                  defaultValue="true"
+                >
+                  <option value="true">Atlassian Cloud</option>
+                  <option value="false">Self-hosted</option>
+                </select>
+              </div>
+
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold flex gap-x-2 items-center">

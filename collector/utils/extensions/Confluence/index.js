@@ -13,7 +13,13 @@ const { ConfluencePagesLoader } = require("./ConfluenceLoader");
  * @returns
  */
 async function loadConfluence(
-  { baseUrl = null, spaceKey = null, username = null, accessToken = null },
+  {
+    baseUrl = null,
+    spaceKey = null,
+    username = null,
+    accessToken = null,
+    cloud = true,
+  },
   response
 ) {
   if (!baseUrl || !spaceKey || !username || !accessToken) {
@@ -45,6 +51,7 @@ async function loadConfluence(
     spaceKey,
     username,
     accessToken,
+    cloud,
   });
 
   const { docs, error } = await loader
@@ -66,7 +73,7 @@ async function loadConfluence(
     };
   }
   const outFolder = slugify(
-    `confluence-${origin}-${v4().slice(0, 4)}`
+    `confluence-${hostname}-${v4().slice(0, 4)}`
   ).toLowerCase();
 
   const outFolderPath =
@@ -91,7 +98,7 @@ async function loadConfluence(
       description: doc.metadata.title,
       docSource: `${origin} Confluence`,
       chunkSource: generateChunkSource(
-        { doc, baseUrl: origin, spaceKey, accessToken, username },
+        { doc, baseUrl: origin, spaceKey, accessToken, username, cloud },
         response.locals.encryptionWorker
       ),
       published: new Date().toLocaleString(),
@@ -130,6 +137,7 @@ async function fetchConfluencePage({
   spaceKey,
   username,
   accessToken,
+  cloud = true,
 }) {
   if (!pageUrl || !baseUrl || !spaceKey || !username || !accessToken) {
     return {
@@ -162,6 +170,7 @@ async function fetchConfluencePage({
     spaceKey,
     username,
     accessToken,
+    cloud,
   });
 
   const { docs, error } = await loader
@@ -225,7 +234,7 @@ function validBaseUrl(baseUrl) {
  * @returns {string}
  */
 function generateChunkSource(
-  { doc, baseUrl, spaceKey, accessToken, username },
+  { doc, baseUrl, spaceKey, accessToken, username, cloud },
   encryptionWorker
 ) {
   const payload = {
@@ -233,6 +242,7 @@ function generateChunkSource(
     spaceKey,
     token: accessToken,
     username,
+    cloud,
   };
   return `confluence://${doc.metadata.url}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)
