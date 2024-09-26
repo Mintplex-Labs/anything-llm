@@ -354,7 +354,6 @@ ${body}`
 
       const totalPages = Number(response.headers.get("x-total-pages"));
       const data = await response.json();
-u
       if (!Array.isArray(data)) {
         console.warn(`Unexpected response format for ${endpoint}:`, data);
         return [];
