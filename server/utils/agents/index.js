@@ -162,6 +162,10 @@ class AgentHandler {
             "FireworksAI API Key must be provided to use agents."
           );
         break;
+      case "deepseek":
+        if (!process.env.DEEPSEEK_API_KEY)
+          throw new Error("DeepSeek API Key must be provided to use agents.");
+        break;
 
       default:
         throw new Error(
@@ -206,6 +210,8 @@ class AgentHandler {
         return null;
       case "fireworksai":
         return null;
+      case "deepseek":
+        return "deepseek-chat";
       default:
         return "unknown";
     }

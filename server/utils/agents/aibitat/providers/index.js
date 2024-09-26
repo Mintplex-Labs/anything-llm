@@ -14,6 +14,7 @@ const PerplexityProvider = require("./perplexity.js");
 const TextWebGenUiProvider = require("./textgenwebui.js");
 const AWSBedrockProvider = require("./bedrock.js");
 const FireworksAIProvider = require("./fireworksai.js");
+const DeepSeekProvider = require("./deepseek.js");
 
 module.exports = {
   OpenAIProvider,
@@ -28,6 +29,7 @@ module.exports = {
   OpenRouterProvider,
   MistralProvider,
   GenericOpenAiProvider,
+  DeepSeekProvider,
   PerplexityProvider,
   TextWebGenUiProvider,
   AWSBedrockProvider,
