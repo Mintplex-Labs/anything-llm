@@ -20,6 +20,7 @@ import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
+import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
@@ -195,6 +196,11 @@ export const LLM_SELECTION_PRIVACY = {
       "You model and chat contents are subject to the agreed EULA for AWS and the model provider on aws.amazon.com",
     ],
     logo: AWSBedrockLogo,
+  },
+  deepseek: {
+    name: "DeepSeek",
+    description: ["Your model and chat contents are visible to DeepSeek"],
+    logo: DeepSeekLogo,
   },
 };
 
