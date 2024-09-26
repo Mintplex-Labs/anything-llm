@@ -6,6 +6,7 @@ const minimatch = require("minimatch");
  * @property {string} [branch] - The branch to load from (optional).
  * @property {string} [accessToken] - GitLab access token for authentication (optional).
  * @property {string[]} [ignorePaths] - Array of paths to ignore when loading (optional).
+ * @property {boolean} [fetchIssues] - Should issues be fetched (optional).
  */
 
 /**
@@ -33,6 +34,7 @@ class GitLabRepoLoader {
     this.branch = args?.branch;
     this.accessToken = args?.accessToken || null;
     this.ignorePaths = args?.ignorePaths || [];
+    this.withIssues = args?.fetchIssues || false;
 
     this.projectId = null;
     this.apiBase = "https://gitlab.com";
@@ -123,22 +125,44 @@ class GitLabRepoLoader {
 
     if (this.accessToken)
       console.log(
-        `[Gitlab Loader]: Access token set! Recursive loading enabled!`
+        `[Gitlab Loader]: Access token set! Recursive loading enabled for ${this.repo}!`
       );
 
-    const files = await this.fetchFilesRecursive();
     const docs = [];
+
+    console.log(`[Gitlab Loader]: Fetching files.`);
+
+    const files = await this.fetchFilesRecursive();
+
+    console.log(`[Gitlab Loader]: Fetched ${files.length} files.`);
 
     for (const file of files) {
       if (this.ignorePaths.some((path) => file.path.includes(path))) continue;
 
-      const content = await this.fetchSingleFileContents(file.path);
-      if (content) {
-        docs.push({
-          pageContent: content,
-          metadata: { source: file.path },
-        });
-      }
+      docs.push({
+        pageContent: file.content,
+        metadata: {
+          source: file.path,
+          url: `${this.repo}/-/blob/${this.branch}/${file.path}`,
+        },
+      });
+    }
+
+    if (this.withIssues) {
+      console.log(`[Gitlab Loader]: Fetching issues.`);
+      const issues = await this.fetchIssues();
+      console.log(
+        `[Gitlab Loader]: Fetched ${issues.length} issues with discussions.`
+      );
+      docs.push(
+        ...issues.map((issue) => ({
+          issue,
+          metadata: {
+            source: `issue-${this.repo}-${issue.iid}`,
+            url: issue.web_url,
+          },
+        }))
+      );
     }
 
     return docs;
@@ -160,51 +184,14 @@ class GitLabRepoLoader {
     if (!this.#validGitlabUrl() || !this.projectId) return [];
     await this.#validateAccessToken();
     this.branches = [];
-    let fetching = true;
-    let page = 1;
-    let perPage = 50;
 
-    while (fetching) {
-      try {
-        const params = new URLSearchParams({
-          per_page: perPage,
-          page,
-        });
-        const response = await fetch(
-          `${this.apiBase}/api/v4/projects/${
-            this.projectId
-          }/repository/branches?${params.toString()}`,
-          {
-            method: "GET",
-            headers: {
-              Accepts: "application/json",
-              ...(this.accessToken
-                ? { "PRIVATE-TOKEN": this.accessToken }
-                : {}),
-            },
-          }
-        )
-          .then((res) => res.json())
-          .then((branches) => {
-            if (!Array.isArray(branches) || branches.length === 0) {
-              fetching = false;
-              return [];
-            }
-            return branches.map((b) => b.name);
-          })
-          .catch((e) => {
-            console.error(e);
-            fetching = false;
-            return [];
-          });
+    const branchesRequestData = {
+      endpoint: `/api/v4/projects/${this.projectId}/repository/branches`,
+    };
 
-        this.branches.push(...response);
-        page++;
-      } catch (err) {
-        console.log(`RepoLoader.getRepoBranches`, err);
-        fetching = false;
-        return [];
-      }
+    let branchesPage = [];
+    while ((branchesPage = await this.fetchNextPage(branchesRequestData))) {
+      this.branches.push(...branchesPage.map((branch) => branch.name));
     }
     return this.#branchPrefSort(this.branches);
   }
@@ -215,60 +202,94 @@ class GitLabRepoLoader {
    */
   async fetchFilesRecursive() {
     const files = [];
-    let perPage = 100;
-    let fetching = true;
-    let page = 1;
+    const filesRequestData = {
+      endpoint: `/api/v4/projects/${this.projectId}/repository/tree`,
+      queryParams: {
+        ref: this.branch,
+        recursive: true,
+      },
+    };
 
-    while (fetching) {
-      try {
-        const params = new URLSearchParams({
-          ref: this.branch,
-          recursive: true,
-          per_page: perPage,
-          page,
-        });
-        const queryUrl = `${this.apiBase}/api/v4/projects/${
-          this.projectId
-        }/repository/tree?${params.toString()}`;
-        const response = await fetch(queryUrl, {
-          method: "GET",
-          headers: this.accessToken
-            ? { "PRIVATE-TOKEN": this.accessToken }
-            : {},
-        });
-        const totalPages = Number(response.headers.get("x-total-pages"));
-        const nextPage = Number(response.headers.get("x-next-page"));
-        const data = await response.json();
-
-        /** @type {FileTreeObject[]} */
-        const objects = Array.isArray(data)
-          ? data.filter((item) => item.type === "blob")
-          : []; // only get files, not paths or submodules
-
-        // Apply ignore path rules to found objects. If any rules match it is an invalid file path.
-        console.log(
-          `Found ${objects.length} blobs from repo from pg ${page}/${totalPages}`
-        );
-        for (const file of objects) {
+    let filesPage = null;
+    let pagePromises = [];
+    while ((filesPage = await this.fetchNextPage(filesRequestData))) {
+      // Fetch all the files that are not ignored in parallel.
+      pagePromises = filesPage
+        .filter((file) => {
+          if (file.type !== "blob") {
+            return false;
+          }
           const isIgnored = this.ignorePaths.some((ignorePattern) =>
             minimatch(file.path, ignorePattern, { matchBase: true })
           );
-          if (!isIgnored) files.push(file);
-        }
+          return !isIgnored;
+        })
+        .map(async (file) => {
+          const content = await this.fetchSingleFileContents(file.path);
+          if (!content) return null;
+          return {
+            path: file.path,
+            content,
+          };
+        });
 
-        if (page === totalPages) {
-          fetching = false;
-          break;
-        }
+      const pageFiles = await Promise.all(pagePromises);
 
-        page = Number(nextPage);
-      } catch (e) {
-        console.error(`RepoLoader.getRepositoryTree`, e);
-        fetching = false;
-        break;
-      }
+      files.push(...pageFiles.filter((item) => item !== null));
+      console.log(`Fetched ${files.length} files.`);
     }
+    console.log(`Total files fetched: ${files.length}`);
     return files;
+  }
+
+  /**
+   * Fetches all issues from the repository.
+   * @returns {Promise<Issue[]>} An array of issue objects.
+   */
+  async fetchIssues() {
+    const issues = [];
+    const issuesRequestData = {
+      endpoint: `/api/v4/projects/${this.projectId}/issues`,
+    };
+
+    let issuesPage = null;
+    let pagePromises = [];
+    while ((issuesPage = await this.fetchNextPage(issuesRequestData))) {
+      // Fetch all the issues in parallel.
+      pagePromises = issuesPage.map(async (issue) => {
+        const discussionsRequestData = {
+          endpoint: `/api/v4/projects/${this.projectId}/issues/${issue.iid}/discussions`,
+        };
+        let discussionPage = null;
+        const discussions = [];
+
+        while (
+          (discussionPage = await this.fetchNextPage(discussionsRequestData))
+        ) {
+          discussions.push(
+            ...discussionPage.map(({ notes }) =>
+              notes.map(
+                ({ body, author, created_at }) =>
+                  `${author.username} at ${created_at}:
+${body}`
+              )
+            )
+          );
+        }
+        const result = {
+          ...issue,
+          discussions,
+        };
+        return result;
+      });
+
+      const pageIssues = await Promise.all(pagePromises);
+
+      issues.push(...pageIssues);
+      console.log(`Fetched ${issues.length} issues.`);
+    }
+    console.log(`Total issues fetched: ${issues.length}`);
+    return issues;
   }
 
   /**
@@ -298,6 +319,59 @@ class GitLabRepoLoader {
       return data;
     } catch (e) {
       console.error(`RepoLoader.fetchSingleFileContents`, e);
+      return null;
+    }
+  }
+
+  /**
+   * Fetches the next page of data from the API.
+   * @param {Object} requestData - The request data.
+   * @returns {Promise<Array<Object>|null>} The next page of data, or null if no more pages.
+   */
+  async fetchNextPage(requestData) {
+    try {
+      if (requestData.page === -1) return null;
+      if (!requestData.page) requestData.page = 1;
+
+      const { endpoint, perPage = 100, queryParams = {} } = requestData;
+      const params = new URLSearchParams({
+        ...queryParams,
+        per_page: perPage,
+        page: requestData.page,
+      });
+      const url = `${this.apiBase}${endpoint}?${params.toString()}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
+      });
+
+      // Rate limits get hit very often if no PAT is provided
+      if (response.status === 401) {
+        console.warn(`Rate limit hit for ${endpoint}. Skipping.`);
+        return null;
+      }
+
+      const totalPages = Number(response.headers.get("x-total-pages"));
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        console.warn(`Unexpected response format for ${endpoint}:`, data);
+        return [];
+      }
+
+      console.log(
+        `Gitlab RepoLoader: fetched ${endpoint} page ${requestData.page}/${totalPages} with ${data.length} records.`
+      );
+
+      if (totalPages === requestData.page) {
+        requestData.page = -1;
+      } else {
+        requestData.page = Number(response.headers.get("x-next-page"));
+      }
+
+      return data;
+    } catch (e) {
+      console.error(`RepoLoader.fetchNextPage`, e);
       return null;
     }
   }
