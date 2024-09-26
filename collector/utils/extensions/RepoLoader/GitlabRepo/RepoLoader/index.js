@@ -346,8 +346,19 @@ ${body}`
         headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
       });
 
+      // Rate limits get hit very often if no PAT is provided
+      if (response.status === 401) {
+        console.warn(`Rate limit hit for ${endpoint}. Skipping.`);
+        return null;
+      }
+
       const totalPages = Number(response.headers.get("x-total-pages"));
       const data = await response.json();
+u
+      if (!Array.isArray(data)) {
+        console.warn(`Unexpected response format for ${endpoint}:`, data);
+        return [];
+      }
 
       console.log(
         `Gitlab RepoLoader: fetched ${endpoint} page ${requestData.page}/${totalPages} with ${data.length} records.`
