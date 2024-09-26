@@ -55,7 +55,6 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 
-
 export const AVAILABLE_LLM_PROVIDERS = [
   {
     name: "OpenAI",

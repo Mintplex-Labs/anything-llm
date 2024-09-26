@@ -3,7 +3,9 @@ import System from "@/models/system";
 
 export default function DeepSeekOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.DeepSeekApiKey);
-  const [deepSeekApiKey, setDeepSeekApiKey] = useState(settings?.DeepSeekApiKey);
+  const [deepSeekApiKey, setDeepSeekApiKey] = useState(
+    settings?.DeepSeekApiKey
+  );
 
   return (
     <div className="flex gap-[36px] mt-1.5">

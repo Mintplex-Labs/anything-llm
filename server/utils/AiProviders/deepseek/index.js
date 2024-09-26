@@ -6,14 +6,16 @@ const { MODEL_MAP } = require("../modelMap");
 
 class DeepSeekLLM {
   constructor(embedder = null, modelPreference = null) {
-    if (!process.env.DEEPSEEK_API_KEY) throw new Error("No DeepSeek API key was set.");
+    if (!process.env.DEEPSEEK_API_KEY)
+      throw new Error("No DeepSeek API key was set.");
     const { OpenAI: OpenAIApi } = require("openai");
 
     this.openai = new OpenAIApi({
       apiKey: process.env.DEEPSEEK_API_KEY,
       baseURL: "https://api.deepseek.com/v1",
     });
-    this.model = modelPreference || process.env.DEEPSEEK_MODEL_PREF || "deepseek-chat";
+    this.model =
+      modelPreference || process.env.DEEPSEEK_MODEL_PREF || "deepseek-chat";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -50,7 +52,7 @@ class DeepSeekLLM {
 
   async isValidChatCompletionModel(modelName = "") {
     const models = await this.openai.models.list().catch(() => ({ data: [] }));
-    return models.data.some(model => model.id === modelName);
+    return models.data.some((model) => model.id === modelName);
   }
 
   constructPrompt({
