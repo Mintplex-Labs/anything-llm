@@ -19,6 +19,7 @@ const HistoricalMessage = ({
   role,
   workspace,
   sources = [],
+  attachments = [],
   error = false,
   feedbackScore = null,
   chatId = null,
@@ -75,7 +76,7 @@ const HistoricalMessage = ({
         role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
       }`}
     >
-      <div className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}>
+      <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <div className="flex flex-col items-center">
             <ProfileImage role={role} workspace={workspace} />
@@ -92,16 +93,20 @@ const HistoricalMessage = ({
               role={role}
               chatId={chatId}
               message={message}
+              attachments={attachments}
               adjustTextArea={adjustTextArea}
               saveChanges={saveEditedMessage}
             />
           ) : (
-            <span
-              className={`flex flex-col gap-y-1`}
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(renderMarkdown(message)),
-              }}
-            />
+            <div className="overflow-x-scroll break-words no-scroll">
+              <span
+                className="flex flex-col gap-y-1"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(renderMarkdown(message)),
+                }}
+              />
+              <ChatAttachments attachments={attachments} />
+            </div>
           )}
         </div>
         <div className="flex gap-x-5 ml-14">
@@ -160,3 +165,18 @@ export default memo(
     );
   }
 );
+
+function ChatAttachments({ attachments = [] }) {
+  if (!attachments.length) return null;
+  return (
+    <div className="flex flex-wrap gap-2">
+      {attachments.map((item) => (
+        <img
+          key={item.name}
+          src={item.contentString}
+          className="max-w-[300px] rounded-md"
+        />
+      ))}
+    </div>
+  );
+}

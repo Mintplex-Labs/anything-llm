@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import NativeTTSMessage from "./native";
 import AsyncTTSMessage from "./asyncTts";
+import PiperTTSMessage from "./piperTTS";
 import System from "@/models/system";
 
 export default function TTSMessage({ slug, chatId, message }) {
+  const [settings, setSettings] = useState({});
   const [provider, setProvider] = useState("native");
   const [loading, setLoading] = useState(true);
 
@@ -11,13 +13,26 @@ export default function TTSMessage({ slug, chatId, message }) {
     async function getSettings() {
       const _settings = await System.keys();
       setProvider(_settings?.TextToSpeechProvider ?? "native");
+      setSettings(_settings);
       setLoading(false);
     }
     getSettings();
   }, []);
 
   if (!chatId || loading) return null;
-  if (provider !== "native")
-    return <AsyncTTSMessage slug={slug} chatId={chatId} />;
-  return <NativeTTSMessage message={message} />;
+
+  switch (provider) {
+    case "openai":
+    case "elevenlabs":
+      return <AsyncTTSMessage slug={slug} chatId={chatId} />;
+    case "piper_local":
+      return (
+        <PiperTTSMessage
+          voiceId={settings?.TTSPiperTTSVoiceModel}
+          message={message}
+        />
+      );
+    default:
+      return <NativeTTSMessage message={message} />;
+  }
 }

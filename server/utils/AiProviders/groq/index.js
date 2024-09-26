@@ -2,6 +2,7 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const { MODEL_MAP } = require("../modelMap");
 
 class GroqLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -13,7 +14,7 @@ class GroqLLM {
       apiKey: process.env.GROQ_API_KEY,
     });
     this.model =
-      modelPreference || process.env.GROQ_MODEL_PREF || "llama3-8b-8192";
+      modelPreference || process.env.GROQ_MODEL_PREF || "llama-3.1-8b-instant";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -40,36 +41,16 @@ class GroqLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    return MODEL_MAP.groq[modelName] ?? 8192;
+  }
+
   promptWindowLimit() {
-    switch (this.model) {
-      case "mixtral-8x7b-32768":
-        return 32_768;
-      case "llama3-8b-8192":
-        return 8192;
-      case "llama3-70b-8192":
-        return 8192;
-      case "gemma-7b-it":
-        return 8192;
-      default:
-        return 8192;
-    }
+    return MODEL_MAP.groq[this.model] ?? 8192;
   }
 
   async isValidChatCompletionModel(modelName = "") {
-    const validModels = [
-      "mixtral-8x7b-32768",
-      "llama3-8b-8192",
-      "llama3-70b-8192",
-      "gemma-7b-it",
-    ];
-    const isPreset = validModels.some((model) => modelName === model);
-    if (isPreset) return true;
-
-    const model = await this.openai.models
-      .retrieve(modelName)
-      .then((modelObj) => modelObj)
-      .catch(() => null);
-    return !!model;
+    return !!modelName; // name just needs to exist
   }
 
   constructPrompt({

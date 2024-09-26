@@ -8,6 +8,7 @@ import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
+import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
@@ -18,6 +19,7 @@ import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
+import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
@@ -106,6 +108,14 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: TogetherAILogo,
   },
+  fireworksai: {
+    name: "FireworksAI",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to Fireworks AI",
+    ],
+    logo: FireworksAILogo,
+  },
   mistral: {
     name: "Mistral",
     description: [
@@ -178,6 +188,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on the server running LiteLLM",
     ],
     logo: LiteLLMLogo,
+  },
+  bedrock: {
+    name: "AWS Bedrock",
+    description: [
+      "You model and chat contents are subject to the agreed EULA for AWS and the model provider on aws.amazon.com",
+    ],
+    logo: AWSBedrockLogo,
   },
 };
 

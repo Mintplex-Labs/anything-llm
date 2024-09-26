@@ -15,6 +15,23 @@ function isNullOrNaN(value) {
 
 const SystemSettings = {
   protectedFields: ["multi_user_mode"],
+  publicFields: [
+    "limit_user_messages",
+    "message_limit",
+    "footer_data",
+    "support_email",
+    "text_splitter_chunk_size",
+    "text_splitter_chunk_overlap",
+    "max_embed_chunk_size",
+    "agent_search_provider",
+    "agent_sql_connections",
+    "default_agent_skills",
+    "imported_agent_skills",
+    "custom_app_name",
+    "feature_flags",
+    "meta_page_title",
+    "meta_page_favicon",
+  ],
   supportedFields: [
     "limit_user_messages",
     "message_limit",
@@ -81,6 +98,7 @@ const SystemSettings = {
         if (
           ![
             "google-search-engine",
+            "searchapi",
             "serper-dot-dev",
             "bing-search",
             "serply-engine",
@@ -209,12 +227,17 @@ const SystemSettings = {
       // Eleven Labs TTS
       TTSElevenLabsKey: !!process.env.TTS_ELEVEN_LABS_KEY,
       TTSElevenLabsVoiceModel: process.env.TTS_ELEVEN_LABS_VOICE_MODEL,
+      // Piper TTS
+      TTSPiperTTSVoiceModel:
+        process.env.TTS_PIPER_VOICE_MODEL ?? "en_US-hfc_female-medium",
 
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
       AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
+      AgentSearchApiKey: !!process.env.AGENT_SEARCHAPI_API_KEY || null,
+      AgentSearchApiEngine: process.env.AGENT_SEARCHAPI_ENGINE || "google",
       AgentSerperApiKey: !!process.env.AGENT_SERPER_DEV_KEY || null,
       AgentBingSearchApiKey: !!process.env.AGENT_BING_SEARCH_API_KEY || null,
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
@@ -412,10 +435,15 @@ const SystemSettings = {
       OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
       OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
+      OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
 
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+
+      // Fireworks AI API Keys
+      FireworksAiLLMApiKey: !!process.env.FIREWORKS_AI_LLM_API_KEY,
+      FireworksAiLLMModelPref: process.env.FIREWORKS_AI_LLM_MODEL_PREF,
 
       // Perplexity AI Keys
       PerplexityApiKey: !!process.env.PERPLEXITY_API_KEY,
@@ -424,6 +452,7 @@ const SystemSettings = {
       // OpenRouter Keys
       OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
       OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
+      OpenRouterTimeout: process.env.OPENROUTER_TIMEOUT_MS,
 
       // Mistral AI (API) Keys
       MistralApiKey: !!process.env.MISTRAL_API_KEY,
@@ -464,6 +493,12 @@ const SystemSettings = {
       GenericOpenAiTokenLimit: process.env.GENERIC_OPEN_AI_MODEL_TOKEN_LIMIT,
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
       GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
+
+      AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+      AwsBedrockLLMAccessKey: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+      AwsBedrockLLMRegion: process.env.AWS_BEDROCK_LLM_REGION,
+      AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
+      AwsBedrockLLMTokenLimit: process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT,
 
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,

@@ -13,6 +13,9 @@ import AvailableAgentsButton, {
 import TextSizeButton from "./TextSizeMenu";
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
+import AttachmentManager from "./Attachments";
+import AttachItem from "./AttachItem";
+import { PASTE_ATTACHMENT_EVENT } from "../DnDWrapper";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
@@ -21,6 +24,7 @@ export default function PromptInput({
   inputDisabled,
   buttonDisabled,
   sendCommand,
+  attachments = [],
 }) {
   const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
@@ -88,6 +92,39 @@ export default function PromptInput({
     element.style.height = `${element.scrollHeight}px`;
   };
 
+  const handlePasteEvent = (e) => {
+    e.preventDefault();
+    if (e.clipboardData.items.length === 0) return false;
+
+    // paste any clipboard items that are images.
+    for (const item of e.clipboardData.items) {
+      if (item.type.startsWith("image/")) {
+        const file = item.getAsFile();
+        window.dispatchEvent(
+          new CustomEvent(PASTE_ATTACHMENT_EVENT, {
+            detail: { files: [file] },
+          })
+        );
+        continue;
+      }
+
+      // handle files specifically that are not images as uploads
+      if (item.kind === "file") {
+        const file = item.getAsFile();
+        window.dispatchEvent(
+          new CustomEvent(PASTE_ATTACHMENT_EVENT, {
+            detail: { files: [file] },
+          })
+        );
+        continue;
+      }
+    }
+
+    const pasteText = e.clipboardData.getData("text/plain");
+    if (pasteText) setPromptInput((prev) => prev + pasteText.trim());
+    return;
+  };
+
   const watchForSlash = debounce(checkForSlash, 300);
   const watchForAt = debounce(checkForAt, 300);
 
@@ -106,10 +143,11 @@ export default function PromptInput({
       />
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
+        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
       >
         <div className="flex items-center rounded-lg md:mb-4">
-          <div className="w-[600px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+          <div className="w-[95vw] md:w-[635px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+            <AttachmentManager attachments={attachments} />
             <div className="flex items-center w-full border-b-2 border-gray-500/50">
               <textarea
                 ref={textareaRef}
@@ -121,6 +159,7 @@ export default function PromptInput({
                   setPromptInput(e.target.value);
                 }}
                 onKeyDown={captureEnter}
+                onPaste={handlePasteEvent}
                 required={true}
                 disabled={inputDisabled}
                 onFocus={() => setFocused(true)}
@@ -158,6 +197,7 @@ export default function PromptInput({
             </div>
             <div className="flex justify-between py-3.5">
               <div className="flex gap-x-2">
+                <AttachItem />
                 <SlashCommandsButton
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}

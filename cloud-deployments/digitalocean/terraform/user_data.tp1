@@ -9,10 +9,12 @@ sudo systemctl enable docker
 sudo systemctl start docker  
   
 mkdir -p /home/anythingllm
-touch /home/anythingllm/.env
-  
-sudo docker pull mintplexlabs/anythingllm:master
-sudo docker run -d -p 3001:3001 --cap-add SYS_ADMIN -v /home/anythingllm:/app/server/storage -v /home/anythingllm/.env:/app/server/.env -e STORAGE_DIR="/app/server/storage" mintplexlabs/anythingllm:master
+cat <<EOF >/home/anythingllm/.env
+${env_content}
+EOF
+
+sudo docker pull mintplexlabs/anythingllm
+sudo docker run -d -p 3001:3001 --cap-add SYS_ADMIN -v /home/anythingllm:/app/server/storage -v /home/anythingllm/.env:/app/server/.env -e STORAGE_DIR="/app/server/storage" mintplexlabs/anythingllm
 echo "Container ID: $(sudo docker ps --latest --quiet)"  
   
 export ONLINE=$(curl -Is http://localhost:3001/api/ping | head -n 1|cut -d$' ' -f2)  

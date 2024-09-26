@@ -40,6 +40,7 @@ function workspaceThreadEndpoints(app) {
             LLMSelection: process.env.LLM_PROVIDER || "openai",
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+            TTSSelection: process.env.TTS_PROVIDER || "native",
           },
           user?.id
         );
@@ -137,6 +138,7 @@ function workspaceThreadEndpoints(app) {
             workspaceId: workspace.id,
             user_id: user?.id || null,
             thread_id: thread.id,
+            api_session_id: null, // Do not include API session chats.
             include: true,
           },
           null,

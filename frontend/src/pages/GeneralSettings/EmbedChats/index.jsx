@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
@@ -7,10 +7,86 @@ import useQuery from "@/hooks/useQuery";
 import ChatRow from "./ChatRow";
 import Embed from "@/models/embed";
 import { useTranslation } from "react-i18next";
+import { CaretDown, Download } from "@phosphor-icons/react";
+import showToast from "@/utils/toast";
+import { saveAs } from "file-saver";
+import System from "@/models/system";
+
+const exportOptions = {
+  csv: {
+    name: "CSV",
+    mimeType: "text/csv",
+    fileExtension: "csv",
+    filenameFunc: () => {
+      return `anythingllm-embed-chats-${new Date().toLocaleDateString()}`;
+    },
+  },
+  json: {
+    name: "JSON",
+    mimeType: "application/json",
+    fileExtension: "json",
+    filenameFunc: () => {
+      return `anythingllm-embed-chats-${new Date().toLocaleDateString()}`;
+    },
+  },
+  jsonl: {
+    name: "JSONL",
+    mimeType: "application/jsonl",
+    fileExtension: "jsonl",
+    filenameFunc: () => {
+      return `anythingllm-embed-chats-${new Date().toLocaleDateString()}-lines`;
+    },
+  },
+  jsonAlpaca: {
+    name: "JSON (Alpaca)",
+    mimeType: "application/json",
+    fileExtension: "json",
+    filenameFunc: () => {
+      return `anythingllm-embed-chats-${new Date().toLocaleDateString()}-alpaca`;
+    },
+  },
+};
 
 export default function EmbedChats() {
-  // TODO [FEAT]: Add export of embed chats
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef();
+  const openMenuButton = useRef();
   const { t } = useTranslation();
+
+  const handleDumpChats = async (exportType) => {
+    const chats = await System.exportChats(exportType, "embed");
+    if (!!chats) {
+      const { name, mimeType, fileExtension, filenameFunc } =
+        exportOptions[exportType];
+      const blob = new Blob([chats], { type: mimeType });
+      saveAs(blob, `${filenameFunc()}.${fileExtension}`);
+      showToast(`Embed chats exported successfully as ${name}.`, "success");
+    } else {
+      showToast("Failed to export embed chats.", "error");
+    }
+  };
+
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        !openMenuButton.current.contains(event.target)
+      ) {
+        setShowMenu(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -24,6 +100,38 @@ export default function EmbedChats() {
               <p className="text-lg leading-6 font-bold text-white">
                 {t("embed-chats.title")}
               </p>
+              <div className="relative">
+                <button
+                  ref={openMenuButton}
+                  onClick={toggleMenu}
+                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-white text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                >
+                  <Download size={18} weight="bold" />
+                  {t("embed-chats.export")}
+                  <CaretDown size={18} weight="bold" />
+                </button>
+                <div
+                  ref={menuRef}
+                  className={`${
+                    showMenu ? "slide-down" : "slide-up hidden"
+                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary mt-2 shadow-md`}
+                >
+                  <div className="py-2">
+                    {Object.entries(exportOptions).map(([key, data]) => (
+                      <button
+                        key={key}
+                        onClick={() => {
+                          handleDumpChats(key);
+                          setShowMenu(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147]"
+                      >
+                        {data.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
               {t("embed-chats.description")}

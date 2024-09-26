@@ -82,6 +82,7 @@ AnythingLLMのいくつかのクールな機能
 - [LM Studio (すべてのモデル)](https://lmstudio.ai)
 - [LocalAi (すべてのモデル)](https://localai.io/)
 - [Together AI (チャットモデル)](https://www.together.ai/)
+- [Fireworks AI (チャットモデル)](https://fireworks.ai/)
 - [Perplexity (チャットモデル)](https://www.perplexity.ai/)
 - [OpenRouter (チャットモデル)](https://openrouter.ai/)
 - [Mistral](https://mistral.ai/)

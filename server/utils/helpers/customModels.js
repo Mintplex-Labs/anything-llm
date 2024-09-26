@@ -1,9 +1,7 @@
-const {
-  OpenRouterLLM,
-  fetchOpenRouterModels,
-} = require("../AiProviders/openRouter");
+const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
+const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -11,6 +9,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ollama",
   "native-llm",
   "togetherai",
+  "fireworksai",
   "mistral",
   "perplexity",
   "openrouter",
@@ -18,6 +17,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "koboldcpp",
   "litellm",
   "elevenlabs-tts",
+  "groq",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -33,6 +33,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await ollamaAIModels(basePath);
     case "togetherai":
       return await getTogetherAiModels();
+    case "fireworksai":
+      return await getFireworksAiModels(apiKey);
     case "mistral":
       return await getMistralModels(apiKey);
     case "native-llm":
@@ -49,6 +51,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await liteLLMModels(basePath, apiKey);
     case "elevenlabs-tts":
       return await getElevenLabsModels(apiKey);
+    case "groq":
+      return await getGroqAiModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -167,6 +171,33 @@ async function localAIModels(basePath = null, apiKey = null) {
   return { models, error: null };
 }
 
+async function getGroqAiModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.GROQ_API_KEY
+      : _apiKey || process.env.GROQ_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://api.groq.com/openai/v1",
+    apiKey,
+  });
+  const models = (
+    await openai.models
+      .list()
+      .then((results) => results.data)
+      .catch((e) => {
+        console.error(`GroqAi:listModels`, e.message);
+        return [];
+      })
+  ).filter(
+    (model) => !model.id.includes("whisper") && !model.id.includes("tool-use")
+  );
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.GROQ_API_KEY = apiKey;
+  return { models, error: null };
+}
+
 async function liteLLMModels(basePath = null, apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
@@ -264,6 +295,21 @@ async function ollamaAIModels(basePath = null) {
 
 async function getTogetherAiModels() {
   const knownModels = togetherAiModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getFireworksAiModels() {
+  const knownModels = fireworksAiModels();
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 

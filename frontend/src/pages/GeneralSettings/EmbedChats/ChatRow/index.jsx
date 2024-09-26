@@ -16,6 +16,11 @@ export default function ChatRow({ chat, onDelete }) {
     openModal: openResponseModal,
     closeModal: closeResponseModal,
   } = useModal();
+  const {
+    isOpen: isConnectionDetailsModalOpen,
+    openModal: openConnectionDetailsModal,
+    closeModal: closeConnectionDetailsModal,
+  } = useModal();
 
   const handleDelete = async () => {
     if (
@@ -42,7 +47,10 @@ export default function ChatRow({ chat, onDelete }) {
             {chat.embed_config.workspace.name}
           </a>
         </td>
-        <td className="px-6 py-4 font-medium whitespace-nowrap text-white">
+        <td
+          onClick={openConnectionDetailsModal}
+          className="px-6 py-4 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+        >
           <div className="flex flex-col">
             <p>{truncate(chat.session_id, 20)}</p>
             <ConnectionDetails
@@ -81,6 +89,18 @@ export default function ChatRow({ chat, onDelete }) {
           closeModal={closeResponseModal}
         />
       </ModalWrapper>
+      <ModalWrapper isOpen={isConnectionDetailsModalOpen}>
+        <TextPreview
+          text={
+            <ConnectionDetails
+              sessionId={chat.session_id}
+              verbose={true}
+              connection_information={chat.connection_information}
+            />
+          }
+          closeModal={closeConnectionDetailsModal}
+        />
+      </ModalWrapper>
     </>
   );
 }
@@ -109,15 +129,44 @@ const TextPreview = ({ text, closeModal }) => {
   );
 };
 
-const ConnectionDetails = ({ connection_information }) => {
+const ConnectionDetails = ({
+  sessionId,
+  verbose = false,
+  connection_information,
+}) => {
   let details = {};
   try {
     details = JSON.parse(connection_information);
   } catch {}
 
   if (Object.keys(details).length === 0) return null;
+
+  if (verbose) {
+    return (
+      <>
+        <p className="text-xs text-slate-400">sessionID: {sessionId}</p>
+        {details.username && (
+          <p className="text-xs text-slate-400">username: {details.username}</p>
+        )}
+        {details.ip && (
+          <p className="text-xs text-slate-400">
+            client ip address: {details.ip}
+          </p>
+        )}
+        {details.host && (
+          <p className="text-xs text-slate-400">
+            client host URL: {details.host}
+          </p>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
+      {details.username && (
+        <p className="text-xs text-slate-400">{details.username}</p>
+      )}
       {details.ip && <p className="text-xs text-slate-400">{details.ip}</p>}
       {details.host && <p className="text-xs text-slate-400">{details.host}</p>}
     </>

@@ -2,6 +2,7 @@ import { API_BASE, AUTH_TIMESTAMP, fullApiUrl } from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import LiveDocumentSync from "./experimental/liveSync";
+import AgentPlugins from "./experimental/agentPlugins";
 
 const System = {
   cacheKeys: {
@@ -576,9 +577,10 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  exportChats: async (type = "csv") => {
+  exportChats: async (type = "csv", chatType = "workspace") => {
     const url = new URL(`${fullApiUrl()}/system/export-chats`);
     url.searchParams.append("type", encodeURIComponent(type));
+    url.searchParams.append("chatType", encodeURIComponent(chatType));
     return await fetch(url, {
       method: "GET",
       headers: baseHeaders(),
@@ -675,6 +677,7 @@ const System = {
   },
   experimentalFeatures: {
     liveSync: LiveDocumentSync,
+    agentPlugins: AgentPlugins,
   },
 };
 

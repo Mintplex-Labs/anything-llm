@@ -37,6 +37,7 @@ const TRANSLATIONS = {
     tools: "Инструменты",
     "experimental-features": "Экспериментальные функции",
     contact: "联系支持Связаться с Поддержкой",
+    "browser-extension": "Расширение браузера",
   },
 
   login: {
@@ -404,6 +405,7 @@ const TRANSLATIONS = {
   },
   "embed-chats": {
     title: "Встраивание чатов",
+    export: "Экспорт",
     description:
       "Это все записанные чаты и сообщения от любого встраивания, которое вы опубликовали.",
     table: {

@@ -156,30 +156,38 @@ const Milvus = {
           vectorDimension = chunks[0][0].values.length || null;
 
           await this.getOrCreateCollection(client, namespace, vectorDimension);
-          for (const chunk of chunks) {
-            // Before sending to Pinecone and saving the records to our db
-            // we need to assign the id of each chunk that is stored in the cached file.
-            const newChunks = chunk.map((chunk) => {
-              const id = uuidv4();
-              documentVectors.push({ docId, vectorId: id });
-              return { id, vector: chunk.values, metadata: chunk.metadata };
-            });
-            const insertResult = await client.insert({
-              collection_name: this.normalize(namespace),
-              data: newChunks,
-            });
+          try {
+            for (const chunk of chunks) {
+              // Before sending to Milvus and saving the records to our db
+              // we need to assign the id of each chunk that is stored in the cached file.
+              const newChunks = chunk.map((chunk) => {
+                const id = uuidv4();
+                documentVectors.push({ docId, vectorId: id });
+                return { id, vector: chunk.values, metadata: chunk.metadata };
+              });
+              const insertResult = await client.insert({
+                collection_name: this.normalize(namespace),
+                data: newChunks,
+              });
 
-            if (insertResult?.status.error_code !== "Success") {
-              throw new Error(
-                `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
-              );
+              if (insertResult?.status.error_code !== "Success") {
+                throw new Error(
+                  `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
+                );
+              }
             }
+            await DocumentVectors.bulkInsert(documentVectors);
+            await client.flushSync({
+              collection_names: [this.normalize(namespace)],
+            });
+            return { vectorized: true, error: null };
+          } catch (insertError) {
+            console.error(
+              "Error inserting cached chunks:",
+              insertError.message
+            );
+            return { vectorized: false, error: insertError.message };
           }
-          await DocumentVectors.bulkInsert(documentVectors);
-          await client.flushSync({
-            collection_names: [this.normalize(namespace)],
-          });
-          return { vectorized: true, error: null };
         }
       }
 

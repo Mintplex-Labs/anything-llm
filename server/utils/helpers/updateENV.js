@@ -101,6 +101,10 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  OllamaLLMPerformanceMode: {
+    envKey: "OLLAMA_PERFORMANCE_MODE",
+    checks: [],
+  },
   OllamaLLMKeepAliveSeconds: {
     envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
     checks: [isInteger],
@@ -205,6 +209,28 @@ const KEY_MAPPING = {
   },
   GenericOpenAiMaxTokens: {
     envKey: "GENERIC_OPEN_AI_MAX_TOKENS",
+    checks: [nonZero],
+  },
+
+  // AWS Bedrock LLM InferenceSettings
+  AwsBedrockLLMAccessKeyId: {
+    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMAccessKey: {
+    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMRegion: {
+    envKey: "AWS_BEDROCK_LLM_REGION",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMModel: {
+    envKey: "AWS_BEDROCK_LLM_MODEL_PREFERENCE",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMTokenLimit: {
+    envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
 
@@ -324,6 +350,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Fireworks AI Options
+  FireworksAiLLMApiKey: {
+    envKey: "FIREWORKS_AI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  FireworksAiLLMModelPref: {
+    envKey: "FIREWORKS_AI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Perplexity Options
   PerplexityApiKey: {
     envKey: "PERPLEXITY_API_KEY",
@@ -342,6 +378,10 @@ const KEY_MAPPING = {
   OpenRouterModelPref: {
     envKey: "OPENROUTER_MODEL_PREF",
     checks: [isNotEmpty],
+  },
+  OpenRouterTimeout: {
+    envKey: "OPENROUTER_TIMEOUT_MS",
+    checks: [],
   },
 
   // Groq Options
@@ -405,6 +445,14 @@ const KEY_MAPPING = {
     envKey: "AGENT_GSE_KEY",
     checks: [],
   },
+  AgentSearchApiKey: {
+    envKey: "AGENT_SEARCHAPI_API_KEY",
+    checks: [],
+  },
+  AgentSearchApiEngine: {
+    envKey: "AGENT_SEARCHAPI_ENGINE",
+    checks: [],
+  },
   AgentSerperApiKey: {
     envKey: "AGENT_SERPER_DEV_KEY",
     checks: [],
@@ -445,6 +493,12 @@ const KEY_MAPPING = {
   },
   TTSElevenLabsVoiceModel: {
     envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
+    checks: [],
+  },
+
+  // PiperTTS Local
+  TTSPiperTTSVoiceModel: {
+    envKey: "TTS_PIPER_VOICE_MODEL",
     checks: [],
   },
 };
@@ -506,7 +560,12 @@ function validOllamaLLMBasePath(input = "") {
 }
 
 function supportedTTSProvider(input = "") {
-  const validSelection = ["native", "openai", "elevenlabs"].includes(input);
+  const validSelection = [
+    "native",
+    "openai",
+    "elevenlabs",
+    "piper_local",
+  ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
 
@@ -531,6 +590,7 @@ function supportedLLM(input = "") {
     "ollama",
     "native",
     "togetherai",
+    "fireworksai",
     "mistral",
     "huggingface",
     "perplexity",
@@ -541,6 +601,7 @@ function supportedLLM(input = "") {
     "cohere",
     "litellm",
     "generic-openai",
+    "bedrock",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -558,6 +619,10 @@ function validGeminiModel(input = "") {
     "gemini-1.0-pro",
     "gemini-1.5-pro-latest",
     "gemini-1.5-flash-latest",
+    "gemini-1.5-pro-exp-0801",
+    "gemini-1.5-pro-exp-0827",
+    "gemini-1.5-flash-exp-0827",
+    "gemini-1.5-flash-8b-exp-0827",
   ];
   return validModels.includes(input)
     ? null

@@ -90,7 +90,6 @@ function apiOpenAICompatibleEndpoints(app) {
       #swagger.requestBody = {
           description: 'Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.',
           required: true,
-          type: 'object',
           content: {
             "application/json": {
               example: {
@@ -154,6 +153,7 @@ function apiOpenAICompatibleEndpoints(app) {
               workspace.chatProvider ?? process.env.LLM_PROVIDER ?? "openai",
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+            TTSSelection: process.env.TTS_PROVIDER || "native",
           });
           await EventLogs.logEvent("api_sent_chat", {
             workspaceName: workspace?.name,
@@ -180,6 +180,7 @@ function apiOpenAICompatibleEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          TTSSelection: process.env.TTS_PROVIDER || "native",
         });
         await EventLogs.logEvent("api_sent_chat", {
           workspaceName: workspace?.name,
@@ -203,7 +204,6 @@ function apiOpenAICompatibleEndpoints(app) {
       #swagger.requestBody = {
           description: 'The input string(s) to be embedded. If the text is too long for the embedder model context, it will fail to embed. The vector and associated chunk metadata will be returned in the array order provided',
           required: true,
-          type: 'object',
           content: {
             "application/json": {
               example: {

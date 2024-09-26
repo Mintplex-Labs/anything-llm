@@ -38,7 +38,6 @@ function extensions(app) {
           reqBody(request),
           response,
         );
-        console.log({ success, reason, data })
         response.status(200).json({
           success,
           reason,
