@@ -501,6 +501,16 @@ const KEY_MAPPING = {
     envKey: "TTS_PIPER_VOICE_MODEL",
     checks: [],
   },
+
+  // DeepSeek Options
+  DeepSeekApiKey: {
+    envKey: "DEEPSEEK_API_KEY",
+    checks: [isNotEmpty],
+  },
+  DeepSeekModelPref: {
+    envKey: "DEEPSEEK_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -602,6 +612,7 @@ function supportedLLM(input = "") {
     "litellm",
     "generic-openai",
     "bedrock",
+    "deepseek",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

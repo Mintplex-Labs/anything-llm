@@ -53,6 +53,10 @@ const MODEL_MAP = {
     "gpt-4": 8_192,
     "gpt-4-32k": 32_000,
   },
+  deepseek: {
+    "deepseek-chat": 128_000,
+    "deepseek-coder": 128_000,
+  },
 };
 
 module.exports = { MODEL_MAP };

@@ -159,6 +159,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "bedrock":
       const { AWSBedrockLLM } = require("../AiProviders/bedrock");
       return new AWSBedrockLLM(embedder, model);
+    case "deepseek":
+      const { DeepSeekLLM } = require("../AiProviders/deepseek");
+      return new DeepSeekLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
