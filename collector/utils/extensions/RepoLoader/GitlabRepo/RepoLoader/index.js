@@ -1,4 +1,4 @@
-const minimatch = require("minimatch");
+const ignore = require("ignore");
 
 /**
  * @typedef {Object} RepoLoaderArgs
@@ -34,6 +34,7 @@ class GitLabRepoLoader {
     this.branch = args?.branch;
     this.accessToken = args?.accessToken || null;
     this.ignorePaths = args?.ignorePaths || [];
+    this.ignoreFilter = ignore().add(this.ignorePaths);
     this.withIssues = args?.fetchIssues || false;
 
     this.projectId = null;
@@ -137,7 +138,7 @@ class GitLabRepoLoader {
     console.log(`[Gitlab Loader]: Fetched ${files.length} files.`);
 
     for (const file of files) {
-      if (this.ignorePaths.some((path) => file.path.includes(path))) continue;
+      if (this.ignoreFilter.ignores(file.path)) continue;
 
       docs.push({
         pageContent: file.content,
@@ -216,13 +217,8 @@ class GitLabRepoLoader {
       // Fetch all the files that are not ignored in parallel.
       pagePromises = filesPage
         .filter((file) => {
-          if (file.type !== "blob") {
-            return false;
-          }
-          const isIgnored = this.ignorePaths.some((ignorePattern) =>
-            minimatch(file.path, ignorePattern, { matchBase: true })
-          );
-          return !isIgnored;
+          if (file.type !== "blob") return false;
+          return !this.ignoreFilter.ignores(file.path);
         })
         .map(async (file) => {
           const content = await this.fetchSingleFileContents(file.path);
