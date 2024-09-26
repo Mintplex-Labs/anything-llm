@@ -31,7 +31,6 @@
     "mammoth": "^1.6.0",
     "mbox-parser": "^1.0.1",
     "mime": "^3.0.0",
-    "minimatch": "5.1.0",
     "moment": "^2.29.4",
     "node-html-parser": "^6.1.13",
     "officeparser": "^4.0.5",
