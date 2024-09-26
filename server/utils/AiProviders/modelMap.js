@@ -54,8 +54,8 @@ const MODEL_MAP = {
     "gpt-4-32k": 32_000,
   },
   deepseek: {
-    "deepseek-chat": 8_192,
-    "deepseek-coder": 8_192,
+    "deepseek-chat": 128_000,
+    "deepseek-coder": 128_000,
   },
 };
 
