@@ -129,7 +129,7 @@ export default function ConfluenceOptions() {
                   </p>
                 </div>
                 <input
-                  type="email"
+                  type="text"
                   name="username"
                   className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="jdoe@example.com"
