@@ -174,6 +174,14 @@ class Provider {
           apiKey: process.env.TEXT_GEN_WEB_UI_API_KEY ?? "not-used",
           ...config,
         });
+      case "deepseek":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.deepseek.com/v1",
+          },
+          apiKey: process.env.DEEPSEEK_API_KEY ?? null,
+          ...config,
+        });
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
     }

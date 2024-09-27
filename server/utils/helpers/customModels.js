@@ -18,6 +18,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "litellm",
   "elevenlabs-tts",
   "groq",
+  "deepseek",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -53,6 +54,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getElevenLabsModels(apiKey);
     case "groq":
       return await getGroqAiModels(apiKey);
+    case "deepseek":
+      return await getDeepSeekModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -416,6 +419,31 @@ async function getElevenLabsModels(apiKey = null) {
   }
 
   if (models.length > 0 && !!apiKey) process.env.TTS_ELEVEN_LABS_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getDeepSeekModels(apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com/v1",
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by,
+      }))
+    )
+    .catch((e) => {
+      console.error(`DeepSeek:listModels`, e.message);
+      return [];
+    });
+
+  if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
   return { models, error: null };
 }
 

@@ -105,7 +105,7 @@ class GitHubRepoLoader {
     if (!this.ready) throw new Error("[Github Loader]: not in ready state!");
     const {
       GithubRepoLoader: LCGithubLoader,
-    } = require("langchain/document_loaders/web/github");
+    } = require("@langchain/community/document_loaders/web/github");
 
     if (this.accessToken)
       console.log(
@@ -113,17 +113,16 @@ class GitHubRepoLoader {
       );
 
     const loader = new LCGithubLoader(this.repo, {
-      accessToken: this.accessToken,
       branch: this.branch,
       recursive: !!this.accessToken, // Recursive will hit rate limits.
       maxConcurrency: 5,
-      unknown: "ignore",
+      unknown: "warn",
+      accessToken: this.accessToken,
       ignorePaths: this.ignorePaths,
       verbose: true,
     });
 
-    const docs = [];
-    for await (const doc of loader.loadAsStream()) docs.push(doc);
+    const docs = await loader.load();
     return docs;
   }
 

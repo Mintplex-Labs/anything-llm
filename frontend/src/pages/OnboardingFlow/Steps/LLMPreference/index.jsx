@@ -19,6 +19,7 @@ import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
+import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -41,6 +42,7 @@ import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
+import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -183,6 +185,13 @@ const LLMS = [
     logo: LiteLLMLogo,
     options: (settings) => <LiteLLMOptions settings={settings} />,
     description: "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
+  },
+  {
+    name: "DeepSeek",
+    value: "deepseek",
+    logo: DeepSeekLogo,
+    options: (settings) => <DeepSeekOptions settings={settings} />,
+    description: "Run DeepSeek's powerful LLMs.",
   },
   {
     name: "Generic OpenAI",

@@ -511,6 +511,10 @@ const SystemSettings = {
 
       // VoyageAi API Keys
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
+
+      // DeepSeek API Keys
+      DeepSeekApiKey: !!process.env.DEEPSEEK_API_KEY,
+      DeepSeekModelPref: process.env.DEEPSEEK_MODEL_PREF,
     };
   },
 
