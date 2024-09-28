@@ -60,8 +60,9 @@ export default function ActiveWorkspaces() {
                 className={`
                   transition-all duration-[200ms]
                   flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
-                  hover:bg-workspace-item-selected-gradient hover:font-bold border-2 border-outline
-                  ${isActive ? "bg-workspace-item-selected-gradient font-bold" : ""}
+                  bg-workspace-item-default
+                  hover:bg-workspace-item-hover hover:font-bold
+                  ${isActive ? "bg-workspace-item-selected font-bold" : ""}
                 `}
               >
                 <div className="flex flex-row justify-between w-full">

@@ -43,7 +43,15 @@ export default {
         error: "#B42318",
         warn: "#854708",
         success: "#05603A",
-        darker: "#F4F4F4"
+        darker: "#F4F4F4",
+        // Sidebar colors
+        "sidebar-bg": "#0E0F0F",
+        "workspace-item-default": "rgba(255, 255, 255, 0.1)",
+        "workspace-item-selected": "rgba(255, 255, 255, 0.3)",
+        "workspace-item-hover": "#3F3F42",
+        "footer-icon": "rgba(255, 255, 255, 0.1)",
+        "footer-icon-hover": "rgba(255, 255, 255, 0.2)",
+        "sidebar-border": "rgba(255, 255, 255, 0.1)",
       },
       backgroundImage: {
         "preference-gradient":
