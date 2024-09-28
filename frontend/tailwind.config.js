@@ -52,6 +52,9 @@ export default {
         "footer-icon": "rgba(255, 255, 255, 0.1)",
         "footer-icon-hover": "rgba(255, 255, 255, 0.2)",
         "sidebar-border": "rgba(255, 255, 255, 0.1)",
+
+        // Main container colors
+        "main-container-bg": "#0E0F0F",
       },
       backgroundImage: {
         "preference-gradient":
