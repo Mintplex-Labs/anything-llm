@@ -1,4 +1,16 @@
 const MODELS = {
+  "accounts/fireworks/models/llama-v3p2-3b-instruct": {
+    id: "accounts/fireworks/models/llama-v3p2-3b-instruct",
+    organization: "Meta",
+    name: "Llama 3.2 3B Instruct",
+    maxLength: 131072,
+  },
+  "accounts/fireworks/models/llama-v3p2-1b-instruct": {
+    id: "accounts/fireworks/models/llama-v3p2-1b-instruct",
+    organization: "Meta",
+    name: "Llama 3.2 1B Instruct",
+    maxLength: 131072,
+  },
   "accounts/fireworks/models/llama-v3p1-405b-instruct": {
     id: "accounts/fireworks/models/llama-v3p1-405b-instruct",
     organization: "Meta",
