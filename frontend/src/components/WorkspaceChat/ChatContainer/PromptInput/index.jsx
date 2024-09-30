@@ -121,7 +121,11 @@ export default function PromptInput({
     }
 
     const pasteText = e.clipboardData.getData("text/plain");
-    if (pasteText) setPromptInput((prev) => prev + pasteText.trim());
+    if (pasteText) {
+      const newPromptInput = promptInput + pasteText.trim();
+      setPromptInput(newPromptInput);
+      onChange({ target: { value: newPromptInput } });
+    }
     return;
   };
 
