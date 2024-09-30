@@ -23,7 +23,7 @@ import {
   BingSearchOptions,
   SerplySearchOptions,
   SearXNGOptions,
-  TavilySearchOptions, // Import the TavilySearchOptions component
+  TavilySearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [

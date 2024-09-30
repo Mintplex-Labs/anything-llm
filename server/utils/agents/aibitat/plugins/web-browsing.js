@@ -446,10 +446,6 @@ const webBrowsing = {
             );
             return JSON.stringify(data);
           },
-          /**
-           * Use Tavily Search API
-           * https://docs.tavily.com/
-           */
           _tavilySearch: async function (query) {
             if (!process.env.AGENT_TAVILY_API_KEY) {
               this.super.introspect(
