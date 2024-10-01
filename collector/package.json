@@ -42,6 +42,7 @@
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",
     "winston": "^3.13.0",
+    "xlsx": "^0.18.5",
     "youtubei.js": "^9.1.0"
   },
   "devDependencies": {
