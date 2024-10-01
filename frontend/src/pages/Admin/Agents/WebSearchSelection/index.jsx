@@ -7,6 +7,7 @@ import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
 import SerplySearchIcon from "./icons/serply.png";
 import SearXNGSearchIcon from "./icons/searxng.png";
+import TavilySearchIcon from "./icons/tavily.svg";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -22,6 +23,7 @@ import {
   BingSearchOptions,
   SerplySearchOptions,
   SearXNGOptions,
+  TavilySearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -80,6 +82,14 @@ const SEARCH_PROVIDERS = [
     options: (settings) => <SearXNGOptions settings={settings} />,
     description:
       "Free, open-source, internet meta-search engine with no tracking.",
+  },
+  {
+    name: "Tavily Search",
+    value: "tavily-search",
+    logo: TavilySearchIcon,
+    options: (settings) => <TavilySearchOptions settings={settings} />,
+    description:
+      "Tavily Search API. Offers a free tier with 1000 queries per month.",
   },
 ];
 
