@@ -38,7 +38,7 @@ async function processSingleFile(targetFilename, options = {}) {
     };
 
   const fileExtension = path.extname(fullFilePath).toLowerCase();
-  if (!fileExtension) {
+  if (fullFilePath.includes(".") && !fileExtension) {
     return {
       success: false,
       reason: `No file extension found. This file cannot be processed.`,
