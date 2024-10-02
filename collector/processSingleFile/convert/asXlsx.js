@@ -12,10 +12,16 @@ const { default: slugify } = require("slugify");
 
 async function asXlsx({ fullFilePath = "", filename = "" }) {
   const documents = [];
-  const folderName = slugify(`${path.basename(filename, path.extname(filename))}-${v4().slice(0, 4)}`).toLowerCase();
-  const outFolderPath = process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../../server/storage/documents/${folderName}`)
-    : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
+  const folderName = slugify(
+    `${path.basename(filename, path.extname(filename))}-${v4().slice(0, 4)}`
+  ).toLowerCase();
+  const outFolderPath =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(
+          __dirname,
+          `../../../server/storage/documents/${folderName}`
+        )
+      : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
 
   try {
     const workbook = XLSX.readFile(fullFilePath);
@@ -54,7 +60,9 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
         outFolderPath
       );
       documents.push(document);
-      console.log(`[SUCCESS]: Sheet "${sheetName}" converted & ready for embedding.`);
+      console.log(
+        `[SUCCESS]: Sheet "${sheetName}" converted & ready for embedding.`
+      );
     }
   } catch (err) {
     console.error("Could not process xlsx file!", err);
@@ -76,7 +84,9 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
   }
 
   trashFile(fullFilePath);
-  console.log(`[SUCCESS]: ${filename} fully processed. Created ${documents.length} document(s).\n`);
+  console.log(
+    `[SUCCESS]: ${filename} fully processed. Created ${documents.length} document(s).\n`
+  );
   return { success: true, reason: null, documents };
 }
 
