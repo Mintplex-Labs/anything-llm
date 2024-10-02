@@ -33,6 +33,7 @@
     "mime": "^3.0.0",
     "moment": "^2.29.4",
     "node-html-parser": "^6.1.13",
+    "node-xlsx": "^0.24.0",
     "officeparser": "^4.0.5",
     "openai": "4.38.5",
     "pdf-parse": "^1.1.1",
@@ -42,7 +43,6 @@
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",
     "winston": "^3.13.0",
-    "xlsx": "^0.18.5",
     "youtubei.js": "^9.1.0"
   },
   "devDependencies": {

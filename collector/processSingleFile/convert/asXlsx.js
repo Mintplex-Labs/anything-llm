@@ -1,5 +1,5 @@
 const { v4 } = require("uuid");
-const XLSX = require("xlsx");
+const xlsx = require('node-xlsx').default;
 const path = require("path");
 const fs = require("fs");
 const {
@@ -9,6 +9,14 @@ const {
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+
+function convertToCSV(data) {
+  return data.map(row => row.map(cell => {
+    if (cell === null || cell === undefined) return '';
+    if (typeof cell === 'string' && cell.includes(',')) return `"${cell}"`;
+    return cell;
+  }).join(',')).join('\n');
+}
 
 async function asXlsx({ fullFilePath = "", filename = "" }) {
   const documents = [];
@@ -24,28 +32,28 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
       : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
 
   try {
-    const workbook = XLSX.readFile(fullFilePath);
+    const workSheetsFromFile = xlsx.parse(fullFilePath);
 
     if (!fs.existsSync(outFolderPath)) {
       fs.mkdirSync(outFolderPath, { recursive: true });
     }
 
-    for (const sheetName of workbook.SheetNames) {
-      const sheet = workbook.Sheets[sheetName];
-      const content = XLSX.utils.sheet_to_csv(sheet);
+    for (const sheet of workSheetsFromFile) {
+      const { name, data } = sheet;
+      const content = convertToCSV(data);
 
       if (!content?.length) {
-        console.warn(`Sheet "${sheetName}" is empty. Skipping.`);
+        console.warn(`Sheet "${name}" is empty. Skipping.`);
         continue;
       }
 
-      console.log(`-- Processing sheet: ${sheetName} --`);
-      const data = {
+      console.log(`-- Processing sheet: ${name} --`);
+      const sheetData = {
         id: v4(),
-        url: `file://${path.join(outFolderPath, `${slugify(sheetName)}.csv`)}`,
-        title: `${filename} - ${sheetName}`,
+        url: `file://${path.join(outFolderPath, `${slugify(name)}.csv`)}`,
+        title: `${filename} - ${name}`,
         docAuthor: "Unknown",
-        description: `Spreadsheet data from sheet: ${sheetName}`,
+        description: `Spreadsheet data from sheet: ${name}`,
         docSource: "an xlsx file uploaded by the user.",
         chunkSource: "",
         published: createdDate(fullFilePath),
@@ -55,13 +63,13 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
       };
 
       const document = writeToServerDocuments(
-        data,
-        `${slugify(sheetName)}-${data.id}`,
+        sheetData,
+        `${slugify(name)}-${sheetData.id}`,
         outFolderPath
       );
       documents.push(document);
       console.log(
-        `[SUCCESS]: Sheet "${sheetName}" converted & ready for embedding.`
+        `[SUCCESS]: Sheet "${name}" converted & ready for embedding.`
       );
     }
   } catch (err) {
