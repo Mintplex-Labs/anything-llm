@@ -1,5 +1,5 @@
 const { v4 } = require("uuid");
-const xlsx = require('node-xlsx').default;
+const xlsx = require("node-xlsx").default;
 const path = require("path");
 const fs = require("fs");
 const {
@@ -11,11 +11,18 @@ const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
 function convertToCSV(data) {
-  return data.map(row => row.map(cell => {
-    if (cell === null || cell === undefined) return '';
-    if (typeof cell === 'string' && cell.includes(',')) return `"${cell}"`;
-    return cell;
-  }).join(',')).join('\n');
+  return data
+    .map((row) =>
+      row
+        .map((cell) => {
+          if (cell === null || cell === undefined) return "";
+          if (typeof cell === "string" && cell.includes(","))
+            return `"${cell}"`;
+          return cell;
+        })
+        .join(",")
+    )
+    .join("\n");
 }
 
 async function asXlsx({ fullFilePath = "", filename = "" }) {
