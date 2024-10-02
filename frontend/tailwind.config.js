@@ -44,17 +44,32 @@ export default {
         warn: "#854708",
         success: "#05603A",
         darker: "#F4F4F4",
-        // Sidebar colors
-        "sidebar-bg": "#0E0F0F",
-        "workspace-item-default": "rgba(255, 255, 255, 0.1)",
-        "workspace-item-selected": "rgba(255, 255, 255, 0.3)",
-        "workspace-item-hover": "#3F3F42",
-        "footer-icon": "rgba(255, 255, 255, 0.1)",
-        "footer-icon-hover": "rgba(255, 255, 255, 0.2)",
-        "sidebar-border": "rgba(255, 255, 255, 0.1)",
 
-        // Main container colors
-        "main-container-bg": "#0E0F0F",
+        // Generic theme colors
+        theme: {
+          bg: {
+            primary: 'var(--theme-bg-primary)',
+            secondary: 'var(--theme-bg-secondary)',
+            sidebar: 'var(--theme-bg-sidebar)',
+            container: 'var(--theme-bg-container)',
+          },
+          text: {
+            primary: 'var(--theme-text-primary)',
+            secondary: 'var(--theme-text-secondary)',
+          },
+          sidebar: {
+            item: {
+              default: 'var(--theme-sidebar-item-default)',
+              selected: 'var(--theme-sidebar-item-selected)',
+              hover: 'var(--theme-sidebar-item-hover)',
+            },
+            footer: {
+              icon: 'var(--theme-sidebar-footer-icon)',
+              'icon-hover': 'var(--theme-sidebar-footer-icon-hover)',
+            },
+            border: 'var(--theme-sidebar-border)',
+          },
+        },
       },
       backgroundImage: {
         "preference-gradient":

@@ -130,7 +130,7 @@ export default function SuggestedChatMessages({ slug }) {
             <button
               key={index}
               onClick={(e) => startEditing(e, index)}
-              className={`text-left p-2.5 border rounded-xl w-full border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient ${
+              className={`text-left p-2.5 border rounded-xl w-full border-white/20 bg-sidebar hover:bg-theme-sidebar-item-selected-gradient ${
                 editingIndex === index ? "border-sky-400" : ""
               }`}
             >

@@ -10,7 +10,7 @@ export default function LanguagePreference() {
 
   return (
     <>
-      <div className="flex flex-col gap-y-1">
+      <div className="flex flex-col gap-y-1 mt-6">
         <h2 className="text-base leading-6 font-bold text-white">
           Display Language
         </h2>
