@@ -63,6 +63,11 @@ export default {
               selected: 'var(--theme-sidebar-item-selected)',
               hover: 'var(--theme-sidebar-item-hover)',
             },
+            subitem: {
+              default: 'var(--theme-sidebar-subitem-default)',
+              selected: 'var(--theme-sidebar-subitem-selected)',
+              hover: 'var(--theme-sidebar-subitem-hover)',
+            },
             footer: {
               icon: 'var(--theme-sidebar-footer-icon)',
               'icon-hover': 'var(--theme-sidebar-footer-icon-hover)',

@@ -66,8 +66,8 @@ export default function MenuOption({
           rounded-[6px]
           ${
             isActive
-              ? "bg-white/5 font-medium border-outline"
-              : "hover:bg-white/5"
+              ? "bg-theme-sidebar-subitem-selected font-medium border-outline"
+              : "hover:bg-theme-sidebar-subitem-hover"
           }
         `}
       >
