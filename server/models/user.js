@@ -10,6 +10,7 @@ const User = {
     "pfpFilename",
     "role",
     "suspended",
+    "dailyMessageLimit",
   ],
   validations: {
     username: (newValue = "") => {
@@ -32,12 +33,17 @@ const User = {
       }
       return String(role);
     },
+    dailyMessageLimit: (dailyMessageLimit = null) => {
+      return dailyMessageLimit === null ? null : Number(dailyMessageLimit);
+    },
   },
   // validations for the above writable fields.
   castColumnValue: function (key, value) {
     switch (key) {
       case "suspended":
         return Number(Boolean(value));
+      case "dailyMessageLimit":
+        return value === null ? null : Number(value);
       default:
         return String(value);
     }
@@ -48,7 +54,12 @@ const User = {
     return { ...rest };
   },
 
-  create: async function ({ username, password, role = "default" }) {
+  create: async function ({
+    username,
+    password,
+    role = "default",
+    dailyMessageLimit = null,
+  }) {
     const passwordCheck = this.checkPasswordComplexity(password);
     if (!passwordCheck.checkedOK) {
       return { user: null, error: passwordCheck.error };
@@ -58,7 +69,7 @@ const User = {
       // Do not allow new users to bypass validation
       if (!this.usernameRegex.test(username))
         throw new Error(
-          "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
+          "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
         );
 
       const bcrypt = require("bcrypt");
@@ -68,6 +79,8 @@ const User = {
           username: this.validations.username(username),
           password: hashedPassword,
           role: this.validations.role(role),
+          dailyMessageLimit:
+            this.validations.dailyMessageLimit(dailyMessageLimit),
         },
       });
       return { user: this.filterFields(user), error: null };
@@ -135,7 +148,7 @@ const User = {
         return {
           success: false,
           error:
-            "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+            "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
         };
 
       const user = await prisma.users.update({
