@@ -469,6 +469,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_SEARXNG_API_URL",
     checks: [],
   },
+  AgentTavilyApiKey: {
+    envKey: "AGENT_TAVILY_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
