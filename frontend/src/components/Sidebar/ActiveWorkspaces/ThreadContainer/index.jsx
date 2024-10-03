@@ -107,7 +107,7 @@ export default function ThreadContainer({ workspace }) {
   if (loading) {
     return (
       <div className="flex flex-col bg-pulse w-full h-10 items-center justify-center">
-        <p className="text-xs text-slate-600 animate-pulse">
+        <p className="text-xs text-white animate-pulse">
           loading threads....
         </p>
       </div>
@@ -171,25 +171,25 @@ function NewThreadButton({ workspace }) {
   return (
     <button
       onClick={onClick}
-      className="w-full relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg"
+      className="w-full relative flex h-[40px] items-center border-none hover:bg-white/5 rounded-lg"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
-        <div className="bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+        <div className="bg-white/20 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
           {loading ? (
             <CircleNotch
               weight="bold"
               size={14}
-              className="shrink-0 animate-spin text-slate-100"
+              className="shrink-0 animate-spin text-white"
             />
           ) : (
-            <Plus weight="bold" size={14} className="shrink-0 text-slate-100" />
+            <Plus weight="bold" size={14} className="shrink-0 text-white" />
           )}
         </div>
 
         {loading ? (
-          <p className="text-left text-slate-100 text-sm">Starting Thread...</p>
+          <p className="text-left text-white text-sm">Starting Thread...</p>
         ) : (
-          <p className="text-left text-slate-100 text-sm">New Thread</p>
+          <p className="text-left text-white text-sm">New Thread</p>
         )}
       </div>
     </button>
@@ -210,7 +210,7 @@ function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
           <Trash
             weight="bold"
             size={14}
-            className="shrink-0 text-slate-100 group-hover:text-red-400"
+            className="shrink-0 text-white group-hover:text-red-400"
           />
         </div>
         <p className="text-white text-left text-sm group-hover:text-red-400">
