@@ -33,12 +33,13 @@ export default function ActiveWorkspaces() {
   if (loading) {
     return (
       <Skeleton.default
-        height={36}
+        height={40}
         width="100%"
-        count={3}
-        baseColor="#292524"
-        highlightColor="#4c4948"
+        count={5}
+        baseColor="var(--theme-sidebar-item-default)"
+        highlightColor="var(--theme-sidebar-item-hover)"
         enableAnimation={true}
+        className="my-1"
       />
     );
   }

@@ -5,7 +5,7 @@
 :root {
   /* Default theme */
   --theme-bg-primary: #0e0f0f;
-  --theme-bg-secondary: #1a1b1e;
+  --theme-bg-secondary: rgba(255, 255, 255, 0.05);
   --theme-bg-sidebar: #0e0f0f;
   --theme-bg-container: #0e0f0f;
   --theme-text-primary: #ffffff;
@@ -13,6 +13,9 @@
   --theme-sidebar-item-default: rgba(255, 255, 255, 0.1);
   --theme-sidebar-item-selected: rgba(255, 255, 255, 0.3);
   --theme-sidebar-item-hover: #3f3f42;
+  --theme-sidebar-subitem-default: rgba(255, 255, 255, 0.05);
+  --theme-sidebar-subitem-selected: rgba(255, 255, 255, 0.05);
+  --theme-sidebar-subitem-hover: rgba(255, 255, 255, 0.05);
   --theme-sidebar-footer-icon: rgba(255, 255, 255, 0.1);
   --theme-sidebar-footer-icon-hover: rgba(255, 255, 255, 0.2);
   --theme-sidebar-border: rgba(255, 255, 255, 0.1);
@@ -28,6 +31,9 @@
   --theme-sidebar-item-default: rgba(0, 0, 0, 0.1);
   --theme-sidebar-item-selected: rgba(0, 0, 0, 0.2);
   --theme-sidebar-item-hover: #e2e8f0;
+  --theme-sidebar-subitem-default: rgba(0, 0, 0, 0.1);
+  --theme-sidebar-subitem-selected: rgba(0, 0, 0, 0.05);
+  --theme-sidebar-subitem-hover: rgba(0, 0, 0, 0.05);
   --theme-sidebar-footer-icon: rgba(0, 0, 0, 0.3);
   --theme-sidebar-footer-icon-hover: rgba(0, 0, 0, 0.5);
   --theme-sidebar-border: rgba(0, 0, 0, 0.1);

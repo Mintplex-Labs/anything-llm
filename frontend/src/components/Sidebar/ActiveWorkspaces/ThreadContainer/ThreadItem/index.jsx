@@ -62,7 +62,7 @@ export default function ThreadItem({
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH + 8 }}
         className="h-full"
       />
-      <div className={`flex w-full items-center justify-between pr-2 group relative ${isActive ? 'bg-white/5' : 'hover:bg-white/5'} rounded-[4px]`}>
+      <div className={`flex w-full items-center justify-between pr-2 group relative ${isActive ? 'bg-theme-sidebar-subitem-selected' : 'hover:bg-theme-sidebar-subitem-hover'} rounded-[4px]`}>
         {thread.deleted ? (
           <div className="w-full flex justify-between">
             <div className="w-full pl-2 py-1">
