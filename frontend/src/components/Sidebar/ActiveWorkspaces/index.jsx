@@ -73,15 +73,17 @@ export default function ActiveWorkspaces() {
                       className="flex-shrink-0"
                       size={24}
                     />
-                    <p
-                      className={`
-                      text-[14px] leading-loose whitespace-nowrap overflow-hidden
-                      ${isActive ? "text-white" : "text-zinc-200 group-hover:w-[120px]"} truncate
-                      w-[130px] transition-all duration-200
-                    `}
-                    >
-                      {workspace.name}
-                    </p>
+                    <div className="w-[130px] overflow-hidden">
+                      <p
+                        className={`
+                        text-[14px] leading-loose whitespace-nowrap overflow-hidden
+                        ${isActive ? "text-white" : "text-zinc-200"} truncate
+                        w-full group-hover:w-[100px] transition-all duration-200
+                      `}
+                      >
+                        {workspace.name}
+                      </p>
+                    </div>
                   </div>
                   {user?.role !== "default" && (
                     <div
