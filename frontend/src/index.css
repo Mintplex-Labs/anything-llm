@@ -2,6 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Default theme */
+  --theme-bg-primary: #0e0f0f;
+  --theme-bg-secondary: #1a1b1e;
+  --theme-bg-sidebar: #0e0f0f;
+  --theme-bg-container: #0e0f0f;
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: rgba(255, 255, 255, 0.6);
+  --theme-sidebar-item-default: rgba(255, 255, 255, 0.1);
+  --theme-sidebar-item-selected: rgba(255, 255, 255, 0.3);
+  --theme-sidebar-item-hover: #3f3f42;
+  --theme-sidebar-footer-icon: rgba(255, 255, 255, 0.1);
+  --theme-sidebar-footer-icon-hover: rgba(255, 255, 255, 0.2);
+  --theme-sidebar-border: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] {
+  --theme-bg-primary: #ffffff;
+  --theme-bg-secondary: #f4f4f4;
+  --theme-bg-sidebar: #f4f4f4;
+  --theme-bg-container: #ffffff;
+  --theme-text-primary: #000000;
+  --theme-text-secondary: #4a5568;
+  --theme-sidebar-item-default: rgba(0, 0, 0, 0.1);
+  --theme-sidebar-item-selected: rgba(0, 0, 0, 0.2);
+  --theme-sidebar-item-hover: #e2e8f0;
+  --theme-sidebar-footer-icon: rgba(0, 0, 0, 0.3);
+  --theme-sidebar-footer-icon-hover: rgba(0, 0, 0, 0.5);
+  --theme-sidebar-border: rgba(0, 0, 0, 0.1);
+}
+
 html,
 body {
   padding: 0;

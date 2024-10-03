@@ -54,7 +54,7 @@ export default function AdminLogs() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-main-container-bg flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}

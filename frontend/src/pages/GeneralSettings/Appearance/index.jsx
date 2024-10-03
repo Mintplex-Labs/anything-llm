@@ -9,11 +9,13 @@ import CustomAppName from "./CustomAppName";
 import LanguagePreference from "./LanguagePreference";
 import CustomSiteSettings from "./CustomSiteSettings";
 import ShowScrollbar from "./ShowScrollbar";
+import ThemePreference from "./ThemePreference";
 
 export default function Appearance() {
   const { t } = useTranslation();
+
   return (
-    <div className="w-screen h-screen overflow-hidden bg-main-container-bg flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -30,6 +32,8 @@ export default function Appearance() {
               {t("appearance.description")}
             </p>
           </div>
+
+          <ThemePreference />
           <LanguagePreference />
           <ShowScrollbar />
           <CustomLogo />

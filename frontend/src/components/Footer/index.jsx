@@ -54,7 +54,7 @@ export default function Footer() {
               href={paths.github()}
               target="_blank"
               rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full text-white bg-footer-icon hover:bg-footer-icon-hover"
+              className="transition-all duration-300 p-2 rounded-full text-white bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Find us on Github"
               data-tooltip-id="open-github"
               data-tooltip-content="View source code on Github"
@@ -67,7 +67,7 @@ export default function Footer() {
               href={paths.docs()}
               target="_blank"
               rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full text-white bg-footer-icon hover:bg-footer-icon-hover"
+              className="transition-all duration-300 p-2 rounded-full text-white bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Docs"
               data-tooltip-id="open-documentation"
               data-tooltip-content="Open AnythingLLM help docs"
@@ -80,7 +80,7 @@ export default function Footer() {
               href={paths.discord()}
               target="_blank"
               rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full text-white bg-footer-icon hover:bg-footer-icon-hover"
+              className="transition-all duration-300 p-2 rounded-full text-white bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Join our Discord server"
               data-tooltip-id="open-discord"
               data-tooltip-content="Join the AnythingLLM Discord"
@@ -106,7 +106,7 @@ export default function Footer() {
             href={item.url}
             target="_blank"
             rel="noreferrer"
-            className="transition-all duration-300 p-2 rounded-full text-white bg-footer-icon hover:bg-footer-icon-hover"
+            className="transition-all duration-300 p-2 rounded-full text-white bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
           >
             {React.createElement(
               ICON_COMPONENTS?.[item.icon] ?? ICON_COMPONENTS.Info,

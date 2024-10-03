@@ -33,7 +33,7 @@ export default function ThreadItem({
 
   return (
     <div
-      className="w-full relative flex h-[38px] items-center border-none hover:bg-slate-600/20 rounded-lg"
+      className="w-full relative flex h-[38px] items-center border-none rounded-lg"
       role="listitem"
     >
       {/* Curved line Element and leader if required */}
@@ -41,9 +41,9 @@ export default function ThreadItem({
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
         className={`${
           isActive
-            ? "border-l-2 border-b-2 border-white"
-            : "border-l border-b border-slate-300"
-        } h-[50%] absolute top-0 z-10 left-2 rounded-bl-lg`}
+            ? "border-l-2 border-b-2 border-white z-30"
+            : "border-l border-b border-[#6F6F71] z-10"
+        } h-[50%] absolute top-0 left-2 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
       {hasNext && (
@@ -51,9 +51,9 @@ export default function ThreadItem({
           style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
           className={`${
             idx <= activeIdx && !isActive
-              ? "border-l-2 border-white"
-              : "border-l border-slate-300"
-          } h-[100%] absolute top-0 z-1 left-2`}
+              ? "border-l-2 border-white z-20"
+              : "border-l border-[#6F6F71] z-10"
+          } h-[100%] absolute top-0 left-2`}
         ></div>
       )}
 
@@ -62,10 +62,10 @@ export default function ThreadItem({
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH + 8 }}
         className="h-full"
       />
-      <div className="flex w-full items-center justify-between pr-2 group relative">
+      <div className={`flex w-full items-center justify-between pr-2 group relative ${isActive ? 'bg-white/5' : 'hover:bg-white/5'} rounded-[4px]`}>
         {thread.deleted ? (
           <div className="w-full flex justify-between">
-            <div className="w-full ">
+            <div className="w-full pl-2 py-1">
               <p className={`text-left text-sm text-slate-400/50 italic`}>
                 deleted thread
               </p>
@@ -88,12 +88,12 @@ export default function ThreadItem({
             href={
               window.location.pathname === linkTo || ctrlPressed ? "#" : linkTo
             }
-            className="w-full"
+            className="w-full pl-2 py-1"
             aria-current={isActive ? "page" : ""}
           >
             <p
               className={`text-left text-sm ${
-                isActive ? "font-medium text-white" : "text-slate-400"
+                isActive ? "font-medium text-white" : "text-white/40"
               }`}
             >
               {truncate(thread.name, 25)}
@@ -101,7 +101,7 @@ export default function ThreadItem({
           </a>
         )}
         {!!thread.slug && !thread.deleted && (
-          <div ref={optionsContainer}>
+          <div ref={optionsContainer} className="flex items-center"> {/* Added flex and items-center */}
             {ctrlPressed ? (
               <button
                 type="button"
