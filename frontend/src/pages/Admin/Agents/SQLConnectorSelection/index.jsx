@@ -1,21 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DBConnection from "./DBConnection";
 import { Plus, Database } from "@phosphor-icons/react";
 import NewSQLConnection from "./NewConnectionModal";
 import { useModal } from "@/hooks/useModal";
 import SQLAgentImage from "@/media/agents/sql-agent.png";
+import Admin from "@/models/admin";
 
 export default function AgentSQLConnectorSelection({
   skill,
-  settings,
+  settings, // unused.
   toggleSkill,
   enabled = false,
   setHasChanges,
 }) {
   const { isOpen, openModal, closeModal } = useModal();
-  const [connections, setConnections] = useState(
-    settings?.preferences?.agent_sql_connections || []
-  );
+  const [connections, setConnections] = useState([]);
+  useEffect(() => {
+    Admin.systemPreferencesByFields(["agent_sql_connections"])
+      .then((res) => setConnections(res?.settings?.agent_sql_connections ?? []))
+      .catch(() => setConnections([]));
+  }, []);
+
   return (
     <>
       <div className="p-2">

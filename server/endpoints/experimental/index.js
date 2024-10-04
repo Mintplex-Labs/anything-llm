@@ -1,5 +1,6 @@
 const { fineTuningEndpoints } = require("./fineTuning");
 const { liveSyncEndpoints } = require("./liveSync");
+const { importedAgentPluginEndpoints } = require("./imported-agent-plugins");
 
 // All endpoints here are not stable and can move around - have breaking changes
 // or are opt-in features that are not fully released.
@@ -7,6 +8,7 @@ const { liveSyncEndpoints } = require("./liveSync");
 function experimentalEndpoints(router) {
   liveSyncEndpoints(router);
   fineTuningEndpoints(router);
+  importedAgentPluginEndpoints(router);
 }
 
 module.exports = { experimentalEndpoints };

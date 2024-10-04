@@ -62,6 +62,9 @@ const webBrowsing = {
               case "google-search-engine":
                 engine = "_googleSearchEngine";
                 break;
+              case "searchapi":
+                engine = "_searchApi";
+                break;
               case "serper-dot-dev":
                 engine = "_serperDotDev";
                 break;
@@ -73,6 +76,9 @@ const webBrowsing = {
                 break;
               case "searxng-engine":
                 engine = "_searXNGEngine";
+                break;
+              case "tavily-search":
+                engine = "_tavilySearch";
                 break;
               default:
                 engine = "_googleSearchEngine";
@@ -121,6 +127,72 @@ const webBrowsing = {
                 console.log(e);
                 return [];
               });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - looking over them now.`
+            );
+            return JSON.stringify(data);
+          },
+
+          /**
+           * Use SearchApi
+           * SearchApi supports multiple search engines like Google Search, Bing Search, Baidu Search, Google News, YouTube, and many more.
+           * https://www.searchapi.io/
+           */
+          _searchApi: async function (query) {
+            if (!process.env.AGENT_SEARCHAPI_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use SearchApi searching because the user has not defined the required API key.\nVisit: https://www.searchapi.io/ to create the API key for free.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using SearchApi to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const engine = process.env.AGENT_SEARCHAPI_ENGINE;
+            const params = new URLSearchParams({
+              engine: engine,
+              q: query,
+            });
+
+            const url = `https://www.searchapi.io/api/v1/search?${params.toString()}`;
+            const { response, error } = await fetch(url, {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${process.env.AGENT_SEARCHAPI_API_KEY}`,
+                "Content-Type": "application/json",
+                "X-SearchApi-Source": "AnythingLLM",
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            if (response.hasOwnProperty("knowledge_graph"))
+              data.push(response.knowledge_graph?.description);
+            if (response.hasOwnProperty("answer_box"))
+              data.push(response.answer_box?.answer);
+            response.organic_results?.forEach((searchResult) => {
+              const { title, link, snippet } = searchResult;
+              data.push({
+                title,
+                link,
+                snippet,
+              });
+            });
 
             if (data.length === 0)
               return `No information was found online for the search query.`;
@@ -364,6 +436,59 @@ const webBrowsing = {
                 link: url,
                 snippet: content,
                 publishedDate,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - looking over them now.`
+            );
+            return JSON.stringify(data);
+          },
+          _tavilySearch: async function (query) {
+            if (!process.env.AGENT_TAVILY_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Tavily searching because the user has not defined the required API key.\nVisit: https://tavily.com/ to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Tavily to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const url = "https://api.tavily.com/search";
+            const { response, error } = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                api_key: process.env.AGENT_TAVILY_API_KEY,
+                query: query,
+              }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                return { response: null, error: e.message };
+              });
+
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response.results?.forEach((searchResult) => {
+              const { title, url, content } = searchResult;
+              data.push({
+                title,
+                link: url,
+                snippet: content,
               });
             });
 

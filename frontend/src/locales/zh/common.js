@@ -406,6 +406,7 @@ const TRANSLATIONS = {
   // Embeddable Chat History
   "embed-chats": {
     title: "嵌入的聊天历史纪录",
+    export: "导出",
     description: "这些是您发布的任何嵌入的所有记录的聊天和消息。",
     table: {
       embed: "嵌入",

@@ -57,26 +57,12 @@ const Document = {
     }
   },
 
-  getOnlyWorkspaceIds: async function (clause = {}) {
-    try {
-      const workspaceIds = await prisma.workspace_documents.findMany({
-        where: clause,
-        select: {
-          workspaceId: true,
-        },
-      });
-      return workspaceIds.map((record) => record.workspaceId) || [];
-    } catch (error) {
-      console.error(error.message);
-      return [];
-    }
-  },
-
   where: async function (
     clause = {},
     limit = null,
     orderBy = null,
-    include = null
+    include = null,
+    select = null
   ) {
     try {
       const results = await prisma.workspace_documents.findMany({
@@ -84,6 +70,7 @@ const Document = {
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
         ...(include !== null ? { include } : {}),
+        ...(select !== null ? { select: { ...select } } : {}),
       });
       return results;
     } catch (error) {

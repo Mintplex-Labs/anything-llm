@@ -1,6 +1,7 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
+const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -8,6 +9,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ollama",
   "native-llm",
   "togetherai",
+  "fireworksai",
   "mistral",
   "perplexity",
   "openrouter",
@@ -16,6 +18,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "litellm",
   "elevenlabs-tts",
   "groq",
+  "deepseek",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -31,6 +34,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await ollamaAIModels(basePath);
     case "togetherai":
       return await getTogetherAiModels();
+    case "fireworksai":
+      return await getFireworksAiModels(apiKey);
     case "mistral":
       return await getMistralModels(apiKey);
     case "native-llm":
@@ -49,6 +54,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getElevenLabsModels(apiKey);
     case "groq":
       return await getGroqAiModels(apiKey);
+    case "deepseek":
+      return await getDeepSeekModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -304,6 +311,21 @@ async function getTogetherAiModels() {
   return { models, error: null };
 }
 
+async function getFireworksAiModels() {
+  const knownModels = fireworksAiModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
 async function getPerplexityModels() {
   const knownModels = perplexityModels();
   if (!Object.keys(knownModels).length === 0)
@@ -397,6 +419,31 @@ async function getElevenLabsModels(apiKey = null) {
   }
 
   if (models.length > 0 && !!apiKey) process.env.TTS_ELEVEN_LABS_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getDeepSeekModels(apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com/v1",
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by,
+      }))
+    )
+    .catch((e) => {
+      console.error(`DeepSeek:listModels`, e.message);
+      return [];
+    });
+
+  if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
   return { models, error: null };
 }
 

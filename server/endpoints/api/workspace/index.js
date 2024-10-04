@@ -25,7 +25,6 @@ function apiWorkspaceEndpoints(app) {
     #swagger.requestBody = {
       description: 'JSON object containing new display name of workspace.',
       required: true,
-      type: 'object',
       content: {
         "application/json": {
           example: {
@@ -265,7 +264,6 @@ function apiWorkspaceEndpoints(app) {
     #swagger.requestBody = {
       description: 'JSON object containing new settings to update a workspace. All keys are optional and will not update unless provided',
       required: true,
-      type: 'object',
       content: {
         "application/json": {
           example: {
@@ -404,7 +402,6 @@ function apiWorkspaceEndpoints(app) {
     #swagger.requestBody = {
       description: 'JSON object of additions and removals of documents to add to update a workspace. The value should be the folder + filename with the exclusions of the top-level documents path.',
       required: true,
-      type: 'object',
       content: {
         "application/json": {
           example: {
@@ -482,7 +479,6 @@ function apiWorkspaceEndpoints(app) {
       #swagger.requestBody = {
         description: 'JSON object with the document path and pin status to update.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -545,13 +541,19 @@ function apiWorkspaceEndpoints(app) {
    #swagger.requestBody = {
        description: 'Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.',
        required: true,
-       type: 'object',
        content: {
          "application/json": {
            example: {
              message: "What is AnythingLLM?",
              mode: "query | chat",
-             sessionId: "identifier-to-partition-chats-by-external-id"
+             sessionId: "identifier-to-partition-chats-by-external-id",
+             attachments: [
+               {
+                 name: "image.png",
+                 mime: "image/png",
+                 contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+               }
+             ]
            }
          }
        }
@@ -581,7 +583,12 @@ function apiWorkspaceEndpoints(app) {
    */
       try {
         const { slug } = request.params;
-        const { message, mode = "query", sessionId = null } = reqBody(request);
+        const {
+          message,
+          mode = "query",
+          sessionId = null,
+          attachments = [],
+        } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
@@ -617,6 +624,7 @@ function apiWorkspaceEndpoints(app) {
           user: null,
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
+          attachments,
         });
 
         await Telemetry.sendTelemetry("sent_chat", {
@@ -655,13 +663,19 @@ function apiWorkspaceEndpoints(app) {
    #swagger.requestBody = {
        description: 'Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.',
        required: true,
-       type: 'object',
        content: {
          "application/json": {
            example: {
              message: "What is AnythingLLM?",
              mode: "query | chat",
-             sessionId: "identifier-to-partition-chats-by-external-id"
+             sessionId: "identifier-to-partition-chats-by-external-id",
+             attachments: [
+               {
+                 name: "image.png",
+                 mime: "image/png",
+                 contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+               }
+             ]
            }
          }
        }
@@ -671,6 +685,9 @@ function apiWorkspaceEndpoints(app) {
        "text/event-stream": {
          schema: {
            type: 'array',
+           items: {
+              type: 'string',
+          },
            example: [
             {
               id: 'uuid-123',
@@ -709,7 +726,12 @@ function apiWorkspaceEndpoints(app) {
    */
       try {
         const { slug } = request.params;
-        const { message, mode = "query", sessionId = null } = reqBody(request);
+        const {
+          message,
+          mode = "query",
+          sessionId = null,
+          attachments = [],
+        } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
@@ -752,6 +774,7 @@ function apiWorkspaceEndpoints(app) {
           user: null,
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
+          attachments,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection:

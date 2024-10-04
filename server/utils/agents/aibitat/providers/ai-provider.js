@@ -125,6 +125,11 @@ class Provider {
           },
           ...config,
         });
+      case "fireworksai":
+        return new ChatOpenAI({
+          apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
+          ...config,
+        });
 
       // OSS Model Runners
       // case "anythingllm_ollama":
@@ -167,6 +172,14 @@ class Provider {
             baseURL: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
           },
           apiKey: process.env.TEXT_GEN_WEB_UI_API_KEY ?? "not-used",
+          ...config,
+        });
+      case "deepseek":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.deepseek.com/v1",
+          },
+          apiKey: process.env.DEEPSEEK_API_KEY ?? null,
           ...config,
         });
       default:

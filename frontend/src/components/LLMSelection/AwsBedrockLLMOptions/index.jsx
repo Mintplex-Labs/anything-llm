@@ -12,7 +12,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
               You should use a properly defined IAM user for inferencing.
               <br />
               <a
-                href="https://docs.useanything.com/setup/llm-configuration/cloud/aws-bedrock"
+                href="https://docs.anythingllm.com/setup/llm-configuration/cloud/aws-bedrock"
                 target="_blank"
                 className="underline flex gap-x-1 items-center"
               >

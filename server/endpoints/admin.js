@@ -24,6 +24,7 @@ const {
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const ImportedPlugin = require("../utils/agents/imported");
 
 function adminEndpoints(app) {
   if (!app) return;
@@ -311,7 +312,109 @@ function adminEndpoints(app) {
     }
   );
 
-  // TODO: Allow specification of which props to get instead of returning all of them all the time.
+  // System preferences but only by array of labels
+  app.get(
+    "/admin/system-preferences-for",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const requestedSettings = {};
+        const labels = request.query.labels?.split(",") || [];
+        const needEmbedder = [
+          "text_splitter_chunk_size",
+          "max_embed_chunk_size",
+        ];
+        const noRecord = [
+          "max_embed_chunk_size",
+          "agent_sql_connections",
+          "imported_agent_skills",
+          "feature_flags",
+          "meta_page_title",
+          "meta_page_favicon",
+        ];
+
+        for (const label of labels) {
+          // Skip any settings that are not explicitly defined as public
+          if (!SystemSettings.publicFields.includes(label)) continue;
+
+          // Only get the embedder if the setting actually needs it
+          let embedder = needEmbedder.includes(label)
+            ? getEmbeddingEngineSelection()
+            : null;
+          // Only get the record from db if the setting actually needs it
+          let setting = noRecord.includes(label)
+            ? null
+            : await SystemSettings.get({ label });
+
+          switch (label) {
+            case "limit_user_messages":
+              requestedSettings[label] = setting?.value === "true";
+              break;
+            case "message_limit":
+              requestedSettings[label] = setting?.value
+                ? Number(setting.value)
+                : 10;
+              break;
+            case "footer_data":
+              requestedSettings[label] = setting?.value ?? JSON.stringify([]);
+              break;
+            case "support_email":
+              requestedSettings[label] = setting?.value || null;
+              break;
+            case "text_splitter_chunk_size":
+              requestedSettings[label] =
+                setting?.value || embedder?.embeddingMaxChunkLength || null;
+              break;
+            case "text_splitter_chunk_overlap":
+              requestedSettings[label] = setting?.value || null;
+              break;
+            case "max_embed_chunk_size":
+              requestedSettings[label] =
+                embedder?.embeddingMaxChunkLength || 1000;
+              break;
+            case "agent_search_provider":
+              requestedSettings[label] = setting?.value || null;
+              break;
+            case "agent_sql_connections":
+              requestedSettings[label] =
+                await SystemSettings.brief.agent_sql_connections();
+              break;
+            case "default_agent_skills":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
+            case "imported_agent_skills":
+              requestedSettings[label] = ImportedPlugin.listImportedPlugins();
+              break;
+            case "custom_app_name":
+              requestedSettings[label] = setting?.value || null;
+              break;
+            case "feature_flags":
+              requestedSettings[label] =
+                (await SystemSettings.getFeatureFlags()) || {};
+              break;
+            case "meta_page_title":
+              requestedSettings[label] =
+                await SystemSettings.getValueOrFallback({ label }, null);
+              break;
+            case "meta_page_favicon":
+              requestedSettings[label] =
+                await SystemSettings.getValueOrFallback({ label }, null);
+              break;
+            default:
+              break;
+          }
+        }
+
+        response.status(200).json({ settings: requestedSettings });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // TODO: Delete this endpoint
+  // DEPRECATED - use /admin/system-preferences-for instead with ?labels=... comma separated string of labels
   app.get(
     "/admin/system-preferences",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
@@ -352,6 +455,7 @@ function adminEndpoints(app) {
                 ?.value,
               []
             ) || [],
+          imported_agent_skills: ImportedPlugin.listImportedPlugins(),
           custom_app_name:
             (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
             null,
