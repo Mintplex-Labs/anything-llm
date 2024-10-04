@@ -52,6 +52,7 @@ export default {
             secondary: 'var(--theme-bg-secondary)',
             sidebar: 'var(--theme-bg-sidebar)',
             container: 'var(--theme-bg-container)',
+            chat: 'var(--theme-bg-chat)',
           },
           text: {
             primary: 'var(--theme-text-primary)',
