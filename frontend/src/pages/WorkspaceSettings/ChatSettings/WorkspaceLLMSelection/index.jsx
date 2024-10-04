@@ -10,12 +10,7 @@ import paths from "@/utils/paths";
 
 // Some providers can only be associated with a single model.
 // In that case there is no selection to be made so we can just move on.
-const NO_MODEL_SELECTION = [
-  "default",
-  "huggingface",
-  "generic-openai",
-  "bedrock",
-];
+const NO_MODEL_SELECTION = ["default", "huggingface", "bedrock"];
 const DISABLED_PROVIDERS = ["azure", "native"];
 const LLM_DEFAULT = {
   name: "System default",
@@ -67,6 +62,45 @@ export default function WorkspaceLLMSelection({
   }, [LLMS, searchQuery, selectedLLM]);
 
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
+  const renderModelSelection = () => {
+    if (NO_MODEL_SELECTION.includes(selectedLLM)) {
+      if (selectedLLM !== "default") {
+        return (
+          <div className="w-full h-10 justify-center items-center flex mt-4">
+            <p className="text-sm font-base text-white text-opacity-60 text-center">
+              Multi-model support is not supported for this provider yet.
+              <br />
+              This workspace will use{" "}
+              <Link to={paths.settings.llmPreference()} className="underline">
+                the model set for the system.
+              </Link>
+            </p>
+          </div>
+        );
+      }
+      return null;
+    }
+
+    if (selectedLLM === "generic-openai") {
+      return (
+        <GenericOpenAIModelInput
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+      );
+    }
+
+    return (
+      <div className="mt-4 flex flex-col gap-y-1">
+        <ChatModelSelection
+          provider={selectedLLM}
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="border-b border-white/40 pb-8">
       <div className="flex flex-col">
@@ -155,30 +189,30 @@ export default function WorkspaceLLMSelection({
           </button>
         )}
       </div>
-      {NO_MODEL_SELECTION.includes(selectedLLM) ? (
-        <>
-          {selectedLLM !== "default" && (
-            <div className="w-full h-10 justify-center items-center flex mt-4">
-              <p className="text-sm font-base text-white text-opacity-60 text-center">
-                Multi-model support is not supported for this provider yet.
-                <br />
-                This workspace will use{" "}
-                <Link to={paths.settings.llmPreference()} className="underline">
-                  the model set for the system.
-                </Link>
-              </p>
-            </div>
-          )}
-        </>
-      ) : (
-        <div className="mt-4 flex flex-col gap-y-1">
-          <ChatModelSelection
-            provider={selectedLLM}
-            workspace={workspace}
-            setHasChanges={setHasChanges}
-          />
-        </div>
-      )}
+      {renderModelSelection()}
     </div>
   );
 }
+
+const GenericOpenAIModelInput = ({ workspace, setHasChanges }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="mt-4 flex flex-col gap-y-1">
+      <label htmlFor="genericOpenAIModel" className="block input-label">
+        {t("chat.model.title")}
+      </label>
+      <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        {t("chat.model.description")}
+      </p>
+      <input
+        type="text"
+        id="genericOpenAIModel"
+        name="chatModel"
+        defaultValue={workspace?.chatModel || ""}
+        onChange={() => setHasChanges(true)}
+        className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        placeholder="Enter model name (e.g., gpt-3.5-turbo)"
+      />
+    </div>
+  );
+};
