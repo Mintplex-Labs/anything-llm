@@ -122,9 +122,22 @@ export default function PromptInput({
 
     const pasteText = e.clipboardData.getData("text/plain");
     if (pasteText) {
-      const newPromptInput = promptInput + pasteText.trim();
+      const textarea = textareaRef.current;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newPromptInput =
+        promptInput.substring(0, start) +
+        pasteText +
+        promptInput.substring(end);
       setPromptInput(newPromptInput);
       onChange({ target: { value: newPromptInput } });
+
+      // Set the cursor position after the pasted text
+      // we need to use setTimeout to prevent the cursor from being set to the end of the text
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd =
+          start + pasteText.length;
+      }, 0);
     }
     return;
   };
