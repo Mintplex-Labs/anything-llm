@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['chrome-extension'] # put your current branch to create a build. Core team only.
+    branches: ['agent-skill-plugins'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

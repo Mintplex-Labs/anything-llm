@@ -49,7 +49,7 @@ export default function OrderPlaced({ settings }) {
 
             <div className="flex flex-col items-left gap-x-4 text-xs">
               <a
-                href="https://docs.useanything.com/fine-tuning/overview"
+                href="https://docs.anythingllm.com/fine-tuning/overview"
                 target="_blank"
                 rel="noreferrer"
                 className="text-sky-400 hover:underline hover:cursor-pointer"

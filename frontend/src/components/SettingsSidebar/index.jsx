@@ -21,7 +21,6 @@ import { useTranslation } from "react-i18next";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
 import Option from "./MenuOption";
-import { FineTuningAlert } from "@/pages/FineTuning/Banner";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -178,7 +177,6 @@ export default function SettingsSidebar() {
           </div>
         </div>
       </div>
-      <FineTuningAlert />
     </>
   );
 }
