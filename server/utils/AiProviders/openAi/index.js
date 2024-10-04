@@ -36,7 +36,8 @@ class OpenAiLLM {
   }
 
   streamingEnabled() {
-    return "streamGetChatCompletion" in this;
+    // o1 models do not support streaming
+    return !this.isO1Model() && "streamGetChatCompletion" in this;
   }
 
   static promptWindowLimit(modelName) {
@@ -98,8 +99,12 @@ class OpenAiLLM {
     userPrompt = "",
     attachments = [], // This is the specific attachment for only this prompt
   }) {
+    // o1 Models do not support the "system" role
+    // in order to combat this, we can use the "user" role as a replacement for now
+    // https://community.openai.com/t/o1-models-do-not-support-system-role-in-chat-completion/953880
+    const systemRole = this.isO1Model() ? "user" : "system";
     const prompt = {
-      role: "system",
+      role: systemRole,
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [
@@ -122,7 +127,8 @@ class OpenAiLLM {
       .create({
         model: this.model,
         messages,
-        temperature,
+        // o1 models only accept temperature 1
+        temperature: this.isO1Model() ? 1 : temperature,
       })
       .catch((e) => {
         throw new Error(e.message);
@@ -143,7 +149,8 @@ class OpenAiLLM {
       model: this.model,
       stream: true,
       messages,
-      temperature,
+      // o1 models only accept temperature 1
+      temperature: this.isO1Model() ? 1 : temperature,
     });
     return streamRequest;
   }
@@ -164,6 +171,9 @@ class OpenAiLLM {
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);
+  }
+  isO1Model() {
+    return this.model.startsWith("o1");
   }
 }
 
