@@ -21,7 +21,7 @@ export default function TextSizeButton() {
       >
         <TextT
           weight="fill"
-          className="w-6 h-6 pointer-events-none text-white"
+          className="w-[22px] h-[22px] pointer-events-none text-white"
         />
         <Tooltip
           id="tooltip-text-size-btn"

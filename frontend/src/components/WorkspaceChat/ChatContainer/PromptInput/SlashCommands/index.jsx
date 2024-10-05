@@ -18,7 +18,7 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
     >
       <img
         src={SlashCommandIcon}
-        className="w-6 h-6 pointer-events-none"
+        className="w-[20px] h-[20px] pointer-events-none"
         alt="Slash commands button"
       />
       <Tooltip
