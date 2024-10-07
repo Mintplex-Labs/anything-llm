@@ -34,7 +34,12 @@ const User = {
       return String(role);
     },
     dailyMessageLimit: (dailyMessageLimit = null) => {
-      return dailyMessageLimit === null ? null : Number(dailyMessageLimit);
+      if (dailyMessageLimit === null) return null;
+      const limit = Number(dailyMessageLimit);
+      if (isNaN(limit) || limit < 1) {
+        throw new Error("Daily message limit must be null or a number greater than or equal to 1");
+      }
+      return limit;
     },
   },
   // validations for the above writable fields.
