@@ -18,7 +18,8 @@ class GitHubRepoLoader {
    */
   constructor(args = {}) {
     this.ready = false;
-    this.repo = args?.repo;
+    this.originalRepo = args?.repo;
+    this.repo = this.extractRootRepo(args?.repo);
     this.branch = args?.branch;
     this.accessToken = args?.accessToken || null;
     this.ignorePaths = args?.ignorePaths || [];
@@ -26,6 +27,11 @@ class GitHubRepoLoader {
     this.author = null;
     this.project = null;
     this.branches = [];
+  }
+
+  extractRootRepo(url) {
+    const match = url.match(/^(https?:\/\/github\.com\/[^\/]+\/[^\/]+)/);
+    return match ? match[1] : url;
   }
 
   #validGithubUrl() {
@@ -41,7 +47,7 @@ class GitHubRepoLoader {
     if (!match) return false;
 
     this.author = match.author;
-    this.project = match.project;
+    this.project = match.project.split('/')[0];
     return true;
   }
 
@@ -112,7 +118,7 @@ class GitHubRepoLoader {
         `[Github Loader]: Access token set! Recursive loading enabled!`
       );
 
-    const loader = new LCGithubLoader(this.repo, {
+    const loader = new LCGithubLoader(this.originalRepo, {
       branch: this.branch,
       recursive: !!this.accessToken, // Recursive will hit rate limits.
       maxConcurrency: 5,
