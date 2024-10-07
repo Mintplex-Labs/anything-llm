@@ -16,8 +16,6 @@ function isNullOrNaN(value) {
 const SystemSettings = {
   protectedFields: ["multi_user_mode"],
   publicFields: [
-    "limit_user_messages",
-    "message_limit",
     "footer_data",
     "support_email",
     "text_splitter_chunk_size",
@@ -33,8 +31,6 @@ const SystemSettings = {
     "meta_page_favicon",
   ],
   supportedFields: [
-    "limit_user_messages",
-    "message_limit",
     "logo_filename",
     "telemetry_id",
     "footer_data",

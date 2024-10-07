@@ -595,56 +595,6 @@ function apiAdminEndpoints(app) {
     }
   );
 
-  app.get("/v1/admin/preferences", [validApiKey], async (request, response) => {
-    /*
-    #swagger.tags = ['Admin']
-    #swagger.description = 'Show all multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.'
-    #swagger.responses[200] = {
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            example: {
-              settings: {
-                limit_user_messages: false,
-                message_limit: 10,
-              }
-            }
-          }
-        }
-      }
-    }
-    #swagger.responses[403] = {
-      schema: {
-        "$ref": "#/definitions/InvalidAPIKey"
-      }
-    }
-     #swagger.responses[401] = {
-      description: "Instance is not in Multi-User mode. Method denied",
-    }
-    */
-    try {
-      if (!multiUserMode(response)) {
-        response.sendStatus(401).end();
-        return;
-      }
-
-      const settings = {
-        limit_user_messages:
-          (await SystemSettings.get({ label: "limit_user_messages" }))
-            ?.value === "true",
-        message_limit:
-          Number(
-            (await SystemSettings.get({ label: "message_limit" }))?.value
-          ) || 10,
-      };
-      response.status(200).json({ settings });
-    } catch (e) {
-      console.error(e);
-      response.sendStatus(500).end();
-    }
-  });
-
   app.post(
     "/v1/admin/preferences",
     [validApiKey],
@@ -658,8 +608,7 @@ function apiAdminEndpoints(app) {
       content: {
         "application/json": {
           example: {
-            limit_user_messages: true,
-            message_limit: 5,
+            support_email: "support@example.com",
           }
         }
       }

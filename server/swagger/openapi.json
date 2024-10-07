@@ -693,52 +693,6 @@
       }
     },
     "/v1/admin/preferences": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "description": "Show all multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "example": {
-                    "settings": {
-                      "limit_user_messages": false,
-                      "message_limit": 10
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Instance is not in Multi-User mode. Method denied"
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidAPIKey"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidAPIKey"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
       "post": {
         "tags": [
           "Admin"
@@ -788,8 +742,7 @@
           "content": {
             "application/json": {
               "example": {
-                "limit_user_messages": true,
-                "message_limit": 5
+                "support_email": "support@example.com"
               }
             }
           }

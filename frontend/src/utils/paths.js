@@ -80,9 +80,6 @@ export default {
     return `/fine-tuning`;
   },
   settings: {
-    system: () => {
-      return `/settings/system-preferences`;
-    },
     users: () => {
       return `/settings/users`;
     },
