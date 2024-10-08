@@ -490,6 +490,7 @@ const KEY_MAPPING = {
   AzureADGroups: {
     envKey: "AZURE_AD_GROUPS",
     checks: [isNotEmpty],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
