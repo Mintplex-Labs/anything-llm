@@ -10,7 +10,9 @@ const DEFAULT_BRANCHES = ["main", "master"];
 export default function GithubOptions() {
   const [loading, setLoading] = useState(false);
   const [repo, setRepo] = useState(null);
-  const [accessToken, setAccessToken] = useState(() => localStorage.getItem("anythingllm_ghpat") || "");
+  const [accessToken, setAccessToken] = useState(
+    () => localStorage.getItem("anythingllm_ghpat") || ""
+  );
   const [ignores, setIgnores] = useState([]);
 
   const [settings, setSettings] = useState({

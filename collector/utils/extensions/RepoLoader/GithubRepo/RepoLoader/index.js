@@ -47,7 +47,7 @@ class GitHubRepoLoader {
     if (!match) return false;
 
     this.author = match.author;
-    this.project = match.project.split('/')[0];
+    this.project = match.project.split("/")[0];
     return true;
   }
 
