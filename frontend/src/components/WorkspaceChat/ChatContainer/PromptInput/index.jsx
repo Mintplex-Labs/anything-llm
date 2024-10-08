@@ -152,7 +152,7 @@ export default function PromptInput({
         <div className="flex items-center rounded-lg md:mb-4">
           <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input shadow-sm rounded-2xl flex flex-col px-4 overflow-hidden">
             <AttachmentManager attachments={attachments} />
-            <div className="flex items-center w-full border-b-2 border-gray-500/50">
+            <div className="flex items-center w-full border-b-2 border-theme-chat-input-border">
               <textarea
                 ref={textareaRef}
                 onChange={(e) => {

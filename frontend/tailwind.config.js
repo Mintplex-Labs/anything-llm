@@ -76,6 +76,13 @@ export default {
             },
             border: 'var(--theme-sidebar-border)',
           },
+          "chat-input": {
+            border: 'var(--theme-chat-input-border)',
+          },
+          "action-menu": {
+            bg: 'var(--theme-action-menu-bg)',
+            "item-hover": 'var(--theme-action-menu-item-hover)',
+          },
         },
       },
       backgroundImage: {
