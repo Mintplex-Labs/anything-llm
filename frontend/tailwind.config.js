@@ -52,6 +52,8 @@ export default {
             secondary: 'var(--theme-bg-secondary)',
             sidebar: 'var(--theme-bg-sidebar)',
             container: 'var(--theme-bg-container)',
+            chat: 'var(--theme-bg-chat)',
+            "chat-input": 'var(--theme-bg-chat-input)',
           },
           text: {
             primary: 'var(--theme-text-primary)',
@@ -73,6 +75,13 @@ export default {
               'icon-hover': 'var(--theme-sidebar-footer-icon-hover)',
             },
             border: 'var(--theme-sidebar-border)',
+          },
+          "chat-input": {
+            border: 'var(--theme-chat-input-border)',
+          },
+          "action-menu": {
+            bg: 'var(--theme-action-menu-bg)',
+            "item-hover": 'var(--theme-action-menu-item-hover)',
           },
         },
       },

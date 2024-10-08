@@ -89,7 +89,7 @@ export default function PromptInput({
   const adjustTextArea = (event) => {
     const element = event.target;
     element.style.height = "auto";
-    element.style.height = `${element.scrollHeight}px`;
+    element.style.height = `${element.scrollHeight + 12}px`;
   };
 
   const handlePasteEvent = (e) => {
@@ -150,9 +150,9 @@ export default function PromptInput({
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
       >
         <div className="flex items-center rounded-lg md:mb-4">
-          <div className="w-[95vw] md:w-[635px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+          <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input shadow-sm rounded-2xl flex flex-col px-4 overflow-hidden">
             <AttachmentManager attachments={attachments} />
-            <div className="flex items-center w-full border-b-2 border-gray-500/50">
+            <div className="flex items-center w-full border-b-2 border-theme-chat-input-border">
               <textarea
                 ref={textareaRef}
                 onChange={(e) => {
@@ -172,7 +172,7 @@ export default function PromptInput({
                   adjustTextArea(e);
                 }}
                 value={promptInput}
-                className="cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
+                className="cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full text-[14px] leading-5 md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
                 placeholder={"Send a message"}
               />
               {buttonDisabled ? (
@@ -187,7 +187,7 @@ export default function PromptInput({
                     data-tooltip-content="Send prompt message to workspace"
                     aria-label="Send prompt message to workspace"
                   >
-                    <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
+                    <PaperPlaneRight className="w-[21px] h-[24px]" weight="fill" />
                     <span className="sr-only">Send message</span>
                   </button>
                   <Tooltip

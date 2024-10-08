@@ -17,7 +17,7 @@ export default function AvailableAgentsButton({ showing, setShowAgents }) {
         showing ? "!opacity-100" : ""
       }`}
     >
-      <At className="w-6 h-6 pointer-events-none text-white" />
+      <At className="w-[22px] h-[22px] pointer-events-none text-white" />
       <Tooltip
         id="tooltip-agent-list-btn"
         place="top"
