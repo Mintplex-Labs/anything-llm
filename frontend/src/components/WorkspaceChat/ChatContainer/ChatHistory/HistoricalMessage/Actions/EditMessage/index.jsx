@@ -1,4 +1,3 @@
-import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { Pencil } from "@phosphor-icons/react";
 import { useState, useEffect, useRef } from "react";
 import { Tooltip } from "react-tooltip";
@@ -102,9 +101,7 @@ export function EditMessageForm({
       <textarea
         ref={formRef}
         name="editedMessage"
-        className={`w-full rounded ${
-          role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-        } border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y`}
+        className="w-full rounded bg-theme-bg-secondary border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y"
         defaultValue={message}
         onChange={adjustTextArea}
       />
