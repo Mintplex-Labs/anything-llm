@@ -60,8 +60,7 @@ async function streamChatWithForEmbed(
   const { rawHistory, chatHistory } = await recentEmbedChatHistory(
     sessionId,
     embed,
-    messageLimit,
-    chatMode
+    messageLimit
   );
 
   // See stream.js comment for more information on this implementation.
@@ -118,11 +117,7 @@ async function streamChatWithForEmbed(
 
   // If in query mode and no sources are found, do not
   // let the LLM try to hallucinate a response or use general knowledge
-  if (
-    chatMode === "query" &&
-    sources.length === 0 &&
-    pinnedDocIdentifiers.length === 0
-  ) {
+  if (chatMode === "query" && contextTexts.length === 0) {
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
@@ -192,13 +187,7 @@ async function streamChatWithForEmbed(
 
 // On query we don't return message history. All other chat modes and when chatting
 // with no embeddings we return history.
-async function recentEmbedChatHistory(
-  sessionId,
-  embed,
-  messageLimit = 20,
-  chatMode = null
-) {
-  if (chatMode === "query") return { rawHistory: [], chatHistory: [] };
+async function recentEmbedChatHistory(sessionId, embed, messageLimit = 20) {
   const rawHistory = (
     await EmbedChats.forEmbedByUser(embed.id, sessionId, messageLimit, {
       id: "desc",
