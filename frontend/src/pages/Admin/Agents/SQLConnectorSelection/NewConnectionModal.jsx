@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import ModalWrapper from "@/components/ModalWrapper";
-import { WarningOctagon, X } from "@phosphor-icons/react";
+import { Warehouse, WarningOctagon, X } from "@phosphor-icons/react";
 import { DB_LOGOS } from "./DBConnection";
 
 function assembleConnectionString({
@@ -11,6 +11,7 @@ function assembleConnectionString({
   host = "",
   port = "",
   database = "",
+  privateKeyPassPhrase = "",
 }) {
   if ([username, password, host, database].every((i) => !!i) === false)
     return `Please fill out all the fields above.`;
@@ -21,6 +22,16 @@ function assembleConnectionString({
       return `mysql://${username}:${password}@${host}:${port}/${database}`;
     case "sql-server":
       return `mssql://${username}:${password}@${host}:${port}/${database}`;
+    case "snowflake":
+      const snowflake = {
+        username: username,
+        privateKey: password,
+        privateKeyPassPhrase: privateKeyPassPhrase,
+        host: host,
+        warehouse: port,
+        database: database,
+      }
+      return JSON.stringify(snowflake);
     default:
       return null;
   }
@@ -30,6 +41,7 @@ const DEFAULT_ENGINE = "postgresql";
 const DEFAULT_CONFIG = {
   username: null,
   password: null,
+  privateKeyPassPhrase: null,
   host: null,
   port: null,
   database: null,
@@ -51,6 +63,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
     setConfig({
       username: form.get("username").trim(),
       password: form.get("password"),
+      privateKeyPassPhrase: form.get("privateKeyPassPhrase"),
       host: form.get("host").trim(),
       port: form.get("port").trim(),
       database: form.get("database").trim(),
@@ -130,6 +143,11 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     active={engine === "sql-server"}
                     onClick={() => setEngine("sql-server")}
                   />
+                  <DBEngine
+                    provider="snowflake"
+                    active={engine === "snowflake"}
+                    onClick={() => setEngine("snowflake")}
+                  />
                 </div>
               </div>
 
@@ -163,13 +181,14 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     spellCheck={false}
                   />
                 </div>
+                {engine === "snowflake" ? (
                 <div className="flex flex-col">
                   <label className="text-white text-sm font-semibold block mb-3">
-                    Database user password
+                    Private Key Passphrase
                   </label>
                   <input
                     type="text"
-                    name="password"
+                    name="privateKeyPassPhrase"
                     className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="password123"
                     required={true}
@@ -177,18 +196,57 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     spellCheck={false}
                   />
                 </div>
+                ) : (
+                <div className="flex flex-col">
+                  <label className="text-white text-sm font-semibold block mb-3">
+                    Database user password
+                  </label>
+                      <input
+                        type="text"
+                        name="password"
+                        className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                        placeholder="password123"
+                        required={true}
+                        autoComplete="off"
+                        spellCheck={false}
+                      />
+                </div>
+                )}
               </div>
+              {engine === "snowflake" ? (
+              <div className="flex flex-col">
+                <label className="text-white text-sm font-semibold block mb-3">
+                  Private Key
+                </label>
+                    <textarea 
+                    rows={5}
+                    name="password" 
+                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5" 
+                    placeholder="-----BEGIN PRIVATE KEY----- MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQ7  ..." 
+                    required={true} 
+                    autoComplete="off" 
+                    spellCheck={false} />
+              </div>
+              ) : null}
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="sm:col-span-2">
                   <label className="text-white text-sm font-semibold block mb-3">
-                    Server endpoint
+                    {engine === "snowflake" ? (
+                    "Account"
+                    ) : (
+                    "Server endpoint"
+                    )}
                   </label>
                   <input
                     type="text"
                     name="host"
                     className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                    placeholder="the hostname or endpoint for your database"
+                    placeholder={engine === "snowflake" ? (
+                      "the account for your snowflake instance"
+                      ) : (
+                      "the hostname or endpoint for your database"
+                      )}
                     required={true}
                     autoComplete="off"
                     spellCheck={false}
@@ -196,13 +254,21 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 </div>
                 <div>
                   <label className="text-white text-sm font-semibold block mb-3">
-                    Port
+                  {engine === "snowflake" ? (
+                    "Warehouse"
+                    ) : (
+                    "Port"
+                    )}
                   </label>
                   <input
                     type="text"
                     name="port"
                     className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                    placeholder="3306"
+                    placeholder={engine === "snowflake" ? (
+                      "WAREHOUSE"
+                      ) : (
+                      "3306"
+                      )}
                     required={false}
                     autoComplete="off"
                     spellCheck={false}
