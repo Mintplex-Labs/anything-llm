@@ -60,7 +60,7 @@ async function streamChatWithForEmbed(
   const { rawHistory, chatHistory } = await recentEmbedChatHistory(
     sessionId,
     embed,
-    messageLimit,
+    messageLimit
   );
 
   // See stream.js comment for more information on this implementation.
@@ -187,11 +187,7 @@ async function streamChatWithForEmbed(
 
 // On query we don't return message history. All other chat modes and when chatting
 // with no embeddings we return history.
-async function recentEmbedChatHistory(
-  sessionId,
-  embed,
-  messageLimit = 20,
-) {
+async function recentEmbedChatHistory(sessionId, embed, messageLimit = 20) {
   const rawHistory = (
     await EmbedChats.forEmbedByUser(embed.id, sessionId, messageLimit, {
       id: "desc",
