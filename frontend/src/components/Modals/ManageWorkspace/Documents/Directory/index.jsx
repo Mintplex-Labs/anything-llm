@@ -197,7 +197,7 @@ function Directory({
               type="search"
               placeholder="Search for document"
               onChange={handleSearch}
-              className="search-input bg-zinc-900 text-white placeholder-white/40 text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px]"
+              className="search-input bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px]"
             />
             <MagnifyingGlass
               size={14}

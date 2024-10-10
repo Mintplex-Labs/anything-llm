@@ -115,7 +115,7 @@ export default function AdminSystem() {
                     }}
                     value={messageLimit.limit}
                     min={1}
-                    className="bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-60 p-2.5"
+                    className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-60 p-2.5"
                   />
                 </div>
               </div>

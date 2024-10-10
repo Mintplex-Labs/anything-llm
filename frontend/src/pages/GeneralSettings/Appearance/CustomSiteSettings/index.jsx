@@ -61,7 +61,7 @@ export default function CustomSiteSettings() {
             <input
               name="meta_page_title"
               type="text"
-              className="border-none bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-white/20"
+              className="border-none bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-theme-settings-input-placeholder"
               placeholder="AnythingLLM | Your personal LLM trained on anything"
               autoComplete="off"
               onChange={(e) => {
@@ -93,7 +93,7 @@ export default function CustomSiteSettings() {
             <input
               name="meta_page_favicon"
               type="url"
-              className="border-none bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-white/20"
+              className="border-none bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-theme-settings-input-placeholder"
               placeholder="url to your image"
               onChange={(e) => {
                 setSettings((prev) => {

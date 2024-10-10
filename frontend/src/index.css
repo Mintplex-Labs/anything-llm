@@ -27,7 +27,7 @@
   --theme-settings-input-bg: #0E0F0F;
 
   --theme-settings-input-placeholder: rgba(255, 255, 255, 0.5);
-  --theme-settings-input-active: #525355;
+  --theme-settings-input-active: rgb(255 255 255 / 0.2);
   --theme-settings-input-text: #ffffff;
 }
 

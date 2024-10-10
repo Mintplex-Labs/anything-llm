@@ -41,7 +41,7 @@ export default function KoboldCPPOptions({ settings }) {
           <input
             type="number"
             name="KoboldCPPTokenLimit"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             min={1}
             value={tokenLimit}
@@ -97,7 +97,7 @@ export default function KoboldCPPOptions({ settings }) {
             <input
               type="url"
               name="KoboldCPPBasePath"
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://127.0.0.1:5000/v1"
               value={basePathValue.value}
               required={true}

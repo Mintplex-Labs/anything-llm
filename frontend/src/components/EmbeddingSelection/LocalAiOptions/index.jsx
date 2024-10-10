@@ -36,7 +36,7 @@ export default function LocalAiOptions({ settings }) {
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"
-            className="bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="1000"
             min={1}
             onScroll={(e) => e.target.blur()}
@@ -55,7 +55,7 @@ export default function LocalAiOptions({ settings }) {
           <input
             type="password"
             name="LocalAiApiKey"
-            className="bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="sk-mysecretkey"
             defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
@@ -106,7 +106,7 @@ export default function LocalAiOptions({ settings }) {
             <input
               type="url"
               name="EmbeddingBasePath"
-              className="bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://localhost:8080/v1"
               value={basePathValue.value}
               required={true}

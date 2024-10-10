@@ -57,7 +57,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                     maxLength={25}
                     autoComplete="off"
                     required={true}
-                    className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="border-none bg-zinc-900 placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   />
                 </div>
               </div>
@@ -70,7 +70,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                   autoComplete="off"
                   placeholder="This is the content that will be injected in front of your prompt."
                   required={true}
-                  className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="border-none bg-zinc-900 placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 ></textarea>
               </div>
               <div>
@@ -84,7 +84,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                   maxLength={80}
                   autoComplete="off"
                   required={true}
-                  className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="border-none bg-zinc-900 placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 />
               </div>
             </div>

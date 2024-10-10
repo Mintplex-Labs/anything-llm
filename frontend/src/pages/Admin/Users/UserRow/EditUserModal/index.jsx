@@ -50,7 +50,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 <input
                   name="username"
                   type="text"
-                  className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="bg-zinc-900 placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="User's username"
                   defaultValue={user.username}
                   minLength={2}
@@ -72,7 +72,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 <input
                   name="password"
                   type="text"
-                  className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="bg-zinc-900 placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder={`${user.username}'s new password`}
                   autoComplete="off"
                   minLength={8}

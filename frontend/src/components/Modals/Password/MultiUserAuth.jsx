@@ -56,7 +56,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
               placeholder={t("login.multi-user.placeholder-username")}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+              className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
               required
             />
           </div>
@@ -76,7 +76,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
                   onChange={(e) =>
                     handleRecoveryCodeChange(index, e.target.value)
                   }
-                  className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+                  className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required
                 />
               </div>
@@ -136,7 +136,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
               placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+              className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
               required
             />
           </div>
@@ -147,7 +147,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+              className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
               required
             />
           </div>
@@ -305,7 +305,7 @@ export default function MultiUserAuth() {
                   name="username"
                   type="text"
                   placeholder={t("login.multi-user.placeholder-username")}
-                  className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+                  className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required={true}
                   autoComplete="off"
                 />
@@ -315,7 +315,7 @@ export default function MultiUserAuth() {
                   name="password"
                   type="password"
                   placeholder={t("login.multi-user.placeholder-password")}
-                  className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+                  className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required={true}
                   autoComplete="off"
                 />
