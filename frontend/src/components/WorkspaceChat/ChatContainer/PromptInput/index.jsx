@@ -187,7 +187,10 @@ export default function PromptInput({
                     data-tooltip-content="Send prompt message to workspace"
                     aria-label="Send prompt message to workspace"
                   >
-                    <PaperPlaneRight className="w-[21px] h-[24px]" weight="fill" />
+                    <PaperPlaneRight
+                      className="w-[21px] h-[24px]"
+                      weight="fill"
+                    />
                     <span className="sr-only">Send message</span>
                   </button>
                   <Tooltip

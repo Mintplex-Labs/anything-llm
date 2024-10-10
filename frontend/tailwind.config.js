@@ -83,6 +83,14 @@ export default {
             bg: 'var(--theme-action-menu-bg)',
             "item-hover": 'var(--theme-action-menu-item-hover)',
           },
+          settings: {
+            input: {
+              bg: 'var(--theme-settings-input-bg)',
+              active: 'var(--theme-settings-input-active)',
+              placeholder: 'var(--theme-settings-input-placeholder)',
+              text: 'var(--theme-settings-input-text)',
+            }
+          },
         },
       },
       backgroundImage: {

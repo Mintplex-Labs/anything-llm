@@ -80,10 +80,7 @@ export default function DefaultChatContainer() {
     <React.Fragment key="msg4">
       <MessageContainer>
         <MessageContent>
-          <UserIcon
-            user={{ uid: userFromStorage()?.username }}
-            role={"user"}
-          />
+          <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
           <MessageText>{t("welcomeMessage.user1")}</MessageText>
         </MessageContent>
       </MessageContainer>
@@ -113,10 +110,7 @@ export default function DefaultChatContainer() {
     <React.Fragment key="msg6">
       <MessageContainer>
         <MessageContent>
-          <UserIcon
-            user={{ uid: userFromStorage()?.username }}
-            role={"user"}
-          />
+          <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
           <MessageText>{t("welcomeMessage.user2")}</MessageText>
         </MessageContent>
       </MessageContainer>
@@ -142,10 +136,7 @@ export default function DefaultChatContainer() {
     <React.Fragment key="msg8">
       <MessageContainer>
         <MessageContent>
-          <UserIcon
-            user={{ uid: userFromStorage()?.username }}
-            role={"user"}
-          />
+          <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
           <MessageText>{t("welcomeMessage.user3")}</MessageText>
         </MessageContent>
       </MessageContainer>
