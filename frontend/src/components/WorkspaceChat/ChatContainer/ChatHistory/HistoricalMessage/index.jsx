@@ -65,12 +65,12 @@ const HistoricalMessage = ({
   if (completeDelete) return null;
   return (
     <div
-    key={uuid}
-    onAnimationEnd={onEndAnimation}
-    className={`${
-      isDeleted ? "animate-remove" : ""
-    } flex justify-center items-end w-full group bg-theme-bg-chat`}
-  >
+      key={uuid}
+      onAnimationEnd={onEndAnimation}
+      className={`${
+        isDeleted ? "animate-remove" : ""
+      } flex justify-center items-end w-full group bg-theme-bg-chat`}
+    >
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <div className="flex flex-col items-center">

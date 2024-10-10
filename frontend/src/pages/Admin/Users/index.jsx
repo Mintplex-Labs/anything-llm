@@ -25,7 +25,9 @@ export default function AdminUsers() {
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <div className="items-center flex gap-x-4">
-              <p className="text-lg leading-6 font-bold text-theme-text-primary">Users</p>
+              <p className="text-lg leading-6 font-bold text-theme-text-primary">
+                Users
+              </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
               These are all the accounts which have an account on this instance.
@@ -34,7 +36,10 @@ export default function AdminUsers() {
             </p>
           </div>
           <div className="w-full justify-end flex">
-            <CTAButton onClick={openModal} className="mt-3 mr-0 mb-4 md:-mb-6 z-10">
+            <CTAButton
+              onClick={openModal}
+              className="mt-3 mr-0 mb-4 md:-mb-6 z-10"
+            >
               <UserPlus className="h-4 w-4" weight="bold" /> Add user
             </CTAButton>
           </div>

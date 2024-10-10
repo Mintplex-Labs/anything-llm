@@ -5,11 +5,11 @@
 :root {
   /* Default theme */
   --theme-bg-primary: #0e0f0f;
-  --theme-bg-secondary: #1B1B1E;
+  --theme-bg-secondary: #1b1b1e;
   --theme-bg-sidebar: #0e0f0f;
   --theme-bg-container: #0e0f0f;
-  --theme-bg-chat: #1B1B1E;
-  --theme-bg-chat-input: #27282A;
+  --theme-bg-chat: #1b1b1e;
+  --theme-bg-chat-input: #27282a;
   --theme-text-primary: #ffffff;
   --theme-text-secondary: rgba(255, 255, 255, 0.6);
   --theme-sidebar-item-default: rgba(255, 255, 255, 0.1);
@@ -22,10 +22,9 @@
   --theme-sidebar-footer-icon-hover: rgba(255, 255, 255, 0.2);
   --theme-sidebar-border: rgba(255, 255, 255, 0.1);
   --theme-chat-input-border: #525355;
-  --theme-action-menu-bg: #27282A;
+  --theme-action-menu-bg: #27282a;
   --theme-action-menu-item-hover: rgba(255, 255, 255, 0.1);
   --theme-settings-input-bg: #262629;
-
 
   --theme-settings-input-placeholder: rgba(255, 255, 255, 0.5);
   --theme-settings-input-active: #525355;

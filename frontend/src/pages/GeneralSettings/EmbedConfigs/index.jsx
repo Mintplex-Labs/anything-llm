@@ -34,7 +34,10 @@ export default function EmbedConfigs() {
             </p>
           </div>
           <div className="w-full justify-end flex">
-            <CTAButton onClick={openModal} className="mt-3 mr-0 mb-4 md:-mb-14 z-10">
+            <CTAButton
+              onClick={openModal}
+              className="mt-3 mr-0 mb-4 md:-mb-14 z-10"
+            >
               <CodeBlock className="h-4 w-4" weight="bold" />{" "}
               {t("embeddable.create")}
             </CTAButton>

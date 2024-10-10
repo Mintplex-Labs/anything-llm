@@ -107,9 +107,7 @@ export default function ThreadContainer({ workspace }) {
   if (loading) {
     return (
       <div className="flex flex-col bg-pulse w-full h-10 items-center justify-center">
-        <p className="text-xs text-white animate-pulse">
-          loading threads....
-        </p>
+        <p className="text-xs text-white animate-pulse">loading threads....</p>
       </div>
     );
   }
