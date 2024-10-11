@@ -166,7 +166,10 @@ class AgentHandler {
         if (!process.env.DEEPSEEK_API_KEY)
           throw new Error("DeepSeek API Key must be provided to use agents.");
         break;
-
+      case "litellm":
+        if (!process.env.LITE_LLM_BASE_PATH)
+          throw new Error("LiteLLM API base path and key must be provided to use agents.");
+        break;
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
