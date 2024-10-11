@@ -168,7 +168,9 @@ class AgentHandler {
         break;
       case "litellm":
         if (!process.env.LITE_LLM_BASE_PATH)
-          throw new Error("LiteLLM API base path and key must be provided to use agents.");
+          throw new Error(
+            "LiteLLM API base path and key must be provided to use agents."
+          );
         break;
       default:
         throw new Error(
