@@ -70,7 +70,7 @@ export default function CustomAppName() {
         <input
           name="customAppName"
           type="text"
-          className="bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[275px] placeholder:text-white/20"
+          className="bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[275px] placeholder:text-theme-settings-input-placeholder"
           placeholder="AnythingLLM"
           required={true}
           autoComplete="off"

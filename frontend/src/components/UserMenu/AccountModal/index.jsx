@@ -127,7 +127,7 @@ export default function AccountModal({ user, hideModal }) {
               <input
                 name="username"
                 type="text"
-                className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                className="bg-zinc-900 placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 placeholder="User's username"
                 minLength={2}
                 defaultValue={user.username}
@@ -149,7 +149,7 @@ export default function AccountModal({ user, hideModal }) {
               <input
                 name="password"
                 type="text"
-                className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                className="bg-zinc-900 placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 placeholder={`${user.username}'s new password`}
                 minLength={8}
               />

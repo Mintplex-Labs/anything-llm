@@ -47,7 +47,7 @@ export default function DataUpload({ setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-[#303237] text-white rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-6">
         <div className="w-full flex flex-col gap-y-3 max-w-[700px]">
           <h2 className="text-base text-white font-semibold">
             Select your training dataset

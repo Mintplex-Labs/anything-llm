@@ -9,7 +9,7 @@ export default function AzureAiOptions({ settings }) {
           <input
             type="url"
             name="AzureOpenAiEndpoint"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="https://my-azure.openai.azure.com"
             defaultValue={settings?.AzureOpenAiEndpoint}
             required={true}
@@ -25,7 +25,7 @@ export default function AzureAiOptions({ settings }) {
           <input
             type="password"
             name="AzureOpenAiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Azure OpenAI API Key"
             defaultValue={settings?.AzureOpenAiKey ? "*".repeat(20) : ""}
             required={true}
@@ -41,7 +41,7 @@ export default function AzureAiOptions({ settings }) {
           <input
             type="text"
             name="AzureOpenAiEmbeddingModelPref"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Azure OpenAI embedding model deployment name"
             defaultValue={settings?.AzureOpenAiEmbeddingModelPref}
             required={true}

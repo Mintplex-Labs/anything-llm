@@ -78,7 +78,7 @@ export default function GitlabOptions() {
                 <input
                   type="url"
                   name="repo"
-                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:border-white block w-full p-2.5"
                   placeholder="https://gitlab.com/gitlab-org/gitlab"
                   required={true}
                   autoComplete="off"
@@ -104,7 +104,7 @@ export default function GitlabOptions() {
                 <input
                   type="text"
                   name="accessToken"
-                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:border-white block w-full p-2.5"
                   placeholder="glpat-XXXXXXXXXXXXXXXXXXXX"
                   required={false}
                   autoComplete="off"
@@ -161,7 +161,7 @@ export default function GitlabOptions() {
                 classNames={{
                   tag: "bg-blue-300/10 text-zinc-800",
                   input:
-                    "flex bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white",
+                    "flex bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:border-white",
                 }}
               />
             </div>

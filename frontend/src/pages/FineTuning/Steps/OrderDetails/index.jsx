@@ -34,7 +34,7 @@ export default function OrderDetails({ setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-[#303237] text-white rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-6">
         <div className="w-full flex flex-col gap-y-3 max-w-[700px]">
           <h2 className="text-base text-white font-semibold">
             Time to create your fine tune!
@@ -57,7 +57,7 @@ export default function OrderDetails({ setSettings, setStep }) {
               <input
                 type="email"
                 name="email"
-                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[200px] p-2.5"
+                className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[200px] p-2.5"
                 placeholder="jdoe@example.com"
                 required={true}
                 autoComplete="off"
@@ -110,7 +110,7 @@ export default function OrderDetails({ setSettings, setStep }) {
               <input
                 type="text"
                 name="modelName"
-                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[200px] p-2.5"
+                className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[200px] p-2.5"
                 placeholder="My really cool model!"
                 required={true}
                 autoComplete="off"

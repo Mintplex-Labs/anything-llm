@@ -19,7 +19,7 @@ export default function LiteLLMOptions({ settings }) {
           <input
             type="url"
             name="LiteLLMBasePath"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://127.0.0.1:4000"
             defaultValue={settings?.LiteLLMBasePath}
             required={true}
@@ -41,7 +41,7 @@ export default function LiteLLMOptions({ settings }) {
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"
-            className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="8192"
             min={1}
             onScroll={(e) => e.target.blur()}
@@ -61,7 +61,7 @@ export default function LiteLLMOptions({ settings }) {
           <input
             type="password"
             name="LiteLLMAPIKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="sk-mysecretkey"
             defaultValue={settings?.LiteLLMAPIKey ? "*".repeat(20) : ""}
             autoComplete="off"
@@ -107,7 +107,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
         <select
           name="EmbeddingModelPref"
           disabled={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -130,7 +130,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
       <select
         name="EmbeddingModelPref"
         required={true}
-        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

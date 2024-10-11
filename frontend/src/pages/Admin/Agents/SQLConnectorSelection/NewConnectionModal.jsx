@@ -140,7 +140,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 <input
                   type="text"
                   name="name"
-                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="a unique name to identify this SQL connection"
                   required={true}
                   autoComplete="off"
@@ -156,7 +156,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   <input
                     type="text"
                     name="username"
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="root"
                     required={true}
                     autoComplete="off"
@@ -170,7 +170,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   <input
                     type="text"
                     name="password"
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="password123"
                     required={true}
                     autoComplete="off"
@@ -187,7 +187,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   <input
                     type="text"
                     name="host"
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="the hostname or endpoint for your database"
                     required={true}
                     autoComplete="off"
@@ -201,7 +201,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   <input
                     type="text"
                     name="port"
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="3306"
                     required={false}
                     autoComplete="off"
@@ -217,7 +217,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 <input
                   type="text"
                   name="database"
-                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="the database the agent will interact with"
                   required={true}
                   autoComplete="off"

@@ -9,7 +9,7 @@ export default function PineconeDBOptions({ settings }) {
           <input
             type="password"
             name="PineConeKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Pinecone API Key"
             defaultValue={settings?.PineConeKey ? "*".repeat(20) : ""}
             required={true}
@@ -24,7 +24,7 @@ export default function PineconeDBOptions({ settings }) {
           <input
             type="text"
             name="PineConeIndex"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="my-index"
             defaultValue={settings?.PineConeIndex}
             required={true}

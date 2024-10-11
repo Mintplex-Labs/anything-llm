@@ -9,7 +9,7 @@ export default function WeaviateDBOptions({ settings }) {
           <input
             type="url"
             name="WeaviateEndpoint"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://localhost:8080"
             defaultValue={settings?.WeaviateEndpoint}
             required={true}
@@ -25,7 +25,7 @@ export default function WeaviateDBOptions({ settings }) {
           <input
             type="password"
             name="WeaviateApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="sk-123Abcweaviate"
             defaultValue={settings?.WeaviateApiKey}
             autoComplete="off"
