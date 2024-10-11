@@ -121,8 +121,8 @@ function LoadingSkeleton() {
           height={100}
           width="100%"
           count={2}
-          baseColor="#292524"
-          highlightColor="#4c4948"
+          highlightColor="var(--theme-bg-primary)"
+          baseColor="var(--theme-bg-secondary)"
           enableAnimation={true}
           containerClassName="flex flex-col gap-y-1"
         />
@@ -131,8 +131,8 @@ function LoadingSkeleton() {
           height={100}
           width="100%"
           count={2}
-          baseColor="#292524"
-          highlightColor="#4c4948"
+          highlightColor="var(--theme-bg-primary)"
+          baseColor="var(--theme-bg-secondary)"
           enableAnimation={true}
           containerClassName="flex flex-col gap-y-1 mt-4"
         />
