@@ -15,7 +15,7 @@ export default function GeneralSecurity() {
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
       >
         <MultiUserMode />
         <PasswordProtection />
@@ -146,7 +146,7 @@ function MultiUserMode() {
                       <input
                         name="username"
                         type="text"
-                        className="bg-zinc-900 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
+                        className="bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
                         placeholder="Your admin username"
                         minLength={2}
                         required={true}
@@ -165,7 +165,7 @@ function MultiUserMode() {
                       <input
                         name="password"
                         type="text"
-                        className="bg-zinc-900 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
+                        className="bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
                         placeholder="Your admin password"
                         minLength={8}
                         required={true}
@@ -318,7 +318,7 @@ function PasswordProtection() {
                       <input
                         name="password"
                         type="text"
-                        className="bg-zinc-900 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder"
+                        className="bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder"
                         placeholder="Your Instance Password"
                         minLength={8}
                         required={true}
