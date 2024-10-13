@@ -12,6 +12,7 @@ export default function SuggestedChatMessages({ slug }) {
   const [hasChanges, setHasChanges] = useState(false);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+
   useEffect(() => {
     async function fetchWorkspace() {
       if (!slug) return;
@@ -32,17 +33,17 @@ export default function SuggestedChatMessages({ slug }) {
       validMessages
     );
     if (!success) {
-      showToast(`Failed to update welcome messages: ${error}`, "error");
+      showToast(t("general.message.error", { error }), "error");
       return;
     }
-    showToast("Successfully updated welcome messages.", "success");
+    showToast(t("general.message.success"), "success");
     setHasChanges(false);
   };
 
   const addMessage = () => {
     setEditingIndex(-1);
     if (suggestedMessages.length >= 4) {
-      showToast("Maximum of 4 messages allowed.", "warning");
+      showToast(t("general.message.maxLimit"), "warning");
       return;
     }
     const defaultMessage = {
@@ -144,10 +145,10 @@ export default function SuggestedChatMessages({ slug }) {
         <div className="flex flex-col gap-y-4 mr-2 mt-8">
           <div className="w-1/2">
             <label className="text-white text-sm font-semibold block mb-2">
-              Heading
+              {t("general.message.headingLabel")}
             </label>
             <input
-              placeholder="Message heading"
+              placeholder={t("general.message.headingPlaceholder")}
               className=" bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
               value={newMessage.heading}
               name="heading"
@@ -156,10 +157,10 @@ export default function SuggestedChatMessages({ slug }) {
           </div>
           <div className="w-1/2">
             <label className="text-white text-sm font-semibold block mb-2">
-              Message
+              {t("general.message.bodyLabel")}
             </label>
             <input
-              placeholder="Message"
+              placeholder={t("general.message.bodyPlaceholder")}
               className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
               value={newMessage.message}
               name="message"

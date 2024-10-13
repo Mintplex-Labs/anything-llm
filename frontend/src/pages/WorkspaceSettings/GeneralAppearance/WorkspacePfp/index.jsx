@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 export default function WorkspacePfp({ workspace, slug }) {
   const [pfp, setPfp] = useState(null);
   const { t } = useTranslation();
+
   useEffect(() => {
     async function fetchWorkspace() {
       const pfpUrl = await Workspace.fetchPfp(slug);
@@ -26,23 +27,24 @@ export default function WorkspacePfp({ workspace, slug }) {
       workspace.slug
     );
     if (!success) {
-      showToast(`Failed to upload profile picture: ${error}`, "error");
+      showToast(t("general.pfp.uploadFailed", { error }), "error");
       return;
     }
 
     const pfpUrl = await Workspace.fetchPfp(workspace.slug);
     setPfp(pfpUrl);
-    showToast("Profile picture uploaded.", "success");
+    showToast(t("general.pfp.uploadSuccess"), "success");
   };
 
   const handleRemovePfp = async () => {
     const { success, error } = await Workspace.removePfp(workspace.slug);
     if (!success) {
-      showToast(`Failed to remove profile picture: ${error}`, "error");
+      showToast(t("general.pfp.removeFailed", { error }), "error");
       return;
     }
 
     setPfp(null);
+    showToast(t("general.pfp.removeSuccess"), "success");
   };
 
   return (
@@ -66,7 +68,7 @@ export default function WorkspacePfp({ workspace, slug }) {
             {pfp ? (
               <img
                 src={pfp}
-                alt="User profile picture"
+                alt={t("general.pfp.imageAlt")}
                 className="w-36 h-36 rounded-full object-cover bg-white"
               />
             ) : (

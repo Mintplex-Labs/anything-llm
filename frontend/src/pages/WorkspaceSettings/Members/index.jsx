@@ -6,12 +6,14 @@ import * as Skeleton from "react-loading-skeleton";
 import AddMemberModal from "./AddMemberModal";
 import WorkspaceMemberRow from "./WorkspaceMemberRow";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 export default function Members({ workspace }) {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [workspaceUsers, setWorkspaceUsers] = useState([]);
   const [adminWorkspace, setAdminWorkspace] = useState(null);
+  const { t } = useTranslation();
 
   const { isOpen, openModal, closeModal } = useModal();
   useEffect(() => {
@@ -51,13 +53,13 @@ export default function Members({ workspace }) {
         <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
-              Username
+              {t("members.userName")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Role
+              {t("members.role")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Date Added
+              {t("members.dateAdd")}
             </th>
             <th scope="col" className="px-6 py-3 rounded-tr-lg">
               {" "}
@@ -72,13 +74,13 @@ export default function Members({ workspace }) {
           ) : (
             <tr>
               <td className="text-center py-4 text-white/80" colSpan="4">
-                No workspace members
+                {t("members.workspace")}
               </td>
             </tr>
           )}
         </tbody>
       </table>
-      <CTAButton onClick={openModal}>Manage Users</CTAButton>
+      <CTAButton onClick={openModal}>{t("members.manageUsers")}</CTAButton>
       <ModalWrapper isOpen={isOpen}>
         <AddMemberModal
           closeModal={closeModal}

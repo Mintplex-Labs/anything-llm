@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { MagnifyingGlass, X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function AddMemberModal({ closeModal, workspace, users }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUsers, setSelectedUsers] = useState(workspace?.userIds || []);
+  const { t } = useTranslation();
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -14,12 +16,13 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
       selectedUsers
     );
     if (success) {
-      showToast("Users updated successfully.", "success");
+      showToast(t("general.memberModal.updateSuccess"), "success");
       setTimeout(() => {
         window.location.reload();
       }, 1000);
+    } else {
+      showToast(t("general.memberModal.updateError", { error }), "error");
     }
-    showToast(error, "error");
   };
 
   const handleUserSelect = (userId) => {
@@ -64,12 +67,14 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
       <div className="relative bg-main-gradient rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.25)]">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
           <div className="flex items-center gap-x-4">
-            <h3 className="text-base font-semibold text-white">Users</h3>
+            <h3 className="text-base font-semibold text-white">
+              {t("general.memberModal.title")}
+            </h3>
             <div className="relative">
               <input
                 onChange={handleSearch}
                 className="w-[400px] h-[34px] bg-[#030712] rounded-[100px] text-white placeholder:text-white/50 text-sm px-10 pl-10"
-                placeholder="Search for a user"
+                placeholder={t("general.memberModal.searchPlaceholder")}
               />
               <MagnifyingGlass
                 size={16}
@@ -114,7 +119,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                 ))
               ) : (
                 <p className="text-white text-opacity-60 text-sm font-medium ">
-                  No users found
+                  {t("general.memberModal.noUsers")}
                 </p>
               )}
             </table>
@@ -136,7 +141,9 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                     <div className="w-2 h-2 bg-white rounded-[2px]" />
                   )}
                 </div>
-                <p className="text-white text-sm font-medium">Select All</p>
+                <p className="text-white text-sm font-medium">
+                  {t("general.memberModal.selectAll")}
+                </p>
               </button>
               {selectedUsers.length > 0 && (
                 <button
@@ -145,7 +152,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                   className="flex items-center gap-x-2 ml-2"
                 >
                   <p className="text-white/60 text-sm font-medium hover:text-white">
-                    Unselect
+                    {t("general.memberModal.unselect")}
                   </p>
                 </button>
               )}
@@ -154,7 +161,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
               type="submit"
               className="transition-all duration-300 text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white h-[32px] w-[68px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
             >
-              Save
+              {t("general.memberModal.save")}
             </button>
           </div>
         </form>

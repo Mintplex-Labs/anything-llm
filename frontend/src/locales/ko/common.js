@@ -116,12 +116,24 @@ const TRANSLATIONS = {
       save: "메시지 저장",
       heading: "저에게 설명해주세요",
       body: "AnythingLLM의 장점",
+      headingLabel: "메시지 제목",
+      headingPlaceholder: "메시지 제목을 입력하세요",
+      bodyLabel: "메시지 내용",
+      bodyPlaceholder: "메시지 내용을 입력하세요",
+      error: "환영 메시지 업데이트 실패: {{error}}",
+      success: "환영 메시지가 성공적으로 업데이트되었습니다.",
+      maxLimit: "최대 4개의 메시지만 허용됩니다.",
     },
     pfp: {
       title: "어시스턴트 프로필 이미지",
       description: "이 워크스페이스의 어시스턴트 프로필 이미지를 수정합니다.",
       image: "워크스페이스 이미지",
       remove: "워크스페이스 이미지 제거",
+      imageAlt: "사용자 프로필 사진",
+      uploadSuccess: "프로필 사진이 업로드되었습니다.",
+      uploadFailed: "프로필 사진 업로드 실패: {{error}}",
+      removeSuccess: "프로필 사진이 제거되었습니다.",
+      removeFailed: "프로필 사진 제거 실패: {{error}}",
     },
     delete: {
       title: "워크스페이스 삭제",
@@ -320,6 +332,12 @@ const TRANSLATIONS = {
       successMessage:
         "워크스페이스가 성공적으로 생성되었습니다! 홈으로 이동 중...",
       errorMessage: "워크스페이스 생성 실패: {{error}}",
+    },
+    vectorDatabase: {
+      updateButton: "워크스페이스 업데이트",
+      updating: "업데이트 중...",
+      updateSuccess: "워크스페이스가 업데이트되었습니다!",
+      error: "오류",
     },
   },
 
@@ -1745,6 +1763,7 @@ const TRANSLATIONS = {
     role: "역할",
     dateAdd: "추가된 날짜",
     workspace: "워크스페이스 구성원이 없습니다",
+    manageUsers: "사용자 관리",
   },
 
   //newEmbadedModel
@@ -2007,6 +2026,57 @@ const TRANSLATIONS = {
   onboarding: {
     welcome: "환영합니다",
     getStarted: "시작하기",
+  },
+  confluenceOptions: {
+    fetching:
+      "Confluence 공간의 모든 페이지를 가져오는 중입니다 - 시간이 걸릴 수 있습니다.",
+    pagesCollected:
+      "Confluence 공간 {{spaceKey}}에서 페이지를 가져왔습니다. 출력 폴더는 {{destination}}입니다.",
+    pageUrlLabel: "Confluence 페이지 URL",
+    pageUrlDescription: "Confluence 공간의 페이지 URL입니다.",
+    usernameLabel: "Confluence 사용자 이름",
+    usernameDescription: "Confluence 사용자 이름을 입력하세요.",
+    accessTokenLabel: "Confluence 액세스 토큰",
+    accessTokenDescription: "인증을 위한 액세스 토큰입니다.",
+    accessTokenTooltip:
+      "인증을 위해 액세스 토큰을 제공해야 합니다. 액세스 토큰은",
+    accessTokenLink: "여기",
+    collecting: "페이지를 수집 중...",
+    submit: "제출",
+    loadingMessage:
+      "완료되면 모든 페이지를 워크스페이스에 임베드할 수 있습니다.",
+  },
+  githubOptions: {
+    fetching: "레포의 모든 파일을 가져오는 중입니다 - 시간이 걸릴 수 있습니다.",
+    filesCollected:
+      "{{author}}/{{repo}}:{{branch}}에서 {{files}}개의 파일을 가져왔습니다. 출력 폴더는 {{destination}}입니다.",
+    repoUrlLabel: "GitHub 레포 URL",
+    repoUrlDescription: "가져오려는 GitHub 레포의 URL입니다.",
+    accessTokenLabel: "GitHub 액세스 토큰",
+    accessTokenDescription: "속도 제한을 방지하기 위한 액세스 토큰입니다.",
+    optional: "선택 사항",
+    fileIgnoresLabel: "파일 무시 목록",
+    fileIgnoresDescription:
+      ".gitignore 형식으로 특정 파일을 무시합니다. 저장하려는 항목을 입력한 후 Enter 키를 누르세요.",
+    fileIgnoresPlaceholder: "!*.js, images/*, .DS_Store, bin/*",
+    collectingFiles: "파일을 수집 중...",
+    submit: "제출",
+    loadingMessage:
+      "완료되면 문서 선택기에서 모든 파일을 워크스페이스에 임베드할 수 있습니다.",
+  },
+  websiteDepth: {
+    scraping: "웹사이트 스크래핑 중 - 시간이 걸릴 수 있습니다.",
+    scrapedPages: "{{count}}개의 페이지를 성공적으로 스크래핑했습니다!",
+    urlLabel: "웹사이트 URL",
+    urlDescription: "스크래핑하려는 웹사이트의 URL입니다.",
+    depthLabel: "깊이",
+    depthDescription: "시작 URL에서 몇 개의 하위 링크를 따라갈지 설정합니다.",
+    maxLinksLabel: "최대 링크 수",
+    maxLinksDescription: "스크래핑할 최대 링크 수입니다.",
+    scrapingButton: "웹사이트 스크래핑 중...",
+    submitButton: "제출",
+    loadingMessage:
+      "완료되면 모든 스크래핑된 페이지를 문서 선택기에서 워크스페이스에 임베드할 수 있습니다.",
   },
 };
 export default TRANSLATIONS;
