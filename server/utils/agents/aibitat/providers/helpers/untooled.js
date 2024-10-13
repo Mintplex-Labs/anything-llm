@@ -33,7 +33,19 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
 
       if (Array.isArray(def.examples)) {
         def.examples.forEach(({ prompt, call }) => {
-          shotExample += `Query: "${prompt}"\nJSON: ${call}\n`;
+          // Parse the original call JSON
+          let callObj = JSON.parse(call);
+
+          // Create a new object with the correct structure
+          let formattedCall = {
+            name: def.name,
+            arguments: callObj
+          };
+
+          // Stringify the new object with proper formatting
+          let formattedCallString = JSON.stringify(formattedCall, null, 2);
+
+          shotExample += `Query: "${prompt}"\nJSON: ${formattedCallString}\n`;
         });
       }
       output += `${shotExample}-----------\n`;
