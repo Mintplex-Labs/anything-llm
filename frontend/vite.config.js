@@ -8,7 +8,7 @@ import { visualizer } from "rollup-plugin-visualizer"
 dns.setDefaultResultOrder("verbatim")
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   assetsInclude: [
     './public/piper/ort-wasm-simd-threaded.wasm',
     './public/piper/piper_phonemize.wasm',
@@ -56,6 +56,7 @@ export default defineConfig({
     ]
   },
   build: {
+    sourcemap: mode === 'development', // Enable source maps in development mode
     rollupOptions: {
       output: {
         // These settings ensure the primary JS and CSS file references are always index.{js,css}
@@ -84,4 +85,4 @@ export default defineConfig({
       plugins: []
     }
   }
-})
+}))

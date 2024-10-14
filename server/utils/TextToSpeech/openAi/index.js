@@ -4,6 +4,7 @@ class OpenAiTTS {
       throw new Error("No OpenAI API key was set.");
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
+      baseURL: process.env.TTS_OPEN_AI_ENDPOINT || `https://api.openai.com/v1`,
       apiKey: process.env.TTS_OPEN_AI_KEY,
     });
     this.voice = process.env.TTS_OPEN_AI_VOICE_MODEL ?? "alloy";

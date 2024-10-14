@@ -489,6 +489,10 @@ const KEY_MAPPING = {
     envKey: "TTS_OPEN_AI_VOICE_MODEL",
     checks: [],
   },
+  TTSOpenAIEndpoint: {
+    envKey: "TTS_OPEN_AI_ENDPOINT",
+    checks: [validOptionalLLMExternalBasePath],
+  },
 
   // TTS ElevenLabs
   TTSElevenLabsKey: {
@@ -560,6 +564,13 @@ function validLLMExternalBasePath(input = "") {
   } catch {
     return "Not a valid URL";
   }
+}
+
+function validOptionalLLMExternalBasePath(input = "") {
+  if (!input) {
+    return null
+  }
+  return validLLMExternalBasePath(input)
 }
 
 function validOllamaLLMBasePath(input = "") {
