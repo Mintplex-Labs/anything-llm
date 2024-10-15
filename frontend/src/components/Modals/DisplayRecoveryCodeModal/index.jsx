@@ -1,5 +1,5 @@
 import showToast from "@/utils/toast";
-import { DownloadSimple, Key, X } from "@phosphor-icons/react";
+import { DownloadSimple, Key } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
 import { useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
