@@ -13,9 +13,10 @@ const fileUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = Buffer.from(file.originalname, "latin1").toString(
-      "utf8"
-    );
+    // Decode the filename from URI encoding (Chinese characters, etc.)
+    const decodedFilename = decodeURIComponent(file.originalname);
+    // Convert from UTF-8 to the correct encoding if needed
+    file.originalname = Buffer.from(decodedFilename, 'utf8').toString('utf8');
     cb(null, file.originalname);
   },
 });
