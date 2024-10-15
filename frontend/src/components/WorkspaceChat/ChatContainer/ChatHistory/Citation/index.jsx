@@ -126,8 +126,8 @@ function CitationDetailModal({ source, onClose }) {
 
   return (
     <ModalWrapper isOpen={source}>
-      <div className="w-full max-w-2xl bg-main-gradient rounded-lg shadow border border-white/10 overflow-hidden">
-        <div className="relative p-6 border-b rounded-t border-gray-500/50">
+      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             {isUrl ? (
               <a
@@ -155,16 +155,16 @@ function CitationDetailModal({ source, onClose }) {
           <button
             onClick={onClose}
             type="button"
-            className="absolute top-6 right-6 transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-gray-300 text-lg" />
+            <X size={24} weight="bold" className="text-white" />
           </button>
         </div>
         <div
           className="h-full w-full overflow-y-auto"
           style={{ maxHeight: "calc(100vh - 200px)" }}
         >
-          <div className="p-6 space-y-2 flex-col">
+          <div className="py-7 px-9 space-y-2 flex-col">
             {[...Array(3)].map((_, idx) => (
               <SkeletonLine key={idx} />
             ))}

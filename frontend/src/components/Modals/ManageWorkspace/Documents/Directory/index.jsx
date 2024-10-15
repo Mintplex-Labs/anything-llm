@@ -197,7 +197,7 @@ function Directory({
               type="search"
               placeholder="Search for document"
               onChange={handleSearch}
-              className="search-input bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px]"
+              className="search-input bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px]"
             />
             <MagnifyingGlass
               size={14}
@@ -216,8 +216,8 @@ function Directory({
           </button>
         </div>
 
-        <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900">
+        <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
+          <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-theme-settings-input-bg">
             <p className="col-span-6">Name</p>
           </div>
 
