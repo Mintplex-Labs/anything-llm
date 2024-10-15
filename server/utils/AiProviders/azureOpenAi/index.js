@@ -5,7 +5,7 @@ const {
 } = require("../../helpers/chat/responses");
 
 class AzureOpenAiLLM {
-  constructor(embedder = null, _modelPreference = null) {
+  constructor(embedder = null, modelPreference = null) {
     const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
@@ -16,7 +16,7 @@ class AzureOpenAiLLM {
       process.env.AZURE_OPENAI_ENDPOINT,
       new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
     );
-    this.model = process.env.OPEN_MODEL_PREF;
+    this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
