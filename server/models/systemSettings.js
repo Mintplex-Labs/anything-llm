@@ -16,8 +16,6 @@ function isNullOrNaN(value) {
 const SystemSettings = {
   protectedFields: ["multi_user_mode"],
   publicFields: [
-    "limit_user_messages",
-    "message_limit",
     "footer_data",
     "support_email",
     "text_splitter_chunk_size",
@@ -33,8 +31,6 @@ const SystemSettings = {
     "meta_page_favicon",
   ],
   supportedFields: [
-    "limit_user_messages",
-    "message_limit",
     "logo_filename",
     "telemetry_id",
     "footer_data",
@@ -103,6 +99,7 @@ const SystemSettings = {
             "bing-search",
             "serply-engine",
             "searxng-engine",
+            "tavily-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -242,6 +239,7 @@ const SystemSettings = {
       AgentBingSearchApiKey: !!process.env.AGENT_BING_SEARCH_API_KEY || null,
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
+      AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
     };
   },
 
@@ -510,6 +508,10 @@ const SystemSettings = {
       // DeepSeek API Keys
       DeepSeekApiKey: !!process.env.DEEPSEEK_API_KEY,
       DeepSeekModelPref: process.env.DEEPSEEK_MODEL_PREF,
+
+      // APIPie LLM API Keys
+      ApipieLLMApiKey: !!process.env.APIPIE_LLM_API_KEY,
+      ApipieLLMModelPref: process.env.APIPIE_LLM_MODEL_PREF,
     };
   },
 

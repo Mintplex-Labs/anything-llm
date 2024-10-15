@@ -469,6 +469,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_SEARXNG_API_URL",
     checks: [],
   },
+  AgentTavilyApiKey: {
+    envKey: "AGENT_TAVILY_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
@@ -509,6 +513,16 @@ const KEY_MAPPING = {
   },
   DeepSeekModelPref: {
     envKey: "DEEPSEEK_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // APIPie Options
+  ApipieLLMApiKey: {
+    envKey: "APIPIE_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ApipieLLMModelPref: {
+    envKey: "APIPIE_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
 };
@@ -613,6 +627,7 @@ function supportedLLM(input = "") {
     "generic-openai",
     "bedrock",
     "deepseek",
+    "apipie",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
