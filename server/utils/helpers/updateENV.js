@@ -515,6 +515,16 @@ const KEY_MAPPING = {
     envKey: "DEEPSEEK_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // APIPie Options
+  ApipieLLMApiKey: {
+    envKey: "APIPIE_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ApipieLLMModelPref: {
+    envKey: "APIPIE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -617,6 +627,7 @@ function supportedLLM(input = "") {
     "generic-openai",
     "bedrock",
     "deepseek",
+    "apipie",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
