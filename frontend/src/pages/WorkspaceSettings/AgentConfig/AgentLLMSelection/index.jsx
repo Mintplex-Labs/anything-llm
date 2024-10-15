@@ -24,6 +24,7 @@ const ENABLED_PROVIDERS = [
   "bedrock",
   "fireworksai",
   "deepseek",
+  "litellm",
   "apipie",
   // TODO: More agent support.
   // "cohere",         // Has tool calling and will need to build explicit support

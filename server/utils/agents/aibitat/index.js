@@ -785,6 +785,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.FireworksAIProvider({ model: config.model });
       case "deepseek":
         return new Providers.DeepSeekProvider({ model: config.model });
+      case "litellm":
+        return new Providers.LiteLLMProvider({ model: config.model });
       case "apipie":
         return new Providers.ApiPieProvider({ model: config.model });
 

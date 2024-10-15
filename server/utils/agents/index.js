@@ -166,6 +166,12 @@ class AgentHandler {
         if (!process.env.DEEPSEEK_API_KEY)
           throw new Error("DeepSeek API Key must be provided to use agents.");
         break;
+      case "litellm":
+        if (!process.env.LITE_LLM_BASE_PATH)
+          throw new Error(
+            "LiteLLM API base path and key must be provided to use agents."
+          );
+        break;
       case "apipie":
         if (!process.env.APIPIE_LLM_API_KEY)
           throw new Error("ApiPie API Key must be provided to use agents.");
@@ -216,6 +222,8 @@ class AgentHandler {
         return null;
       case "deepseek":
         return "deepseek-chat";
+      case "litellm":
+        return null;
       case "apipie":
         return null;
       default:
