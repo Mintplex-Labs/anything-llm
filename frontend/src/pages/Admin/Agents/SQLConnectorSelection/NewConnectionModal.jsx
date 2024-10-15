@@ -105,10 +105,11 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   <div className="border border-red-800 bg-zinc-800 p-4 rounded-lg flex items-center gap-x-2 text-sm text-red-400">
                     <WarningOctagon size={28} className="shrink-0" />
                     <p>
-                      <b>WARNING:</b> The SQL agent has been <i>instructed</i> to
-                      only perform non-modifying queries. This <b>does not</b>{" "}
-                      prevent a hallucination from still deleting data. Only
-                      connect with a user who has <b>READ_ONLY</b> permissions.
+                      <b>WARNING:</b> The SQL agent has been <i>instructed</i>{" "}
+                      to only perform non-modifying queries. This{" "}
+                      <b>does not</b> prevent a hallucination from still
+                      deleting data. Only connect with a user who has{" "}
+                      <b>READ_ONLY</b> permissions.
                     </p>
                   </div>
 

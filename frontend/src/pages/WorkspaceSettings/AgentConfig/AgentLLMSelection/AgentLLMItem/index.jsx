@@ -122,8 +122,8 @@ function SetupProvider({
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
                 <p className="text-sm text-white/60">
-                  To use {LLMOption.name} as this workspace's LLM you need to set
-                  it up first.
+                  To use {LLMOption.name} as this workspace's LLM you need to
+                  set it up first.
                 </p>
                 <div>{LLMOption.options({ credentialsOnly: true })}</div>
               </div>
