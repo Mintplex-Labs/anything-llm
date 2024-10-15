@@ -508,6 +508,10 @@ const SystemSettings = {
       // DeepSeek API Keys
       DeepSeekApiKey: !!process.env.DEEPSEEK_API_KEY,
       DeepSeekModelPref: process.env.DEEPSEEK_MODEL_PREF,
+
+      // APIPie LLM API Keys
+      ApipieLLMApiKey: !!process.env.APIPIE_LLM_API_KEY,
+      ApipieLLMModelPref: process.env.APIPIE_LLM_MODEL_PREF,
     };
   },
 

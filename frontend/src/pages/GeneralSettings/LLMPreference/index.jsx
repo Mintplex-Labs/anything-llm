@@ -26,6 +26,7 @@ import CohereLogo from "@/media/llmprovider/cohere.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
+import APIPieLogo from "@/media/llmprovider/apipie.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -50,6 +51,7 @@ import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
+import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -222,6 +224,27 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["DeepSeekApiKey"],
   },
   {
+    name: "AWS Bedrock",
+    value: "bedrock",
+    logo: AWSBedrockLogo,
+    options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
+    description: "Run powerful foundation models privately with AWS Bedrock.",
+    requiredConfig: [
+      "AwsBedrockLLMAccessKeyId",
+      "AwsBedrockLLMAccessKey",
+      "AwsBedrockLLMRegion",
+      "AwsBedrockLLMModel",
+    ],
+  },
+  {
+    name: "APIpie",
+    value: "apipie",
+    logo: APIPieLogo,
+    options: (settings) => <ApiPieLLMOptions settings={settings} />,
+    description: "A unified API of AI services from leading providers",
+    requiredConfig: ["ApipieLLMApiKey", "ApipieLLMModelPref"],
+  },
+  {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
@@ -233,19 +256,6 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "GenericOpenAiModelPref",
       "GenericOpenAiTokenLimit",
       "GenericOpenAiKey",
-    ],
-  },
-  {
-    name: "AWS Bedrock",
-    value: "bedrock",
-    logo: AWSBedrockLogo,
-    options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
-    description: "Run powerful foundation models privately with AWS Bedrock.",
-    requiredConfig: [
-      "AwsBedrockLLMAccessKeyId",
-      "AwsBedrockLLMAccessKey",
-      "AwsBedrockLLMRegion",
-      "AwsBedrockLLMModel",
     ],
   },
   {
