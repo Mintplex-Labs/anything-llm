@@ -1,7 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { reqBody, userFromSession, multiUserMode } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { WorkspaceChats } = require("../models/workspaceChats");
 const { Telemetry } = require("../models/telemetry");
 const { streamChatWithWorkspace } = require("../utils/chats/stream");
 const {
@@ -15,6 +14,7 @@ const {
 } = require("../utils/middleware/validWorkspace");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
 const { WorkspaceThread } = require("../models/workspaceThread");
+const { User } = require("../models/user");
 const truncate = require("truncate");
 
 function chatEndpoints(app) {
@@ -47,27 +47,16 @@ function chatEndpoints(app) {
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
 
-        if (multiUserMode(response) && user.role !== ROLES.admin) {
-          if (user.dailyMessageLimit !== null) {
-            const currentChatCount = await WorkspaceChats.count({
-              user_id: user.id,
-              createdAt: {
-                gte: new Date(new Date() - 24 * 60 * 60 * 1000),
-              },
-            });
-
-            if (currentChatCount >= user.dailyMessageLimit) {
-              writeResponseChunk(response, {
-                id: uuidv4(),
-                type: "abort",
-                textResponse: null,
-                sources: [],
-                close: true,
-                error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
-              });
-              return;
-            }
-          }
+        if (multiUserMode(response) && !(await User.canSendChat(user))) {
+          writeResponseChunk(response, {
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
+          });
+          return;
         }
 
         await streamChatWithWorkspace(
@@ -144,27 +133,16 @@ function chatEndpoints(app) {
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
 
-        if (multiUserMode(response) && user.role !== ROLES.admin) {
-          if (user.dailyMessageLimit !== null) {
-            const currentChatCount = await WorkspaceChats.count({
-              user_id: user.id,
-              createdAt: {
-                gte: new Date(new Date() - 24 * 60 * 60 * 1000),
-              },
-            });
-
-            if (currentChatCount >= user.dailyMessageLimit) {
-              writeResponseChunk(response, {
-                id: uuidv4(),
-                type: "abort",
-                textResponse: null,
-                sources: [],
-                close: true,
-                error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
-              });
-              return;
-            }
-          }
+        if (multiUserMode(response) && !(await User.canSendChat(user))) {
+          writeResponseChunk(response, {
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
+          });
+          return;
         }
 
         await streamChatWithWorkspace(

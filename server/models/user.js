@@ -1,6 +1,17 @@
 const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
 
+/**
+ * @typedef {Object} User
+ * @property {number} id
+ * @property {string} username
+ * @property {string} password
+ * @property {string} pfpFilename
+ * @property {string} role
+ * @property {boolean} suspended
+ * @property {number|null} dailyMessageLimit
+ */
+
 const User = {
   usernameRegex: new RegExp(/^[a-z0-9_-]+$/),
   writable: [
@@ -37,7 +48,9 @@ const User = {
       if (dailyMessageLimit === null) return null;
       const limit = Number(dailyMessageLimit);
       if (isNaN(limit) || limit < 1) {
-        throw new Error("Daily message limit must be null or a number greater than or equal to 1");
+        throw new Error(
+          "Daily message limit must be null or a number greater than or equal to 1"
+        );
       }
       return limit;
     },
@@ -277,6 +290,29 @@ const User = {
     }
 
     return { checkedOK: true, error: "No error." };
+  },
+
+  /**
+   * Check if a user can send a chat based on their daily message limit.
+   * This limit is system wide and not per workspace and only applies to
+   * multi-user mode AND non-admin users.
+   * @param {User} user The user object record.
+   * @returns {Promise<boolean>} True if the user can send a chat, false otherwise.
+   */
+  canSendChat: async function (user) {
+    const { ROLES } = require("../utils/middleware/multiUserProtected");
+    if (!user || user.dailyMessageLimit === null || user.role === ROLES.admin)
+      return true;
+
+    const { WorkspaceChats } = require("./workspaceChats");
+    const currentChatCount = await WorkspaceChats.count({
+      user_id: user.id,
+      createdAt: {
+        gte: new Date(new Date() - 24 * 60 * 60 * 1000), // 24 hours
+      },
+    });
+
+    return currentChatCount < user.dailyMessageLimit;
   },
 };
 

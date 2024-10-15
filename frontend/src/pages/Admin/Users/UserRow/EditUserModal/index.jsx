@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
-import { RoleHintDisplay } from "../..";
+import { MessageLimitInput, RoleHintDisplay } from "../..";
 
 export default function EditUserModal({ currentUser, user, closeModal }) {
   const [role, setRole] = useState(user.role);
@@ -113,57 +113,12 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 </select>
                 <RoleHintDisplay role={role} />
               </div>
-              <div className="mt-4 mb-8">
-                <div className="flex flex-col gap-y-1">
-                  <h2 className="text-base leading-6 font-bold text-white">
-                    Limit messages per day
-                  </h2>
-                  <p className="text-xs leading-[18px] font-base text-white/60">
-                    Restrict this user to a number of successful queries or
-                    chats within a 24 hour window.
-                  </p>
-                  <div className="mt-2">
-                    <label className="relative inline-flex cursor-pointer items-center">
-                      <input
-                        type="checkbox"
-                        name="limit_user_messages"
-                        checked={messageLimit.enabled}
-                        onChange={(e) => {
-                          setMessageLimit({
-                            ...messageLimit,
-                            enabled: e.target.checked,
-                          });
-                        }}
-                        className="peer sr-only"
-                      />
-                      <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
-                    </label>
-                  </div>
-                </div>
-                {messageLimit.enabled && (
-                  <div className="mt-4">
-                    <label className="text-white text-sm font-semibold block mb-4">
-                      Message limit per day
-                    </label>
-                    <div className="relative mt-2">
-                      <input
-                        type="number"
-                        name="daily_message_limit"
-                        onScroll={(e) => e.target.blur()}
-                        onChange={(e) => {
-                          setMessageLimit({
-                            enabled: true,
-                            limit: Number(e?.target?.value || 0),
-                          });
-                        }}
-                        value={messageLimit.limit}
-                        min={1}
-                        className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-60 p-2.5"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
+              <MessageLimitInput
+                role={role}
+                enabled={messageLimit.enabled}
+                limit={messageLimit.limit}
+                updateState={setMessageLimit}
+              />
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
             </div>
           </div>
