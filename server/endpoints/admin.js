@@ -347,14 +347,6 @@ function adminEndpoints(app) {
             : await SystemSettings.get({ label });
 
           switch (label) {
-            case "limit_user_messages":
-              requestedSettings[label] = setting?.value === "true";
-              break;
-            case "message_limit":
-              requestedSettings[label] = setting?.value
-                ? Number(setting.value)
-                : 10;
-              break;
             case "footer_data":
               requestedSettings[label] = setting?.value ?? JSON.stringify([]);
               break;
@@ -422,13 +414,6 @@ function adminEndpoints(app) {
       try {
         const embedder = getEmbeddingEngineSelection();
         const settings = {
-          limit_user_messages:
-            (await SystemSettings.get({ label: "limit_user_messages" }))
-              ?.value === "true",
-          message_limit:
-            Number(
-              (await SystemSettings.get({ label: "message_limit" }))?.value
-            ) || 10,
           footer_data:
             (await SystemSettings.get({ label: "footer_data" }))?.value ||
             JSON.stringify([]),

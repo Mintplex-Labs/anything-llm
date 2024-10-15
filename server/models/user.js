@@ -1,6 +1,17 @@
 const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
 
+/**
+ * @typedef {Object} User
+ * @property {number} id
+ * @property {string} username
+ * @property {string} password
+ * @property {string} pfpFilename
+ * @property {string} role
+ * @property {boolean} suspended
+ * @property {number|null} dailyMessageLimit
+ */
+
 const User = {
   usernameRegex: new RegExp(/^[a-z0-9_-]+$/),
   writable: [
@@ -10,6 +21,7 @@ const User = {
     "pfpFilename",
     "role",
     "suspended",
+    "dailyMessageLimit",
   ],
   validations: {
     username: (newValue = "") => {
@@ -32,12 +44,24 @@ const User = {
       }
       return String(role);
     },
+    dailyMessageLimit: (dailyMessageLimit = null) => {
+      if (dailyMessageLimit === null) return null;
+      const limit = Number(dailyMessageLimit);
+      if (isNaN(limit) || limit < 1) {
+        throw new Error(
+          "Daily message limit must be null or a number greater than or equal to 1"
+        );
+      }
+      return limit;
+    },
   },
   // validations for the above writable fields.
   castColumnValue: function (key, value) {
     switch (key) {
       case "suspended":
         return Number(Boolean(value));
+      case "dailyMessageLimit":
+        return value === null ? null : Number(value);
       default:
         return String(value);
     }
@@ -48,7 +72,12 @@ const User = {
     return { ...rest };
   },
 
-  create: async function ({ username, password, role = "default" }) {
+  create: async function ({
+    username,
+    password,
+    role = "default",
+    dailyMessageLimit = null,
+  }) {
     const passwordCheck = this.checkPasswordComplexity(password);
     if (!passwordCheck.checkedOK) {
       return { user: null, error: passwordCheck.error };
@@ -58,7 +87,7 @@ const User = {
       // Do not allow new users to bypass validation
       if (!this.usernameRegex.test(username))
         throw new Error(
-          "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
+          "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
         );
 
       const bcrypt = require("bcrypt");
@@ -68,6 +97,8 @@ const User = {
           username: this.validations.username(username),
           password: hashedPassword,
           role: this.validations.role(role),
+          dailyMessageLimit:
+            this.validations.dailyMessageLimit(dailyMessageLimit),
         },
       });
       return { user: this.filterFields(user), error: null };
@@ -135,7 +166,7 @@ const User = {
         return {
           success: false,
           error:
-            "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+            "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
         };
 
       const user = await prisma.users.update({
@@ -259,6 +290,29 @@ const User = {
     }
 
     return { checkedOK: true, error: "No error." };
+  },
+
+  /**
+   * Check if a user can send a chat based on their daily message limit.
+   * This limit is system wide and not per workspace and only applies to
+   * multi-user mode AND non-admin users.
+   * @param {User} user The user object record.
+   * @returns {Promise<boolean>} True if the user can send a chat, false otherwise.
+   */
+  canSendChat: async function (user) {
+    const { ROLES } = require("../utils/middleware/multiUserProtected");
+    if (!user || user.dailyMessageLimit === null || user.role === ROLES.admin)
+      return true;
+
+    const { WorkspaceChats } = require("./workspaceChats");
+    const currentChatCount = await WorkspaceChats.count({
+      user_id: user.id,
+      createdAt: {
+        gte: new Date(new Date() - 24 * 60 * 60 * 1000), // 24 hours
+      },
+    });
+
+    return currentChatCount < user.dailyMessageLimit;
   },
 };
 
