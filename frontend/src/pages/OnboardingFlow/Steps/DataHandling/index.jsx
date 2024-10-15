@@ -21,6 +21,7 @@ import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
+import APIPieLogo from "@/media/llmprovider/apipie.png";
 
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
@@ -201,6 +202,13 @@ export const LLM_SELECTION_PRIVACY = {
     name: "DeepSeek",
     description: ["Your model and chat contents are visible to DeepSeek"],
     logo: DeepSeekLogo,
+  },
+  apipie: {
+    name: "APIpie.AI",
+    description: [
+      "Your model and chat contents are visible to APIpie in accordance with their terms of service.",
+    ],
+    logo: APIPieLogo,
   },
 };
 
