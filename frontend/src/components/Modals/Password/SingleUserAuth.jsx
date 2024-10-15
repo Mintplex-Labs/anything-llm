@@ -70,7 +70,7 @@ export default function SingleUserAuth() {
   return (
     <>
       <form onSubmit={handleLogin}>
-        <div className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 py-12 -mt-36 md:-mt-10">
+        <div className="flex flex-col justify-center items-center relative rounded-2xl bg-theme-bg-secondary md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 py-12 -mt-36 md:-mt-10">
           <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
             <div className="flex items-center flex-col gap-y-4">
               <div className="flex gap-x-1">
@@ -81,7 +81,7 @@ export default function SingleUserAuth() {
                   {customAppName || "AnythingLLM"}
                 </p>
               </div>
-              <p className="text-sm text-white/90 text-center">
+              <p className="text-sm text-theme-text-secondary text-center">
                 {t("login.sign-in.start")} {customAppName || "AnythingLLM"}{" "}
                 {t("login.sign-in.end")}
               </p>
@@ -94,12 +94,11 @@ export default function SingleUserAuth() {
                   name="password"
                   type="password"
                   placeholder="Password"
-                  className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+                  className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required={true}
                   autoComplete="off"
                 />
               </div>
-
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
             </div>
           </div>
@@ -109,13 +108,13 @@ export default function SingleUserAuth() {
               type="submit"
               className="md:text-primary-button md:bg-transparent text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
             >
-              {loading ? "Validating..." : "Login"}
+              {loading ? t("login.multi-user.validating") : t("login.multi-user.login")}
             </button>
           </div>
         </div>
       </form>
 
-      <ModalWrapper isOpen={isRecoveryCodeModalOpen}>
+      <ModalWrapper isOpen={isRecoveryCodeModalOpen} noPortal={true}>
         <RecoveryCodeModal
           recoveryCodes={recoveryCodes}
           onDownloadComplete={handleDownloadComplete}

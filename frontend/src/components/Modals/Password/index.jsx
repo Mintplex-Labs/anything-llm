@@ -39,7 +39,7 @@ export default function PasswordModal({ mode = "single" }) {
           alt="Logo"
           className={`hidden relative md:flex rounded-2xl w-fit m-4 z-30 ${
             mode === "single" ? "md:top-2" : "md:top-12"
-          } absolute max-h-[65px] md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+          } absolute max-h-[65px]`}
           style={{ objectFit: "contain" }}
         />
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}
