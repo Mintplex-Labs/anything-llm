@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
-import { RoleHintDisplay } from "../..";
+import { MessageLimitInput, RoleHintDisplay } from "../..";
 
 export default function EditUserModal({ currentUser, user, closeModal }) {
   const [role, setRole] = useState(user.role);
   const [error, setError] = useState(null);
+  const [messageLimit, setMessageLimit] = useState({
+    enabled: user.dailyMessageLimit !== null,
+    limit: user.dailyMessageLimit || 10,
+  });
 
   const handleUpdate = async (e) => {
     setError(null);
@@ -16,6 +20,12 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
       if (!value || value === null) continue;
       data[key] = value;
     }
+    if (messageLimit.enabled) {
+      data.dailyMessageLimit = messageLimit.limit;
+    } else {
+      data.dailyMessageLimit = null;
+    }
+
     const { success, error } = await Admin.updateUser(user.id, data);
     if (success) window.location.reload();
     setError(error);
@@ -59,7 +69,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Username must be only contain lowercase letters, numbers,
+                  Username must only contain lowercase letters, numbers,
                   underscores, and hyphens with no spaces
                 </p>
               </div>
@@ -104,6 +114,12 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 </select>
                 <RoleHintDisplay role={role} />
               </div>
+              <MessageLimitInput
+                role={role}
+                enabled={messageLimit.enabled}
+                limit={messageLimit.limit}
+                updateState={setMessageLimit}
+              />
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
             </div>
             <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">

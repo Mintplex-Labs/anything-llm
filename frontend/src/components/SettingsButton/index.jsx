@@ -29,10 +29,8 @@ export default function SettingsButton() {
   return (
     <ToolTipWrapper id="open-settings">
       <Link
-        to={
-          !!user?.role ? paths.settings.system() : paths.settings.appearance()
-        }
-        className="transition-all duration-300 p-2 rounded-full text-white bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
+        to={paths.settings.appearance()}
+        className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
         aria-label="Settings"
         data-tooltip-id="open-settings"
         data-tooltip-content="Open settings"

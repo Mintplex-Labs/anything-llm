@@ -277,11 +277,6 @@ const SidebarOptions = ({ user = null, t }) => (
           href: paths.settings.invites(),
           roles: ["admin", "manager"],
         },
-        {
-          btnText: t("settings.system"),
-          href: paths.settings.system(),
-          roles: ["admin", "manager"],
-        },
       ]}
     />
     <Option

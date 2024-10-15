@@ -2,11 +2,15 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import { userFromStorage } from "@/utils/request";
-import { RoleHintDisplay } from "..";
+import { MessageLimitInput, RoleHintDisplay } from "..";
 
 export default function NewUserModal({ closeModal }) {
   const [error, setError] = useState(null);
   const [role, setRole] = useState("default");
+  const [messageLimit, setMessageLimit] = useState({
+    enabled: false,
+    limit: 10,
+  });
 
   const handleCreate = async (e) => {
     setError(null);
@@ -14,6 +18,8 @@ export default function NewUserModal({ closeModal }) {
     const data = {};
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) data[key] = value;
+    data.dailyMessageLimit = messageLimit.enabled ? messageLimit.limit : null;
+
     const { user, error } = await Admin.newUser(data);
     if (!!user) window.location.reload();
     setError(error);
@@ -59,13 +65,13 @@ export default function NewUserModal({ closeModal }) {
                   pattern="^[a-z0-9_-]+$"
                   onInvalid={(e) =>
                     e.target.setCustomValidity(
-                      "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
+                      "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
                     )
                   }
                   onChange={(e) => e.target.setCustomValidity("")}
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Username must be only contain lowercase letters, numbers,
+                  Username must only contain lowercase letters, numbers,
                   underscores, and hyphens with no spaces
                 </p>
               </div>
@@ -111,6 +117,12 @@ export default function NewUserModal({ closeModal }) {
                 </select>
                 <RoleHintDisplay role={role} />
               </div>
+              <MessageLimitInput
+                role={role}
+                enabled={messageLimit.enabled}
+                limit={messageLimit.limit}
+                updateState={setMessageLimit}
+              />
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
               <p className="text-white text-xs md:text-sm">
                 After creating a user they will need to login with their initial
