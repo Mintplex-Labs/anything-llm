@@ -1,4 +1,5 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
+const { fetchApiPieModels } = require("../AiProviders/apipie");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
@@ -19,6 +20,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "elevenlabs-tts",
   "groq",
   "deepseek",
+  "apipie",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -56,6 +58,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getGroqAiModels(apiKey);
     case "deepseek":
       return await getDeepSeekModels(apiKey);
+    case "apipie":
+      return await getAPIPieModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -342,6 +346,21 @@ async function getPerplexityModels() {
 
 async function getOpenRouterModels() {
   const knownModels = await fetchOpenRouterModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getAPIPieModels(apiKey = null) {
+  const knownModels = await fetchApiPieModels(apiKey);
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 
