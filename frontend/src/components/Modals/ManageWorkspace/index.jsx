@@ -7,6 +7,7 @@ import { isMobile } from "react-device-detect";
 import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 import DataConnectors from "./DataConnectors";
+import ModalWrapper from "@/components/ModalWrapper";
 
 const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
@@ -36,31 +37,44 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
 
   if (isMobile) {
     return (
-      <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
-        <div className="backdrop h-full w-full absolute top-0 z-10" />
-        <div className={`absolute max-h-full transition duration-300 z-20`}>
-          <div className="relative max-w-lg mx-auto bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
-            <div className="p-6">
-              <h1 className="text-white text-lg font-semibold">
+      <ModalWrapper isOpen={true}>
+        <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+          <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+            <div className="w-full flex gap-x-2 items-center">
+              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
                 Editing "{workspace.name}"
-              </h1>
-              <p className="text-white mt-4">
+              </h3>
+            </div>
+            <button
+              onClick={hideModal}
+              type="button"
+              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            >
+              <X size={24} weight="bold" className="text-white" />
+            </button>
+          </div>
+          <div
+            className="h-full w-full overflow-y-auto"
+            style={{ maxHeight: "calc(100vh - 200px)" }}
+          >
+            <div className="py-7 px-9 space-y-2 flex-col">
+              <p className="text-white">
                 Editing these settings are only available on a desktop device.
                 Please access this page on your desktop to continue.
               </p>
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={hideModal}
-                  type="button"
-                  className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                  Dismiss
-                </button>
-              </div>
             </div>
           </div>
+          <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
+            <button
+              onClick={hideModal}
+              type="button"
+              className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
-      </div>
+      </ModalWrapper>
     );
   }
 
