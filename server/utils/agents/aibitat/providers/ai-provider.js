@@ -182,6 +182,14 @@ class Provider {
           apiKey: process.env.DEEPSEEK_API_KEY ?? null,
           ...config,
         });
+      case "apipie":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://apipie.ai/v1",
+          },
+          apiKey: process.env.APIPIE_LLM_API_KEY ?? null,
+          ...config,
+        });
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
     }
