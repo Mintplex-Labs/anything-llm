@@ -32,7 +32,7 @@ class AWSBedrockLLM {
   #bedrockClient({ temperature = 0.7 }) {
     const { ChatBedrockConverse } = require("@langchain/aws");
     return new ChatBedrockConverse({
-      model: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
+      model: this.model,
       region: process.env.AWS_BEDROCK_LLM_REGION,
       credentials: {
         accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
