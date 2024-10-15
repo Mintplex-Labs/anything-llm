@@ -78,9 +78,9 @@ export default function UploadFile({
   return (
     <div>
       <div
-        className={`w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${
+        className={`w-[560px] border-2 border-dashed rounded-2xl bg-theme-bg-primary p-3 ${
           ready ? "cursor-pointer" : "cursor-not-allowed"
-        } hover:bg-zinc-900/90`}
+        } hover:bg-theme-bg-secondary`}
         {...getRootProps()}
       >
         <input {...getInputProps()} />
@@ -133,7 +133,7 @@ export default function UploadFile({
           disabled={fetchingUrl}
           name="link"
           type="url"
-          className="disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
+          className="disabled:bg-theme-settings-input-bg disabled:text-theme-settings-input-placeholder bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-3/4 p-2.5"
           placeholder={"https://example.com"}
           autoComplete="off"
         />

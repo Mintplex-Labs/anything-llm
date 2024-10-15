@@ -77,7 +77,7 @@ export default function GithubOptions() {
                 <input
                   type="url"
                   name="repo"
-                  className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://github.com/Mintplex-Labs/anything-llm"
                   required={true}
                   autoComplete="off"
@@ -102,7 +102,7 @@ export default function GithubOptions() {
                 <input
                   type="text"
                   name="accessToken"
-                  className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="github_pat_1234_abcdefg"
                   required={false}
                   autoComplete="off"
@@ -135,7 +135,7 @@ export default function GithubOptions() {
                 classNames={{
                   tag: "bg-blue-300/10 text-zinc-800",
                   input:
-                    "flex bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
+                    "flex bg-theme-bg-secondary text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
                 }}
               />
             </div>
@@ -198,7 +198,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
         <select
           name="branch"
           required={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available branches --
@@ -219,7 +219,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
       <select
         name="branch"
         required={true}
-        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
       >
         {allBranches.map((branch) => {
           return (

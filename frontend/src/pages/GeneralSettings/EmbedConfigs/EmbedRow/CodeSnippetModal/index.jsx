@@ -6,32 +6,31 @@ import "highlight.js/styles/github-dark-dimmed.min.css";
 
 export default function CodeSnippetModal({ embed, closeModal }) {
   return (
-    <div className="relative max-w-2xl max-h-full">
-      <div className="relative bg-main-gradient rounded-lg shadow">
-        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-          <h3 className="text-xl font-semibold text-white">
-            Copy your embed code
-          </h3>
+    <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+          <div className="w-full flex gap-x-2 items-center">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              Copy your embed code
+            </h3>
+          </div>
           <button
             onClick={closeModal}
             type="button"
-            className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-            data-modal-hide="staticModal"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-gray-300 text-lg" />
+            <X size={24} weight="bold" className="text-white" />
           </button>
         </div>
-        <div>
-          <div className="p-6 space-y-6 flex h-auto max-h-[80vh] w-full overflow-y-scroll">
-            <div className="w-full flex flex-col gap-y-6">
-              <ScriptTag embed={embed} />
-            </div>
+        <div className="px-7 py-6">
+          <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+            <ScriptTag embed={embed} />
           </div>
-          <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+          <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
             <button
               onClick={closeModal}
               type="button"
-              className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
+              className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
             >
               Close
             </button>

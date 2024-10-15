@@ -91,6 +91,9 @@ export default {
               text: 'var(--theme-settings-input-text)',
             }
           },
+          modal: {
+            border: 'var(--theme-modal-border)',
+          }
         },
       },
       backgroundImage: {
