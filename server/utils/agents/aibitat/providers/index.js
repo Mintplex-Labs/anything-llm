@@ -16,6 +16,7 @@ const AWSBedrockProvider = require("./bedrock.js");
 const FireworksAIProvider = require("./fireworksai.js");
 const DeepSeekProvider = require("./deepseek.js");
 const LiteLLMProvider = require("./litellm.js");
+const ApiPieProvider = require("./apipie.js");
 
 module.exports = {
   OpenAIProvider,
@@ -36,4 +37,5 @@ module.exports = {
   AWSBedrockProvider,
   FireworksAIProvider,
   LiteLLMProvider,
+  ApiPieProvider,
 };

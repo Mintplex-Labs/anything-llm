@@ -172,6 +172,11 @@ class AgentHandler {
             "LiteLLM API base path and key must be provided to use agents."
           );
         break;
+      case "apipie":
+        if (!process.env.APIPIE_LLM_API_KEY)
+          throw new Error("ApiPie API Key must be provided to use agents.");
+        break;
+
       default:
         throw new Error(
           "No workspace agent provider set. Please set your agent provider in the workspace's settings"
@@ -217,6 +222,10 @@ class AgentHandler {
         return null;
       case "deepseek":
         return "deepseek-chat";
+      case "litellm":
+        return null;
+      case "apipie":
+        return null;
       default:
         return "unknown";
     }
