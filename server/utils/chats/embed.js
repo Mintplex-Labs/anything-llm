@@ -60,8 +60,7 @@ async function streamChatWithForEmbed(
   const { rawHistory, chatHistory } = await recentEmbedChatHistory(
     sessionId,
     embed,
-    messageLimit,
-    chatMode
+    messageLimit
   );
 
   // See stream.js comment for more information on this implementation.
@@ -113,16 +112,27 @@ async function streamChatWithForEmbed(
     return;
   }
 
-  contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
+  const { fillSourceWindow } = require("../helpers/chat");
+  const filledSources = fillSourceWindow({
+    nDocs: embed.workspace?.topN || 4,
+    searchResults: vectorSearchResults.sources,
+    history: rawHistory,
+    filterIdentifiers: pinnedDocIdentifiers,
+  });
+
+  // Why does contextTexts get all the info, but sources only get current search?
+  // This is to give the ability of the LLM to "comprehend" a contextual response without
+  // populating the Citations under a response with documents the user "thinks" are irrelevant
+  // due to how we manage backfilling of the context to keep chats with the LLM more correct in responses.
+  // If a past citation was used to answer the question - that is visible in the history so it logically makes sense
+  // and does not appear to the user that a new response used information that is otherwise irrelevant for a given prompt.
+  // TLDR; reduces GitHub issues for "LLM citing document that has no answer in it" while keep answers highly accurate.
+  contextTexts = [...contextTexts, ...filledSources.contextTexts];
   sources = [...sources, ...vectorSearchResults.sources];
 
-  // If in query mode and no sources are found, do not
+  // If in query mode and no sources are found in current search or backfilled from history, do not
   // let the LLM try to hallucinate a response or use general knowledge
-  if (
-    chatMode === "query" &&
-    sources.length === 0 &&
-    pinnedDocIdentifiers.length === 0
-  ) {
+  if (chatMode === "query" && contextTexts.length === 0) {
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
@@ -178,7 +188,7 @@ async function streamChatWithForEmbed(
   await EmbedChats.new({
     embedId: embed.id,
     prompt: message,
-    response: { text: completeText, type: chatMode },
+    response: { text: completeText, type: chatMode, sources },
     connection_information: response.locals.connection
       ? {
           ...response.locals.connection,
@@ -190,15 +200,13 @@ async function streamChatWithForEmbed(
   return;
 }
 
-// On query we don't return message history. All other chat modes and when chatting
-// with no embeddings we return history.
-async function recentEmbedChatHistory(
-  sessionId,
-  embed,
-  messageLimit = 20,
-  chatMode = null
-) {
-  if (chatMode === "query") return { rawHistory: [], chatHistory: [] };
+/**
+ * @param {string} sessionId the session id of the user from embed widget
+ * @param {Object} embed the embed config object
+ * @param {Number} messageLimit the number of messages to return
+ * @returns {Promise<{rawHistory: import("@prisma/client").embed_chats[], chatHistory: {role: string, content: string}[]}>
+ */
+async function recentEmbedChatHistory(sessionId, embed, messageLimit = 20) {
   const rawHistory = (
     await EmbedChats.forEmbedByUser(embed.id, sessionId, messageLimit, {
       id: "desc",
