@@ -128,7 +128,7 @@ async function openAiModels(apiKey = null) {
     });
 
   const gpts = allModels
-    .filter((model) => model.id.startsWith("gpt"))
+    .filter((model) => model.id.startsWith("gpt") || model.id.startsWith("o1"))
     .filter(
       (model) => !model.id.includes("vision") && !model.id.includes("instruct")
     )
