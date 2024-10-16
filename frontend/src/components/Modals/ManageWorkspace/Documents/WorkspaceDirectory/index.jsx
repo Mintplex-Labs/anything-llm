@@ -265,17 +265,17 @@ const PinAlert = memo(() => {
 
   return (
     <ModalWrapper isOpen={showAlert} noPortal={true}>
-      <div className="relative w-full max-w-2xl max-h-full">
-        <div className="relative bg-main-gradient rounded-lg shadow">
-          <div className="flex items-start justify-between p-4 rounded-t border-gray-500/50">
-            <div className="flex items-center gap-2">
-              <PushPin className="text-red-600 text-lg w-6 h-6" weight="fill" />
-              <h3 className="text-xl font-semibold text-white">
-                What is document pinning?
-              </h3>
-            </div>
+      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+          <div className="flex items-center gap-2">
+            <PushPin className="text-theme-text-primary text-lg w-6 h-6" weight="regular" />
+            <h3 className="text-xl font-semibold text-white">
+              What is document pinning?
+            </h3>
           </div>
-          <div className="w-full p-6 text-white text-md flex flex-col gap-y-2">
+        </div>
+        <div className="py-7 px-9 space-y-2 flex-col">
+          <div className="w-full text-white text-md flex flex-col gap-y-2">
             <p>
               When you <b>pin</b> a document in AnythingLLM we will inject the
               entire content of the document into your prompt window for your
@@ -291,16 +291,14 @@ const PinAlert = memo(() => {
               in a click.
             </p>
           </div>
-
-          <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
-            <button disabled={true} className="invisible" />
-            <button
-              onClick={dismissAlert}
-              className="border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-            >
-              Okay, got it
-            </button>
-          </div>
+        </div>
+        <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
+          <button
+            onClick={dismissAlert}
+            className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+          >
+            Okay, got it
+          </button>
         </div>
       </div>
     </ModalWrapper>
