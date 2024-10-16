@@ -7,6 +7,20 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 
 // Docs: https://js.langchain.com/v0.2/docs/integrations/chat/bedrock_converse
 class AWSBedrockLLM {
+  /**
+   * These models do not support system prompts
+   * It is not explicitly stated but it is observed that they do not use the system prompt
+   * in their responses and will crash when a system prompt is provided.
+   * We can add more models to this list as we discover them or new models are added.
+   * We may want to extend this list or make a user-config if using custom bedrock models.
+   */
+  noSystemPromptModels = [
+    "amazon.titan-text-express-v1",
+    "amazon.titan-text-lite-v1",
+    "cohere.command-text-v14",
+    "cohere.command-light-text-v14",
+  ];
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID)
       throw new Error("No AWS Bedrock LLM profile id was set.");
@@ -59,6 +73,22 @@ class AWSBedrockLLM {
 
     for (const chat of chats) {
       if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
+
+      // When a model does not support system prompts, we need to handle it.
+      // We will add a new message that simulates the system prompt via a user message and AI response.
+      // This will allow the model to respond without crashing but we can still inject context.
+      if (
+        this.noSystemPromptModels.includes(this.model) &&
+        chat.role === "system"
+      ) {
+        this.#log(
+          `Model does not support system prompts! Simulating system prompt via Human/AI message pairs.`
+        );
+        langchainChats.push(new HumanMessage({ content: chat.content }));
+        langchainChats.push(new AIMessage({ content: "Okay." }));
+        continue;
+      }
+
       const MessageClass = roleToMessageMap[chat.role];
       langchainChats.push(new MessageClass({ content: chat.content }));
     }
@@ -76,6 +106,10 @@ class AWSBedrockLLM {
         })
         .join("")
     );
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[AWSBedrock]\x1b[0m ${text}`, ...args);
   }
 
   streamingEnabled() {
