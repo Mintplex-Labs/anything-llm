@@ -61,8 +61,8 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
 
   return (
     <div className="relative w-full max-w-[550px] max-h-full">
-      <div className="relative bg-main-gradient rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.25)]">
-        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
+      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b rounded-t border-theme-modal-border">
           <div className="flex items-center gap-x-4">
             <h3 className="text-base font-semibold text-white">Users</h3>
             <div className="relative">

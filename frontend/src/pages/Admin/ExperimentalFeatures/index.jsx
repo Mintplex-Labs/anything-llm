@@ -183,7 +183,7 @@ function FeatureVerification({ children }) {
             onSubmit={acceptTos}
             className="relative w-full max-w-2xl max-h-full"
           >
-            <div className="relative bg-main-gradient rounded-lg shadow">
+            <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
               <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
                 <h3 className="text-xl font-semibold text-white">
                   Terms of use for experimental features

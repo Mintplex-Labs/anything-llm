@@ -57,7 +57,7 @@ export default function OrderDetails({ setSettings, setStep }) {
               <input
                 type="email"
                 name="email"
-                className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[200px] p-2.5"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="jdoe@example.com"
                 required={true}
                 autoComplete="off"
@@ -77,7 +77,7 @@ export default function OrderDetails({ setSettings, setStep }) {
                 <select
                   name="baseModel"
                   required={true}
-                  className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full max-w-[200px] p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 >
                   <option disabled value="">
                     -- select a base model --
@@ -110,7 +110,7 @@ export default function OrderDetails({ setSettings, setStep }) {
               <input
                 type="text"
                 name="modelName"
-                className="bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[200px] p-2.5"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="My really cool model!"
                 required={true}
                 autoComplete="off"

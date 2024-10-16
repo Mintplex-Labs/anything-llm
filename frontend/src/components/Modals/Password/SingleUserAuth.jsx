@@ -108,7 +108,9 @@ export default function SingleUserAuth() {
               type="submit"
               className="md:text-primary-button md:bg-transparent text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
             >
-              {loading ? t("login.multi-user.validating") : t("login.multi-user.login")}
+              {loading
+                ? t("login.multi-user.validating")
+                : t("login.multi-user.login")}
             </button>
           </div>
         </div>

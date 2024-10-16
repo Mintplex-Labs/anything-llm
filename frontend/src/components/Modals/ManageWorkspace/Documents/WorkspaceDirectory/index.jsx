@@ -266,7 +266,7 @@ const PinAlert = memo(() => {
   return (
     <ModalWrapper isOpen={showAlert} noPortal={true}>
       <div className="relative w-full max-w-2xl max-h-full">
-        <div className="relative bg-main-gradient rounded-lg shadow">
+        <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
           <div className="flex items-start justify-between p-4 rounded-t border-gray-500/50">
             <div className="flex items-center gap-2">
               <PushPin className="text-red-600 text-lg w-6 h-6" weight="fill" />

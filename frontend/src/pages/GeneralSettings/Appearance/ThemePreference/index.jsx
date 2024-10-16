@@ -13,7 +13,7 @@ export default function ThemePreference() {
         <select
           value={theme}
           onChange={(e) => setTheme(e.target.value)}
-          className="bg-zinc-900 w-fit mt-2 px-4 border-gray-500 text-white text-sm rounded-lg block py-2"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         >
           {Object.entries(availableThemes).map(([key, value]) => (
             <option key={key} value={key}>
