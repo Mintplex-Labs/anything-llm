@@ -8,8 +8,10 @@ import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import paths from "@/utils/paths";
+import useUser from "@/hooks/useUser";
 
 export default function WorkspaceAgentConfiguration({ workspace }) {
+  const { user } = useUser();
   const [settings, setSettings] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -84,21 +86,26 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
           workspace={workspace}
           setHasChanges={setHasChanges}
         />
-        {!hasChanges && (
-          <div className="flex flex-col gap-y-4">
-            <a
-              className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              href={paths.settings.agentSkills()}
-            >
-              Configure Agent Skills
-            </a>
-            <p className="text-white text-opacity-60 text-xs font-medium">
-              Customize and enhance the default agent's capabilities by enabling
-              or disabling specific skills. These settings will be applied
-              across all workspaces.
-            </p>
-          </div>
+        {(!user || user?.role === "admin") && (
+          <>
+            {!hasChanges && (
+              <div className="flex flex-col gap-y-4">
+                <a
+                  className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                  href={paths.settings.agentSkills()}
+                >
+                  Configure Agent Skills
+                </a>
+                <p className="text-white text-opacity-60 text-xs font-medium">
+                  Customize and enhance the default agent's capabilities by
+                  enabling or disabling specific skills. These settings will be
+                  applied across all workspaces.
+                </p>
+              </div>
+            )}
+          </>
         )}
+
         {hasChanges && (
           <button
             type="submit"

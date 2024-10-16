@@ -135,7 +135,7 @@ export default function AccountModal({ user, hideModal }) {
                 autoComplete="off"
               />
               <p className="mt-2 text-xs text-white/60">
-                Username must be only contain lowercase letters, numbers,
+                Username must only contain lowercase letters, numbers,
                 underscores, and hyphens with no spaces
               </p>
             </div>

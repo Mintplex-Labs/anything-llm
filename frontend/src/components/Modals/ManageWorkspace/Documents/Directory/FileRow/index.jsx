@@ -31,7 +31,7 @@ export default function FileRow({ item, selected, toggleSelection }) {
           className="shrink-0 text-base font-bold w-4 h-4 mr-[3px]"
           weight="fill"
         />
-        <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
           {middleTruncate(item.title, 55)}
         </p>
       </div>
