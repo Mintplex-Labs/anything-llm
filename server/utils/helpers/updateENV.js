@@ -506,6 +506,20 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // OpenAI Generic TTS
+  TTSOpenAICompatibleKey: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_KEY",
+    checks: [],
+  },
+  TTSOpenAICompatibleVoiceModel: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL",
+    checks: [isNotEmpty],
+  },
+  TTSOpenAICompatibleEndpoint: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_ENDPOINT",
+    checks: [isValidURL],
+  },
+
   // DeepSeek Options
   DeepSeekApiKey: {
     envKey: "DEEPSEEK_API_KEY",
@@ -589,6 +603,7 @@ function supportedTTSProvider(input = "") {
     "openai",
     "elevenlabs",
     "piper_local",
+    "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }

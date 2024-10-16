@@ -81,11 +81,13 @@ const HistoricalMessage = ({
           <div className="flex flex-col items-center">
             <ProfileImage role={role} workspace={workspace} />
             <div className="mt-1 -mb-10">
-              <TTSMessage
-                slug={workspace?.slug}
-                chatId={chatId}
-                message={message}
-              />
+              {role === "assistant" && (
+                <TTSMessage
+                  slug={workspace?.slug}
+                  chatId={chatId}
+                  message={message}
+                />
+              )}
             </div>
           </div>
           {isEditing ? (

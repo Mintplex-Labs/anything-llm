@@ -221,12 +221,18 @@ const SystemSettings = {
       TextToSpeechProvider: process.env.TTS_PROVIDER || "native",
       TTSOpenAIKey: !!process.env.TTS_OPEN_AI_KEY,
       TTSOpenAIVoiceModel: process.env.TTS_OPEN_AI_VOICE_MODEL,
+
       // Eleven Labs TTS
       TTSElevenLabsKey: !!process.env.TTS_ELEVEN_LABS_KEY,
       TTSElevenLabsVoiceModel: process.env.TTS_ELEVEN_LABS_VOICE_MODEL,
       // Piper TTS
       TTSPiperTTSVoiceModel:
         process.env.TTS_PIPER_VOICE_MODEL ?? "en_US-hfc_female-medium",
+      // OpenAI Generic TTS
+      TTSOpenAICompatibleKey: !!process.env.TTS_OPEN_AI_COMPATIBLE_KEY,
+      TTSOpenAICompatibleVoiceModel:
+        process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
+      TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
 
       // --------------------------------------------------------
       // Agent Settings & Configs

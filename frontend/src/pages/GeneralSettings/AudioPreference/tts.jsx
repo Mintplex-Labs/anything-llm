@@ -8,10 +8,13 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import ElevenLabsIcon from "@/media/ttsproviders/elevenlabs.png";
 import PiperTTSIcon from "@/media/ttsproviders/piper.png";
+import GenericOpenAiLogo from "@/media/ttsproviders/generic-openai.png";
+
 import BrowserNative from "@/components/TextToSpeech/BrowserNative";
 import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
 import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
 import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
+import OpenAiGenericTTSOptions from "@/components/TextToSpeech/OpenAiGenericOptions";
 
 const PROVIDERS = [
   {
@@ -41,6 +44,14 @@ const PROVIDERS = [
     logo: PiperTTSIcon,
     options: (settings) => <PiperTTSOptions settings={settings} />,
     description: "Run TTS models locally in your browser privately.",
+  },
+  {
+    name: "OpenAI Compatible",
+    value: "generic-openai",
+    logo: GenericOpenAiLogo,
+    options: (settings) => <OpenAiGenericTTSOptions settings={settings} />,
+    description:
+      "Connect to an OpenAI compatible TTS service running locally or remotely.",
   },
 ];
 

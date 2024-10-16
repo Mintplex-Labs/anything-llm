@@ -7,6 +7,9 @@ function getTTSProvider() {
     case "elevenlabs":
       const { ElevenLabsTTS } = require("./elevenLabs");
       return new ElevenLabsTTS();
+    case "generic-openai":
+      const { GenericOpenAiTTS } = require("./openAiGeneric");
+      return new GenericOpenAiTTS();
     default:
       throw new Error("ENV: No TTS_PROVIDER value found in environment!");
   }
