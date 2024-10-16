@@ -489,10 +489,6 @@ const KEY_MAPPING = {
     envKey: "TTS_OPEN_AI_VOICE_MODEL",
     checks: [],
   },
-  TTSOpenAIEndpoint: {
-    envKey: "TTS_OPEN_AI_ENDPOINT",
-    checks: [validOptionalLLMExternalBasePath],
-  },
 
   // TTS ElevenLabs
   TTSElevenLabsKey: {
@@ -508,6 +504,20 @@ const KEY_MAPPING = {
   TTSPiperTTSVoiceModel: {
     envKey: "TTS_PIPER_VOICE_MODEL",
     checks: [],
+  },
+
+  // OpenAI Generic TTS
+  TTSOpenAICompatibleKey: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_KEY",
+    checks: [],
+  },
+  TTSOpenAICompatibleVoiceModel: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL",
+    checks: [isNotEmpty],
+  },
+  TTSOpenAICompatibleEndpoint: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_ENDPOINT",
+    checks: [isValidURL],
   },
 
   // DeepSeek Options
@@ -566,13 +576,6 @@ function validLLMExternalBasePath(input = "") {
   }
 }
 
-function validOptionalLLMExternalBasePath(input = "") {
-  if (!input) {
-    return null
-  }
-  return validLLMExternalBasePath(input)
-}
-
 function validOllamaLLMBasePath(input = "") {
   try {
     new URL(input);
@@ -590,6 +593,7 @@ function supportedTTSProvider(input = "") {
     "openai",
     "elevenlabs",
     "piper_local",
+    "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
