@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: "false",
+  darkMode: "class",
   content: {
     relative: true,
     files: [
@@ -176,6 +176,12 @@ export default {
       }
     }
   },
+  variants: {
+    extend: {
+      backgroundColor: ['light'],
+      textColor: ['light'],
+    }
+  },
   // Required for rechart styles to show since they can be rendered dynamically and will be tree-shaken if not safe-listed.
   safelist: [
     {
@@ -206,5 +212,9 @@ export default {
         /^(fill-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/
     }
   ],
-  plugins: []
+  plugins: [
+    function ({ addVariant }) {
+      addVariant('light', '.light &') // Add the `light:` variant
+    },
+  ]
 }

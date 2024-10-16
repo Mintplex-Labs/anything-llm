@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import AnythingLLM from "./media/logo/anything-llm.png";
+import AnythingLLMDark from "./media/logo/anything-llm-old.png";
 import DefaultLoginLogo from "./media/illustrations/login-logo.svg";
 import System from "./models/system";
 
@@ -19,12 +20,16 @@ export function LogoProvider({ children }) {
           setLoginLogo(isCustomLogo ? logoURL : DefaultLoginLogo);
           setIsCustomLogo(isCustomLogo);
         } else {
-          setLogo(AnythingLLM);
+          localStorage.getItem("theme") !== "default"
+            ? setLogo(AnythingLLMDark)
+            : setLogo(AnythingLLM);
           setLoginLogo(DefaultLoginLogo);
           setIsCustomLogo(false);
         }
       } catch (err) {
-        setLogo(AnythingLLM);
+        localStorage.getItem("theme") !== "default"
+          ? setLogo(AnythingLLMDark)
+          : setLogo(AnythingLLM);
         setLoginLogo(DefaultLoginLogo);
         setIsCustomLogo(false);
         console.error("Failed to fetch logo:", err);

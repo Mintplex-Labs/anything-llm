@@ -48,7 +48,7 @@ export default function Sidebar() {
                   {(!user || user?.role !== "default") && (
                     <button
                       onClick={showNewWsModal}
-                      className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                      className="light:border-[1px] light:border-black flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
                     >
                       <Plus size={18} weight="bold" />
                       <p className="text-sidebar text-sm font-semibold">

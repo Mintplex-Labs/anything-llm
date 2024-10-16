@@ -63,7 +63,7 @@ export default function ActiveWorkspaces() {
                   flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
                   bg-theme-sidebar-item-default
                   hover:bg-theme-sidebar-item-hover hover:font-bold
-                  ${isActive ? "bg-theme-sidebar-item-selected font-bold" : ""}
+                  ${isActive ? "bg-theme-sidebar-item-selected font-bold !light:border-transparent" : "light:border-[2px] light:border-sidebar-border"}
                 `}
               >
                 <div className="flex flex-row justify-between w-full">
@@ -71,13 +71,18 @@ export default function ActiveWorkspaces() {
                     <SquaresFour
                       weight={isActive ? "fill" : "regular"}
                       className="flex-shrink-0"
+                      color={
+                        isActive
+                          ? "var(--theme-sidebar-item-workspace-active)"
+                          : "var(--theme-sidebar-item-workspace-inactive)"
+                      }
                       size={24}
                     />
                     <div className="w-[130px] overflow-hidden">
                       <p
                         className={`
                         text-[14px] leading-loose whitespace-nowrap overflow-hidden
-                        ${isActive ? "text-white" : "text-zinc-200"} truncate
+                        ${isActive ? "text-white light:text-[var(--theme-sidebar-item-text-active)] font-bold" : "text-zinc-200 light:text-[var(--theme-sidebar-item-text-inactive)] font-medium"} truncate
                         w-full group-hover:w-[100px] transition-all duration-200
                       `}
                       >

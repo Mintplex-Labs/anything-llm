@@ -9,7 +9,7 @@ import CustomAppName from "./CustomAppName";
 import LanguagePreference from "./LanguagePreference";
 import CustomSiteSettings from "./CustomSiteSettings";
 import ShowScrollbar from "./ShowScrollbar";
-// import ThemePreference from "./ThemePreference";
+import ThemePreference from "./ThemePreference";
 
 export default function Appearance() {
   const { t } = useTranslation();
@@ -33,7 +33,7 @@ export default function Appearance() {
             </p>
           </div>
           {/* TODO: Enable when we have other themes */}
-          {/* <ThemePreference /> */}
+          <ThemePreference />
           <LanguagePreference />
           <ShowScrollbar />
           <CustomLogo />
