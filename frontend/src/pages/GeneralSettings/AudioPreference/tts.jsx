@@ -50,7 +50,8 @@ const PROVIDERS = [
     value: "generic-openai",
     logo: GenericOpenAiLogo,
     options: (settings) => <OpenAiGenericTTSOptions settings={settings} />,
-    description: "Connect to an OpenAI compatible TTS service running locally or remotely.",
+    description:
+      "Connect to an OpenAI compatible TTS service running locally or remotely.",
   },
 ];
 
