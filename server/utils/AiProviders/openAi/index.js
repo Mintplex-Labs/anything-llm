@@ -23,6 +23,14 @@ class OpenAiLLM {
     this.defaultTemp = 0.7;
   }
 
+  /**
+   * Check if the model is an o1 model.
+   * @returns {boolean}
+   */
+  get isO1Model() {
+    return this.model.startsWith("o1");
+  }
+
   #appendContext(contextTexts = []) {
     if (!contextTexts || !contextTexts.length) return "";
     return (
@@ -36,8 +44,8 @@ class OpenAiLLM {
   }
 
   streamingEnabled() {
-    // o1 models do not support streaming
-    return !this.isO1Model() && "streamGetChatCompletion" in this;
+    if (this.isO1Model) return false;
+    return "streamGetChatCompletion" in this;
   }
 
   static promptWindowLimit(modelName) {
@@ -102,9 +110,8 @@ class OpenAiLLM {
     // o1 Models do not support the "system" role
     // in order to combat this, we can use the "user" role as a replacement for now
     // https://community.openai.com/t/o1-models-do-not-support-system-role-in-chat-completion/953880
-    const systemRole = this.isO1Model() ? "user" : "system";
     const prompt = {
-      role: systemRole,
+      role: this.isO1Model ? "user" : "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [
@@ -127,8 +134,7 @@ class OpenAiLLM {
       .create({
         model: this.model,
         messages,
-        // o1 models only accept temperature 1
-        temperature: this.isO1Model() ? 1 : temperature,
+        temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
       })
       .catch((e) => {
         throw new Error(e.message);
@@ -149,8 +155,7 @@ class OpenAiLLM {
       model: this.model,
       stream: true,
       messages,
-      // o1 models only accept temperature 1
-      temperature: this.isO1Model() ? 1 : temperature,
+      temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
     });
     return streamRequest;
   }
@@ -171,9 +176,6 @@ class OpenAiLLM {
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);
-  }
-  isO1Model() {
-    return this.model.startsWith("o1");
   }
 }
 

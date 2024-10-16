@@ -6,12 +6,19 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
 // These models do NOT support function calling
+// and therefore are not supported for agents.
 function supportedModel(provider, model = "") {
   if (provider !== "openai") return true;
   return (
-    ["gpt-3.5-turbo-0301", "gpt-4-turbo-2024-04-09", "gpt-4-turbo"].includes(
-      model
-    ) === false
+    [
+      "gpt-3.5-turbo-0301",
+      "gpt-4-turbo-2024-04-09",
+      "gpt-4-turbo",
+      "o1-preview",
+      "o1-preview-2024-09-12",
+      "o1-mini",
+      "o1-mini-2024-09-12",
+    ].includes(model) === false
   );
 }
 
