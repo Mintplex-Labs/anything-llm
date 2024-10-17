@@ -78,7 +78,7 @@ export default function CreateWorkspace({
           <input
             name="name"
             type="text"
-            className="bg-theme-settings-input-bg text-white focus:outline-primary-button active:outline-primary-button placeholder:text-theme-settings-input-placeholder outline-none text-sm rounded-lg block w-full p-2.5"
+            className="bg-theme-bg-input text-theme-text-primary focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none text-sm rounded-lg block w-full p-2.5"
             placeholder="My Workspace"
             required={true}
             autoComplete="off"

@@ -64,7 +64,7 @@ export default function WebsiteDepthOptions() {
                 <input
                   type="url"
                   name="url"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://example.com"
                   required={true}
                   autoComplete="off"
@@ -84,7 +84,7 @@ export default function WebsiteDepthOptions() {
                   name="depth"
                   min="1"
                   max="5"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   required={true}
                   defaultValue="1"
                 />
@@ -102,7 +102,7 @@ export default function WebsiteDepthOptions() {
                   type="number"
                   name="maxLinks"
                   min="1"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   required={true}
                   defaultValue="20"
                 />
@@ -114,9 +114,8 @@ export default function WebsiteDepthOptions() {
             <button
               type="submit"
               disabled={loading}
-              className={`mt-2 w-full ${
-                loading ? "cursor-not-allowed animate-pulse" : ""
-              } justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed`}
+              className={`mt-2 w-full ${loading ? "cursor-not-allowed animate-pulse" : ""
+                } justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed`}
             >
               {loading ? "Scraping website..." : "Submit"}
             </button>

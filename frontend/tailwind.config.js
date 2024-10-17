@@ -47,9 +47,20 @@ export default {
 
         // Generic theme colors
         theme: {
+          active: 'var(--theme-active)',
+          dark: 'var(--theme-bg-dark)',
+          border: {
+            default: 'var(--theme-default-border)',
+          },
+          highlight: {
+            primary: 'var(--theme-highlight-primary)',
+            secondary: 'var(--theme-highlight-secondary)',
+          },
           bg: {
+            dark: 'var(--theme-bg-dark)',
             primary: 'var(--theme-bg-primary)',
             secondary: 'var(--theme-bg-secondary)',
+            input: 'var(--theme-bg-input)',
             sidebar: 'var(--theme-bg-sidebar)',
             container: 'var(--theme-bg-container)',
             chat: 'var(--theme-bg-chat)',
@@ -58,6 +69,7 @@ export default {
           text: {
             primary: 'var(--theme-text-primary)',
             secondary: 'var(--theme-text-secondary)',
+            placeholder: 'var(--theme-text-placeholder)',
           },
           sidebar: {
             item: {

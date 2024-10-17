@@ -13,7 +13,7 @@ export default function ThemePreference() {
         <select
           value={theme}
           onChange={(e) => setTheme(e.target.value)}
-          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         >
           {Object.entries(availableThemes).map(([key, value]) => (
             <option key={key} value={key}>

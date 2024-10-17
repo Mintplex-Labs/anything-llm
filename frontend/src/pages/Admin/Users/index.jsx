@@ -189,7 +189,7 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
               }}
               value={limit}
               min={1}
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             />
           </div>
         </div>

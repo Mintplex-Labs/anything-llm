@@ -43,8 +43,7 @@ export default function GithubOptions() {
       }
 
       showToast(
-        `${data.files} ${pluralize("file", data.files)} collected from ${
-          data.author
+        `${data.files} ${pluralize("file", data.files)} collected from ${data.author
         }/${data.repo}:${data.branch}. Output folder is ${data.destination}.`,
         "success",
         { clear: true }
@@ -77,7 +76,7 @@ export default function GithubOptions() {
                 <input
                   type="url"
                   name="repo"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://github.com/Mintplex-Labs/anything-llm"
                   required={true}
                   autoComplete="off"
@@ -102,7 +101,7 @@ export default function GithubOptions() {
                 <input
                   type="text"
                   name="accessToken"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="github_pat_1234_abcdefg"
                   required={false}
                   autoComplete="off"

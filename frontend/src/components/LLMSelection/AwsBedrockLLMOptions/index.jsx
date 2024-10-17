@@ -5,7 +5,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
   return (
     <div className="w-full flex flex-col">
       {!settings?.credentialsOnly && (
-        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-theme-text-primary mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
             <Info size={40} />
             <p className="text-base">
@@ -26,13 +26,13 @@ export default function AwsBedrockLLMOptions({ settings }) {
 
       <div className="w-full flex items-center gap-[36px] my-1.5">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-theme-text-primary text-sm font-semibold block mb-3">
             AWS Bedrock IAM Access ID
           </label>
           <input
             type="password"
             name="AwsBedrockLLMAccessKeyId"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="AWS Bedrock IAM User Access ID"
             defaultValue={
               settings?.AwsBedrockLLMAccessKeyId ? "*".repeat(20) : ""
@@ -49,7 +49,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
           <input
             type="password"
             name="AwsBedrockLLMAccessKey"
-            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="AWS Bedrock IAM User Access Key"
             defaultValue={
               settings?.AwsBedrockLLMAccessKey ? "*".repeat(20) : ""
@@ -67,7 +67,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
             name="AwsBedrockLLMRegion"
             defaultValue={settings?.AwsBedrockLLMRegion || "us-west-2"}
             required={true}
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           >
             {AWS_REGIONS.map((region) => {
               return (
@@ -90,7 +90,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
               <input
                 type="text"
                 name="AwsBedrockLLMModel"
-                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="Model id from AWS eg: meta.llama3.1-v0.1"
                 defaultValue={settings?.AwsBedrockLLMModel}
                 required={true}
@@ -105,7 +105,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
               <input
                 type="number"
                 name="AwsBedrockLLMTokenLimit"
-                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="Content window limit (eg: 4096)"
                 min={1}
                 onScroll={(e) => e.target.blur()}

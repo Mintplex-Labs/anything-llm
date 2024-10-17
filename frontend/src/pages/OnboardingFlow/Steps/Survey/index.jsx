@@ -91,7 +91,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
     navigate(paths.onboarding.createWorkspace());
   };
 
-  if (!!window?.localStorage?.getItem(COMPLETE_QUESTIONNAIRE)) {
+  if (!!window?.localStorage?.getItem(COMPLETE_QUESTIONNAIRE) || true) {
     return (
       <div className="w-full flex justify-center items-center py-40">
         <div className="w-full flex items-center justify-center px-1 md:px-8 py-4">
@@ -122,7 +122,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
             type="email"
             placeholder="you@gmail.com"
             required={true}
-            className="mt-2 bg-theme-settings-input-bg text-white focus:outline-primary-button active:outline-primary-button placeholder:text-theme-settings-input-placeholder outline-none text-sm font-medium font-['Plus Jakarta Sans'] leading-tight w-full h-11 p-2.5 bg-theme-settings-input-bg rounded-lg"
+            className="mt-2 bg-theme-bg-input text-theme-text-primary focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none text-sm font-medium font-['Plus Jakarta Sans'] leading-tight w-full h-11 p-2.5 rounded-lg"
           />
         </div>
 
@@ -135,9 +135,8 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           </label>
           <div className="mt-2 gap-y-3 flex flex-col">
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-                selectedOption === "job" ? "border-white border-opacity-40" : ""
-              } hover:border-white/60`}
+              className={`transition-all duration-300 w-full h-11 p-2.5 bg-theme-bg-dark border border-transparent rounded-lg flex justify-start items-center gap-2.5 cursor-pointer ${selectedOption === "job" ? "border-theme-highlight-primary" : ""
+                } hover:border-theme-highlight-primary hover:border-[1px]`}
             >
               <input
                 type="radio"
@@ -148,20 +147,16 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-                  selectedOption === "job" ? "bg-white" : ""
-                }`}
+                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${selectedOption === "job" ? "bg-theme-active" : ""
+                  }`}
               ></div>
-              <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
                 For work
               </div>
             </label>
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-                selectedOption === "personal"
-                  ? "border-white border-opacity-40"
-                  : ""
-              } hover:border-white/60`}
+              className={`transition-all duration-300 w-full h-11 p-2.5 bg-theme-bg-dark border border-transparent rounded-lg flex justify-start items-center gap-2.5 cursor-pointer ${selectedOption === "personal" ? "border-theme-highlight-primary" : ""
+                } hover:border-theme-highlight-primary hover:border-[1px]`}
             >
               <input
                 type="radio"
@@ -172,20 +167,16 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-                  selectedOption === "personal" ? "bg-white" : ""
-                }`}
+                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${selectedOption === "personal" ? "bg-theme-active" : ""
+                  }`}
               ></div>
-              <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
                 For my personal use
               </div>
             </label>
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-                selectedOption === "other"
-                  ? "border-white border-opacity-40"
-                  : ""
-              } hover:border-white/60`}
+              className={`transition-all duration-300 w-full h-11 p-2.5 bg-theme-bg-dark border border-transparent rounded-lg flex justify-start items-center gap-2.5 cursor-pointer ${selectedOption === "other" ? "border-theme-highlight-primary" : ""
+                } hover:border-theme-highlight-primary hover:border-[1px]`}
             >
               <input
                 type="radio"
@@ -196,11 +187,10 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-                  selectedOption === "other" ? "bg-white" : ""
-                }`}
+                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${selectedOption === "other" ? "bg-theme-active" : ""
+                  }`}
               ></div>
-              <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
                 Other
               </div>
             </label>
@@ -217,7 +207,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           <textarea
             name="comment"
             rows={5}
-            className="mt-2 bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button placeholder:text-theme-settings-input-placeholder outline-none block w-full p-2.5"
+            className="mt-2 bg-theme-bg-input text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none block w-full p-2.5"
             placeholder="If you have any questions or comments right now, you can leave them here and we will get back to you. You can also email team@mintplexlabs.com"
             wrap="soft"
             autoComplete="off"

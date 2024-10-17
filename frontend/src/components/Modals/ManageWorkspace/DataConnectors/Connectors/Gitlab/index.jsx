@@ -43,8 +43,7 @@ export default function GitlabOptions() {
       }
 
       showToast(
-        `${data.files} ${pluralize("file", data.files)} collected from ${
-          data.author
+        `${data.files} ${pluralize("file", data.files)} collected from ${data.author
         }/${data.repo}:${data.branch}. Output folder is ${data.destination}.`,
         "success",
         { clear: true }
@@ -77,7 +76,7 @@ export default function GitlabOptions() {
                 <input
                   type="url"
                   name="repo"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://gitlab.com/gitlab-org/gitlab"
                   required={true}
                   autoComplete="off"
@@ -102,7 +101,7 @@ export default function GitlabOptions() {
                 <input
                   type="text"
                   name="accessToken"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="glpat-XXXXXXXXXXXXXXXXXXXX"
                   required={false}
                   autoComplete="off"
