@@ -81,6 +81,16 @@
   --theme-modal-border: #d3d3d3;
 }
 
+[data-theme="light"] .text-white {
+  color: var(--theme-text-primary);
+}
+
+[data-theme="light"] .text-description,
+[data-theme="light"] .text-white\/60 {
+  color: var(--theme-text-secondary);
+}
+
+
 html,
 body {
   padding: 0;
@@ -211,21 +221,17 @@ a {
 
 @media (prefers-color-scheme: light) {
   .fade-up-border {
-    background: linear-gradient(
-      to bottom,
-      rgba(220, 221, 223, 10%),
-      rgb(220, 221, 223) 89%
-    );
+    background: linear-gradient(to bottom,
+        rgba(220, 221, 223, 10%),
+        rgb(220, 221, 223) 89%);
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .fade-up-border {
-    background: linear-gradient(
-      to bottom,
-      rgba(41, 37, 36, 50%),
-      rgb(41 37 36) 90%
-    );
+    background: linear-gradient(to bottom,
+        rgba(41, 37, 36, 50%),
+        rgb(41 37 36) 90%);
   }
 }
 
@@ -352,7 +358,7 @@ a {
   height: 100px !important;
 }
 
-.grid-loader > circle {
+.grid-loader>circle {
   fill: #008eff;
 }
 
@@ -415,11 +421,9 @@ dialog::backdrop {
 }
 
 .login-input-gradient {
-  background: linear-gradient(
-    180deg,
-    rgba(61, 65, 71, 0.3) 0%,
-    rgba(44, 47, 53, 0.3) 100%
-  ) !important;
+  background: linear-gradient(180deg,
+      rgba(61, 65, 71, 0.3) 0%,
+      rgba(44, 47, 53, 0.3) 100%) !important;
   box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
 }
 
@@ -444,11 +448,11 @@ dialog::backdrop {
   top: 100%;
 }
 
-.user-reply > div:first-of-type {
+.user-reply>div:first-of-type {
   border: 2px solid white;
 }
 
-.reply > *:last-child::after {
+.reply>*:last-child::after {
   content: "|";
   animation: blink 1.5s steps(1) infinite;
   color: white;
@@ -529,7 +533,7 @@ dialog::backdrop {
  * ==============================================
  */
 .markdown,
-.markdown > * {
+.markdown>* {
   font-weight: 400;
 }
 
@@ -601,6 +605,7 @@ dialog::backdrop {
 }
 
 @media (max-width: 600px) {
+
   .markdown table th,
   .markdown table td {
     padding: 10px;
@@ -666,7 +671,7 @@ dialog::backdrop {
   text-decoration: underline;
 }
 
-.markdown ul li > ul {
+.markdown ul li>ul {
   padding-left: 20px;
   margin: 0px;
 }
@@ -676,7 +681,7 @@ dialog::backdrop {
   margin: 0.35rem;
 }
 
-.markdown > p > a,
+.markdown>p>a,
 .markdown p a {
   text-decoration: underline;
 }
@@ -760,7 +765,7 @@ does not extend the close button beyond the viewport. */
 }
 
 /* Recharts rendering styles */
-.recharts-text > * {
+.recharts-text>* {
   fill: #fff;
 }
 
