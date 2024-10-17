@@ -6,7 +6,11 @@ import PreLoader from "@/components/Preloader";
 import { LOCALAI_COMMON_URLS } from "@/utils/constants";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 
-export default function LocalAiOptions({ settings, showAlert = false }) {
+export default function LocalAiOptions({
+  settings,
+  showAlert = false,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const {
     autoDetecting: loading,
     basePath,
@@ -56,7 +60,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
               <input
                 type="number"
                 name="LocalAiTokenLimit"
-                className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
                 placeholder="4096"
                 min={1}
                 onScroll={(e) => e.target.blur()}
@@ -77,7 +81,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <input
             type="password"
             name="LocalAiApiKey"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="sk-mysecretkey"
             defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
@@ -128,7 +132,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             <input
               type="url"
               name="LocalAiBasePath"
-              className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
               placeholder="http://localhost:8080/v1"
               value={basePathValue.value}
               required={true}
@@ -144,7 +148,12 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
   );
 }
 
-function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
+function LocalAIModelSelection({
+  settings,
+  basePath = null,
+  apiKey = null,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -176,7 +185,7 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
         <select
           name="LocalAiModelPref"
           disabled={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -196,7 +205,7 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
       <select
         name="LocalAiModelPref"
         required={true}
-        className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

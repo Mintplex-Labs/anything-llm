@@ -48,6 +48,8 @@ export default {
         // Generic theme colors
         theme: {
           active: 'var(--theme-active)',
+          "off-white": 'var(--theme-off-white)',
+          "off-dark": 'var(--theme-off-dark)',
           dark: 'var(--theme-bg-dark)',
           border: {
             default: 'var(--theme-default-border)',
@@ -57,19 +59,22 @@ export default {
             secondary: 'var(--theme-highlight-secondary)',
           },
           bg: {
+            app: 'var(--theme-bg-app)',
             dark: 'var(--theme-bg-dark)',
             primary: 'var(--theme-bg-primary)',
             secondary: 'var(--theme-bg-secondary)',
             input: 'var(--theme-bg-input)',
             sidebar: 'var(--theme-bg-sidebar)',
-            container: 'var(--theme-bg-container)',
             chat: 'var(--theme-bg-chat)',
-            "chat-input": 'var(--theme-bg-chat-input)',
+            container: 'var(--theme-bg-container)',
+            "input-dark": 'var(--theme-bg-input-dark)',
+            "r-container": 'var(--theme-bg-r-container)',
           },
           text: {
             primary: 'var(--theme-text-primary)',
             secondary: 'var(--theme-text-secondary)',
             placeholder: 'var(--theme-text-placeholder)',
+            inactive: 'var(--theme-text-inactive)',
           },
           sidebar: {
             item: {

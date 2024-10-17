@@ -230,7 +230,7 @@ export default function DefaultChatContainer() {
 
 function MessageContainer({ children }) {
   return (
-    <div className="flex justify-center items-end w-full bg-theme-bg-chat">
+    <div className="flex justify-center items-end w-full bg-theme-bg-r-container">
       <div className="py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         {children}
       </div>

@@ -43,7 +43,8 @@ export default function GithubOptions() {
       }
 
       showToast(
-        `${data.files} ${pluralize("file", data.files)} collected from ${data.author
+        `${data.files} ${pluralize("file", data.files)} collected from ${
+          data.author
         }/${data.repo}:${data.branch}. Output folder is ${data.destination}.`,
         "success",
         { clear: true }
@@ -76,7 +77,7 @@ export default function GithubOptions() {
                 <input
                   type="url"
                   name="repo"
-                  className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://github.com/Mintplex-Labs/anything-llm"
                   required={true}
                   autoComplete="off"
@@ -101,7 +102,7 @@ export default function GithubOptions() {
                 <input
                   type="text"
                   name="accessToken"
-                  className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="github_pat_1234_abcdefg"
                   required={false}
                   autoComplete="off"
@@ -132,9 +133,9 @@ export default function GithubOptions() {
                 name="ignores"
                 placeholder="!*.js, images/*, .DS_Store, bin/*"
                 classNames={{
-                  tag: "bg-blue-300/10 text-zinc-800",
+                  tag: "bg-blue-300/10 text-theme-dark m-1",
                   input:
-                    "flex bg-theme-bg-secondary text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
+                    "flex bg-transparent text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5",
                 }}
               />
             </div>

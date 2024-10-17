@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import System from "@/models/system";
 
-export default function LiteLLMOptions({ settings }) {
+export default function LiteLLMOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [basePathValue, setBasePathValue] = useState(settings?.LiteLLMBasePath);
   const [basePath, setBasePath] = useState(settings?.LiteLLMBasePath);
   const [apiKeyValue, setApiKeyValue] = useState(settings?.LiteLLMAPIKey);
@@ -17,7 +20,7 @@ export default function LiteLLMOptions({ settings }) {
           <input
             type="url"
             name="LiteLLMBasePath"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="http://127.0.0.1:4000"
             defaultValue={settings?.LiteLLMBasePath}
             required={true}
@@ -31,6 +34,7 @@ export default function LiteLLMOptions({ settings }) {
           settings={settings}
           basePath={basePath}
           apiKey={apiKey}
+          inputBgClassName={inputBgClassName}
         />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
@@ -59,7 +63,7 @@ export default function LiteLLMOptions({ settings }) {
           <input
             type="password"
             name="LiteLLMAPIKey"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="sk-mysecretkey"
             defaultValue={settings?.LiteLLMAPIKey ? "*".repeat(20) : ""}
             autoComplete="off"
@@ -73,7 +77,12 @@ export default function LiteLLMOptions({ settings }) {
   );
 }
 
-function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
+function LiteLLMModelSelection({
+  settings,
+  basePath = null,
+  apiKey = null,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -105,7 +114,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
         <select
           name="LiteLLMModelPref"
           disabled={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -125,7 +134,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
       <select
         name="LiteLLMModelPref"
         required={true}
-        className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

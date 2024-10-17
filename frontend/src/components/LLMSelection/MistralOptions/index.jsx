@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 
-export default function MistralOptions({ settings }) {
+export default function MistralOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [inputValue, setInputValue] = useState(settings?.MistralApiKey);
   const [mistralKey, setMistralKey] = useState(settings?.MistralApiKey);
 
@@ -14,7 +17,7 @@ export default function MistralOptions({ settings }) {
         <input
           type="password"
           name="MistralApiKey"
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
           placeholder="Mistral API Key"
           defaultValue={settings?.MistralApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -31,7 +34,11 @@ export default function MistralOptions({ settings }) {
   );
 }
 
-function MistralModelSelection({ apiKey, settings }) {
+function MistralModelSelection({
+  apiKey,
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -62,7 +69,7 @@ function MistralModelSelection({ apiKey, settings }) {
         <select
           name="MistralModelPref"
           disabled={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             {!!apiKey
@@ -82,7 +89,7 @@ function MistralModelSelection({ apiKey, settings }) {
       <select
         name="MistralModelPref"
         required={true}
-        className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {customModels.length > 0 && (
           <optgroup label="Available Mistral Models">

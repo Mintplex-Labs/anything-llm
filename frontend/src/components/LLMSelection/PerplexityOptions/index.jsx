@@ -1,7 +1,10 @@
 import System from "@/models/system";
 import { useState, useEffect } from "react";
 
-export default function PerplexityOptions({ settings }) {
+export default function PerplexityOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
@@ -11,7 +14,7 @@ export default function PerplexityOptions({ settings }) {
         <input
           type="password"
           name="PerplexityApiKey"
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
           placeholder="Perplexity API Key"
           defaultValue={settings?.PerplexityApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -20,13 +23,19 @@ export default function PerplexityOptions({ settings }) {
         />
       </div>
       {!settings?.credentialsOnly && (
-        <PerplexityModelSelection settings={settings} />
+        <PerplexityModelSelection
+          settings={settings}
+          inputBgClassName={inputBgClassName}
+        />
       )}
     </div>
   );
 }
 
-function PerplexityModelSelection({ settings }) {
+function PerplexityModelSelection({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,7 +58,7 @@ function PerplexityModelSelection({ settings }) {
         <select
           name="PerplexityModelPref"
           disabled={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -67,7 +76,7 @@ function PerplexityModelSelection({ settings }) {
       <select
         name="PerplexityModelPref"
         required={true}
-        className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {customModels.length > 0 && (
           <optgroup label="Available Perplexity Models">

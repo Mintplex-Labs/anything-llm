@@ -18,7 +18,7 @@ export default function NativeTranscriptionOptions({ settings }) {
             name="WhisperModelPref"
             defaultValue={model}
             onChange={(e) => setModel(e.target.value)}
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           >
             {["Xenova/whisper-small", "Xenova/whisper-large"].map(
               (value, i) => {

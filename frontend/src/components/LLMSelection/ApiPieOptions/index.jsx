@@ -1,7 +1,10 @@
 import System from "@/models/system";
 import { useState, useEffect } from "react";
 
-export default function ApiPieLLMOptions({ settings }) {
+export default function ApiPieLLMOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="flex flex-col gap-y-4 mt-1.5">
       <div className="flex gap-[36px]">
@@ -12,7 +15,7 @@ export default function ApiPieLLMOptions({ settings }) {
           <input
             type="password"
             name="ApipieLLMApiKey"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="APIpie API Key"
             defaultValue={settings?.ApipieLLMApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -21,14 +24,20 @@ export default function ApiPieLLMOptions({ settings }) {
           />
         </div>
         {!settings?.credentialsOnly && (
-          <APIPieModelSelection settings={settings} />
+          <APIPieModelSelection
+            settings={settings}
+            inputBgClassName={inputBgClassName}
+          />
         )}
       </div>
     </div>
   );
 }
 
-function APIPieModelSelection({ settings }) {
+function APIPieModelSelection({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -60,7 +69,7 @@ function APIPieModelSelection({ settings }) {
         <select
           name="ApipieLLMModelPref"
           disabled={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -78,7 +87,7 @@ function APIPieModelSelection({ settings }) {
       <select
         name="ApipieLLMModelPref"
         required={true}
-        className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {Object.keys(groupedModels)
           .sort()

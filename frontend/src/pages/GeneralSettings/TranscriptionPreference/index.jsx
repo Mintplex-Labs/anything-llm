@@ -99,7 +99,7 @@ export default function TranscriptionModelPreference() {
   );
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-app flex">
       <Sidebar />
       {loading ? (
         <div

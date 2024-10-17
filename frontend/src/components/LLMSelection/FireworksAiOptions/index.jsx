@@ -1,7 +1,10 @@
 import System from "@/models/system";
 import { useState, useEffect } from "react";
 
-export default function FireworksAiOptions({ settings }) {
+export default function FireworksAiOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
@@ -11,7 +14,7 @@ export default function FireworksAiOptions({ settings }) {
         <input
           type="password"
           name="FireworksAiLLMApiKey"
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
           placeholder="Fireworks AI API Key"
           defaultValue={settings?.FireworksAiLLMApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -20,12 +23,18 @@ export default function FireworksAiOptions({ settings }) {
         />
       </div>
       {!settings?.credentialsOnly && (
-        <FireworksAiModelSelection settings={settings} />
+        <FireworksAiModelSelection
+          settings={settings}
+          inputBgClassName={inputBgClassName}
+        />
       )}
     </div>
   );
 }
-function FireworksAiModelSelection({ settings }) {
+function FireworksAiModelSelection({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -58,7 +67,7 @@ function FireworksAiModelSelection({ settings }) {
         <select
           name="FireworksAiLLMModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -76,7 +85,7 @@ function FireworksAiModelSelection({ settings }) {
       <select
         name="FireworksAiLLMModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {Object.keys(groupedModels)
           .sort()

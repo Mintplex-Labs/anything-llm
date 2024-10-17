@@ -98,13 +98,11 @@ export default function SpeechToText({ sendCommand }) {
       data-tooltip-content="Speak your prompt"
       aria-label="Speak your prompt"
       onClick={listening ? endTTSSession : startSTTSession}
-      className={`relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
-        !!listening ? "!opacity-100" : ""
-      }`}
+      className={`relative flex justify-center items-center cursor-pointer group`}
     >
       <Microphone
         weight="fill"
-        className={`w-[22px] h-[21px] pointer-events-none text-white overflow-hidden rounded-full ${
+        className={`w-[22px] h-[21px] pointer-events-none text-theme-off-white group-hover:text-white ${
           listening ? "animate-pulse-glow" : ""
         }`}
       />

@@ -1,7 +1,10 @@
 import System from "@/models/system";
 import { useState, useEffect } from "react";
 
-export default function TogetherAiOptions({ settings }) {
+export default function TogetherAiOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
@@ -11,7 +14,7 @@ export default function TogetherAiOptions({ settings }) {
         <input
           type="password"
           name="TogetherAiApiKey"
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
           placeholder="Together AI API Key"
           defaultValue={settings?.TogetherAiApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -20,12 +23,18 @@ export default function TogetherAiOptions({ settings }) {
         />
       </div>
       {!settings?.credentialsOnly && (
-        <TogetherAiModelSelection settings={settings} />
+        <TogetherAiModelSelection
+          settings={settings}
+          inputBgClassName={inputBgClassName}
+        />
       )}
     </div>
   );
 }
-function TogetherAiModelSelection({ settings }) {
+function TogetherAiModelSelection({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -58,7 +67,7 @@ function TogetherAiModelSelection({ settings }) {
         <select
           name="TogetherAiModelPref"
           disabled={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -76,7 +85,7 @@ function TogetherAiModelSelection({ settings }) {
       <select
         name="TogetherAiModelPref"
         required={true}
-        className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {Object.keys(groupedModels)
           .sort()

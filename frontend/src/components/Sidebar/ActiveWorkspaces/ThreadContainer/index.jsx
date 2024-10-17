@@ -177,17 +177,25 @@ function NewThreadButton({ workspace }) {
             <CircleNotch
               weight="bold"
               size={14}
-              className="shrink-0 animate-spin text-white"
+              className="shrink-0 animate-spin text-theme-text-primary"
             />
           ) : (
-            <Plus weight="bold" size={14} className="shrink-0 text-white" />
+            <Plus
+              weight="bold"
+              size={14}
+              className="shrink-0 text-theme-text-primary"
+            />
           )}
         </div>
 
         {loading ? (
-          <p className="text-left text-white text-sm">Starting Thread...</p>
+          <p className="text-left text-theme-text-primary text-sm">
+            Starting Thread...
+          </p>
         ) : (
-          <p className="text-left text-white text-sm">New Thread</p>
+          <p className="text-left text-theme-text-primary text-sm">
+            New Thread
+          </p>
         )}
       </div>
     </button>
@@ -204,14 +212,14 @@ function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
       className="w-full relative flex h-[40px] items-center border-none hover:bg-red-400/20 rounded-lg group"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
-        <div className="bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+        <div className="bg-theme-bg-container p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
           <Trash
             weight="bold"
             size={14}
-            className="shrink-0 text-white group-hover:text-red-400"
+            className="shrink-0 text-theme-text-primary group-hover:text-red-400"
           />
         </div>
-        <p className="text-white text-left text-sm group-hover:text-red-400">
+        <p className="text-theme-text-primary text-left text-sm group-hover:text-red-400">
           Delete Selected
         </p>
       </div>

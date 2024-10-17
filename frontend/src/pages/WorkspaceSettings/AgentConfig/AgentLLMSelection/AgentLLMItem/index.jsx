@@ -106,7 +106,7 @@ function SetupProvider({
         <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
           <div className="relative p-6 border-b rounded-t border-theme-modal-border">
             <div className="w-full flex gap-x-2 items-center">
-              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              <h3 className="text-xl font-semibold text-theme-text-primary overflow-hidden overflow-ellipsis whitespace-nowrap">
                 Setup {LLMOption.name}
               </h3>
             </div>
@@ -121,7 +121,7 @@ function SetupProvider({
           <form id="provider-form" onSubmit={handleUpdate}>
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
-                <p className="text-sm text-white/60">
+                <p className="text-sm text-theme-text-secondary">
                   To use {LLMOption.name} as this workspace's LLM you need to
                   set it up first.
                 </p>
@@ -132,14 +132,14 @@ function SetupProvider({
               <button
                 type="button"
                 onClick={closeModal}
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 text-theme-text-secondary hover:bg-theme-modal-border px-4 py-2 rounded-lg text-sm"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 form="provider-form"
-                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 bg-theme-bg-input-dark text-theme-text-primary hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
                 Save {LLMOption.name} settings
               </button>

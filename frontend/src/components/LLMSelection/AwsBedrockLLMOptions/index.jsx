@@ -1,7 +1,10 @@
 import { ArrowSquareOut, Info } from "@phosphor-icons/react";
 import { AWS_REGIONS } from "./regions";
 
-export default function AwsBedrockLLMOptions({ settings }) {
+export default function AwsBedrockLLMOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="w-full flex flex-col">
       {!settings?.credentialsOnly && (
@@ -32,7 +35,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
           <input
             type="password"
             name="AwsBedrockLLMAccessKeyId"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="AWS Bedrock IAM User Access ID"
             defaultValue={
               settings?.AwsBedrockLLMAccessKeyId ? "*".repeat(20) : ""
@@ -49,7 +52,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
           <input
             type="password"
             name="AwsBedrockLLMAccessKey"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="AWS Bedrock IAM User Access Key"
             defaultValue={
               settings?.AwsBedrockLLMAccessKey ? "*".repeat(20) : ""
@@ -67,7 +70,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
             name="AwsBedrockLLMRegion"
             defaultValue={settings?.AwsBedrockLLMRegion || "us-west-2"}
             required={true}
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
           >
             {AWS_REGIONS.map((region) => {
               return (
@@ -90,7 +93,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
               <input
                 type="text"
                 name="AwsBedrockLLMModel"
-                className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
                 placeholder="Model id from AWS eg: meta.llama3.1-v0.1"
                 defaultValue={settings?.AwsBedrockLLMModel}
                 required={true}
@@ -105,7 +108,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
               <input
                 type="number"
                 name="AwsBedrockLLMTokenLimit"
-                className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
                 placeholder="Content window limit (eg: 4096)"
                 min={1}
                 onScroll={(e) => e.target.blur()}

@@ -5,7 +5,10 @@ import { KOBOLDCPP_COMMON_URLS } from "@/utils/constants";
 import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 
-export default function KoboldCPPOptions({ settings }) {
+export default function KoboldCPPOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const {
     autoDetecting: loading,
     basePath,
@@ -33,6 +36,7 @@ export default function KoboldCPPOptions({ settings }) {
         <KoboldCPPModelSelection
           settings={settings}
           basePath={basePath.value}
+          inputBgClassName={inputBgClassName}
         />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-2">
@@ -41,7 +45,7 @@ export default function KoboldCPPOptions({ settings }) {
           <input
             type="number"
             name="KoboldCPPTokenLimit"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="4096"
             min={1}
             value={tokenLimit}
@@ -97,7 +101,7 @@ export default function KoboldCPPOptions({ settings }) {
             <input
               type="url"
               name="KoboldCPPBasePath"
-              className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
               placeholder="http://127.0.0.1:5000/v1"
               value={basePathValue.value}
               required={true}
@@ -116,7 +120,11 @@ export default function KoboldCPPOptions({ settings }) {
   );
 }
 
-function KoboldCPPModelSelection({ settings, basePath = null }) {
+function KoboldCPPModelSelection({
+  settings,
+  basePath = null,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -153,7 +161,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
         <select
           name="KoboldCPPModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -177,7 +185,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
       <select
         name="KoboldCPPModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {customModels.map((model) => (
           <option

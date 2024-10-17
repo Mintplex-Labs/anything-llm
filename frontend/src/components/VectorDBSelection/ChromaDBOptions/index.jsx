@@ -9,7 +9,7 @@ export default function ChromaDBOptions({ settings }) {
           <input
             type="url"
             name="ChromaEndpoint"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://localhost:8000"
             defaultValue={settings?.ChromaEndpoint}
             required={true}
@@ -27,7 +27,7 @@ export default function ChromaDBOptions({ settings }) {
             autoComplete="off"
             type="text"
             defaultValue={settings?.ChromaApiHeader}
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="X-Api-Key"
           />
         </div>
@@ -41,7 +41,7 @@ export default function ChromaDBOptions({ settings }) {
             autoComplete="off"
             type="password"
             defaultValue={settings?.ChromaApiKey ? "*".repeat(20) : ""}
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="sk-myApiKeyToAccessMyChromaInstance"
           />
         </div>

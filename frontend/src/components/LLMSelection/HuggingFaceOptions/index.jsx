@@ -1,4 +1,7 @@
-export default function HuggingFaceOptions({ settings }) {
+export default function HuggingFaceOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="w-full flex flex-col">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
@@ -9,7 +12,7 @@ export default function HuggingFaceOptions({ settings }) {
           <input
             type="url"
             name="HuggingFaceLLMEndpoint"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="https://example.endpoints.huggingface.cloud"
             defaultValue={settings?.HuggingFaceLLMEndpoint}
             required={true}
@@ -24,7 +27,7 @@ export default function HuggingFaceOptions({ settings }) {
           <input
             type="password"
             name="HuggingFaceLLMAccessToken"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="HuggingFace Access Token"
             defaultValue={
               settings?.HuggingFaceLLMAccessToken ? "*".repeat(20) : ""
@@ -41,7 +44,7 @@ export default function HuggingFaceOptions({ settings }) {
           <input
             type="number"
             name="HuggingFaceLLMTokenLimit"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="4096"
             min={1}
             onScroll={(e) => e.target.blur()}

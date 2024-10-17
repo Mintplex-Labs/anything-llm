@@ -1,4 +1,7 @@
-export default function CohereAiOptions({ settings }) {
+export default function CohereAiOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="w-full flex flex-col">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
@@ -9,7 +12,7 @@ export default function CohereAiOptions({ settings }) {
           <input
             type="password"
             name="CohereApiKey"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="Cohere API Key"
             defaultValue={settings?.CohereApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -25,7 +28,7 @@ export default function CohereAiOptions({ settings }) {
             name="CohereModelPref"
             defaultValue={settings?.CohereModelPref || "command-r"}
             required={true}
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
           >
             {[
               "command-r",

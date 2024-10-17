@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 
-export default function OpenAiOptions({ settings }) {
+export default function OpenAiOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [inputValue, setInputValue] = useState(settings?.OpenAiKey);
   const [openAIKey, setOpenAIKey] = useState(settings?.OpenAiKey);
 
@@ -14,7 +17,7 @@ export default function OpenAiOptions({ settings }) {
         <input
           type="password"
           name="OpenAiKey"
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
           placeholder="OpenAI API Key"
           defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
           required={true}
@@ -25,13 +28,21 @@ export default function OpenAiOptions({ settings }) {
         />
       </div>
       {!settings?.credentialsOnly && (
-        <OpenAIModelSelection settings={settings} apiKey={openAIKey} />
+        <OpenAIModelSelection
+          settings={settings}
+          apiKey={openAIKey}
+          inputBgClassName={inputBgClassName}
+        />
       )}
     </div>
   );
 }
 
-function OpenAIModelSelection({ apiKey, settings }) {
+function OpenAIModelSelection({
+  apiKey,
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -66,7 +77,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
         <select
           name="OpenAiModelPref"
           disabled={true}
-          className="bg-theme-bg-input border-gray-500 text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -84,7 +95,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
       <select
         name="OpenAiModelPref"
         required={true}
-        className="bg-theme-bg-input border-gray-500 text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {Object.keys(groupedModels)
           .sort()

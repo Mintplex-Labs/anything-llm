@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { Flask } from "@phosphor-icons/react";
 import System from "@/models/system";
 
-export default function NativeLLMOptions({ settings }) {
+export default function NativeLLMOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-orange-800/30 w-fit rounded-lg px-4 py-2">
@@ -14,13 +17,19 @@ export default function NativeLLMOptions({ settings }) {
         </div>
       </div>
       <div className="w-full flex items-center gap-[36px]">
-        <NativeModelSelection settings={settings} />
+        <NativeModelSelection
+          settings={settings}
+          inputBgClassName={inputBgClassName}
+        />
       </div>
     </div>
   );
 }
 
-function NativeModelSelection({ settings }) {
+function NativeModelSelection({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +52,7 @@ function NativeModelSelection({ settings }) {
         <select
           name="NativeLLMModelPref"
           disabled={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             -- waiting for models --
@@ -62,7 +71,7 @@ function NativeModelSelection({ settings }) {
         <select
           name="NativeLLMModelPref"
           required={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           {customModels.length > 0 && (
             <optgroup label="Your loaded models">
@@ -88,7 +97,7 @@ function NativeModelSelection({ settings }) {
         <input
           type="number"
           name="NativeLLMTokenLimit"
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
           placeholder="4096"
           min={1}
           onScroll={(e) => e.target.blur()}

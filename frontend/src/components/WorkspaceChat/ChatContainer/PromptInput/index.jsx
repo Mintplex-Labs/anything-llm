@@ -163,7 +163,7 @@ export default function PromptInput({
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
       >
         <div className="flex items-center rounded-lg md:mb-4">
-          <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input shadow-sm rounded-2xl flex flex-col px-4 overflow-hidden">
+          <div className="w-[95vw] md:w-[635px] bg-theme-bg-container shadow-sm rounded-2xl flex flex-col px-4 overflow-hidden">
             <AttachmentManager attachments={attachments} />
             <div className="flex items-center w-full border-b-2 border-theme-chat-input-border">
               <textarea
@@ -185,7 +185,7 @@ export default function PromptInput({
                   adjustTextArea(e);
                 }}
                 value={promptInput}
-                className="cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full text-[14px] leading-5 md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
+                className="cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full text-[14px] leading-5 md:text-md text-white bg-transparent placeholder:text-theme-off-white resize-none active:outline-none focus:outline-none flex-grow"
                 placeholder={"Send a message"}
               />
               {buttonDisabled ? (
@@ -195,14 +195,14 @@ export default function PromptInput({
                   <button
                     ref={formRef}
                     type="submit"
-                    className="inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
+                    className="inline-flex justify-center rounded-2xl cursor-pointer group ml-4 group"
                     data-tooltip-id="send-prompt"
                     data-tooltip-content="Send prompt message to workspace"
                     aria-label="Send prompt message to workspace"
                   >
                     <PaperPlaneRight
-                      className="w-[21px] h-[24px]"
                       weight="fill"
+                      className="w-[21px] h-[24px] text-theme-off-white group-hover:text-white"
                     />
                     <span className="sr-only">Send message</span>
                   </button>

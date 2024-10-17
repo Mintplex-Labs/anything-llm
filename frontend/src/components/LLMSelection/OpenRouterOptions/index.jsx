@@ -2,7 +2,10 @@ import System from "@/models/system";
 import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 
-export default function OpenRouterOptions({ settings }) {
+export default function OpenRouterOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="flex flex-col gap-y-4 mt-1.5">
       <div className="flex gap-[36px]">
@@ -13,7 +16,7 @@ export default function OpenRouterOptions({ settings }) {
           <input
             type="password"
             name="OpenRouterApiKey"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="OpenRouter API Key"
             defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -22,7 +25,10 @@ export default function OpenRouterOptions({ settings }) {
           />
         </div>
         {!settings?.credentialsOnly && (
-          <OpenRouterModelSelection settings={settings} />
+          <OpenRouterModelSelection
+            settings={settings}
+            inputBgClassName={inputBgClassName}
+          />
         )}
       </div>
       <AdvancedControls settings={settings} />
@@ -30,7 +36,10 @@ export default function OpenRouterOptions({ settings }) {
   );
 }
 
-function AdvancedControls({ settings }) {
+function AdvancedControls({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
 
   return (
@@ -55,7 +64,7 @@ function AdvancedControls({ settings }) {
           <input
             type="number"
             name="OpenRouterTimeout"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="Timeout value between token responses to auto-timeout the stream"
             defaultValue={settings?.OpenRouterTimeout ?? 500}
             autoComplete="off"
@@ -69,7 +78,10 @@ function AdvancedControls({ settings }) {
   );
 }
 
-function OpenRouterModelSelection({ settings }) {
+function OpenRouterModelSelection({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -101,7 +113,7 @@ function OpenRouterModelSelection({ settings }) {
         <select
           name="OpenRouterModelPref"
           disabled={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -119,7 +131,7 @@ function OpenRouterModelSelection({ settings }) {
       <select
         name="OpenRouterModelPref"
         required={true}
-        className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {Object.keys(groupedModels)
           .sort()

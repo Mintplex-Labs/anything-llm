@@ -135,8 +135,9 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           </label>
           <div className="mt-2 gap-y-3 flex flex-col">
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-theme-bg-dark border border-transparent rounded-lg flex justify-start items-center gap-2.5 cursor-pointer ${selectedOption === "job" ? "border-theme-highlight-primary" : ""
-                } hover:border-theme-highlight-primary hover:border-[1px]`}
+              className={`transition-all duration-300 w-full h-11 p-2.5 bg-theme-bg-dark border border-transparent rounded-lg flex justify-start items-center gap-2.5 cursor-pointer ${
+                selectedOption === "job" ? "border-theme-highlight-primary" : ""
+              } hover:border-theme-highlight-primary hover:border-[1px]`}
             >
               <input
                 type="radio"
@@ -147,16 +148,20 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${selectedOption === "job" ? "bg-theme-active" : ""
-                  }`}
+                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
+                  selectedOption === "job" ? "bg-theme-active" : ""
+                }`}
               ></div>
               <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
                 For work
               </div>
             </label>
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-theme-bg-dark border border-transparent rounded-lg flex justify-start items-center gap-2.5 cursor-pointer ${selectedOption === "personal" ? "border-theme-highlight-primary" : ""
-                } hover:border-theme-highlight-primary hover:border-[1px]`}
+              className={`transition-all duration-300 w-full h-11 p-2.5 bg-theme-bg-dark border border-transparent rounded-lg flex justify-start items-center gap-2.5 cursor-pointer ${
+                selectedOption === "personal"
+                  ? "border-theme-highlight-primary"
+                  : ""
+              } hover:border-theme-highlight-primary hover:border-[1px]`}
             >
               <input
                 type="radio"
@@ -167,16 +172,20 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${selectedOption === "personal" ? "bg-theme-active" : ""
-                  }`}
+                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
+                  selectedOption === "personal" ? "bg-theme-active" : ""
+                }`}
               ></div>
               <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
                 For my personal use
               </div>
             </label>
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-theme-bg-dark border border-transparent rounded-lg flex justify-start items-center gap-2.5 cursor-pointer ${selectedOption === "other" ? "border-theme-highlight-primary" : ""
-                } hover:border-theme-highlight-primary hover:border-[1px]`}
+              className={`transition-all duration-300 w-full h-11 p-2.5 bg-theme-bg-dark border border-transparent rounded-lg flex justify-start items-center gap-2.5 cursor-pointer ${
+                selectedOption === "other"
+                  ? "border-theme-highlight-primary"
+                  : ""
+              } hover:border-theme-highlight-primary hover:border-[1px]`}
             >
               <input
                 type="radio"
@@ -187,8 +196,9 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${selectedOption === "other" ? "bg-theme-active" : ""
-                  }`}
+                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
+                  selectedOption === "other" ? "bg-theme-active" : ""
+                }`}
               ></div>
               <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
                 Other

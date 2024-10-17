@@ -173,7 +173,7 @@ function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
     if (selectedLLM !== "default") {
       return (
         <div className="w-full h-10 justify-center items-center flex mt-4">
-          <p className="text-sm font-base text-white text-opacity-60 text-center">
+          <p className="text-sm font-base text-theme-text-secondary text-center">
             Multi-model support is not supported for this provider yet.
             <br />
             This workspace will use{" "}
@@ -215,7 +215,7 @@ function FreeFormLLMInput({ workspace, setHasChanges }) {
         name="chatModel"
         defaultValue={workspace?.chatModel || ""}
         onChange={() => setHasChanges(true)}
-        className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         placeholder="Enter model name exactly as referenced in the API (e.g., gpt-3.5-turbo)"
       />
     </div>

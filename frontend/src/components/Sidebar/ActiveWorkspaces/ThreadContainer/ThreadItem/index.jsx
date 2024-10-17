@@ -68,7 +68,9 @@ export default function ThreadItem({
         {thread.deleted ? (
           <div className="w-full flex justify-between">
             <div className="w-full pl-2 py-1">
-              <p className={`text-left text-sm text-slate-400/50 italic`}>
+              <p
+                className={`text-left text-sm text-theme-text-inactive italic`}
+              >
                 deleted thread
               </p>
             </div>
@@ -94,8 +96,10 @@ export default function ThreadItem({
             aria-current={isActive ? "page" : ""}
           >
             <p
-              className={`text-left text-sm ${
-                isActive ? "font-medium text-white" : "text-white/40"
+              className={`text-left text-sm font-medium ${
+                isActive
+                  ? "text-theme-text-primary"
+                  : "text-theme-text-inactive"
               }`}
             >
               {truncate(thread.name, 25)}
@@ -113,7 +117,7 @@ export default function ThreadItem({
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <X
-                  className="text-zinc-300 hover:text-white"
+                  className="text-theme-text-inactive hover:text-theme-text-primary"
                   weight="bold"
                   size={18}
                 />
@@ -126,7 +130,10 @@ export default function ThreadItem({
                   onClick={() => setShowOptions(!showOptions)}
                   aria-label="Thread options"
                 >
-                  <DotsThree className="text-slate-300" size={25} />
+                  <DotsThree
+                    className="text-theme-text-inactive hover:text-theme-text-primary"
+                    size={25}
+                  />
                 </button>
               </div>
             )}
@@ -229,7 +236,7 @@ function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
   return (
     <div
       ref={menuRef}
-      className="absolute w-fit z-[20] top-[25px] right-[10px] bg-zinc-900 rounded-lg p-1"
+      className="absolute w-fit z-[20] top-[25px] right-[10px] bg-theme-bg-container border border-theme-border rounded-lg p-1"
     >
       <button
         onClick={renameThread}

@@ -6,7 +6,11 @@ import PreLoader from "@/components/Preloader";
 import { LMSTUDIO_COMMON_URLS } from "@/utils/constants";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 
-export default function LMStudioOptions({ settings, showAlert = false }) {
+export default function LMStudioOptions({
+  settings,
+  showAlert = false,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const {
     autoDetecting: loading,
     basePath,
@@ -48,7 +52,11 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
         </div>
       )}
       <div className="w-full flex items-start gap-[36px] mt-1.5">
-        <LMStudioModelSelection settings={settings} basePath={basePath.value} />
+        <LMStudioModelSelection
+          settings={settings}
+          basePath={basePath.value}
+          inputBgClassName={inputBgClassName}
+        />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-2">
             Max Tokens
@@ -56,7 +64,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           <input
             type="number"
             name="LMStudioTokenLimit"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="4096"
             defaultChecked="4096"
             min={1}
@@ -113,7 +121,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
             <input
               type="url"
               name="LMStudioBasePath"
-              className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
               placeholder="http://localhost:1234/v1"
               value={basePathValue.value}
               required={true}
@@ -132,7 +140,11 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
   );
 }
 
-function LMStudioModelSelection({ settings, basePath = null }) {
+function LMStudioModelSelection({
+  settings,
+  basePath = null,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -169,7 +181,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
         <select
           name="LMStudioModelPref"
           disabled={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             {!!basePath
@@ -193,7 +205,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
       <select
         name="LMStudioModelPref"
         required={true}
-        className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

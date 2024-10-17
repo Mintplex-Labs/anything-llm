@@ -1,4 +1,7 @@
-export default function GenericOpenAiOptions({ settings }) {
+export default function GenericOpenAiOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="flex flex-col gap-y-7">
       <div className="flex gap-[36px] mt-1.5 flex-wrap">
@@ -9,7 +12,7 @@ export default function GenericOpenAiOptions({ settings }) {
           <input
             type="url"
             name="GenericOpenAiBasePath"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="eg: https://proxy.openai.com"
             defaultValue={settings?.GenericOpenAiBasePath}
             required={true}
@@ -24,7 +27,7 @@ export default function GenericOpenAiOptions({ settings }) {
           <input
             type="password"
             name="GenericOpenAiKey"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="Generic service API Key"
             defaultValue={settings?.GenericOpenAiKey ? "*".repeat(20) : ""}
             required={false}
@@ -39,7 +42,7 @@ export default function GenericOpenAiOptions({ settings }) {
           <input
             type="text"
             name="GenericOpenAiModelPref"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="Model id used for chat requests"
             defaultValue={settings?.GenericOpenAiModelPref}
             required={true}
@@ -55,7 +58,7 @@ export default function GenericOpenAiOptions({ settings }) {
           <input
             type="number"
             name="GenericOpenAiTokenLimit"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="Content window limit (eg: 4096)"
             min={1}
             onScroll={(e) => e.target.blur()}
@@ -71,7 +74,7 @@ export default function GenericOpenAiOptions({ settings }) {
           <input
             type="number"
             name="GenericOpenAiMaxTokens"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="Max tokens per request (eg: 1024)"
             min={1}
             defaultValue={settings?.GenericOpenAiMaxTokens || 1024}

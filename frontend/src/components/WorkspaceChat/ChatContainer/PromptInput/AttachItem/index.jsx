@@ -23,9 +23,9 @@ export default function AttachItem() {
           document?.getElementById("dnd-chat-file-uploader")?.click();
           return;
         }}
-        className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer`}
+        className={`border-none relative flex justify-center items-center cursor-pointer group`}
       >
-        <PaperclipHorizontal className="w-[22px] h-[22px] pointer-events-none text-white rotate-90 -scale-y-100" />
+        <PaperclipHorizontal className="w-[22px] h-[22px] pointer-events-none rotate-90 -scale-y-100 text-theme-off-white group-hover:text-white" />
         <Tooltip
           id="attach-item-btn"
           place="top"

@@ -15,13 +15,11 @@ export default function TextSizeButton() {
         data-tooltip-content="Change text size"
         aria-label="Change text size"
         onClick={() => setShowTextSizeMenu(!showTextSizeMenu)}
-        className={`relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
-          showTextSizeMenu ? "!opacity-100" : ""
-        }`}
+        className={`relative flex justify-center items-center cursor-pointer group`}
       >
         <TextT
           weight="fill"
-          className="w-[22px] h-[22px] pointer-events-none text-white"
+          className="w-[22px] h-[22px] pointer-events-none text-theme-off-white group-hover:text-white"
         />
         <Tooltip
           id="tooltip-text-size-btn"

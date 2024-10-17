@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 
-export default function GroqAiOptions({ settings }) {
+export default function GroqAiOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [inputValue, setInputValue] = useState(settings?.GroqApiKey);
   const [apiKey, setApiKey] = useState(settings?.GroqApiKey);
 
@@ -14,7 +17,7 @@ export default function GroqAiOptions({ settings }) {
         <input
           type="password"
           name="GroqApiKey"
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
           placeholder="Groq API Key"
           defaultValue={settings?.GroqApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -26,13 +29,21 @@ export default function GroqAiOptions({ settings }) {
       </div>
 
       {!settings?.credentialsOnly && (
-        <GroqAIModelSelection settings={settings} apiKey={apiKey} />
+        <GroqAIModelSelection
+          settings={settings}
+          apiKey={apiKey}
+          inputBgClassName={inputBgClassName}
+        />
       )}
     </div>
   );
 }
 
-function GroqAIModelSelection({ apiKey, settings }) {
+function GroqAIModelSelection({
+  apiKey,
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -67,7 +78,7 @@ function GroqAIModelSelection({ apiKey, settings }) {
         <select
           name="GroqModelPref"
           disabled={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             --loading available models--
@@ -88,7 +99,7 @@ function GroqAIModelSelection({ apiKey, settings }) {
       <select
         name="GroqModelPref"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {customModels.length > 0 && (
           <optgroup label="Available models">

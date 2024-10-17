@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 
-export default function DeepSeekOptions({ settings }) {
+export default function DeepSeekOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [inputValue, setInputValue] = useState(settings?.DeepSeekApiKey);
   const [deepSeekApiKey, setDeepSeekApiKey] = useState(
     settings?.DeepSeekApiKey
@@ -16,7 +19,7 @@ export default function DeepSeekOptions({ settings }) {
         <input
           type="password"
           name="DeepSeekApiKey"
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
           placeholder="DeepSeek API Key"
           defaultValue={settings?.DeepSeekApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -27,13 +30,21 @@ export default function DeepSeekOptions({ settings }) {
         />
       </div>
       {!settings?.credentialsOnly && (
-        <DeepSeekModelSelection settings={settings} apiKey={deepSeekApiKey} />
+        <DeepSeekModelSelection
+          settings={settings}
+          apiKey={deepSeekApiKey}
+          inputBgClassName={inputBgClassName}
+        />
       )}
     </div>
   );
 }
 
-function DeepSeekModelSelection({ apiKey, settings }) {
+function DeepSeekModelSelection({
+  apiKey,
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -65,7 +76,7 @@ function DeepSeekModelSelection({ apiKey, settings }) {
         <select
           name="DeepSeekModelPref"
           disabled={true}
-          className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -83,7 +94,7 @@ function DeepSeekModelSelection({ apiKey, settings }) {
       <select
         name="DeepSeekModelPref"
         required={true}
-        className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
       >
         {models.map((model) => (
           <option

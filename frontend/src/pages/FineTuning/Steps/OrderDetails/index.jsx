@@ -57,7 +57,7 @@ export default function OrderDetails({ setSettings, setStep }) {
               <input
                 type="email"
                 name="email"
-                className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="jdoe@example.com"
                 required={true}
                 autoComplete="off"
@@ -77,7 +77,7 @@ export default function OrderDetails({ setSettings, setStep }) {
                 <select
                   name="baseModel"
                   required={true}
-                  className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 >
                   <option disabled value="">
                     -- select a base model --
@@ -110,7 +110,7 @@ export default function OrderDetails({ setSettings, setStep }) {
               <input
                 type="text"
                 name="modelName"
-                className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="My really cool model!"
                 required={true}
                 autoComplete="off"

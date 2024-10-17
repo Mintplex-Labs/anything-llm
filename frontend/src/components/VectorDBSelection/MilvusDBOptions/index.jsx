@@ -9,7 +9,7 @@ export default function MilvusDBOptions({ settings }) {
           <input
             type="text"
             name="MilvusAddress"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://localhost:19530"
             defaultValue={settings?.MilvusAddress}
             required={true}
@@ -25,7 +25,7 @@ export default function MilvusDBOptions({ settings }) {
           <input
             type="text"
             name="MilvusUsername"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="username"
             defaultValue={settings?.MilvusUsername}
             autoComplete="off"
@@ -39,7 +39,7 @@ export default function MilvusDBOptions({ settings }) {
           <input
             type="password"
             name="MilvusPassword"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-bg-input-dark text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="password"
             defaultValue={settings?.MilvusPassword ? "*".repeat(20) : ""}
             autoComplete="off"

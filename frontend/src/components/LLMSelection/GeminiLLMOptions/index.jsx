@@ -1,4 +1,7 @@
-export default function GeminiLLMOptions({ settings }) {
+export default function GeminiLLMOptions({
+  settings,
+  inputBgClassName = "bg-theme-bg-input-dark",
+}) {
   return (
     <div className="w-full flex flex-col">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
@@ -9,7 +12,7 @@ export default function GeminiLLMOptions({ settings }) {
           <input
             type="password"
             name="GeminiLLMApiKey"
-            className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
             placeholder="Google Gemini API Key"
             defaultValue={settings?.GeminiLLMApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -28,7 +31,7 @@ export default function GeminiLLMOptions({ settings }) {
                 name="GeminiLLMModelPref"
                 defaultValue={settings?.GeminiLLMModelPref || "gemini-pro"}
                 required={true}
-                className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
               >
                 <optgroup label="Stable Models">
                   {[
@@ -70,7 +73,7 @@ export default function GeminiLLMOptions({ settings }) {
                   settings?.GeminiSafetySetting || "BLOCK_MEDIUM_AND_ABOVE"
                 }
                 required={true}
-                className="border-none bg-theme-bg-input text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className={`border-none ${inputBgClassName} text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5`}
               >
                 <option value="BLOCK_NONE">None</option>
                 <option value="BLOCK_ONLY_HIGH">Block few</option>

@@ -63,35 +63,57 @@ const LLMS = [
     name: "OpenAI",
     value: "openai",
     logo: OpenAiLogo,
-    options: (settings) => <OpenAiOptions settings={settings} />,
+    options: (settings) => (
+      <OpenAiOptions settings={settings} inputBgClassName="bg-theme-bg-input" />
+    ),
     description: "The standard option for most non-commercial use.",
   },
   {
     name: "Azure OpenAI",
     value: "azure",
     logo: AzureOpenAiLogo,
-    options: (settings) => <AzureAiOptions settings={settings} />,
+    options: (settings) => (
+      <AzureAiOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "The enterprise option of OpenAI hosted on Azure services.",
   },
   {
     name: "Anthropic",
     value: "anthropic",
     logo: AnthropicLogo,
-    options: (settings) => <AnthropicAiOptions settings={settings} />,
+    options: (settings) => (
+      <AnthropicAiOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "A friendly AI Assistant hosted by Anthropic.",
   },
   {
     name: "Gemini",
     value: "gemini",
     logo: GeminiLogo,
-    options: (settings) => <GeminiLLMOptions settings={settings} />,
+    options: (settings) => (
+      <GeminiLLMOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Google's largest and most capable AI model",
   },
   {
     name: "HuggingFace",
     value: "huggingface",
     logo: HuggingFaceLogo,
-    options: (settings) => <HuggingFaceOptions settings={settings} />,
+    options: (settings) => (
+      <HuggingFaceOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description:
       "Access 150,000+ open-source LLMs and the world's AI community",
   },
@@ -99,14 +121,24 @@ const LLMS = [
     name: "Ollama",
     value: "ollama",
     logo: OllamaLogo,
-    options: (settings) => <OllamaLLMOptions settings={settings} />,
+    options: (settings) => (
+      <OllamaLLMOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Run LLMs locally on your own machine.",
   },
   {
     name: "LM Studio",
     value: "lmstudio",
     logo: LMStudioLogo,
-    options: (settings) => <LMStudioOptions settings={settings} />,
+    options: (settings) => (
+      <LMStudioOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description:
       "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
   },
@@ -114,35 +146,60 @@ const LLMS = [
     name: "Local AI",
     value: "localai",
     logo: LocalAiLogo,
-    options: (settings) => <LocalAiOptions settings={settings} />,
+    options: (settings) => (
+      <LocalAiOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Run LLMs locally on your own machine.",
   },
   {
     name: "KoboldCPP",
     value: "koboldcpp",
     logo: KoboldCPPLogo,
-    options: (settings) => <KoboldCPPOptions settings={settings} />,
+    options: (settings) => (
+      <KoboldCPPOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Run local LLMs using koboldcpp.",
   },
   {
     name: "Oobabooga Web UI",
     value: "textgenwebui",
     logo: TextGenWebUILogo,
-    options: (settings) => <TextGenWebUIOptions settings={settings} />,
+    options: (settings) => (
+      <TextGenWebUIOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Run local LLMs using Oobabooga's Text Generation Web UI.",
   },
   {
     name: "Together AI",
     value: "togetherai",
     logo: TogetherAILogo,
-    options: (settings) => <TogetherAiOptions settings={settings} />,
+    options: (settings) => (
+      <TogetherAiOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Run open source models from Together AI.",
   },
   {
     name: "Fireworks AI",
     value: "fireworksai",
     logo: FireworksAILogo,
-    options: (settings) => <FireworksAiOptions settings={settings} />,
+    options: (settings) => (
+      <FireworksAiOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description:
       "The fastest and most efficient inference engine to build production-ready, compound AI systems.",
   },
@@ -150,14 +207,24 @@ const LLMS = [
     name: "Mistral",
     value: "mistral",
     logo: MistralLogo,
-    options: (settings) => <MistralOptions settings={settings} />,
+    options: (settings) => (
+      <MistralOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Run open source models from Mistral AI.",
   },
   {
     name: "Perplexity AI",
     value: "perplexity",
     logo: PerplexityLogo,
-    options: (settings) => <PerplexityOptions settings={settings} />,
+    options: (settings) => (
+      <PerplexityOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description:
       "Run powerful and internet-connected models hosted by Perplexity AI.",
   },
@@ -165,14 +232,21 @@ const LLMS = [
     name: "OpenRouter",
     value: "openrouter",
     logo: OpenRouterLogo,
-    options: (settings) => <OpenRouterOptions settings={settings} />,
+    options: (settings) => (
+      <OpenRouterOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "A unified interface for LLMs.",
   },
   {
     name: "Groq",
     value: "groq",
     logo: GroqLogo,
-    options: (settings) => <GroqAiOptions settings={settings} />,
+    options: (settings) => (
+      <GroqAiOptions settings={settings} inputBgClassName="bg-theme-bg-input" />
+    ),
     description:
       "The fastest LLM inferencing available for real-time AI applications.",
   },
@@ -180,35 +254,60 @@ const LLMS = [
     name: "Cohere",
     value: "cohere",
     logo: CohereLogo,
-    options: (settings) => <CohereAiOptions settings={settings} />,
+    options: (settings) => (
+      <CohereAiOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Run Cohere's powerful Command models.",
   },
   {
     name: "LiteLLM",
     value: "litellm",
     logo: LiteLLMLogo,
-    options: (settings) => <LiteLLMOptions settings={settings} />,
+    options: (settings) => (
+      <LiteLLMOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
   },
   {
     name: "DeepSeek",
     value: "deepseek",
     logo: DeepSeekLogo,
-    options: (settings) => <DeepSeekOptions settings={settings} />,
+    options: (settings) => (
+      <DeepSeekOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Run DeepSeek's powerful LLMs.",
   },
   {
     name: "APIpie",
     value: "apipie",
     logo: APIPieLogo,
-    options: (settings) => <ApiPieLLMOptions settings={settings} />,
+    options: (settings) => (
+      <ApiPieLLMOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "A unified API of AI services from leading providers",
   },
   {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
-    options: (settings) => <GenericOpenAiOptions settings={settings} />,
+    options: (settings) => (
+      <GenericOpenAiOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description:
       "Connect to any OpenAi-compatible service via a custom configuration",
   },
@@ -216,14 +315,24 @@ const LLMS = [
     name: "AWS Bedrock",
     value: "bedrock",
     logo: AWSBedrockLogo,
-    options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
+    options: (settings) => (
+      <AWSBedrockLLMOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description: "Run powerful foundation models privately with AWS Bedrock.",
   },
   {
     name: "Native",
     value: "native",
     logo: AnythingLLMIcon,
-    options: (settings) => <NativeLLMOptions settings={settings} />,
+    options: (settings) => (
+      <NativeLLMOptions
+        settings={settings}
+        inputBgClassName="bg-theme-bg-input"
+      />
+    ),
     description:
       "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
   },

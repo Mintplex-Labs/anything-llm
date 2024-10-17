@@ -338,7 +338,7 @@ export default function GeneralLLMPreference() {
     (llm) => llm.value === selectedLLM
   );
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-app flex">
       <Sidebar />
       {loading ? (
         <div

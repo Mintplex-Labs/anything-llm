@@ -293,9 +293,9 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
         onBlur={handleBlur}
         placeholder="https://mysite.com, https://anythingllm.com"
         classNames={{
-          tag: "bg-blue-300/10 text-zinc-800 m-1",
+          tag: "bg-blue-300/10 text-theme-dark m-1",
           input:
-            "flex bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5",
+            "flex bg-transparent text-theme-text-primary placeholder:text-theme-text-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5",
         }}
       />
     </div>
