@@ -90,6 +90,10 @@
   color: var(--theme-text-secondary);
 }
 
+[data-theme="light"] .bg-theme-bg-secondary {
+  border: 1px solid var(--theme-sidebar-border);
+}
+
 
 html,
 body {
