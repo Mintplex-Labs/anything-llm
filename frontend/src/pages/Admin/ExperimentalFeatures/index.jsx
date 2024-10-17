@@ -113,7 +113,7 @@ function FeatureList({
 
   return (
     <div
-      className={`bg-white/5 text-white rounded-xl ${
+      className={`bg-theme-bg-secondary text-white rounded-xl ${
         isMobile ? "w-full" : "min-w-[360px] w-fit"
       }`}
     >
@@ -126,17 +126,23 @@ function FeatureList({
             index === Object.keys(features).length - 1
               ? "rounded-b-xl"
               : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
-            selectedFeature === feature ? "bg-white/10" : ""
+          } cursor-pointer transition-all duration-300 hover:bg-white/5 ${
+            selectedFeature === feature
+              ? "bg-white/10 light:bg-theme-bg-sidebar  "
+              : ""
           }`}
           onClick={() => handleClick?.(feature)}
         >
           <div className="text-sm font-light">{settings.title}</div>
           <div className="flex items-center gap-x-2">
-            <div className="text-sm text-white/60 font-medium">
+            <div className="text-sm text-theme-text-secondary font-medium">
               {activeFeatures.includes(settings.key) ? "On" : "Off"}
             </div>
-            <CaretRight size={14} weight="bold" className="text-white/80" />
+            <CaretRight
+              size={14}
+              weight="bold"
+              className="text-theme-text-secondary"
+            />
           </div>
         </div>
       ))}
@@ -258,13 +264,13 @@ function FeatureVerification({ children }) {
               <div className="flex w-full justify-between items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
                 <a
                   href={paths.home()}
-                  className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
+                  className="px-4 py-2 rounded-lg text-theme-text-primary hover:bg-red-500/50 light:hover:bg-red-300/50 transition-all duration-300"
                 >
-                  Reject & Close
+                  Reject & close
                 </a>
                 <button
                   type="submit"
-                  className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  className="transition-all duration-300 text-theme-text-primary hover:bg-blue-300/50 light:hover:bg-blue-300 px-4 py-2 rounded-lg text-sm"
                 >
                   I understand
                 </button>

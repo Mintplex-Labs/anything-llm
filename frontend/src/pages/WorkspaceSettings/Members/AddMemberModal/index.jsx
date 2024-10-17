@@ -68,7 +68,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
             <div className="relative">
               <input
                 onChange={handleSearch}
-                className="w-[400px] h-[34px] bg-[#030712] rounded-[100px] text-white placeholder:text-white/50 text-sm px-10 pl-10"
+                className="w-[400px] h-[34px] bg-theme-bg-primary rounded-[100px] text-white placeholder:text-theme-text-secondary text-sm px-10 pl-10"
                 placeholder="Search for a user"
               />
               <MagnifyingGlass
@@ -98,22 +98,22 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                     onClick={() => handleUserSelect(user.id)}
                   >
                     <div
-                      className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center"
+                      className="shrink-0 w-3 h-3 rounded border-[1px] border-white light:border-black flex justify-center items-center"
                       role="checkbox"
                       aria-checked={isUserSelected(user.id)}
                       tabIndex={0}
                     >
                       {isUserSelected(user.id) && (
-                        <div className="w-2 h-2 bg-white rounded-[2px]" />
+                        <div className="w-2 h-2 bg-white light:bg-black rounded-[2px]" />
                       )}
                     </div>
-                    <p className="text-white text-sm font-medium">
+                    <p className="text-theme-text-primary text-sm font-medium">
                       {user.username}
                     </p>
                   </tr>
                 ))
               ) : (
-                <p className="text-white text-opacity-60 text-sm font-medium ">
+                <p className="text-theme-text-secondary text-sm font-medium ">
                   No users found
                 </p>
               )}
@@ -144,7 +144,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                   onClick={handleUnselect}
                   className="flex items-center gap-x-2 ml-2"
                 >
-                  <p className="text-white/60 text-sm font-medium hover:text-white">
+                  <p className="text-theme-text-secondary text-sm font-medium hover:text-theme-text-primary">
                     Unselect
                   </p>
                 </button>

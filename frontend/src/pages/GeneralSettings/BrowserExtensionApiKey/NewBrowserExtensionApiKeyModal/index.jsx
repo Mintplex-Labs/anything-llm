@@ -77,7 +77,7 @@ export default function NewBrowserExtensionApiKeyModal({
                 />
               )}
               {isMultiUser && (
-                <p className="text-yellow-300 text-xs md:text-sm font-semibold">
+                <p className="text-yellow-300 light:text-orange-500 text-xs md:text-sm font-semibold">
                   Warning: You are in multi-user mode, this API key will allow
                   access to all workspaces associated with your account. Please
                   share it cautiously.

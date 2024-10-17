@@ -131,7 +131,7 @@ export default function WorkspaceChats() {
                 <button
                   ref={openMenuButton}
                   onClick={toggleMenu}
-                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-theme-text-primary text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:light:bg-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                 >
                   <Download size={18} weight="bold" />
                   {t("recorded.export")}
@@ -141,7 +141,7 @@ export default function WorkspaceChats() {
                   ref={menuRef}
                   className={`${
                     showMenu ? "slide-down" : "slide-up hidden"
-                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary mt-2 shadow-md`}
+                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary light:bg-theme-bg-secondary mt-2 shadow-md`}
                 >
                   <div className="py-2">
                     {Object.entries(exportOptions).map(([key, data]) => (
@@ -151,7 +151,7 @@ export default function WorkspaceChats() {
                           handleDumpChats(key);
                           setShowMenu(false);
                         }}
-                        className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147]"
+                        className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
                       >
                         {data.name}
                       </button>
@@ -163,14 +163,14 @@ export default function WorkspaceChats() {
                 <>
                   <button
                     onClick={handleClearAllChats}
-                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-white/40 text-white/40 rounded-lg bg-transparent hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent light:border-theme-sidebar-border border-white/40 text-white/40 light:text-theme-text-secondary rounded-lg bg-transparent hover:light:text-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                   >
                     <Trash size={18} weight="bold" />
                     Clear Chats
                   </button>
                   <a
                     href={paths.orderFineTune()}
-                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-yellow-300 text-yellow-300/80 rounded-lg bg-transparent hover:text-theme-text-primary text-xs font-semibold hover:bg-yellow-300/75 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-yellow-300 light:border-yellow-600 text-yellow-300/80 light:text-yellow-600 rounded-lg bg-transparent hover:light:text-yellow-800 hover:text-theme-text-primary text-xs font-semibold hover:bg-yellow-300/75 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                   >
                     <Sparkle size={18} weight="bold" />
                     Order Fine-Tune Model
@@ -237,7 +237,7 @@ function ChatsContainer({
   return (
     <>
       <table className="w-full text-sm text-left rounded-lg min-w-[640px]">
-        <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
+        <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase light:border-theme-sidebar-border border-white/10 border-b">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
               {t("recorded.table.id")}
@@ -280,7 +280,7 @@ function ChatsContainer({
         </button>
         <button
           onClick={handleNext}
-          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
+          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 light:text-theme-text-secondary light:border-theme-sidebar-border text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
           disabled={!canNext}
         >
           Next Page

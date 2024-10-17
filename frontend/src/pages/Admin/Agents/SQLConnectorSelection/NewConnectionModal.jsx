@@ -102,7 +102,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   will be available for future SQL agent calls.
                 </p>
                 <div className="flex flex-col w-full">
-                  <div className="border border-red-800 bg-zinc-800 p-4 rounded-lg flex items-center gap-x-2 text-sm text-red-400">
+                  <div className="border border-red-800 bg-zinc-800 light:bg-red-200/50 p-4 rounded-lg flex items-center gap-x-2 text-sm text-red-400 light:text-red-500">
                     <WarningOctagon size={28} className="shrink-0" />
                     <p>
                       <b>WARNING:</b> The SQL agent has been <i>instructed</i>{" "}
@@ -226,7 +226,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     spellCheck={false}
                   />
                 </div>
-                <p className="text-white/40 text-sm">
+                <p className="text-theme-text-secondary text-sm">
                   {assembleConnectionString({ engine, ...config })}
                 </p>
               </div>
@@ -235,7 +235,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
               <button
                 type="button"
                 onClick={handleClose}
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 text-white hover:bg-zinc-700 light:hover:bg-theme-bg-primary px-4 py-2 rounded-lg text-sm"
               >
                 Cancel
               </button>
@@ -260,7 +260,7 @@ function DBEngine({ provider, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col p-4 border border-white/40 bg-zinc-800 rounded-lg w-fit hover:bg-zinc-700 ${
+      className={`flex flex-col p-4 border border-white/40 bg-zinc-800 light:bg-theme-settings-input-bg rounded-lg w-fit hover:bg-zinc-700 ${
         active ? "!bg-blue-500/50" : ""
       }`}
     >

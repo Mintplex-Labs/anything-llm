@@ -145,7 +145,7 @@ export default function AdminAgents() {
 
           {/* Skill settings nav */}
           <div hidden={showSkillModal} className="flex flex-col gap-y-[18px]">
-            <div className="text-white flex items-center gap-x-2">
+            <div className="text-theme-text-primary flex items-center gap-x-2">
               <Robot size={24} />
               <p className="text-lg font-medium">Agent Skills</p>
             </div>
@@ -170,7 +170,7 @@ export default function AdminAgents() {
               activeSkills={agentSkills}
             />
 
-            <div className="text-white flex items-center gap-x-2">
+            <div className="text-theme-text-primary flex items-center gap-x-2">
               <Plug size={24} />
               <p className="text-lg font-medium">Custom Skills</p>
             </div>
@@ -225,7 +225,7 @@ export default function AdminAgents() {
                         )}
                       </>
                     ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-white/60">
+                      <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                         <Robot size={40} />
                         <p className="font-medium">Select an agent skill</p>
                       </div>
@@ -260,7 +260,7 @@ export default function AdminAgents() {
 
         {/* Skill settings nav */}
         <div className="flex flex-col gap-y-[18px]">
-          <div className="text-white flex items-center gap-x-2">
+          <div className="text-theme-text-primary flex items-center gap-x-2">
             <Robot size={24} />
             <p className="text-lg font-medium">Agent Skills</p>
           </div>
@@ -280,7 +280,7 @@ export default function AdminAgents() {
             activeSkills={agentSkills}
           />
 
-          <div className="text-white flex items-center gap-x-2">
+          <div className="text-theme-text-primary flex items-center gap-x-2">
             <Plug size={24} />
             <p className="text-lg font-medium">Custom Skills</p>
           </div>
@@ -317,7 +317,7 @@ export default function AdminAgents() {
                 )}
               </>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-white/60">
+              <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                 <Robot size={40} />
                 <p className="font-medium">Select an agent skill</p>
               </div>
@@ -362,7 +362,7 @@ function SkillList({
 
   return (
     <div
-      className={`bg-white/5 text-white rounded-xl ${
+      className={`bg-theme-bg-secondary text-white rounded-xl ${
         isMobile ? "w-full" : "min-w-[360px] w-fit"
       }`}
     >
@@ -375,8 +375,10 @@ function SkillList({
             index === Object.keys(skills).length - 1
               ? "rounded-b-xl"
               : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
-            selectedSkill === skill ? "bg-white/10" : ""
+          } cursor-pointer transition-all duration-300  hover:bg-theme-bg-primary ${
+            selectedSkill === skill
+              ? "bg-white/10 light:bg-theme-bg-sidebar  "
+              : ""
           }`}
           onClick={() => handleClick?.(skill)}
         >
@@ -385,11 +387,15 @@ function SkillList({
             {isDefault ? (
               <DefaultBadge title={skill} />
             ) : (
-              <div className="text-sm text-white/60 font-medium">
+              <div className="text-sm text-theme-text-secondary font-medium">
                 {activeSkills.includes(skill) ? "On" : "Off"}
               </div>
             )}
-            <CaretRight size={14} weight="bold" className="text-white/80" />
+            <CaretRight
+              size={14}
+              weight="bold"
+              className="text-theme-text-secondary"
+            />
           </div>
         </div>
       ))}

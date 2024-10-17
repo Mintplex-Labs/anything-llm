@@ -39,7 +39,7 @@ export default function AdminApiKeys() {
               href={paths.apiDocs()}
               target="_blank"
               rel="noreferrer"
-              className="text-xs leading-[18px] font-base text-blue-300 hover:underline mt-1"
+              className="text-xs leading-[18px] font-base text-blue-300 light:text-blue-500 hover:underline mt-1"
             >
               {t("api.link")} &rarr;
             </a>
