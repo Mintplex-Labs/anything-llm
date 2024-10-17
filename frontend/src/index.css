@@ -18,6 +18,8 @@
   --theme-sidebar-item-hover: #3f3f42;
   --theme-sidebar-subitem-default: rgba(255, 255, 255, 0.05);
   --theme-sidebar-subitem-selected: rgba(255, 255, 255, 0.05);
+  --theme-sidebar-thread-selected: rgba(255, 255, 255, 0.05);
+
   --theme-sidebar-subitem-hover: rgba(255, 255, 255, 0.05);
   --theme-sidebar-border: rgba(255, 255, 255, 0.1);
   --theme-sidebar-item-workspace-active: #ffffff;
@@ -60,8 +62,7 @@
 
   --theme-sidebar-subitem-default: transparent;
   --theme-sidebar-subitem-selected: #C8EFFF;
-  --theme-sidebar-subitem-icon: #184558;
-
+  --theme-sidebar-thread-selected: rgba(0, 0, 0, 0.10);
   --theme-sidebar-subitem-hover: rgba(0, 0, 0, 0.05);
   --theme-sidebar-border: #d3d4d4;
 
