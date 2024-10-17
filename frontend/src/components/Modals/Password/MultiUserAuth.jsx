@@ -32,14 +32,14 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col justify-center items-center relative rounded-2xl bg-theme-bg-secondary md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-8 px-0 py-4 w-full md:w-fit mt-10 md:mt-0"
+      className="flex flex-col justify-center items-center relative rounded-2xl border-none bg-theme-bg-secondary md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-8 px-0 py-4 w-full md:w-fit mt-10 md:mt-0"
     >
       <div className="flex items-start justify-between pt-11 pb-9 w-screen md:w-full md:px-12 px-6 ">
         <div className="flex flex-col gap-y-4 w-full">
-          <h3 className="text-4xl md:text-lg font-bold text-white text-center md:text-left">
+          <h3 className="text-4xl md:text-lg font-bold text-theme-text-primary text-center md:text-left">
             {t("login.password-reset.title")}
           </h3>
-          <p className="text-sm text-white/90 md:text-left md:max-w-[300px] px-4 md:px-0 text-center">
+          <p className="text-sm text-theme-text-secondary md:text-left md:max-w-[300px] px-4 md:px-0 text-center">
             {t("login.password-reset.description")}
           </p>
         </div>
@@ -288,7 +288,7 @@ export default function MultiUserAuth() {
                 <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap hidden md:block">
                   {t("login.multi-user.welcome")}
                 </h3>
-                <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
+                <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] light:via-[#75D6FF] to-[#FFFFFF] light:to-[#75D6FF] bg-clip-text text-transparent">
                   {customAppName || "AnythingLLM"}
                 </p>
               </div>

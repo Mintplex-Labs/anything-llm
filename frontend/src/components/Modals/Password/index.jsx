@@ -33,7 +33,7 @@ export default function PasswordModal({ mode = "single" }) {
           alt="login illustration"
         />
       </div>
-      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative md:-mt-20 mt-0 bg-theme-bg-secondary md:bg-transparent">
+      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative md:-mt-20 mt-0 !border-none bg-theme-bg-secondary md:bg-transparent">
         <img
           src={loginLogo}
           alt="Logo"

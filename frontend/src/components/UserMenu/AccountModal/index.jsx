@@ -85,7 +85,7 @@ export default function AccountModal({ user, hideModal }) {
           <form onSubmit={handleUpdate} className="space-y-6">
             <div className="flex flex-col md:flex-row items-center justify-center gap-8">
               <div className="flex flex-col items-center">
-                <label className="w-48 h-48 flex flex-col items-center justify-center bg-theme-settings-input-bg/50 transition-all duration-300 rounded-full mt-8 border-2 border-dashed border-white border-opacity-60 cursor-pointer hover:opacity-60">
+                <label className="group w-48 h-48 flex flex-col items-center justify-center bg-theme-settings-input-bg/50 hover:bg-theme-settings-input-bg transition-all duration-300 rounded-full mt-8 border-2 border-dashed border-white light:border-theme-settings-input-bg border-opacity-60 cursor-pointer hover:opacity-60">
                   <input
                     id="logo-upload"
                     type="file"
@@ -101,11 +101,11 @@ export default function AccountModal({ user, hideModal }) {
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center p-3">
-                      <Plus className="w-8 h-8 text-white/80 m-2" />
-                      <span className="text-white text-opacity-80 text-sm font-semibold">
+                      <Plus className="w-8 h-8 text-theme-text-secondary m-2" />
+                      <span className="text-theme-text-secondary text-opacity-80 text-sm font-semibold">
                         Profile Picture
                       </span>
-                      <span className="text-white text-opacity-60 text-xs">
+                      <span className="text-theme-text-secondary text-opacity-60 text-xs">
                         800 x 800
                       </span>
                     </div>
@@ -115,7 +115,7 @@ export default function AccountModal({ user, hideModal }) {
                   <button
                     type="button"
                     onClick={handleRemovePfp}
-                    className="mt-3 text-white text-opacity-60 text-sm font-medium hover:underline"
+                    className="mt-3 text-theme-text-secondary text-opacity-60 text-sm font-medium hover:underline"
                   >
                     Remove Profile Picture
                   </button>
@@ -126,7 +126,7 @@ export default function AccountModal({ user, hideModal }) {
               <div>
                 <label
                   htmlFor="username"
-                  className="block mb-2 text-sm font-medium text-white"
+                  className="block mb-2 text-sm font-medium text-theme-text-primary"
                 >
                   Username
                 </label>

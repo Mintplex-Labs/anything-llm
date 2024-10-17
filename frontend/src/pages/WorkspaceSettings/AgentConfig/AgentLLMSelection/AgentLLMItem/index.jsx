@@ -35,8 +35,8 @@ export default function WorkspaceLLM({
     <>
       <div
         onClick={handleProviderSelection}
-        className={`w-full p-2 rounded-md hover:cursor-pointer hover:bg-white/10 ${
-          checked ? "bg-white/10" : ""
+        className={`w-full p-2 rounded-md hover:cursor-pointer hover:bg-theme-bg-secondary ${
+          checked ? "bg-theme-bg-secondary" : ""
         }`}
       >
         <input
