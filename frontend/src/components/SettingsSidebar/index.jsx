@@ -69,11 +69,10 @@ export default function SettingsSidebar() {
           className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
         >
           <div
-            className={`${
-              showBgOverlay
-                ? "transition-all opacity-1"
-                : "transition-none opacity-0"
-            }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-screen`}
+            className={`${showBgOverlay
+              ? "transition-all opacity-1"
+              : "transition-none opacity-0"
+              }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-screen`}
             onClick={() => setShowSidebar(false)}
           />
           <div
@@ -149,7 +148,7 @@ export default function SettingsSidebar() {
           className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border min-w-[250px] p-[10px] h-[calc(100%-76px)]"
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
-            <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
+            <div className="text-theme-text-secondary text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
               {t("settings.title")}
             </div>
             <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
@@ -163,7 +162,7 @@ export default function SettingsSidebar() {
                       user?.hasOwnProperty("role") && user.role !== "admin"
                     }
                     to={paths.settings.privacy()}
-                    className="text-darker hover:text-white text-xs leading-[18px] mx-3"
+                    className="text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary text-xs leading-[18px] mx-3"
                   >
                     {t("settings.privacy")}
                   </Link>
@@ -199,7 +198,7 @@ function SupportEmail() {
   return (
     <Link
       to={supportEmail}
-      className="text-darker hover:text-white text-xs leading-[18px] mx-3 mt-1"
+      className="text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary text-xs leading-[18px] mx-3 mt-1"
     >
       {t("settings.contact")}
     </Link>

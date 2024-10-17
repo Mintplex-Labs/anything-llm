@@ -44,8 +44,8 @@ export default function MenuOption({
 
   const isActive = hasChildren
     ? (!isExpanded &&
-        childOptions.some((child) => child.href === location.pathname)) ||
-      location.pathname === href
+      childOptions.some((child) => child.href === location.pathname)) ||
+    location.pathname === href
     : location.pathname === href;
 
   const handleClick = (e) => {
@@ -64,27 +64,23 @@ export default function MenuOption({
           flex items-center justify-between w-full
           transition-all duration-300
           rounded-[6px]
-          ${
-            isActive
-              ? "bg-theme-sidebar-subitem-selected font-medium border-outline"
-              : "hover:bg-theme-sidebar-subitem-hover"
+          ${isActive
+            ? "bg-theme-sidebar-subitem-selected font-medium border-outline"
+            : "hover:bg-theme-sidebar-subitem-hover"
           }
         `}
       >
         <Link
           to={href}
-          className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${
-            isChild ? "text-white/70 hover:text-white" : "text-white"
-          }`}
+          className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${isChild ? "hover:text-white" : "text-white light:text-black"
+            }`}
           onClick={hasChildren ? handleClick : undefined}
         >
           {icon}
           <p
-            className={`${
-              isChild ? "text-xs" : "text-sm"
-            } leading-loose whitespace-nowrap overflow-hidden ml-2 ${
-              isActive ? "text-white" : ""
-            } ${!icon && "pl-5"}`}
+            className={`${isChild ? "text-xs" : "text-sm"
+              } leading-loose whitespace-nowrap overflow-hidden ml-2 ${isActive ? "text-white light:text-[var(--theme-sidebar-item-text-active)]" : "text-white light:text-black"
+              } ${!icon && "pl-5"}`}
           >
             {btnText}
           </p>
@@ -94,9 +90,9 @@ export default function MenuOption({
             <CaretRight
               size={16}
               weight="bold"
-              className={`transition-transform ${
-                isExpanded ? "rotate-90" : ""
-              }`}
+              // color={isExpanded ? "#000000" : "var(--theme-sidebar-subitem-icon)"}
+              className={`transition-transform text-white light:text-black ${isExpanded ? "rotate-90" : ""
+                }`}
             />
           </button>
         )}
