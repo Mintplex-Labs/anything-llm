@@ -39,19 +39,21 @@ export default function ThreadItem({
       {/* Curved line Element and leader if required */}
       <div
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
-        className={`${isActive
-          ? "border-l-2 border-b-2 border-white light:border-theme-sidebar-border z-30"
-          : "border-l border-b border-[#6F6F71] light:border-theme-sidebar-border z-10"
-          } h-[50%] absolute top-0 left-2 rounded-bl-lg`}
+        className={`${
+          isActive
+            ? "border-l-2 border-b-2 border-white light:border-theme-sidebar-border z-30"
+            : "border-l border-b border-[#6F6F71] light:border-theme-sidebar-border z-10"
+        } h-[50%] absolute top-0 left-2 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
       {hasNext && (
         <div
           style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
-          className={`${idx <= activeIdx && !isActive
-            ? "border-l-2 border-white light:border-theme-sidebar-border z-20"
-            : "border-l border-[#6F6F71] light:border-theme-sidebar-border z-10"
-            } h-[100%] absolute top-0 left-2`}
+          className={`${
+            idx <= activeIdx && !isActive
+              ? "border-l-2 border-white light:border-theme-sidebar-border z-20"
+              : "border-l border-[#6F6F71] light:border-theme-sidebar-border z-10"
+          } h-[100%] absolute top-0 left-2`}
         ></div>
       )}
 
@@ -66,7 +68,9 @@ export default function ThreadItem({
         {thread.deleted ? (
           <div className="w-full flex justify-between">
             <div className="w-full pl-2 py-1">
-              <p className={`text-left text-sm text-slate-400/50 light:text-slate-500 italic`}>
+              <p
+                className={`text-left text-sm text-slate-400/50 light:text-slate-500 italic`}
+              >
                 deleted thread
               </p>
             </div>
@@ -92,8 +96,11 @@ export default function ThreadItem({
             aria-current={isActive ? "page" : ""}
           >
             <p
-              className={`text-left text-sm ${isActive ? "font-medium text-white light:text-[var(--theme-sidebar-item-text-active)]" : "text-theme-text-primary"
-                }`}
+              className={`text-left text-sm ${
+                isActive
+                  ? "font-medium text-white light:text-[var(--theme-sidebar-item-text-active)]"
+                  : "text-theme-text-primary"
+              }`}
             >
               {truncate(thread.name, 25)}
             </p>
@@ -123,7 +130,10 @@ export default function ThreadItem({
                   onClick={() => setShowOptions(!showOptions)}
                   aria-label="Thread options"
                 >
-                  <DotsThree className="text-slate-300 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary" size={25} />
+                  <DotsThree
+                    className="text-slate-300 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
+                    size={25}
+                  />
                 </button>
               </div>
             )}

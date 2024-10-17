@@ -180,14 +180,22 @@ function NewThreadButton({ workspace }) {
               className="shrink-0 animate-spin text-white light:text-theme-text-secondary"
             />
           ) : (
-            <Plus weight="bold" size={14} className="shrink-0 text-white light:text-theme-text-secondary" />
+            <Plus
+              weight="bold"
+              size={14}
+              className="shrink-0 text-white light:text-theme-text-secondary"
+            />
           )}
         </div>
 
         {loading ? (
-          <p className="text-left text-white light:text-theme-text-secondary text-sm">Starting Thread...</p>
+          <p className="text-left text-white light:text-theme-text-secondary text-sm">
+            Starting Thread...
+          </p>
         ) : (
-          <p className="text-left text-white light:text-theme-text-secondary text-sm">New Thread</p>
+          <p className="text-left text-white light:text-theme-text-secondary text-sm">
+            New Thread
+          </p>
         )}
       </div>
     </button>
