@@ -59,7 +59,7 @@ export default function UserButton() {
         ref={buttonRef}
         onClick={() => setShowMenu(!showMenu)}
         type="button"
-        className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-theme-bg-app justify-center text-white p-2 hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+        className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-theme-bg-app  justify-center text-white p-2 hover:border-slate-100 hover:border-opacity-50 border border-theme-sidebar-border"
       >
         {mode === "multi" ? <UserDisplay /> : <Person size={14} />}
       </button>

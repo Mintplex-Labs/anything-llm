@@ -17,7 +17,7 @@ export default function ChatBubble({ message, type, popMsg }) {
           />
 
           <span
-            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+            className={`whitespace-pre-line text-theme-text-primary font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
           >
             {message}
           </span>
