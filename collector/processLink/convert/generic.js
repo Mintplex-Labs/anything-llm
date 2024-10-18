@@ -28,7 +28,7 @@ async function scrapeGenericUrl(link, textOnly = false) {
 
   const url = new URL(link);
   const decodedPathname = decodeURIComponent(url.pathname);
-  const filename = `${url.hostname}${decodedPathname.replace(/\//g, '_')}`;
+  const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
 
   const data = {
     id: v4(),
