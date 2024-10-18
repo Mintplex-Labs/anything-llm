@@ -17,7 +17,7 @@ export default function ChangeWarningModal({
             <h3 className="text-xl font-semibold text-yellow-300">Warning</h3>
           </div>
         </div>
-        <div className="w-[550px] p-6 text-white">
+        <div className="w-[550px] p-6 text-theme-text-primary">
           <p>
             {warningText}
             <br />
@@ -30,13 +30,13 @@ export default function ChangeWarningModal({
           <button
             onClick={onClose}
             type="button"
-            className="px-4 py-2 rounded-lg text-white hover:bg-red-500 transition-all duration-300"
+            className="px-4 py-2 rounded-lg text-theme-text-primary hover:bg-red-500 transition-all duration-300"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            className="transition-all duration-300 border border-theme-sidebar-border px-4 py-2 rounded-lg text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
           >
             Confirm
           </button>

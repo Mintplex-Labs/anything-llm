@@ -43,7 +43,75 @@ export default {
         error: "#B42318",
         warn: "#854708",
         success: "#05603A",
-        darker: "#F4F4F4"
+        darker: "#F4F4F4",
+
+        // Generic theme colors
+        theme: {
+          active: 'var(--theme-active)',
+          "off-white": 'var(--theme-off-white)',
+          "off-dark": 'var(--theme-off-dark)',
+          dark: 'var(--theme-bg-dark)',
+          border: {
+            default: 'var(--theme-default-border)',
+          },
+          highlight: {
+            primary: 'var(--theme-highlight-primary)',
+            secondary: 'var(--theme-highlight-secondary)',
+          },
+          bg: {
+            app: 'var(--theme-bg-app)',
+            dark: 'var(--theme-bg-dark)',
+            primary: 'var(--theme-bg-primary)',
+            secondary: 'var(--theme-bg-secondary)',
+            input: 'var(--theme-bg-input)',
+            sidebar: 'var(--theme-bg-sidebar)',
+            chat: 'var(--theme-bg-chat)',
+            container: 'var(--theme-bg-container)',
+            "input-dark": 'var(--theme-bg-input-dark)',
+            "r-container": 'var(--theme-bg-r-container)',
+          },
+          text: {
+            primary: 'var(--theme-text-primary)',
+            secondary: 'var(--theme-text-secondary)',
+            placeholder: 'var(--theme-text-placeholder)',
+            inactive: 'var(--theme-text-inactive)',
+          },
+          sidebar: {
+            item: {
+              default: 'var(--theme-sidebar-item-default)',
+              selected: 'var(--theme-sidebar-item-selected)',
+              hover: 'var(--theme-sidebar-item-hover)',
+            },
+            subitem: {
+              default: 'var(--theme-sidebar-subitem-default)',
+              selected: 'var(--theme-sidebar-subitem-selected)',
+              hover: 'var(--theme-sidebar-subitem-hover)',
+            },
+            footer: {
+              icon: 'var(--theme-sidebar-footer-icon)',
+              'icon-hover': 'var(--theme-sidebar-footer-icon-hover)',
+            },
+            border: 'var(--theme-sidebar-border)',
+          },
+          "chat-input": {
+            border: 'var(--theme-chat-input-border)',
+          },
+          "action-menu": {
+            bg: 'var(--theme-action-menu-bg)',
+            "item-hover": 'var(--theme-action-menu-item-hover)',
+          },
+          settings: {
+            input: {
+              bg: 'var(--theme-settings-input-bg)',
+              active: 'var(--theme-settings-input-active)',
+              placeholder: 'var(--theme-settings-input-placeholder)',
+              text: 'var(--theme-settings-input-text)',
+            }
+          },
+          modal: {
+            border: 'var(--theme-modal-border)',
+          }
+        },
       },
       backgroundImage: {
         "preference-gradient":

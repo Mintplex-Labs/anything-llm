@@ -160,7 +160,7 @@ const JustMe = ({
   });
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
-      <div className="flex flex-col border rounded-lg border-white/20 p-8 items-center gap-y-4 w-full max-w-[600px]">
+      <div className="flex flex-col border rounded-lg border-theme-border-default p-8 items-center gap-y-4 w-full max-w-[600px]">
         <div className=" text-white text-sm font-semibold md:-ml-56">
           Would you like to set up a password?
         </div>
@@ -190,15 +190,15 @@ const JustMe = ({
           <form className="w-full mt-4" onSubmit={handleSubmit}>
             <label
               htmlFor="name"
-              className="block mb-3 text-sm font-medium text-white"
+              className="block mb-3 text-sm font-medium text-theme-text-primary"
             >
               Instance Password
             </label>
             <input
               name="password"
               type="password"
-              className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
-              placeholder="Your admin password"
+              className="bg-theme-bg-input text-theme-text-primary text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
+              placeholder="Your instance password"
               minLength={6}
               required={true}
               autoComplete="off"
@@ -265,7 +265,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
     }
   }, [username, password]);
   return (
-    <div className="w-full flex items-center justify-center border max-w-[600px] rounded-lg border-white/20">
+    <div className="w-full flex items-center justify-center border max-w-[600px] rounded-lg border-theme-border-default">
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col w-full md:px-8 px-2 py-4">
           <div className="space-y-6 flex h-full w-full">
@@ -273,14 +273,14 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
               <div>
                 <label
                   htmlFor="name"
-                  className="block mb-3 text-sm font-medium text-white"
+                  className="block mb-3 text-sm font-medium text-theme-text-primary"
                 >
                   Admin account username
                 </label>
                 <input
                   name="username"
                   type="text"
-                  className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
+                  className="bg-theme-bg-input text-theme-text-primary text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin username"
                   minLength={6}
                   required={true}
@@ -303,7 +303,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                 <input
                   name="password"
                   type="password"
-                  className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
+                  className="bg-theme-bg-input text-theme-text-primary text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin password"
                   minLength={8}
                   required={true}
@@ -317,8 +317,8 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
             </div>
           </div>
         </div>
-        <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b border-gray-500/50">
-          <div className=" text-white text-opacity-80 text-xs font-base">
+        <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b border-theme-border-default">
+          <div className="text-theme-text-secondary text-xs font-base">
             By default, you will be the only admin. Once onboarding is completed
             you can create and invite others to be users or admins. Do not lose
             your password as only admins can reset passwords.

@@ -16,7 +16,7 @@ export default function SettingsButton() {
       <ToolTipWrapper id="go-home">
         <Link
           to={paths.home()}
-          className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+          className="transition-all duration-300 p-2 rounded-full text-white bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
           aria-label="Home"
           data-tooltip-id="go-home"
           data-tooltip-content="Back to workspaces"
@@ -30,7 +30,7 @@ export default function SettingsButton() {
     <ToolTipWrapper id="open-settings">
       <Link
         to={paths.settings.appearance()}
-        className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+        className="transition-all duration-300 p-2 rounded-full text-white bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
         aria-label="Settings"
         data-tooltip-id="open-settings"
         data-tooltip-content="Open settings"
