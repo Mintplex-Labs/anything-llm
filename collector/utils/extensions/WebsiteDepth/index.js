@@ -108,7 +108,8 @@ async function bulkScrapePages(links, outFolderPath) {
       }
 
       const url = new URL(link);
-      const filename = (url.host + "-" + url.pathname).replace(".", "_");
+      const decodedPathname = decodeURIComponent(url.pathname);
+      const filename = `${url.hostname}${decodedPathname.replace(/\//g, '_')}`;
 
       const data = {
         id: v4(),
