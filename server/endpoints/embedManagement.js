@@ -1,7 +1,6 @@
 const { EmbedChats } = require("../models/embedChats");
 const { EmbedConfig } = require("../models/embedConfig");
 const { EventLogs } = require("../models/eventLogs");
-const { Workspace } = require("../models/workspace");
 const { reqBody, userFromSession } = require("../utils/http");
 const { validEmbedConfigId } = require("../utils/middleware/embedMiddleware");
 const {
@@ -9,6 +8,9 @@ const {
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const {
+  chatHistoryViewable,
+} = require("../utils/middleware/chatHistoryViewable");
 
 function embedManagementEndpoints(app) {
   if (!app) return;
@@ -90,7 +92,7 @@ function embedManagementEndpoints(app) {
 
   app.post(
     "/embed/chats",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [chatHistoryViewable, validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);

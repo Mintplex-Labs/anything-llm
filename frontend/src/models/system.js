@@ -9,6 +9,7 @@ const System = {
     footerIcons: "anythingllm_footer_links",
     supportEmail: "anythingllm_support_email",
     customAppName: "anythingllm_custom_app_name",
+    canViewChatHistory: "anythingllm_can_view_chat_history",
   },
   ping: async function () {
     return await fetch(`${API_BASE}/ping`)
@@ -674,6 +675,36 @@ const System = {
         console.error(e);
         return false;
       });
+  },
+
+  /**
+   * Fetches the can view chat history state from local storage or the system settings.
+   * Notice: This is an instance setting that cannot be changed via the UI and it is cached
+   * in local storage for 24 hours.
+   * @returns {Promise<{viewable: boolean, error: string | null}>}
+   */
+  fetchCanViewChatHistory: async function () {
+    const cache = window.localStorage.getItem(
+      this.cacheKeys.canViewChatHistory
+    );
+    const { viewable, lastFetched } = cache
+      ? safeJsonParse(cache, { viewable: false, lastFetched: 0 })
+      : { viewable: false, lastFetched: 0 };
+
+    // Since this is an instance setting that cannot be changed via the UI,
+    // we can cache it in local storage for a day and if the admin changes it,
+    // they should instruct the users to clear local storage.
+    if (typeof viewable === "boolean" && Date.now() - lastFetched < 8.64e7)
+      return { viewable, error: null };
+
+    const res = await System.keys();
+    const isViewable = res?.DisableViewChatHistory === false;
+
+    window.localStorage.setItem(
+      this.cacheKeys.canViewChatHistory,
+      JSON.stringify({ viewable: isViewable, lastFetched: Date.now() })
+    );
+    return { viewable: isViewable, error: null };
   },
   experimentalFeatures: {
     liveSync: LiveDocumentSync,

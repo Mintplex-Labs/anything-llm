@@ -11,6 +11,7 @@ import { CaretDown, Download } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { saveAs } from "file-saver";
 import System from "@/models/system";
+import { CanViewChatHistory } from "@/components/CanViewChatHistory";
 
 const exportOptions = {
   csv: {
@@ -88,59 +89,61 @@ export default function EmbedChats() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      <Sidebar />
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
-      >
-        <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
-            <div className="flex gap-x-4 items-center">
-              <p className="text-lg leading-6 font-bold text-white">
-                {t("embed-chats.title")}
-              </p>
-              <div className="relative">
-                <button
-                  ref={openMenuButton}
-                  onClick={toggleMenu}
-                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-white text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
-                >
-                  <Download size={18} weight="bold" />
-                  {t("embed-chats.export")}
-                  <CaretDown size={18} weight="bold" />
-                </button>
-                <div
-                  ref={menuRef}
-                  className={`${
-                    showMenu ? "slide-down" : "slide-up hidden"
-                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary mt-2 shadow-md`}
-                >
-                  <div className="py-2">
-                    {Object.entries(exportOptions).map(([key, data]) => (
-                      <button
-                        key={key}
-                        onClick={() => {
-                          handleDumpChats(key);
-                          setShowMenu(false);
-                        }}
-                        className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147]"
-                      >
-                        {data.name}
-                      </button>
-                    ))}
+    <CanViewChatHistory>
+      <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+        <Sidebar />
+        <div
+          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
+        >
+          <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
+            <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+              <div className="flex gap-x-4 items-center">
+                <p className="text-lg leading-6 font-bold text-white">
+                  {t("embed-chats.title")}
+                </p>
+                <div className="relative">
+                  <button
+                    ref={openMenuButton}
+                    onClick={toggleMenu}
+                    className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-white text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  >
+                    <Download size={18} weight="bold" />
+                    {t("embed-chats.export")}
+                    <CaretDown size={18} weight="bold" />
+                  </button>
+                  <div
+                    ref={menuRef}
+                    className={`${
+                      showMenu ? "slide-down" : "slide-up hidden"
+                    } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary mt-2 shadow-md`}
+                  >
+                    <div className="py-2">
+                      {Object.entries(exportOptions).map(([key, data]) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            handleDumpChats(key);
+                            setShowMenu(false);
+                          }}
+                          className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147]"
+                        >
+                          {data.name}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
+              <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+                {t("embed-chats.description")}
+              </p>
             </div>
-            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              {t("embed-chats.description")}
-            </p>
+            <ChatsContainer />
           </div>
-          <ChatsContainer />
         </div>
       </div>
-    </div>
+    </CanViewChatHistory>
   );
 }
 

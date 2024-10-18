@@ -149,17 +149,32 @@ function useIsExpanded({
   return { isExpanded, setIsExpanded };
 }
 
+/**
+ * Checks if the child options are visible to the user.
+ * This hides the top level options if the child options are not visible
+ * for either the users permissions or the child options hidden prop is set to true by other means.
+ * If all child options return false for `isVisible` then the parent option will not be visible as well.
+ * @param {object} user - The user object.
+ * @param {array} childOptions - The child options.
+ * @returns {boolean} - True if the child options are visible, false otherwise.
+ */
 function hasVisibleOptions(user = null, childOptions = []) {
   if (!Array.isArray(childOptions) || childOptions?.length === 0) return false;
 
-  function isVisible({ roles = [], user = null, flex = false }) {
+  function isVisible({
+    roles = [],
+    user = null,
+    flex = false,
+    hidden = false,
+  }) {
+    if (hidden) return false;
     if (!flex && !roles.includes(user?.role)) return false;
     if (flex && !!user && !roles.includes(user?.role)) return false;
     return true;
   }
 
   return childOptions.some((opt) =>
-    isVisible({ roles: opt.roles, user, flex: opt.flex })
+    isVisible({ roles: opt.roles, user, flex: opt.flex, hidden: opt.hidden })
   );
 }
 

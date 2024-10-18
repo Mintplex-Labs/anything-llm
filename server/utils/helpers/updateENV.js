@@ -886,6 +886,8 @@ function dumpENV() {
     "ENABLE_HTTPS",
     "HTTPS_CERT_PATH",
     "HTTPS_KEY_PATH",
+    // Other Configuration Keys
+    "DISABLE_VIEW_CHAT_HISTORY",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
