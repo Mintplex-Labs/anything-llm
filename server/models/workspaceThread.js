@@ -5,12 +5,12 @@ const WorkspaceThread = {
   defaultName: "Thread",
   writable: ["name"],
 
-  new: async function (workspace, userId = null) {
+  new: async function (workspace, userId = null, data = {}) {
     try {
       const thread = await prisma.workspace_threads.create({
         data: {
-          name: this.defaultName,
-          slug: uuidv4(),
+          name: data.name || this.defaultName,
+          slug: data.slug || uuidv4(),
           user_id: userId ? Number(userId) : null,
           workspace_id: workspace.id,
         },
