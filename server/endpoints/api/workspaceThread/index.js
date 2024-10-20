@@ -71,7 +71,7 @@ function apiWorkspaceThreadEndpoints(app) {
       try {
         const wslug = request.params.slug;
         let { userId = null, name = null, slug = null } = reqBody(request);
-        const workspace = await Workspace.get({ wslug });
+        const workspace = await Workspace.get({ slug: wslug });
 
         if (!workspace) {
           response.sendStatus(400).end();
