@@ -285,7 +285,8 @@ class AgentHandler {
     }
 
     // The provider was explicitly set, so check if the workspace has an agent model set.
-    if (this.invocation.workspace.agentModel) return this.invocation.workspace.agentModel;
+    if (this.invocation.workspace.agentModel)
+      return this.invocation.workspace.agentModel;
 
     // Otherwise, we have no model to use - so guess a default model to use via the provider
     // and it's system ENV params and if that fails - we return either a base model or null.
