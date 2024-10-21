@@ -525,6 +525,10 @@ const SystemSettings = {
       // APIPie LLM API Keys
       ApipieLLMApiKey: !!process.env.APIPIE_LLM_API_KEY,
       ApipieLLMModelPref: process.env.APIPIE_LLM_MODEL_PREF,
+
+      // xAI LLM API Keys
+      XAIApiKey: !!process.env.XAI_LLM_API_KEY,
+      XAIModelPref: process.env.XAI_LLM_MODEL_PREF,
     };
   },
 

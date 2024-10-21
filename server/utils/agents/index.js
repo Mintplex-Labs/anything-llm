@@ -169,6 +169,10 @@ class AgentHandler {
         if (!process.env.APIPIE_LLM_API_KEY)
           throw new Error("ApiPie API Key must be provided to use agents.");
         break;
+      case "xai":
+        if (!process.env.XAI_LLM_API_KEY)
+          throw new Error("xAI API Key must be provided to use agents.");
+        break;
 
       default:
         throw new Error(
@@ -228,6 +232,8 @@ class AgentHandler {
         return process.env.LITE_LLM_MODEL_PREF ?? null;
       case "apipie":
         return process.env.APIPIE_LLM_MODEL_PREF ?? null;
+      case "xai":
+        return process.env.XAI_LLM_MODEL_PREF ?? "grok-beta";
       default:
         return null;
     }
