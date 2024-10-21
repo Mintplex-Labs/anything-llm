@@ -23,6 +23,14 @@ class OpenAiLLM {
     this.defaultTemp = 0.7;
   }
 
+  /**
+   * Check if the model is an o1 model.
+   * @returns {boolean}
+   */
+  get isO1Model() {
+    return this.model.startsWith("o1");
+  }
+
   #appendContext(contextTexts = []) {
     if (!contextTexts || !contextTexts.length) return "";
     return (
@@ -36,6 +44,7 @@ class OpenAiLLM {
   }
 
   streamingEnabled() {
+    if (this.isO1Model) return false;
     return "streamGetChatCompletion" in this;
   }
 
@@ -98,8 +107,11 @@ class OpenAiLLM {
     userPrompt = "",
     attachments = [], // This is the specific attachment for only this prompt
   }) {
+    // o1 Models do not support the "system" role
+    // in order to combat this, we can use the "user" role as a replacement for now
+    // https://community.openai.com/t/o1-models-do-not-support-system-role-in-chat-completion/953880
     const prompt = {
-      role: "system",
+      role: this.isO1Model ? "user" : "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [
@@ -122,7 +134,7 @@ class OpenAiLLM {
       .create({
         model: this.model,
         messages,
-        temperature,
+        temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
       })
       .catch((e) => {
         throw new Error(e.message);
@@ -143,7 +155,7 @@ class OpenAiLLM {
       model: this.model,
       stream: true,
       messages,
-      temperature,
+      temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
     });
     return streamRequest;
   }

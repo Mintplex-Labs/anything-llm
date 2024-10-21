@@ -16,8 +16,6 @@ function isNullOrNaN(value) {
 const SystemSettings = {
   protectedFields: ["multi_user_mode"],
   publicFields: [
-    "limit_user_messages",
-    "message_limit",
     "footer_data",
     "support_email",
     "text_splitter_chunk_size",
@@ -33,8 +31,6 @@ const SystemSettings = {
     "meta_page_favicon",
   ],
   supportedFields: [
-    "limit_user_messages",
-    "message_limit",
     "logo_filename",
     "telemetry_id",
     "footer_data",
@@ -225,12 +221,18 @@ const SystemSettings = {
       TextToSpeechProvider: process.env.TTS_PROVIDER || "native",
       TTSOpenAIKey: !!process.env.TTS_OPEN_AI_KEY,
       TTSOpenAIVoiceModel: process.env.TTS_OPEN_AI_VOICE_MODEL,
+
       // Eleven Labs TTS
       TTSElevenLabsKey: !!process.env.TTS_ELEVEN_LABS_KEY,
       TTSElevenLabsVoiceModel: process.env.TTS_ELEVEN_LABS_VOICE_MODEL,
       // Piper TTS
       TTSPiperTTSVoiceModel:
         process.env.TTS_PIPER_VOICE_MODEL ?? "en_US-hfc_female-medium",
+      // OpenAI Generic TTS
+      TTSOpenAICompatibleKey: !!process.env.TTS_OPEN_AI_COMPATIBLE_KEY,
+      TTSOpenAICompatibleVoiceModel:
+        process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
+      TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
 
       // --------------------------------------------------------
       // Agent Settings & Configs
@@ -244,6 +246,13 @@ const SystemSettings = {
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
+
+      // --------------------------------------------------------
+      // Compliance Settings
+      // --------------------------------------------------------
+      // Disable View Chat History for the whole instance.
+      DisableViewChatHistory:
+        "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
     };
   },
 
@@ -512,6 +521,10 @@ const SystemSettings = {
       // DeepSeek API Keys
       DeepSeekApiKey: !!process.env.DEEPSEEK_API_KEY,
       DeepSeekModelPref: process.env.DEEPSEEK_MODEL_PREF,
+
+      // APIPie LLM API Keys
+      ApipieLLMApiKey: !!process.env.APIPIE_LLM_API_KEY,
+      ApipieLLMModelPref: process.env.APIPIE_LLM_MODEL_PREF,
     };
   },
 
