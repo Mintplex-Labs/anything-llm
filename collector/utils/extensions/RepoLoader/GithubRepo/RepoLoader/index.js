@@ -18,8 +18,7 @@ class GitHubRepoLoader {
    */
   constructor(args = {}) {
     this.ready = false;
-    this.originalRepo = args?.repo;
-    this.repo = this.extractRootRepo(args?.repo);
+    this.repo = args?.repo;
     this.branch = args?.branch;
     this.accessToken = args?.accessToken || null;
     this.ignorePaths = args?.ignorePaths || [];
@@ -29,26 +28,37 @@ class GitHubRepoLoader {
     this.branches = [];
   }
 
-  extractRootRepo(url) {
-    const match = url.match(/^(https?:\/\/github\.com\/[^\/]+\/[^\/]+)/);
-    return match ? match[1] : url;
-  }
-
   #validGithubUrl() {
-    const UrlPattern = require("url-pattern");
-    const pattern = new UrlPattern(
-      "https\\://github.com/(:author)/(:project(*))",
-      {
-        // fixes project names with special characters (.github)
-        segmentValueCharset: "a-zA-Z0-9-._~%/+",
-      }
-    );
-    const match = pattern.match(this.repo);
-    if (!match) return false;
+    try {
+      const url = new URL(this.repo);
 
-    this.author = match.author;
-    this.project = match.project.split("/")[0];
-    return true;
+      // Not a github url at all.
+      if (url.hostname !== "github.com") {
+        console.log(
+          `[Github Loader]: Invalid Github URL provided! Hostname must be 'github.com'. Got ${url.hostname}`
+        );
+        return false;
+      }
+
+      // Assume the url is in the format of github.com/{author}/{project}
+      // Remove the first slash from the pathname so we can split it properly.
+      const [author, project, ..._rest] = url.pathname.slice(1).split("/");
+      if (!author || !project) {
+        console.log(
+          `[Github Loader]: Invalid Github URL provided! URL must be in the format of 'github.com/{author}/{project}'. Got ${url.pathname}`
+        );
+        return false;
+      }
+
+      this.author = author;
+      this.project = project;
+      return true;
+    } catch (e) {
+      console.log(
+        `[Github Loader]: Invalid Github URL provided! Error: ${e.message}`
+      );
+      return false;
+    }
   }
 
   // Ensure the branch provided actually exists
@@ -118,7 +128,7 @@ class GitHubRepoLoader {
         `[Github Loader]: Access token set! Recursive loading enabled!`
       );
 
-    const loader = new LCGithubLoader(this.originalRepo, {
+    const loader = new LCGithubLoader(this.repo, {
       branch: this.branch,
       recursive: !!this.accessToken, // Recursive will hit rate limits.
       maxConcurrency: 5,
