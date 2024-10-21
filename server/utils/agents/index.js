@@ -275,6 +275,10 @@ class AgentHandler {
    * @returns {string|null} the model preference value to use in API calls
    */
   #fetchModel() {
+    // The provider was explicitly set, so check if the workspace has an agent model set.
+    if (this.invocation.workspace.agentModel)
+      return this.invocation.workspace.agentModel;
+
     // Provider was not explicitly set for workspace, so we are going to run our fallback logic
     // that will set a provider and model for us to use.
     if (!this.provider) {
@@ -283,10 +287,6 @@ class AgentHandler {
       this.provider = fallback.provider; // re-set the provider to the fallback provider so it is not null.
       return fallback.model; // set its defined model based on fallback logic.
     }
-
-    // The provider was explicitly set, so check if the workspace has an agent model set.
-    if (this.invocation.workspace.agentModel)
-      return this.invocation.workspace.agentModel;
 
     // Otherwise, we have no model to use - so guess a default model to use via the provider
     // and it's system ENV params and if that fails - we return either a base model or null.
@@ -299,7 +299,6 @@ class AgentHandler {
 
     if (!this.provider)
       throw new Error("No valid provider found for the agent.");
-
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
   }

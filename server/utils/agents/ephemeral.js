@@ -138,6 +138,9 @@ class EphemeralAgentHandler extends AgentHandler {
    * @returns {string|null} the model preference value to use in API calls
    */
   #fetchModel() {
+    // The provider was explicitly set, so check if the workspace has an agent model set.
+    if (this.#workspace.agentModel) return this.#workspace.agentModel;
+
     // Provider was not explicitly set for workspace, so we are going to run our fallback logic
     // that will set a provider and model for us to use.
     if (!this.provider) {
@@ -147,9 +150,6 @@ class EphemeralAgentHandler extends AgentHandler {
       return fallback.model; // set its defined model based on fallback logic.
     }
 
-    // The provider was explicitly set, so check if the workspace has an agent model set.
-    if (this.#workspace.agentModel) return this.#workspace.agentModel;
-
     // Otherwise, we have no model to use - so guess a default model to use via the provider
     // and it's system ENV params and if that fails - we return either a base model or null.
     return this.providerDefault();
@@ -158,6 +158,9 @@ class EphemeralAgentHandler extends AgentHandler {
   #providerSetupAndCheck() {
     this.provider = this.#workspace.agentProvider ?? null;
     this.model = this.#fetchModel();
+
+    if (!this.provider)
+      throw new Error("No valid provider found for the agent.");
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
   }
