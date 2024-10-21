@@ -33,22 +33,14 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
 
       if (Array.isArray(def.examples)) {
         def.examples.forEach(({ prompt, call }) => {
-          // Parse the original call JSON
-          let callObj = JSON.parse(call);
-
-          // Create a new object with the correct structure
-          let formattedCall = {
+          shotExample += `Query: "${prompt}"\nJSON: ${JSON.stringify({
             name: def.name,
-            arguments: callObj
-          };
-
-          // Stringify the new object with proper formatting
-          let formattedCallString = JSON.stringify(formattedCall, null, 2);
-
-          shotExample += `Query: "${prompt}"\nJSON: ${formattedCallString}\n`;
+            arguments: safeJsonParse(call, {}),
+          })}\n`;
+          console.log("shotExample", shotExample);
         });
       }
-      output += `${shotExample}-----------\n`;
+      output += `${shotExample} -----------\n`;
     });
     return output;
   }
@@ -63,7 +55,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
    */
   compareArrays(arr1, arr2, opts) {
     function vKey(i, v) {
-      return (opts?.enforceOrder ? `${i}-` : "") + `${typeof v}-${v}`;
+      return (opts?.enforceOrder ? `${i} -` : "") + `${typeof v} -${v} `;
     }
 
     if (arr1.length !== arr2.length) return false;
@@ -89,6 +81,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
   }
 
   validFuncCall(functionCall = {}, functions = []) {
+    console.log("functionCall", functionCall);
     if (
       !functionCall ||
       !functionCall?.hasOwnProperty("name") ||
@@ -126,15 +119,15 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       DO NOT HAVE TO PICK A FUNCTION IF IT WILL NOT HELP ANSWER OR FULFILL THE USER'S QUERY.
       When a function is selection, respond in JSON with no additional text.
       When there is no relevant function to call - return with a regular chat text response.
-      Your task is to pick a **single** function that we will use to call, if any seem useful or relevant for the user query.
+      Your task is to pick a ** single ** function that we will use to call, if any seem useful or relevant for the user query.
 
       All JSON responses should have two keys.
-      'name': this is the name of the function name to call. eg: 'web-scraper', 'rag-memory', etc..
+      'name': this is the name of the function name to call.eg: 'web-scraper', 'rag-memory', etc..
       'arguments': this is an object with the function properties to invoke the function.
       DO NOT INCLUDE ANY OTHER KEYS IN JSON RESPONSES.
 
       Here are the available tools you can use an examples of a query and response so you can understand how each one works.
-      ${this.showcaseFunctions(functions)}
+        ${this.showcaseFunctions(functions)}
 
       Now pick a function if there is an appropriate one to use given the last user message and the given conversation so far.`,
           role: "system",
