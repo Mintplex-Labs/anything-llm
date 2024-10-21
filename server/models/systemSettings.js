@@ -246,6 +246,13 @@ const SystemSettings = {
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
+
+      // --------------------------------------------------------
+      // Compliance Settings
+      // --------------------------------------------------------
+      // Disable View Chat History for the whole instance.
+      DisableViewChatHistory:
+        "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
     };
   },
 
