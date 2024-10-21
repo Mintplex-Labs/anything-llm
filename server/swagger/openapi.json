@@ -2391,12 +2391,14 @@
           }
         },
         "requestBody": {
-          "description": "Optional userId associated with the thread",
+          "description": "Optional userId associated with the thread, thread slug and thread name",
           "required": false,
           "content": {
             "application/json": {
               "example": {
-                "userId": 1
+                "userId": 1,
+                "name": "Name",
+                "slug": "thread-slug"
               }
             }
           }
