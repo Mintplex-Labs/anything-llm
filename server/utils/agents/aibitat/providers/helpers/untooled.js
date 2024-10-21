@@ -37,7 +37,6 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
             name: def.name,
             arguments: safeJsonParse(call, {}),
           })}\n`;
-          console.log("shotExample", shotExample);
         });
       }
       output += `${shotExample} -----------\n`;
@@ -81,7 +80,6 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
   }
 
   validFuncCall(functionCall = {}, functions = []) {
-    console.log("functionCall", functionCall);
     if (
       !functionCall ||
       !functionCall?.hasOwnProperty("name") ||
