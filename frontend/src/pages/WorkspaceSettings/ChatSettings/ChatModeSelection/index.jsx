@@ -12,7 +12,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
       </div>
 
       <div className="flex flex-col gap-y-1 mt-2">
-        <div className="w-fit flex gap-x-1 items-center p-1 rounded-lg bg-zinc-800 ">
+        <div className="w-fit flex gap-x-1 items-center p-1 rounded-lg bg-theme-settings-input-bg ">
           <input type="hidden" name="chatMode" value={chatMode} />
           <button
             type="button"

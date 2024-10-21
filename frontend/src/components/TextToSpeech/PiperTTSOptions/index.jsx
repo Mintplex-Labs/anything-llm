@@ -75,7 +75,7 @@ function PiperTTSModelSelection({ settings }) {
           name="TTSPiperTTSVoiceModel"
           value=""
           disabled={true}
-          className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option value="" disabled={true}>
             -- loading available models --
@@ -97,7 +97,7 @@ function PiperTTSModelSelection({ settings }) {
             required={true}
             onChange={(e) => setSelectedVoice(e.target.value)}
             value={selectedVoice}
-            className="border-none flex-shrink-0 bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            className="border-none flex-shrink-0 bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
             {voicesByLanguage(voices).map(([lang, voices]) => {
               return (

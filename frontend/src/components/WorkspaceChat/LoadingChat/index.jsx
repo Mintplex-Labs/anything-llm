@@ -3,12 +3,12 @@ import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 export default function LoadingChat() {
-  const highlightColor = "#3D4147";
-  const baseColor = "#2C2F35";
+  const highlightColor = "var(--theme-bg-primary)";
+  const baseColor = "var(--theme-bg-secondary)";
   return (
     <div
-      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="p-4 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll"
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll no-scroll p-4"
+      style={{ height: "calc(100% - 32px)" }}
     >
       <Skeleton.default
         height="100px"
