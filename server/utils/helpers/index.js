@@ -165,6 +165,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "apipie":
       const { ApiPieLLM } = require("../AiProviders/apipie");
       return new ApiPieLLM(embedder, model);
+    case "xai":
+      const { XAiLLM } = require("../AiProviders/xai");
+      return new XAiLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -294,6 +297,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "apipie":
       const { ApiPieLLM } = require("../AiProviders/apipie");
       return ApiPieLLM;
+    case "xai":
+      const { XAiLLM } = require("../AiProviders/xai");
+      return XAiLLM;
     default:
       return null;
   }

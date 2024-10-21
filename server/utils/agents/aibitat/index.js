@@ -789,6 +789,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.LiteLLMProvider({ model: config.model });
       case "apipie":
         return new Providers.ApiPieProvider({ model: config.model });
+      case "xai":
+        return new Providers.XAIProvider({ model: config.model });
 
       default:
         throw new Error(

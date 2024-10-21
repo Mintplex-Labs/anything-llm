@@ -17,6 +17,7 @@ const FireworksAIProvider = require("./fireworksai.js");
 const DeepSeekProvider = require("./deepseek.js");
 const LiteLLMProvider = require("./litellm.js");
 const ApiPieProvider = require("./apipie.js");
+const XAIProvider = require("./xai.js");
 
 module.exports = {
   OpenAIProvider,
@@ -38,4 +39,5 @@ module.exports = {
   FireworksAIProvider,
   LiteLLMProvider,
   ApiPieProvider,
+  XAIProvider,
 };

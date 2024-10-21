@@ -61,6 +61,9 @@ const MODEL_MAP = {
     "deepseek-chat": 128_000,
     "deepseek-coder": 128_000,
   },
+  xai: {
+    "grok-beta": 131_072,
+  },
 };
 
 module.exports = { MODEL_MAP };

@@ -539,6 +539,16 @@ const KEY_MAPPING = {
     envKey: "APIPIE_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // xAI Options
+  XAIApiKey: {
+    envKey: "XAI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  XAIModelPref: {
+    envKey: "XAI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -643,6 +653,7 @@ function supportedLLM(input = "") {
     "bedrock",
     "deepseek",
     "apipie",
+    "xai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
