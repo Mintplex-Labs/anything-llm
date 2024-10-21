@@ -634,6 +634,7 @@ function supportedLLM(input = "") {
     "huggingface",
     "perplexity",
     "openrouter",
+    "novita",
     "groq",
     "koboldcpp",
     "textgenwebui",

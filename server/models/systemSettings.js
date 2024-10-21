@@ -441,6 +441,11 @@ const SystemSettings = {
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
       OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
 
+      // Novita LLM Keys
+      NovitaApiKey: !!process.env.NOVITA_API_KEY,
+      NovitaModelPref: process.env.NOVITA_MODEL_PREF,
+      NovitaTimeout: process.env.NOVITA_TIMEOUT_MS,
+
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,

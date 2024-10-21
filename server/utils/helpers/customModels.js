@@ -4,6 +4,7 @@ const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
+const { fetchNovitaModels } = require("../AiProviders/novita");
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
   "localai",
@@ -21,6 +22,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "groq",
   "deepseek",
   "apipie",
+  "novita",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -60,6 +62,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getDeepSeekModels(apiKey);
     case "apipie":
       return await getAPIPieModels(apiKey);
+    case "novita":
+      return await getNovitaModels();
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -349,6 +353,22 @@ async function getOpenRouterModels() {
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getNovitaModels() {
+  console.log("getting novita models");
+  const knownModels = await fetchNovitaModels();
+  console.log(knownModels);
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
   const models = Object.values(knownModels).map((model) => {
     return {
       id: model.id,

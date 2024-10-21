@@ -165,6 +165,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "apipie":
       const { ApiPieLLM } = require("../AiProviders/apipie");
       return new ApiPieLLM(embedder, model);
+    case "novita":
+      const { NovitaLLM } = require("../AiProviders/novita");
+      return new NovitaLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
