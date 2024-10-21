@@ -756,7 +756,7 @@ ${this.getHistory({ to: route.to })
       case "anthropic":
         return new Providers.AnthropicProvider({ model: config.model });
       case "lmstudio":
-        return new Providers.LMStudioProvider({});
+        return new Providers.LMStudioProvider({ model: config.model });
       case "ollama":
         return new Providers.OllamaProvider({ model: config.model });
       case "groq":

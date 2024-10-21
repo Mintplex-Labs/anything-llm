@@ -5,7 +5,7 @@ const {
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
-  constructor(embedder = null, _modelPreference = null) {
+  constructor(embedder = null, modelPreference = null) {
     if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
 
@@ -21,7 +21,10 @@ class LMStudioLLM {
     // and any other value will crash inferencing. So until this is patched we will
     // try to fetch the `/models` and have the user set it, or just fallback to "Loaded from Chat UI"
     // which will not impact users with <v0.2.17 and should work as well once the bug is fixed.
-    this.model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
+    this.model =
+      modelPreference ||
+      process.env.LMSTUDIO_MODEL_PREF ||
+      "Loaded from Chat UI";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
