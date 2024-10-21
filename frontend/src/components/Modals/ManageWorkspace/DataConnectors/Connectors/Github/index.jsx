@@ -10,14 +10,12 @@ const DEFAULT_BRANCHES = ["main", "master"];
 export default function GithubOptions() {
   const [loading, setLoading] = useState(false);
   const [repo, setRepo] = useState(null);
-  const [accessToken, setAccessToken] = useState(
-    () => localStorage.getItem("anythingllm_ghpat") || ""
-  );
+  const [accessToken, setAccessToken] = useState(null);
   const [ignores, setIgnores] = useState([]);
 
   const [settings, setSettings] = useState({
     repo: null,
-    accessToken: accessToken,
+    accessToken: null,
   });
 
   const handleSubmit = async (e) => {
@@ -40,13 +38,10 @@ export default function GithubOptions() {
 
       if (!!error) {
         showToast(error, "error", { clear: true });
-        localStorage.removeItem("anythingllm_ghpat");
-        setAccessToken("");
         setLoading(false);
         return;
       }
 
-      localStorage.setItem("anythingllm_ghpat", form.get("accessToken"));
       showToast(
         `${data.files} ${pluralize("file", data.files)} collected from ${
           data.author
@@ -60,7 +55,6 @@ export default function GithubOptions() {
     } catch (e) {
       console.error(e);
       showToast(e.message, "error", { clear: true });
-      localStorage.removeItem("anythingllm_ghpat");
       setLoading(false);
     }
   };
@@ -106,18 +100,15 @@ export default function GithubOptions() {
                   </p>
                 </div>
                 <input
-                  type={accessToken ? "password" : "text"}
+                  type="text"
                   name="accessToken"
                   className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="github_pat_1234_abcdefg"
                   required={false}
                   autoComplete="off"
                   spellCheck={false}
-                  value={accessToken}
-                  onChange={(e) => {
-                    setAccessToken(e.target.value);
-                    setSettings({ ...settings, accessToken: e.target.value });
-                  }}
+                  onChange={(e) => setAccessToken(e.target.value)}
+                  onBlur={() => setSettings({ ...settings, accessToken })}
                 />
               </div>
               <GitHubBranchSelection
