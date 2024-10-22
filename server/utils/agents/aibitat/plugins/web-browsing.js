@@ -77,6 +77,9 @@ const webBrowsing = {
               case "searxng-engine":
                 engine = "_searXNGEngine";
                 break;
+              case "tavily-search":
+                engine = "_tavilySearch";
+                break;
               default:
                 engine = "_googleSearchEngine";
             }
@@ -433,6 +436,59 @@ const webBrowsing = {
                 link: url,
                 snippet: content,
                 publishedDate,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - looking over them now.`
+            );
+            return JSON.stringify(data);
+          },
+          _tavilySearch: async function (query) {
+            if (!process.env.AGENT_TAVILY_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Tavily searching because the user has not defined the required API key.\nVisit: https://tavily.com/ to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Tavily to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const url = "https://api.tavily.com/search";
+            const { response, error } = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                api_key: process.env.AGENT_TAVILY_API_KEY,
+                query: query,
+              }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                return { response: null, error: e.message };
+              });
+
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response.results?.forEach((searchResult) => {
+              const { title, url, content } = searchResult;
+              data.push({
+                title,
+                link: url,
+                snippet: content,
               });
             });
 

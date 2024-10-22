@@ -71,23 +71,6 @@ export default function AzureAiOptions({ settings }) {
             </option>
           </select>
         </div>
-
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            Embedding Deployment Name
-          </label>
-          <input
-            type="text"
-            name="AzureOpenAiEmbeddingModelPref"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Azure OpenAI embedding model deployment name"
-            defaultValue={settings?.AzureOpenAiEmbeddingModelPref}
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-        <div className="flex-flex-col w-60"></div>
       </div>
     </div>
   );

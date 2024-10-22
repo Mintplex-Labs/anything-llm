@@ -55,6 +55,9 @@ const {
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 const { EncryptionManager } = require("../utils/EncryptionManager");
 const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
+const {
+  chatHistoryViewable,
+} = require("../utils/middleware/chatHistoryViewable");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -495,8 +498,6 @@ function systemEndpoints(app) {
 
         await SystemSettings._updateSettings({
           multi_user_mode: true,
-          limit_user_messages: false,
-          message_limit: 25,
         });
         await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
 
@@ -968,7 +969,11 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/workspace-chats",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      chatHistoryViewable,
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+    ],
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);
@@ -1008,7 +1013,11 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/export-chats",
-    [validatedRequest, flexUserRoleValid([ROLES.manager, ROLES.admin])],
+    [
+      chatHistoryViewable,
+      validatedRequest,
+      flexUserRoleValid([ROLES.manager, ROLES.admin]),
+    ],
     async (request, response) => {
       try {
         const { type = "jsonl", chatType = "workspace" } = request.query;

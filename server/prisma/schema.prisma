@@ -67,6 +67,7 @@ model users {
   seen_recovery_codes         Boolean?                      @default(false)
   createdAt                   DateTime                      @default(now())
   lastUpdatedAt               DateTime                      @default(now())
+  dailyMessageLimit           Int?
   workspace_chats             workspace_chats[]
   workspace_users             workspace_users[]
   embed_configs               embed_configs[]
