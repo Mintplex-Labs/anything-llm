@@ -200,7 +200,6 @@ const Elasticsearch = {
                     }
                   }
                 });
-                console.log(`Index ${indexName} created with mappings.`);
               }
               const response = await client.index({
                 index: indexName,
