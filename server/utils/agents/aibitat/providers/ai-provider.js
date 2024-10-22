@@ -130,6 +130,30 @@ class Provider {
           apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
           ...config,
         });
+      case "apipie":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://apipie.ai/v1",
+          },
+          apiKey: process.env.APIPIE_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "deepseek":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.deepseek.com/v1",
+          },
+          apiKey: process.env.DEEPSEEK_API_KEY ?? null,
+          ...config,
+        });
+      case "xai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.x.ai/v1",
+          },
+          apiKey: process.env.XAI_LLM_API_KEY ?? null,
+          ...config,
+        });
 
       // OSS Model Runners
       // case "anythingllm_ollama":
@@ -174,6 +198,15 @@ class Provider {
           apiKey: process.env.TEXT_GEN_WEB_UI_API_KEY ?? "not-used",
           ...config,
         });
+      case "litellm":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.LITE_LLM_BASE_PATH,
+          },
+          apiKey: process.env.LITE_LLM_API_KEY ?? null,
+          ...config,
+        });
+
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);
     }

@@ -11,7 +11,7 @@ class VoyageAiEmbedder {
     });
 
     this.voyage = voyage;
-    this.model = process.env.EMBEDDING_MODEL_PREF || "voyage-large-2-instruct";
+    this.model = process.env.EMBEDDING_MODEL_PREF || "voyage-3-lite";
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.batchSize = 128; // Voyage AI's limit per request is 128 https://docs.voyageai.com/docs/rate-limits#use-larger-batches
@@ -23,6 +23,8 @@ class VoyageAiEmbedder {
     switch (this.model) {
       case "voyage-finance-2":
       case "voyage-multilingual-2":
+      case "voyage-3":
+      case "voyage-3-lite":
         return 32_000;
       case "voyage-large-2-instruct":
       case "voyage-law-2":

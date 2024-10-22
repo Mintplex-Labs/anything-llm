@@ -1,5 +1,7 @@
 | Organization | Model Name | Model String for API | Context length |
 |--------------|------------|----------------------|----------------|
+| Meta | Llama 3.2 3B Instruct | accounts/fireworks/models/llama-v3p2-3b-instruct | 131072 |
+| Meta | Llama 3.2 1B Instruct | accounts/fireworks/models/llama-v3p2-1b-instruct | 131072 |
 | Meta | Llama 3.1 405B Instruct | accounts/fireworks/models/llama-v3p1-405b-instruct | 131072 |
 | Meta | Llama 3.1 70B Instruct | accounts/fireworks/models/llama-v3p1-70b-instruct | 131072 |
 | Meta | Llama 3.1 8B Instruct | accounts/fireworks/models/llama-v3p1-8b-instruct | 131072 |

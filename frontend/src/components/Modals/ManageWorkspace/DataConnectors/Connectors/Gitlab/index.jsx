@@ -34,6 +34,7 @@ export default function GitlabOptions() {
         accessToken: form.get("accessToken"),
         branch: form.get("branch"),
         ignorePaths: ignores,
+        fetchIssues: form.get("fetchIssues"),
       });
 
       if (!!error) {
@@ -111,6 +112,30 @@ export default function GitlabOptions() {
                   onChange={(e) => setAccessToken(e.target.value)}
                   onBlur={() => setSettings({ ...settings, accessToken })}
                 />
+              </div>
+              <div className="flex flex-col pr-10">
+                <div className="flex flex-col gap-y-1 mb-4">
+                  <label className="text-white font-bold text-sm flex gap-x-2 items-center">
+                    <p className="font-bold text-white">Settings</p>{" "}
+                  </label>
+                  <p className="text-xs font-normal text-white/50">
+                    Select additional entities to fetch from the GitLab API.
+                  </p>
+                </div>
+                <div className="flex items-center gap-x-2">
+                  <label className="relative inline-flex cursor-pointer items-center">
+                    <input
+                      type="checkbox"
+                      name="fetchIssues"
+                      value={true}
+                      className="peer sr-only"
+                    />
+                    <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
+                    <span className="ml-3 text-sm font-medium text-white">
+                      Fetch Issues as Documents
+                    </span>
+                  </label>
+                </div>
               </div>
               <GitLabBranchSelection
                 repo={settings.repo}

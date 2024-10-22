@@ -64,11 +64,23 @@ const DataConnector = {
           return { branches: [], error: e.message };
         });
     },
-    collect: async function ({ repo, accessToken, branch, ignorePaths = [] }) {
+    collect: async function ({
+      repo,
+      accessToken,
+      branch,
+      ignorePaths = [],
+      fetchIssues = false,
+    }) {
       return await fetch(`${API_BASE}/ext/gitlab/repo`, {
         method: "POST",
         headers: baseHeaders(),
-        body: JSON.stringify({ repo, accessToken, branch, ignorePaths }),
+        body: JSON.stringify({
+          repo,
+          accessToken,
+          branch,
+          ignorePaths,
+          fetchIssues,
+        }),
       })
         .then((res) => res.json())
         .then((res) => {
@@ -119,7 +131,13 @@ const DataConnector = {
   },
 
   confluence: {
-    collect: async function ({ baseUrl, spaceKey, username, accessToken }) {
+    collect: async function ({
+      baseUrl,
+      spaceKey,
+      username,
+      accessToken,
+      cloud,
+    }) {
       return await fetch(`${API_BASE}/ext/confluence`, {
         method: "POST",
         headers: baseHeaders(),
@@ -128,6 +146,7 @@ const DataConnector = {
           spaceKey,
           username,
           accessToken,
+          cloud,
         }),
       })
         .then((res) => res.json())

@@ -1,4 +1,5 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
+const { fetchApiPieModels } = require("../AiProviders/apipie");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
@@ -18,6 +19,9 @@ const SUPPORT_CUSTOM_MODELS = [
   "litellm",
   "elevenlabs-tts",
   "groq",
+  "deepseek",
+  "apipie",
+  "xai",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -53,6 +57,12 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getElevenLabsModels(apiKey);
     case "groq":
       return await getGroqAiModels(apiKey);
+    case "deepseek":
+      return await getDeepSeekModels(apiKey);
+    case "apipie":
+      return await getAPIPieModels(apiKey);
+    case "xai":
+      return await getXAIModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -121,7 +131,7 @@ async function openAiModels(apiKey = null) {
     });
 
   const gpts = allModels
-    .filter((model) => model.id.startsWith("gpt"))
+    .filter((model) => model.id.startsWith("gpt") || model.id.startsWith("o1"))
     .filter(
       (model) => !model.id.includes("vision") && !model.id.includes("instruct")
     )
@@ -352,6 +362,21 @@ async function getOpenRouterModels() {
   return { models, error: null };
 }
 
+async function getAPIPieModels(apiKey = null) {
+  const knownModels = await fetchApiPieModels(apiKey);
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
 async function getMistralModels(apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
@@ -416,6 +441,61 @@ async function getElevenLabsModels(apiKey = null) {
   }
 
   if (models.length > 0 && !!apiKey) process.env.TTS_ELEVEN_LABS_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getDeepSeekModels(apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com/v1",
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by,
+      }))
+    )
+    .catch((e) => {
+      console.error(`DeepSeek:listModels`, e.message);
+      return [];
+    });
+
+  if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getXAIModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.XAI_LLM_API_KEY
+      : _apiKey || process.env.XAI_LLM_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://api.x.ai/v1",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`XAI:listModels`, e.message);
+      return [
+        {
+          created: 1725148800,
+          id: "grok-beta",
+          object: "model",
+          owned_by: "xai",
+        },
+      ];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.XAI_LLM_API_KEY = apiKey;
   return { models, error: null };
 }
 

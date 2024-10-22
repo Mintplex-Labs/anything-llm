@@ -469,6 +469,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_SEARXNG_API_URL",
     checks: [],
   },
+  AgentTavilyApiKey: {
+    envKey: "AGENT_TAVILY_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
@@ -500,6 +504,50 @@ const KEY_MAPPING = {
   TTSPiperTTSVoiceModel: {
     envKey: "TTS_PIPER_VOICE_MODEL",
     checks: [],
+  },
+
+  // OpenAI Generic TTS
+  TTSOpenAICompatibleKey: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_KEY",
+    checks: [],
+  },
+  TTSOpenAICompatibleVoiceModel: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL",
+    checks: [isNotEmpty],
+  },
+  TTSOpenAICompatibleEndpoint: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_ENDPOINT",
+    checks: [isValidURL],
+  },
+
+  // DeepSeek Options
+  DeepSeekApiKey: {
+    envKey: "DEEPSEEK_API_KEY",
+    checks: [isNotEmpty],
+  },
+  DeepSeekModelPref: {
+    envKey: "DEEPSEEK_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // APIPie Options
+  ApipieLLMApiKey: {
+    envKey: "APIPIE_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ApipieLLMModelPref: {
+    envKey: "APIPIE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // xAI Options
+  XAIApiKey: {
+    envKey: "XAI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  XAIModelPref: {
+    envKey: "XAI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
   },
 };
 
@@ -565,6 +613,7 @@ function supportedTTSProvider(input = "") {
     "openai",
     "elevenlabs",
     "piper_local",
+    "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
@@ -602,6 +651,9 @@ function supportedLLM(input = "") {
     "litellm",
     "generic-openai",
     "bedrock",
+    "deepseek",
+    "apipie",
+    "xai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -845,6 +897,8 @@ function dumpENV() {
     "ENABLE_HTTPS",
     "HTTPS_CERT_PATH",
     "HTTPS_KEY_PATH",
+    // Other Configuration Keys
+    "DISABLE_VIEW_CHAT_HISTORY",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

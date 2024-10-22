@@ -51,7 +51,7 @@ export default function FolderRow({
             className="shrink-0 text-base font-bold w-4 h-4 mr-[3px]"
             weight="fill"
           />
-          <p className="whitespace-nowrap overflow-show">
+          <p className="whitespace-nowrap overflow-show max-w-[400px]">
             {middleTruncate(item.name, 35)}
           </p>
         </div>
