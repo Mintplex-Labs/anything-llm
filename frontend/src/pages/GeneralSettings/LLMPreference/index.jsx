@@ -120,7 +120,8 @@ export const AVAILABLE_LLM_PROVIDERS = [
     value: "novita",
     logo: NovitaLogo,
     options: (settings) => <NovitaLLMOptions settings={settings} />,
-    description: "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
+    description:
+      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
     requiredConfig: ["NovitaAiApiKey"],
   },
   {

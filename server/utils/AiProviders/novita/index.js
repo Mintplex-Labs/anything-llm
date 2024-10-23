@@ -29,7 +29,9 @@ class NovitaLLM {
       },
     });
     this.model =
-      modelPreference || process.env.NOVITA_MODEL_PREF || "gryphe/mythomax-l2-13b";
+      modelPreference ||
+      process.env.NOVITA_MODEL_PREF ||
+      "gryphe/mythomax-l2-13b";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -86,9 +88,7 @@ class NovitaLLM {
     if (fs.existsSync(this.cacheModelPath) && !this.#cacheIsStale())
       return false;
 
-    this.log(
-      "Model cache is not present or stale. Fetching from Novita API."
-    );
+    this.log("Model cache is not present or stale. Fetching from Novita API.");
     await fetchNovitaModels();
     return;
   }
