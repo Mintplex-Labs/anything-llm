@@ -292,12 +292,12 @@ dialog[open] {
 }
 
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(250, 0, 0, 0.5);
   backdrop-filter: blur(2px);
 }
 
 .backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(250, 0, 0, 0.5);
   backdrop-filter: blur(2px);
 }
 
