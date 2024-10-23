@@ -300,6 +300,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "apipie":
       const { ApiPieLLM } = require("../AiProviders/apipie");
       return ApiPieLLM;
+    case "novita":
+      const { NovitaLLM } = require("../AiProviders/novita");
+      return NovitaLLM;
     case "xai":
       const { XAiLLM } = require("../AiProviders/xai");
       return XAiLLM;

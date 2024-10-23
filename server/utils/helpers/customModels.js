@@ -367,9 +367,7 @@ async function getOpenRouterModels() {
 }
 
 async function getNovitaModels() {
-  console.log("getting novita models");
   const knownModels = await fetchNovitaModels();
-  console.log(knownModels);
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
   const models = Object.values(knownModels).map((model) => {
