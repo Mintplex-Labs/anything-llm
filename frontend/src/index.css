@@ -662,18 +662,18 @@ does not extend the close button beyond the viewport. */
 /* Webkit browsers (Chrome, Safari) */
 .white-scrollbar::-webkit-scrollbar {
   width: 3px;
-  background-color: #18181b;
+  background-color: #db8e5e;
 }
 
 .white-scrollbar::-webkit-scrollbar-track {
-  background-color: #18181b;
+  background-color: #db8e5e;
   margin-right: 8px;
 }
 
 .white-scrollbar::-webkit-scrollbar-thumb {
   background-color: #ffffff;
   border-radius: 4px;
-  border: 2px solid #18181b;
+  border: 2px solid #db8e5e;
 }
 
 .white-scrollbar::-webkit-scrollbar-thumb:hover {
