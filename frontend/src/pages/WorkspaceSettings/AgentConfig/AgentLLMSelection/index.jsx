@@ -17,6 +17,7 @@ const ENABLED_PROVIDERS = [
   "koboldcpp",
   "togetherai",
   "openrouter",
+  "novita",
   "mistral",
   "perplexity",
   "textgenwebui",
@@ -40,6 +41,7 @@ const WARN_PERFORMANCE = [
   "ollama",
   "localai",
   "openrouter",
+  "novita",
   "generic-openai",
   "textgenwebui",
 ];

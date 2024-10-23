@@ -85,6 +85,7 @@ AnythingLLMのいくつかのクールな機能
 - [Fireworks AI (チャットモデル)](https://fireworks.ai/)
 - [Perplexity (チャットモデル)](https://www.perplexity.ai/)
 - [OpenRouter (チャットモデル)](https://openrouter.ai/)
+- [Novita AI (チャットモデル)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)

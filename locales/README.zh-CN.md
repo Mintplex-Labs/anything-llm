@@ -81,6 +81,7 @@ AnythingLLM的一些酷炫特性
 - [Fireworks AI (聊天模型)](https://fireworks.ai/)
 - [Perplexity (聊天模型)](https://www.perplexity.ai/)
 - [OpenRouter (聊天模型)](https://openrouter.ai/)
+- [Novita AI (聊天模型)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)

@@ -384,6 +384,20 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Novita Options
+  NovitaApiKey: {
+    envKey: "NOVITA_API_KEY",
+    checks: [isNotEmpty],
+  },
+  NovitaModelPref: {
+    envKey: "NOVITA_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  NovitaTimeout: {
+    envKey: "NOVITA_TIMEOUT_MS",
+    checks: [],
+  },
+
   // Groq Options
   GroqApiKey: {
     envKey: "GROQ_API_KEY",
@@ -644,6 +658,7 @@ function supportedLLM(input = "") {
     "huggingface",
     "perplexity",
     "openrouter",
+    "novita",
     "groq",
     "koboldcpp",
     "textgenwebui",
