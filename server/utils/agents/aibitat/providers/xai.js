@@ -4,22 +4,17 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The agent provider for the LMStudio.
+ * The agent provider for the xAI provider.
  */
-class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
+class XAIProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  /**
-   *
-   * @param {{model?: string}} config
-   */
   constructor(config = {}) {
+    const { model = "grok-beta" } = config;
     super();
-    const model =
-      config?.model || process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
     const client = new OpenAI({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
-      apiKey: null,
+      baseURL: "https://api.x.ai/v1",
+      apiKey: process.env.XAI_LLM_API_KEY,
       maxRetries: 3,
     });
 
@@ -41,9 +36,9 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
+          throw new Error("xAI chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
+          throw new Error("xAI chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -112,11 +107,10 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
    */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = LMStudioProvider;
+module.exports = XAIProvider;

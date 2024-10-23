@@ -50,8 +50,10 @@
     "textgenwebui",
     "togetherai",
     "Unembed",
+    "uuidv",
     "vectordbs",
     "Weaviate",
+    "XAILLM",
     "Zilliz"
   ],
   "eslint.experimental.useFlatConfig": true,
