@@ -1649,6 +1649,15 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
+          },
+          {
+            "name": "apiSessionId",
+            "in": "query",
+            "description": "Optional apiSessionId to filter by",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
