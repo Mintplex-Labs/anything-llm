@@ -1649,6 +1649,15 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
+          },
+          {
+            "name": "apiSessionId",
+            "in": "query",
+            "description": "Optional apiSessionId to filter by",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2391,12 +2400,14 @@
           }
         },
         "requestBody": {
-          "description": "Optional userId associated with the thread",
+          "description": "Optional userId associated with the thread, thread slug and thread name",
           "required": false,
           "content": {
             "application/json": {
               "example": {
-                "userId": 1
+                "userId": 1,
+                "name": "Name",
+                "slug": "thread-slug"
               }
             }
           }

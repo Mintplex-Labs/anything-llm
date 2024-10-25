@@ -30,7 +30,7 @@ export function DnDFileUploaderProvider({ workspace, children }) {
   const { user } = useUser();
 
   useEffect(() => {
-    if (!!user && user.role === "default") return false;
+    if (!!user && user.role === "default") return;
     System.checkDocumentProcessorOnline().then((status) => setReady(status));
   }, [user]);
 

@@ -4,15 +4,18 @@ const {
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 
-class OpenAiLLM {
+class XAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    if (!process.env.OPEN_AI_KEY) throw new Error("No OpenAI API key was set.");
+    if (!process.env.XAI_LLM_API_KEY)
+      throw new Error("No xAI API key was set.");
     const { OpenAI: OpenAIApi } = require("openai");
 
     this.openai = new OpenAIApi({
-      apiKey: process.env.OPEN_AI_KEY,
+      baseURL: "https://api.x.ai/v1",
+      apiKey: process.env.XAI_LLM_API_KEY,
     });
-    this.model = modelPreference || process.env.OPEN_MODEL_PREF || "gpt-4o";
+    this.model =
+      modelPreference || process.env.XAI_LLM_MODEL_PREF || "grok-beta";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -21,14 +24,6 @@ class OpenAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
-  }
-
-  /**
-   * Check if the model is an o1 model.
-   * @returns {boolean}
-   */
-  get isO1Model() {
-    return this.model.startsWith("o1");
   }
 
   #appendContext(contextTexts = []) {
@@ -44,32 +39,24 @@ class OpenAiLLM {
   }
 
   streamingEnabled() {
-    if (this.isO1Model) return false;
     return "streamGetChatCompletion" in this;
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.openai[modelName] ?? 4_096;
+    return MODEL_MAP.xai[modelName] ?? 131_072;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.openai[this.model] ?? 4_096;
+    return MODEL_MAP.xai[this.model] ?? 131_072;
   }
 
-  // Short circuit if name has 'gpt' since we now fetch models from OpenAI API
-  // via the user API key, so the model must be relevant and real.
-  // and if somehow it is not, chat will fail but that is caught.
-  // we don't want to hit the OpenAI api every chat because it will get spammed
-  // and introduce latency for no reason.
-  async isValidChatCompletionModel(modelName = "") {
-    const isPreset = modelName.toLowerCase().includes("gpt");
-    if (isPreset) return true;
-
-    const model = await this.openai.models
-      .retrieve(modelName)
-      .then((modelObj) => modelObj)
-      .catch(() => null);
-    return !!model;
+  isValidChatCompletionModel(modelName = "") {
+    switch (modelName) {
+      case "grok-beta":
+        return true;
+      default:
+        return false;
+    }
   }
 
   /**
@@ -107,11 +94,8 @@ class OpenAiLLM {
     userPrompt = "",
     attachments = [], // This is the specific attachment for only this prompt
   }) {
-    // o1 Models do not support the "system" role
-    // in order to combat this, we can use the "user" role as a replacement for now
-    // https://community.openai.com/t/o1-models-do-not-support-system-role-in-chat-completion/953880
     const prompt = {
-      role: this.isO1Model ? "user" : "system",
+      role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [
@@ -125,16 +109,16 @@ class OpenAiLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
+    if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `xAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const result = await this.openai.chat.completions
       .create({
         model: this.model,
         messages,
-        temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
+        temperature,
       })
       .catch((e) => {
         throw new Error(e.message);
@@ -146,16 +130,16 @@ class OpenAiLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
+    if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `xAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.chat.completions.create({
       model: this.model,
       stream: true,
       messages,
-      temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
+      temperature,
     });
     return streamRequest;
   }
@@ -180,5 +164,5 @@ class OpenAiLLM {
 }
 
 module.exports = {
-  OpenAiLLM,
+  XAiLLM,
 };

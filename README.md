@@ -94,6 +94,8 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
 - [LiteLLM](https://github.com/BerriAI/litellm)
 - [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
+- [Apipie](https://apipie.ai/)
+- [xAI](https://x.ai/)
 
 **Embedder models:**
 
@@ -116,6 +118,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [PiperTTSLocal - runs in browser](https://github.com/rhasspy/piper)
 - [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
 - [ElevenLabs](https://elevenlabs.io/)
+- Any OpenAI Compatible TTS service.
 
 **STT (speech-to-text) support:**
 
@@ -147,7 +150,7 @@ This monorepo consists of three main sections:
 
 Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
-|----------------------------------------|----:|-----|---------------|------------|
+|----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
 | Railway  |  RepoCloud | Elestio |

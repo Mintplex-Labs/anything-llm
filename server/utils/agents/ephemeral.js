@@ -100,29 +100,68 @@ class EphemeralAgentHandler extends AgentHandler {
   }
 
   /**
+   * Attempts to find a fallback provider and model to use if the workspace
+   * does not have an explicit `agentProvider` and `agentModel` set.
+   * 1. Fallback to the workspace `chatProvider` and `chatModel` if they exist.
+   * 2. Fallback to the system `LLM_PROVIDER` and try to load the the associated default model via ENV params or a base available model.
+   * 3. Otherwise, return null - will likely throw an error the user can act on.
+   * @returns {object|null} - An object with provider and model keys.
+   */
+  #getFallbackProvider() {
+    // First, fallback to the workspace chat provider and model if they exist
+    if (this.#workspace.chatProvider && this.#workspace.chatModel) {
+      return {
+        provider: this.#workspace.chatProvider,
+        model: this.#workspace.chatModel,
+      };
+    }
+
+    // If workspace does not have chat provider and model fallback
+    // to system provider and try to load provider default model
+    const systemProvider = process.env.LLM_PROVIDER;
+    const systemModel = this.providerDefault(systemProvider);
+    if (systemProvider && systemModel) {
+      return {
+        provider: systemProvider,
+        model: systemModel,
+      };
+    }
+
+    return null;
+  }
+
+  /**
    * Finds or assumes the model preference value to use for API calls.
    * If multi-model loading is supported, we use their agent model selection of the workspace
    * If not supported, we attempt to fallback to the system provider value for the LLM preference
    * and if that fails - we assume a reasonable base model to exist.
-   * @returns {string} the model preference value to use in API calls
+   * @returns {string|null} the model preference value to use in API calls
    */
   #fetchModel() {
-    if (!Object.keys(this.noProviderModelDefault).includes(this.provider))
-      return this.#workspace.agentModel || this.providerDefault();
+    // Provider was not explicitly set for workspace, so we are going to run our fallback logic
+    // that will set a provider and model for us to use.
+    if (!this.provider) {
+      const fallback = this.#getFallbackProvider();
+      if (!fallback) throw new Error("No valid provider found for the agent.");
+      this.provider = fallback.provider; // re-set the provider to the fallback provider so it is not null.
+      return fallback.model; // set its defined model based on fallback logic.
+    }
 
-    // Provider has no reliable default (cant load many models) - so we need to look at system
-    // for the model param.
-    const sysModelKey = this.noProviderModelDefault[this.provider];
-    if (!!sysModelKey)
-      return process.env[sysModelKey] ?? this.providerDefault();
+    // The provider was explicitly set, so check if the workspace has an agent model set.
+    if (this.invocation.workspace.agentModel)
+      return this.invocation.workspace.agentModel;
 
-    // If all else fails - look at the provider default list
+    // Otherwise, we have no model to use - so guess a default model to use via the provider
+    // and it's system ENV params and if that fails - we return either a base model or null.
     return this.providerDefault();
   }
 
   #providerSetupAndCheck() {
-    this.provider = this.#workspace.agentProvider;
+    this.provider = this.#workspace.agentProvider ?? null;
     this.model = this.#fetchModel();
+
+    if (!this.provider)
+      throw new Error("No valid provider found for the agent.");
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.checkSetup();
   }

@@ -33,7 +33,10 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
 
       if (Array.isArray(def.examples)) {
         def.examples.forEach(({ prompt, call }) => {
-          shotExample += `Query: "${prompt}"\nJSON: ${call}\n`;
+          shotExample += `Query: "${prompt}"\nJSON: ${JSON.stringify({
+            name: def.name,
+            arguments: safeJsonParse(call, {}),
+          })}\n`;
         });
       }
       output += `${shotExample}-----------\n`;
