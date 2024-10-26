@@ -2339,6 +2339,68 @@
         }
       }
     },
+    "/v1/workspace/{slug}/thread": {
+      "get": {
+        "tags": [
+          "Workspace Threads"
+        ],
+        "description": "Get all threads in a workspace",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": [
+                    {
+                      "id": 1,
+                      "name": "Thread 1",
+                      "slug": "thread-1",
+                      "user_id": 1,
+                      "workspace_id": 1
+                    },
+                    {
+                      "id": 2,
+                      "name": "Thread 2",
+                      "slug": "thread-2",
+                      "user_id": 1,
+                      "workspace_id": 1
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/workspace/{slug}/thread/new": {
       "post": {
         "tags": [
