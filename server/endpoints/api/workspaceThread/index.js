@@ -17,6 +17,69 @@ const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
 
+  app.get(
+    "/v1/workspace/:slug/threads",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Workspace Threads']
+      #swagger.description = 'Get all threads in a workspace'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace',
+          required: true,
+          type: 'string'
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: [
+                {
+                  id: 1,
+                  name: "Thread 1",
+                  slug: "thread-1",
+                  user_id: 1,
+                  workspace_id: 1
+                },
+                {
+                  id: 2,
+                  name: "Thread 2",
+                  slug: "thread-2",
+                  user_id: 1,
+                  workspace_id: 1
+                }
+              ]
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const { slug } = request.params;
+        const workspace = await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const threads = await WorkspaceThread.where({}, null, { id: "asc" }, workspace.id);
+
+        response.status(200).json({ threads });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+  
   app.post(
     "/v1/workspace/:slug/thread/new",
     [validApiKey],
