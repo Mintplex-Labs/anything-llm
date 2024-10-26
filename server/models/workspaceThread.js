@@ -139,6 +139,17 @@ const WorkspaceThread = {
     onRename?.(updatedThread);
     return true;
   },
+
+  // Function to get all threads
+  getAllThreads: async function () {
+    try {
+      const threads = await prisma.workspace_threads.findMany();
+      return threads || [];
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
 };
 
 module.exports = { WorkspaceThread };
