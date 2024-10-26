@@ -18,7 +18,7 @@ function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
 
   app.get(
-    "/v1/workspace/:slug/threads",
+    "/v1/workspace/:slug/thread",
     [validApiKey],
     async (request, response) => {
       /*
