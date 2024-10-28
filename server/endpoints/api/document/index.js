@@ -1,6 +1,6 @@
 const { Telemetry } = require("../../../models/telemetry");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
-const { handleFileUpload } = require("../../../utils/files/multer");
+const { handleAPIFileUpload } = require("../../../utils/files/multer");
 const {
   viewLocalFiles,
   findDocumentInDocuments,
@@ -23,7 +23,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload",
-    [validApiKey, handleFileUpload],
+    [validApiKey, handleAPIFileUpload],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
