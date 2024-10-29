@@ -11,6 +11,7 @@ import {
   PencilSimpleLine,
   Nut,
   Toolbox,
+  Globe,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
@@ -288,6 +289,14 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText={t("settings.agent-skills")}
           icon={<Robot className="h-5 w-5 flex-shrink-0" />}
           href={paths.settings.agentSkills()}
+          user={user}
+          flex={true}
+          roles={["admin"]}
+        />
+        <Option
+          btnText={t("settings.community-hub")}
+          icon={<Globe className="h-5 w-5 flex-shrink-0" />}
+          href={paths.settings.communityHub()}
           user={user}
           flex={true}
           roles={["admin"]}

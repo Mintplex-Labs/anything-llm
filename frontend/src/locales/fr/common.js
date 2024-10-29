@@ -39,6 +39,7 @@ const TRANSLATIONS = {
     "experimental-features": "Fonctionnalités Expérimentales",
     contact: "Contacter le Support",
     "browser-extension": "Extension de navigateur",
+    "community-hub": "Espace Communautaire",
   },
 
   // Page Definitions
@@ -497,6 +498,12 @@ const TRANSLATIONS = {
     embedding: "Préférence d'intégration",
     vector: "Base de données vectorielle",
     anonymous: "Télémétrie anonyme activée",
+  },
+
+  // Community Hub
+  "community-hub": {
+    title: "Espace Communautaire",
+    description: "Partagez et collaborez avec la communauté AnythingLLM.",
   },
 };
 

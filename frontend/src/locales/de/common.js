@@ -38,6 +38,7 @@ const TRANSLATIONS = {
     "experimental-features": "Experimentelle Funktionen",
     contact: "Support kontaktieren",
     "browser-extension": "Browser-Erweiterung",
+    "community-hub": "Community-Hub",
   },
 
   login: {
@@ -478,6 +479,11 @@ const TRANSLATIONS = {
     embedding: "Einbettungspräferenz",
     vector: "Vektordatenbank",
     anonymous: "Anonyme Telemetrie aktiviert",
+  },
+
+  "community-hub": {
+    title: "Community-Hub",
+    description: "Teilen und zusammenarbeiten mit der AnythingLLM-Community.",
   },
 };
 

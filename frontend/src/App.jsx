@@ -24,6 +24,9 @@ const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
 const AdminAgents = lazy(() => import("@/pages/Admin/Agents"));
+const AdminCommunityHub = lazy(
+  () => import("@/pages/GeneralSettings/CommunityHub")
+);
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
 const GeneralAppearance = lazy(
   () => import("@/pages/GeneralSettings/Appearance")
@@ -125,6 +128,10 @@ export default function App() {
                 <Route
                   path="/settings/agents"
                   element={<AdminRoute Component={AdminAgents} />}
+                />
+                <Route
+                  path="/settings/community-hub"
+                  element={<AdminRoute Component={AdminCommunityHub} />}
                 />
                 <Route
                   path="/settings/event-logs"

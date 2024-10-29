@@ -120,6 +120,9 @@ export default {
     agentSkills: () => {
       return "/settings/agents";
     },
+    communityHub: () => {
+      return "/settings/community-hub";
+    },
     apiKeys: () => {
       return "/settings/api-keys";
     },

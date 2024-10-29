@@ -39,6 +39,7 @@ const TRANSLATIONS = {
     "experimental-features": "Caratteristiche sperimentali",
     contact: "Contatta il Supporto",
     "browser-extension": "Estensione del browser",
+    "community-hub": "Hub della Comunità",
   },
 
   // Page Definitions
@@ -494,6 +495,12 @@ const TRANSLATIONS = {
     embedding: "Preferenza di embedding",
     vector: "Database vettoriale",
     anonymous: "Telemetria anonima abilitata",
+  },
+
+  // Community Hub
+  "community-hub": {
+    title: "Hub della Comunità",
+    description: "Condividi e collabora con la comunità di AnythingLLM.",
   },
 };
 
