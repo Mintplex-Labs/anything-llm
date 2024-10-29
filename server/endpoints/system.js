@@ -273,18 +273,6 @@ function systemEndpoints(app) {
         });
       }
 
-      if (token.user.suspended) {
-        await EventLogs.logEvent("failed_login_account_suspended", {
-          ip: request.ip || "Unknown IP",
-          multiUserMode: true,
-        });
-        return response.status(401).json({
-          valid: false,
-          token: null,
-          message: `[002] Account suspended by admin.`,
-        });
-      }
-
       await Telemetry.sendTelemetry(
         "login_event",
         { multiUserMode: true },

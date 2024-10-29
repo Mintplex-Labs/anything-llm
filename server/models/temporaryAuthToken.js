@@ -81,6 +81,7 @@ const TemporaryAuthToken = {
       });
       if (!token) throw new Error("Invalid token.");
       if (token.expiresAt < new Date()) throw new Error("Token expired.");
+      if (token.user.suspended) throw new Error("User account suspended.");
 
       // Create a new session token for the user valid for 30 days
       const sessionToken = makeJWT(
@@ -93,22 +94,10 @@ const TemporaryAuthToken = {
       console.error("FAILED TO VALIDATE TEMPORARY AUTH TOKEN.", error.message);
       return { sessionToken: null, token: null, error: error.message };
     } finally {
-      // Delete the token after it has been used under all circumstances if it was valid
+      // Delete the token after it has been used under all circumstances if it was retrieved
       if (token)
-        await prisma.temporary_auth_tokens.delete({
-          where: { token: token.token },
-        });
+        await prisma.temporary_auth_tokens.delete({ where: { id: token.id } });
     }
-  },
-
-  /**
-   * Generates a login URL for a temporary auth token that should be used in the browser
-   * to authenticate as the user associated with the token.
-   * @param {import("@prisma/client").temporary_auth_tokens & {user: import("@prisma/client").users}} token
-   * @returns {string}
-   */
-  generateLoginUrl: function (token) {
-    return `${process.env.FRONTEND_URL}/sso/login?token=${token.token}`;
   },
 };
 
