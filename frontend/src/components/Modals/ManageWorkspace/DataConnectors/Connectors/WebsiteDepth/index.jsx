@@ -64,7 +64,7 @@ export default function WebsiteDepthOptions() {
                 <input
                   type="url"
                   name="url"
-                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-dark-highlight text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://example.com"
                   required={true}
                   autoComplete="off"

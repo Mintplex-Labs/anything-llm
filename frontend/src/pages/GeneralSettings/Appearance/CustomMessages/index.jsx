@@ -57,10 +57,10 @@ export default function CustomMessages() {
   return (
     <div className="mb-8">
       <div className="flex flex-col gap-y-1">
-        <h2 className="text-base leading-6 font-bold text-white">
+        <h2 className="text-base leading-6 font-bold text-forest">
           {t("appearance.message.title")}
         </h2>
-        <p className="text-xs leading-[18px] font-base text-white/60">
+        <p className="text-xs leading-[18px] font-base text-forest">
           {t("appearance.message.description")}
         </p>
       </div>

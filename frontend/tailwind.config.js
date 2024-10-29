@@ -21,49 +21,53 @@ export default {
         "360": "360deg"
       },
       colors: {
-        "black-900": "#141414",
-        accent: "#3D4147",
-        "sidebar-button": "#31353A",
-        sidebar: "#25272C",
+        "black-900": "#004637",
+        accent: "#009681",
+        "sidebar-button": "#026153",
+        sidebar: "#004637",
         "historical-msg-system": "rgba(255, 255, 255, 0.05);",
-        "historical-msg-user": "#2C2F35",
-        outline: "#4E5153",
-        "primary-button": "#46C8FF",
-        secondary: "#2C2F36",
-        "dark-input": "#18181B",
-        "mobile-onboarding": "#2C2F35",
-        "dark-highlight": "#1C1E21",
-        "dark-text": "#222628",
-        description: "#D2D5DB",
-        "x-button": "#9CA3AF",
-        royalblue: "#065986",
+        "historical-msg-user": "rgba(0,150,129,0.2)",
+        outline: "#009681",
+        "primary-button": "#00DABB",
+        secondary: "#026153",
+        "dark-input": "#004637",
+        "mobile-onboarding": "#026153",
+        "dark-highlight": "#004637",
+        "dark-text": "#004637",
+        description: "#E0E0D6",
+        "x-button": "#C2C2AE",
+        royalblue: "#9E9D82",
         purple: "#4A1FB8",
         magenta: "#9E165F",
         danger: "#F04438",
         error: "#B42318",
         warn: "#854708",
         success: "#05603A",
-        darker: "#F4F4F4"
+        darker: "#F4F4F4",
+        forest: "#004637",
+        spring: "#026153",
+        lspring: "#009681"
       },
       backgroundImage: {
         "preference-gradient":
-          "linear-gradient(180deg, #5A5C63 0%, rgba(90, 92, 99, 0.28) 100%);",
+          "linear-gradient(180deg, #026153 0%, rgba(90, 92, 99, 0.28) 100%);",
         "chat-msg-user-gradient":
-          "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%);",
+          "linear-gradient(180deg, #004637 0%, #004637 100%);",
         "selected-preference-gradient":
           "linear-gradient(180deg, #313236 0%, rgba(63.40, 64.90, 70.13, 0) 100%);",
-        "main-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
-        "modal-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
+        "main-gradient": "linear-gradient(180deg, #004637 0%, #004637 100%)",
+        "chat-gradient": "linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 100%)",
+        "modal-gradient": "linear-gradient(180deg, #004637 0%, #004637 100%)",
         "sidebar-gradient": "linear-gradient(90deg, #5B616A 0%, #3F434B 100%)",
-        "login-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
+        "login-gradient": "linear-gradient(180deg, #004637 0%, #004637 100%)",
         "menu-item-gradient":
-          "linear-gradient(90deg, #3D4147 0%, #2C2F35 100%)",
+          "linear-gradient(90deg, #004637 0%, #004637 100%)",
         "menu-item-selected-gradient":
           "linear-gradient(90deg, #5B616A 0%, #3F434B 100%)",
         "workspace-item-gradient":
-          "linear-gradient(90deg, #3D4147 0%, #2C2F35 100%)",
+          "linear-gradient(90deg, #004637 0%, #004637 100%)",
         "workspace-item-selected-gradient":
-          "linear-gradient(90deg, #5B616A 0%, #3F434B 100%)",
+          "linear-gradient(90deg, #00DABB 0%, #00DABB 100%)",
         "switch-selected": "linear-gradient(146deg, #5B616A 0%, #3F434B 100%)"
       },
       fontFamily: {
@@ -129,30 +133,30 @@ export default {
   safelist: [
     {
       pattern:
-        /^(bg-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+        /^(bg-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|forest)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
       variants: ["hover", "ui-selected"]
     },
     {
       pattern:
-        /^(text-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+        /^(text-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|forest)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
       variants: ["hover", "ui-selected"]
     },
     {
       pattern:
-        /^(border-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+        /^(border-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|forest)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
       variants: ["hover", "ui-selected"]
     },
     {
       pattern:
-        /^(ring-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/
+        /^(ring-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|forest)-(?:50|100|200|300|400|500|600|700|800|900|950))$/
     },
     {
       pattern:
-        /^(stroke-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/
+        /^(stroke-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|forest)-(?:50|100|200|300|400|500|600|700|800|900|950))$/
     },
     {
       pattern:
-        /^(fill-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/
+        /^(fill-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|forest)-(?:50|100|200|300|400|500|600|700|800|900|950))$/
     }
   ],
   plugins: []

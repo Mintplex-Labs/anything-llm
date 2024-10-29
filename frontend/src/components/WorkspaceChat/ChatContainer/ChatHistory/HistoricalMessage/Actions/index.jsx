@@ -82,7 +82,7 @@ function FeedbackButton({
         <IconComponent
           size={20}
           className="mb-1"
-          weight={isSelected ? "fill" : "regular"}
+          weight={isSelected ? "fill" : "rgb(0,70,55)"}
         />
       </button>
       <Tooltip

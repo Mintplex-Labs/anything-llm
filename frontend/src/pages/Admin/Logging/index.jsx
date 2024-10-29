@@ -107,8 +107,8 @@ function LogsContainer({
       <Skeleton.default
         height="80vh"
         width="100%"
-        highlightColor="#3D4147"
-        baseColor="#2C2F35"
+        highlightColor="#009681"
+        baseColor="#026153"
         count={1}
         className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex w-full"

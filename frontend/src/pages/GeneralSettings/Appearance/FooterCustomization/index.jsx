@@ -52,14 +52,14 @@ export default function FooterCustomization() {
   return (
     <div className="mb-8">
       <div className="flex flex-col gap-y-1">
-        <h2 className="text-base leading-6 font-bold text-white">
+        <h2 className="text-base leading-6 font-bold text-forest">
           {t("appearance.icons.title")}
         </h2>
-        <p className="text-xs leading-[18px] font-base text-white/60">
+        <p className="text-xs leading-[18px] font-base text-forest">
           {t("appearance.icons.description")}
         </p>
       </div>
-      <div className="mt-3 flex gap-x-3 font-bold text-white text-sm">
+      <div className="mt-3 flex gap-x-3 font-bold text-forest text-sm">
         <div>{t("appearance.icons.icon")}</div>
         <div>{t("appearance.icons.link")}</div>
       </div>

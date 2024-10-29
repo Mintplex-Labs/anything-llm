@@ -54,10 +54,10 @@ export default function SupportEmail() {
   return (
     <form className="mb-6" onSubmit={updateSupportEmail}>
       <div className="flex flex-col gap-y-1">
-        <h2 className="text-base leading-6 font-bold text-white">
+        <h2 className="text-base leading-6 font-bold text-forest">
           Support Email
         </h2>
-        <p className="text-xs leading-[18px] font-base text-white/60">
+        <p className="text-xs leading-[18px] font-base text-forest">
           Set the support email address that shows up in the user menu while
           logged into this instance.
         </p>

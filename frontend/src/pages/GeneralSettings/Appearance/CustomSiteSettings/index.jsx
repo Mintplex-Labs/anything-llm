@@ -41,10 +41,10 @@ export default function CustomSiteSettings() {
     >
       <div className="flex flex-col border-t border-white/30 pt-4 gap-y-2">
         <div className="flex flex-col gap-y-1">
-          <h2 className="text-base leading-6 font-bold text-white">
+          <h2 className="text-base leading-6 font-bold text-forest">
             Custom Site Settings
           </h2>
-          <p className="text-xs leading-[18px] font-base text-white/60">
+          <p className="text-xs leading-[18px] font-base text-forest">
             Change the content of the browser tab for customization and
             branding.
           </p>
@@ -52,8 +52,8 @@ export default function CustomSiteSettings() {
 
         <div className="w-fit">
           <div className="flex flex-col gap-y-1">
-            <h2 className="text-sm leading-6 text-white">Tab Title</h2>
-            <p className="text-xs leading-[18px] font-base text-white/60">
+            <h2 className="text-sm leading-6 text-forest">Tab Title</h2>
+            <p className="text-xs leading-[18px] font-base text-forest">
               Set a custom tab title when the app is open in a browser.
             </p>
           </div>
@@ -61,8 +61,8 @@ export default function CustomSiteSettings() {
             <input
               name="meta_page_title"
               type="text"
-              className="border-none bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-white/20"
-              placeholder="AnythingLLM | Your personal LLM trained on anything"
+              className="border-none bg-dark-highlight mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-white/20"
+              placeholder="Personal Assistant"
               autoComplete="off"
               onChange={(e) => {
                 setSettings((prev) => {
@@ -79,8 +79,8 @@ export default function CustomSiteSettings() {
 
         <div className="w-fit">
           <div className="flex flex-col gap-y-1">
-            <h2 className="text-sm leading-6 text-white">Tab Favicon</h2>
-            <p className="text-xs leading-[18px] font-base text-white/60">
+            <h2 className="text-sm leading-6 text-forest">Tab Favicon</h2>
+            <p className="text-xs leading-[18px] font-base text-forest">
               Define a url to an image to use for your favicon
             </p>
           </div>
@@ -93,7 +93,7 @@ export default function CustomSiteSettings() {
             <input
               name="meta_page_favicon"
               type="url"
-              className="border-none bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-white/20"
+              className="border-none bg-dark-highlight mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-white/20"
               placeholder="url to your image"
               onChange={(e) => {
                 setSettings((prev) => {

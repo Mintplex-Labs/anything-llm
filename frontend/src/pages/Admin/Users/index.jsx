@@ -67,8 +67,8 @@ function UsersContainer() {
       <Skeleton.default
         height="80vh"
         width="100%"
-        highlightColor="#3D4147"
-        baseColor="#2C2F35"
+        highlightColor="#009681"
+        baseColor="#026153"
         count={1}
         className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex w-full"
@@ -142,7 +142,7 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
     <div className="mt-4 mb-8">
       <div className="flex flex-col gap-y-1">
         <div className="flex items-center gap-x-2">
-          <h2 className="text-base leading-6 font-bold text-white">
+          <h2 className="text-base leading-6 font-bold text-forest">
             Limit messages per day
           </h2>
           <label className="relative inline-flex cursor-pointer items-center">

@@ -1,0 +1,1595 @@
+# Query: text-white
+
+1404 results - 189 files
+
+anything-llm-1\frontend\public\embed\anythingllm-chat-widget.min.css:
+  1: ⟪ 8617 characters skipped ⟫tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity))}.allm-text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity))}.allm-text-slate-800\/60{color:#1e293b99}.allm-text-emerald{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity))}.allm-text-emerald\/50{color:#ffffff80}.allm-text-zinc-300{--tw-text-opacity:1;color:rgb(212 212 216 / var(--tw-text-opacity))}.allm-no-underline{text-decoration-line:none}.allm-shadow-\[0_4px_14px_rgba\(0\,0\,0\,0\.25\)\]{--tw-shadow:0 4px 14px rgba(0,0,0,.25);--tw-shadow-colored:0 4px 14px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.allm-shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / .1),0 4px 6px -4px rgb(0 0 0 / .1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.msg-suggestion{animation-name:fadeIn;animation-duration:.3s;animation-timing-function:linear;animation-fill-mode:forwards}@keyframes fadeIn{0%{opacity:0%}25%{opacity:25%}50%{opacity:50%}75%{opacity:75%}to{opacity:100%}}.placeholder\:allm-text-slate-800\/60::-moz-placeholder{color:#1e293b99}.placeholder
+
+anything-llm-1\frontend\public\embed\anythingllm-chat-widget.min.js:
+  37: ⟪ 180436 characters skipped ⟫olor:e.buttonColor},id:"anything-llm-embed-chat-button",onClick:n,className:"hover:allm-cursor-pointer allm-border-none allm-flex allm-items-center allm-justify-center allm-p-4 allm-rounded-full allm-text-emerald allm-text-2xl hover:allm-opacity-95","aria-label":"Toggle Menu",children:w.jsx(r,{className:"text-emerald"})})}const ko="data:image/svg+xml,%3csvg%20width='49'%20height='49'%20viewBox='0%200%2049%2049'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3crect%20x='0.898438'%20y='0.5'%20width='48'%20height='48'%20rx='24'%20fill='%23222628'%20fill-opacity='0.8'/%3e%3cpath%20fill-rule='evenodd'%20clip-rule='evenodd'%20d='M12.0173%2014.2937C10.4387%2014.2937%209.14844%2015.584%209.14844%2017.1626V31.8372C9.14844%2033.4156%2010.4365%2034.7061%2012.0173%2034.7061H17.5428C18.4316%2034.7061%2019.2557%2034.3035%2019.8034%2033.6063L19.8041%2033.6054L32.4126%2017.4869H37.4552V31.509H32.4204L29.8951%2027.9721L29.8867%2027.9615C29.4483%2027.4042%2028.602%2027.4042%2028.1635%2027.9615L27.52%2028.7815L27.5178%2028.7843C27.2188%2029.1751%2027.2113%2029.7217%2027.512%2030.1178L29.985%2033.5936L29.9935%2033.6044C30.5415%2034.302%2031.3696%2034.7042%2032.2541%2034.7042H37.7795C39.3643%2034.7042%2040.6484%2033.4175%2040.6484%2031.8353V17.1626C40.6484%2015.5827%2039.3646%2014.2937%2037.7795%2014.⟪ 373560 characters skipped ⟫lm-items-center",children:w.jsx("div",{className:"allm-p-1 allm-rounded-full allm-border allm-border-white/10 allm-bg-black/20 hover:allm-bg-black/50",children:w.jsx(F2,{weight:"bold",className:"allm-text-emerald/50 allm-w-5 allm-h-5",onClick:l,id:"scroll-to-bottom-button","aria-label":"Scroll to bottom"})})})})]})}function o8(){return w.jsx("div",{className:"allm-h-full allm-w-full allm-relative",children:w.jsx("div",{className:"allm-h-full allm-max-h-[82vh] allm-pb-[100px] allm-pt-[5px] allm-bg-gray-100 allm-rounded-lg allm-px-2 allm-h-full allm-mt-2 allm-gap-y-2 allm-overflow-y-scroll allm-flex allm-flex-col allm-justify-start allm-no-scroll",children:w.jsx("div",{className:"allm-flex allm-h-full allm-flex-col allm-items-center allm-justify-center",children:w.jsx(nu,{size:14,className:"allm-text-slate-400 allm-animate-spin"})})})})}function a8({settings:e}){var t;return null!=(t=null==e?void 0:e.defaultMessages)&&t.length?w.jsx("div",{className:"allm-flex allm-flex-col allm-gap-y-2 allm-w-[75%]",children:e.defaultMessages.map(((n,r)=>w.jsx("button",{style:{opacity:0,wordBreak:"break-word",backgroundColor:pe.USER_STYLES.msgBg,fontSize:e.textSize},type:"button",onClick:()=>{window.dispatchEvent(new CustomEvent(Xu,{detail:{command:n}}))},className:"msg-suggestion allm-border-none hover:allm-shadow-[0_4px_14px_rgba(0,0,0,0.5)] allm-cursor-pointer allm-px-2 allm-py-2 allm-rounded-lg allm-text-emerald allm-w-full allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)]",children:n},r)))}):null}function s8({message:e,submit:t,onChange:n,inputDisabled:r,buttonDisabled:o}){const a=Z.useRef(null),s=Z.useRef(null),[i,l]=Z.useState(!1);Z.useEffect((()=>{!r&&s.current&&s.current.focus(),c()}),[r]);const c=()=>{s.current&&(s.current.style.height="auto")},p=m=>{const A=m.target;A.style.height="auto",A.style.height=0!==m.target.value.length?A.scrollHeight+"px":"auto"};return w.jsx("div",{className:"allm-w-full allm-sticky allm-bottom-0 allm-z-10 allm-flex allm-justify-center allm-items-center allm-bg-white",children:w.jsx("form",{onSubmit:m=>{l(!1),t(m)},className:"allm-flex allm-flex-col allm-gap-y-1 allm-rounded-t-lg allm-w-full allm-items-center allm-justify-center",children:w.jsx("div",{className:"allm-flex allm-items-center allm-w-full",children:w.jsx("div",{className:"allm-bg-white allm-flex allm-flex-col allm-px-4 allm-overflow-hidden allm-w-full",children:w.jsxs("div",{style:{border:"1.5p⟪ 8217 characters skipped ⟫lm-chat-widget.min.css"),t.toString()}catch{return""}}(null==(B1=null==document?void 0:document.currentScript)?void 0:B1.src),USER_STYLES:{msgBg:(null==Kn?void 0:Kn.userBgColor)??"#3DBEF5",base:"allm-text-emerald allm-rounded-t-[18px] allm-rounded-bl-[18px] allm-rounded-br-[4px] allm-mx-[20px]"},ASSISTANT_STYLES:{msgBg:(null==Kn?void 0:Kn.assistantBgColor)??"#FFFFFF",base:"allm-text-[#222628] allm-rounded-t-[18px] allm-rounded-br-[18px] allm-rounded-bl-[4px] allm-mr-[37px] allm-ml-[9px]"}};Jn.embedderSettings=pe,Object.defineProperty(Jn,Symbol.toStringTag,{value:"Module"})}));
+
+anything-llm-1\frontend\src\index.css:
+  400:   @apply !bg-zinc-900 !text-emerald !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
+  404:   @apply !bg-black !text-emerald !py-2 !px-3 !rounded-md;
+  444:   @apply text-[14px] font-bold text-emerald;
+
+anything-llm-1\frontend\src\components\ChangeWarning\index.jsx:
+  20:         <div className="w-[550px] p-6 text-emerald">
+  33:             className="px-4 py-2 rounded-lg text-emerald hover:bg-red-500 transition-all duration-300"
+  39:             className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\components\ChatBubble\index.jsx:
+  20:             className={`whitespace-pre-line text-emerald font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+
+anything-llm-1\frontend\src\components\ContextualSaveBar\index.jsx:
+  13:         <Warning size={18} className="text-emerald" />
+  14:         <p className="text-emerald font-medium text-xs">Unsaved Changes</p>
+  18:           className="border-none text-emerald font-medium text-sm px-[10px] py-[6px] rounded-md bg-white/5 hover:bg-white/10"
+
+anything-llm-1\frontend\src\components\DataConnectorOption\index.jsx:
+   7:       <label className="transition-all duration-300 inline-flex flex-col h-full w-60 cursor-pointer items-start justify-between rounded-2xl bg-preference-gradient border-2 border-transparent shadow-md px-5 py-4 text-emerald hover:bg-selected-preference-gradient hover:border-white/60 peer-checked:border-white peer-checked:border-opacity-90 peer-checked:bg-selected-preference-gradient">
+  12:         <div className="mt-2 text-xs font-base text-emerald tracking-wide">
+  18:           className="mt-2 text-xs text-emerald font-medium underline"
+
+anything-llm-1\frontend\src\components\DefaultChat\index.jsx:
+   54:               className={`whitespace-pre-line text-emerald font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+   74:               className={`whitespace-pre-line text-emerald font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+   94:                 className={`whitespace-pre-line text-emerald font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+  102:                 className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+  127:               className={`whitespace-pre-line text-emerald font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+  147:                 className={`whitespace-pre-line text-emerald font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+  155:                   className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+  181:               className={`whitespace-pre-line text-emerald font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+  201:               className={`whitespace-pre-line text-emerald font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+  230:               className={`whitespace-pre-line text-emerald font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+  250:                 className={`whitespace-pre-line text-emerald font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+  260:                   className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+  267:                   className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\components\EditingChatBubble\index.jsx:
+  28:           className={`transition-all duration-300 absolute z-10 text-emerald rounded-full hover:bg-neutral-700 hover:border-white border-transparent border shadow-lg ${
+  38:             isUser ? "bg-[#41444C] text-emerald" : "bg-[#2E3036] text-emerald"
+  53:                 isUser ? "bg-[#41444C] text-emerald" : "bg-[#2E3036] text-emerald"
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\AzureAiOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  22:           <label className="text-emerald text-sm font-semibold block mb-3">
+  28:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  38:           <label className="text-emerald text-sm font-semibold block mb-3">
+  44:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\CohereOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  21:           <label className="text-emerald text-sm font-semibold block mb-3">
+  27:             className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\EmbedderItem\index.jsx:
+  31:           <div className="text-sm font-semibold text-emerald">{name}</div>
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\GenericOpenAiOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  21:           <label className="text-emerald text-sm font-semibold block mb-3">
+  27:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  36:           <label className="text-emerald text-sm font-semibold block mb-3">
+  42:             className="bg-zinc-900 text-emerald placeholder-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  55:             <label className="text-emerald text-sm font-semibold flex items-center gap-x-2">
+  62:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\LiteLLMOptions\index.jsx:
+   16:           <label className="text-emerald text-sm font-semibold block mb-3">
+   22:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   38:           <label className="text-emerald text-sm font-semibold block mb-3">
+   44:             className="bg-zinc-900 text-emerald placeholder-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   57:             <label className="text-emerald text-sm font-semibold flex items-center gap-x-2">
+   64:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  104:         <label className="text-emerald text-sm font-semibold block mb-3">
+  110:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  125:         <label className="text-emerald text-sm font-semibold block mb-3">
+  133:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\LMStudioOptions\index.jsx:
+   35:           <label className="text-emerald text-sm font-semibold block mb-2">
+   41:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   50:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+   61:           className="text-emerald hover:text-emerald/70 flex items-center text-sm"
+   76:               <label className="text-emerald text-sm font-semibold">
+   86:                       className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-emerald shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+   97:               className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  106:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  147:         <label className="text-emerald text-sm font-semibold block mb-2">
+  153:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  161:         <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  171:       <label className="text-emerald text-sm font-semibold block mb-2">
+  177:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  195:       <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\LocalAiOptions\index.jsx:
+   33:           <label className="text-emerald text-sm font-semibold block mb-2">
+   39:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   50:             <label className="text-emerald text-sm font-semibold flex items-center gap-x-2">
+   58:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   74:           className="text-emerald hover:text-emerald/70 flex items-center text-sm"
+   88:               <label className="text-emerald text-sm font-semibold">
+   98:                       className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-emerald shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+  109:               className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  151:         <label className="text-emerald text-sm font-semibold block mb-2">
+  157:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  171:       <label className="text-emerald text-sm font-semibold block mb-2">
+  177:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\NativeEmbeddingOptions\index.jsx:
+  7:       <p className="text-sm font-base text-emerald text-opacity-60">
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\OllamaOptions\index.jsx:
+   38:           <label className="text-emerald text-sm font-semibold block mb-2">
+   44:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   53:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+   64:           className="text-emerald hover:text-emerald/70 flex items-center text-sm"
+   79:               <label className="text-emerald text-sm font-semibold">
+   89:                       className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-emerald shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+  100:               className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  109:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  146:         <label className="text-emerald text-sm font-semibold block mb-2">
+  152:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  160:         <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  170:       <label className="text-emerald text-sm font-semibold block mb-2">
+  176:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  194:       <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\OpenAiOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  21:           <label className="text-emerald text-sm font-semibold block mb-3">
+  27:             className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\EmbeddingSelection\VoyageAiOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  21:           <label className="text-emerald text-sm font-semibold block mb-3">
+  28:             className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\Footer\index.jsx:
+   57:               className="transition-all duration-300 p-2 rounded-full text-emerald bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+   70:               className="w-fit transition-all duration-300 p-2 rounded-full text-emerald bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+   83:               className="transition-all duration-300 p-2 rounded-full text-emerald bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+  109:             className="transition-all duration-300 p-2 rounded-full text-emerald bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+
+anything-llm-1\frontend\src\components\lib\CTAButton\index.jsx:
+  11:       className={`text-xs px-4 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary hover:text-emerald h-[34px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)] w-fit ${className}`}
+
+anything-llm-1\frontend\src\components\LLMSelection\AnthropicAiOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  23:             <label className="text-emerald text-sm font-semibold block mb-3">
+  30:               className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\ApiPieOptions\index.jsx:
+   9:           <label className="text-emerald text-sm font-semibold block mb-3">
+  15:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  57:         <label className="text-emerald text-sm font-semibold block mb-3">
+  63:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  75:       <label className="text-emerald text-sm font-semibold block mb-3">
+  81:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\AwsBedrockLLMOptions\index.jsx:
+    8:         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-emerald mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+   29:           <label className="text-emerald text-sm font-semibold block mb-3">
+   35:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   46:           <label className="text-emerald text-sm font-semibold block mb-3">
+   52:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   63:           <label className="text-emerald text-sm font-semibold block mb-3">
+   70:             className="border-none bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+   87:               <label className="text-emerald text-sm font-semibold block mb-3">
+   93:                 className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  102:               <label className="text-emerald text-sm font-semibold block mb-3">
+  108:                 className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\AzureAiOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  22:           <label className="text-emerald text-sm font-semibold block mb-3">
+  28:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  38:           <label className="text-emerald text-sm font-semibold block mb-3">
+  44:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  56:           <label className="text-emerald text-sm font-semibold block mb-3">
+  62:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\CohereAiOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  21:           <label className="text-emerald text-sm font-semibold block mb-3">
+  28:             className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\DeepSeekOptions\index.jsx:
+  13:         <label className="text-emerald text-sm font-semibold block mb-3">
+  19:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  62:         <label className="text-emerald text-sm font-semibold block mb-3">
+  68:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  80:       <label className="text-emerald text-sm font-semibold block mb-3">
+  86:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\FireworksAiOptions\index.jsx:
+   8:         <label className="text-emerald text-sm font-semibold block mb-3">
+  14:           className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  55:         <label className="text-emerald text-sm font-semibold block mb-3">
+  61:           className="border-none bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  73:       <label className="text-emerald text-sm font-semibold block mb-3">
+  79:         className="border-none bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\GeminiLLMOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  24:               <label className="text-emerald text-sm font-semibold block mb-3">
+  31:                 className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  64:               <label className="text-emerald text-sm font-semibold block mb-3">
+  73:                 className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\GenericOpenAiOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  21:           <label className="text-emerald text-sm font-semibold block mb-3">
+  27:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  36:           <label className="text-emerald text-sm font-semibold block mb-3">
+  42:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  52:           <label className="text-emerald text-sm font-semibold block mb-3">
+  58:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  68:           <label className="text-emerald text-sm font-semibold block mb-3">
+  74:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\GroqAiOptions\index.jsx:
+   11:         <label className="text-emerald text-sm font-semibold block mb-3">
+   17:           className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   64:         <label className="text-emerald text-sm font-semibold block mb-3">
+   70:           className="border-none bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+   76:         <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+   85:       <label className="text-emerald text-sm font-semibold block mb-3">
+   91:         className="border-none bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  109:       <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+
+anything-llm-1\frontend\src\components\LLMSelection\HuggingFaceOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  21:           <label className="text-emerald text-sm font-semibold block mb-3">
+  27:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  38:           <label className="text-emerald text-sm font-semibold block mb-3">
+  44:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\KoboldCPPOptions\index.jsx:
+   38:           <label className="text-emerald text-sm font-semibold block mb-2">
+   44:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   53:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+   64:           className="border-none text-emerald hover:text-emerald/70 flex items-center text-sm"
+   79:               <label className="text-emerald text-sm font-semibold">
+   89:                       className="border-none bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-emerald shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+  100:               className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  109:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  150:         <label className="text-emerald text-sm font-semibold block mb-2">
+  156:           className="border-none bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  164:         <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  174:       <label className="text-emerald text-sm font-semibold block mb-2">
+  180:         className="border-none bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  192:       <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+
+anything-llm-1\frontend\src\components\LLMSelection\LiteLLMOptions\index.jsx:
+   14:           <label className="text-emerald text-sm font-semibold block mb-3">
+   20:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   36:           <label className="text-emerald text-sm font-semibold block mb-3">
+   42:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   55:             <label className="text-emerald text-sm font-semibold flex items-center gap-x-2">
+   62:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  102:         <label className="text-emerald text-sm font-semibold block mb-3">
+  108:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  122:       <label className="text-emerald text-sm font-semibold block mb-3">
+  128:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\LLMItem\index.jsx:
+  31:           <div className="text-sm font-semibold text-emerald">{name}</div>
+
+anything-llm-1\frontend\src\components\LLMSelection\LLMProviderOption\index.jsx:
+  20:       <label className="transition-all duration-300 inline-flex flex-col h-full w-60 cursor-pointer items-start justify-between rounded-2xl bg-preference-gradient border-2 border-transparent shadow-md px-5 py-4 text-emerald hover:bg-selected-preference-gradient hover:border-white/60 peer-checked:border-white peer-checked:border-opacity-90 peer-checked:bg-selected-preference-gradient">
+  25:         <div className="mt-2 text-xs font-base text-emerald tracking-wide">
+  30:           className="mt-2 text-xs text-emerald font-medium underline"
+
+anything-llm-1\frontend\src\components\LLMSelection\LMStudioOptions\index.jsx:
+   34:         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-emerald mb-6 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+   53:           <label className="text-emerald text-sm font-semibold block mb-2">
+   59:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   69:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+   80:           className="text-emerald hover:text-emerald/70 flex items-center text-sm"
+   95:               <label className="text-emerald text-sm font-semibold">
+  105:                       className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-emerald shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+  116:               className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  125:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  166:         <label className="text-emerald text-sm font-semibold block mb-2">
+  172:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  180:         <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  190:       <label className="text-emerald text-sm font-semibold block mb-2">
+  196:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  214:       <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+
+anything-llm-1\frontend\src\components\LLMSelection\LocalAiOptions\index.jsx:
+   28:         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-emerald mb-6 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+   53:               <label className="text-emerald text-sm font-semibold block mb-2">
+   59:                 className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   72:             <label className="text-emerald text-sm font-semibold flex items-center gap-x-2">
+   80:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   96:           className="text-emerald hover:text-emerald/70 flex items-center text-sm"
+  110:               <label className="text-emerald text-sm font-semibold">
+  120:                       className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-emerald shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+  131:               className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  173:         <label className="text-emerald text-sm font-semibold block mb-2">
+  179:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  193:       <label className="text-emerald text-sm font-semibold block mb-2">
+  199:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\MistralOptions\index.jsx:
+  11:         <label className="text-emerald text-sm font-semibold block mb-3">
+  17:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  59:         <label className="text-emerald text-sm font-semibold block mb-3">
+  65:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  79:       <label className="text-emerald text-sm font-semibold block mb-3">
+  85:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\NativeLLMOptions\index.jsx:
+   8:       <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-emerald mb-4 bg-orange-800/30 w-fit rounded-lg px-4 py-2">
+  40:         <label className="text-emerald text-sm font-semibold block mb-3">
+  46:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  59:         <label className="text-emerald text-sm font-semibold block mb-3">
+  65:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  85:         <label className="text-emerald text-sm font-semibold block mb-3">
+  91:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\OllamaLLMOptions\index.jsx:
+   37:           <label className="text-emerald text-sm font-semibold block mb-2">
+   43:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   53:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+   64:           className="text-emerald hover:text-emerald/70 flex items-center text-sm"
+   79:               <label className="text-emerald text-sm font-semibold">
+   89:                       className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-emerald shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+  100:               className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  109:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  115:             <label className="text-emerald text-sm font-semibold block mb-2">
+  121:               className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  129:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  145:             <label className="text-emerald text-sm font-semibold mb-2 flex items-center">
+  149:                 className="ml-2 text-emerald"
+  156:               className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  163:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  220:         <label className="text-emerald text-sm font-semibold block mb-2">
+  226:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  234:         <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  244:       <label className="text-emerald text-sm font-semibold block mb-2">
+  250:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  268:       <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+
+anything-llm-1\frontend\src\components\LLMSelection\OpenAiOptions\index.jsx:
+  11:         <label className="text-emerald text-sm font-semibold block mb-3">
+  17:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  63:         <label className="text-emerald text-sm font-semibold block mb-3">
+  69:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  81:       <label className="text-emerald text-sm font-semibold block mb-3">
+  87:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\OpenRouterOptions\index.jsx:
+   10:           <label className="text-emerald text-sm font-semibold block mb-3">
+   16:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   41:         className="text-emerald hover:text-emerald/70 flex items-center text-sm"
+   52:           <label className="text-emerald text-sm font-semibold block mb-3">
+   58:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   98:         <label className="text-emerald text-sm font-semibold block mb-3">
+  104:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  116:       <label className="text-emerald text-sm font-semibold block mb-3">
+  122:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\PerplexityOptions\index.jsx:
+   8:         <label className="text-emerald text-sm font-semibold block mb-3">
+  14:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  46:         <label className="text-emerald text-sm font-semibold block mb-3">
+  52:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  64:       <label className="text-emerald text-sm font-semibold block mb-3">
+  70:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\TextGenWebUIOptions\index.jsx:
+   5:         <label className="text-emerald text-sm font-semibold block mb-3">
+  11:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  20:         <label className="text-emerald text-sm font-semibold block mb-3">
+  26:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  36:         <label className="text-emerald text-sm font-semibold block mb-3">
+  42:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\LLMSelection\TogetherAiOptions\index.jsx:
+   8:         <label className="text-emerald text-sm font-semibold block mb-3">
+  14:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  55:         <label className="text-emerald text-sm font-semibold block mb-3">
+  61:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  73:       <label className="text-emerald text-sm font-semibold block mb-3">
+  79:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\Modals\NewWorkspace.jsx:
+  34:             <h3 className="text-xl font-semibold text-emerald">
+  51:                     className="block mb-2 text-sm font-medium text-emerald"
+  59:                     className="bg-zinc-900 w-full text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  73:                 className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\components\Modals\DisplayRecoveryCodeModal\index.jsx:
+  38:           <Key size={24} className="text-emerald" weight="bold" />
+  40:             className="text-lg leading-6 font-medium text-emerald"
+  47:           <p className="text-sm text-emerald flex flex-col">
+  54:             className="bg-dark-highlight text-emerald hover:text-primary-button
+  71:           className="transition-all duration-300 text-xs md:w-[500px] md:h-[34px] h-[48px] w-full m-2 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-emerald whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)] flex justify-center items-center gap-x-2"
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\index.jsx:
+   44:               <h1 className="text-emerald text-lg font-semibold">
+   47:               <p className="text-emerald mt-4">
+   55:                   className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+  108:           className={`px-4 py-2 rounded-[8px] font-semibold text-emerald hover:bg-switch-selected hover:bg-opacity-60 ${
+  111:               : "bg-sidebar-button text-emerald/20 font-medium hover:text-emerald"
+  118:           className={`px-4 py-2 rounded-[8px] font-semibold text-emerald hover:bg-switch-selected hover:bg-opacity-60 ${
+  121:               : "bg-sidebar-button text-emerald/20 font-medium hover:text-emerald"
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\DataConnectors\index.jsx:
+  62:             className="absolute left-4 z-30 text-emerald"
+  67:             className="border-none bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:outline-primary-button active:outline-primary-button outline-none text-emerald"
+  87:             <div className="text-emerald text-center mt-4">
+  94:       <div className="w-full p-4 top-0 text-emerald min-w-[500px]">
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\DataConnectors\ConnectorOption\index.jsx:
+  18:         <div className="text-emerald font-bold text-[14px]">{name}</div>
+  20:           <p className="text-[12px] text-emerald/60">{description}</p>
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\DataConnectors\Connectors\Confluence\index.jsx:
+   60:                   <label className="text-emerald text-sm font-bold flex gap-x-2 items-center">
+   61:                     <p className="font-bold text-emerald">
+   65:                   <p className="text-xs font-normal text-emerald/50">
+   72:                   className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   85:                   <label className="text-emerald text-sm font-bold flex gap-x-2 items-center">
+   86:                     <p className="font-bold text-emerald">Confluence base URL</p>
+   88:                   <p className="text-xs font-normal text-emerald/50">
+   95:                   className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  104:                   <label className="text-emerald text-sm font-bold">
+  107:                   <p className="text-xs font-normal text-emerald/50">
+  115:                   className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  124:                   <label className="text-emerald text-sm font-bold">
+  127:                   <p className="text-xs font-normal text-emerald/50">
+  134:                   className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  143:                   <label className="text-emerald text-sm font-bold flex gap-x-2 items-center">
+  144:                     <p className="font-bold text-emerald">
+  175:                   <p className="text-xs font-normal text-emerald/50">
+  182:                   className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  201:               <p className="text-xs text-emerald/50">
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\DataConnectors\Connectors\Github\index.jsx:
+   70:                   <label className="text-emerald text-sm font-bold">
+   73:                   <p className="text-xs font-normal text-emerald/50">
+   80:                   className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   91:                   <label className="text-emerald font-bold text-sm flex gap-x-2 items-center">
+   92:                     <p className="font-bold text-emerald">Github Access Token</p>{" "}
+   93:                     <p className="text-xs text-emerald/50 font-light flex items-center">
+   98:                   <p className="text-xs font-normal text-emerald/50">
+  105:                   className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  122:                 <label className="text-emerald text-sm flex gap-x-2 items-center">
+  123:                   <p className="text-emerald text-sm font-bold">File Ignores</p>
+  125:                 <p className="text-xs font-normal text-emerald/50">
+  138:                     "flex bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
+  154:               <p className="text-xs text-emerald/50">
+  193:           <label className="text-emerald text-sm font-bold">Branch</label>
+  194:           <p className="text-xs font-normal text-emerald/50">
+  201:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  214:         <label className="text-emerald text-sm font-bold">Branch</label>
+  215:         <p className="text-xs font-normal text-emerald/50">
+  222:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  239:     <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-emerald mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\DataConnectors\Connectors\Gitlab\index.jsx:
+   71:                   <label className="text-emerald text-sm font-bold">
+   74:                   <p className="text-xs font-normal text-emerald/50">
+   81:                   className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+   93:                   <label className="text-emerald font-bold text-sm flex gap-x-2 items-center">
+   94:                     <p className="font-bold text-emerald">GitLab Access Token</p>{" "}
+   95:                     <p className="text-xs text-emerald/50 font-light flex items-center">
+  100:                   <p className="text-xs font-normal text-emerald/50">
+  107:                   className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+  118:                   <label className="text-emerald font-bold text-sm flex gap-x-2 items-center">
+  119:                     <p className="font-bold text-emerald">Settings</p>{" "}
+  121:                   <p className="text-xs font-normal text-emerald/50">
+  134:                     <span className="ml-3 text-sm font-medium text-emerald">
+  148:                 <label className="text-emerald text-sm flex gap-x-2 items-center">
+  149:                   <p className="text-emerald text-sm font-bold">File Ignores</p>
+  151:                 <p className="text-xs font-normal text-emerald/50">
+  164:                     "flex bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:border-white",
+  180:               <p className="text-xs text-emerald/50">
+  219:           <label className="text-emerald text-sm font-bold">Branch</label>
+  220:           <p className="text-xs font-normal text-emerald/50">
+  227:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  240:         <label className="text-emerald text-sm font-bold">Branch</label>
+  241:         <p className="text-xs font-normal text-emerald/50">
+  248:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  265:     <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-emerald mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\DataConnectors\Connectors\WebsiteDepth\index.jsx:
+   57:                   <label className="text-emerald text-sm font-bold">
+   60:                   <p className="text-xs font-normal text-emerald/50">
+   67:                   className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   76:                   <label className="text-emerald text-sm font-bold">Depth</label>
+   77:                   <p className="text-xs font-normal text-emerald/50">
+   87:                   className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   94:                   <label className="text-emerald text-sm font-bold">
+   97:                   <p className="text-xs font-normal text-emerald/50">
+  105:                   className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  124:               <p className="text-xs text-emerald/50">
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\DataConnectors\Connectors\Youtube\index.jsx:
+  52:                   <label className="text-emerald text-sm font-bold">
+  55:                   <p className="text-xs font-normal text-emerald/50">
+  62:                   className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  81:               <p className="text-xs text-emerald/50 max-w-sm">
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\Documents\index.jsx:
+  212:         <ArrowsDownUp className="text-emerald text-base font-bold rotate-90 w-11 h-11" />
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\Documents\Directory\index.jsx:
+  194:           <h3 className="text-emerald text-base font-bold">My Documents</h3>
+  200:               className="search-input bg-zinc-900 text-emerald placeholder-white/40 text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px]"
+  204:               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald"
+  220:           <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-emerald/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900">
+  228:                 <p className="text-emerald/80 text-sm font-semibold animate-pulse text-center w-1/3">
+  252:                 <p className="text-emerald text-opacity-40 text-sm font-medium">
+  266:                     className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-emerald hover:bg-neutral-800/80"
+  277:                       <MoveToFolderIcon className="text-dark-text group-hover:text-emerald" />
+  291:                     className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-dark-text hover:text-emerald hover:bg-neutral-800/80 flex justify-center items-center"
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\Documents\Directory\ContextMenu\index.jsx:
+  67:         className="block w-full text-left px-4 py-2 text-sm text-emerald hover:bg-zinc-700"
+  73:         className="block w-full text-left px-4 py-2 text-sm text-emerald hover:bg-zinc-700"
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\Documents\Directory\FileRow\index.jsx:
+  14:       className={`text-emerald/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer file-row ${
+  52:           <p className="text-emerald">{item.title}</p>
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\Documents\Directory\FolderRow\index.jsx:
+  25:         className={`text-emerald/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 bg-dark-highlight hover:bg-sky-500/20 cursor-pointer w-full file-row ${
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\Documents\Directory\NewFolderModal\index.jsx:
+  35:           <h3 className="text-xl font-semibold text-emerald">
+  53:                   className="block mb-2 text-sm font-medium text-emerald"
+  60:                   className="bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  75:               className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+  81:               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\Documents\UploadFile\index.jsx:
+   89:             <CloudArrowUp className="w-8 h-8 text-emerald/80" />
+   90:             <div className="text-emerald text-opacity-80 text-sm font-semibold py-1">
+   93:             <div className="text-emerald text-opacity-60 text-xs font-medium py-1 px-20 text-center">
+  100:             <CloudArrowUp className="w-8 h-8 text-emerald/80" />
+  101:             <div className="text-emerald text-opacity-80 text-sm font-semibold py-1">
+  104:             <div className="text-emerald text-opacity-60 text-xs font-medium py-1">
+  128:       <div className="text-center text-emerald text-opacity-50 text-xs font-medium w-[560px] py-2">
+  136:           className="disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
+  143:           className="disabled:bg-white/20 disabled:text-slate-300 disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-slate-200 hover:text-slate-800 w-auto border border-white text-sm text-emerald p-2.5 rounded-lg"
+  148:       <div className="mt-6 text-center text-emerald text-opacity-80 text-xs font-medium w-[560px]">
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\Documents\UploadFile\FileUploadProgress\index.jsx:
+   82:           <p className="text-emerald text-xs font-medium">
+  102:           <p className="text-emerald text-xs font-medium">
+  127:         <p className="text-emerald text-xs font-medium">
+  130:         <p className="text-emerald/60 text-xs font-medium">
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\Documents\WorkspaceDirectory\index.jsx:
+   90:           <h3 className="text-emerald text-base font-bold ml-5">
+   95:           <div className="text-emerald/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-zinc-900 sticky top-0 z-10 rounded-t-2xl">
+  104:             <p className="text-emerald/80 text-sm font-semibold animate-pulse text-center w-1/3">
+  117:           <h3 className="text-emerald text-base font-bold ml-5">
+  128:             <div className="text-emerald/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
+  182:                   <p className="text-emerald text-opacity-40 text-sm font-medium">
+  194:                       className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-emerald hover:bg-neutral-800/80"
+  206:                       className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-emerald hover:bg-neutral-800/80"
+  218:             <div className="text-emerald/80">
+  235:               className="border border-slate-200 px-5 py-2.5 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+  273:               <h3 className="text-xl font-semibold text-emerald">
+  278:           <div className="w-full p-6 text-emerald text-md flex flex-col gap-y-2">
+  299:               className="border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+  338:               <h3 className="text-xl font-semibold text-emerald">
+  343:           <div className="w-full p-6 text-emerald text-md flex flex-col gap-y-2">
+  370:               className="border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\components\Modals\ManageWorkspace\Documents\WorkspaceDirectory\WorkspaceFileRow\index.jsx:
+   60:       className={`items-center h-[34px] text-emerald/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 ${
+  116:           <p className="text-emerald">{item.title}</p>
+
+anything-llm-1\frontend\src\components\Modals\Password\MultiUserAuth.jsx:
+   39:           <h3 className="text-4xl md:text-lg font-bold text-emerald text-center md:text-left">
+   42:           <p className="text-sm text-emerald/90 md:text-left md:max-w-[300px] px-4 md:px-0 text-center">
+   50:             <label className="text-emerald text-sm font-bold">
+   59:               className="bg-zinc-900 text-emerald placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+   64:             <label className="text-emerald text-sm font-bold">
+   79:                   className="bg-zinc-900 text-emerald placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+   90:           className="md:text-primary-button md:bg-transparent md:w-[300px] text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-emerald md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
+   96:           className="text-emerald text-sm flex gap-x-1 hover:text-primary-button hover:underline -mb-8"
+  122:           <h3 className="text-4xl md:text-2xl font-bold text-emerald text-center md:text-left">
+  125:           <p className="text-sm text-emerald/90 md:text-left md:max-w-[300px] px-4 md:px-0 text-center">
+  139:               className="bg-zinc-900 text-emerald placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+  150:               className="bg-zinc-900 text-emerald placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+  159:           className="md:text-primary-button md:bg-transparent md:w-[300px] text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-emerald md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
+  288:                 <h3 className="text-md md:text-2xl font-bold text-emerald text-center white-space-nowrap hidden md:block">
+  295:               <p className="text-sm text-emerald/90 text-center">
+  308:                   className="bg-zinc-900 text-emerald placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+  318:                   className="bg-zinc-900 text-emerald placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+  330:               className="md:text-primary-button md:bg-transparent text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-emerald md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
+  338:               className="text-emerald text-sm flex gap-x-1 hover:text-primary-button hover:underline"
+
+anything-llm-1\frontend\src\components\Modals\Password\SingleUserAuth.jsx:
+   77:                 <h3 className="text-md md:text-2xl font-bold text-emerald text-center white-space-nowrap hidden md:block">
+   84:               <p className="text-sm text-emerald/90 text-center">
+   97:                   className="bg-zinc-900 text-emerald placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+  110:               className="md:text-primary-button md:bg-transparent text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-emerald md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
+
+anything-llm-1\frontend\src\components\SettingsButton\index.jsx:
+  19:           className="transition-all duration-300 p-2 rounded-full text-emerald bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+  33:         className="transition-all duration-300 p-2 rounded-full text-emerald bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+
+anything-llm-1\frontend\src\components\SettingsSidebar\index.jsx:
+   98:                     className="transition-all duration-300 p-2 rounded-full text-emerald bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+  117:                       className="text-darker hover:text-emerald text-xs leading-[18px] mx-3"
+  153:             <div className="text-emerald text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
+  167:                     className="text-darker hover:text-emerald text-xs leading-[18px] mx-3"
+  203:       className="text-darker hover:text-emerald text-xs leading-[18px] mx-3 mt-1"
+
+anything-llm-1\frontend\src\components\SettingsSidebar\MenuOption\index.jsx:
+  77:             isChild ? "text-emerald/70 hover:text-emerald" : "text-emerald"
+  86:               isActive ? "text-emerald" : ""
+  93:           <button onClick={handleClick} className="p-2 text-emerald">
+
+anything-llm-1\frontend\src\components\Sidebar\ActiveWorkspaces\index.jsx:
+   96:                 flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-emerald justify-start items-center
+  113:                         isActive ? "text-emerald " : "text-zinc-200"
+  125:                         className={`flex hover:bg-[#646768] p-[2px] rounded-[4px] text-[#A7A8A9] hover:text-emerald ${
+  162:                         className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-emerald ml-auto"
+
+anything-llm-1\frontend\src\components\Sidebar\ActiveWorkspaces\ThreadContainer\index.jsx:
+  216:         <p className="text-emerald text-left text-sm group-hover:text-red-400">
+
+anything-llm-1\frontend\src\components\Sidebar\ActiveWorkspaces\ThreadContainer\ThreadItem\index.jsx:
+   80:                   className="text-zinc-300 hover:text-emerald"
+   96:                 isActive ? "font-medium text-emerald" : "text-slate-400"
+  112:                   className="text-zinc-300 hover:text-emerald"
+
+anything-llm-1\frontend\src\components\SpeechToText\BrowserNative\index.jsx:
+  4:       <p className="text-sm font-base text-emerald text-opacity-60">
+
+anything-llm-1\frontend\src\components\TextToSpeech\BrowserNative\index.jsx:
+  4:       <p className="text-sm font-base text-emerald text-opacity-60">
+
+anything-llm-1\frontend\src\components\TextToSpeech\ElevenLabsOptions\index.jsx:
+  13:         <label className="text-emerald text-sm font-semibold block mb-3">
+  19:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  65:         <label className="text-emerald text-sm font-semibold block mb-3">
+  71:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  83:       <label className="text-emerald text-sm font-semibold block mb-3">
+  89:         className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\TextToSpeech\OpenAiGenericOptions\index.jsx:
+   9:             <label className="text-emerald text-sm font-semibold">Base URL</label>
+  14:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  21:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  28:           <label className="text-emerald text-sm font-semibold block mb-3">
+  34:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  42:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+  48:           <label className="text-emerald text-sm font-semibold block mb-3">
+  54:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  61:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60 mt-2">
+
+anything-llm-1\frontend\src\components\TextToSpeech\OpenAiOptions\index.jsx:
+  13:         <label className="text-emerald text-sm font-semibold block mb-3">
+  19:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  28:         <label className="text-emerald text-sm font-semibold block mb-3">
+  34:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\TextToSpeech\PiperTTSOptions\index.jsx:
+   11:       <p className="text-sm font-base text-emerald text-opacity-60 mb-4">
+   71:         <label className="text-emerald text-sm font-semibold block mb-3">
+   78:           className="border-none bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+   91:         <label className="text-emerald text-sm font-semibold block mb-3">
+  100:             className="border-none flex-shrink-0 bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  116:         <p className="text-xs text-emerald/40">
+  125:           className="w-fit border-none hover:text-emerald hover:underline text-emerald/40 text-sm my-4"
+
+anything-llm-1\frontend\src\components\TranscriptionSelection\NativeTranscriptionOptions\index.jsx:
+  14:           <label className="text-emerald text-sm font-semibold block mb-3">
+  21:             className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+  54:     <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-emerald mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+  74:     <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-emerald mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+
+anything-llm-1\frontend\src\components\TranscriptionSelection\OpenAiOptions\index.jsx:
+  10:         <label className="text-emerald text-sm font-semibold block mb-3">
+  16:           className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  27:         <label className="text-emerald text-sm font-semibold block mb-3">
+  32:           className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\UserMenu\AccountModal\index.jsx:
+   70:           <h3 className="text-xl font-semibold text-emerald">Edit Account</h3>
+   98:                     <Plus className="w-8 h-8 text-emerald/80 m-2" />
+   99:                     <span className="text-emerald text-opacity-80 text-sm font-semibold">
+  102:                     <span className="text-emerald text-opacity-60 text-xs">
+  112:                   className="mt-3 text-emerald text-opacity-60 text-sm font-medium hover:underline"
+  123:                 className="block mb-2 text-sm font-medium text-emerald"
+  130:                 className="bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  137:               <p className="mt-2 text-xs text-emerald/60">
+  145:                 className="block mb-2 text-sm font-medium text-emerald"
+  152:                 className="bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  156:               <p className="mt-2 text-xs text-emerald/60">
+  166:               className="px-4 py-2 rounded-lg text-emerald bg-transparent hover:bg-stone-900"
+  172:               className="px-4 py-2 rounded-lg text-emerald bg-transparent border border-slate-200 hover:bg-slate-200 hover:text-slate-800"
+  195:         className="block mb-2 text-sm font-medium text-emerald"
+  201:         className="bg-zinc-900 w-fit mt-2 px-4 border-gray-500 text-emerald text-sm rounded-lg block py-2"
+
+anything-llm-1\frontend\src\components\UserMenu\UserButton\index.jsx:
+  62:         className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient justify-center text-emerald p-2 hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+  76:                 className="text-emerald hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+  83:               className="text-emerald hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+  95:               className="text-emerald hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+
+anything-llm-1\frontend\src\components\VectorDBSelection\AstraDBOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  22:           <label className="text-emerald text-sm font-semibold block mb-3">
+  28:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\VectorDBSelection\ChromaDBOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  22:           <label className="text-emerald text-sm font-semibold block mb-3">
+  30:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  36:           <label className="text-emerald text-sm font-semibold block mb-3">
+  44:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\VectorDBSelection\LanceDBOptions\index.jsx:
+  6:       <p className="text-sm font-base text-emerald text-opacity-60">
+
+anything-llm-1\frontend\src\components\VectorDBSelection\MilvusDBOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  22:           <label className="text-emerald text-sm font-semibold block mb-3">
+  28:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  36:           <label className="text-emerald text-sm font-semibold block mb-3">
+  42:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\VectorDBSelection\PineconeDBOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  21:           <label className="text-emerald text-sm font-semibold block mb-3">
+  27:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\VectorDBSelection\QDrantDBOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  22:           <label className="text-emerald text-sm font-semibold block mb-3">
+  28:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\VectorDBSelection\VectorDBItem\index.jsx:
+  31:           <div className="text-sm font-semibold text-emerald">{name}</div>
+
+anything-llm-1\frontend\src\components\VectorDBSelection\WeaviateDBOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  22:           <label className="text-emerald text-sm font-semibold block mb-3">
+  28:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\VectorDBSelection\ZillizCloudOptions\index.jsx:
+   6:           <label className="text-emerald text-sm font-semibold block mb-3">
+  12:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  22:           <label className="text-emerald text-sm font-semibold block mb-3">
+  28:             className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\components\WorkspaceChat\index.jsx:
+  46:                 <p className="text-sm mt-4 text-emerald">
+  53:                     className="border border-slate-200 text-emerald hover:bg-slate-200 hover:text-slate-800 px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 transition-all duration-300"
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\ChatHistory\index.jsx:
+  171:           <p className="text-emerald/60 text-lg font-base py-4">
+  175:             <p className="w-full items-center text-emerald/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+  186:             <p className="w-full items-center text-emerald/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+  207:       className={`markdown text-emerald/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
+  268:               className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-emerald"
+  274:               <ArrowDown weight="bold" className="text-emerald/60 w-5 h-5" />
+  289:             className={`text-xs inline-block p-2 rounded-lg text-emerald/60 font-mono whitespace-pre-line`}
+  302:     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-emerald/60 text-xs mt-10 w-full justify-center">
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\ChatHistory\Chartable\index.jsx:
+   78:           <div className="bg-zinc-900 p-8 rounded-xl text-emerald">
+   93:           <div className="bg-zinc-900 p-8 rounded-xl text-emerald">
+  110:           <div className="bg-zinc-900 p-8 pb-12 rounded-xl text-emerald h-[500px] w-full">
+  125:           <div className="bg-zinc-900 p-8 rounded-xl text-emerald">
+  181:           <div className="bg-zinc-900 p-8 rounded-xl text-emerald">
+  227:           <div className="bg-zinc-900 p-8 rounded-xl text-emerald">
+  251:           <div className="bg-zinc-900 p-8 rounded-xl text-emerald">
+  285:           <div className="bg-zinc-900 p-8 rounded-xl text-emerald">
+  320:           <div className="bg-zinc-900 p-8 rounded-xl text-emerald">
+  346:           <div className="bg-zinc-900 p-8 rounded-xl text-emerald">
+  416:     <div className="w-56 bg-zinc-400 rounded-lg border p-2 text-emerald">
+  450:               className="text-emerald/50 w-5 h-5 animate-spin"
+  456:               className="text-emerald/50 w-5 h-5 hover:text-emerald"
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\ChatHistory\Citation\index.jsx:
+   48:         className={`text-emerald/50 font-medium italic text-sm text-left ml-14 pt-2 ${
+   50:         } hover:text-emerald/75 transition-all duration-300`}
+  137:                 className="text-xl font-semibold text-emerald overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline hover:text-blue-300 flex items-center gap-x-1"
+  145:               <h3 className="text-xl font-semibold text-emerald overflow-hidden overflow-ellipsis whitespace-nowrap">
+  172:               <div key={idx} className="pt-6 text-emerald">
+  174:                   <p className="text-emerald whitespace-pre-line">
+  180:                       <div className="w-full flex items-center text-xs text-emerald/60 gap-x-2 cursor-default">
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\ChatHistory\HistoricalMessage\Actions\ActionMenu\index.jsx:
+  56:         <div className="absolute -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-[#41454B] bg-opacity-100 flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-emerald z-99 md:z-10">
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\ChatHistory\HistoricalMessage\Actions\EditMessage\index.jsx:
+  120:           className="px-2 py-1 bg-historical-msg-system text-emerald font-medium rounded-md hover:bg-historical-msg-user/90 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\DnDWrapper\index.jsx:
+  232:             <p className="text-emerald text-[24px] font-semibold">Add anything</p>
+  233:             <p className="text-emerald text-[16px] text-center">
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\index.jsx:
+  188:                 className="cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-emerald bg-transparent placeholder:text-emerald/60 resize-none active:outline-none focus:outline-none flex-grow"
+  198:                     className="inline-flex justify-center rounded-2xl cursor-pointer text-emerald/60 hover:text-emerald group ml-4"
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\AgentMenu\index.jsx:
+   20:       <At className="w-6 h-6 pointer-events-none text-emerald" />
+   33:     <div className="px-2 bg-white/20 text-emerald/60 text-black text-xs w-fit rounded-sm">
+   80:                 <div className="text-emerald text-sm">
+  100:                 <div className="text-emerald text-xs text-emerald/50 italic">
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\AttachItem\index.jsx:
+  28:         <PaperclipHorizontal className="w-6 h-6 pointer-events-none text-emerald rotate-90 -scale-y-100" />
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\Attachments\index.jsx:
+   54:           <CircleNotch size={30} className="text-emerald animate-spin" />
+   57:           <p className="text-emerald text-xs font-medium truncate">{file.name}</p>
+   58:           <p className="text-emerald/60 text-xs font-medium">
+   82:                 className="flex-shrink-0 text-zinc-200 group-hover:text-emerald"
+   89:             <WarningOctagon size={30} className="text-emerald" />
+   92:             <p className="text-emerald text-xs font-medium truncate">
+  127:                 className="flex-shrink-0 text-zinc-200 group-hover:text-emerald"
+  140:               <Icon size={30} className="text-emerald" />
+  144:             <p className="text-emerald text-xs font-medium truncate">
+  147:             <p className="text-emerald/80 text-xs font-medium">Image attached!</p>
+  175:               className="flex-shrink-0 text-zinc-200 group-hover:text-emerald"
+  182:           <Icon size={30} className="text-emerald" />
+  185:           <p className="text-emerald text-xs font-medium truncate">{file.name}</p>
+  186:           <p className="text-emerald/80 text-xs font-medium">File embedded!</p>
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\SlashCommands\endAgentSession.jsx:
+  16:         <div className="text-emerald text-sm font-bold">/exit</div>
+  17:         <div className="text-emerald text-opacity-60 text-sm">
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\SlashCommands\reset.jsx:
+  16:         <div className="text-emerald text-sm font-bold">/reset</div>
+  17:         <div className="text-emerald text-opacity-60 text-sm">
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\SlashCommands\SlashPresets\AddPresetModal.jsx:
+   34:             <h3 className="text-xl font-semibold text-emerald">Add New Preset</h3>
+   46:                 <label className="block mb-2 text-sm font-medium text-emerald">
+   50:                   <span className="text-emerald text-sm mr-2 font-bold">/</span>
+   60:                     className="border-none bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+   65:                 <label className="block mb-2 text-sm font-medium text-emerald">
+   73:                   className="border-none bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+   77:                 <label className="border-none block mb-2 text-sm font-medium text-emerald">
+   87:                   className="border-none bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+   96:               className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+  102:               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\SlashCommands\SlashPresets\EditPresetModal.jsx:
+   56:             <h3 className="text-xl font-semibold text-emerald">Edit Preset</h3>
+   70:                   className="block mb-2 text-sm font-medium text-emerald"
+   75:                   <span className="text-emerald text-sm mr-2 font-bold">/</span>
+   83:                     className="border-none bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+   90:                   className="block mb-2 text-sm font-medium text-emerald"
+   99:                   className="border-none bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  105:                   className="block mb-2 text-sm font-medium text-emerald"
+  115:                   className="border-none bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  135:                 className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+  141:                 className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\SlashCommands\SlashPresets\index.jsx:
+   91:             <div className="text-emerald text-sm font-bold">{preset.command}</div>
+   92:             <div className="text-emerald text-opacity-60 text-sm">
+  101:             className="text-emerald text-sm p-1 hover:cursor-pointer hover:bg-zinc-900 rounded-full mt-1"
+  113:           <div className="text-emerald text-sm font-medium">Add New Preset </div>
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\SpeechToText\index.jsx:
+  107:         className={`w-6 h-6 pointer-events-none text-emerald overflow-hidden rounded-full ${
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\StopGenerationButton\index.jsx:
+  16:         className="border-none text-emerald/60 cursor-pointer group"
+
+anything-llm-1\frontend\src\components\WorkspaceChat\ChatContainer\PromptInput\TextSizeMenu\index.jsx:
+   24:           className="w-6 h-6 pointer-events-none text-emerald"
+   88:             <div className="text-emerald text-xs">Small</div>
+  103:             <div className="text-emerald text-sm">Normal</div>
+  118:             <div className="text-emerald text-[16px]">Large</div>
+
+anything-llm-1\frontend\src\pages\Admin\Agents\index.jsx:
+  148:             <div className="text-emerald flex items-center gap-x-2">
+  173:             <div className="text-emerald flex items-center gap-x-2">
+  195:                     className="text-emerald/60 hover:text-emerald transition-colors duration-200"
+  204:                   <div className="bg-[#303237] text-emerald rounded-xl p-4">
+  228:                       <div className="flex flex-col items-center justify-center h-full text-emerald/60">
+  263:           <div className="text-emerald flex items-center gap-x-2">
+  283:           <div className="text-emerald flex items-center gap-x-2">
+  296:           <div className="bg-[#303237] text-emerald rounded-xl flex-1 p-4">
+  320:               <div className="flex flex-col items-center justify-center h-full text-emerald/60">
+  365:       className={`bg-white/5 text-emerald rounded-xl ${
+  388:               <div className="text-sm text-emerald/60 font-medium">
+  392:             <CaretRight size={14} weight="bold" className="text-emerald/80" />
+
+anything-llm-1\frontend\src\pages\Admin\Agents\DefaultSkillPanel\index.jsx:
+  16:             <label htmlFor="name" className="text-emerald text-md font-bold">
+  23:         <p className="text-emerald text-opacity-60 text-xs font-medium py-1.5">
+
+anything-llm-1\frontend\src\pages\Admin\Agents\GenericSkillPanel\index.jsx:
+  23:           <label htmlFor="name" className="text-emerald text-md font-bold">
+  43:         <p className="text-emerald text-opacity-60 text-xs font-medium py-1.5">
+
+anything-llm-1\frontend\src\pages\Admin\Agents\Imported\ImportedSkillConfig\index.jsx:
+  109:             <label htmlFor="name" className="text-emerald text-md font-bold">
+  123:           <p className="text-emerald text-opacity-60 text-xs font-medium py-1.5">
+  129:               className="text-emerald hover:underline"
+  139:                   <label htmlFor={key} className="text-emerald text-sm font-bold">
+  154:                     className="bg-transparent border border-white border-opacity-20 rounded-md p-2 text-emerald text-sm"
+  156:                   <p className="text-emerald text-opacity-60 text-xs font-medium py-1.5">
+  165:                   className="bg-blue-500 text-emerald rounded-md p-2"
+  172:             <p className="text-emerald text-opacity-60 text-sm font-medium py-1.5">
+
+anything-llm-1\frontend\src\pages\Admin\Agents\Imported\SkillList\index.jsx:
+  12:       <div className="text-emerald/60 text-center text-xs flex flex-col gap-y-2">
+  19:             className="text-emerald/80 hover:underline"
+  30:       className={`bg-white/5 text-emerald rounded-xl ${
+  50:             <div className="text-sm text-emerald/60 font-medium">
+  53:             <CaretRight size={14} weight="bold" className="text-emerald/80" />
+
+anything-llm-1\frontend\src\pages\Admin\Agents\SQLConnectorSelection\DBConnection.jsx:
+  35:           <div className="text-sm font-semibold text-emerald">{database_id}</div>
+  41:           className="border-none text-emerald/40 hover:text-red-500"
+
+anything-llm-1\frontend\src\pages\Admin\Agents\SQLConnectorSelection\index.jsx:
+  30:             <label htmlFor="name" className="text-emerald text-md font-bold">
+  49:           <p className="text-emerald text-opacity-60 text-xs font-medium py-1.5">
+  67:                 <p className="text-emerald font-semibold text-sm">
+
+anything-llm-1\frontend\src\pages\Admin\Agents\SQLConnectorSelection\NewConnectionModal.jsx:
+   80:             <h3 className="text-xl font-semibold text-emerald">
+   99:               <p className="text-sm text-emerald">
+  114:                 <label className="text-emerald text-sm font-semibold block my-4">
+  137:                 <label className="text-emerald text-sm font-semibold block mb-3">
+  143:                   className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  153:                   <label className="text-emerald text-sm font-semibold block mb-3">
+  159:                     className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  167:                   <label className="text-emerald text-sm font-semibold block mb-3">
+  173:                     className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  184:                   <label className="text-emerald text-sm font-semibold block mb-3">
+  190:                     className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  198:                   <label className="text-emerald text-sm font-semibold block mb-3">
+  204:                     className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  214:                 <label className="text-emerald text-sm font-semibold block mb-3">
+  220:                   className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  227:               <p className="text-emerald/40 text-sm">
+  235:                 className="border-none text-xs px-2 py-1 font-semibold rounded-lg bg-white hover:bg-transparent border-2 border-transparent hover:border-white hover:text-emerald h-[32px] w-fit -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+  242:                 className="border-none text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-emerald h-[32px] w-fit -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+
+anything-llm-1\frontend\src\pages\Admin\Agents\WebSearchSelection\index.jsx:
+  149:           <label htmlFor="name" className="text-emerald text-md font-bold">
+  168:         <p className="text-emerald text-opacity-60 text-xs font-medium py-1.5">
+  193:                       className="absolute left-4 z-30 text-emerald -ml-4 my-2"
+  200:                       className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-emerald placeholder:text-emerald placeholder:font-medium"
+  210:                       className="cursor-pointer text-emerald hover:text-x-button"
+  241:                     <div className="text-sm font-semibold text-emerald">
+  249:                 <CaretUpDown size={24} weight="bold" className="text-emerald" />
+
+anything-llm-1\frontend\src\pages\Admin\Agents\WebSearchSelection\SearchProviderItem\index.jsx:
+  21:           <div className="text-sm font-semibold text-emerald">{name}</div>
+
+anything-llm-1\frontend\src\pages\Admin\Agents\WebSearchSelection\SearchProviderOptions\index.jsx:
+    4:       <p className="text-sm text-emerald/60 my-2">
+   17:           <label className="text-emerald text-sm font-semibold block mb-3">
+   23:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   32:           <label className="text-emerald text-sm font-semibold block mb-3">
+   38:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   71:       <p className="text-sm text-emerald/60 my-2">
+   84:           <label className="text-emerald text-sm font-semibold block mb-3">
+   90:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+   99:           <label className="text-emerald text-sm font-semibold block mb-3">
+  105:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  117:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  133:       <p className="text-sm text-emerald/60 my-2">
+  146:           <label className="text-emerald text-sm font-semibold block mb-3">
+  152:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  168:       <p className="text-sm text-emerald/60 my-2">
+  181:           <label className="text-emerald text-sm font-semibold block mb-3">
+  187:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  196:       <p className="text-sm text-emerald/60 my-2">
+  199:       <ol className="list-decimal text-sm text-emerald/60 ml-6">
+  231:       <p className="text-sm text-emerald/60 my-2">
+  244:           <label className="text-emerald text-sm font-semibold block mb-3">
+  250:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  267:         <label className="text-emerald text-sm font-semibold block mb-3">
+  273:           className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+  288:       <p className="text-sm text-emerald/60 my-2">
+  301:           <label className="text-emerald text-sm font-semibold block mb-3">
+  307:             className="border-none bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+
+anything-llm-1\frontend\src\pages\Admin\ExperimentalFeatures\index.jsx:
+   50:           <div className="text-emerald flex items-center gap-x-2">
+   68:             <div className="bg-[#303237] text-emerald rounded-xl flex-1 p-4">
+   76:                 <div className="flex flex-col items-center justify-center h-full text-emerald/60">
+  116:       className={`bg-white/5 text-emerald rounded-xl ${
+  136:             <div className="text-sm text-emerald/60 font-medium">
+  139:             <CaretRight size={14} weight="bold" className="text-emerald/80" />
+  188:                 <h3 className="text-xl font-semibold text-emerald">
+  193:                 <div className="w-full flex flex-col gap-y-4 text-emerald">
+  261:                   className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+  267:                   className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\Admin\ExperimentalFeatures\Features\LiveSync\toggle.jsx:
+  36:           <h2 className="text-emerald text-md font-bold">
+  50:           <p className="text-emerald/90 text-sm">
+  55:           <p className="text-emerald/90 text-sm">
+  59:           <p className="text-emerald/80 text-xs italic">
+
+anything-llm-1\frontend\src\pages\Admin\ExperimentalFeatures\Features\LiveSync\manage\index.jsx:
+  20:               <p className="text-lg leading-6 font-bold text-emerald">
+  24:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  66:       <thead className="text-emerald text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+
+anything-llm-1\frontend\src\pages\Admin\ExperimentalFeatures\Features\LiveSync\manage\DocumentSyncQueueRow\index.jsx:
+  22:         className="bg-transparent text-emerald text-opacity-80 text-sm font-medium"
+
+anything-llm-1\frontend\src\pages\Admin\Invitations\index.jsx:
+  28:               <p className="text-lg leading-6 font-bold text-emerald">
+  32:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  83:       <thead className="text-emerald text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+
+anything-llm-1\frontend\src\pages\Admin\Invitations\InviteRow\index.jsx:
+  45:         className="bg-transparent text-emerald text-opacity-80 text-sm font-medium"
+  65:                 className="font-medium text-blue-300 rounded-lg hover:text-emerald hover:text-opacity-60 hover:underline"
+
+anything-llm-1\frontend\src\pages\Admin\Invitations\NewInviteModal\index.jsx:
+   64:           <h3 className="text-xl font-semibold text-emerald">
+   85:                   className="rounded-lg px-4 py-2 text-emerald bg-zinc-900 border border-gray-500/50"
+   88:               <p className="text-emerald text-xs md:text-sm">
+  103:                     className="text-sm font-medium text-emerald"
+  107:                   <p className="text-emerald/60 text-xs">
+  135:                   className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+  141:                   className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+  151:                 className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center"
+  184:       <div className="text-emerald text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+
+anything-llm-1\frontend\src\pages\Admin\Logging\index.jsx:
+   66:               <p className="text-lg leading-6 font-bold text-emerald">
+   70:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  122:         <thead className="text-emerald text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+
+anything-llm-1\frontend\src\pages\Admin\Logging\LogRow\index.jsx:
+  30:         className={`bg-transparent text-emerald text-opacity-80 text-sm font-medium ${
+  48:                 <p className="text-xs text-emerald/50 w-[20px]">hide</p>
+  55:                 <p className="text-xs text-emerald/50 w-[20px]">show</p>
+  72:         className="px-6 py-4 font-medium text-emerald rounded-l-2xl"
+  77:         <div className="w-full rounded-lg bg-main-2 p-2 text-emerald shadow-sm border-white border bg-opacity-10">
+  97:     <td className="px-6 py-4 font-medium whitespace-nowrap text-emerald flex items-center">
+
+anything-llm-1\frontend\src\pages\Admin\Users\index.jsx:
+   28:               <p className="text-lg leading-6 font-bold text-emerald">Users</p>
+   30:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+   81:       <thead className="text-emerald text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+  125:       <p className="text-sm font-medium text-emerald">Permissions</p>
+  129:             <li key={i} className="text-xs text-emerald/60">
+  145:           <h2 className="text-base leading-6 font-bold text-emerald">
+  163:         <p className="text-xs leading-[18px] font-base text-emerald/60">
+  170:           <label className="text-emerald text-sm font-semibold block mb-4">
+  185:               className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:border-white block w-60 p-2.5"
+
+anything-llm-1\frontend\src\pages\Admin\Users\NewUserModal\index.jsx:
+   34:           <h3 className="text-xl font-semibold text-emerald">
+   52:                   className="block mb-2 text-sm font-medium text-emerald"
+   59:                   className="bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+   72:                 <p className="mt-2 text-xs text-emerald/60">
+   80:                   className="block mb-2 text-sm font-medium text-emerald"
+   87:                   className="bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+   93:                 <p className="mt-2 text-xs text-emerald/60">
+  100:                   className="block mb-2 text-sm font-medium text-emerald"
+  109:                   className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-emerald border-gray-500 focus:ring-blue-500 focus:border-blue-500 w-full"
+  126:               <p className="text-emerald text-xs md:text-sm">
+  136:               className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+  142:               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\Admin\Users\UserRow\index.jsx:
+  60:         className="bg-transparent text-emerald text-opacity-80 text-sm font-medium"
+  71:               className="text-sm font-medium text-emerald/80 rounded-lg hover:text-emerald px-2 py-1 hover:bg-white hover:bg-opacity-10"
+  80:                 className="text-sm font-medium text-emerald/80 hover:text-orange-300 rounded-lg px-2 py-1 hover:bg-white hover:bg-opacity-10"
+  86:                 className="text-sm font-medium text-emerald/80 hover:text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
+
+anything-llm-1\frontend\src\pages\Admin\Users\UserRow\EditUserModal\index.jsx:
+   38:           <h3 className="text-xl font-semibold text-emerald">
+   56:                   className="block mb-2 text-sm font-medium text-emerald"
+   63:                   className="bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+   70:                 <p className="mt-2 text-xs text-emerald/60">
+   78:                   className="block mb-2 text-sm font-medium text-emerald"
+   85:                   className="bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+   90:                 <p className="mt-2 text-xs text-emerald/60">
+   97:                   className="block mb-2 text-sm font-medium text-emerald"
+  106:                   className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-emerald border-gray-500 focus:ring-blue-500 focus:border-blue-500 w-full"
+  129:               className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+  135:               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\Admin\Workspaces\index.jsx:
+  27:               <p className="text-lg leading-6 font-bold text-emerald">
+  31:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  83:       <thead className="text-emerald text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+
+anything-llm-1\frontend\src\pages\Admin\Workspaces\NewWorkspaceModal\index.jsx:
+  22:           <h3 className="text-xl font-semibold text-emerald">
+  40:                   className="block mb-2 text-sm font-medium text-emerald"
+  47:                   className="bg-zinc-900 placeholder:text-emerald/20 border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  55:               <p className="text-emerald text-opacity-60 text-xs md:text-sm">
+  65:               className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+  71:               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\Admin\Workspaces\WorkspaceRow\index.jsx:
+  23:         className="bg-transparent text-emerald text-opacity-80 text-sm font-medium"
+  33:             className="text-emerald flex items-center hover:underline"
+  41:             className="text-emerald flex items-center underline"
+
+anything-llm-1\frontend\src\pages\FineTuning\index.jsx:
+  10:       className={`bg-white/5 text-emerald rounded-xl py-1 px-4 ${
+  37:               <div className="text-sm text-emerald/40 font-medium">
+  72:             <div className="text-emerald flex items-center gap-x-2">
+
+anything-llm-1\frontend\src\pages\FineTuning\Steps\Confirmation\index.jsx:
+   64:       <div className="bg-[#303237] text-emerald rounded-xl flex-1 p-6">
+   66:           <h2 className="text-base text-emerald font-semibold">
+   69:           <p className="text-emerald/80 text-sm">
+   89:           <div className="p-4 bg-zinc-900 text-emerald flex flex-col gap-y-2 rounded-lg mt-4">
+   93:                 <p className="text-emerald/80 w-2/3">{settings.email}</p>
+   97:                 <p className="text-emerald/80 w-2/3">{settings.baseModel}</p>
+  101:                 <p className="text-emerald/80 w-2/3">"{settings.modelName}"</p>
+  105:                 <div className="text-emerald/80 w-2/3 flex flex-wrap gap-1">
+  109:                       className={`rounded-full bg-white/10 px-2 py-0.5 h-[20px] text-xs font-medium text-emerald shadow-sm`}
+  118:                 <p className="text-emerald/80 w-2/3">
+  129:                   <Check className="text-emerald" size={12} weight="bold" />
+  130:                   <p className="text-emerald/80">
+  135:                   <Check className="text-emerald" size={12} weight="bold" />
+  136:                   <p className="text-emerald/80">
+  141:                   <Check className="text-emerald" size={12} weight="bold" />
+  142:                   <p className="text-emerald/80">Agreed to Fulfillment terms</p>
+  150:                 <p className="text-emerald/80">
+  155:               <p className="m-0 p-0 text-xs text-emerald/60">
+  161:           <p className="text-xs text-emerald/80 mt-4">
+
+anything-llm-1\frontend\src\pages\FineTuning\Steps\DataUpload\index.jsx:
+   50:       <div className="bg-[#303237] text-emerald rounded-xl flex-1 p-6">
+   52:           <h2 className="text-base text-emerald font-semibold">
+   55:           <p className="text-emerald/80 text-sm">
+   66:               <label className="text-emerald text-sm font-semibold block mb-3">
+   69:               <p className="text-xs font-normal text-emerald/80 mb-2">
+   89:               <label className="text-emerald text-sm font-semibold block mb-3">
+   92:               <p className="text-xs font-normal text-emerald/80 mb-2">
+  160:         <MagnifyingGlass size={16} className="text-emerald" />
+  171:           className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-emerald text-xs placeholder:`text-emerald/50`"
+  183:                       className="flex items-center justify-between rounded-full h-[20px] bg-white/10 px-2 py-1 text-xs font-medium text-emerald shadow-sm"
+  224:         <p className="text-center text-emerald/40">
+  248:             className="text-left text-emerald hover:bg-white/10 rounded-lg p-1"
+  273:     <div className="bg-zinc-900 text-emerald/80 p-4 rounded-lg text-sm">
+
+anything-llm-1\frontend\src\pages\FineTuning\Steps\FulfillmentPolicy\index.jsx:
+   14:       <div className="bg-[#303237] text-emerald rounded-xl flex-1 p-6">
+   16:           <h2 className="text-base text-emerald font-semibold">
+   19:           <p className="text-emerald/80 text-sm">
+   24:           <div className="flex flex-col gap-y-2 text-emerald/80 text-xs font-semibold rounded-lg p-4 h-[60vh] overflow-y-auto bg-dark-text mt-2">
+   25:             <div className="text-xs text-emerald">
+   29:             <p className="text-emerald/80">
+   35:             <h2 className="text-emerald mt-4">Delivery of Model</h2>
+   36:             <p className="text-emerald/80">
+   44:             <h2 className="text-emerald mt-4">Support</h2>
+   45:             <p className="text-emerald/80">
+   51:             <h2 className="text-emerald mt-4">Requesting Download Links</h2>
+   52:             <p className="text-emerald/80">
+   60:             <h2 className="text-emerald mt-4">Cancellation and Refunds</h2>
+   61:             <p className="text-emerald/80">
+   69:             <h2 className="text-emerald mt-4">No Guarantees</h2>
+   70:             <p className="text-emerald/80">
+   76:             <p className="text-emerald/80">
+   83:             <h2 className="text-emerald mt-4">Payment Terms</h2>
+   84:             <p className="text-emerald/80">
+   92:             <h2 className="text-emerald mt-4">
+   95:             <p className="text-emerald/80">
+  102:             <h2 className="text-emerald mt-4">Contact</h2>
+  103:             <p className="text-emerald/80">
+
+anything-llm-1\frontend\src\pages\FineTuning\Steps\Introduction\index.jsx:
+  15:       <div className="bg-[#303237] text-emerald rounded-xl flex-1 p-6">
+  17:           <h2 className="text-base text-emerald font-semibold">
+  20:           <div className="flex flex-col gap-y-[25px] text-emerald/80 text-sm">
+  40:           <div className="flex flex-col gap-y-2 text-emerald/80 text-sm mt-4">
+  41:             <h3 className="text-base text-emerald font-semibold">
+  50:                 <Check className="text-emerald" size={12} weight="bold" /> Setting
+  55:                 <Check className="text-emerald" size={12} weight="bold" />{" "}
+  59:                 <Check className="text-emerald" size={12} weight="bold" />{" "}
+  64:                 <Check className="text-emerald" size={12} weight="bold" /> You
+  70:           <div className="flex flex-col gap-y-2 text-emerald/80 text-sm mt-4">
+  71:             <h3 className="text-base text-emerald font-semibold">
+  81:                 <X className="text-emerald" size={12} weight="bold" /> You need
+  85:                 <X className="text-emerald" size={12} weight="bold" /> You want
+  91:           <div className="flex flex-col gap-y-2 text-emerald/80 text-sm">
+
+anything-llm-1\frontend\src\pages\FineTuning\Steps\OrderDetails\index.jsx:
+   37:       <div className="bg-[#303237] text-emerald rounded-xl flex-1 p-6">
+   39:           <h2 className="text-base text-emerald font-semibold">
+   42:           <p className="text-emerald/80 text-sm">
+   49:               <label className="text-emerald text-sm font-semibold block mb-3">
+   52:               <p className="text-xs font-normal text-emerald/80 mb-2">
+   60:                 className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[200px] p-2.5"
+   69:               <label className="text-emerald text-sm font-semibold block mb-3">
+   72:               <p className="text-xs font-normal text-emerald/80 mb-2">
+   80:                   className="bg-zinc-900 border-gray-500 text-emerald text-sm rounded-lg block w-full max-w-[200px] p-2.5"
+   94:                 <div className="flex items-center gap-x-2 text-emerald/80 text-sm">
+  102:               <label className="text-emerald text-sm font-semibold block mb-3">
+  105:               <p className="text-xs font-normal text-emerald/80 mb-2">
+  113:                 className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[200px] p-2.5"
+
+anything-llm-1\frontend\src\pages\FineTuning\Steps\OrderPlaced\index.jsx:
+   7:       <div className="bg-[#303237] text-emerald rounded-xl flex-1 p-6">
+   9:           <h2 className="text-base text-emerald font-semibold">
+  12:           <div className="flex flex-col gap-y-[25px] text-emerald/80 text-xs">
+  25:             <p className="text-xs text-emerald/80">
+  30:               <p className="text-emerald/80 font-medium">
+  33:               <p className="text-xs text-emerald/80">
+  40:               <p className="text-emerald/80 font-medium">
+  43:               <p className="text-xs text-emerald/80">
+  67:             <p className="text-xs text-emerald/80">
+
+anything-llm-1\frontend\src\pages\FineTuning\Steps\Privacy\index.jsx:
+   14:       <div className="bg-[#303237] text-emerald rounded-xl flex-1 p-6">
+   16:           <h2 className="text-base text-emerald font-semibold">
+   19:           <p className="text-emerald/80 text-sm">
+   27:           <div className="flex flex-col gap-y-2 text-emerald/75 text-xs font-semibold rounded-lg p-4 h-[60vh] overflow-y-auto bg-dark-text mt-2">
+   29:               <h1 className="text-emerald/80">Privacy Policy</h1>
+   33:             <h2 className="text-emerald mt-4">1. Introduction</h2>
+   34:             <p className="text-emerald/80">
+   42:             <h2 className="text-emerald mt-4">2. Information We Collect</h2>
+   43:             <p className="text-emerald/80">
+   48:             <ul className="list-disc pl-5 text-emerald/80">
+   54:             <h2 className="text-emerald mt-4">3. Use of Information</h2>
+   55:             <p className="text-emerald/80">
+   58:             <ul className="list-disc pl-5 text-emerald/80">
+   64:             <h2 className="text-emerald mt-4">4. Data Retention and Deletion</h2>
+   65:             <p className="text-emerald/80">
+   71:             <p className="text-emerald/80">
+   76:             <p className="text-emerald/80">
+   86:             <h2 className="text-emerald mt-4">5. Data Storage and Security</h2>
+   87:             <p className="text-emerald/80">
+   98:             <h2 className="text-emerald mt-4">6. Payment Processing</h2>
+   99:             <p className="text-emerald/80">
+  104:             <h2 className="text-emerald mt-4">7. Data Sharing</h2>
+  105:             <p className="text-emerald/80">
+  111:             <h2 className="text-emerald mt-4">8. Your Rights</h2>
+  112:             <p className="text-emerald/80">
+  125:             <h2 className="text-emerald mt-4">9. California Privacy Rights</h2>
+  126:             <p className="text-emerald/80">
+  132:             <ul className="list-disc pl-5 text-emerald/80">
+  162:             <p className="text-emerald/80">
+  180:             <p className="text-emerald/80">
+  187:             <p className="text-emerald/80">
+  192:             <h2 className="text-emerald mt-4">10. Contact Us</h2>
+  193:             <p className="text-emerald/80">
+  205:             <h2 className="text-emerald mt-4">
+  208:             <p className="text-emerald/80">
+  214:             <p className="text-emerald/80">
+
+anything-llm-1\frontend\src\pages\FineTuning\Steps\TermsAndConditions\index.jsx:
+   14:       <div className="bg-[#303237] text-emerald rounded-xl flex-1 p-6">
+   16:           <h2 className="text-base text-emerald font-semibold">
+   19:           <p className="text-emerald/80 text-sm">
+   23:           <div className="flex flex-col gap-y-2 text-emerald/80 text-xs font-semibold rounded-lg p-4 h-[60vh] overflow-y-auto bg-dark-text mt-2">
+   24:             <div className="text-xs text-emerald">
+   28:             <p className="text-emerald/80">
+   36:             <h2 className="text-emerald mt-4">1. Services Provided</h2>
+   37:             <p className="text-emerald/80">
+   44:             <h2 className="text-emerald mt-4">2. Payment Terms</h2>
+   45:             <ul className="list-disc pl-5 text-emerald/80">
+   61:             <h2 className="text-emerald mt-4">3. Order Form</h2>
+   62:             <ul className="list-disc pl-5 text-emerald/80">
+   74:             <h2 className="text-emerald mt-4">4. Customer Responsibilities</h2>
+   75:             <p className="text-emerald/80">
+   79:             <p className="text-emerald/80">
+   83:             <p className="text-emerald/80">
+   88:             <p className="text-emerald/80">
+   93:             <p className="text-emerald/80">
+   98:             <h2 className="text-emerald mt-4">5. Refund Policy</h2>
+   99:             <p className="text-emerald/80">
+  106:             <h2 className="text-emerald mt-4">6. Governing Law</h2>
+  107:             <p className="text-emerald/80">
+  112:             <h2 className="text-emerald mt-4">7. Dispute Resolution</h2>
+  113:             <p className="text-emerald/80">
+  119:             <h2 className="text-emerald mt-4">8. Notices</h2>
+  120:             <p className="text-emerald/80">
+  126:             <p className="text-emerald/80">
+  135:             <p className="text-emerald/80">
+  139:             <h2 className="text-emerald mt-4">9. Amendments</h2>
+  140:             <p className="text-emerald/80">
+  147:             <h2 className="text-emerald mt-4">10. Indemnity</h2>
+  148:             <p className="text-emerald/80">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\ApiKeys\index.jsx:
+  31:               <p className="text-lg leading-6 font-bold text-emerald">
+  35:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  95:       <thead className="text-emerald text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\ApiKeys\ApiKeyRow\index.jsx:
+  49:         className="bg-transparent text-emerald text-opacity-80 text-sm font-medium"
+  62:             className="font-medium text-blue-300 rounded-lg hover:text-emerald hover:text-opacity-60 hover:underline"
+  68:             className="font-medium px-2 py-1 rounded-lg hover:bg-sidebar-gradient text-emerald hover:text-emerald/80 hover:bg-opacity-20"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\ApiKeys\NewApiKeyModal\index.jsx:
+   42:           <h3 className="text-xl font-semibold text-emerald">
+   63:                   className="rounded-lg px-4 py-2 text-emerald bg-zinc-900 border border-gray-500/50"
+   66:               <p className="text-emerald text-xs md:text-sm">
+   86:                   className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+   92:                   className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+  102:                 className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Appearance\index.jsx:
+  25:               <p className="text-lg leading-6 font-bold text-emerald">
+  29:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Appearance\CustomAppName\index.jsx:
+  62:         <h2 className="text-base leading-6 font-bold text-emerald">
+  65:         <p className="text-xs leading-[18px] font-base text-emerald/60">
+  73:           className="bg-zinc-900 mt-3 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[275px] placeholder:text-emerald/20"
+  84:             className="mt-4 text-emerald text-base font-medium hover:text-opacity-60"
+  93:           className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Appearance\CustomLogo\index.jsx:
+   74:         <h2 className="text-base leading-6 font-bold text-emerald">
+   77:         <p className="text-xs leading-[18px] font-base text-emerald/60">
+  103:                   <div className="text-emerald text-opacity-80 text-sm font-semibold py-1">
+  106:                   <div className="text-emerald text-opacity-60 text-xs font-medium py-1">
+  126:                 className="text-emerald text-base font-medium hover:text-opacity-60 mx-2"
+  141:                 className="text-emerald text-base font-medium hover:text-opacity-60 mx-2"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Appearance\CustomMessages\index.jsx:
+   60:         <h2 className="text-base leading-6 font-bold text-emerald">
+   63:         <p className="text-xs leading-[18px] font-base text-emerald/60">
+   92:             className="self-end text-emerald hover:text-emerald/60 transition"
+  107:             className="self-end text-emerald hover:text-emerald/60 transition"
+  126:             className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Appearance\CustomSiteSettings\index.jsx:
+   44:           <h2 className="text-base leading-6 font-bold text-emerald">
+   47:           <p className="text-xs leading-[18px] font-base text-emerald/60">
+   55:             <h2 className="text-sm leading-6 text-emerald">Tab Title</h2>
+   56:             <p className="text-xs leading-[18px] font-base text-emerald/60">
+   64:               className="border-none bg-zinc-900 mt-3 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-emerald/20"
+   82:             <h2 className="text-sm leading-6 text-emerald">Tab Favicon</h2>
+   83:             <p className="text-xs leading-[18px] font-base text-emerald/60">
+   96:               className="border-none bg-zinc-900 mt-3 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-emerald/20"
+  112:             className="border-none transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Appearance\FooterCustomization\index.jsx:
+  55:         <h2 className="text-base leading-6 font-bold text-emerald">
+  58:         <p className="text-xs leading-[18px] font-base text-emerald/60">
+  62:       <div className="mt-3 flex gap-x-3 font-bold text-emerald text-sm">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Appearance\FooterCustomization\NewIconForm\index.jsx:
+   63:             className: "h-5 w-5 text-emerald",
+   77:                   className: "h-5 w-5 text-emerald",
+   90:         className="bg-zinc-900 text-emerald placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[32px] focus:outline-primary-button active:outline-primary-button outline-none"
+  106:               className="hover:text-red-500 text-emerald/80 px-2 py-2 rounded-md text-sm font-bold"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Appearance\LanguagePreference\index.jsx:
+  14:         <h2 className="text-base leading-6 font-bold text-emerald">
+  17:         <p className="text-xs leading-[18px] font-base text-emerald/60">
+  25:           className="bg-zinc-900 w-fit mt-2 px-4 border-gray-500 text-emerald text-sm rounded-lg block py-2"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Appearance\ShowScrollbar\index.jsx:
+  32:         <h2 className="text-base leading-6 font-bold text-emerald">
+  35:         <p className="text-xs leading-[18px] font-base text-emerald/60">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Appearance\SupportEmail\index.jsx:
+  57:         <h2 className="text-base leading-6 font-bold text-emerald">
+  60:         <p className="text-xs leading-[18px] font-base text-emerald/60">
+  69:           className="bg-zinc-900 mt-3 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[275px] placeholder:text-emerald/20"
+  80:             className="mt-4 text-emerald text-base font-medium hover:text-opacity-60"
+  89:           className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\AudioPreference\stt.jsx:
+   82:             <p className="text-lg leading-6 font-bold text-emerald">
+   86:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  103:         <div className="text-base font-bold text-emerald mt-6 mb-4">Provider</div>
+  118:                     className="absolute left-4 z-30 text-emerald -ml-4 my-2"
+  125:                     className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-emerald placeholder:text-emerald placeholder:font-medium"
+  135:                     className="cursor-pointer text-emerald hover:text-x-button"
+  167:                   <div className="text-sm font-semibold text-emerald">
+  175:               <CaretUpDown size={24} weight="bold" className="text-emerald" />
+
+anything-llm-1\frontend\src\pages\GeneralSettings\AudioPreference\tts.jsx:
+  120:             <p className="text-lg leading-6 font-bold text-emerald">
+  124:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  138:         <div className="text-base font-bold text-emerald mt-6 mb-4">Provider</div>
+  153:                     className="absolute left-4 z-30 text-emerald -ml-4 my-2"
+  160:                     className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-emerald placeholder:text-emerald placeholder:font-medium"
+  170:                     className="cursor-pointer text-emerald hover:text-x-button"
+  202:                   <div className="text-sm font-semibold text-emerald">
+  210:               <CaretUpDown size={24} weight="bold" className="text-emerald" />
+
+anything-llm-1\frontend\src\pages\GeneralSettings\BrowserExtensionApiKey\index.jsx:
+   51:               <p className="text-lg leading-6 font-bold text-emerald">
+   55:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+   80:               <thead className="text-emerald text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+  100:                   <tr className="bg-transparent text-emerald text-opacity-80 text-sm font-medium">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\BrowserExtensionApiKey\BrowserExtensionApiKeyRow\index.jsx:
+   62:       className="bg-transparent text-emerald text-opacity-80 text-sm font-medium"
+   71:             className="text-emerald hover:text-emerald/80 transition-colors duration-200 p-1 rounded"
+   90:             className="text-emerald hover:text-emerald/80 transition-colors duration-200 p-1 rounded"
+  113:           className="font-medium px-2 py-1 rounded-lg hover:bg-sidebar-gradient text-emerald hover:text-emerald/80 hover:bg-opacity-20"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\BrowserExtensionApiKey\NewBrowserExtensionApiKeyModal\index.jsx:
+   54:           <h3 className="text-xl font-semibold text-emerald">
+   74:                   className="rounded-lg px-4 py-2 text-emerald bg-zinc-900 border border-gray-500/50 border-none"
+   84:               <p className="text-emerald text-xs md:text-sm">
+   88:               <p className="text-emerald text-xs md:text-sm">
+  101:                   className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300 border-none"
+  107:                   className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 border-none"
+  117:                 className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center border-none cursor-pointer"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Chats\index.jsx:
+  127:               <p className="text-lg leading-6 font-bold text-emerald">
+  134:                   className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-emerald text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+  154:                         className="w-full text-left px-4 py-2 text-emerald text-sm hover:bg-[#009681]"
+  166:                     className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-white/40 text-emerald/40 rounded-lg bg-transparent hover:text-emerald text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+  173:                     className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-yellow-300 text-yellow-300/80 rounded-lg bg-transparent hover:text-emerald text-xs font-semibold hover:bg-yellow-300/75 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+  181:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  238:         <thead className="text-emerald text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Chats\ChatRow\index.jsx:
+   48:       <tr className="bg-transparent text-emerald text-opacity-80 text-sm font-medium">
+   49:         <td className="px-6 py-4 font-medium whitespace-nowrap text-emerald">
+   52:         <td className="px-6 py-4 font-medium whitespace-nowrap text-emerald">
+   72:             className="font-medium px-2 py-1 rounded-lg hover:bg-sidebar-gradient text-emerald hover:text-emerald/80 hover:bg-opacity-20"
+   95:           <h3 className="text-xl font-semibold text-emerald">Viewing Text</h3>
+  105:           <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 border border-gray-500 text-emerald text-sm">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\EmbedChats\index.jsx:
+  100:               <p className="text-lg leading-6 font-bold text-emerald">
+  107:                   className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-emerald text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+  127:                         className="w-full text-left px-4 py-2 text-emerald text-sm hover:bg-[#009681]"
+  136:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  193:         <thead className="text-emerald text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\EmbedChats\ChatRow\index.jsx:
+   38:       <tr className="bg-transparent text-emerald text-opacity-80 text-sm font-medium">
+   39:         <td className="px-6 py-4 font-medium whitespace-nowrap text-emerald">
+   44:             className="text-emerald flex items-center hover:underline"
+   77:             className="font-medium px-2 py-1 rounded-lg hover:bg-sidebar-gradient text-emerald hover:text-emerald/80 hover:bg-opacity-20"
+  113:           <h3 className="text-xl font-semibold text-emerald">Viewing Text</h3>
+  123:           <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 border border-gray-500 text-emerald text-sm">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\EmbedConfigs\index.jsx:
+  28:               <p className="text-lg leading-6 font-bold text-emerald">
+  32:             <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  82:       <thead className="text-emerald text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\EmbedConfigs\EmbedRow\index.jsx:
+  66:         className="bg-transparent text-emerald text-opacity-80 text-sm"
+  76:             className="text-emerald flex items-center hover:underline"
+  90:             className="font-medium text-emerald text-opacity-80 rounded-lg hover:text-emerald px-2 py-1 hover:text-opacity-60 hover:bg-white hover:bg-opacity-10"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\EmbedConfigs\EmbedRow\CodeSnippetModal\index.jsx:
+   12:           <h3 className="text-xl font-semibold text-emerald">
+   34:               className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+   83:         <label className="block text-sm font-medium text-emerald">
+  101:         className="disabled:border disabled:border-green-300 border border-transparent relative w-full font-mono flex bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\EmbedConfigs\EmbedRow\EditEmbedModal\index.jsx:
+   36:           <h3 className="text-xl font-semibold text-emerald">
+   92:               <p className="text-emerald text-xs md:text-sm pb-8">
+   95:                 <code className="bg-stone-800 text-emerald mx-1 px-1 rounded-sm">
+  106:               className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+  112:               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\EmbedConfigs\NewEmbedModal\index.jsx:
+   43:           <h3 className="text-xl font-semibold text-emerald">
+   88:               <p className="text-emerald text-xs md:text-sm pb-8">
+   91:                 <code className="bg-stone-800 text-emerald mx-1 px-1 rounded-sm">
+  102:               className="px-4 py-2 rounded-lg text-emerald hover:bg-stone-900 transition-all duration-300"
+  108:               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+  134:           className="block  text-sm font-medium text-emerald"
+  147:         className="min-w-[15rem] rounded-lg bg-zinc-900 px-4 py-2 text-sm text-emerald focus:ring-blue-500 focus:border-blue-500"
+  171:           className="block text-sm font-medium text-emerald"
+  203:           <div className="text-emerald text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+  225:           <div className="text-emerald text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+  277:           className="block text-sm font-medium text-emerald"
+  297:             "flex bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5",
+  308:         <label htmlFor={name} className="block text-sm font-medium text-emerald">
+  316:         className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[15rem] p-2.5"
+  331:         <label htmlFor={name} className="block text-sm font-medium text-emerald">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\Security\index.jsx:
+   94:             <p className="text-lg leading-6 font-bold text-emerald">
+   98:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  118:                   <label className="mb-2.5 block font-medium text-emerald">
+  142:                         className="block mb-3 font-medium text-emerald"
+  149:                         className="bg-zinc-900 text-emerald text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-emerald/20 focus:ring-blue-500"
+  161:                         className="block mb-3 font-medium text-emerald"
+  168:                         className="bg-zinc-900 text-emerald text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-emerald/20 focus:ring-blue-500"
+  181:               <p className="text-emerald/80 text-xs rounded-lg w-96">
+  271:             <p className="text-lg leading-6 font-bold text-emerald">
+  275:           <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  295:                   <label className="mb-2.5 block font-medium text-emerald">
+  314:                         className="block mb-3 font-medium text-emerald"
+  321:                         className="bg-zinc-900 text-emerald text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-emerald/20"
+  334:               <p className="text-emerald/80 text-xs rounded-lg w-96">
+
+anything-llm-1\frontend\src\pages\GeneralSettings\TranscriptionPreference\index.jsx:
+  122:                   <p className="text-lg leading-6 font-bold text-emerald">
+  126:                 <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  140:               <div className="text-base font-bold text-emerald mt-6 mb-4">
+  157:                           className="absolute left-4 z-30 text-emerald -ml-4 my-2"
+  164:                           className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:outline-primary-button active:outline-primary-button outline-none text-emerald placeholder:text-emerald placeholder:font-medium"
+  174:                           className="cursor-pointer text-emerald hover:text-x-button"
+  206:                         <div className="text-sm font-semibold text-emerald">
+  217:                       className="text-emerald"
+
+anything-llm-1\frontend\src\pages\GeneralSettings\VectorDatabase\index.jsx:
+  198:                   <p className="text-lg leading-6 font-bold text-emerald">
+  202:                 <p className="text-xs leading-[18px] font-base text-emerald text-opacity-60">
+  216:               <div className="text-base font-bold text-emerald mt-6 mb-4">
+  233:                           className="absolute left-4 z-30 text-emerald -ml-4 my-2"
+  240:                           className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-emerald placeholder:text-emerald placeholder:font-medium"
+  250:                           className="cursor-pointer text-emerald hover:text-x-button"
+  282:                         <div className="text-sm font-semibold text-emerald">
+  293:                       className="text-emerald"
+
+anything-llm-1\frontend\src\pages\Invite\NewUserModal\index.jsx:
+  37:           <h3 className="text-xl font-semibold text-emerald">
+  47:                   className="block mb-2 text-sm font-medium text-emerald"
+  54:                   className="bg-zinc-900 border border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  64:                   className="block mb-2 text-sm font-medium text-emerald"
+  71:                   className="bg-zinc-900 border border-gray-500 text-emerald text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+  88:               className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center"
+
+anything-llm-1\frontend\src\pages\OnboardingFlow\Steps\index.jsx:
+   44:               <h1 className="text-emerald font-semibold text-center text-2xl">
+   62:                     className="text-emerald group-hover:text-black group-disabled:text-gray-500"
+   77:                     className="text-emerald group-hover:text-black group-disabled:text-gray-500"
+  109:           <h1 className="text-emerald font-semibold text-center text-2xl">
+  128:               className="text-emerald group-hover:text-black group-disabled:text-gray-500"
+
+anything-llm-1\frontend\src\pages\WorkspaceSettings\ChatSettings\index.jsx:
+  85:             className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\WorkspaceSettings\ChatSettings\ChatHistorySettings\index.jsx:
+  10:         <p className="text-emerald text-opacity-60 text-xs font-medium">
+  24:         className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+
+anything-llm-1\frontend\src\pages\WorkspaceSettings\ChatSettings\ChatTemperatureSettings\index.jsx:
+  24:         <p className="text-emerald text-opacity-60 text-xs font-medium py-1.5">
+  40:         className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+
+anything-llm-1\frontend\src\pages\WorkspaceSettings\Members\index.jsx:
+  51:         <thead className="text-emerald text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
+  74:               <td className="text-center py-4 text-emerald/80" colSpan="4">
+
+anything-llm-1\frontend\src\pages\WorkspaceSettings\Members\WorkspaceMemberRow\index.jsx:
+  6:       <tr className="bg-transparent text-emerald text-opacity-80 text-sm font-medium">
+
+anything-llm-1\frontend\src\pages\WorkspaceSettings\VectorDatabase\index.jsx:
+  55:           className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-emerald text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+
+anything-llm-1\frontend\src\pages\WorkspaceSettings\VectorDatabase\MaxContextSnippets\index.jsx:
+  11:         <p className="text-emerald text-opacity-60 text-xs font-medium py-1.5">
+  25:         className="bg-zinc-900 text-emerald placeholder:text-emerald/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-2"
+
+anything-llm-1\frontend\src\pages\WorkspaceSettings\VectorDatabase\ResetDatabase\index.jsx:
+  41:       className="border-none w-fit transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-red-500/25 text-red-200 hover:text-emerald hover:bg-red-600 disabled:bg-red-600 disabled:text-red-200 disabled:animate-pulse"

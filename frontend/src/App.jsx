@@ -8,6 +8,7 @@ import PrivateRoute, {
 } from "@/components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "@/index.css";
 import Login from "@/pages/Login";
 import OnboardingFlow from "@/pages/OnboardingFlow";
 import i18n from "./i18n";

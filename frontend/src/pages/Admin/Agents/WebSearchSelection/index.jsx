@@ -179,7 +179,7 @@ export default function AgentWebSearchSelection({
             />
             {searchMenuOpen && (
               <div
-                className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
+                className="fixed top-0 left-0 w-full h-full bg-forest bg-opacity-70 backdrop-blur-sm z-10"
                 onClick={() => setSearchMenuOpen(false)}
               />
             )}

@@ -107,7 +107,7 @@ export default function SettingsSidebar() {
                 <div className="h-auto md:sidebar-items md:dark:sidebar-items">
                   <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} t={t} />
-                    <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
+                    <div className="h-[1.5px] bg-[#009681] mx-3 mt-[14px]" />
                     <SupportEmail />
                     <Link
                       hidden={
@@ -157,7 +157,7 @@ export default function SettingsSidebar() {
               <div className="h-auto sidebar-items">
                 <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
                   <SidebarOptions user={user} t={t} />
-                  <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
+                  <div className="h-[1.5px] bg-[#009681] mx-3 mt-[14px]" />
                   <SupportEmail />
                   <Link
                     hidden={

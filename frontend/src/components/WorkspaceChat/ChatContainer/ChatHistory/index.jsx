@@ -168,11 +168,11 @@ export default function ChatHistory({
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
-          <p className="text-white/60 text-lg font-base py-4">
+          <p className="text-forest text-lg font-base py-4">
             Welcome to your new workspace.
           </p>
           {!user || user.role !== "default" ? (
-            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+            <p className="w-full items-center text-forest text-lg font-base flex flex-col md:flex-row gap-x-1">
               To get started either{" "}
               <span
                 className="underline font-medium cursor-pointer"
@@ -183,7 +183,7 @@ export default function ChatHistory({
               or <b className="font-medium italic">send a chat.</b>
             </p>
           ) : (
-            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+            <p className="w-full items-center text-forest text-lg font-base flex flex-col md:flex-row gap-x-1">
               To get started <b className="font-medium italic">send a chat.</b>
             </p>
           )}
@@ -204,7 +204,7 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`markdown text-white/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
+      className={`markdown text-forest/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
         showScrollbar ? "" : "no-scroll"
       }`}
       id="chat-history"
