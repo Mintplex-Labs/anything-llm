@@ -559,9 +559,9 @@ const SystemSettings = {
           ?.value === "enabled",
     };
   },
-  hubSettings: async function() {
+  hubSettings: async function () {
     try {
-      const hubKey = await this.get({ label: 'hub_api_key' });
+      const hubKey = await this.get({ label: "hub_api_key" });
       return {
         hasApiKey: !!hubKey?.value,
       };

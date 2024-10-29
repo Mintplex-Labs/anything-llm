@@ -49,7 +49,8 @@ export default function CommunityHub() {
                 placeholder="Enter your AnythingLLM Hub API key"
               />
               <p className="text-white/60 text-xs mt-2">
-                Connect your AnythingLLM Hub account to automatically sync your shared items.
+                Connect your AnythingLLM Hub account to automatically sync your
+                shared items.
               </p>
             </div>
           </div>
@@ -58,9 +59,12 @@ export default function CommunityHub() {
           <div className="mt-8 mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-white text-base font-semibold">Import Items</h2>
+                <h2 className="text-white text-base font-semibold">
+                  Import Items
+                </h2>
                 <p className="text-white/60 text-xs mt-1">
-                  Import prompts, skills, workspaces, and commands shared by the community.
+                  Import prompts, skills, workspaces, and commands shared by the
+                  community.
                 </p>
               </div>
               <CTAButton onClick={openModal}>

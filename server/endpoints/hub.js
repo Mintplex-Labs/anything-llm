@@ -20,7 +20,7 @@ function hubEndpoints(app) {
     try {
       const { hub_api_key } = reqBody(request);
       const { success, error } = await SystemSettings.updateSettings({
-        hub_api_key
+        hub_api_key,
       });
 
       if (!success) throw new Error(error || "Failed to update hub API key");
@@ -55,16 +55,20 @@ function hubEndpoints(app) {
     }
   });
 
-  app.delete("/hub/items/:id", [validatedRequest], async (request, response) => {
-    try {
-      const { id } = request.params;
-      const success = await Hub.deleteItem(id);
-      response.status(success ? 200 : 500).json({ success });
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({ error: error.message });
+  app.delete(
+    "/hub/items/:id",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const success = await Hub.deleteItem(id);
+        response.status(success ? 200 : 500).json({ success });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: error.message });
+      }
     }
-  });
+  );
 }
 
 module.exports = { hubEndpoints };
