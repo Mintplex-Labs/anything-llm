@@ -2,8 +2,10 @@ import { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { CMD_REGEX } from ".";
+import { useTranslation } from "react-i18next";
 
 export default function AddPresetModal({ isOpen, onClose, onSave }) {
+  const { t } = useTranslation();
   const [command, setCommand] = useState("");
 
   const handleSubmit = async (e) => {
@@ -31,7 +33,9 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
       >
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-            <h3 className="text-xl font-semibold text-white">Add New Preset</h3>
+            <h3 className="text-xl font-semibold text-white">
+              {t("addPresetModal.title")}
+            </h3>
             <button
               onClick={onClose}
               type="button"
@@ -44,14 +48,14 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
             <div className="w-full flex flex-col gap-y-4">
               <div>
                 <label className="block mb-2 text-sm font-medium text-white">
-                  Command
+                  {t("addPresetModal.command")}
                 </label>
                 <div className="flex items-center">
                   <span className="text-white text-sm mr-2 font-bold">/</span>
                   <input
                     name="command"
                     type="text"
-                    placeholder="your-command"
+                    placeholder={t("addPresetModal.commandPlaceholder")}
                     value={command}
                     onChange={handleCommandChange}
                     maxLength={25}
@@ -63,24 +67,24 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
               </div>
               <div>
                 <label className="block mb-2 text-sm font-medium text-white">
-                  Prompt
+                  {t("addPresetModal.prompt")}
                 </label>
                 <textarea
                   name="prompt"
                   autoComplete="off"
-                  placeholder="This is the content that will be injected in front of your prompt."
+                  placeholder={t("addPresetModal.promptPlaceholder")}
                   required={true}
                   className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 ></textarea>
               </div>
               <div>
                 <label className="border-none block mb-2 text-sm font-medium text-white">
-                  Description
+                  {t("addPresetModal.description")}
                 </label>
                 <input
                   type="text"
                   name="description"
-                  placeholder="Responds with a poem about LLMs."
+                  placeholder={t("addPresetModal.descriptionPlaceholder")}
                   maxLength={80}
                   autoComplete="off"
                   required={true}
@@ -95,13 +99,13 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
               type="button"
               className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
             >
-              Cancel
+              {t("addPresetModal.cancel")}
             </button>
             <button
               type="submit"
               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
-              Save
+              {t("addPresetModal.save")}
             </button>
           </div>
         </div>

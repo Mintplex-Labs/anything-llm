@@ -1,7 +1,9 @@
 import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function LogRow({ log }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [metadata, setMetadata] = useState(null);
   const [hasMetadata, setHasMetadata] = useState(false);
@@ -45,14 +47,18 @@ export default function LogRow({ log }) {
                 className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
               >
                 <CaretUp weight="bold" size={20} />
-                <p className="text-xs text-white/50 w-[20px]">hide</p>
+                <p className="text-xs text-white/50 w-[20px]">
+                  {t("logRow.hide")}
+                </p>
               </td>
             ) : (
               <td
                 className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
               >
                 <CaretDown weight="bold" size={20} />
-                <p className="text-xs text-white/50 w-[20px]">show</p>
+                <p className="text-xs text-white/50 w-[20px]">
+                  {t("logRow.show")}
+                </p>
               </td>
             )}
           </>
@@ -64,6 +70,7 @@ export default function LogRow({ log }) {
 }
 
 const EventMetadata = ({ metadata, expanded = false }) => {
+  const { t } = useTranslation();
   if (!metadata || !expanded) return null;
   return (
     <tr className="bg-sidebar">
@@ -71,7 +78,7 @@ const EventMetadata = ({ metadata, expanded = false }) => {
         colSpan="2"
         className="px-6 py-4 font-medium text-white rounded-l-2xl"
       >
-        Event Metadata
+        {t("logRow.eventMetadata")}
       </td>
       <td colSpan="4" className="px-6 py-4 rounded-r-2xl">
         <div className="w-full rounded-lg bg-main-2 p-2 text-white shadow-sm border-white border bg-opacity-10">
@@ -85,6 +92,7 @@ const EventMetadata = ({ metadata, expanded = false }) => {
 };
 
 const EventBadge = ({ event }) => {
+  const { t } = useTranslation();
   let colorTheme = { bg: "bg-sky-600/20", text: "text-sky-400 " };
   if (event.includes("update"))
     colorTheme = { bg: "bg-yellow-600/20", text: "text-yellow-400 " };
@@ -98,7 +106,7 @@ const EventBadge = ({ event }) => {
       <span
         className={`rounded-full ${colorTheme.bg} px-2 py-0.5 text-sm font-medium ${colorTheme.text} shadow-sm`}
       >
-        {event}
+        {t(`logRow.events.${event}`, event)}
       </span>
     </td>
   );

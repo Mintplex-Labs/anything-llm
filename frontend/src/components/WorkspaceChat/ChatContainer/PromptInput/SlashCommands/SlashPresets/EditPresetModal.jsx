@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { CMD_REGEX } from ".";
+import { useTranslation } from "react-i18next";
 
 export default function EditPresetModal({
   isOpen,
@@ -10,6 +11,7 @@ export default function EditPresetModal({
   onDelete,
   preset,
 }) {
+  const { t } = useTranslation();
   const [command, setCommand] = useState(preset?.command?.slice(1) || "");
   const [deleting, setDeleting] = useState(false);
 
@@ -31,7 +33,7 @@ export default function EditPresetModal({
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this preset?")) return;
+    if (!window.confirm(t("editPresetModal.confirmDelete"))) return;
 
     setDeleting(true);
     await onDelete(preset.id);
@@ -47,7 +49,9 @@ export default function EditPresetModal({
       >
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-            <h3 className="text-xl font-semibold text-white">Edit Preset</h3>
+            <h3 className="text-xl font-semibold text-white">
+              {t("editPresetModal.title")}
+            </h3>
             <button
               onClick={onClose}
               type="button"
@@ -63,14 +67,14 @@ export default function EditPresetModal({
                   htmlFor="command"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Command
+                  {t("editPresetModal.command")}
                 </label>
                 <div className="flex items-center">
                   <span className="text-white text-sm mr-2 font-bold">/</span>
                   <input
                     type="text"
                     name="command"
-                    placeholder="your-command"
+                    placeholder={t("editPresetModal.commandPlaceholder")}
                     value={command}
                     onChange={handleCommandChange}
                     required={true}
@@ -83,11 +87,11 @@ export default function EditPresetModal({
                   htmlFor="prompt"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Prompt
+                  {t("editPresetModal.prompt")}
                 </label>
                 <textarea
                   name="prompt"
-                  placeholder="This is a test prompt. Please respond with a poem about LLMs."
+                  placeholder={t("editPresetModal.promptPlaceholder")}
                   defaultValue={preset.prompt}
                   required={true}
                   className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -98,13 +102,13 @@ export default function EditPresetModal({
                   htmlFor="description"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Description
+                  {t("editPresetModal.description")}
                 </label>
                 <input
                   type="text"
                   name="description"
                   defaultValue={preset.description}
-                  placeholder="Responds with a poem about LLMs."
+                  placeholder={t("editPresetModal.descriptionPlaceholder")}
                   required={true}
                   className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 />
@@ -119,7 +123,9 @@ export default function EditPresetModal({
                 type="button"
                 className="px-4 py-2 rounded-lg text-red-500 hover:bg-red-500/25 transition-all duration-300 disabled:opacity-50"
               >
-                {deleting ? "Deleting..." : "Delete Preset"}
+                {deleting
+                  ? t("editPresetModal.deleting")
+                  : t("editPresetModal.delete")}
               </button>
             </div>
             <div className="flex space-x-2">
@@ -128,13 +134,13 @@ export default function EditPresetModal({
                 type="button"
                 className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
               >
-                Cancel
+                {t("editPresetModal.cancel")}
               </button>
               <button
                 type="submit"
                 className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
               >
-                Save
+                {t("editPresetModal.save")}
               </button>
             </div>
           </div>

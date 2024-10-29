@@ -2,6 +2,7 @@ import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { Pencil } from "@phosphor-icons/react";
 import { useState, useEffect, useRef } from "react";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
 
 const EDIT_EVENT = "toggle-message-edit";
 
@@ -31,6 +32,8 @@ export function useEditMessage({ chatId, role }) {
 }
 
 export function EditMessageAction({ chatId = null, role, isEditing }) {
+  const { t } = useTranslation();
+
   function handleEditClick() {
     window.dispatchEvent(
       new CustomEvent(EDIT_EVENT, { detail: { chatId, role } })
@@ -47,11 +50,19 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
       <button
         onClick={handleEditClick}
         data-tooltip-id="edit-input-text"
-        data-tooltip-content={`Edit ${
-          role === "user" ? "Prompt" : "Response"
-        } `}
+        data-tooltip-content={t("editMessage.actionTooltip", {
+          action:
+            role === "user"
+              ? t("editMessage.prompt")
+              : t("editMessage.response"),
+        })}
         className="border-none text-zinc-300"
-        aria-label={`Edit ${role === "user" ? "Prompt" : "Response"}`}
+        aria-label={t("editMessage.actionTooltip", {
+          action:
+            role === "user"
+              ? t("editMessage.prompt")
+              : t("editMessage.response"),
+        })}
       >
         <Pencil size={21} className="mb-1" />
       </button>
@@ -72,7 +83,9 @@ export function EditMessageForm({
   adjustTextArea,
   saveChanges,
 }) {
+  const { t } = useTranslation();
   const formRef = useRef(null);
+
   function handleSaveMessage(e) {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -112,14 +125,14 @@ export function EditMessageForm({
           type="submit"
           className="px-2 py-1 bg-gray-200 text-gray-700 font-medium rounded-md mr-2 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
-          Save & Submit
+          {t("editMessage.saveButton")}
         </button>
         <button
           type="button"
           className="px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           onClick={cancelEdits}
         >
-          Cancel
+          {t("editMessage.cancelButton")}
         </button>
       </div>
     </form>

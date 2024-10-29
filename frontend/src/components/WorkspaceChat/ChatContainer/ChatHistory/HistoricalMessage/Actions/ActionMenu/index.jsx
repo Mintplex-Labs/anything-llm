@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Trash, DotsThreeVertical, TreeView } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
 
 function ActionMenu({ chatId, forkThread, isEditing, role }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -47,8 +49,8 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
         onClick={toggleMenu}
         className="border-none text-zinc-300 hover:text-zinc-100 transition-colors duration-200"
         data-tooltip-id="action-menu"
-        data-tooltip-content="More actions"
-        aria-label="More actions"
+        data-tooltip-content={t("actionMenu.tooltip")}
+        aria-label={t("actionMenu.tooltip")}
       >
         <DotsThreeVertical size={24} weight="bold" />
       </button>
@@ -59,14 +61,14 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
             className="border-none flex items-center gap-x-2 hover:bg-white/10 py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <TreeView size={18} />
-            <span className="text-sm">Fork</span>
+            <span className="text-sm">{t("actionMenu.fork")}</span>
           </button>
           <button
             onClick={handleDelete}
             className="border-none flex items-center gap-x-2 hover:bg-white/10 py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <Trash size={18} />
-            <span className="text-sm">Delete</span>
+            <span className="text-sm">{t("actionMenu.delete")}</span>
           </button>
         </div>
       )}

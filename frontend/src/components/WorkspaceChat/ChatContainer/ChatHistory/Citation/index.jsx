@@ -17,6 +17,7 @@ import {
 import ConfluenceLogo from "@/media/dataConnectors/confluence.png";
 import { Tooltip } from "react-tooltip";
 import { toPercentString } from "@/utils/numbers";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 function combineLikeSources(sources) {
   const combined = {};
@@ -37,6 +38,7 @@ function combineLikeSources(sources) {
 }
 
 export default function Citations({ sources = [] }) {
+  const { t } = useTranslation(); // Add useTranslation hook
   if (sources.length === 0) return null;
   const [open, setOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
@@ -49,7 +51,7 @@ export default function Citations({ sources = [] }) {
           open ? "pb-2" : ""
         } hover:text-white/75 transition-all duration-300`}
       >
-        {open ? "Hide Citations" : "Show Citations"}
+        {open ? t("citations.hide") : t("citations.show")}
         <CaretRight
           className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${
             open ? "rotate-90" : ""
@@ -121,6 +123,7 @@ function omitChunkHeader(text) {
 }
 
 function CitationDetailModal({ source, onClose }) {
+  const { t } = useTranslation(); // Add useTranslation hook
   const { references, title, chunks } = source;
   const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
 
@@ -149,7 +152,7 @@ function CitationDetailModal({ source, onClose }) {
           </div>
           {references > 1 && (
             <p className="text-xs text-gray-400 mt-2">
-              Referenced {references} times.
+              {t("citations.referenced", { count: references })}
             </p>
           )}
           <button
@@ -165,9 +168,6 @@ function CitationDetailModal({ source, onClose }) {
           style={{ maxHeight: "calc(100vh - 200px)" }}
         >
           <div className="p-6 space-y-2 flex-col">
-            {[...Array(3)].map((_, idx) => (
-              <SkeletonLine key={idx} />
-            ))}
             {chunks.map(({ text, score }, idx) => (
               <div key={idx} className="pt-6 text-white">
                 <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
@@ -180,11 +180,15 @@ function CitationDetailModal({ source, onClose }) {
                       <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
                         <div
                           data-tooltip-id="similarity-score"
-                          data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
+                          data-tooltip-content={t(
+                            "citations.similarityExplanation"
+                          )}
                           className="flex items-center gap-x-1"
                         >
                           <Info size={14} />
-                          <p>{toPercentString(score)} match</p>
+                          <p>
+                            {toPercentString(score)} {t("citations.match")}
+                          </p>
                         </div>
                       </div>
                       <Tooltip
@@ -195,9 +199,6 @@ function CitationDetailModal({ source, onClose }) {
                     </>
                   )}
                 </div>
-                {[...Array(3)].map((_, idx) => (
-                  <SkeletonLine key={idx} />
-                ))}
               </div>
             ))}
             <div className="mb-6"></div>
@@ -208,10 +209,6 @@ function CitationDetailModal({ source, onClose }) {
   );
 }
 
-// Show the correct title and/or display text for citations
-// which contain valid outbound links that can be clicked by the
-// user when viewing a citation. Optionally allows various icons
-// to show distinct types of sources.
 function parseChunkSource({ title = "", chunks = [] }) {
   const nullResponse = {
     isUrl: false,
@@ -261,7 +258,6 @@ function parseChunkSource({ title = "", chunks = [] }) {
   return nullResponse;
 }
 
-// Patch to render Confluence icon as a element like we do with Phosphor
 const ConfluenceIcon = ({ ...props }) => (
   <img src={ConfluenceLogo} {...props} />
 );

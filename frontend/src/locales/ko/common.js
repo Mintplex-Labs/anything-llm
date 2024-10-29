@@ -2078,5 +2078,120 @@ const TRANSLATIONS = {
     loadingMessage:
       "완료되면 모든 스크래핑된 페이지를 문서 선택기에서 워크스페이스에 임베드할 수 있습니다.",
   },
+  //sidebar
+  thread: {
+    deleted: "삭제된 스레드",
+    rename: "이름 변경",
+    delete: "스레드 삭제",
+    options: "스레드 옵션",
+    renamePrompt: "이 스레드의 이름을 무엇으로 변경하시겠습니까?",
+    renameError: "스레드를 업데이트할 수 없습니다! {{message}}",
+    deleteConfirm:
+      "이 스레드를 삭제하시겠습니까? 이 스레드의 모든 채팅이 삭제됩니다. 이 작업은 되돌릴 수 없습니다.",
+    deleteError: "스레드를 삭제할 수 없습니다!",
+    deleteSuccess: "스레드가 성공적으로 삭제되었습니다!",
+  },
+
+  account: {
+    editTitle: "계정 수정",
+    profilePicture: "프로필 사진",
+    profilePictureAlt: "사용자 프로필 사진",
+    removeProfilePicture: "프로필 사진 제거",
+    username: "사용자 이름",
+    usernamePlaceholder: "사용자의 사용자 이름",
+    newPassword: "새 비밀번호",
+    passwordPlaceholder: "{{username}}의 새 비밀번호",
+    preferredLanguage: "선호 언어",
+    cancel: "취소",
+    updateAccount: "계정 업데이트",
+    updateSuccess: "프로필이 업데이트되었습니다.",
+    updateError: "사용자 업데이트 실패: {{error}}",
+    uploadError: "프로필 사진 업로드 실패: {{error}}",
+    uploadSuccess: "프로필 사진이 업로드되었습니다.",
+    removeError: "프로필 사진 제거 실패: {{error}}",
+    removeSuccess: "프로필 사진이 성공적으로 제거되었습니다.",
+  },
+  citations: {
+    show: "인용 표시",
+    hide: "인용 숨기기",
+    referenced: "{{count}}번 참조됨.",
+    match: "일치",
+    similarityExplanation:
+      "이것은 벡터 데이터베이스에 의해 계산된 쿼리와 이 텍스트 조각의 의미적 유사도 점수입니다.",
+  },
+  actionMenu: {
+    tooltip: "추가 작업",
+    fork: "분기",
+    delete: "삭제",
+  },
+  deleteMessage: {
+    delete: "삭제",
+  },
+  editMessage: {
+    actionTooltip: "{{action}} 편집",
+    prompt: "프롬프트",
+    response: "응답",
+    saveButton: "저장 및 제출",
+    cancelButton: "취소",
+  },
+  promptReply: {
+    error: "메시지에 응답할 수 없습니다.",
+    reason: "이유: {{error}}",
+    unknown: "알 수 없음",
+    workspaceAlt: "워크스페이스 프로필 사진",
+  },
+  endAgentSession: {
+    haltSession: "현재 에이전트 세션을 중단합니다.",
+  },
+  addPresetModal: {
+    title: "새 프리셋 추가",
+    command: "명령어",
+    commandPlaceholder: "명령어 입력",
+    prompt: "프롬프트",
+    promptPlaceholder: "프롬프트 앞에 삽입될 내용을 여기에 입력하세요.",
+    description: "설명",
+    descriptionPlaceholder: "LLM에 관한 시를 응답합니다.",
+    cancel: "취소",
+    save: "저장",
+  },
+  editPresetModal: {
+    title: "프리셋 편집",
+    command: "명령어",
+    commandPlaceholder: "명령어 입력",
+    prompt: "프롬프트",
+    promptPlaceholder: "테스트 프롬프트입니다. LLM에 관한 시로 응답해 주세요.",
+    description: "설명",
+    descriptionPlaceholder: "LLM에 관한 시로 응답합니다.",
+    confirmDelete: "이 프리셋을 삭제하시겠습니까?",
+    deleting: "삭제 중...",
+    delete: "프리셋 삭제",
+    cancel: "취소",
+    save: "저장",
+  },
+  slashPresets: {
+    addNewPreset: "새 프리셋 추가",
+  },
+  resetCommand: {
+    description: "채팅 기록을 지우고 새 채팅을 시작하세요",
+  },
+  workspaceChat: {
+    notFound: {
+      title: "워크스페이스를 찾을 수 없습니다!",
+      message: "이 이름의 워크스페이스를 찾을 수 없는 것 같습니다.",
+      backButton: "홈페이지로 돌아가기",
+    },
+    copiedMessage: "복사 완료!",
+  },
+  logRow: {
+    hide: "숨기기",
+    show: "보기",
+    eventMetadata: "이벤트 메타데이터",
+    events: {
+      login_event: "로그인 이벤트",
+      update: "업데이트",
+      failed_: "실패",
+      deleted: "삭제됨",
+    },
+  },
 };
 export default TRANSLATIONS;

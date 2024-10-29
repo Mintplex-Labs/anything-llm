@@ -4,9 +4,12 @@ import System from "@/models/system";
 import { AUTH_USER } from "@/utils/constants";
 import showToast from "@/utils/toast";
 import { Plus, X } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
+  const { t } = useTranslation();
+
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return false;
@@ -15,23 +18,24 @@ export default function AccountModal({ user, hideModal }) {
     formData.append("file", file);
     const { success, error } = await System.uploadPfp(formData);
     if (!success) {
-      showToast(`Failed to upload profile picture: ${error}`, "error");
+      showToast(t("account.uploadError", { error }), "error");
       return;
     }
 
     const pfpUrl = await System.fetchPfp(user.id);
     setPfp(pfpUrl);
-    showToast("Profile picture uploaded.", "success");
+    showToast(t("account.uploadSuccess"), "success");
   };
 
   const handleRemovePfp = async () => {
     const { success, error } = await System.removePfp();
     if (!success) {
-      showToast(`Failed to remove profile picture: ${error}`, "error");
+      showToast(t("account.removeError", { error }), "error");
       return;
     }
 
     setPfp(null);
+    showToast(t("account.removeSuccess"), "success");
   };
 
   const handleUpdate = async (e) => {
@@ -52,10 +56,10 @@ export default function AccountModal({ user, hideModal }) {
         storedUser.username = data.username;
         localStorage.setItem(AUTH_USER, JSON.stringify(storedUser));
       }
-      showToast("Profile updated.", "success", { clear: true });
+      showToast(t("account.updateSuccess"), "success", { clear: true });
       hideModal();
     } else {
-      showToast(`Failed to update user: ${error}`, "error");
+      showToast(t("account.updateError", { error }), "error");
     }
   };
 
@@ -66,7 +70,9 @@ export default function AccountModal({ user, hideModal }) {
     >
       <div className="relative w-[500px] max-w-2xl max-h-full bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-          <h3 className="text-xl font-semibold text-white">Edit Account</h3>
+          <h3 className="text-xl font-semibold text-white">
+            {t("account.editTitle")}
+          </h3>
           <button
             onClick={hideModal}
             type="button"
@@ -89,14 +95,14 @@ export default function AccountModal({ user, hideModal }) {
                 {pfp ? (
                   <img
                     src={pfp}
-                    alt="User profile picture"
+                    alt={t("account.profilePictureAlt")}
                     className="w-48 h-48 rounded-full object-cover bg-white"
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center p-3">
                     <Plus className="w-8 h-8 text-white/80 m-2" />
                     <span className="text-white text-opacity-80 text-sm font-semibold">
-                      Profile Picture
+                      {t("account.profilePicture")}
                     </span>
                     <span className="text-white text-opacity-60 text-xs">
                       800 x 800
@@ -110,7 +116,7 @@ export default function AccountModal({ user, hideModal }) {
                   onClick={handleRemovePfp}
                   className="mt-3 text-white text-opacity-60 text-sm font-medium hover:underline"
                 >
-                  Remove Profile Picture
+                  {t("account.removeProfilePicture")}
                 </button>
               )}
             </div>
@@ -121,13 +127,13 @@ export default function AccountModal({ user, hideModal }) {
                 htmlFor="username"
                 className="block mb-2 text-sm font-medium text-white"
               >
-                Username
+                {t("account.username")}
               </label>
               <input
                 name="username"
                 type="text"
                 className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="User's username"
+                placeholder={t("account.usernamePlaceholder")}
                 minLength={2}
                 defaultValue={user.username}
                 required
@@ -139,13 +145,15 @@ export default function AccountModal({ user, hideModal }) {
                 htmlFor="password"
                 className="block mb-2 text-sm font-medium text-white"
               >
-                New Password
+                {t("account.newPassword")}
               </label>
               <input
                 name="password"
                 type="password"
                 className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder={`${user.username}'s new password`}
+                placeholder={t("account.passwordPlaceholder", {
+                  username: user.username,
+                })}
               />
             </div>
             <LanguagePreference />
@@ -156,13 +164,13 @@ export default function AccountModal({ user, hideModal }) {
               type="button"
               className="px-4 py-2 rounded-lg text-white bg-transparent hover:bg-stone-900"
             >
-              Cancel
+              {t("account.cancel")}
             </button>
             <button
               type="submit"
               className="px-4 py-2 rounded-lg text-white bg-transparent border border-slate-200 hover:bg-slate-200 hover:text-slate-800"
             >
-              Update Account
+              {t("account.updateAccount")}
             </button>
           </div>
         </form>
@@ -178,6 +186,7 @@ function LanguagePreference() {
     getLanguageName,
     changeLanguage,
   } = useLanguageOptions();
+  const { t } = useTranslation();
 
   return (
     <div>
@@ -185,7 +194,7 @@ function LanguagePreference() {
         htmlFor="userLang"
         className="block mb-2 text-sm font-medium text-white"
       >
-        Preferred language
+        {t("account.preferredLanguage")}
       </label>
       <select
         name="userLang"
