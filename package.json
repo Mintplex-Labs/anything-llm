@@ -30,5 +30,9 @@
   "private": false,
   "dependencies": {
     "react-toastify": "^10.0.6"
+  },
+  "devDependencies": {
+    "electron": "^33.0.2",
+    "electron-builder": "^25.1.8"
   }
 }
