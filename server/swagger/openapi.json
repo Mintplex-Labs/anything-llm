@@ -2877,6 +2877,65 @@
         }
       }
     },
+    "/v1/users/{id}/issue-auth-token": {
+      "get": {
+        "tags": [
+          "User Management"
+        ],
+        "description": "Issue a temporary auth token for a user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the user to issue a temporary auth token for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "token": "1234567890",
+                    "loginPath": "/sso/simple?token=1234567890"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Permission denied."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/v1/openai/models": {
       "get": {
         "tags": [

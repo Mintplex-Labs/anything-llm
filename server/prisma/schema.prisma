@@ -79,6 +79,7 @@ model users {
   slash_command_presets       slash_command_presets[]
   browser_extension_api_keys  browser_extension_api_keys[]
   hub_items                   hub_items[]
+  temporary_auth_tokens       temporary_auth_tokens[]
 }
 
 model recovery_codes {
@@ -323,4 +324,16 @@ model hub_items {
   lastUpdatedAt DateTime @updatedAt
   user_id       Int?
   user          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model temporary_auth_tokens {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
 }

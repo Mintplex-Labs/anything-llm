@@ -1,7 +1,12 @@
 import { ArrowSquareOut, Info } from "@phosphor-icons/react";
 import { AWS_REGIONS } from "./regions";
+import { useState } from "react";
 
 export default function AwsBedrockLLMOptions({ settings }) {
+  const [useSessionToken, setUseSessionToken] = useState(
+    settings?.AwsBedrockLLMConnectionMethod === "sessionToken"
+  );
+
   return (
     <div className="w-full flex flex-col">
       {!settings?.credentialsOnly && (
@@ -23,6 +28,43 @@ export default function AwsBedrockLLMOptions({ settings }) {
           </div>
         </div>
       )}
+
+      <div className="flex flex-col gap-y-2">
+        <input
+          type="hidden"
+          name="AwsBedrockLLMConnectionMethod"
+          value={useSessionToken ? "sessionToken" : "iam"}
+        />
+        <div className="flex flex-col w-full">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Use session token
+          </label>
+          <p className="text-white/50 text-sm">
+            Select the method to authenticate with AWS Bedrock.
+          </p>
+        </div>
+        <div className="flex items-center justify-start gap-x-4 bg-zinc-900 p-2.5 rounded-lg w-fit">
+          <span
+            className={`text-sm ${!useSessionToken ? "text-white" : "text-white/50"}`}
+          >
+            IAM
+          </span>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              className="sr-only peer"
+              checked={useSessionToken}
+              onChange={(e) => setUseSessionToken(e.target.checked)}
+            />
+            <div className="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-button"></div>
+          </label>
+          <span
+            className={`text-sm ${useSessionToken ? "text-white" : "text-white/50"}`}
+          >
+            Session Token
+          </span>
+        </div>
+      </div>
 
       <div className="w-full flex items-center gap-[36px] my-1.5">
         <div className="flex flex-col w-60">
@@ -59,6 +101,25 @@ export default function AwsBedrockLLMOptions({ settings }) {
             spellCheck={false}
           />
         </div>
+        {useSessionToken && (
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              AWS Bedrock Session Token
+            </label>
+            <input
+              type="password"
+              name="AwsBedrockLLMSessionToken"
+              className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="AWS Bedrock Session Token"
+              defaultValue={
+                settings?.AwsBedrockLLMSessionToken ? "*".repeat(20) : ""
+              }
+              required={true}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+        )}
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
             AWS region

@@ -213,6 +213,13 @@ const KEY_MAPPING = {
   },
 
   // AWS Bedrock LLM InferenceSettings
+  AwsBedrockLLMConnectionMethod: {
+    envKey: "AWS_BEDROCK_LLM_CONNECTION_METHOD",
+    checks: [
+      (input) =>
+        ["iam", "sessionToken"].includes(input) ? null : "Invalid value",
+    ],
+  },
   AwsBedrockLLMAccessKeyId: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
     checks: [isNotEmpty],
@@ -220,6 +227,10 @@ const KEY_MAPPING = {
   AwsBedrockLLMAccessKey: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
     checks: [isNotEmpty],
+  },
+  AwsBedrockLLMSessionToken: {
+    envKey: "AWS_BEDROCK_LLM_SESSION_TOKEN",
+    checks: [],
   },
   AwsBedrockLLMRegion: {
     envKey: "AWS_BEDROCK_LLM_REGION",
@@ -899,6 +910,8 @@ function dumpENV() {
     "HTTPS_KEY_PATH",
     // Other Configuration Keys
     "DISABLE_VIEW_CHAT_HISTORY",
+    // Simple SSO
+    "SIMPLE_SSO_ENABLED",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
