@@ -16,16 +16,18 @@ const Hub = {
       });
   },
 
-  // Import a new item from the hub
-  importItem: async (data) => {
-    return await fetch(`${API_BASE}/hub/items`, {
+  // Update hub settings (API key, etc.)
+  updateSettings: async (data) => {
+    return await fetch(`${API_BASE}/hub/settings`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to import item.");
-        return res.json();
+      .then(async (res) => {
+        const response = await res.json();
+        if (!res.ok)
+          throw new Error(response.error || "Failed to update settings");
+        return { success: true, error: null };
       })
       .catch((e) => ({
         success: false,
@@ -33,54 +35,62 @@ const Hub = {
       }));
   },
 
-  // Delete an imported item
-  deleteItem: async (id) => {
-    return await fetch(`${API_BASE}/hub/items/${id}`, {
-      method: "DELETE",
-      headers: baseHeaders(),
-    })
-      .then((res) => res.ok)
-      .catch((e) => {
-        console.error(e);
-        return false;
-      });
-  },
-
-  // Get hub API key from system settings
-  getApiKey: async () => {
-    return await fetch(`${API_BASE}/system/settings?labels=hub_api_key`, {
-      method: "GET",
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .then((res) => res.settings?.hub_api_key || null)
-      .catch((e) => {
-        console.error(e);
-        return null;
-      });
-  },
-
-  // Fetch hub settings (API key, etc.)
+  // Get hub settings
   getSettings: async () => {
     return await fetch(`${API_BASE}/hub/settings`, {
       method: "GET",
       headers: baseHeaders(),
     })
+      .then(async (res) => {
+        const response = await res.json();
+        if (!res.ok)
+          throw new Error(response.error || "Failed to fetch settings");
+        return { settings: response.settings, error: null };
+      })
+      .catch((e) => ({
+        settings: { hasApiKey: false },
+        error: e.message,
+      }));
+  },
+
+  // Delete an item
+  deleteItem: async (id) => {
+    return await fetch(`${API_BASE}/hub/items/${id}`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
       .then((res) => res.json())
-      .then((res) => res.settings)
       .catch((e) => {
         console.error(e);
-        return { hasApiKey: false };
+        return { success: false, error: e.message };
       });
   },
 
-  // Update hub settings (API key, etc.)
-  updateSettings: async (data) => {
-    return await fetch(`${API_BASE}/hub/settings`, {
+  // Import by string
+  importByString: async (data) => {
+    return await fetch(`${API_BASE}/hub/import`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
-    });
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+
+  // Explore items
+  explore: async () => {
+    return await fetch(`${API_BASE}/hub/explore`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
   },
 };
 

@@ -145,6 +145,12 @@ export default {
       return `/settings/beta-features`;
     },
   },
+
+  external: {
+    hub: () => {
+      return "https://hub.anythingllm.com";
+    },
+  },
   experimental: {
     liveDocumentSync: {
       manage: () => `/settings/beta-features/live-document-sync/manage`,

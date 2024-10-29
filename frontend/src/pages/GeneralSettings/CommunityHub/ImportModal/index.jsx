@@ -1,21 +1,20 @@
 import { useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { X } from "@phosphor-icons/react";
-
-const IMPORT_TYPES = [
-  { label: "System Prompt", value: "prompt" },
-  { label: "Agent Skill", value: "skill" },
-  { label: "Workspace", value: "workspace" },
-  { label: "Slash Command", value: "command" },
-];
+import Hub from "@/models/hub";
+import showToast from "@/utils/toast";
 
 export default function ImportModal({ isOpen, closeModal }) {
-  const [selectedType, setSelectedType] = useState("prompt");
   const [importString, setImportString] = useState("");
 
   const handleImport = async (e) => {
     e.preventDefault();
-    // Handle import logic here
+    const response = await Hub.importByString({ importString });
+    if (response.success) {
+      showToast("Items imported successfully", "success");
+    } else {
+      showToast(response.error, "error");
+    }
     closeModal();
   };
 
@@ -34,23 +33,6 @@ export default function ImportModal({ isOpen, closeModal }) {
 
         <form onSubmit={handleImport}>
           <div className="p-4 space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                Import Type
-              </label>
-              <select
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
-              >
-                {IMPORT_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-white mb-2">
                 Import String
@@ -75,7 +57,7 @@ export default function ImportModal({ isOpen, closeModal }) {
             </button>
             <button
               type="submit"
-              className="text-white bg-primary-button hover:bg-secondary focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              className="text-black bg-primary-button hover:bg-secondary focus:ring-4 focus:outline-none focus:ring-blue-300 hover:text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             >
               Import
             </button>
