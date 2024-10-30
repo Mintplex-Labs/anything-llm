@@ -23,6 +23,10 @@ function isInvalidIp({ hostname }) {
 
   // If fails to validate to number - abort and return as invalid.
   if (isNaN(Number(octetOne))) return true;
+
+  // Allow 127.0.0.1 (localhost) but block other private IP ranges
+  if (octetOne === "127" && hostname === "127.0.0.1") return false;
+
   return INVALID_OCTETS.includes(Number(octetOne));
 }
 
