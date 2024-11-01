@@ -244,6 +244,9 @@ class NovitaLLM {
         const now = Number(new Date());
         const diffMs = now - lastChunkTime;
         if (diffMs >= timeoutThresholdMs) {
+          this.log(
+            `Novita stream did not self-close and has been stale for >${timeoutThresholdMs}ms. Closing response stream.`
+          );
           writeResponseChunk(response, {
             uuid,
             sources,
