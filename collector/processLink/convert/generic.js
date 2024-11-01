@@ -36,7 +36,7 @@ async function scrapeGenericUrl(link, textOnly = false) {
     title: slugify(filename) + ".html",
     docAuthor: "no author found",
     description: "No description found.",
-    docSource: "URL link uploaded by the user.",
+    docSource: link,
     chunkSource: `link://${link}`,
     published: new Date().toLocaleString(),
     wordCount: content.split(" ").length,
