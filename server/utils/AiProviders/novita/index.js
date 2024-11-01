@@ -59,9 +59,6 @@ class NovitaLLM {
    * @returns {number} The timeout value in milliseconds (default: 500)
    */
   #parseTimeout() {
-    this.log(
-      `Novita timeout is set to ${process.env.NOVITA_TIMEOUT_MS ?? 500}ms`
-    );
     if (isNaN(Number(process.env.NOVITA_TIMEOUT_MS))) return 500;
     const setValue = Number(process.env.NOVITA_TIMEOUT_MS);
     if (setValue < 500) return 500;
@@ -159,7 +156,6 @@ class NovitaLLM {
         },
       });
     }
-    console.log(content.flat());
     return content.flat();
   }
 
@@ -248,9 +244,6 @@ class NovitaLLM {
         const now = Number(new Date());
         const diffMs = now - lastChunkTime;
         if (diffMs >= timeoutThresholdMs) {
-          console.log(
-            `Novita stream did not self-close and has been stale for >${timeoutThresholdMs}ms. Closing response stream.`
-          );
           writeResponseChunk(response, {
             uuid,
             sources,
@@ -336,7 +329,6 @@ async function fetchNovitaModels() {
     .then((res) => res.json())
     .then(({ data = [] }) => {
       const models = {};
-      console.log(data);
       data.forEach((model) => {
         models[model.id] = {
           id: model.id,
@@ -365,7 +357,6 @@ async function fetchNovitaModels() {
           encoding: "utf-8",
         }
       );
-      console.log(models);
       return models;
     })
     .catch((e) => {
