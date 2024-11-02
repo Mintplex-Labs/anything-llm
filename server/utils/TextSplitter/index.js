@@ -65,8 +65,7 @@ class TextSplitter {
   /**
    *  Creates a string of metadata to be prepended to each chunk.
    * @param {DocumentMetadata} metadata - Metadata to be prepended to each chunk.
-   * @see {}
-   * @returns {object} Object of metadata that will be prepended to each chunk.
+   * @returns {{[key: ('title' | 'published' | 'source')]: string}} Object of metadata that will be prepended to each chunk.
    */
   static buildHeaderMeta(metadata = {}) {
     if (!metadata || Object.keys(metadata).length === 0) return null;
@@ -106,7 +105,7 @@ class TextSplitter {
     Object.entries(PLUCK_MAP).forEach(([key, value]) => {
       if (!(key in metadata)) return; // Skip if the metadata key is not present.
       const pluckedValue = value.pluck(metadata);
-      if (!pluckedValue) return; // Skip if the plucked value is null.
+      if (!pluckedValue) return; // Skip if the plucked value is null/empty.
       pluckedData[value.as] = pluckedValue;
     });
 
