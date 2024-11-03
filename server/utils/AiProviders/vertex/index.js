@@ -10,6 +10,7 @@ class VertexLLM {
     const { VertexAI } = require("@google-cloud/vertexai");
     const vertexAI = new VertexAI({
       project: process.env.VERTEX_PROJECT_NAME,
+      location: process.env.VERTEX_REGION,
     });
     this.model =
       modelPreference ||

@@ -436,6 +436,7 @@ const SystemSettings = {
       VertexSafetySetting:
         process.env.VERTEX_SAFETY_SETTING || "BLOCK_MEDIUM_AND_ABOVE",
       VertexProjectName: process.env.VERTEX_PROJECT_NAME,
+      VertexRegion: process.env.VERTEX_REGION,
 
       // LMStudio Keys
       LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,

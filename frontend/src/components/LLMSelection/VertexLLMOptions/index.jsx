@@ -10,8 +10,23 @@ export default function VertexLLMOptions({ settings }) {
             type="text"
             name="VertexProjectName"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="your-project-name"
+            placeholder="eg: your-project-name"
             defaultValue={settings?.VertexProjectName ?? ""}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            GCP Region
+          </label>
+          <input
+            type="text"
+            name="VertexRegion"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="eg: europe-west4"
+            defaultValue={settings?.VertexRegion ?? ""}
             required={true}
             autoComplete="off"
             spellCheck={false}

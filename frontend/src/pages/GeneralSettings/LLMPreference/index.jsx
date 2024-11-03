@@ -100,7 +100,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     logo: VertexLogo,
     options: (settings) => <VertexLLMOptions settings={settings} />,
     description: "Google's Genereative AI model platform",
-    requiredConfig: ["VertexProjectName"],
+    requiredConfig: ["VertexProjectName", "VertexRegion"],
   },
   {
     name: "HuggingFace",

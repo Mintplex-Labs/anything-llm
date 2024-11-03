@@ -65,6 +65,10 @@ const KEY_MAPPING = {
     envKey: "VERTEX_PROJECT_NAME",
     checks: [isNotEmpty],
   },
+  VertexRegion: {
+    envKey: "VERTEX_REGION",
+    checks: [isNotEmpty],
+  },
   VertexSafetySetting: {
     envKey: "VERTEX_SAFETY_SETTING",
     checks: [validGeminiSafetySetting],
