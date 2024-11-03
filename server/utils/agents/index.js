@@ -210,6 +210,8 @@ class AgentHandler {
         return process.env.KOBOLD_CPP_MODEL_PREF ?? null;
       case "gemini":
         return process.env.GEMINI_MODEL_PREF ?? "gemini-pro";
+      case "vertex":
+        return process.env.GEMINI_MODEL_PREF ?? "gemini-1.5-pro";
       case "localai":
         return process.env.LOCAL_AI_MODEL_PREF ?? null;
       case "openrouter":

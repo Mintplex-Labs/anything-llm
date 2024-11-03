@@ -430,6 +430,13 @@ const SystemSettings = {
       GeminiSafetySetting:
         process.env.GEMINI_SAFETY_SETTING || "BLOCK_MEDIUM_AND_ABOVE",
 
+      // Vertex
+      VertexLLMModelPref:
+        process.env.VERTEX_LLM_MODEL_PREF || "gemini-1.5-flash",
+      VertexSafetySetting:
+        process.env.VERTEX_SAFETY_SETTING || "BLOCK_MEDIUM_AND_ABOVE",
+      VertexProjectName: process.env.VERTEX_PROJECT_NAME,
+
       // LMStudio Keys
       LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
       LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,

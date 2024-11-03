@@ -96,6 +96,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
 - [Apipie](https://apipie.ai/)
 - [xAI](https://x.ai/)
+- [Google Vertex](https://cloud.google.com/vertex-ai)
 
 **Embedder models:**
 

@@ -30,6 +30,14 @@ const MODEL_MAP = {
     "gemini-1.5-flash-exp-0827": 1_048_576,
     "gemini-1.5-flash-8b-exp-0827": 1_048_576,
   },
+  vertex: {
+    "gemini-1.5-flash": 1_048_576,
+    "gemini-1.5-pro": 2_097_152,
+    "gemini-1.5-flash-001": 1_048_576,
+    "gemini-1.5-pro-001": 2_097_152,
+    "gemini-1.5-flash-002": 1_048_576,
+    "gemini-1.5-pro-002": 2_097_152,
+  },
   groq: {
     "gemma2-9b-it": 8192,
     "gemma-7b-it": 8192,

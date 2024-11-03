@@ -11,6 +11,14 @@ export const DISABLED_PROVIDERS = [
 ];
 const PROVIDER_DEFAULT_MODELS = {
   openai: [],
+  vertex: [
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash-001",
+    "gemini-1.5-pro-001",
+    "gemini-1.5-flash-002",
+    "gemini-1.5-pro-002",
+  ],
   gemini: [
     "gemini-pro",
     "gemini-1.0-pro",

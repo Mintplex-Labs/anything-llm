@@ -108,6 +108,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "gemini":
       const { GeminiLLM } = require("../AiProviders/gemini");
       return new GeminiLLM(embedder, model);
+    case "vertex":
+      const { VertexLLM } = require("../AiProviders/vertex");
+      return new VertexLLM(embedder, model);
     case "lmstudio":
       const { LMStudioLLM } = require("../AiProviders/lmStudio");
       return new LMStudioLLM(embedder, model);
@@ -240,6 +243,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "gemini":
       const { GeminiLLM } = require("../AiProviders/gemini");
       return GeminiLLM;
+    case "vertex":
+      const { VertexLLM } = require("../AiProviders/vertex");
+      return VertexLLM;
     case "lmstudio":
       const { LMStudioLLM } = require("../AiProviders/lmStudio");
       return LMStudioLLM;

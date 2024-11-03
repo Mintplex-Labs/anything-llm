@@ -6,6 +6,7 @@ import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
+import VertexLogo from "@/media/llmprovider/vertex.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
@@ -74,6 +75,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to Google",
     ],
     logo: GeminiLogo,
+  },
+  vertex: {
+    name: "Vertex",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to Google",
+    ],
+    logo: VertexLogo,
   },
   lmstudio: {
     name: "LMStudio",
