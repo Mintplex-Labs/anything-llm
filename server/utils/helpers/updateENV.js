@@ -396,16 +396,16 @@ const KEY_MAPPING = {
   },
 
   // Novita Options
-  NovitaApiKey: {
-    envKey: "NOVITA_API_KEY",
+  NovitaLLMApiKey: {
+    envKey: "NOVITA_LLM_API_KEY",
     checks: [isNotEmpty],
   },
-  NovitaModelPref: {
-    envKey: "NOVITA_MODEL_PREF",
+  NovitaLLMModelPref: {
+    envKey: "NOVITA_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
-  NovitaTimeout: {
-    envKey: "NOVITA_TIMEOUT_MS",
+  NovitaLLMTimeout: {
+    envKey: "NOVITA_LLM_TIMEOUT_MS",
     checks: [],
   },
 

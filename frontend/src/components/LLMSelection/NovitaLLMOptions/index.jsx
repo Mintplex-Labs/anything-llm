@@ -12,10 +12,10 @@ export default function NovitaLLMOptions({ settings }) {
           </label>
           <input
             type="password"
-            name="NovitaApiKey"
+            name="NovitaLLMApiKey"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Novita API Key"
-            defaultValue={settings?.NovitaApiKey ? "*".repeat(20) : ""}
+            defaultValue={settings?.NovitaLLMApiKey ? "*".repeat(20) : ""}
             required={true}
             autoComplete="off"
             spellCheck={false}
@@ -54,10 +54,10 @@ function AdvancedControls({ settings }) {
           </label>
           <input
             type="number"
-            name="NovitaTimeout"
+            name="NovitaLLMTimeout"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Timeout value between token responses to auto-timeout the stream"
-            defaultValue={settings?.NovitaTimeout ?? 500}
+            defaultValue={settings?.NovitaLLMTimeout ?? 500}
             autoComplete="off"
             onScroll={(e) => e.target.blur()}
             min={500}
@@ -99,7 +99,7 @@ function NovitaModelSelection({ settings }) {
           Chat Model Selection
         </label>
         <select
-          name="NovitaModelPref"
+          name="NovitaLLMModelPref"
           disabled={true}
           className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
@@ -117,7 +117,7 @@ function NovitaModelSelection({ settings }) {
         Chat Model Selection
       </label>
       <select
-        name="NovitaModelPref"
+        name="NovitaLLMModelPref"
         required={true}
         className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
@@ -129,7 +129,7 @@ function NovitaModelSelection({ settings }) {
                 <option
                   key={model.id}
                   value={model.id}
-                  selected={settings?.NovitaModelPref === model.id}
+                  selected={settings?.NovitaLLMModelPref === model.id}
                 >
                   {model.name}
                 </option>

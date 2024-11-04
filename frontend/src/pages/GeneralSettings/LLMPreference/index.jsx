@@ -122,7 +122,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <NovitaLLMOptions settings={settings} />,
     description:
       "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
-    requiredConfig: ["NovitaAiApiKey"],
+    requiredConfig: ["NovitaLLMApiKey"],
   },
   {
     name: "LM Studio",

@@ -211,7 +211,7 @@ class Provider {
           configuration: {
             baseURL: "https://api.novita.ai/v3/openai",
           },
-          apiKey: process.env.NOVITA_API_KEY ?? null,
+          apiKey: process.env.NOVITA_LLM_API_KEY ?? null,
           ...config,
         });
 

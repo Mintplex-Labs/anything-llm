@@ -15,14 +15,14 @@ const cacheFolder = path.resolve(
 
 class NovitaLLM {
   constructor(embedder = null, modelPreference = null) {
-    if (!process.env.NOVITA_API_KEY)
+    if (!process.env.NOVITA_LLM_API_KEY)
       throw new Error("No Novita API key was set.");
 
     const { OpenAI: OpenAIApi } = require("openai");
     this.basePath = "https://api.novita.ai/v3/openai";
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
-      apiKey: process.env.NOVITA_API_KEY ?? null,
+      apiKey: process.env.NOVITA_LLM_API_KEY ?? null,
       defaultHeaders: {
         "HTTP-Referer": "https://anythingllm.com",
         "X-Novita-Source": "anythingllm",
@@ -30,7 +30,7 @@ class NovitaLLM {
     });
     this.model =
       modelPreference ||
-      process.env.NOVITA_MODEL_PREF ||
+      process.env.NOVITA_LLM_MODEL_PREF ||
       "gryphe/mythomax-l2-13b";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
@@ -46,6 +46,8 @@ class NovitaLLM {
       fs.mkdirSync(cacheFolder, { recursive: true });
     this.cacheModelPath = path.resolve(cacheFolder, "models.json");
     this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
+    this.log(`Loaded with model: ${this.model}`);
   }
 
   log(text, ...args) {
@@ -55,12 +57,12 @@ class NovitaLLM {
   /**
    * Novita has various models that never return `finish_reasons` and thus leave the stream open
    * which causes issues in subsequent messages. This timeout value forces us to close the stream after
-   * x milliseconds. This is a configurable value via the NOVITA_TIMEOUT_MS value
+   * x milliseconds. This is a configurable value via the NOVITA_LLM_TIMEOUT_MS value
    * @returns {number} The timeout value in milliseconds (default: 500)
    */
   #parseTimeout() {
-    if (isNaN(Number(process.env.NOVITA_TIMEOUT_MS))) return 500;
-    const setValue = Number(process.env.NOVITA_TIMEOUT_MS);
+    if (isNaN(Number(process.env.NOVITA_LLM_TIMEOUT_MS))) return 500;
+    const setValue = Number(process.env.NOVITA_LLM_TIMEOUT_MS);
     if (setValue < 500) return 500;
     return setValue;
   }

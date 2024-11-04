@@ -174,7 +174,7 @@ class AgentHandler {
           throw new Error("xAI API Key must be provided to use agents.");
         break;
       case "novita":
-        if (!process.env.NOVITA_API_KEY)
+        if (!process.env.NOVITA_LLM_API_KEY)
           throw new Error("Novita API Key must be provided to use agents.");
         break;
 
@@ -239,7 +239,7 @@ class AgentHandler {
       case "xai":
         return process.env.XAI_LLM_MODEL_PREF ?? "grok-beta";
       case "novita":
-        return process.env.NOVITA_MODEL_PREF ?? "gryphe/mythomax-l2-13b";
+        return process.env.NOVITA_LLM_MODEL_PREF ?? "gryphe/mythomax-l2-13b";
       default:
         return null;
     }
