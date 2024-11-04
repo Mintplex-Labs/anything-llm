@@ -41,7 +41,8 @@ const SEARCH_PROVIDERS = [
     value: "duckduckgo-engine",
     logo: DuckDuckGoIcon,
     options: () => <React.Fragment />,
-    description: "Free and privacy-focused web search using DuckDuckGo's HTML interface.",
+    description:
+      "Free and privacy-focused web search using DuckDuckGo's HTML interface.",
   },
   {
     name: "Google Search Engine",

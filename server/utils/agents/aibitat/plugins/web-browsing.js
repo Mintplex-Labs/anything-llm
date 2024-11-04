@@ -528,17 +528,24 @@ const webBrowsing = {
               const result = results[i];
 
               // Extract title
-              const titleMatch = result.match(/<a[^>]*class="result__a"[^>]*>(.*?)<\/a>/);
-              const title = titleMatch ? titleMatch[1].trim() : '';
+              const titleMatch = result.match(
+                /<a[^>]*class="result__a"[^>]*>(.*?)<\/a>/
+              );
+              const title = titleMatch ? titleMatch[1].trim() : "";
 
               // Extract URL
-              const urlMatch = result.match(/<a[^>]*class="result__a"[^>]*href="([^"]*)">/);
-              const link = urlMatch ? urlMatch[1] : '';
+              const urlMatch = result.match(
+                /<a[^>]*class="result__a"[^>]*href="([^"]*)">/
+              );
+              const link = urlMatch ? urlMatch[1] : "";
 
               // Extract snippet
-              const snippetMatch = result.match(/<a[^>]*class="result__snippet"[^>]*>(.*?)<\/a>/);
-              const snippet = snippetMatch ?
-                snippetMatch[1].replace(/<\/?b>/g, '').trim() : '';
+              const snippetMatch = result.match(
+                /<a[^>]*class="result__snippet"[^>]*>(.*?)<\/a>/
+              );
+              const snippet = snippetMatch
+                ? snippetMatch[1].replace(/<\/?b>/g, "").trim()
+                : "";
 
               if (title && link && snippet) {
                 data.push({ title, link, snippet });
