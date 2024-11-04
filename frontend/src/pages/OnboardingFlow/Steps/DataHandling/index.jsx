@@ -16,6 +16,7 @@ import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
+import NovitaLogo from "@/media/llmprovider/novita.png";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
@@ -157,6 +158,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to OpenRouter",
     ],
     logo: OpenRouterLogo,
+  },
+  novita: {
+    name: "Novita AI",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to Novita AI",
+    ],
+    logo: NovitaLogo,
   },
   groq: {
     name: "Groq",

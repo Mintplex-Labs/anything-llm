@@ -97,6 +97,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Apipie](https://apipie.ai/)
 - [xAI](https://x.ai/)
 - [Google Vertex](https://cloud.google.com/vertex-ai)
+- [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 
 **Embedder models:**
 
