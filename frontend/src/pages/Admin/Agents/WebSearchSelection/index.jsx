@@ -37,6 +37,13 @@ const SEARCH_PROVIDERS = [
       "Web search will be disabled until a provider and keys are provided.",
   },
   {
+    name: "DuckDuckGo",
+    value: "duckduckgo-engine",
+    logo: DuckDuckGoIcon,
+    options: () => <React.Fragment />,
+    description: "Free and privacy-focused web search using DuckDuckGo's HTML interface.",
+  },
+  {
     name: "Google Search Engine",
     value: "google-search-engine",
     logo: GoogleSearchIcon,
@@ -91,13 +98,6 @@ const SEARCH_PROVIDERS = [
     options: (settings) => <TavilySearchOptions settings={settings} />,
     description:
       "Tavily Search API. Offers a free tier with 1000 queries per month.",
-  },
-  {
-    name: "DuckDuckGo",
-    value: "duckduckgo-engine",
-    logo: DuckDuckGoIcon,
-    options: () => <React.Fragment />,
-    description: "Free and privacy-focused web search using DuckDuckGo's HTML interface.",
   },
 ];
 
