@@ -89,14 +89,25 @@ class TextSplitter {
           // If the chunkSource is a link or youtube link, we can add the URL
           // as its source in the metadata so the LLM can use it for context.
           // eg prompt: Where did you get this information? -> answer: "from https://example.com"
-          if (!metadata?.chunkSource) return null;
           if (
-            !validPrefixes.some((prefix) =>
-              metadata.chunkSource.startsWith(prefix)
+            !metadata?.chunkSource || // Exists
+            !metadata?.chunkSource.length || // Is not empty
+            typeof metadata.chunkSource !== "string" || // Is a string
+            !validPrefixes.some(
+              (prefix) => metadata.chunkSource.startsWith(prefix) // Has a valid prefix we respect
             )
           )
             return null;
-          return metadata.chunkSource.split("://")[1];
+
+          // We know a prefix is present, so we can split on it and return the rest.
+          // If nothing is found, return null and it will not be added to the metadata.
+          let source = null;
+          for (const prefix of validPrefixes) {
+            source = metadata.chunkSource.split(prefix)?.[1] || null;
+            if (source) break;
+          }
+
+          return source;
         },
       },
     };
