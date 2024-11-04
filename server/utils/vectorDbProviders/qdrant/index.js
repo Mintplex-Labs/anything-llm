@@ -222,10 +222,7 @@ const QDrant = {
           { label: "text_splitter_chunk_overlap" },
           20
         ),
-        chunkHeaderMeta: {
-          sourceDocument: metadata?.title,
-          published: metadata?.published || "unknown",
-        },
+        chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
