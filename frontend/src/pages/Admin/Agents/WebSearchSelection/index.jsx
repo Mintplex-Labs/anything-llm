@@ -8,6 +8,7 @@ import BingSearchIcon from "./icons/bing.png";
 import SerplySearchIcon from "./icons/serply.png";
 import SearXNGSearchIcon from "./icons/searxng.png";
 import TavilySearchIcon from "./icons/tavily.svg";
+import DuckDuckGoIcon from "./icons/duckduckgo.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -90,6 +91,13 @@ const SEARCH_PROVIDERS = [
     options: (settings) => <TavilySearchOptions settings={settings} />,
     description:
       "Tavily Search API. Offers a free tier with 1000 queries per month.",
+  },
+  {
+    name: "DuckDuckGo",
+    value: "duckduckgo-engine",
+    logo: DuckDuckGoIcon,
+    options: () => <React.Fragment />,
+    description: "Free and privacy-focused web search using DuckDuckGo's HTML interface.",
   },
 ];
 

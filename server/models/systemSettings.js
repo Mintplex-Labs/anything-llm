@@ -100,6 +100,7 @@ const SystemSettings = {
             "serply-engine",
             "searxng-engine",
             "tavily-search",
+            "duckduckgo-engine",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
