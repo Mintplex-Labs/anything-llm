@@ -34,14 +34,6 @@ export default function PromptInput({
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
 
-  // Save the current state before changes
-  const saveCurrentState = (adjust = 0) => {
-    undoStack.current.push({
-      value: promptInput,
-      cursorPosition: textareaRef.current.selectionStart + adjust,
-    });
-  };
-
   // To prevent too many re-renders we remotely listen for updates from the parent
   // via an event cycle. Otherwise, using message as a prop leads to a re-render every
   // change on the input.
@@ -62,6 +54,15 @@ export default function PromptInput({
     }
     resetTextAreaHeight();
   }, [inputDisabled]);
+
+  // Save the current state before changes
+  const saveCurrentState = (adjustment = 0) => {
+    undoStack.current.push({
+      value: promptInput,
+      cursorPositionStart: textareaRef.current.selectionStart + adjustment,
+      cursorPositionEnd: textareaRef.current.selectionEnd + adjustment,
+    });
+  };
 
   const handleSubmit = (e) => {
     setFocused(false);
@@ -92,14 +93,15 @@ export default function PromptInput({
       event.preventDefault();
       submit(event);
     } else if ((event.ctrlKey || event.metaKey) && event.key === "z") {
+      // (metaKey is the Command key on an Apple Mac)
       event.preventDefault();
       if (undoStack.current.length > 0) {
         const lastState = undoStack.current.pop();
         setPromptInput(lastState.value);
         setTimeout(() => {
           textareaRef.current.setSelectionRange(
-            lastState.cursorPosition,
-            lastState.cursorPosition
+            lastState.cursorPositionStart,
+            lastState.cursorPositionEnd
           );
         }, 0);
       }
@@ -189,7 +191,7 @@ export default function PromptInput({
               <textarea
                 ref={textareaRef}
                 onChange={(e) => {
-                  saveCurrentState(-1);
+                  saveCurrentState(-1); // -1 adjusts the cursor position backward for undo.
                   onChange(e);
                   watchForSlash(e);
                   watchForAt(e);
