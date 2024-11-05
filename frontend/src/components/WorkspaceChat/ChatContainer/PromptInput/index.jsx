@@ -33,13 +33,12 @@ export default function PromptInput({
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
-  const [cursorPosition, setCursorPosition] = useState(0);
 
   // Save the current state before changes
-  const saveCurrentState = () => {
+  const saveCurrentState = (adjust = 0) => {
     undoStack.current.push({
       value: promptInput,
-      cursorPosition: textareaRef.current.selectionStart,
+      cursorPosition: textareaRef.current.selectionStart + adjust,
     });
   };
 
@@ -104,15 +103,6 @@ export default function PromptInput({
           );
         }, 0);
       }
-      setTimeout(() => {
-        if (textareaRef.current) {
-          const newPosition = Math.max(cursorPosition - 1, 0);
-          textareaRef.current.setSelectionRange(newPosition, newPosition);
-          setCursorPosition(newPosition);
-        }
-      }, 0);
-    } else {
-      setCursorPosition(textareaRef.current.selectionStart);
     }
   };
 
@@ -199,7 +189,7 @@ export default function PromptInput({
               <textarea
                 ref={textareaRef}
                 onChange={(e) => {
-                  saveCurrentState();
+                  saveCurrentState(-1);
                   onChange(e);
                   watchForSlash(e);
                   watchForAt(e);
@@ -208,7 +198,7 @@ export default function PromptInput({
                 }}
                 onKeyDown={captureEnterOrUndo}
                 onPaste={(e) => {
-                  saveCurrentState(e);
+                  saveCurrentState();
                   handlePasteEvent(e);
                 }}
                 required={true}
