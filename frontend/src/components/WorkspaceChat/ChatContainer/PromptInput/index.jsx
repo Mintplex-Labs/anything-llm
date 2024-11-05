@@ -32,6 +32,15 @@ export default function PromptInput({
   const formRef = useRef(null);
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
+  const undoStack = useRef([]);
+
+  // Save the current state before changes
+  const saveCurrentState = () => {
+    undoStack.current.push({
+      value: promptInput,
+      cursorPosition: textareaRef.current.selectionStart,
+    });
+  };
 
   // To prevent too many re-renders we remotely listen for updates from the parent
   // via an event cycle. Otherwise, using message as a prop leads to a re-render every
@@ -78,10 +87,21 @@ export default function PromptInput({
     if (showAgents) return setShowAgents(false);
   };
 
-  const captureEnter = (event) => {
-    if (event.keyCode == 13) {
-      if (!event.shiftKey) {
-        submit(event);
+  const captureEnterOrUndo = (event) => {
+    if (event.keyCode === 13 && !event.shiftKey) {
+      event.preventDefault();
+      submit(event);
+    } else if ((event.ctrlKey || event.metaKey) && event.key === "z") {
+      event.preventDefault();
+      if (undoStack.current.length > 0) {
+        const lastState = undoStack.current.pop();
+        setPromptInput(lastState.value);
+        setTimeout(() => {
+          textareaRef.current.setSelectionRange(
+            lastState.cursorPosition,
+            lastState.cursorPosition
+          );
+        }, 0);
       }
     }
   };
@@ -169,14 +189,18 @@ export default function PromptInput({
               <textarea
                 ref={textareaRef}
                 onChange={(e) => {
+                  saveCurrentState();
                   onChange(e);
                   watchForSlash(e);
                   watchForAt(e);
                   adjustTextArea(e);
                   setPromptInput(e.target.value);
                 }}
-                onKeyDown={captureEnter}
-                onPaste={handlePasteEvent}
+                onKeyDown={captureEnterOrUndo}
+                onPaste={(e) => {
+                  saveCurrentState(e);
+                  handlePasteEvent(e);
+                }}
                 required={true}
                 disabled={inputDisabled}
                 onFocus={() => setFocused(true)}
