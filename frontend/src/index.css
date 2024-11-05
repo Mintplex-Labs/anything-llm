@@ -285,8 +285,6 @@ a {
   animation: none !important;
 }
 
-
-
 #chat-container::-webkit-scrollbar,
 .no-scroll::-webkit-scrollbar {
   display: none !important;
