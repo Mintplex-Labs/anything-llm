@@ -80,6 +80,9 @@ const webBrowsing = {
               case "tavily-search":
                 engine = "_tavilySearch";
                 break;
+              case "duckduckgo-engine":
+                engine = "_duckDuckGoEngine";
+                break;
               default:
                 engine = "_googleSearchEngine";
             }
@@ -497,6 +500,66 @@ const webBrowsing = {
             this.super.introspect(
               `${this.caller}: I found ${data.length} results - looking over them now.`
             );
+            return JSON.stringify(data);
+          },
+          _duckDuckGoEngine: async function (query) {
+            this.super.introspect(
+              `${this.caller}: Using DuckDuckGo to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const searchURL = new URL("https://html.duckduckgo.com/html");
+            searchURL.searchParams.append("q", query);
+
+            const response = await fetch(searchURL.toString());
+
+            if (!response.ok) {
+              return `There was an error searching DuckDuckGo. Status: ${response.status}`;
+            }
+
+            const html = await response.text();
+            const data = [];
+
+            const results = html.split('<div class="result results_links');
+
+            // Skip first element since it's before the first result
+            for (let i = 1; i < results.length; i++) {
+              const result = results[i];
+
+              // Extract title
+              const titleMatch = result.match(
+                /<a[^>]*class="result__a"[^>]*>(.*?)<\/a>/
+              );
+              const title = titleMatch ? titleMatch[1].trim() : "";
+
+              // Extract URL
+              const urlMatch = result.match(
+                /<a[^>]*class="result__a"[^>]*href="([^"]*)">/
+              );
+              const link = urlMatch ? urlMatch[1] : "";
+
+              // Extract snippet
+              const snippetMatch = result.match(
+                /<a[^>]*class="result__snippet"[^>]*>(.*?)<\/a>/
+              );
+              const snippet = snippetMatch
+                ? snippetMatch[1].replace(/<\/?b>/g, "").trim()
+                : "";
+
+              if (title && link && snippet) {
+                data.push({ title, link, snippet });
+              }
+            }
+
+            if (data.length === 0) {
+              return `No information was found online for the search query.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - looking over them now.`
+            );
+
             return JSON.stringify(data);
           },
         });
