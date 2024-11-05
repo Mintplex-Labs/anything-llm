@@ -135,50 +135,8 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 [Learn about documents](./server/storage/documents/DOCUMENTS.md)
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
-
-## Telemetry & Privacy
-
-Raiqa Assistant by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
-
-<details>
-<summary><kbd>More about Telemetry & Privacy for Raiqa Assistant</kbd></summary>
-
-### Why?
-
-We use this information to help us understand how Raiqa Assistant is used, to help us prioritize work on new features and bug fixes, and to help us improve Raiqa Assistant's performance and stability.
-
-### Opting out
-
-Set `DISABLE_TELEMETRY` in your server or docker .env settings to "true" to opt out of telemetry. You can also do this in-app by going to the sidebar > `Privacy` and disabling telemetry.
-
-### What do you explicitly track?
-
-We will only track usage details that help us make product and roadmap decisions, specifically:
-
-- Typ of your installation (Docker or Desktop)
-- When a document is added or removed. No information _about_ the document. Just that the event occurred. This gives us an idea of use.
-- Type of vector database in use. Let's us know which vector database provider is the most used to prioritize changes when updates arrive for that provider.
-- Type of LLM in use. Let's us know the most popular choice and prioritize changes when updates arrive for that provider.
-- Chat is sent. This is the most regular "event" and gives us an idea of the daily-activity of this project across all installations. Again, only the event is sent - we have no information on the nature or content of the chat itself.
-
-You can verify these claims by finding all locations `Telemetry.sendTelemetry` is called. Additionally these events are written to the output log so you can also see the specific data which was sent - if enabled. No IP or other identifying information is collected. The Telemetry provider is [PostHog](https://posthog.com/) - an open-source telemetry collection service.
-
-[View all telemetry events in source code](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
-
-</details>
-
-## 🔗 More Products
-
-- **[VectorAdmin][vector-admin]:** An all-in-one GUI & tool-suite for managing vector databases.
-- **[OpenAI Assistant Swarm][assistant-swarm]:** Turn your entire library of OpenAI assistants into one single army commanded from a single agent.
-
-<div align="right">
-
-[![][back-to-top]](#readme-top)
-
 </div>
 
 ---
 
-Copyright © 2024 [Raiqa][profile-link]. <br />
-This project is [MIT](./LICENSE) licensed.
+Copyright © 2024 [Raiqa]. <br />
