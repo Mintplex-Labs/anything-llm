@@ -1,6 +1,6 @@
 # Common Issues with Ollama
 
-If you encounter an error stating `llama:streaming - could not stream chat. Error: connect ECONNREFUSED 172.17.0.1:11434` when using AnythingLLM in a Docker container, this indicates that the IP of the Host inside of the virtual docker network does not bind to port 11434 of the host system by default, due to Ollama's restriction to localhost and 127.0.0.1. To resolve this issue and ensure proper communication between the Dockerized AnythingLLM and the Ollama service, you must configure Ollama to bind to 0.0.0.0 or a specific IP address.
+If you encounter an error stating `llama:streaming - could not stream chat. Error: connect ECONNREFUSED 172.17.0.1:11434` when using Raiqa Assistant in a Docker container, this indicates that the IP of the Host inside of the virtual docker network does not bind to port 11434 of the host system by default, due to Ollama's restriction to localhost and 127.0.0.1. To resolve this issue and ensure proper communication between the Dockerized Raiqa Assistant and the Ollama service, you must configure Ollama to bind to 0.0.0.0 or a specific IP address.
 
 ### Setting Environment Variables on Mac
 

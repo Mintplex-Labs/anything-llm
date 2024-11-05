@@ -1,5 +1,5 @@
 name: ✨ New Feature suggestion
-description: Suggest a new feature for AnythingLLM!
+description: Suggest a new feature for Raiqa Assistant!
 title: "[FEAT]: "
 labels: [enhancement, feature request]
 body:
@@ -9,7 +9,7 @@ body:
         Share a new idea for a feature or improvement. Be sure to search existing
         issues first to avoid duplicates.
 
-        Want help contributing a PR? Use our repo chatbot by OnboardAI! https://learnthisrepo.com/anythingllm
+        Want help contributing a PR? Use our repo chatbot by OnboardAI!
 
 
   - type: textarea

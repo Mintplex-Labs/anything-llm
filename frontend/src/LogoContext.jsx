@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import AnythingLLM from "./media/logo/anything-llm.png";
+import RaiqaAssistant from "./media/logo/raiqa-health.png";
 import DefaultLoginLogo from "./media/illustrations/login-logo.svg";
 import System from "./models/system";
 
@@ -19,12 +19,12 @@ export function LogoProvider({ children }) {
           setLoginLogo(isCustomLogo ? logoURL : DefaultLoginLogo);
           setIsCustomLogo(isCustomLogo);
         } else {
-          setLogo(AnythingLLM);
+          setLogo(RaiqaAssistant);
           setLoginLogo(DefaultLoginLogo);
           setIsCustomLogo(false);
         }
       } catch (err) {
-        setLogo(AnythingLLM);
+        setLogo(RaiqaAssistant);
         setLoginLogo(DefaultLoginLogo);
         setIsCustomLogo(false);
         console.error("Failed to fetch logo:", err);

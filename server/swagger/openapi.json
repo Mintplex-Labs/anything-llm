@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
-    "title": "AnythingLLM Developer API",
-    "description": "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io."
+    "title": "Raiqa Assistant Developer API",
+    "description": "API endpoints that enable programmatic reading, writing, and updating of your Raiqa Assistant instance. UI supplied by Swagger.io."
   },
   "servers": [
     {
@@ -754,7 +754,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding.",
+        "description": "Upload a new file to Raiqa Assistant to be parsed and prepared for embedding.",
         "parameters": [],
         "responses": {
           "200": {
@@ -768,14 +768,14 @@
                     "error": null,
                     "documents": [
                       {
-                        "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
-                        "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
-                        "url": "file://Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
-                        "title": "anythingllm.txt",
+                        "location": "custom-documents/raiqaAssistant.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                        "name": "raiqaAssistant.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                        "url": "file://Users/tim/Documents/anything-llm/collector/hotdir/raiqaAssistant.txt",
+                        "title": "raiqaAssistant.txt",
                         "docAuthor": "Unknown",
                         "description": "Unknown",
                         "docSource": "a text file uploaded by the user.",
-                        "chunkSource": "anythingllm.txt",
+                        "chunkSource": "raiqaAssistant.txt",
                         "published": "1/16/2024, 3:07:00 PM",
                         "wordCount": 93,
                         "token_count_estimate": 115
@@ -830,7 +830,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding.",
+        "description": "Upload a valid URL for Raiqa Assistant to scrape and prepare for embedding.",
         "parameters": [],
         "responses": {
           "200": {
@@ -850,10 +850,10 @@
                         "docAuthor": "no author found",
                         "description": "No description found.",
                         "docSource": "URL link uploaded by the user.",
-                        "chunkSource": "https:anythingllm.com.html",
+                        "chunkSource": "https:raiqa.ai.html",
                         "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
-                        "pageContent": "AnythingLLM is the best....",
+                        "pageContent": "Raiqa Assistant is the best....",
                         "token_count_estimate": 447,
                         "location": "custom-documents/url-useanything_com-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
                       }
@@ -890,7 +890,7 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "link": "https://anythingllm.com"
+                  "link": "https://raiqa.ai"
                 }
               }
             }
@@ -926,7 +926,7 @@
                         "chunkSource": "no chunk source specified",
                         "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
-                        "pageContent": "AnythingLLM is the best....",
+                        "pageContent": "Raiqa Assistant is the best....",
                         "token_count_estimate": 447,
                         "location": "custom-documents/raw-my-doc-text-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
                       }
@@ -966,7 +966,7 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
+                  "textContent": "This is the raw text that will be saved as a document in Raiqa Assistant.",
                   "metadata": {
                     "title": "This key is required. See in /server/endpoints/api/document/index.js:287",
                     "keyOne": "valueOne",
@@ -1149,7 +1149,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Get a single document by its unique AnythingLLM document name",
+        "description": "Get a single document by its unique Raiqa Assistant document name",
         "parameters": [
           {
             "name": "docName",
@@ -1691,12 +1691,12 @@
                     "history": [
                       {
                         "role": "user",
-                        "content": "What is AnythingLLM?",
+                        "content": "What is Raiqa Assistant?",
                         "sentAt": 1692851630
                       },
                       {
                         "role": "assistant",
-                        "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                        "content": "Raiqa Assistant is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
                         "sources": [
                           {
                             "source": "object about source document and snippets used"
@@ -1807,7 +1807,7 @@
                   "custom-documents/my-pdf.pdf-hash.json"
                 ],
                 "deletes": [
-                  "custom-documents/anythingllm.txt-hash.json"
+                  "custom-documents/raiqaAssistant.txt-hash.json"
                 ]
               }
             }
@@ -1899,7 +1899,7 @@
                     "textResponse": "Response to your query",
                     "sources": [
                       {
-                        "title": "anythingllm.txt",
+                        "title": "raiqaAssistant.txt",
                         "chunk": "This is a context chunk used in the answer of the prompt by the LLM,"
                       }
                     ],
@@ -1938,7 +1938,7 @@
           "content": {
             "application/json": {
               "example": {
-                "message": "What is AnythingLLM?",
+                "message": "What is Raiqa Assistant?",
                 "mode": "query | chat",
                 "sessionId": "identifier-to-partition-chats-by-external-id",
                 "attachments": [
@@ -2002,7 +2002,7 @@
                       "textResponse": "final chunk of LLM output!",
                       "sources": [
                         {
-                          "title": "anythingllm.txt",
+                          "title": "raiqaAssistant.txt",
                           "chunk": "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."
                         }
                       ],
@@ -2040,7 +2040,7 @@
           "content": {
             "application/json": {
               "example": {
-                "message": "What is AnythingLLM?",
+                "message": "What is Raiqa Assistant?",
                 "mode": "query | chat",
                 "sessionId": "identifier-to-partition-chats-by-external-id",
                 "attachments": [
@@ -2266,7 +2266,7 @@
                     },
                     {
                       "role": "assistant",
-                      "content": "AnythingLLM is a knowledge graph and vector database management system built using NodeJS express server. It provides an interface for handling all interactions, including vectorDB management and LLM (Language Model) interactions."
+                      "content": "Raiqa Assistant is a knowledge graph and vector database management system built using NodeJS express server. It provides an interface for handling all interactions, including vectorDB management and LLM (Language Model) interactions."
                     }
                   ]
                 }
@@ -2607,12 +2607,12 @@
                     "history": [
                       {
                         "role": "user",
-                        "content": "What is AnythingLLM?",
+                        "content": "What is Raiqa Assistant?",
                         "sentAt": 1692851630
                       },
                       {
                         "role": "assistant",
-                        "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                        "content": "Raiqa Assistant is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
                         "sources": [
                           {
                             "source": "object about source document and snippets used"
@@ -2688,7 +2688,7 @@
                     "textResponse": "Response to your query",
                     "sources": [
                       {
-                        "title": "anythingllm.txt",
+                        "title": "raiqaAssistant.txt",
                         "chunk": "This is a context chunk used in the answer of the prompt by the LLM."
                       }
                     ],
@@ -2727,7 +2727,7 @@
           "content": {
             "application/json": {
               "example": {
-                "message": "What is AnythingLLM?",
+                "message": "What is Raiqa Assistant?",
                 "mode": "query | chat",
                 "userId": 1
               }
@@ -2794,7 +2794,7 @@
                       "textResponse": "final chunk of LLM output!",
                       "sources": [
                         {
-                          "title": "anythingllm.txt",
+                          "title": "raiqaAssistant.txt",
                           "chunk": "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."
                         }
                       ],
@@ -2832,7 +2832,7 @@
           "content": {
             "application/json": {
               "example": {
-                "message": "What is AnythingLLM?",
+                "message": "What is Raiqa Assistant?",
                 "mode": "query | chat",
                 "userId": 1
               }
@@ -3052,7 +3052,7 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.",
+          "description": "Send a prompt to the workspace with full use of documents as if sending a chat in Raiqa Assistant. Only supports some values of OpenAI API. See example below.",
           "required": true,
           "content": {
             "application/json": {
@@ -3064,11 +3064,11 @@
                   },
                   {
                     "role": "user",
-                    "content": "What is AnythingLLM?"
+                    "content": "What is Raiqa Assistant?"
                   },
                   {
                     "role": "assistant",
-                    "content": "AnythingLLM is...."
+                    "content": "Raiqa Assistant is...."
                   },
                   {
                     "role": "user",
@@ -3136,7 +3136,7 @@
         "tags": [
           "OpenAI Compatible Endpoints"
         ],
-        "description": "List all the vector database collections connected to AnythingLLM. These are essentially workspaces but return their unique vector db identifier - this is the same as the workspace slug.",
+        "description": "List all the vector database collections connected to Raiqa Assistant. These are essentially workspaces but return their unique vector db identifier - this is the same as the workspace slug.",
         "parameters": [],
         "responses": {
           "200": {

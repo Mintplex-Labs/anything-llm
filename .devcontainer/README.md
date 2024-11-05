@@ -1,6 +1,6 @@
-# AnythingLLM Development Container Setup
+# Raiqa Assistant Development Container Setup
 
-Welcome to the AnythingLLM development container configuration, designed to create a seamless and feature-rich development environment for this project.
+Welcome to the Raiqa Assistant development container configuration, designed to create a seamless and feature-rich development environment for this project.
 
 <center><h1><b>PLEASE READ THIS</b></h1></center>
 
@@ -36,7 +36,7 @@ Checklist:
 
 - [ ] The usual message asking you to start the Server and Frontend in different windows are now "hidden" in the building process of the devcontainer. Don't forget to do as suggested.
 - [ ] Open a JavaScript file, for example "server/index.js" and check if `eslint` is working. It will complain that `'err' is defined but never used.`. This means it is working.
-- [ ] Open a React File, for example, "frontend/src/main.jsx," and check if `eslint` complains about `Fast refresh only works when a file has exports. Move your component(s) to a separate file.`. Again, it means `eslint` is working. Now check at the status bar if the `Prettier` has a double checkmark :heavy_check_mark: (double). It means Prettier is working. You will see a nice extension `Formatting:`:heavy_check_mark: that can be used to disable the `Format on Save` feature temporarily. 
+- [ ] Open a React File, for example, "frontend/src/main.jsx," and check if `eslint` complains about `Fast refresh only works when a file has exports. Move your component(s) to a separate file.`. Again, it means `eslint` is working. Now check at the status bar if the `Prettier` has a double checkmark :heavy_check_mark: (double). It means Prettier is working. You will see a nice extension `Formatting:`:heavy_check_mark: that can be used to disable the `Format on Save` feature temporarily.
 - [ ] Check if, on the left pane, you have the NPM Scripts (this may be disabled; look at the "Explorer" tree-dots up-right). There will be scripts inside the `package.json` files. You will basically need to run the `dev:collector`, `dev:server` and the `dev:frontend` in this order. When the frontend finishes starting, a window browser will open **inside** the VSCode. Still, you can open it outside.
 
 :warning: **Important for all developers** :warning:

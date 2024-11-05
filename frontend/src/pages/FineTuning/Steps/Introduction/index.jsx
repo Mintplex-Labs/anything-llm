@@ -26,12 +26,12 @@ export default function Introduction({ setSettings, setStep }) {
             </p>
             <p>
               Typically, you would use an open-source model - you probably are
-              using one right now with AnythingLLM!
+              using one right now with Raiqa Assistant!
             </p>
             <p>
-              When you create a custom fine-tune with AnythingLLM we will train
+              When you create a custom fine-tune with Raiqa Assistant we will train
               a custom base model on your specific data already inside of this
-              AnythingLLM instance and give you back a <code>GGUF</code> file
+              Raiqa Assistant instance and give you back a <code>GGUF</code> file
               you can then load back into tools like Ollama, LMStudio, and
               anywhere else you use local LLMs.
             </p>

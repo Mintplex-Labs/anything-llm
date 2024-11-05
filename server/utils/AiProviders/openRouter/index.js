@@ -24,8 +24,8 @@ class OpenRouterLLM {
       baseURL: this.basePath,
       apiKey: process.env.OPENROUTER_API_KEY ?? null,
       defaultHeaders: {
-        "HTTP-Referer": "https://anythingllm.com",
-        "X-Title": "AnythingLLM",
+        "HTTP-Referer": "https://raiqa.ai",
+        "X-Title": "Raiqa Assistant",
       },
     });
     this.model =

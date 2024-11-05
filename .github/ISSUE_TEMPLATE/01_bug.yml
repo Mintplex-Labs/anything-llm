@@ -1,22 +1,22 @@
 name: 🐛 Bug Report
-description: File a bug report for AnythingLLM
+description: File a bug report for Raiqa Assistant
 title: "[BUG]: "
 labels: [possible bug]
 body:
   - type: markdown
     attributes:
-      value: | 
-        Use this template to file a bug report for AnythingLLM. Please be as descriptive as possible to allow everyone to replicate and solve your issue. Want help contributing a PR? Use our repo chatbot by OnboardAI! https://learnthisrepo.com/anythingllm"
+      value: |
+        Use this template to file a bug report for Raiqa Assistant. Please be as descriptive as possible to allow everyone to replicate and solve your issue. Want help contributing a PR? Use our repo chatbot by OnboardAI!"
   - type: dropdown
     id: runtime
     attributes:
-      label: How are you running AnythingLLM?
-      description: AnythingLLM can be run in many environments, pick the one that best represents where you encounter the bug.
+      label: How are you running Raiqa Assistant?
+      description: Raiqa Assistant can be run in many environments, pick the one that best represents where you encounter the bug.
       options:
         - Docker (local)
         - Docker (remote machine)
         - Local development
-        - AnythingLLM desktop app
+        - Raiqa Assistant desktop app
         - All versions
         - Not listed
       default: 0

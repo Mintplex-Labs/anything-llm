@@ -20,7 +20,7 @@ export default function UserRow({ currUser, user }) {
   const handleSuspend = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to suspend ${user.username}?\nAfter you do this they will be logged out and unable to log back into this instance of AnythingLLM until unsuspended by an admin.`
+        `Are you sure you want to suspend ${user.username}?\nAfter you do this they will be logged out and unable to log back into this instance of Raiqa Assistant until unsuspended by an admin.`
       )
     )
       return false;
@@ -41,7 +41,7 @@ export default function UserRow({ currUser, user }) {
   const handleDelete = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to delete ${user.username}?\nAfter you do this they will be logged out and unable to use this instance of AnythingLLM.\n\nThis action is irreversible.`
+        `Are you sure you want to delete ${user.username}?\nAfter you do this they will be logged out and unable to use this instance of Raiqa Assistant.\n\nThis action is irreversible.`
       )
     )
       return false;

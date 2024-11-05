@@ -88,15 +88,15 @@ function apiOpenAICompatibleEndpoints(app) {
       #swagger.tags = ['OpenAI Compatible Endpoints']
       #swagger.description = 'Execute a chat with a workspace with OpenAI compatibility. Supports streaming as well. Model must be a workspace slug from /models.'
       #swagger.requestBody = {
-          description: 'Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.',
+          description: 'Send a prompt to the workspace with full use of documents as if sending a chat in Raiqa Assistant. Only supports some values of OpenAI API. See example below.',
           required: true,
           content: {
             "application/json": {
               example: {
                 messages: [
                 {"role":"system", content: "You are a helpful assistant"},
-                {"role":"user", content: "What is AnythingLLM?"},
-                {"role":"assistant", content: "AnythingLLM is...."},
+                {"role":"user", content: "What is Raiqa Assistant?"},
+                {"role":"assistant", content: "Raiqa Assistant is...."},
                 {"role":"user", content: "Follow up question..."}
                 ],
                 model: "sample-workspace",
@@ -257,7 +257,7 @@ function apiOpenAICompatibleEndpoints(app) {
     async (request, response) => {
       /*
       #swagger.tags = ['OpenAI Compatible Endpoints']
-      #swagger.description = 'List all the vector database collections connected to AnythingLLM. These are essentially workspaces but return their unique vector db identifier - this is the same as the workspace slug.'
+      #swagger.description = 'List all the vector database collections connected to Raiqa Assistant. These are essentially workspaces but return their unique vector db identifier - this is the same as the workspace slug.'
       #swagger.responses[200] = {
         content: {
           "application/json": {

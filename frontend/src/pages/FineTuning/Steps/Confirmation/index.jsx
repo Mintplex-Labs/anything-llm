@@ -70,7 +70,7 @@ export default function Confirmation({ settings, setSettings, setStep }) {
             Below are your fine-tuning order details. If you have any questions
             before or after ordering your fine-tune you can checkout the{" "}
             <a
-              href="https://docs.anythingllm.com/fine-tuning/overview"
+              href="https://docs.raiqa.ai/fine-tuning/overview"
               target="_blank"
               rel="noreferrer"
               className="underline text-sky-400"

@@ -1,12 +1,12 @@
-name: anythingllm
+name: raiqaAssistant
 
 networks:
   anything-llm:
     driver: bridge
 
 services:
-  anything-llm:
-    container_name: anythingllm
+  raiqa-assistant:
+    container_name: raiqaAssistant
     build:
       context: ../.
       dockerfile: ./docker/Dockerfile

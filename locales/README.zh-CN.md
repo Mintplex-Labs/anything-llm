@@ -1,11 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
-</p>
-
-<p align="center">
-    <b>AnythingLLM：</b> 您一直在寻找的全方位AI应用程序。<br />
+    <b>Raiqa Assistant：</b> 您一直在寻找的全方位AI应用程序。<br />
     与您的文档聊天，使用AI代理，高度可配置，多用户，无需繁琐的设置。
 </p>
 
@@ -15,21 +11,11 @@
   </a> |
   <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="许可证">
-  </a> |
-  <a href="https://docs.anythingllm.com" target="_blank">
-    文档
-  </a> |
-  <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
-    托管实例
   </a>
 </p>
 
 <p align="center">
   <a href='../README.md'>English</a> · <b>简体中文</b> · <a href='./README.ja-JP.md'>日本語</a>
-</p>
-
-<p align="center">
-👉 适用于桌面（Mac、Windows和Linux）的AnythingLLM！<a href="https://anythingllm.com/download" target="_blank">立即下载</a>
 </p>
 
 这是一个全栈应用程序，可以将任何文档、资源（如网址链接、音频、视频）或内容片段转换为上下文，以便任何大语言模型（LLM）在聊天期间作为参考使用。此应用程序允许您选择使用哪个LLM或向量数据库，同时支持多用户管理并设置不同权限。
@@ -155,21 +141,21 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ## 远程信息收集与隐私保护
 
-由 Mintplex Labs Inc 开发的 AnythingLLM 包含一个收集匿名使用信息的 Telemetry 功能。
+由 Mintplex Labs Inc 开发的 Raiqa Assistant 包含一个收集匿名使用信息的 Telemetry 功能。
 
 <details>
-<summary><kbd>有关 AnythingLLM 的远程信息收集与隐私保护更多信息</kbd></summary>
+<summary><kbd>有关 Raiqa Assistant 的远程信息收集与隐私保护更多信息</kbd></summary>
 
 
 
 
 ### 为什么收集信息？
 
-我们使用这些信息来帮助我们理解 AnythingLLM 的使用情况，帮助我们确定新功能和错误修复的优先级，并帮助我们提高 AnythingLLM 的性能和稳定性。
+我们使用这些信息来帮助我们理解 Raiqa Assistant 的使用情况，帮助我们确定新功能和错误修复的优先级，并帮助我们提高 Raiqa Assistant 的性能和稳定性。
 
 ### 怎样关闭
 
-通过在服务器或 docker 的 `.env` 设置中将 `DISABLE_TELEMETRY` 设置为 “true” 来选择退出 Telemetry 远程信息收集功能。您也可以进入 AnythingLLM 应用 >>> 侧边栏最下方 >>> `隐私和数据` （Privacy&Data) >>> 找到最下方的 Anonymous Telemetry Enabled，点击绿色按钮让它变灰色，从而禁用信息收集功能。
+通过在服务器或 docker 的 `.env` 设置中将 `DISABLE_TELEMETRY` 设置为 “true” 来选择退出 Telemetry 远程信息收集功能。您也可以进入 Raiqa Assistant 应用 >>> 侧边栏最下方 >>> `隐私和数据` （Privacy&Data) >>> 找到最下方的 Anonymous Telemetry Enabled，点击绿色按钮让它变灰色，从而禁用信息收集功能。
 
 ### 你们跟踪收集哪些信息？
 

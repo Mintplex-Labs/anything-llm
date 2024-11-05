@@ -1,11 +1,11 @@
 # How to use Dockerized Anything LLM
 
-Use the Dockerized version of AnythingLLM for a much faster and complete startup of AnythingLLM.
+Use the Dockerized version of Raiqa Assistant for a much faster and complete startup of Raiqa Assistant.
 
 ### Minimum Requirements
 
 > [!TIP]
-> Running AnythingLLM on AWS/GCP/Azure?
+> Running Raiqa Assistant on AWS/GCP/Azure?
 > You should aim for at least 2GB of RAM. Disk storage is proportional to however much data
 > you will be storing (documents, vectors, models, etc). Minimum 10GB recommended.
 
@@ -13,23 +13,23 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 - `yarn` and `node` on your machine
 - access to an LLM running locally or remotely
 
-\*AnythingLLM by default uses a built-in vector database powered by [LanceDB](https://github.com/lancedb/lancedb)
+\*Raiqa Assistant by default uses a built-in vector database powered by [LanceDB](https://github.com/lancedb/lancedb)
 
-\*AnythingLLM by default embeds text on instance privately [Learn More](../server/storage/models/README.md)
+\*Raiqa Assistant by default embeds text on instance privately [Learn More](../server/storage/models/README.md)
 
-## Recommend way to run dockerized AnythingLLM!
+## Recommend way to run dockerized Raiqa Assistant!
 
 > [!IMPORTANT]
 > If you are running another service on localhost like Chroma, LocalAi, or LMStudio
 > you will need to use http://host.docker.internal:xxxx to access the service from within
-> the docker container using AnythingLLM as `localhost:xxxx` will not resolve for the host system.
+> the docker container using Raiqa Assistant as `localhost:xxxx` will not resolve for the host system.
 >
 > **Requires** Docker v18.03+ on Win/Mac and 20.10+ on Linux/Ubuntu for host.docker.internal to resolve!
 >
 > _Linux_: add `--add-host=host.docker.internal:host-gateway` to docker run command for this to resolve.
 >
 > eg: Chroma host URL running on localhost:8000 on host machine needs to be http://host.docker.internal:8000
-> when used in AnythingLLM.
+> when used in Raiqa Assistant.
 
 > [!TIP]
 > It is best to mount the containers storage volume to a folder on your host machine
@@ -43,7 +43,7 @@ docker pull mintplexlabs/anythingllm
 
 <table>
 <tr>
-<th colspan="2">Mount the storage locally and run AnythingLLM in Docker</th>
+<th colspan="2">Mount the storage locally and run Raiqa Assistant in Docker</th>
 </tr>
 <tr>
 <td>
@@ -52,7 +52,7 @@ docker pull mintplexlabs/anythingllm
 <td>
 
 ```shell
-export STORAGE_LOCATION=$HOME/anythingllm && \
+export STORAGE_LOCATION=$HOME/raiqaAssistant && \
 mkdir -p $STORAGE_LOCATION && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d -p 3001:3001 \
@@ -73,7 +73,7 @@ mintplexlabs/anythingllm
 
 ```powershell
 # Run this in powershell terminal
-$env:STORAGE_LOCATION="$HOME\Documents\anythingllm"; `
+$env:STORAGE_LOCATION="$HOME\Documents\raiqaAssistant"; `
 If(!(Test-Path $env:STORAGE_LOCATION)) {New-Item $env:STORAGE_LOCATION -ItemType Directory}; `
 If(!(Test-Path "$env:STORAGE_LOCATION\.env")) {New-Item "$env:STORAGE_LOCATION\.env" -ItemType File}; `
 docker run -d -p 3001:3001 `
@@ -94,9 +94,9 @@ mintplexlabs/anythingllm;
 ```yaml
 version: '3.8'
 services:
-  anythingllm:
+  raiqaAssistant:
     image: mintplexlabs/anythingllm
-    container_name: anythingllm
+    container_name: raiqaAssistant
     ports:
     - "3001:3001"
     cap_add:
@@ -136,7 +136,7 @@ volumes:
 </tr>
 </table>
 
-Go to `http://localhost:3001` and you are now using AnythingLLM! All your data and progress will persist between
+Go to `http://localhost:3001` and you are now using Raiqa Assistant! All your data and progress will persist between
 container rebuilds or pulls from Docker Hub.
 
 ## How to use the user interface
@@ -150,7 +150,7 @@ container rebuilds or pulls from Docker Hub.
 ## Build locally from source _not recommended for casual use_
 
 - `git clone` this repo and `cd anything-llm` to get to the root directory.
-- `touch server/storage/anythingllm.db` to create empty SQLite DB file.
+- `touch server/storage/raiqaAssistant.db` to create empty SQLite DB file.
 - `cd docker/`
 - `cp .env.example .env` **you must do this before building**
 - `docker-compose up -d --build` to build the image - this will take a few moments.
@@ -159,12 +159,12 @@ Your docker host will show the image as online once the build process is complet
 
 ## Integrations and one-click setups
 
-The integrations below are templates or tooling built by the community to make running the docker experience of AnythingLLM easier.
+The integrations below are templates or tooling built by the community to make running the docker experience of Raiqa Assistant easier.
 
-### Use the Midori AI Subsystem to Manage AnythingLLM
+### Use the Midori AI Subsystem to Manage Raiqa Assistant
 
 Follow the setup found on [Midori AI Subsystem Site](https://io.midori-ai.xyz/subsystem/manager/) for your host OS
-After setting that up install the AnythingLLM docker backend to the Midori AI Subsystem.
+After setting that up install the Raiqa Assistant docker backend to the Midori AI Subsystem.
 
 Once that is done, you are all set!
 
@@ -182,7 +182,7 @@ If you are in docker and cannot connect to a service running on your host machin
 > On linux `http://host.docker.internal:xxxx` does not work.
 > Use `http://172.17.0.1:xxxx` instead to emulate this functionality.
 
-Then in docker you need to replace that localhost part with `host.docker.internal`. For example, if running Ollama on the host machine, bound to http://127.0.0.1:11434 you should put `http://host.docker.internal:11434` into the connection URL in AnythingLLM.
+Then in docker you need to replace that localhost part with `host.docker.internal`. For example, if running Ollama on the host machine, bound to http://127.0.0.1:11434 you should put `http://host.docker.internal:11434` into the connection URL in Raiqa Assistant.
 
 
 ### API is not working, cannot login, LLM is "offline"?

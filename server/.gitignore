@@ -1,7 +1,8 @@
 .env.production
 .env.development
+.env.uat
 storage/assets/*
-!storage/assets/anything-llm.png
+!storage/assets/raiqa-health.png
 storage/documents/*
 storage/comkey/*
 storage/tmp/*

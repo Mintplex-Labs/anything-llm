@@ -4,7 +4,7 @@ const { getType } = require("mime");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../../models/systemSettings");
 const { normalizePath, isWithin } = require(".");
-const LOGO_FILENAME = "anything-llm.png";
+const LOGO_FILENAME = "raiqa-health.png";
 
 function validFilename(newFilename = "") {
   return ![LOGO_FILENAME].includes(newFilename);

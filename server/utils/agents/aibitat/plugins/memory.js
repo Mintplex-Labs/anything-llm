@@ -19,10 +19,10 @@ const memory = {
             "Search against local documents for context that is relevant to the query or store a snippet of text into memory for retrieval later. Storing information should only be done when the user specifically requests for information to be remembered or saved to long-term memory. You should use this tool before search the internet for information. Do not use this tool unless you are explicity told to 'remember' or 'store' information.",
           examples: [
             {
-              prompt: "What is AnythingLLM?",
+              prompt: "What is Raiqa Assistant?",
               call: JSON.stringify({
                 action: "search",
-                content: "What is AnythingLLM?",
+                content: "What is Raiqa Assistant?",
               }),
             },
             {

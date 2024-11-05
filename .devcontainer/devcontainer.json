@@ -10,7 +10,7 @@
   //   },
   //   "dockerfile": "Dockerfile"
   // },
-  // "containerUser": "anythingllm",
+  // "containerUser": "raiqaAssistant",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
   "image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm",
   // Features to add to the dev container. More info: https://containers.dev/features.

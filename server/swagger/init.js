@@ -5,9 +5,9 @@ const path = require("path");
 const doc = {
   info: {
     version: "1.0.0",
-    title: "AnythingLLM Developer API",
+    title: "Raiqa Assistant Developer API",
     description:
-      "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io.",
+      "API endpoints that enable programmatic reading, writing, and updating of your Raiqa Assistant instance. UI supplied by Swagger.io.",
   },
   // Swagger-autogen does not allow us to use relative paths as these will resolve to
   // http:///api in the openapi.json file, so we need to monkey-patch this post-generation.

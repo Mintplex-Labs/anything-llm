@@ -62,7 +62,7 @@ export default function CustomSiteSettings() {
               name="meta_page_title"
               type="text"
               className="border-none bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[400px] placeholder:text-white/20"
-              placeholder="AnythingLLM | Your personal LLM trained on anything"
+              placeholder="Raiqa Assistant | Your personal LLM trained on anything"
               autoComplete="off"
               onChange={(e) => {
                 setSettings((prev) => {
@@ -71,7 +71,7 @@ export default function CustomSiteSettings() {
               }}
               value={
                 settings.title ??
-                "AnythingLLM | Your personal LLM trained on anything"
+                "Raiqa Assistant | Your personal LLM trained on anything"
               }
             />
           </div>

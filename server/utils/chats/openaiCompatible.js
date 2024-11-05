@@ -216,7 +216,7 @@ async function streamChat({
   // We don't want to write a new method for every LLM to support openAI calls
   // via the `handleStreamResponseV2` method handler. So here we create a passthrough
   // that on writes to the main response, transforms the chunk to OpenAI format.
-  // The chunk is coming in the format from `writeResponseChunk` but in the AnythingLLM
+  // The chunk is coming in the format from `writeResponseChunk` but in the Raiqa Assistant
   // response chunk schema, so we here we mutate each chunk.
   const responseInterceptor = new PassThrough({});
   responseInterceptor.on("data", (chunk) => {

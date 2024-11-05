@@ -177,7 +177,7 @@ function apiSystemEndpoints(app) {
               },
               {
                 "role": "assistant",
-                "content": "AnythingLLM is a knowledge graph and vector database management system built using NodeJS express server. It provides an interface for handling all interactions, including vectorDB management and LLM (Language Model) interactions."
+                "content": "Raiqa Assistant is a knowledge graph and vector database management system built using NodeJS express server. It provides an interface for handling all interactions, including vectorDB management and LLM (Language Model) interactions."
               },
             ]
           }

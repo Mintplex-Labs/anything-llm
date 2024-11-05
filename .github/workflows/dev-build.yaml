@@ -1,4 +1,4 @@
-name: AnythingLLM Development Docker image (amd64)
+name: Raiqa Assistant Development Docker image (amd64)
 
 concurrency:
   group: build-${{ github.ref }}
@@ -43,15 +43,15 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         # Only login to the Docker Hub if the repo is mintplex/anythingllm, to allow for forks to build on GHCR
-        if: steps.dockerhub.outputs.enabled == 'true' 
+        if: steps.dockerhub.outputs.enabled == 'true'
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-   
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
@@ -77,7 +77,7 @@ jobs:
 
       # For Docker scout there are some intermediary reported CVEs which exists outside
       # of execution content or are unreachable by an attacker but exist in image.
-      # We create VEX files for these so they don't show in scout summary. 
+      # We create VEX files for these so they don't show in scout summary.
       - name: Collect known and verified CVE exceptions
         id: cve-list
         run: |
@@ -111,4 +111,3 @@ jobs:
           done
         shell: bash
 
-      

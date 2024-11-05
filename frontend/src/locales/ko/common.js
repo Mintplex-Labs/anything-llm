@@ -316,7 +316,7 @@ const TRANSLATIONS = {
       system: "시스템",
       user: "사용자",
       message: "메시지",
-      assistant: "AnythingLLM 채팅 어시스턴트",
+      assistant: "Raiqa Assistant 채팅 어시스턴트",
       "double-click": "더블 클릭하여 편집...",
       save: "메시지 저장",
     },
@@ -332,7 +332,7 @@ const TRANSLATIONS = {
   api: {
     title: "API 키",
     description:
-      "API 키는 소유자가 프로그래밍 방식으로 이 AnythingLLM 인스턴스에 액세스하고 관리할 수 있도록 합니다.",
+      "API 키는 소유자가 프로그래밍 방식으로 이 Raiqa Assistant 인스턴스에 액세스하고 관리할 수 있도록 합니다.",
     link: "API 문서 읽기",
     generate: "새 API 키 생성",
     table: {
@@ -399,7 +399,7 @@ const TRANSLATIONS = {
   vector: {
     title: "벡터 데이터베이스",
     description:
-      "이것은 AnythingLLM 인스턴스가 벡터 데이터베이스 사용을 위한 인증 설정입니다. 이 키가 활성 상태이고 정확해야 합니다.",
+      "이것은 Raiqa Assistant 인스턴스가 벡터 데이터베이스 사용을 위한 인증 설정입니다. 이 키가 활성 상태이고 정확해야 합니다.",
     provider: {
       title: "벡터 데이터베이스 제공자",
       description: "LanceDB를 선택하면 설정이 필요 없습니다.",
@@ -447,7 +447,7 @@ const TRANSLATIONS = {
     password: {
       title: "비밀번호 보호",
       description:
-        "AnythingLLM 인스턴스를 비밀번호로 보호하십시오. 이 비밀번호를 잊어버리면 복구 방법이 없으므로 반드시 저장하세요.",
+        "Raiqa Assistant 인스턴스를 비밀번호로 보호하십시오. 이 비밀번호를 잊어버리면 복구 방법이 없으므로 반드시 저장하세요.",
     },
     instance: {
       title: "인스턴스 비밀번호 보호",

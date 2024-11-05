@@ -14,7 +14,7 @@ const keyPath =
 // that can then be appended as a header value to do integrity checking on a payload. Given the
 // nature of this class and that keys are rolled constantly, this protects the request
 // integrity of requests sent to the collector as only the server can sign these requests.
-// This keeps accidental misconfigurations of AnythingLLM that leaving port 8888 open from
+// This keeps accidental misconfigurations of Raiqa Assistant that leaving port 8888 open from
 // being abused or SSRF'd by users scraping malicious sites who have a loopback embedded in a <script>, for example.
 // Since each request to the collector must be signed to be valid, unsigned requests directly to the collector
 // will be dropped and must go through the /server endpoint directly.
@@ -61,7 +61,7 @@ class CommunicationKey {
       keyPair.publicKey
     );
     this.log(
-      "RSA key pair generated for signed payloads within AnythingLLM services."
+      "RSA key pair generated for signed payloads within Raiqa Assistant services."
     );
   }
 

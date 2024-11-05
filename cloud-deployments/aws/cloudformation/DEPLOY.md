@@ -1,6 +1,6 @@
-# How to deploy a private AnythingLLM instance on AWS
+# How to deploy a private Raiqa Assistant instance on AWS
 
-With an AWS account you can easily deploy a private AnythingLLM instance on AWS. This will create a url that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys and they will not be exposed - however if you want your instance to be protected it is highly recommend that you set a password one setup is complete.
+With an AWS account you can easily deploy a private Raiqa Assistant instance on AWS. This will create a url that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys and they will not be exposed - however if you want your instance to be protected it is highly recommend that you set a password one setup is complete.
 
 **Quick Launch (EASY)**
 1. Log in to your AWS account
@@ -14,7 +14,7 @@ With an AWS account you can easily deploy a private AnythingLLM instance on AWS.
 
 ![Upload Stack](../../../images/screenshots/upload.png)
 
-6. Click Deploy.  
+6. Click Deploy.
 7. Wait for stack events to finish and be marked as `Completed`
 8. View `Outputs` tab.
 
@@ -33,7 +33,7 @@ The output of this cloudformation stack will be:
 
 ## Please read this notice before submitting issues about your deployment
 
-**Note:** 
+**Note:**
 Your instance will not be available instantly. Depending on the instance size you launched with it can take 5-10 minutes to fully boot up.
 
 If you want to check the instance's progress, navigate to [your deployed EC2 instances](https://us-west-1.console.aws.amazon.com/ec2/home) and connect to your instance via SSH in browser.
@@ -42,8 +42,8 @@ Once connected run `sudo tail -f /var/log/cloud-init-output.log` and wait for th
 You should see an output like this
 ```
 [+] Running 2/2
- ⠿ Network docker_anything-llm  Created 
- ⠿ Container anything-llm       Started  
+ ⠿ Network docker_anything-llm  Created
+ ⠿ Container anything-llm       Started
 ```
 
 Additionally, your use of this deployment process means you are responsible for any costs of these AWS resources fully.

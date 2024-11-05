@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AnythingLLM Agent Skill Plugin Manifest Schema",
+  "title": "Raiqa Assistant Agent Skill Plugin Manifest Schema",
   "type": "object",
   "properties": {
     "active": {
@@ -13,7 +13,7 @@
     },
     "name": {
       "type": "string",
-      "description": "The human-readable name of the skill displayed in the AnythingLLM UI."
+      "description": "The human-readable name of the skill displayed in the Raiqa Assistant UI."
     },
     "schema": {
       "type": "string",

@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 const TITLE = "Create your first workspace";
 const DESCRIPTION =
-  "Create your first workspace and get started with AnythingLLM.";
+  "Create your first workspace and get started with Raiqa Assistant.";
 
 export default function CreateWorkspace({
   setHeader,

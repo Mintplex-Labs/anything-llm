@@ -29,7 +29,7 @@ const Chroma = {
 
     // Ensure the name doesn't start with a non-alphanumeric character
     if (normalized[0] && !/^[a-zA-Z0-9]$/.test(normalized[0])) {
-      normalized = "anythingllm-" + normalized.slice(1);
+      normalized = "raiqaAssistant-" + normalized.slice(1);
     }
 
     // Ensure the name doesn't end with a non-alphanumeric character
@@ -42,7 +42,7 @@ const Chroma = {
 
     // Ensure the length is between 3 and 63 characters
     if (normalized.length < 3) {
-      normalized = `anythingllm-${normalized}`;
+      normalized = `raiqaAssistant-${normalized}`;
     } else if (normalized.length > 63) {
       // Recheck the norm'd name if sliced since its ending can still be invalid.
       normalized = this.normalize(normalized.slice(0, 63));

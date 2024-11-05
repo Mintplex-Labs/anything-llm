@@ -290,7 +290,7 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
         value={domains}
         onChange={handleChange}
         onBlur={handleBlur}
-        placeholder="https://mysite.com, https://anythingllm.com"
+        placeholder="https://mysite.com, https://raiqa.ai"
         classNames={{
           tag: "bg-blue-300/10 text-zinc-800 m-1",
           input:

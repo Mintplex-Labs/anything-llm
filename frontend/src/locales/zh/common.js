@@ -68,11 +68,11 @@ const TRANSLATIONS = {
 
   welcomeMessage: {
     part1:
-      "欢迎使用 AnythingLLM，这是由 Mintplex Labs 开发的开源 AI 工具，可以将任何东西转换为您可以查询和聊天的训练有素的聊天机器人。AnythingLLM 是一款 BYOK（自带密钥）软件，因此除了您想使用的服务外，此软件不收取订阅费、费用或其他费用。",
+      "欢迎使用 Raiqa Assistant，这是由 Mintplex Labs 开发的开源 AI 工具，可以将任何东西转换为您可以查询和聊天的训练有素的聊天机器人。Raiqa Assistant 是一款 BYOK（自带密钥）软件，因此除了您想使用的服务外，此软件不收取订阅费、费用或其他费用。",
     part2:
-      "AnythingLLM 是将强大的 AI 产品（如 OpenAi、GPT-4、LangChain、PineconeDB、ChromaDB 等）整合在一个整洁的包中而无需繁琐操作的最简单方法，可以将您的生产力提高 100 倍。",
+      "Raiqa Assistant 是将强大的 AI 产品（如 OpenAi、GPT-4、LangChain、PineconeDB、ChromaDB 等）整合在一个整洁的包中而无需繁琐操作的最简单方法，可以将您的生产力提高 100 倍。",
     part3:
-      "AnythingLLM 可以完全在您的本地计算机上运行，几乎没有开销，您甚至不会注意到它的存在！无需 GPU。也可以进行云端和本地安装。\nAI 工具生态系统每天都在变得更强大。AnythingLLM 使其易于使用。",
+      "Raiqa Assistant 可以完全在您的本地计算机上运行，几乎没有开销，您甚至不会注意到它的存在！无需 GPU。也可以进行云端和本地安装。\nAI 工具生态系统每天都在变得更强大。Raiqa Assistant 使其易于使用。",
     githubIssue: "在 Github 上创建问题",
     user1: "我该如何开始?!",
     part4:
@@ -80,7 +80,7 @@ const TRANSLATIONS = {
     createWorkspace: "创建您的第一个工作区",
     user2: "这像是一个 AI Dropbox 吗？那么聊天呢？它是一个聊天机器人，不是吗？",
     part5:
-      "AnythingLLM 不仅仅是一个更智能的 Dropbox。\n\nAnythingLLM 提供了两种与您的数据交流的方式：\n\n<i>查询：</i> 您的聊天将返回在您的工作区中访问的文档中找到的数据或推论。向工作区添加更多文档会使其更智能！\n\n<i>对话：</i> 您的文档和正在进行的聊天记录同时为 LLM 知识做出贡献。非常适合添加基于文本的实时信息或纠正 LLM 可能存在的误解。\n\n您可以在聊天过程中 <i>切换模式！</i>",
+      "Raiqa Assistant 不仅仅是一个更智能的 Dropbox。\n\nRaiqa Assistant 提供了两种与您的数据交流的方式：\n\n<i>查询：</i> 您的聊天将返回在您的工作区中访问的文档中找到的数据或推论。向工作区添加更多文档会使其更智能！\n\n<i>对话：</i> 您的文档和正在进行的聊天记录同时为 LLM 知识做出贡献。非常适合添加基于文本的实时信息或纠正 LLM 可能存在的误解。\n\n您可以在聊天过程中 <i>切换模式！</i>",
     user3: "哇，这听起来很棒，让我马上试试！",
     part6: "玩得开心！",
     starOnGithub: "在 GitHub 上加星",
@@ -116,7 +116,7 @@ const TRANSLATIONS = {
       add: "添加新消息",
       save: "保存消息",
       heading: "向我解释",
-      body: "AnythingLLM 的好处",
+      body: "Raiqa Assistant 的好处",
     },
     pfp: {
       title: "助理头像",
@@ -304,7 +304,7 @@ const TRANSLATIONS = {
       system: "系统",
       user: "用户",
       message: "消息",
-      assistant: "AnythingLLM 聊天助手",
+      assistant: "Raiqa Assistant 聊天助手",
       "double-click": "双击以编辑...",
       save: "保存消息",
     },
@@ -319,7 +319,7 @@ const TRANSLATIONS = {
   // API Keys
   api: {
     title: "API 密钥",
-    description: "API 密钥允许持有者以编程方式访问和管理此 AnythingLLM 实例。",
+    description: "API 密钥允许持有者以编程方式访问和管理此 Raiqa Assistant 实例。",
     link: "阅读 API 文档",
     generate: "生成新的 API 密钥",
     table: {
@@ -333,7 +333,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM 首选项",
     description:
-      "这些是您首选的 LLM 聊天和嵌入提供商的凭据和设置。重要的是，这些密钥是最新的和正确的，否则 AnythingLLM 将无法正常运行。",
+      "这些是您首选的 LLM 聊天和嵌入提供商的凭据和设置。重要的是，这些密钥是最新的和正确的，否则 Raiqa Assistant 将无法正常运行。",
     provider: "LLM 提供商",
   },
 
@@ -343,7 +343,7 @@ const TRANSLATIONS = {
       "这些是您的首选转录模型提供商的凭据和设置。重要的是这些密钥是最新且正确的，否则媒体文件和音频将无法转录。",
     provider: "转录提供商",
     "warn-start":
-      "在 RAM 或 CPU 有限的计算机上使用本地耳语模型可能会在处理媒体文件时停止 AnythingLLM。",
+      "在 RAM 或 CPU 有限的计算机上使用本地耳语模型可能会在处理媒体文件时停止 Raiqa Assistant。",
     "warn-recommend": "我们建议至少 2GB RAM 并上传 <10Mb 的文件。",
     "warn-end": "内置模型将在首次使用时自动下载。",
   },
@@ -353,10 +353,10 @@ const TRANSLATIONS = {
     "desc-start":
       "当使用本身不支持嵌入引擎的 LLM 时，您可能需要额外指定用于嵌入文本的凭据。",
     "desc-end":
-      "嵌入是将文本转换为矢量的过程。需要这些凭据才能将您的文件和提示转换为 AnythingLLM 可以用来处理的格式。",
+      "嵌入是将文本转换为矢量的过程。需要这些凭据才能将您的文件和提示转换为 Raiqa Assistant 可以用来处理的格式。",
     provider: {
       title: "嵌入引擎提供商",
-      description: "使用 AnythingLLM 的本机嵌入引擎时不需要设置。",
+      description: "使用 Raiqa Assistant 的本机嵌入引擎时不需要设置。",
     },
   },
 
@@ -383,7 +383,7 @@ const TRANSLATIONS = {
   vector: {
     title: "向量数据库",
     description:
-      "这些是 AnythingLLM 实例如何运行的凭据和设置。重要的是，这些密钥是最新的和正确的。",
+      "这些是 Raiqa Assistant 实例如何运行的凭据和设置。重要的是，这些密钥是最新的和正确的。",
     provider: {
       title: "向量数据库提供商",
       description: "LanceDB 不需要任何配置。",

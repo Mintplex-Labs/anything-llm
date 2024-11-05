@@ -70,7 +70,7 @@ export default function Footer() {
               className="w-fit transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
               aria-label="Docs"
               data-tooltip-id="open-documentation"
-              data-tooltip-content="Open AnythingLLM help docs"
+              data-tooltip-content="Open Raiqa Assistant help docs"
             >
               <BookOpen weight="fill" className="h-5 w-5 " />
             </a>
@@ -83,7 +83,7 @@ export default function Footer() {
               className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
               aria-label="Join our Discord server"
               data-tooltip-id="open-discord"
-              data-tooltip-content="Join the AnythingLLM Discord"
+              data-tooltip-content="Join the Raiqa Assistant Discord"
             >
               <DiscordLogo
                 weight="fill"

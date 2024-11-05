@@ -68,11 +68,11 @@ const TRANSLATIONS = {
 
   welcomeMessage: {
     part1:
-      "Bienvenue sur AnythingLLM, un outil d'intelligence artificielle open-source créé par Mintplex Labs qui transforme n'importe quoi en un chatbot entraîné avec lequel vous pouvez interroger et discuter. AnythingLLM est un logiciel BYOK (apportez vos propres clés), il n'y a donc pas d'abonnement, de frais ou de charges pour ce logiciel en dehors des services que vous souhaitez utiliser.",
+      "Bienvenue sur Raiqa Assistant, un outil d'intelligence artificielle open-source créé par Mintplex Labs qui transforme n'importe quoi en un chatbot entraîné avec lequel vous pouvez interroger et discuter. Raiqa Assistant est un logiciel BYOK (apportez vos propres clés), il n'y a donc pas d'abonnement, de frais ou de charges pour ce logiciel en dehors des services que vous souhaitez utiliser.",
     part2:
-      "AnythingLLM est le moyen le plus simple de regrouper des produits d'intelligence artificielle puissants tels que OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB et d'autres services dans un package soigné, sans tracas, pour augmenter votre productivité de 100x.",
+      "Raiqa Assistant est le moyen le plus simple de regrouper des produits d'intelligence artificielle puissants tels que OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB et d'autres services dans un package soigné, sans tracas, pour augmenter votre productivité de 100x.",
     part3:
-      "AnythingLLM peut fonctionner totalement localement sur votre machine avec peu d'impact, vous ne remarquerez même pas qu'il est là ! Pas besoin de GPU. L'installation en cloud et sur site est également disponible.\nL'écosystème des outils d'IA devient plus puissant chaque jour. AnythingLLM le rend facile à utiliser.",
+      "Raiqa Assistant peut fonctionner totalement localement sur votre machine avec peu d'impact, vous ne remarquerez même pas qu'il est là ! Pas besoin de GPU. L'installation en cloud et sur site est également disponible.\nL'écosystème des outils d'IA devient plus puissant chaque jour. Raiqa Assistant le rend facile à utiliser.",
     githubIssue: "Créer un problème sur Github",
     user1: "Comment commencer?!",
     part4:
@@ -81,7 +81,7 @@ const TRANSLATIONS = {
     user2:
       "Est-ce comme un Dropbox IA ou quelque chose comme ça ? Et le chat ? C'est bien un chatbot, non ?",
     part5:
-      "AnythingLLM est plus qu'un Dropbox plus intelligent.\n\nAnythingLLM offre deux façons de parler avec vos données:\n\n<i>Interrogation :</i> Vos chats renverront des données ou des inférences trouvées avec les documents dans votre workspace auquel il a accès. Ajouter plus de documents au workspace le rend plus intelligent !\n\n<i>Conversationnel :</i> Vos documents et votre historique de chat en cours contribuent tous deux aux connaissances du LLM en même temps. Idéal pour ajouter des informations en temps réel basées sur du texte ou des corrections et des malentendus que le LLM pourrait avoir.\n\nVous pouvez basculer entre les deux modes <i>en plein milieu d'une conversation !</i>",
+      "Raiqa Assistant est plus qu'un Dropbox plus intelligent.\n\nRaiqa Assistant offre deux façons de parler avec vos données:\n\n<i>Interrogation :</i> Vos chats renverront des données ou des inférences trouvées avec les documents dans votre workspace auquel il a accès. Ajouter plus de documents au workspace le rend plus intelligent !\n\n<i>Conversationnel :</i> Vos documents et votre historique de chat en cours contribuent tous deux aux connaissances du LLM en même temps. Idéal pour ajouter des informations en temps réel basées sur du texte ou des corrections et des malentendus que le LLM pourrait avoir.\n\nVous pouvez basculer entre les deux modes <i>en plein milieu d'une conversation !</i>",
     user3: "Wow, cela semble incroyable, laissez-moi l'essayer tout de suite !",
     part6: "Amusez-vous bien !",
     starOnGithub: "Étoile sur GitHub",
@@ -120,7 +120,7 @@ const TRANSLATIONS = {
       add: "Ajouter un nouveau message",
       save: "Enregistrer les messages",
       heading: "Expliquez-moi",
-      body: "les avantages de AnythingLLM",
+      body: "les avantages de Raiqa Assistant",
     },
     pfp: {
       title: "Image de profil de l'assistant",
@@ -329,7 +329,7 @@ const TRANSLATIONS = {
       system: "système",
       user: "utilisateur",
       message: "message",
-      assistant: "Assistant de chat AnythingLLM",
+      assistant: "Assistant de chat Raiqa Assistant",
       "double-click": "Double-cliquez pour modifier...",
       save: "Enregistrer les messages",
     },
@@ -346,7 +346,7 @@ const TRANSLATIONS = {
   api: {
     title: "Clés API",
     description:
-      "Les clés API permettent au titulaire d'accéder et de gérer de manière programmatique cette instance AnythingLLM.",
+      "Les clés API permettent au titulaire d'accéder et de gérer de manière programmatique cette instance Raiqa Assistant.",
     link: "Lisez la documentation de l'API",
     generate: "Générer une nouvelle clé API",
     table: {
@@ -359,7 +359,7 @@ const TRANSLATIONS = {
   llm: {
     title: "Préférence LLM",
     description:
-      "Voici les identifiants et les paramètres de votre fournisseur LLM de chat et d'intégration préféré. Il est important que ces clés soient actuelles et correctes, sinon AnythingLLM ne fonctionnera pas correctement.",
+      "Voici les identifiants et les paramètres de votre fournisseur LLM de chat et d'intégration préféré. Il est important que ces clés soient actuelles et correctes, sinon Raiqa Assistant ne fonctionnera pas correctement.",
     provider: "Fournisseur LLM",
   },
 
@@ -369,7 +369,7 @@ const TRANSLATIONS = {
       "Voici les identifiants et les paramètres de votre fournisseur de modèle de transcription préféré. Il est important que ces clés soient actuelles et correctes, sinon les fichiers multimédias et audio ne seront pas transcrits.",
     provider: "Fournisseur de transcription",
     "warn-start":
-      "L'utilisation du modèle local whisper sur des machines avec une RAM ou un CPU limités peut bloquer AnythingLLM lors du traitement des fichiers multimédias.",
+      "L'utilisation du modèle local whisper sur des machines avec une RAM ou un CPU limités peut bloquer Raiqa Assistant lors du traitement des fichiers multimédias.",
     "warn-recommend":
       "Nous recommandons au moins 2 Go de RAM et des fichiers téléchargés <10 Mo.",
     "warn-end":
@@ -381,11 +381,11 @@ const TRANSLATIONS = {
     "desc-start":
       "Lorsque vous utilisez un LLM qui ne supporte pas nativement un moteur d'intégration - vous devrez peut-être spécifier en plus des identifiants pour intégrer le texte.",
     "desc-end":
-      "L'intégration est le processus de transformation du texte en vecteurs. Ces identifiants sont nécessaires pour transformer vos fichiers et invites en un format que AnythingLLM peut utiliser pour traiter.",
+      "L'intégration est le processus de transformation du texte en vecteurs. Ces identifiants sont nécessaires pour transformer vos fichiers et invites en un format que Raiqa Assistant peut utiliser pour traiter.",
     provider: {
       title: "Fournisseur d'intégration",
       description:
-        "Aucune configuration n'est nécessaire lors de l'utilisation du moteur d'intégration natif de AnythingLLM.",
+        "Aucune configuration n'est nécessaire lors de l'utilisation du moteur d'intégration natif de Raiqa Assistant.",
     },
   },
 
@@ -416,7 +416,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Base de données vectorielle",
     description:
-      "Voici les identifiants et les paramètres de fonctionnement de votre instance AnythingLLM. Il est important que ces clés soient actuelles et correctes.",
+      "Voici les identifiants et les paramètres de fonctionnement de votre instance Raiqa Assistant. Il est important que ces clés soient actuelles et correctes.",
     provider: {
       title: "Fournisseur de base de données vectorielle",
       description: "Aucune configuration n'est nécessaire pour LanceDB.",
@@ -465,7 +465,7 @@ const TRANSLATIONS = {
     password: {
       title: "Protection par mot de passe",
       description:
-        "Protégez votre instance AnythingLLM avec un mot de passe. Si vous oubliez ce mot de passe, il n'y a pas de méthode de récupération, donc assurez-vous de le sauvegarder.",
+        "Protégez votre instance Raiqa Assistant avec un mot de passe. Si vous oubliez ce mot de passe, il n'y a pas de méthode de récupération, donc assurez-vous de le sauvegarder.",
     },
     instance: {
       title: "Protéger l'instance par mot de passe",
@@ -492,7 +492,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Confidentialité et gestion des données",
     description:
-      "Voici votre configuration pour la gestion des données et des fournisseurs tiers connectés avec AnythingLLM.",
+      "Voici votre configuration pour la gestion des données et des fournisseurs tiers connectés avec Raiqa Assistant.",
     llm: "Sélection LLM",
     embedding: "Préférence d'intégration",
     vector: "Base de données vectorielle",

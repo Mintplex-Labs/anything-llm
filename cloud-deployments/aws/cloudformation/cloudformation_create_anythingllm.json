@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Create a stack that runs AnythingLLM on a single instance",
+  "Description": "Create a stack that runs Raiqa Assistant on a single instance",
   "Parameters": {
     "InstanceType": {
       "Description": "EC2 instance type",
@@ -86,15 +86,15 @@
                 "sudo iptables -A OUTPUT -m owner ! --uid-owner root -d 169.254.169.254 -j DROP\n",
                 "sudo systemctl enable docker\n",
                 "sudo systemctl start docker\n",
-                "mkdir -p /home/ec2-user/anythingllm\n",
-                "touch /home/ec2-user/anythingllm/.env\n",
-                "sudo chown ec2-user:ec2-user -R /home/ec2-user/anythingllm\n",
+                "mkdir -p /home/ec2-user/raiqaAssistant\n",
+                "touch /home/ec2-user/raiqaAssistant/.env\n",
+                "sudo chown ec2-user:ec2-user -R /home/ec2-user/raiqaAssistant\n",
                 "docker pull mintplexlabs/anythingllm\n",
-                "docker run -d -p 3001:3001 --cap-add SYS_ADMIN -v /home/ec2-user/anythingllm:/app/server/storage -v /home/ec2-user/anythingllm/.env:/app/server/.env -e STORAGE_DIR=\"/app/server/storage\" mintplexlabs/anythingllm\n",
+                "docker run -d -p 3001:3001 --cap-add SYS_ADMIN -v /home/ec2-user/raiqaAssistant:/app/server/storage -v /home/ec2-user/raiqaAssistant/.env:/app/server/.env -e STORAGE_DIR=\"/app/server/storage\" mintplexlabs/anythingllm\n",
                 "echo \"Container ID: $(sudo docker ps --latest --quiet)\"\n",
                 "export ONLINE=$(curl -Is http://localhost:3001/api/ping | head -n 1|cut -d$' ' -f2)\n",
                 "echo \"Health check: $ONLINE\"\n",
-                "echo \"Setup complete! AnythingLLM instance is now online!\"\n",
+                "echo \"Setup complete! Raiqa Assistant instance is now online!\"\n",
                 "\n",
                 "--//--\n"
               ]
@@ -106,7 +106,7 @@
     "AnythingLLMInstanceSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "AnythingLLM Instance Security Group",
+        "GroupDescription": "Raiqa Assistant Instance Security Group",
         "SecurityGroupIngress": [
           {
             "IpProtocol": "tcp",
@@ -132,7 +132,7 @@
   },
   "Outputs": {
     "ServerIp": {
-      "Description": "IP address of the AnythingLLM instance",
+      "Description": "IP address of the Raiqa Assistant instance",
       "Value": {
         "Fn::GetAtt": [
           "AnythingLLMInstance",
@@ -141,7 +141,7 @@
       }
     },
     "ServerURL": {
-      "Description": "URL of the AnythingLLM server",
+      "Description": "URL of the Raiqa Assistant server",
       "Value": {
         "Fn::Join": [
           "",
