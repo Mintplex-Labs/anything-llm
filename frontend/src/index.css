@@ -270,7 +270,6 @@ a {
   min-height: 40px !important;
 }
 
-/* Force scrollbar to stay visible */
 .show-scrollbar::-webkit-scrollbar,
 .show-scrollbar::-webkit-scrollbar-thumb,
 .show-scrollbar::-webkit-scrollbar-track {
@@ -278,7 +277,6 @@ a {
   opacity: 1 !important;
 }
 
-/* Remove any transitions */
 .show-scrollbar,
 .show-scrollbar::-webkit-scrollbar,
 .show-scrollbar::-webkit-scrollbar-thumb,
