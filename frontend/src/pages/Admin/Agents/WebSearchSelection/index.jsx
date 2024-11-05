@@ -25,6 +25,7 @@ import {
   SerplySearchOptions,
   SearXNGOptions,
   TavilySearchOptions,
+  DuckDuckGoOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -40,7 +41,7 @@ const SEARCH_PROVIDERS = [
     name: "DuckDuckGo",
     value: "duckduckgo-engine",
     logo: DuckDuckGoIcon,
-    options: () => <React.Fragment />,
+    options: () => <DuckDuckGoOptions />,
     description:
       "Free and privacy-focused web search using DuckDuckGo's HTML interface.",
   },
