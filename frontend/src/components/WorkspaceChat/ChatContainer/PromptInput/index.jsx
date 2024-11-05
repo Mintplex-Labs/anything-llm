@@ -33,6 +33,7 @@ export default function PromptInput({
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
+  const [cursorPosition, setCursorPosition] = useState(0);
 
   // Save the current state before changes
   const saveCurrentState = () => {
@@ -103,6 +104,15 @@ export default function PromptInput({
           );
         }, 0);
       }
+      setTimeout(() => {
+        if (textareaRef.current) {
+          const newPosition = Math.max(cursorPosition - 1, 0);
+          textareaRef.current.setSelectionRange(newPosition, newPosition);
+          setCursorPosition(newPosition);
+        }
+      }, 0);
+    } else {
+      setCursorPosition(textareaRef.current.selectionStart);
     }
   };
 
