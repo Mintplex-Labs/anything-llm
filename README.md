@@ -111,19 +111,6 @@ This monorepo consists of three main sections:
 - `embed`: Submodule for generation & creation of the [web embed widget].
 - `browser-extension`: Submodule for the [chrome browser extension].
 
-## 🛳 Self Hosting
-
-Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run Raiqa Assistant locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
-| Docker | AWS | GCP | Digital Ocean | Render.com |
-|----------------------------------------|----|-----|---------------|------------|
-| [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
-
-| Railway  |  RepoCloud | Elestio |
-| --- | --- | --- |
-| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] |
-
-[or set up a production Raiqa Assistant instance without Docker →](./BARE_METAL.md)
-
 ## How to setup for development
 
 - `yarn setup` To fill in the required `.env` files you'll need in each of the application sections (from root of repo).
