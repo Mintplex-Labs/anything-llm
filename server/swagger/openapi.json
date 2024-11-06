@@ -1473,18 +1473,20 @@
                 "schema": {
                   "type": "object",
                   "example": {
-                    "workspace": {
-                      "id": 79,
-                      "name": "My workspace",
-                      "slug": "my-workspace-123",
-                      "createdAt": "2023-08-17 00:45:03",
-                      "openAiTemp": null,
-                      "lastUpdatedAt": "2023-08-17 00:45:03",
-                      "openAiHistory": 20,
-                      "openAiPrompt": null,
-                      "documents": [],
-                      "threads": []
-                    }
+                    "workspace": [
+                      {
+                        "id": 79,
+                        "name": "My workspace",
+                        "slug": "my-workspace-123",
+                        "createdAt": "2023-08-17 00:45:03",
+                        "openAiTemp": null,
+                        "lastUpdatedAt": "2023-08-17 00:45:03",
+                        "openAiHistory": 20,
+                        "openAiPrompt": null,
+                        "documents": [],
+                        "threads": []
+                      }
+                    ]
                   }
                 }
               }
@@ -1649,6 +1651,33 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
+          },
+          {
+            "name": "apiSessionId",
+            "in": "query",
+            "description": "Optional apiSessionId to filter by",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Optional number of chat messages to return (default: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "Optional order of chat messages (asc or desc)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2861,6 +2890,65 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/users/{id}/issue-auth-token": {
+      "get": {
+        "tags": [
+          "User Management"
+        ],
+        "description": "Issue a temporary auth token for a user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the user to issue a temporary auth token for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "token": "1234567890",
+                    "loginPath": "/sso/simple?token=1234567890"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Permission denied."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"

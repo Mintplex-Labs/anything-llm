@@ -78,6 +78,7 @@ model users {
   workspace_agent_invocations workspace_agent_invocations[]
   slash_command_presets       slash_command_presets[]
   browser_extension_api_keys  browser_extension_api_keys[]
+  temporary_auth_tokens       temporary_auth_tokens[]
 }
 
 model recovery_codes {
@@ -310,4 +311,16 @@ model browser_extension_api_keys {
   user          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
+}
+
+model temporary_auth_tokens {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
 }
