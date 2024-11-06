@@ -316,3 +316,13 @@ export function TavilySearchOptions({ settings }) {
     </>
   );
 }
+
+export function DuckDuckGoOptions() {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        DuckDuckGo is ready to use without any additional configuration.
+      </p>
+    </>
+  );
+}

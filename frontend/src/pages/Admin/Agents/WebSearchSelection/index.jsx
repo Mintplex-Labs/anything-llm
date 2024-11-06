@@ -8,6 +8,7 @@ import BingSearchIcon from "./icons/bing.png";
 import SerplySearchIcon from "./icons/serply.png";
 import SearXNGSearchIcon from "./icons/searxng.png";
 import TavilySearchIcon from "./icons/tavily.svg";
+import DuckDuckGoIcon from "./icons/duckduckgo.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -24,6 +25,7 @@ import {
   SerplySearchOptions,
   SearXNGOptions,
   TavilySearchOptions,
+  DuckDuckGoOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -34,6 +36,14 @@ const SEARCH_PROVIDERS = [
     options: () => <React.Fragment />,
     description:
       "Web search will be disabled until a provider and keys are provided.",
+  },
+  {
+    name: "DuckDuckGo",
+    value: "duckduckgo-engine",
+    logo: DuckDuckGoIcon,
+    options: () => <DuckDuckGoOptions />,
+    description:
+      "Free and privacy-focused web search using DuckDuckGo's HTML interface.",
   },
   {
     name: "Google Search Engine",

@@ -150,18 +150,20 @@ function apiWorkspaceEndpoints(app) {
           schema: {
             type: 'object',
             example: {
-              workspace: {
-                "id": 79,
-                "name": "My workspace",
-                "slug": "my-workspace-123",
-                "createdAt": "2023-08-17 00:45:03",
-                "openAiTemp": null,
-                "lastUpdatedAt": "2023-08-17 00:45:03",
-                "openAiHistory": 20,
-                "openAiPrompt": null,
-                "documents": [],
-                "threads": []
-              }
+              workspace: [
+                {
+                  "id": 79,
+                  "name": "My workspace",
+                  "slug": "my-workspace-123",
+                  "createdAt": "2023-08-17 00:45:03",
+                  "openAiTemp": null,
+                  "lastUpdatedAt": "2023-08-17 00:45:03",
+                  "openAiHistory": 20,
+                  "openAiPrompt": null,
+                  "documents": [],
+                  "threads": []
+                }
+              ]
             }
           }
         }
@@ -339,6 +341,24 @@ function apiWorkspaceEndpoints(app) {
         required: true,
         type: 'string'
     }
+    #swagger.parameters['apiSessionId'] = {
+        in: 'query',
+        description: 'Optional apiSessionId to filter by',
+        required: false,
+        type: 'string'
+    }
+    #swagger.parameters['limit'] = {
+        in: 'query',
+        description: 'Optional number of chat messages to return (default: 100)',
+        required: false,
+        type: 'integer'
+    }
+    #swagger.parameters['orderBy'] = {
+        in: 'query',
+        description: 'Optional order of chat messages (asc or desc)',
+        required: false,
+        type: 'string'
+    }
     #swagger.responses[200] = {
       content: {
         "application/json": {
@@ -370,6 +390,11 @@ function apiWorkspaceEndpoints(app) {
     */
       try {
         const { slug } = request.params;
+        const {
+          apiSessionId = null,
+          limit = 100,
+          orderBy = "desc",
+        } = request.query;
         const workspace = await Workspace.get({ slug });
 
         if (!workspace) {
@@ -377,7 +402,21 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        const history = await WorkspaceChats.forWorkspace(workspace.id);
+        const validLimit = Math.max(1, parseInt(limit));
+        const validOrderBy = ["asc", "desc"].includes(orderBy)
+          ? orderBy
+          : "desc";
+
+        const history = apiSessionId
+          ? await WorkspaceChats.forWorkspaceByApiSessionId(
+              workspace.id,
+              apiSessionId,
+              validLimit,
+              { createdAt: validOrderBy }
+            )
+          : await WorkspaceChats.forWorkspace(workspace.id, validLimit, {
+              createdAt: validOrderBy,
+            });
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
         console.error(e.message, e);

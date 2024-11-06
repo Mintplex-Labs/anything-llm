@@ -31,6 +31,14 @@ class AWSBedrockLLM {
     if (!process.env.AWS_BEDROCK_LLM_REGION)
       throw new Error("No AWS Bedrock LLM region was set.");
 
+    if (
+      process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD === "sessionToken" &&
+      !process.env.AWS_BEDROCK_LLM_SESSION_TOKEN
+    )
+      throw new Error(
+        "No AWS Bedrock LLM session token was set while using session token as the authentication method."
+      );
+
     this.model =
       modelPreference || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
     this.limits = {
@@ -41,6 +49,20 @@ class AWSBedrockLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.#log(
+      `Loaded with model: ${this.model}. Will communicate with AWS Bedrock using ${this.authMethod} authentication.`
+    );
+  }
+
+  /**
+   * Get the authentication method for the AWS Bedrock LLM.
+   * There are only two valid values for this setting - anything else will default to "iam".
+   * @returns {"iam"|"sessionToken"}
+   */
+  get authMethod() {
+    const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
+    if (!["iam", "sessionToken"].includes(method)) return "iam";
+    return method;
   }
 
   #bedrockClient({ temperature = 0.7 }) {
@@ -51,6 +73,9 @@ class AWSBedrockLLM {
       credentials: {
         accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+        ...(this.authMethod === "sessionToken"
+          ? { sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN }
+          : {}),
       },
       temperature,
     });

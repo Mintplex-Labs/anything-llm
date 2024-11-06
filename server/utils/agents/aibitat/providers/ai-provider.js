@@ -146,6 +146,14 @@ class Provider {
           apiKey: process.env.DEEPSEEK_API_KEY ?? null,
           ...config,
         });
+      case "xai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.x.ai/v1",
+          },
+          apiKey: process.env.XAI_LLM_API_KEY ?? null,
+          ...config,
+        });
 
       // OSS Model Runners
       // case "anythingllm_ollama":
@@ -196,6 +204,14 @@ class Provider {
             baseURL: process.env.LITE_LLM_BASE_PATH,
           },
           apiKey: process.env.LITE_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "novita":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.novita.ai/v3/openai",
+          },
+          apiKey: process.env.NOVITA_LLM_API_KEY ?? null,
           ...config,
         });
 

@@ -15,6 +15,7 @@ import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
+import NovitaLogo from "@/media/llmprovider/novita.png";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
@@ -22,6 +23,7 @@ import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
+import XAILogo from "@/media/llmprovider/xai.png";
 
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
@@ -148,6 +150,14 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: OpenRouterLogo,
   },
+  novita: {
+    name: "Novita AI",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to Novita AI",
+    ],
+    logo: NovitaLogo,
+  },
   groq: {
     name: "Groq",
     description: [
@@ -209,6 +219,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chat contents are visible to APIpie in accordance with their terms of service.",
     ],
     logo: APIPieLogo,
+  },
+  xai: {
+    name: "xAI",
+    description: [
+      "Your model and chat contents are visible to xAI in accordance with their terms of service.",
+    ],
+    logo: XAILogo,
   },
 };
 

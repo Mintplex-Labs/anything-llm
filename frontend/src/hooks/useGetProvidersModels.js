@@ -25,9 +25,13 @@ const PROVIDER_DEFAULT_MODELS = {
     "claude-instant-1.2",
     "claude-2.0",
     "claude-2.1",
-    "claude-3-opus-20240229",
-    "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
+    "claude-3-sonnet-20240229",
+    "claude-3-opus-latest",
+    "claude-3-5-haiku-latest",
+    "claude-3-5-haiku-20241022",
+    "claude-3-5-sonnet-latest",
+    "claude-3-5-sonnet-20241022",
     "claude-3-5-sonnet-20240620",
   ],
   azure: [],
@@ -49,6 +53,7 @@ const PROVIDER_DEFAULT_MODELS = {
   textgenwebui: [],
   "generic-openai": [],
   bedrock: [],
+  xai: ["grok-beta"],
 };
 
 // For providers with large model lists (e.g. togetherAi) - we subgroup the options
@@ -62,7 +67,13 @@ function groupModels(models) {
   }, {});
 }
 
-const groupedProviders = ["togetherai", "fireworksai", "openai", "openrouter"];
+const groupedProviders = [
+  "togetherai",
+  "fireworksai",
+  "openai",
+  "novita",
+  "openrouter",
+];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);

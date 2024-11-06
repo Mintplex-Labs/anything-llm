@@ -213,6 +213,13 @@ const KEY_MAPPING = {
   },
 
   // AWS Bedrock LLM InferenceSettings
+  AwsBedrockLLMConnectionMethod: {
+    envKey: "AWS_BEDROCK_LLM_CONNECTION_METHOD",
+    checks: [
+      (input) =>
+        ["iam", "sessionToken"].includes(input) ? null : "Invalid value",
+    ],
+  },
   AwsBedrockLLMAccessKeyId: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
     checks: [isNotEmpty],
@@ -220,6 +227,10 @@ const KEY_MAPPING = {
   AwsBedrockLLMAccessKey: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
     checks: [isNotEmpty],
+  },
+  AwsBedrockLLMSessionToken: {
+    envKey: "AWS_BEDROCK_LLM_SESSION_TOKEN",
+    checks: [],
   },
   AwsBedrockLLMRegion: {
     envKey: "AWS_BEDROCK_LLM_REGION",
@@ -384,6 +395,20 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Novita Options
+  NovitaLLMApiKey: {
+    envKey: "NOVITA_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  NovitaLLMModelPref: {
+    envKey: "NOVITA_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  NovitaLLMTimeout: {
+    envKey: "NOVITA_LLM_TIMEOUT_MS",
+    checks: [],
+  },
+
   // Groq Options
   GroqApiKey: {
     envKey: "GROQ_API_KEY",
@@ -539,6 +564,16 @@ const KEY_MAPPING = {
     envKey: "APIPIE_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // xAI Options
+  XAIApiKey: {
+    envKey: "XAI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  XAIModelPref: {
+    envKey: "XAI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -634,6 +669,7 @@ function supportedLLM(input = "") {
     "huggingface",
     "perplexity",
     "openrouter",
+    "novita",
     "groq",
     "koboldcpp",
     "textgenwebui",
@@ -643,6 +679,7 @@ function supportedLLM(input = "") {
     "bedrock",
     "deepseek",
     "apipie",
+    "xai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -687,9 +724,13 @@ function validAnthropicModel(input = "") {
     "claude-instant-1.2",
     "claude-2.0",
     "claude-2.1",
-    "claude-3-opus-20240229",
-    "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
+    "claude-3-sonnet-20240229",
+    "claude-3-opus-latest",
+    "claude-3-5-haiku-latest",
+    "claude-3-5-haiku-20241022",
+    "claude-3-5-sonnet-latest",
+    "claude-3-5-sonnet-20241022",
     "claude-3-5-sonnet-20240620",
   ];
   return validModels.includes(input)
@@ -886,6 +927,10 @@ function dumpENV() {
     "ENABLE_HTTPS",
     "HTTPS_CERT_PATH",
     "HTTPS_KEY_PATH",
+    // Other Configuration Keys
+    "DISABLE_VIEW_CHAT_HISTORY",
+    // Simple SSO
+    "SIMPLE_SSO_ENABLED",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
