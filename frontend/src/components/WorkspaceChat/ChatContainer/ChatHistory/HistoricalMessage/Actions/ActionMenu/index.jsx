@@ -45,7 +45,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
       />
       <button
         onClick={toggleMenu}
-        className="border-none text-zinc-300 hover:text-zinc-100 transition-colors duration-200"
+        className="border-none text-[var(--theme-sidebar-footer-icon-fill)] hover:text-[var(--theme-sidebar-footer-icon-fill)] transition-colors duration-200"
         data-tooltip-id="action-menu"
         data-tooltip-content="More actions"
         aria-label="More actions"

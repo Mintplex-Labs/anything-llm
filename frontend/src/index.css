@@ -44,32 +44,32 @@
   --theme-loader: #000000;
 
   --theme-bg-primary: #ffffff;
-  --theme-bg-secondary: #f7f7f7;
-  --theme-bg-sidebar: #fafafa;
-  --theme-bg-container: #ffffff;
+  --theme-bg-secondary: #FFFFFF;
+  --theme-bg-sidebar: #EDF2FA;
+  --theme-bg-container: #F9FBFD;
 
-  --theme-bg-chat: #f7f7f7;
+  --theme-bg-chat: #FFFFFF;
   --theme-bg-chat-input: #eaeaea;
   --theme-text-primary: #0e0f0f;
   --theme-text-secondary: #7a7d7e;
   --theme-sidebar-item-default: #ffffff;
-  --theme-sidebar-item-selected: #c8efff;
+  --theme-sidebar-item-selected: #FFFFFF;
   --theme-sidebar-item-hover: #c8efff;
 
   --theme-sidebar-item-text-inactive: #7a7d7e;
   --theme-sidebar-item-text-active: #184558;
 
-  --theme-sidebar-item-workspace-active: #46c8ff;
+  --theme-sidebar-item-workspace-active: #000000;
   --theme-sidebar-item-workspace-inactive: #7a7d7e;
 
   --theme-sidebar-subitem-default: transparent;
-  --theme-sidebar-subitem-selected: #c8efff;
-  --theme-sidebar-thread-selected: rgba(0, 0, 0, 0.1);
-  --theme-sidebar-subitem-hover: rgba(0, 0, 0, 0.05);
+  --theme-sidebar-subitem-selected: #E2E7EE;
+  --theme-sidebar-thread-selected: #FFFFFF;
+  --theme-sidebar-subitem-hover: #E2E7EE;
   --theme-sidebar-border: #d3d4d4;
 
-  --theme-sidebar-footer-icon: #e9e9e9;
-  --theme-sidebar-footer-icon-fill: #7a7d7e;
+  --theme-sidebar-footer-icon: #FFFFFF;
+  --theme-sidebar-footer-icon-fill: #6E6F6F;
   --theme-sidebar-footer-icon-hover: #d8d6d6;
 
   --theme-chat-input-border: #cccccc;

@@ -84,7 +84,7 @@ export default function MenuOption({
               isChild ? "text-xs" : "text-sm"
             } leading-loose whitespace-nowrap overflow-hidden ml-2 ${
               isActive
-                ? "text-white light:text-[var(--theme-sidebar-item-text-active)]"
+                ? "text-white font-semibold"
                 : "text-white light:text-black"
             } ${!icon && "pl-5"}`}
           >

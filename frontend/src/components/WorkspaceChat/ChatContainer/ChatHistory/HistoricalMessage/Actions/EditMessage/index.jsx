@@ -52,7 +52,7 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
         className="border-none text-zinc-300"
         aria-label={`Edit ${role === "user" ? "Prompt" : "Response"}`}
       >
-        <Pencil size={21} className="mb-1" />
+        <Pencil color="var(--theme-sidebar-footer-icon-fill)" size={21} className="mb-1" />
       </button>
       <Tooltip
         id="edit-input-text"
@@ -114,7 +114,7 @@ export function EditMessageForm({
         </button>
         <button
           type="button"
-          className="px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          className="px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 light:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           onClick={cancelEdits}
         >
           Cancel

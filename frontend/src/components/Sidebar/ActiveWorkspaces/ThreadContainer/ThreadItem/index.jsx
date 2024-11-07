@@ -98,7 +98,7 @@ export default function ThreadItem({
             <p
               className={`text-left text-sm ${
                 isActive
-                  ? "font-medium text-white light:text-[var(--theme-sidebar-item-text-active)]"
+                  ? "font-medium text-white"
                   : "text-theme-text-primary"
               }`}
             >

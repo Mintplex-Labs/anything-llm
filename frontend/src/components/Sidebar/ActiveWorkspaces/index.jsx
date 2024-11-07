@@ -62,8 +62,8 @@ export default function ActiveWorkspaces() {
                   transition-all duration-[200ms]
                   flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
                   bg-theme-sidebar-item-default
-                  hover:bg-theme-sidebar-item-hover hover:font-bold
-                  ${isActive ? "bg-theme-sidebar-item-selected font-bold !light:border-transparent" : "light:border-[2px] light:border-sidebar-border"}
+                  hover:bg-theme-sidebar-subitem-hover hover:font-bold
+                  ${isActive ? "bg-theme-sidebar-item-selected font-bold border-2 border-transparent light:border-blue-400" : ""}
                 `}
               >
                 <div className="flex flex-row justify-between w-full">
@@ -82,7 +82,7 @@ export default function ActiveWorkspaces() {
                       <p
                         className={`
                         text-[14px] leading-loose whitespace-nowrap overflow-hidden
-                        ${isActive ? "text-white light:text-[var(--theme-sidebar-item-text-active)] font-bold" : "text-zinc-200 light:text-[var(--theme-sidebar-item-text-inactive)] font-medium"} truncate
+                        ${isActive ? "text-white font-bold" : "text-zinc-200 light:text-[var(--theme-sidebar-item-text-inactive)] font-medium"} truncate
                         w-full group-hover:w-[100px] transition-all duration-200
                       `}
                       >
