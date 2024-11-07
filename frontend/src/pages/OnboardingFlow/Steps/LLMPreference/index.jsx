@@ -22,6 +22,7 @@ import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
+import NovitaLogo from "@/media/llmprovider/novita.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 
 import CohereLogo from "@/media/llmprovider/cohere.png";
@@ -48,6 +49,7 @@ import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
+import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -103,6 +105,14 @@ const LLMS = [
     logo: OllamaLogo,
     options: (settings) => <OllamaLLMOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
+  },
+  {
+    name: "Novita AI",
+    value: "novita",
+    logo: NovitaLogo,
+    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    description:
+      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
   },
   {
     name: "LM Studio",

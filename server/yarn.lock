@@ -10,25 +10,24 @@
     lodash.assignwith "^4.2.0"
     typical "^7.1.1"
 
-"@anthropic-ai/sdk@^0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@anthropic-ai/sdk/-/sdk-0.16.1.tgz#7472c42389d9a5323c20afa53995e1c3b922b95d"
-  integrity sha512-vHgvfWEyFy5ktqam56Nrhv8MVa7EJthsRYNi+1OrFFfyrj9tR2/aji1QbVbQjYU/pPhPFaYrdCEC/MLPFrmKwA==
+"@anthropic-ai/sdk@^0.20.1":
+  version "0.20.9"
+  resolved "https://registry.yarnpkg.com/@anthropic-ai/sdk/-/sdk-0.20.9.tgz#f7c983861774e1595d5941a4d02774b7aa87c780"
+  integrity sha512-Lq74+DhiEQO6F9/gdVOLmHx57pX45ebK2Q/zH14xYe1157a7QeUVknRqIp0Jz5gQI01o7NKbuv9Dag2uQsLjDg==
   dependencies:
     "@types/node" "^18.11.18"
     "@types/node-fetch" "^2.6.4"
     abort-controller "^3.0.0"
     agentkeepalive "^4.2.1"
-    digest-fetch "^1.3.0"
     form-data-encoder "1.7.2"
     formdata-node "^4.3.2"
     node-fetch "^2.6.7"
     web-streams-polyfill "^3.2.1"
 
-"@anthropic-ai/sdk@^0.20.1":
-  version "0.20.8"
-  resolved "https://registry.yarnpkg.com/@anthropic-ai/sdk/-/sdk-0.20.8.tgz#310fbf9110c61032ed55863525607a327f94c328"
-  integrity sha512-dTMDrWYIFyoSr9P0b/gT2Nu1scBuEq4LU9SGX901ktP4aQxs2jiSWq6A80pRmVxyjFl3ngFvcOmVVrP0NHNhOg==
+"@anthropic-ai/sdk@^0.32.1":
+  version "0.32.1"
+  resolved "https://registry.yarnpkg.com/@anthropic-ai/sdk/-/sdk-0.32.1.tgz#d22c8ebae2adccc59d78fb416e89de337ff09014"
+  integrity sha512-U9JwTrDvdQ9iWuABVsMLj8nJVwAyQz6QXvgLsVhryhCEPkLsbcP/MXxm+jYcAwLoV8ESbaTTjnD4kuAFa+Hyjg==
   dependencies:
     "@types/node" "^18.11.18"
     "@types/node-fetch" "^2.6.4"
@@ -37,7 +36,6 @@
     form-data-encoder "1.7.2"
     formdata-node "^4.3.2"
     node-fetch "^2.6.7"
-    web-streams-polyfill "^3.2.1"
 
 "@anthropic-ai/sdk@^0.9.1":
   version "0.9.1"
@@ -3836,9 +3834,9 @@ fast-xml-parser@4.2.5:
     strnum "^1.0.5"
 
 fast-xml-parser@^4.3.5:
-  version "4.3.6"
-  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.3.6.tgz#190f9d99097f0c8f2d3a0e681a10404afca052ff"
-  integrity sha512-M2SovcRxD4+vC493Uc2GZVcZaj66CCJhWurC4viynVSTvrpErCShNcDz1lAho6n9REQKvL/ll4A4/fw6Y9z8nw==
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.5.0.tgz#2882b7d01a6825dfdf909638f2de0256351def37"
+  integrity sha512-/PlTQCI96+fZMAOLMZK4CWG1ItCbfZ/0jx7UIJFChPNrx7tcEgerUgWbeieCM9MfHInUDyK8DWYZ+YrywDJuTg==
   dependencies:
     strnum "^1.0.5"
 

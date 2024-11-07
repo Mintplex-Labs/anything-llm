@@ -1,3 +1,18 @@
+/**
+ * @typedef {object} DocumentMetadata
+ * @property {string} id - eg; "123e4567-e89b-12d3-a456-426614174000"
+ * @property {string} url - eg; "file://example.com/index.html"
+ * @property {string} title - eg; "example.com/index.html"
+ * @property {string} docAuthor - eg; "no author found"
+ * @property {string} description - eg; "No description found."
+ * @property {string} docSource - eg; "URL link uploaded by the user."
+ * @property {string} chunkSource - eg; link://https://example.com
+ * @property {string} published - ISO 8601 date string
+ * @property {number} wordCount - Number of words in the document
+ * @property {string} pageContent - The raw text content of the document
+ * @property {number} token_count_estimate - Number of tokens in the document
+ */
+
 function isNullOrNaN(value) {
   if (value === null) return true;
   return isNaN(value);
@@ -29,10 +44,12 @@ class TextSplitter {
     console.log(`\x1b[35m[TextSplitter]\x1b[0m ${text}`, ...args);
   }
 
-  // Does a quick check to determine the text chunk length limit.
-  // Embedder models have hard-set limits that cannot be exceeded, just like an LLM context
-  // so here we want to allow override of the default 1000, but up to the models maximum, which is
-  // sometimes user defined.
+  /**
+   *  Does a quick check to determine the text chunk length limit.
+   * Embedder models have hard-set limits that cannot be exceeded, just like an LLM context
+   * so here we want to allow override of the default 1000, but up to the models maximum, which is
+   * sometimes user defined.
+   */
   static determineMaxChunkSize(preferred = null, embedderLimit = 1000) {
     const prefValue = isNullOrNaN(preferred)
       ? Number(embedderLimit)
@@ -45,6 +62,70 @@ class TextSplitter {
     return prefValue > limit ? limit : prefValue;
   }
 
+  /**
+   *  Creates a string of metadata to be prepended to each chunk.
+   * @param {DocumentMetadata} metadata - Metadata to be prepended to each chunk.
+   * @returns {{[key: ('title' | 'published' | 'source')]: string}} Object of metadata that will be prepended to each chunk.
+   */
+  static buildHeaderMeta(metadata = {}) {
+    if (!metadata || Object.keys(metadata).length === 0) return null;
+    const PLUCK_MAP = {
+      title: {
+        as: "sourceDocument",
+        pluck: (metadata) => {
+          return metadata?.title || null;
+        },
+      },
+      published: {
+        as: "published",
+        pluck: (metadata) => {
+          return metadata?.published || null;
+        },
+      },
+      chunkSource: {
+        as: "source",
+        pluck: (metadata) => {
+          const validPrefixes = ["link://", "youtube://"];
+          // If the chunkSource is a link or youtube link, we can add the URL
+          // as its source in the metadata so the LLM can use it for context.
+          // eg prompt: Where did you get this information? -> answer: "from https://example.com"
+          if (
+            !metadata?.chunkSource || // Exists
+            !metadata?.chunkSource.length || // Is not empty
+            typeof metadata.chunkSource !== "string" || // Is a string
+            !validPrefixes.some(
+              (prefix) => metadata.chunkSource.startsWith(prefix) // Has a valid prefix we respect
+            )
+          )
+            return null;
+
+          // We know a prefix is present, so we can split on it and return the rest.
+          // If nothing is found, return null and it will not be added to the metadata.
+          let source = null;
+          for (const prefix of validPrefixes) {
+            source = metadata.chunkSource.split(prefix)?.[1] || null;
+            if (source) break;
+          }
+
+          return source;
+        },
+      },
+    };
+
+    const pluckedData = {};
+    Object.entries(PLUCK_MAP).forEach(([key, value]) => {
+      if (!(key in metadata)) return; // Skip if the metadata key is not present.
+      const pluckedValue = value.pluck(metadata);
+      if (!pluckedValue) return; // Skip if the plucked value is null/empty.
+      pluckedData[value.as] = pluckedValue;
+    });
+
+    return pluckedData;
+  }
+
+  /**
+   *  Creates a string of metadata to be prepended to each chunk.
+   */
   stringifyHeader() {
     if (!this.config.chunkHeaderMeta) return null;
     let content = "";
