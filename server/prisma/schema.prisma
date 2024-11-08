@@ -78,7 +78,6 @@ model users {
   workspace_agent_invocations workspace_agent_invocations[]
   slash_command_presets       slash_command_presets[]
   browser_extension_api_keys  browser_extension_api_keys[]
-  hub_items                   hub_items[]
   temporary_auth_tokens       temporary_auth_tokens[]
 }
 
@@ -312,18 +311,6 @@ model browser_extension_api_keys {
   user          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
-}
-
-model hub_items {
-  id            Int      @id @default(autoincrement())
-  type          String // "prompt", "skill", "workspace", "command"
-  name          String
-  content       String // JSON stringified content
-  hubId         String // ID from the hub platform
-  createdAt     DateTime @default(now())
-  lastUpdatedAt DateTime @updatedAt
-  user_id       Int?
-  user          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model temporary_auth_tokens {

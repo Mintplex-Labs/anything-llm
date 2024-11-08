@@ -120,9 +120,6 @@ export default {
     agentSkills: () => {
       return "/settings/agents";
     },
-    communityHub: () => {
-      return "/settings/community-hub";
-    },
     apiKeys: () => {
       return "/settings/api-keys";
     },
@@ -145,12 +142,35 @@ export default {
       return `/settings/beta-features`;
     },
   },
-
-  external: {
-    hub: () => {
-      return "https://hub.anythingllm.com";
+  communityHub: {
+    website: () => {
+      return import.meta.env.DEV
+        ? `http://localhost:5173`
+        : `https://hub.anythingllm.com`;
+    },
+    /**
+     * View more items of a given type on the community hub.
+     * @param {string} type - The type of items to view more of. Should be kebab-case.
+     * @returns {string} The path to view more items of the given type.
+     */
+    viewMoreOfType: function (type) {
+      return `${this.website()}/list/${type}`;
+    },
+    trending: () => {
+      return `/settings/community-hub/trending`;
+    },
+    authentication: () => {
+      return `/settings/community-hub/authentication`;
+    },
+    importItem: () => {
+      return `/settings/community-hub/import-item`;
+    },
+    profile: function (username) {
+      if (username) return `${this.website()}/u/${username}`;
+      return `${this.website()}/me`;
     },
   },
+
   experimental: {
     liveDocumentSync: {
       manage: () => `/settings/beta-features/live-document-sync/manage`,

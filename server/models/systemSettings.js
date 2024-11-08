@@ -568,17 +568,20 @@ const SystemSettings = {
           ?.value === "enabled",
     };
   },
+
+  /**
+   * Get user configured Community Hub Settings
+   * Connection key is used to authenticate with the Community Hub API
+   * for your account.
+   * @returns {Promise<{connectionKey: string}>}
+   */
   hubSettings: async function () {
     try {
       const hubKey = await this.get({ label: "hub_api_key" });
-      return {
-        hasApiKey: !!hubKey?.value,
-      };
+      return { connectionKey: hubKey?.value || null };
     } catch (error) {
       console.error(error.message);
-      return {
-        hasApiKey: false,
-      };
+      return { connectionKey: null };
     }
   },
 };

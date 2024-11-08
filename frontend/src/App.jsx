@@ -25,9 +25,6 @@ const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
 const AdminAgents = lazy(() => import("@/pages/Admin/Agents"));
-const AdminCommunityHub = lazy(
-  () => import("@/pages/GeneralSettings/CommunityHub")
-);
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
 const GeneralAppearance = lazy(
   () => import("@/pages/GeneralSettings/Appearance")
@@ -70,6 +67,16 @@ const LiveDocumentSyncManage = lazy(
   () => import("@/pages/Admin/ExperimentalFeatures/Features/LiveSync/manage")
 );
 const FineTuningWalkthrough = lazy(() => import("@/pages/FineTuning"));
+
+const CommunityHubTrending = lazy(
+  () => import("@/pages/GeneralSettings/CommunityHub/Trending")
+);
+const CommunityHubAuthentication = lazy(
+  () => import("@/pages/GeneralSettings/CommunityHub/Authentication")
+);
+const CommunityHubImportItem = lazy(
+  () => import("@/pages/GeneralSettings/CommunityHub/ImportItem")
+);
 
 export default function App() {
   return (
@@ -131,10 +138,6 @@ export default function App() {
                 <Route
                   path="/settings/agents"
                   element={<AdminRoute Component={AdminAgents} />}
-                />
-                <Route
-                  path="/settings/community-hub"
-                  element={<AdminRoute Component={AdminCommunityHub} />}
                 />
                 <Route
                   path="/settings/event-logs"
@@ -203,6 +206,21 @@ export default function App() {
                 <Route
                   path="/fine-tuning"
                   element={<AdminRoute Component={FineTuningWalkthrough} />}
+                />
+
+                <Route
+                  path="/settings/community-hub/trending"
+                  element={<AdminRoute Component={CommunityHubTrending} />}
+                />
+                <Route
+                  path="/settings/community-hub/authentication"
+                  element={
+                    <AdminRoute Component={CommunityHubAuthentication} />
+                  }
+                />
+                <Route
+                  path="/settings/community-hub/import-item"
+                  element={<AdminRoute Component={CommunityHubImportItem} />}
                 />
               </Routes>
               <ToastContainer />

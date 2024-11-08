@@ -316,7 +316,8 @@ const TRANSLATIONS = {
     },
     message: {
       title: "Berichten Aanpassen",
-      description: "Pas de automatische berichten aan die aan je gebruikers worden weergegeven.",
+      description:
+        "Pas de automatische berichten aan die aan je gebruikers worden weergegeven.",
       new: "Nieuw",
       system: "systeem",
       user: "gebruiker",

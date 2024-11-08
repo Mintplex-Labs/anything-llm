@@ -182,6 +182,100 @@ class ImportedPlugin {
       },
     };
   }
+
+  /**
+   * Imports a community item from a URL.
+   * The community item is a zip file that contains a plugin.json file and handler.js file.
+   * This function will unzip the file and import the plugin into the agent-skills folder
+   * based on the hubId found in the plugin.json file.
+   * The zip file will be downloaded to the pluginsPath folder and then unzipped and finally deleted.
+   * @param {string} url - The signed URL of the community item zip file.
+   * @param {object} item - The community item.
+   * @returns {Promise<object>} - The result of the import.
+   */
+  static async importCommunityItemFromUrl(url, item) {
+    this.checkPluginFolderExists();
+    const zipFilePath = path.resolve(pluginsPath, `${item.id}.zip`);
+    const pluginFile = item.manifest.files.find(
+      (file) => file.name === "plugin.json"
+    );
+    if (!pluginFile)
+      return {
+        success: false,
+        error: "No plugin.json file found in manifest.",
+      };
+
+    const hubId = safeJsonParse(pluginFile.content).hubId || null;
+    if (!hubId)
+      return { success: false, error: "No hubId found in plugin.json." };
+
+    const pluginFolder = path.resolve(pluginsPath, normalizePath(hubId));
+    if (fs.existsSync(pluginFolder))
+      console.log(
+        "ImportedPlugin.importCommunityItemFromUrl - plugin folder already exists - will overwrite"
+      );
+
+    try {
+      const protocol = new URL(url).protocol.replace(":", "");
+      const httpLib = protocol === "https" ? require("https") : require("http");
+
+      const downloadZipFile = new Promise(async (resolve) => {
+        try {
+          console.log(
+            "ImportedPlugin.importCommunityItemFromUrl - downloading asset from ",
+            new URL(url).origin
+          );
+          const zipFile = fs.createWriteStream(zipFilePath);
+          const request = httpLib.get(url, function (response) {
+            response.pipe(zipFile);
+            zipFile.on("finish", () => {
+              console.log(
+                "ImportedPlugin.importCommunityItemFromUrl - downloaded zip file"
+              );
+              resolve(true);
+            });
+          });
+
+          request.on("error", (error) => {
+            console.error(
+              "ImportedPlugin.importCommunityItemFromUrl - error downloading zip file: ",
+              error
+            );
+            resolve(false);
+          });
+        } catch (error) {
+          console.error(
+            "ImportedPlugin.importCommunityItemFromUrl - error downloading zip file: ",
+            error
+          );
+          resolve(false);
+        }
+      });
+
+      const success = await downloadZipFile;
+      if (!success)
+        return { success: false, error: "Failed to download zip file." };
+
+      // Unzip the file to the plugin folder
+      // Note: https://github.com/cthackers/adm-zip?tab=readme-ov-file#electron-original-fs
+      const AdmZip = require("adm-zip");
+      const zip = new AdmZip(zipFilePath);
+      zip.extractAllTo(pluginFolder);
+
+      console.log(
+        `ImportedPlugin.importCommunityItemFromUrl - successfully imported plugin to agent-skills/${hubId}`
+      );
+      return { success: true, error: null };
+    } catch (error) {
+      console.error(
+        "ImportedPlugin.importCommunityItemFromUrl - error: ",
+        error
+      );
+      return { success: false, error: error.message };
+    } finally {
+      if (fs.existsSync(zipFilePath)) fs.unlinkSync(zipFilePath);
+    }
+  }
 }
 
 module.exports = ImportedPlugin;

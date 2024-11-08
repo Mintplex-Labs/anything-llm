@@ -25,7 +25,7 @@ const { documentEndpoints } = require("./endpoints/document");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
 const { experimentalEndpoints } = require("./endpoints/experimental");
 const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
-const { hubEndpoints } = require("./endpoints/hub");
+const { communityHubEndpoints } = require("./endpoints/communityHub");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -60,7 +60,7 @@ documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
 experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
-hubEndpoints(apiRouter);
+communityHubEndpoints(apiRouter);
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);

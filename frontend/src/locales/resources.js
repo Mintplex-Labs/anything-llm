@@ -58,7 +58,7 @@ export const resources = {
   he: {
     common: Hebrew,
   },
-    nl: {
+  nl: {
     common: Dutch,
   },
 };
