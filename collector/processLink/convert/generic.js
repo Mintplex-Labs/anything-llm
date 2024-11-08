@@ -1,7 +1,7 @@
 const { v4 } = require("uuid");
 const {
   PuppeteerWebBaseLoader,
-} = require("langchain/document_loaders/web/puppeteer");
+} = require("@langchain/community/document_loaders/web/puppeteer");
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");

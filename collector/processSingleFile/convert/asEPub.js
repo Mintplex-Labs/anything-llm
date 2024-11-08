@@ -1,5 +1,5 @@
 const { v4 } = require("uuid");
-const { EPubLoader } = require("langchain/document_loaders/fs/epub");
+const { EPubLoader } = require("@langchain/community/document_loaders/fs/epub");
 const { tokenizeString } = require("../../utils/tokenizer");
 const {
   createdDate,
