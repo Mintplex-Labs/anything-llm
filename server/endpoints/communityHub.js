@@ -102,6 +102,21 @@ function communityHubEndpoints(app) {
       }
     }
   );
+
+  app.get(
+    "/community-hub/items",
+    [validatedRequest],
+    async (_, response) => {
+      try {
+        const { connectionKey } = await SystemSettings.hubSettings();
+        const items = await CommunityHub.fetchUserItems(connectionKey);
+        response.status(200).json({ success: true, ...items });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ success: false, error: error.message });
+      }
+    }
+  );
 }
 
 module.exports = { communityHubEndpoints };

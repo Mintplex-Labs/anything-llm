@@ -8,6 +8,7 @@ import showToast from "@/utils/toast";
 import { FullScreenLoader } from "@/components/Preloader";
 import paths from "@/utils/paths";
 import { Info } from "@phosphor-icons/react";
+import UserItems from "./UserItems";
 
 function useCommunityHubAuthentication() {
   const [originalConnectionKey, setOriginalConnectionKey] = useState("");
@@ -98,7 +99,7 @@ export default function CommunityHubAuthentication() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                Connect your AnythingLLM Community Hub account
+                Your AnythingLLM Community Hub Account
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
@@ -136,7 +137,7 @@ export default function CommunityHubAuthentication() {
           )}
 
           {/* API Key Section */}
-          <div className="mt-6">
+          <div className="mt-6 mb-12">
             <div className="flex flex-col w-full max-w-[400px]">
               <label className="text-white text-sm font-semibold block mb-2">
                 AnythingLLM Hub API Key
@@ -150,17 +151,15 @@ export default function CommunityHubAuthentication() {
               />
               <p className="text-white/60 text-xs mt-2">
                 You can get your API key from your{" "}
-                <a
-                  href={paths.communityHub.profile()}
-                  className="underline text-primary-button"
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <a href={paths.communityHub.profile()} className="underline text-primary-button">
                   AnythingLLM Community Hub profile page
-                </a>
-                .
+                </a>.
               </p>
             </div>
+          </div>
+
+          <div className="mt-6">
+            <UserItems />
           </div>
         </div>
       </div>

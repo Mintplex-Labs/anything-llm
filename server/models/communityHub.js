@@ -137,6 +137,23 @@ const CommunityHub = {
       error: "Unsupported item type. Nothing to import.",
     };
   },
+
+  fetchUserItems: async function (connectionKey) {
+    if (!connectionKey) return { createdByMe: {}, teamItems: [] };
+
+    return await fetch(`${this.apiBase}/items`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${connectionKey}`,
+      },
+    })
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error fetching user items:", error);
+        return { createdByMe: {}, teamItems: [] };
+      });
+  },
 };
 
 module.exports = { CommunityHub };

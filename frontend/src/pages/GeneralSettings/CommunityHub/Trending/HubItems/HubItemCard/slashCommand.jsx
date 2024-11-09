@@ -1,9 +1,8 @@
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
-import Workspace from "@/models/workspace";
 import { X } from "@phosphor-icons/react";
 import truncate from "truncate";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
 
@@ -14,22 +13,33 @@ export default function SlashCommandHubCard({ item }) {
     <>
       <div
         key={item.id}
-        className="bg-zinc-800 rounded-lg p-3 hover:bg-zinc-700 transition-all duration-200"
+        onClick={openModal}
+        className="bg-black/70 rounded-lg p-3 hover:bg-black/60 transition-all duration-200 cursor-pointer group border border-transparent hover:border-slate-400"
       >
         <p className="text-white text-sm font-medium">{item.name}</p>
         <div className="flex flex-col gap-2">
           <p className="text-white/60 text-xs mt-1">{item.description}</p>
-          <p className="text-white/60 text-xs bg-zinc-900 px-2 py-1 rounded-md font-mono">
+          <label className="text-white/60 text-xs font-semibold mt-4">
+            Command
+          </label>
+          <p className="text-white/60 text-xs bg-zinc-900 px-2 py-1 rounded-md font-mono border border-slate-800">
             {item.command}
-            <br />
-            <br />
+          </p>
+
+          <label className="text-white/60 text-xs font-semibold mt-4">
+            Prompt
+          </label>
+          <p className="text-white/60 text-xs bg-zinc-900 px-2 py-1 rounded-md font-mono border border-slate-800">
             {truncate(item.prompt, 90)}
           </p>
         </div>
         <div className="flex justify-end mt-2">
           <button
-            className="text-primary-button hover:text-primary-button/80 text-xs"
-            onClick={openModal}
+            className="text-primary-button hover:text-primary-button/80 text-sm font-medium px-3 py-1.5 rounded-md bg-black/30 group-hover:bg-black/50 transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              openModal();
+            }}
           >
             Import →
           </button>
@@ -75,7 +85,7 @@ function ImportSlashCommandModal({ item, isOpen, closeModal }) {
   return (
     <ModalWrapper isOpen={isOpen} closeModal={closeModal}>
       <div className="relative w-full max-w-2xl max-h-full">
-        <div className="relative bg-main-gradient rounded-lg shadow py-4">
+        <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 rounded-t border-gray-500/50">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-x-2 w-full justify-between">
@@ -100,26 +110,32 @@ function ImportSlashCommandModal({ item, isOpen, closeModal }) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-y-2 p-4 mt-2">
-            <div className="w-full text-white text-md gap-x-2 flex items-center">
-              <p className="text-white/60 w-fit font-mono bg-zinc-900 px-2 py-1 rounded-md text-sm whitespace-pre-line">
+          <div className="flex flex-col gap-y-4 p-4 max-h-[calc(300px)] overflow-y-auto my-2">
+            <div className="flex flex-col gap-y-2">
+              <label className="text-white text-sm font-semibold block">
+                Command
+              </label>
+              <p className="text-white/60 font-mono bg-zinc-900 px-4 py-3 rounded-lg text-sm whitespace-pre-line">
                 {item.command}
               </p>
             </div>
 
-            <div className="w-full text-white text-md flex flex-col gap-y-2">
-              <p className="text-white/60 font-mono bg-zinc-900 p-4 rounded-md text-sm whitespace-pre-line max-h-[calc(200px)] overflow-y-auto">
+            <div className="flex flex-col gap-y-2">
+              <label className="text-white text-sm font-semibold block">
+                Prompt
+              </label>
+              <p className="text-white/60 font-mono bg-zinc-900 px-4 py-3 rounded-lg text-sm whitespace-pre-line">
                 {item.prompt}
               </p>
             </div>
           </div>
 
-          <div className="flex w-full justify-center px-4">
+          <div className="flex w-fit justify-end p-4 ml-auto">
             <button
               type="button"
               onClick={importSlashCommand}
               disabled={loading}
-              className="w-full text-center border border-slate-200 px-4 py-2 rounded-lg text-white text-sm hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              className="border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex justify-center gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 transition-all duration-300"
             >
               {loading ? "Importing..." : "Import slash command"}
             </button>

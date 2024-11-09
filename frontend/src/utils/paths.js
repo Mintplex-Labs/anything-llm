@@ -169,6 +169,9 @@ export default {
       if (username) return `${this.website()}/u/${username}`;
       return `${this.website()}/me`;
     },
+    noPrivateItems: () => {
+      return "https://docs.anythingllm.com/community-hub/no-private-items";
+    },
   },
 
   experimental: {

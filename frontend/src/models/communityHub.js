@@ -107,6 +107,27 @@ const CommunityHub = {
         };
       });
   },
+
+  /**
+   * Fetch the user items from the community hub.
+   * @returns {Promise<{success: boolean, error: string | null, createdByMe: object, teamItems: object[]}>}
+   */
+  fetchUserItems: async () => {
+    return await fetch(`${API_BASE}/community-hub/items`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return {
+          success: false,
+          error: e.message,
+          createdByMe: {},
+          teamItems: [],
+        };
+      });
+  },
 };
 
 export default CommunityHub;

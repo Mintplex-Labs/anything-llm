@@ -79,12 +79,12 @@ export default function HubItems() {
 
 function HubCategory({ exploreItems }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="flex flex-col gap-4">
       {Object.keys(exploreItems).map((type) => {
         const path = typeToPath(type);
         if (exploreItems[type].items.length === 0) return null;
         return (
-          <div key={type} className="bg-zinc-900 rounded-lg p-4">
+          <div key={type} className="rounded-lg w-full">
             <div className="flex justify-between items-center">
               <h3 className="text-white capitalize font-medium mb-3">
                 {readableType(type)}
@@ -94,13 +94,13 @@ function HubCategory({ exploreItems }) {
                   href={paths.communityHub.viewMoreOfType(path)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-button hover:text-primary-button/80 text-xs"
+                  className="text-primary-button hover:text-primary-button/80 text-sm"
                 >
                   Explore More →
                 </a>
               )}
             </div>
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
               {exploreItems[type].items.map((item) => (
                 <HubItemCard key={item.id} type={type} item={item} />
               ))}
