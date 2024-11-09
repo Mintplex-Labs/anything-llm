@@ -162,8 +162,8 @@ export default {
     authentication: () => {
       return `/settings/community-hub/authentication`;
     },
-    importItem: () => {
-      return `/settings/community-hub/import-item`;
+    importItem: (importItemId) => {
+      return `/settings/community-hub/import-item${importItemId ? `?id=${importItemId}` : ""}`;
     },
     profile: function (username) {
       if (username) return `${this.website()}/u/${username}`;

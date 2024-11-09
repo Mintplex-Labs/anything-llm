@@ -7,8 +7,6 @@ import showToast from "@/utils/toast";
 import System from "@/models/system";
 
 export default function SlashCommandHubCard({ item }) {
-  const { isOpen, openModal, closeModal } = useModal();
-
   return (
     <>
       <div
@@ -42,16 +40,9 @@ export default function SlashCommandHubCard({ item }) {
             }}
           >
             Import →
-          </button>
+          </Link>
         </div>
       </div>
-      {isOpen && (
-        <ImportSlashCommandModal
-          item={item}
-          isOpen={isOpen}
-          closeModal={closeModal}
-        />
-      )}
     </>
   );
 }

@@ -1,14 +1,8 @@
-import ModalWrapper from "@/components/ModalWrapper";
-import { useModal } from "@/hooks/useModal";
-import Workspace from "@/models/workspace";
-import { X } from "@phosphor-icons/react";
 import truncate from "truncate";
-import { useState, useEffect } from "react";
-import showToast from "@/utils/toast";
+import paths from "@/utils/paths";
+import { Link } from "react-router-dom";
 
 export default function SystemPromptHubCard({ item }) {
-  const { isOpen, openModal, closeModal } = useModal();
-
   return (
     <>
       <div
@@ -35,16 +29,9 @@ export default function SystemPromptHubCard({ item }) {
             }}
           >
             Import →
-          </button>
+          </Link>
         </div>
       </div>
-      {isOpen && (
-        <ImportSystemPromptModal
-          item={item}
-          isOpen={isOpen}
-          closeModal={closeModal}
-        />
-      )}
     </>
   );
 }
