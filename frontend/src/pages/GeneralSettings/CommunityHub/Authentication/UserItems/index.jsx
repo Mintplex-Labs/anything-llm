@@ -41,7 +41,8 @@ export default function UserItems() {
           </a>
         </div>
         <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-          Items you have created and shared publicly on the AnythingLLM Community Hub.
+          Items you have created and shared publicly on the AnythingLLM
+          Community Hub.
         </p>
         <div className="flex flex-col gap-4 mt-4">
           {Object.keys(createdByMe).map((type) => {
@@ -75,7 +76,9 @@ export default function UserItems() {
         <div className="flex flex-col gap-4 mt-4">
           {teamItems.map((team) => (
             <div key={team.teamId} className="flex flex-col gap-y-4">
-              <h3 className="text-white text-sm font-medium">{team.teamName}</h3>
+              <h3 className="text-white text-sm font-medium">
+                {team.teamName}
+              </h3>
               {Object.keys(team.items).map((type) => {
                 if (team.items[type].items.length === 0) return null;
                 return (

@@ -93,9 +93,9 @@ function ImportSystemPromptModal({ item, isOpen, closeModal }) {
                 </button>
               </div>
               <p className="text-white/60 text-sm">
-                Importing a system prompt will overwrite your workspace's current
-                prompt. Simply select the workspace you want to import the prompt
-                to and click import.
+                Importing a system prompt will overwrite your workspace's
+                current prompt. Simply select the workspace you want to import
+                the prompt to and click import.
               </p>
             </div>
           </div>
@@ -109,7 +109,10 @@ function ImportSystemPromptModal({ item, isOpen, closeModal }) {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex p-4 justify-between items-end">
+          <form
+            onSubmit={handleSubmit}
+            className="flex p-4 justify-between items-end"
+          >
             <div className="flex flex-col w-60">
               <label className="text-white text-sm font-semibold block mb-3">
                 Destination Workspace

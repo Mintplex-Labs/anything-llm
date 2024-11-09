@@ -151,9 +151,13 @@ export default function CommunityHubAuthentication() {
               />
               <p className="text-white/60 text-xs mt-2">
                 You can get your API key from your{" "}
-                <a href={paths.communityHub.profile()} className="underline text-primary-button">
+                <a
+                  href={paths.communityHub.profile()}
+                  className="underline text-primary-button"
+                >
                   AnythingLLM Community Hub profile page
-                </a>.
+                </a>
+                .
               </p>
             </div>
           </div>

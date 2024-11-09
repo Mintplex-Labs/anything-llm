@@ -18,7 +18,8 @@ export function useUserItems() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const { success, createdByMe, teamItems } = await CommunityHub.fetchUserItems();
+        const { success, createdByMe, teamItems } =
+          await CommunityHub.fetchUserItems();
         if (success) {
           setUserItems({ createdByMe, teamItems });
         }
