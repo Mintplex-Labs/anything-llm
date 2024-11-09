@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Sparkle, Toolbox } from "@phosphor-icons/react";
+import { Toolbox } from "@phosphor-icons/react";
 import { isMobile } from "react-device-detect";
 import CommunityHubImportItemSteps, {
   CommunityHubImportItemLayout,

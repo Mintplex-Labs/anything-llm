@@ -1,3 +1,6 @@
+import paths from "@/utils/paths";
+import { Link } from "react-router-dom";
+
 export default function GenericHubCard({ item }) {
   return (
     <div
@@ -7,14 +10,12 @@ export default function GenericHubCard({ item }) {
       <p className="text-white text-sm font-medium">{item.name}</p>
       <p className="text-white/60 text-xs mt-1">{item.description}</p>
       <div className="flex justify-end mt-2">
-        <button
+        <Link
           className="text-primary-button hover:text-primary-button/80 text-xs"
-          onClick={() => {
-            /* TODO: Add import action */
-          }}
+          to={paths.communityHub.importItem(item.importId)}
         >
           Import →
-        </button>
+        </Link>
       </div>
     </div>
   );

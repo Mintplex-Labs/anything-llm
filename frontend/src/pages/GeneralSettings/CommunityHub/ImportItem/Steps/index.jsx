@@ -1,9 +1,10 @@
 import { isMobile } from "react-device-detect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import Introduction from "./Introduction";
 import PullAndReview from "./PullAndReview";
 import Completed from "./Completed";
+import useQuery from "@/hooks/useQuery";
 
 const CommunityHubImportItemSteps = {
   itemId: {
@@ -44,10 +45,21 @@ const CommunityHubImportItemSteps = {
 };
 
 export function CommunityHubImportItemLayout({ setStep, children }) {
+  const query = useQuery();
   const [settings, setSettings] = useState({
     itemId: null,
     item: null,
   });
+
+  useEffect(() => {
+    function autoForward() {
+      if (query.get("id")) {
+        setSettings({ itemId: query.get("id") });
+        setStep(CommunityHubImportItemSteps.itemId.next());
+      }
+    }
+    autoForward();
+  }, []);
 
   return (
     <div
