@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import CommunityHub from "@/models/communityHub";
 import paths from "@/utils/paths";
 import HubItemCard from "./HubItemCard";
+import * as Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 function readableType(type) {
   switch (type) {
@@ -72,12 +74,13 @@ export default function HubItems() {
           import an item via its import link directly.
         </p>
       </div>
-      <HubCategory exploreItems={exploreItems} />
+      <HubCategory loading={loading} exploreItems={exploreItems} />
     </div>
   );
 }
 
-function HubCategory({ exploreItems }) {
+function HubCategory({ loading, exploreItems }) {
+  if (loading) return <HubItemCardSkeleton />;
   return (
     <div className="flex flex-col gap-4">
       {Object.keys(exploreItems).map((type) => {
@@ -108,6 +111,55 @@ function HubCategory({ exploreItems }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+export function HubItemCardSkeleton() {
+  const highlightColor = "#3D4147";
+  const baseColor = "#2C2F35";
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="rounded-lg w-full">
+        <div className="flex justify-between items-center">
+          <Skeleton.default
+            height="40px"
+            width="300px"
+            highlightColor={highlightColor}
+            baseColor={baseColor}
+            count={1}
+          />
+        </div>
+        <Skeleton.default
+          height="200px"
+          width="300px"
+          highlightColor={highlightColor}
+          baseColor={baseColor}
+          count={4}
+          className="rounded-lg"
+          containerClassName="flex flex-wrap gap-2 mt-1"
+        />
+      </div>
+      <div className="rounded-lg w-full">
+        <div className="flex justify-between items-center">
+          <Skeleton.default
+            height="40px"
+            width="300px"
+            highlightColor={highlightColor}
+            baseColor={baseColor}
+            count={1}
+          />
+        </div>
+        <Skeleton.default
+          height="200px"
+          width="300px"
+          highlightColor={highlightColor}
+          baseColor={baseColor}
+          count={4}
+          className="rounded-lg"
+          containerClassName="flex flex-wrap gap-2 mt-1"
+        />
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import paths from "@/utils/paths";
 import HubItemCard from "../../Trending/HubItems/HubItemCard";
 import { useUserItems } from "../useUserItems";
+import { HubItemCardSkeleton } from "../../Trending/HubItems";
 
 function readableType(type) {
   switch (type) {
@@ -20,7 +21,7 @@ export default function UserItems({ connectionKey }) {
   const { loading, userItems } = useUserItems({ connectionKey });
   const { createdByMe = {}, teamItems = [] } = userItems || {};
 
-  if (loading) return null;
+  if (loading) return <HubItemCardSkeleton />;
   return (
     <div className="flex flex-col gap-y-8">
       {/* Created By Me Section */}
