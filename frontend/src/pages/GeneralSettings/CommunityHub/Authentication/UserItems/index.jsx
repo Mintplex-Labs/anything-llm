@@ -18,7 +18,7 @@ function readableType(type) {
 
 export default function UserItems() {
   const { loading, userItems } = useUserItems();
-  const { createdByMe, teamItems } = userItems;
+  const { createdByMe = {}, teamItems = [] } = userItems || {};
 
   if (loading) return null;
   console.log(userItems);
@@ -46,7 +46,7 @@ export default function UserItems() {
         </p>
         <div className="flex flex-col gap-4 mt-4">
           {Object.keys(createdByMe).map((type) => {
-            if (createdByMe[type].items.length === 0) return null;
+            if (!createdByMe[type]?.items?.length) return null;
             return (
               <div key={type} className="rounded-lg w-full">
                 <h3 className="text-white capitalize font-medium mb-3">
