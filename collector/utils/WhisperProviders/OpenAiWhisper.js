@@ -33,7 +33,7 @@ class OpenAiWhisper {
           };
         }
 
-        return { content: response, error: null };
+        return { content: response.text, error: null };
       })
       .catch((error) => {
         this.#log(
