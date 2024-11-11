@@ -306,7 +306,7 @@ const webBrowsing = {
             if (searchResponse.length === 0)
               return `No information was found online for the search query.`;
             this.super.introspect(
-              `${this.caller}: I found ${data.length} results - looking over them now.`
+              `${this.caller}: I found ${searchResponse.length} results - looking over them now.`
             );
             return JSON.stringify(searchResponse);
           },
