@@ -34,9 +34,12 @@ const CommunityHub = {
       headers: baseHeaders(),
       body: JSON.stringify({ importId }),
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        const response = await res.json();
+        if (!res.ok) throw new Error(response?.error ?? res.statusText);
+        return response;
+      })
       .catch((e) => {
-        console.error(e);
         return {
           error: e.message,
           item: null,

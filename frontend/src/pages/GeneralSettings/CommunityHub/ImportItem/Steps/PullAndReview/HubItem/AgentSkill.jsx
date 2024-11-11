@@ -24,7 +24,7 @@ export default function AgentSkill({ item, settings, setStep }) {
       setStep(CommunityHubImportItemSteps.completed.key);
     } catch (e) {
       console.error(e);
-      showToast("Failed to import agent skill.", "error");
+      showToast(`Failed to import agent skill. ${e.message}`, "error");
     } finally {
       setLoading(false);
     }

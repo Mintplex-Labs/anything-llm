@@ -2,6 +2,9 @@ const { SystemSettings } = require("../models/systemSettings");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { reqBody } = require("../utils/http");
 const { CommunityHub } = require("../models/communityHub");
+const {
+  communityHubDownloadsEnabled,
+} = require("../utils/middleware/communityHubDownloadsEnabled");
 
 function communityHubEndpoints(app) {
   if (!app) return;
@@ -75,7 +78,7 @@ function communityHubEndpoints(app) {
 
   app.post(
     "/community-hub/import",
-    [validatedRequest],
+    [validatedRequest, communityHubDownloadsEnabled],
     async (request, response) => {
       try {
         const { importId } = reqBody(request);
@@ -88,8 +91,10 @@ function communityHubEndpoints(app) {
         } = await CommunityHub.getBundleItem(importId);
         if (fetchError) throw new Error(fetchError);
 
-        const { success, error: importError } =
-          await CommunityHub.importBundleItem({ url, item });
+        const { error: importError } = await CommunityHub.importBundleItem({
+          url,
+          item,
+        });
         if (importError) throw new Error(importError);
 
         response.status(200).json({ success: true, error: null });
