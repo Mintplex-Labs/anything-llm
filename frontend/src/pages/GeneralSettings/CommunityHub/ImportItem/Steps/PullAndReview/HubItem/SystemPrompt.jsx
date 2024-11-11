@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
+import CommunityHub from "@/models/communityHub";
 
 export default function SystemPrompt({ item, setStep }) {
   const [destinationWorkspaceSlug, setDestinationWorkspaceSlug] =
@@ -20,9 +21,15 @@ export default function SystemPrompt({ item, setStep }) {
 
   async function handleSubmit() {
     showToast("Applying system prompt to workspace...", "info");
-    await Workspace.update(destinationWorkspaceSlug, {
-      openAiPrompt: item.prompt,
+    const { error } = await CommunityHub.applyItem(item.importId, {
+      workspaceSlug: destinationWorkspaceSlug,
     });
+    if (error) {
+      return showToast(`Failed to apply system prompt. ${error}`, "error", {
+        clear: true,
+      });
+    }
+
     showToast("System prompt applied to workspace.", "success", {
       clear: true,
     });

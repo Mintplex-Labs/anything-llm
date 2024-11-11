@@ -5,13 +5,19 @@ const { CommunityHub } = require("../models/communityHub");
 const {
   communityHubDownloadsEnabled,
 } = require("../utils/middleware/communityHubDownloadsEnabled");
+const { EventLogs } = require("../models/eventLogs");
+const { Telemetry } = require("../models/telemetry");
+const {
+  flexUserRoleValid,
+  ROLES,
+} = require("../utils/middleware/multiUserProtected");
 
 function communityHubEndpoints(app) {
   if (!app) return;
 
   app.get(
     "/community-hub/settings",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_, response) => {
       try {
         const { connectionKey } = await SystemSettings.hubSettings();
@@ -25,7 +31,7 @@ function communityHubEndpoints(app) {
 
   app.post(
     "/community-hub/settings",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const data = reqBody(request);
@@ -39,23 +45,27 @@ function communityHubEndpoints(app) {
     }
   );
 
-  app.get("/community-hub/explore", [validatedRequest], async (_, response) => {
-    try {
-      const exploreItems = await CommunityHub.fetchExploreItems();
-      response.status(200).json({ success: true, result: exploreItems });
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({
-        success: false,
-        result: null,
-        error: error.message,
-      });
+  app.get(
+    "/community-hub/explore",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_, response) => {
+      try {
+        const exploreItems = await CommunityHub.fetchExploreItems();
+        response.status(200).json({ success: true, result: exploreItems });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({
+          success: false,
+          result: null,
+          error: error.message,
+        });
+      }
     }
-  });
+  );
 
   app.post(
     "/community-hub/item",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { importId } = reqBody(request);
@@ -76,26 +86,83 @@ function communityHubEndpoints(app) {
     }
   );
 
+  /**
+   * Apply an item to the AnythingLLM instance. Used for simple items like slash commands and system prompts.
+   */
   app.post(
-    "/community-hub/import",
-    [validatedRequest, communityHubDownloadsEnabled],
+    "/community-hub/apply",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { importId } = reqBody(request);
-        if (!importId) throw new Error("Import ID is required");
+        const { importId, options = {} } = reqBody(request);
+        if (!importId)
+          return response.status(500).json({
+            success: false,
+            error: "Import ID is required",
+          });
 
-        const {
-          url,
-          item,
-          error: fetchError,
-        } = await CommunityHub.getBundleItem(importId);
-        if (fetchError) throw new Error(fetchError);
+        const { item, error } =
+          await CommunityHub.getItemFromImportId(importId);
+        if (error) throw new Error(error);
+        const { error: applyError } = await CommunityHub.applyItem(item, {
+          ...options,
+          currentUser: response.locals?.user,
+        });
+        if (applyError) throw new Error(applyError);
 
+        await Telemetry.sendTelemetry("community_hub_import", {
+          itemType: response.locals.bundleItem.itemType,
+          visibility: response.locals.bundleItem.visibility,
+        });
+        await EventLogs.logEvent(
+          "community_hub_import",
+          {
+            itemId: response.locals.bundleItem.id,
+            itemType: response.locals.bundleItem.itemType,
+          },
+          response.locals?.user?.id
+        );
+
+        response.status(200).json({ success: true, error: null });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ success: false, error: error.message });
+      }
+    }
+  );
+
+  /**
+   * Import a bundle item to the AnythingLLM instance by downloading the zip file and importing it.
+   * or whatever the item type requires. This is not used if the item is a simple text responses like
+   * slash commands or system prompts.
+   */
+  app.post(
+    "/community-hub/import",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin]),
+      communityHubDownloadsEnabled,
+    ],
+    async (_, response) => {
+      try {
         const { error: importError } = await CommunityHub.importBundleItem({
-          url,
-          item,
+          url: response.locals.bundleUrl,
+          item: response.locals.bundleItem,
         });
         if (importError) throw new Error(importError);
+
+        await Telemetry.sendTelemetry("community_hub_import", {
+          itemType: response.locals.bundleItem.itemType,
+          visibility: response.locals.bundleItem.visibility,
+        });
+        await EventLogs.logEvent(
+          "community_hub_import",
+          {
+            itemId: response.locals.bundleItem.id,
+            itemType: response.locals.bundleItem.itemType,
+          },
+          response.locals?.user?.id
+        );
 
         response.status(200).json({ success: true, error: null });
       } catch (error) {
@@ -108,16 +175,20 @@ function communityHubEndpoints(app) {
     }
   );
 
-  app.get("/community-hub/items", [validatedRequest], async (_, response) => {
-    try {
-      const { connectionKey } = await SystemSettings.hubSettings();
-      const items = await CommunityHub.fetchUserItems(connectionKey);
-      response.status(200).json({ success: true, ...items });
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({ success: false, error: error.message });
+  app.get(
+    "/community-hub/items",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_, response) => {
+      try {
+        const { connectionKey } = await SystemSettings.hubSettings();
+        const items = await CommunityHub.fetchUserItems(connectionKey);
+        response.status(200).json({ success: true, ...items });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ success: false, error: error.message });
+      }
     }
-  });
+  );
 }
 
 module.exports = { communityHubEndpoints };

@@ -70,8 +70,7 @@ export default function HubItems() {
           Recently Added on AnythingLLM Community Hub
         </p>
         <p className="text-xs text-white/60">
-          Explore the latest additions to the AnythingLLM Community Hub or
-          import an item via its import link directly.
+          Explore the latest additions to the AnythingLLM Community Hub
         </p>
       </div>
       <HubCategory loading={loading} exploreItems={exploreItems} />

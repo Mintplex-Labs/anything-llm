@@ -24,6 +24,28 @@ const CommunityHub = {
   },
 
   /**
+   * Apply an item to the AnythingLLM instance. Used for simple items like slash commands and system prompts.
+   * @param {string} importId - The import ID of the item.
+   * @param {object} options - Additional options for applying the item for whatever the item type requires.
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  async applyItem(importId, options = {}) {
+    return await fetch(`${API_BASE}/community-hub/apply`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ importId, options }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return {
+          success: false,
+          error: e.message,
+        };
+      });
+  },
+
+  /**
    * Import a bundle item from the community hub.
    * @param {string} importId - The import ID of the item.
    * @returns {Promise<{error: string | null, item: object | null}>}

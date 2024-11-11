@@ -1,26 +1,22 @@
 import CTAButton from "@/components/lib/CTAButton";
 import CommunityHubImportItemSteps from "../..";
 import showToast from "@/utils/toast";
-import System from "@/models/system";
 import paths from "@/utils/paths";
+import CommunityHub from "@/models/communityHub";
 
 export default function SlashCommand({ item, setStep }) {
   async function handleSubmit() {
     try {
-      const { preset, error } = await System.createSlashCommandPreset({
-        command: item.command,
-        prompt: item.prompt,
-        description: item.description,
-      });
+      const { error } = await CommunityHub.applyItem(item.importId);
       if (error) throw new Error(error);
       showToast(
-        `Slash command ${preset.command} imported successfully!`,
+        `Slash command ${item.command} imported successfully!`,
         "success"
       );
       setStep(CommunityHubImportItemSteps.completed.key);
     } catch (e) {
       console.error(e);
-      showToast("Failed to import slash command.", "error");
+      showToast(`Failed to import slash command. ${e.message}`, "error");
     } finally {
       setLoading(false);
     }

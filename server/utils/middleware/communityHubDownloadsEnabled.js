@@ -1,3 +1,6 @@
+const { CommunityHub } = require("../../models/communityHub");
+const { reqBody } = require("../http");
+
 /**
  * Checks if community hub bundle downloads are enabled. The reason this functionality is disabled
  * by default is that since AgentSkills, Workspaces, and DataConnectors are all imported from the
@@ -6,13 +9,16 @@
  * functionality is disabled by default and must be enabled manually by the system administrator.
  *
  * On hosted systems, this would not be an issue since the user cannot modify this setting, but those
- * who self-host can still unlock this feature manually by setting the environment variable.
+ * who self-host can still unlock this feature manually by setting the environment variable
+ * which would require someone who likely has the capacity to understand the risks and the
+ * implications of importing unverified items that can run code on their system, container, or instance.
+ * @see {@link https://docs.anythingllm.com/docs/community-hub/importing-items}
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  * @param {import("express").NextFunction} next
  * @returns {void}
  */
-async function communityHubDownloadsEnabled(_, response, next) {
+async function communityHubDownloadsEnabled(request, response, next) {
   if (!("COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED" in process.env)) {
     return response.status(422).json({
       error:
@@ -20,6 +26,39 @@ async function communityHubDownloadsEnabled(_, response, next) {
     });
   }
 
+  const { importId } = reqBody(request);
+  if (!importId)
+    return response.status(500).json({
+      success: false,
+      error: "Import ID is required",
+    });
+
+  const {
+    url,
+    item,
+    error: fetchError,
+  } = await CommunityHub.getBundleItem(importId);
+  if (fetchError)
+    return response.status(500).json({
+      success: false,
+      error: fetchError,
+    });
+
+  // If the admin specifically did not set the system to `allow_all` then downloads are limited to verified items or private items only.
+  // This is to prevent users from downloading unverified items and importing them into their own instance without understanding the risks.
+  if (
+    !item.verified &&
+    item.visibility !== "private" &&
+    process.env.COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED !== "allow_all"
+  ) {
+    return response.status(422).json({
+      error:
+        "Community hub bundle downloads are limited to verified public items or private team items only. Please contact the system administrator to review or modify this setting.",
+    });
+  }
+
+  response.locals.bundleItem = item;
+  response.locals.bundleUrl = url;
   next();
 }
 

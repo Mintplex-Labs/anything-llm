@@ -1,7 +1,7 @@
 const ImportedPlugin = require("../utils/agents/imported");
 
 /**
- * An interface to the community hub for AnythingLLM external API.
+ * An interface to the AnythingLLM Community Hub external API.
  */
 const CommunityHub = {
   importPrefix: "allm-community-id",
@@ -61,6 +61,11 @@ const CommunityHub = {
       });
   },
 
+  /**
+   * Fetch an item from the community hub by import ID.
+   * @param {string} importId - The import ID of the item.
+   * @returns {Promise<{item: object | null, error: string | null}>}
+   */
   getItemFromImportId: async function (importId) {
     const { entityType, entityId } = this.validateImportId(importId);
     if (!entityType || !entityId)
@@ -117,6 +122,45 @@ const CommunityHub = {
         return { url: null, item: null, error: error.message };
       });
     return { url, item, error };
+  },
+
+  /**
+   * Apply an item to the AnythingLLM instance. Used for simple items like slash commands and system prompts.
+   * @param {object} item - The item to apply.
+   * @param {object} options - Additional options for applying the item.
+   * @param {object|null} options.currentUser - The current user object.
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  applyItem: async function (item, options = {}) {
+    if (!item) return { success: false, error: "Item is required" };
+
+    if (item.itemType === "system-prompt") {
+      if (!options?.workspaceSlug)
+        return { success: false, error: "Workspace slug is required" };
+
+      const { Workspace } = require("./workspace");
+      const workspace = await Workspace.get({
+        slug: String(options.workspaceSlug),
+      });
+      if (!workspace) return { success: false, error: "Workspace not found" };
+      await Workspace.update(workspace.id, { openAiPrompt: item.prompt });
+      return { success: true, error: null };
+    }
+
+    if (item.itemType === "slash-command") {
+      const { SlashCommandPresets } = require("./slashCommandsPresets");
+      await SlashCommandPresets.create(options?.currentUser?.id, {
+        command: SlashCommandPresets.formatCommand(String(item.command)),
+        prompt: String(item.prompt),
+        description: String(item.description),
+      });
+      return { success: true, error: null };
+    }
+
+    return {
+      success: false,
+      error: "Unsupported item type. Nothing to apply.",
+    };
   },
 
   /**

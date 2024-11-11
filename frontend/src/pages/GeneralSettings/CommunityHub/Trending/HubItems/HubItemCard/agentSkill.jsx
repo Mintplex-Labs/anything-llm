@@ -1,9 +1,9 @@
-import truncate from "truncate";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
+import pluralize from "pluralize";
 import { VisibilityIcon } from "./generic";
 
-export default function SystemPromptHubCard({ item }) {
+export default function AgentSkillHubCard({ item }) {
   return (
     <>
       <Link
@@ -17,11 +17,18 @@ export default function SystemPromptHubCard({ item }) {
         </div>
         <div className="flex flex-col gap-2">
           <p className="text-white/60 text-xs mt-1">{item.description}</p>
-          <label className="text-white/60 text-xs font-semibold mt-4">
-            Prompt
-          </label>
-          <p className="text-white/60 text-xs bg-zinc-900 px-2 py-1 rounded-md font-mono border border-slate-800">
-            {truncate(item.prompt, 90)}
+
+          <p className="font-mono text-xs mt-1 text-white/60">
+            {item.verified ? (
+              <span className="text-green-500">Verified</span>
+            ) : (
+              <span className="text-red-500">Unverified</span>
+            )}{" "}
+            Skill
+          </p>
+          <p className="font-mono text-xs mt-1 text-white/60">
+            {item.manifest.files?.length || 0}{" "}
+            {pluralize("file", item.manifest.files?.length || 0)} found
           </p>
         </div>
         <div className="flex justify-end mt-2">
