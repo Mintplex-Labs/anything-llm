@@ -10,12 +10,14 @@ const DEFAULT_USER_ITEMS = {
   teamItems: [],
 };
 
-export function useUserItems() {
+export function useUserItems({ connectionKey }) {
   const [loading, setLoading] = useState(true);
   const [userItems, setUserItems] = useState(DEFAULT_USER_ITEMS);
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log("fetching user items", connectionKey);
+      if (!connectionKey) return;
       setLoading(true);
       try {
         const { success, createdByMe, teamItems } =
@@ -31,7 +33,7 @@ export function useUserItems() {
     };
 
     fetchData();
-  }, []);
+  }, [connectionKey]);
 
   return { loading, userItems };
 }
