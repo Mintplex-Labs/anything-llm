@@ -294,7 +294,7 @@ const SidebarOptions = ({ user = null, t }) => (
           roles={["admin"]}
         />
         <Option
-          btnText={t("settings.community-hub")}
+          btnText="Community Hub"
           icon={<Globe className="h-5 w-5 flex-shrink-0" />}
           childOptions={[
             {

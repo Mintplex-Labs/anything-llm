@@ -39,7 +39,6 @@ const TRANSLATIONS = {
     "experimental-features": "실험적 기능",
     contact: "지원팀 연락",
     "browser-extension": "브라우저 확장 프로그램",
-    "community-hub": "커뮤니티 허브",
   },
 
   // Page Definitions
@@ -480,12 +479,6 @@ const TRANSLATIONS = {
     embedding: "임베딩 기본 설정",
     vector: "벡터 데이터베이스",
     anonymous: "익명 원격 분석 활성화",
-  },
-
-  // Community Hub
-  "community-hub": {
-    title: "커뮤니티 허브",
-    description: "AnythingLLM 커뮤니티와 공유하고 협력하세요.",
   },
 };
 

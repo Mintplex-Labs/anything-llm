@@ -38,7 +38,6 @@ const TRANSLATIONS = {
     "experimental-features": "Экспериментальные функции",
     contact: "联系支持Связаться с Поддержкой",
     "browser-extension": "Расширение браузера",
-    "community-hub": "Центр Сообщества",
   },
 
   login: {
@@ -460,12 +459,6 @@ const TRANSLATIONS = {
     embedding: "Предпочтение встраивания",
     vector: "Векторная база данных",
     anonymous: "Анонимная телеметрия включена",
-  },
-
-  // Community Hub
-  "community-hub": {
-    title: "Центр Сообщества",
-    description: "Поделитесь и сотрудничайте с сообществом AnythingLLM.",
   },
 };
 

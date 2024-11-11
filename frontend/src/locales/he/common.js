@@ -39,7 +39,6 @@ const TRANSLATIONS = {
     "experimental-features": "תכונות ניסיוניות",
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
-    "community-hub": "קהילת מופע AnythingLLM",
   },
 
   // Page Definitions
@@ -327,12 +326,6 @@ const TRANSLATIONS = {
       icon: "סמל",
       link: "קישור",
     },
-  },
-
-  // Community Hub
-  "community-hub": {
-    title: "קהילת מופע AnythingLLM",
-    description: "שתף והפגשו עם קהילת AnythingLLM.",
   },
 
   // API Keys

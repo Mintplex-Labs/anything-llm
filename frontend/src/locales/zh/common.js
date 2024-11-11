@@ -40,7 +40,6 @@ const TRANSLATIONS = {
     "experimental-features": "实验功能",
     contact: "联系支持",
     "browser-extension": "浏览器扩展",
-    "community-hub": "社区中心",
   },
 
   // Page Definitions
@@ -463,12 +462,6 @@ const TRANSLATIONS = {
     embedding: "嵌入首选项",
     vector: "向量数据库",
     anonymous: "启用匿名遥测",
-  },
-
-  // Community Hub
-  "community-hub": {
-    title: "社区中心",
-    description: "与 AnythingLLM 社区分享和协作。",
   },
 };
 

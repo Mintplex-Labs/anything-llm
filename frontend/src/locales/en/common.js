@@ -39,7 +39,6 @@ const TRANSLATIONS = {
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
-    "community-hub": "Community Hub",
   },
 
   // Page Definitions
@@ -333,12 +332,6 @@ const TRANSLATIONS = {
       icon: "Icon",
       link: "Link",
     },
-  },
-
-  // Community Hub
-  "community-hub": {
-    title: "Community Hub",
-    description: "Share and collaborate with the AnythingLLM community.",
   },
 
   // API Keys

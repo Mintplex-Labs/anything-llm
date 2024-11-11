@@ -1,10 +1,8 @@
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import { useTranslation } from "react-i18next";
 import HubItems from "./HubItems";
 
 export default function CommunityHub() {
-  const { t } = useTranslation();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -16,11 +14,11 @@ export default function CommunityHub() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                {t("community-hub.title")}
+                Community Hub
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              {t("community-hub.description")}
+              Share and collaborate with the AnythingLLM community.
             </p>
           </div>
           <HubItems />
