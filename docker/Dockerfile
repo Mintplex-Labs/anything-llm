@@ -116,6 +116,7 @@ RUN echo "Running common build flow of AnythingLLM image for all architectures"
 USER anythingllm
 WORKDIR /app
 
+
 # Install & Build frontend layer
 FROM build AS frontend-build
 COPY --chown=anythingllm:anythingllm ./frontend /app/frontend/
@@ -131,7 +132,7 @@ WORKDIR /app
 # Install server layer & build node-llama-cpp
 # Also pull and build collector deps (chromium issues prevent bad bindings)
 FROM build AS backend-build
-COPY ./server /app/server/
+COPY --chown=anythingllm:anythingllm ./server /app/server/
 WORKDIR /app/server
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 WORKDIR /app
