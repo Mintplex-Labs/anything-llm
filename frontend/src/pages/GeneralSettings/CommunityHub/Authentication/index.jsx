@@ -38,6 +38,7 @@ function useCommunityHubAuthentication() {
         return showToast("Failed to save API key", "error");
       setHasChanges(false);
       showToast("API key saved successfully", "success");
+      setOriginalConnectionKey(connectionKey);
     } catch (error) {
       console.error(error);
       showToast("Failed to save API key", "error");
@@ -64,6 +65,7 @@ function useCommunityHubAuthentication() {
 
   return {
     connectionKey,
+    originalConnectionKey,
     loading,
     onConnectionKeyChange,
     updateConnectionKey,
@@ -73,9 +75,9 @@ function useCommunityHubAuthentication() {
 }
 
 export default function CommunityHubAuthentication() {
-  const { t } = useTranslation();
   const {
     connectionKey,
+    originalConnectionKey,
     loading,
     onConnectionKeyChange,
     updateConnectionKey,
@@ -162,9 +164,11 @@ export default function CommunityHubAuthentication() {
             </div>
           </div>
 
-          <div className="mt-6">
-            <UserItems />
-          </div>
+          {!!originalConnectionKey && (
+            <div className="mt-6">
+              <UserItems connectionKey={originalConnectionKey} />
+            </div>
+          )}
         </div>
       </div>
     </div>

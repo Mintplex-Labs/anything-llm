@@ -16,13 +16,11 @@ function readableType(type) {
   }
 }
 
-export default function UserItems() {
-  const { loading, userItems } = useUserItems();
+export default function UserItems({ connectionKey }) {
+  const { loading, userItems } = useUserItems({ connectionKey });
   const { createdByMe, teamItems } = userItems;
 
   if (loading) return null;
-  console.log(userItems);
-
   return (
     <div className="flex flex-col gap-y-8">
       {/* Created By Me Section */}
