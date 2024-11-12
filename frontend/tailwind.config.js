@@ -93,6 +93,9 @@ export default {
           },
           modal: {
             border: 'var(--theme-modal-border)',
+          },
+          "file-picker": {
+            hover: 'var(--theme-file-picker-hover)',
           }
         },
       },

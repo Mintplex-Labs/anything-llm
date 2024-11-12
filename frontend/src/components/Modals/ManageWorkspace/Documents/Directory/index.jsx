@@ -197,7 +197,7 @@ function Directory({
               type="search"
               placeholder="Search for document"
               onChange={handleSearch}
-              className="search-input bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px]"
+              className="search-input bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px] light:border-theme-modal-border light:border"
             />
             <MagnifyingGlass
               size={14}
@@ -206,18 +206,18 @@ function Directory({
             />
           </div>
           <button
-            className="flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-[#222628]/60 z-20 relative"
+            className="flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-theme-sidebar-subitem-hover z-20 relative"
             onClick={openFolderModal}
           >
-            <Plus size={18} weight="bold" color="#D3D4D4" />
-            <div className="text-[#D3D4D4] text-xs font-bold leading-[18px]">
+            <Plus size={18} weight="bold" color="var(--theme-text-primary)" />
+            <div className="text-theme-text-primary text-xs font-bold leading-[18px]">
               New Folder
             </div>
           </button>
         </div>
 
         <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
-          <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-theme-settings-input-bg">
+          <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-theme-settings-input-bg">
             <p className="col-span-6">Name</p>
           </div>
 

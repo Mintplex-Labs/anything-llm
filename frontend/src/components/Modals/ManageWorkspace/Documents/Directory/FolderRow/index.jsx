@@ -22,13 +22,13 @@ export default function FolderRow({
     <>
       <tr
         onClick={onRowClick}
-        className={`text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 bg-dark-highlight hover:bg-sky-500/20 cursor-pointer w-full file-row ${
+        className={`text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer w-full file-row ${
           selected ? "selected" : ""
         }`}
       >
-        <div className="col-span-6 flex gap-x-[4px] items-center">
+        <div className="col-span-6 flex gap-x-[4px] items-center text-theme-text-primary">
           <div
-            className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+            className="shrink-0 w-3 h-3 rounded border-[1px] border-white light:invert flex justify-center items-center cursor-pointer"
             role="checkbox"
             aria-checked={selected}
             tabIndex={0}

@@ -97,7 +97,7 @@ export default function UploadFile({
           </div>
         ) : files.length === 0 ? (
           <div className="flex flex-col items-center justify-center">
-            <CloudArrowUp className="w-8 h-8 text-white/80" />
+            <CloudArrowUp className="w-8 h-8 text-white/80 light:invert" />
             <div className="text-white text-opacity-80 text-sm font-semibold py-1">
               Click to upload or drag and drop
             </div>

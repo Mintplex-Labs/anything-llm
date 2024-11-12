@@ -159,7 +159,7 @@ export default function GitlabOptions() {
                 classNames={{
                   tag: "bg-blue-300/10 text-zinc-800",
                   input:
-                    "flex bg-theme-bg-secondary text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
+                    "flex p-1 bg-theme-bg-secondary text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
                 }}
               />
             </div>

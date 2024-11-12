@@ -122,7 +122,7 @@ export default function GithubOptions() {
                 <label className="text-white text-sm flex gap-x-2 items-center">
                   <p className="text-white text-sm font-bold">File Ignores</p>
                 </label>
-                <p className="text-xs font-normal text-white/50">
+                <p className="text-xs font-normal text-theme-text-secondary">
                   List in .gitignore format to ignore specific files during
                   collection. Press enter after each entry you want to save.
                 </p>
@@ -135,7 +135,7 @@ export default function GithubOptions() {
                 classNames={{
                   tag: "bg-blue-300/10 text-zinc-800",
                   input:
-                    "flex bg-theme-bg-secondary text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
+                    "flex p-1 bg-theme-bg-secondary text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
                 }}
               />
             </div>
