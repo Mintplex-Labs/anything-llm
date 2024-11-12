@@ -18,6 +18,8 @@ import AttachItem from "./AttachItem";
 import { PASTE_ATTACHMENT_EVENT } from "../DnDWrapper";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
+const MAX_EDIT_STACK_SIZE = 100;
+
 export default function PromptInput({
   submit,
   onChange,
@@ -34,13 +36,20 @@ export default function PromptInput({
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
-  const MAX_STACK_SIZE = 100;
 
-  // To prevent too many re-renders we remotely listen for updates from the parent
-  // via an event cycle. Otherwise, using message as a prop leads to a re-render every
-  // change on the input.
+  /**
+   * To prevent too many re-renders we remotely listen for updates from the parent
+   * via an event cycle. Otherwise, using message as a prop leads to a re-render every
+   * change on the input.
+   * @param {Event} e
+   */
   function handlePromptUpdate(e) {
     setPromptInput(e?.detail ?? "");
+  }
+
+  function resetTextAreaHeight() {
+    if (!textareaRef.current) return;
+    textareaRef.current.style.height = "auto";
   }
 
   useEffect(() => {
@@ -51,102 +60,120 @@ export default function PromptInput({
   }, []);
 
   useEffect(() => {
-    if (!inputDisabled && textareaRef.current) {
-      textareaRef.current.focus();
-    }
+    if (!inputDisabled && textareaRef.current) textareaRef.current.focus();
     resetTextAreaHeight();
   }, [inputDisabled]);
 
-  // Save the current state before changes
-  const saveCurrentState = (adjustment = 0) => {
-    if (undoStack.current.length >= MAX_STACK_SIZE) {
-      // If the stack is at the max size, remove oldest state
+  /**
+   * Save the current state before changes
+   * @param {number} adjustment
+   */
+  function saveCurrentState(adjustment = 0) {
+    if (undoStack.current.length >= MAX_EDIT_STACK_SIZE)
       undoStack.current.shift();
-    }
     undoStack.current.push({
       value: promptInput,
       cursorPositionStart: textareaRef.current.selectionStart + adjustment,
       cursorPositionEnd: textareaRef.current.selectionEnd + adjustment,
     });
-  };
-
+  }
   const debouncedSaveState = debounce(saveCurrentState, 250);
 
-  const handleSubmit = (e) => {
+  function handleSubmit(e) {
     setFocused(false);
     submit(e);
-  };
+  }
 
-  const resetTextAreaHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-    }
-  };
+  function resetTextAreaHeight() {
+    if (!textareaRef.current) return;
+    textareaRef.current.style.height = "auto";
+  }
 
-  const checkForSlash = (e) => {
+  function checkForSlash(e) {
     const input = e.target.value;
     if (input === "/") setShowSlashCommand(true);
     if (showSlashCommand) setShowSlashCommand(false);
     return;
-  };
+  }
+  const watchForSlash = debounce(checkForSlash, 300);
 
-  const checkForAt = (e) => {
+  function checkForAt(e) {
     const input = e.target.value;
     if (input === "@") return setShowAgents(true);
     if (showAgents) return setShowAgents(false);
-  };
+  }
+  const watchForAt = debounce(checkForAt, 300);
 
-  const captureEnterOrUndo = (event) => {
+  /**
+   * Capture enter key press to handle submission, redo, or undo
+   * via keyboard shortcuts
+   * @param {KeyboardEvent} event
+   */
+  function captureEnterOrUndo(event) {
+    // Is simple enter key press w/o shift key
     if (event.keyCode === 13 && !event.shiftKey) {
       event.preventDefault();
-      submit(event);
-    } else if ((event.ctrlKey || event.metaKey) && event.key === "z") {
-      event.preventDefault();
-      if (event.shiftKey) {
-        // Redo with Ctrl+Shift+Z or Cmd+Shift+Z
-        if (redoStack.current.length > 0) {
-          const nextState = redoStack.current.pop();
-          undoStack.current.push({
-            value: promptInput,
-            cursorPositionStart: textareaRef.current.selectionStart,
-            cursorPositionEnd: textareaRef.current.selectionEnd,
-          });
-          setPromptInput(nextState.value);
-          setTimeout(() => {
-            textareaRef.current.setSelectionRange(
-              nextState.cursorPositionStart,
-              nextState.cursorPositionEnd
-            );
-          }, 0);
-        }
-      } else {
-        // Undo with Ctrl+Z or Cmd+Z
-        if (undoStack.current.length > 0) {
-          const lastState = undoStack.current.pop();
-          redoStack.current.push({
-            value: promptInput,
-            cursorPositionStart: textareaRef.current.selectionStart,
-            cursorPositionEnd: textareaRef.current.selectionEnd,
-          });
-          setPromptInput(lastState.value);
-          setTimeout(() => {
-            textareaRef.current.setSelectionRange(
-              lastState.cursorPositionStart,
-              lastState.cursorPositionEnd
-            );
-          }, 0);
-        }
-      }
+      return submit(event);
     }
-  };
 
-  const adjustTextArea = (event) => {
+    // Is undo with Ctrl+Z or Cmd+Z + Shift key = Redo
+    if (
+      (event.ctrlKey || event.metaKey) &&
+      event.key === "z" &&
+      event.shiftKey
+    ) {
+      event.preventDefault();
+      if (redoStack.current.length === 0) return;
+
+      const nextState = redoStack.current.pop();
+      if (!nextState) return;
+
+      undoStack.current.push({
+        value: promptInput,
+        cursorPositionStart: textareaRef.current.selectionStart,
+        cursorPositionEnd: textareaRef.current.selectionEnd,
+      });
+      setPromptInput(nextState.value);
+      setTimeout(() => {
+        textareaRef.current.setSelectionRange(
+          nextState.cursorPositionStart,
+          nextState.cursorPositionEnd
+        );
+      }, 0);
+    }
+
+    // Undo with Ctrl+Z or Cmd+Z
+    if (
+      (event.ctrlKey || event.metaKey) &&
+      event.key === "z" &&
+      !event.shiftKey
+    ) {
+      if (undoStack.current.length === 0) return;
+      const lastState = undoStack.current.pop();
+      if (!lastState) return;
+
+      redoStack.current.push({
+        value: promptInput,
+        cursorPositionStart: textareaRef.current.selectionStart,
+        cursorPositionEnd: textareaRef.current.selectionEnd,
+      });
+      setPromptInput(lastState.value);
+      setTimeout(() => {
+        textareaRef.current.setSelectionRange(
+          lastState.cursorPositionStart,
+          lastState.cursorPositionEnd
+        );
+      }, 0);
+    }
+  }
+
+  function adjustTextArea(event) {
     const element = event.target;
     element.style.height = "auto";
     element.style.height = `${element.scrollHeight}px`;
-  };
+  }
 
-  const handlePasteEvent = (e) => {
+  function handlePasteEvent(e) {
     e.preventDefault();
     if (e.clipboardData.items.length === 0) return false;
 
@@ -194,19 +221,16 @@ export default function PromptInput({
       }, 0);
     }
     return;
-  };
+  }
 
-  const watchForSlash = debounce(checkForSlash, 300);
-  const watchForAt = debounce(checkForAt, 300);
-
-  const handleChange = (e) => {
+  function handleChange(e) {
     debouncedSaveState(-1);
     onChange(e);
     watchForSlash(e);
     watchForAt(e);
     adjustTextArea(e);
     setPromptInput(e.target.value);
-  };
+  }
 
   return (
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
