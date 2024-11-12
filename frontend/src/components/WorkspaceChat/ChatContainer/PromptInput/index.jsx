@@ -33,6 +33,8 @@ export default function PromptInput({
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
+  const redoStack = useRef([]);
+  const MAX_STACK_SIZE = 100;
 
   // To prevent too many re-renders we remotely listen for updates from the parent
   // via an event cycle. Otherwise, using message as a prop leads to a re-render every
@@ -57,12 +59,18 @@ export default function PromptInput({
 
   // Save the current state before changes
   const saveCurrentState = (adjustment = 0) => {
+    if (undoStack.current.length >= MAX_STACK_SIZE) {
+      // If the stack is at the max size, remove oldest state
+      undoStack.current.shift();
+    }
     undoStack.current.push({
       value: promptInput,
       cursorPositionStart: textareaRef.current.selectionStart + adjustment,
       cursorPositionEnd: textareaRef.current.selectionEnd + adjustment,
     });
   };
+
+  const debouncedSaveState = debounce(saveCurrentState, 250);
 
   const handleSubmit = (e) => {
     setFocused(false);
@@ -93,17 +101,41 @@ export default function PromptInput({
       event.preventDefault();
       submit(event);
     } else if ((event.ctrlKey || event.metaKey) && event.key === "z") {
-      // (metaKey is the Command key on an Apple Mac)
       event.preventDefault();
-      if (undoStack.current.length > 0) {
-        const lastState = undoStack.current.pop();
-        setPromptInput(lastState.value);
-        setTimeout(() => {
-          textareaRef.current.setSelectionRange(
-            lastState.cursorPositionStart,
-            lastState.cursorPositionEnd
-          );
-        }, 0);
+      if (event.shiftKey) {
+        // Redo with Ctrl+Shift+Z or Cmd+Shift+Z
+        if (redoStack.current.length > 0) {
+          const nextState = redoStack.current.pop();
+          undoStack.current.push({
+            value: promptInput,
+            cursorPositionStart: textareaRef.current.selectionStart,
+            cursorPositionEnd: textareaRef.current.selectionEnd,
+          });
+          setPromptInput(nextState.value);
+          setTimeout(() => {
+            textareaRef.current.setSelectionRange(
+              nextState.cursorPositionStart,
+              nextState.cursorPositionEnd
+            );
+          }, 0);
+        }
+      } else {
+        // Undo with Ctrl+Z or Cmd+Z
+        if (undoStack.current.length > 0) {
+          const lastState = undoStack.current.pop();
+          redoStack.current.push({
+            value: promptInput,
+            cursorPositionStart: textareaRef.current.selectionStart,
+            cursorPositionEnd: textareaRef.current.selectionEnd,
+          });
+          setPromptInput(lastState.value);
+          setTimeout(() => {
+            textareaRef.current.setSelectionRange(
+              lastState.cursorPositionStart,
+              lastState.cursorPositionEnd
+            );
+          }, 0);
+        }
       }
     }
   };
@@ -167,6 +199,15 @@ export default function PromptInput({
   const watchForSlash = debounce(checkForSlash, 300);
   const watchForAt = debounce(checkForAt, 300);
 
+  const handleChange = (e) => {
+    debouncedSaveState(-1);
+    onChange(e);
+    watchForSlash(e);
+    watchForAt(e);
+    adjustTextArea(e);
+    setPromptInput(e.target.value);
+  };
+
   return (
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
       <SlashCommands
@@ -190,14 +231,7 @@ export default function PromptInput({
             <div className="flex items-center w-full border-b-2 border-gray-500/50">
               <textarea
                 ref={textareaRef}
-                onChange={(e) => {
-                  saveCurrentState(-1); // -1 adjusts the cursor position backward for undo.
-                  onChange(e);
-                  watchForSlash(e);
-                  watchForAt(e);
-                  adjustTextArea(e);
-                  setPromptInput(e.target.value);
-                }}
+                onChange={handleChange}
                 onKeyDown={captureEnterOrUndo}
                 onPaste={(e) => {
                   saveCurrentState();
