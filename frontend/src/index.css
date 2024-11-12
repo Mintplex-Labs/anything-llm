@@ -244,15 +244,53 @@ a {
   }
 }
 
-#chat-history::-webkit-scrollbar,
+.show-scrollbar {
+  overflow-y: scroll !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.1) !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.show-scrollbar::-webkit-scrollbar {
+  width: 8px !important;
+  display: block !important;
+  background: transparent !important;
+}
+
+.show-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1) !important;
+  margin: 3px !important;
+  border-radius: 4px !important;
+}
+
+.show-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  border-radius: 4px !important;
+  border: none !important;
+  min-height: 40px !important;
+}
+
+.show-scrollbar::-webkit-scrollbar,
+.show-scrollbar::-webkit-scrollbar-thumb,
+.show-scrollbar::-webkit-scrollbar-track {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.show-scrollbar,
+.show-scrollbar::-webkit-scrollbar,
+.show-scrollbar::-webkit-scrollbar-thumb,
+.show-scrollbar::-webkit-scrollbar-track {
+  transition: none !important;
+  animation: none !important;
+}
+
 #chat-container::-webkit-scrollbar,
 .no-scroll::-webkit-scrollbar {
   display: none !important;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
-#chat-history,
-#chat-container,
 .no-scroll {
   -ms-overflow-style: none !important;
   /* IE and Edge */
