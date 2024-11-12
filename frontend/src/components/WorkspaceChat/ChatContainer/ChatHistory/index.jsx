@@ -28,8 +28,8 @@ export default function ChatHistory({
   const chatHistoryRef = useRef(null);
   const [textSize, setTextSize] = useState("normal");
   const [isUserScrolling, setIsUserScrolling] = useState(false);
-  const showScrollbar = Appearance.getSettings()?.showScrollbar || false;
   const isStreaming = history[history.length - 1]?.animate;
+  const { showScrollbar } = Appearance.getSettings();
 
   const getTextSizeClass = (size) => {
     switch (size) {

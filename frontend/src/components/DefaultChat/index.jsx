@@ -21,6 +21,7 @@ import { useTranslation, Trans } from "react-i18next";
 import Appearance from "@/models/appearance";
 
 export default function DefaultChatContainer() {
+  const { showScrollbar } = Appearance.getSettings();
   const [mockMsgs, setMockMessages] = useState([]);
   const { user } = useUser();
   const [fetchedMessages, setFetchedMessages] = useState([]);
@@ -31,7 +32,6 @@ export default function DefaultChatContainer() {
   } = useNewWorkspaceModal();
   const popMsg = !window.localStorage.getItem("anythingllm_intro");
   const { t } = useTranslation();
-  const showScrollbar = Appearance.getSettings()?.showScrollbar || false;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -306,7 +306,8 @@ export default function DefaultChatContainer() {
 
   return (
     <div
-      className={`relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full border-2 border-outline h-[calc(100vh-32px)] overflow-y-scroll ${
+      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+      className={`relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full border-2 border-outline overflow-y-scroll ${
         showScrollbar ? "show-scrollbar" : "no-scroll"
       }`}
     >
