@@ -2,6 +2,7 @@ const { CommunityHub } = require("../../models/communityHub");
 const { reqBody } = require("../http");
 
 /**
+ * ### Must be called after `communityHubItem`
  * Checks if community hub bundle downloads are enabled. The reason this functionality is disabled
  * by default is that since AgentSkills, Workspaces, and DataConnectors are all imported from the
  * community hub via unzipping a bundle - it would be possible for a malicious user to craft and
@@ -18,7 +19,7 @@ const { reqBody } = require("../http");
  * @param {import("express").NextFunction} next
  * @returns {void}
  */
-async function communityHubDownloadsEnabled(request, response, next) {
+function communityHubDownloadsEnabled(request, response, next) {
   if (!("COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED" in process.env)) {
     return response.status(422).json({
       error:
@@ -26,6 +27,27 @@ async function communityHubDownloadsEnabled(request, response, next) {
     });
   }
 
+  // If the admin specifically did not set the system to `allow_all` then downloads are limited to verified items or private items only.
+  // This is to prevent users from downloading unverified items and importing them into their own instance without understanding the risks.
+  const item = response.locals.bundleItem;
+  if (
+    !item.verified &&
+    item.visibility !== "private" &&
+    process.env.COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED !== "allow_all"
+  ) {
+    return response.status(422).json({
+      error:
+        "Community hub bundle downloads are limited to verified public items or private team items only. Please contact the system administrator to review or modify this setting.",
+    });
+  }
+  next();
+}
+
+/**
+ * Fetch the bundle item from the community hub.
+ * Sets `response.locals.bundleItem` and `response.locals.bundleUrl`.
+ */
+async function communityHubItem(request, response, next) {
   const { importId } = reqBody(request);
   if (!importId)
     return response.status(500).json({
@@ -44,24 +66,12 @@ async function communityHubDownloadsEnabled(request, response, next) {
       error: fetchError,
     });
 
-  // If the admin specifically did not set the system to `allow_all` then downloads are limited to verified items or private items only.
-  // This is to prevent users from downloading unverified items and importing them into their own instance without understanding the risks.
-  if (
-    !item.verified &&
-    item.visibility !== "private" &&
-    process.env.COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED !== "allow_all"
-  ) {
-    return response.status(422).json({
-      error:
-        "Community hub bundle downloads are limited to verified public items or private team items only. Please contact the system administrator to review or modify this setting.",
-    });
-  }
-
   response.locals.bundleItem = item;
   response.locals.bundleUrl = url;
   next();
 }
 
 module.exports = {
+  communityHubItem,
   communityHubDownloadsEnabled,
 };

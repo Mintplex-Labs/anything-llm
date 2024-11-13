@@ -8,7 +8,7 @@ const CommunityHub = {
   apiBase:
     process.env.NODE_ENV === "development"
       ? "http://127.0.0.1:5001/anythingllm-hub/us-central1/external/v1"
-      : "https://external-ipxn23pfkq-uc.a.run.app/v1",
+      : "https://hub.external.anythingllm.com/v1",
 
   /**
    * Validate an import ID and return the entity type and ID.
@@ -58,32 +58,6 @@ const CommunityHub = {
             totalCount: 0,
           },
         };
-      });
-  },
-
-  /**
-   * Fetch an item from the community hub by import ID.
-   * @param {string} importId - The import ID of the item.
-   * @returns {Promise<{item: object | null, error: string | null}>}
-   */
-  getItemFromImportId: async function (importId) {
-    const { entityType, entityId } = this.validateImportId(importId);
-    if (!entityType || !entityId)
-      return { item: null, error: "Invalid import ID" };
-
-    const { SystemSettings } = require("./systemSettings");
-    const { connectionKey } = await SystemSettings.hubSettings();
-    return await fetch(`${this.apiBase}/${entityType}/${entityId}/review`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        ...(connectionKey ? { Authorization: `Bearer ${connectionKey}` } : {}),
-      },
-    })
-      .then((response) => response.json())
-      .catch((error) => {
-        console.error(`Error fetching item for import ID ${importId}:`, error);
-        return { item: null, error: error.message };
       });
   },
 

@@ -4,6 +4,7 @@ const { reqBody } = require("../utils/http");
 const { CommunityHub } = require("../models/communityHub");
 const {
   communityHubDownloadsEnabled,
+  communityHubItem,
 } = require("../utils/middleware/communityHubDownloadsEnabled");
 const { EventLogs } = require("../models/eventLogs");
 const { Telemetry } = require("../models/telemetry");
@@ -65,16 +66,14 @@ function communityHubEndpoints(app) {
 
   app.post(
     "/community-hub/item",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
-    async (request, response) => {
+    [validatedRequest, flexUserRoleValid([ROLES.admin]), communityHubItem],
+    async (_request, response) => {
       try {
-        const { importId } = reqBody(request);
-        if (!importId) throw new Error("Import ID is required");
-        const { item, error } =
-          await CommunityHub.getItemFromImportId(importId);
-        if (error) throw new Error(error);
-
-        response.status(200).json({ success: true, item, error: null });
+        response.status(200).json({
+          success: true,
+          item: response.locals.bundleItem,
+          error: null,
+        });
       } catch (error) {
         console.error(error);
         response.status(500).json({
@@ -91,19 +90,11 @@ function communityHubEndpoints(app) {
    */
   app.post(
     "/community-hub/apply",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin]), communityHubItem],
     async (request, response) => {
       try {
-        const { importId, options = {} } = reqBody(request);
-        if (!importId)
-          return response.status(500).json({
-            success: false,
-            error: "Import ID is required",
-          });
-
-        const { item, error } =
-          await CommunityHub.getItemFromImportId(importId);
-        if (error) throw new Error(error);
+        const { options = {} } = reqBody(request);
+        const item = response.locals.bundleItem;
         const { error: applyError } = await CommunityHub.applyItem(item, {
           ...options,
           currentUser: response.locals?.user,
@@ -141,6 +132,7 @@ function communityHubEndpoints(app) {
     [
       validatedRequest,
       flexUserRoleValid([ROLES.admin]),
+      communityHubItem,
       communityHubDownloadsEnabled,
     ],
     async (_, response) => {
