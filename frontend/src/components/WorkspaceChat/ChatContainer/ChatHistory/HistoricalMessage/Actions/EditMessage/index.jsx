@@ -1,7 +1,6 @@
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { Pencil } from "@phosphor-icons/react";
 import { useState, useEffect, useRef } from "react";
-import { Tooltip } from "react-tooltip";
 
 const EDIT_EVENT = "toggle-message-edit";
 
@@ -55,12 +54,6 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
       >
         <Pencil size={21} className="mb-1" />
       </button>
-      <Tooltip
-        id="edit-input-text"
-        place="bottom"
-        delayShow={300}
-        className="tooltip !text-xs"
-      />
     </div>
   );
 }

@@ -15,7 +15,6 @@ import {
   YoutubeLogo,
 } from "@phosphor-icons/react";
 import ConfluenceLogo from "@/media/dataConnectors/confluence.png";
-import { Tooltip } from "react-tooltip";
 import { toPercentString } from "@/utils/numbers";
 
 function combineLikeSources(sources) {
@@ -176,23 +175,16 @@ function CitationDetailModal({ source, onClose }) {
                   </p>
 
                   {!!score && (
-                    <>
-                      <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
-                        <div
-                          data-tooltip-id="similarity-score"
-                          data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
-                          className="flex items-center gap-x-1"
-                        >
-                          <Info size={14} />
-                          <p>{toPercentString(score)} match</p>
-                        </div>
+                    <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
+                      <div
+                        data-tooltip-id="similarity-score"
+                        data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
+                        className="flex items-center gap-x-1"
+                      >
+                        <Info size={14} />
+                        <p>{toPercentString(score)} match</p>
                       </div>
-                      <Tooltip
-                        id="similarity-score"
-                        place="top"
-                        delayShow={100}
-                      />
-                    </>
+                    </div>
                   )}
                 </div>
                 {[...Array(3)].map((_, idx) => (
