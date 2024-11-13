@@ -18,8 +18,10 @@ import { userFromStorage } from "@/utils/request";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import useUser from "@/hooks/useUser";
 import { useTranslation, Trans } from "react-i18next";
+import Appearance from "@/models/appearance";
 
 export default function DefaultChatContainer() {
+  const { showScrollbar } = Appearance.getSettings();
   const [mockMsgs, setMockMessages] = useState([]);
   const { user } = useUser();
   const [fetchedMessages, setFetchedMessages] = useState([]);
@@ -305,7 +307,9 @@ export default function DefaultChatContainer() {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline"
+      className={`relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full border-2 border-outline overflow-y-scroll ${
+        showScrollbar ? "show-scrollbar" : "no-scroll"
+      }`}
     >
       {isMobile && <SidebarMobileHeader />}
       {fetchedMessages.length === 0

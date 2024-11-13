@@ -100,6 +100,7 @@ const SystemSettings = {
             "serply-engine",
             "searxng-engine",
             "tavily-search",
+            "duckduckgo-engine",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -448,6 +449,11 @@ const SystemSettings = {
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
       OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
 
+      // Novita LLM Keys
+      NovitaLLMApiKey: !!process.env.NOVITA_LLM_API_KEY,
+      NovitaLLMModelPref: process.env.NOVITA_LLM_MODEL_PREF,
+      NovitaLLMTimeout: process.env.NOVITA_LLM_TIMEOUT_MS,
+
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
@@ -505,8 +511,11 @@ const SystemSettings = {
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
       GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
 
+      AwsBedrockLLMConnectionMethod:
+        process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam",
       AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
       AwsBedrockLLMAccessKey: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+      AwsBedrockLLMSessionToken: !!process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
       AwsBedrockLLMRegion: process.env.AWS_BEDROCK_LLM_REGION,
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
       AwsBedrockLLMTokenLimit: process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT,

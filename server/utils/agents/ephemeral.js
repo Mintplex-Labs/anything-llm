@@ -20,19 +20,40 @@ const {
  * not persist between invocations
  */
 class EphemeralAgentHandler extends AgentHandler {
+  /** @type {string|null} the unique identifier for the agent invocation */
   #invocationUUID = null;
+  /** @type {import("@prisma/client").workspaces|null} the workspace to use for the agent */
   #workspace = null;
+  /** @type {import("@prisma/client").users|null} the user id to use for the agent */
   #userId = null;
+  /** @type {import("@prisma/client").workspace_threads|null} the workspace thread id to use for the agent */
   #threadId = null;
+  /** @type {string|null} the session id to use for the agent */
   #sessionId = null;
+  /** @type {string|null} the prompt to use for the agent */
   #prompt = null;
+  /** @type {string[]} the functions to load into the agent (Aibitat plugins) */
   #funcsToLoad = [];
 
+  /** @type {AIbitat|null} */
   aibitat = null;
+  /** @type {string|null} */
   channel = null;
+  /** @type {string|null} */
   provider = null;
+  /** @type {string|null} the model to use for the agent */
   model = null;
 
+  /**
+   * @param {{
+   * uuid: string,
+   * workspace: import("@prisma/client").workspaces,
+   * prompt: string,
+   * userId: import("@prisma/client").users["id"]|null,
+   * threadId: import("@prisma/client").workspace_threads["id"]|null,
+   * sessionId: string|null
+   * }} parameters
+   */
   constructor({
     uuid,
     workspace,
@@ -148,8 +169,7 @@ class EphemeralAgentHandler extends AgentHandler {
     }
 
     // The provider was explicitly set, so check if the workspace has an agent model set.
-    if (this.invocation.workspace.agentModel)
-      return this.invocation.workspace.agentModel;
+    if (this.#workspace.agentModel) return this.#workspace.agentModel;
 
     // Otherwise, we have no model to use - so guess a default model to use via the provider
     // and it's system ENV params and if that fails - we return either a base model or null.

@@ -791,6 +791,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.ApiPieProvider({ model: config.model });
       case "xai":
         return new Providers.XAIProvider({ model: config.model });
+      case "novita":
+        return new Providers.NovitaProvider({ model: config.model });
 
       default:
         throw new Error(
