@@ -6,7 +6,7 @@ class LMStudioEmbedder {
       throw new Error("No embedding base path was set.");
     if (!process.env.EMBEDDING_MODEL_PREF)
       throw new Error("No embedding model was set.");
-    this.basePath = `${process.env.EMBEDDING_BASE_PATH}/embeddings`;
+    this.basePath = `${process.env.EMBEDDING_BASE_PATH}`;
     this.model = process.env.EMBEDDING_MODEL_PREF;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
@@ -55,7 +55,7 @@ class LMStudioEmbedder {
     for (const chunk of textChunks) {
       if (hasError) break; // If an error occurred don't continue and exit early.
       results.push(
-        await fetch(this.basePath, {
+        await fetch(`${this.basePath}/embeddings`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
