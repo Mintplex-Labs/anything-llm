@@ -12,6 +12,7 @@ import { defaultSkills, configurableSkills } from "./skills";
 import { DefaultBadge } from "./Badges/default";
 import ImportedSkillList from "./Imported/SkillList";
 import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
+import { Tooltip } from "react-tooltip";
 
 export default function AdminAgents() {
   const [hasChanges, setHasChanges] = useState(false);
@@ -361,38 +362,49 @@ function SkillList({
   if (skills.length === 0) return null;
 
   return (
-    <div
-      className={`bg-white/5 text-white rounded-xl ${
-        isMobile ? "w-full" : "min-w-[360px] w-fit"
-      }`}
-    >
-      {Object.entries(skills).map(([skill, settings], index) => (
-        <div
-          key={skill}
-          className={`py-3 px-4 flex items-center justify-between ${
-            index === 0 ? "rounded-t-xl" : ""
-          } ${
-            index === Object.keys(skills).length - 1
-              ? "rounded-b-xl"
-              : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
-            selectedSkill === skill ? "bg-white/10" : ""
-          }`}
-          onClick={() => handleClick?.(skill)}
-        >
-          <div className="text-sm font-light">{settings.title}</div>
-          <div className="flex items-center gap-x-2">
-            {isDefault ? (
-              <DefaultBadge title={skill} />
-            ) : (
-              <div className="text-sm text-white/60 font-medium">
-                {activeSkills.includes(skill) ? "On" : "Off"}
-              </div>
-            )}
-            <CaretRight size={14} weight="bold" className="text-white/80" />
+    <>
+      <div
+        className={`bg-white/5 text-white rounded-xl ${
+          isMobile ? "w-full" : "min-w-[360px] w-fit"
+        }`}
+      >
+        {Object.entries(skills).map(([skill, settings], index) => (
+          <div
+            key={skill}
+            className={`py-3 px-4 flex items-center justify-between ${
+              index === 0 ? "rounded-t-xl" : ""
+            } ${
+              index === Object.keys(skills).length - 1
+                ? "rounded-b-xl"
+                : "border-b border-white/10"
+            } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
+              selectedSkill === skill ? "bg-white/10" : ""
+            }`}
+            onClick={() => handleClick?.(skill)}
+          >
+            <div className="text-sm font-light">{settings.title}</div>
+            <div className="flex items-center gap-x-2">
+              {isDefault ? (
+                <DefaultBadge title={skill} />
+              ) : (
+                <div className="text-sm text-white/60 font-medium">
+                  {activeSkills.includes(skill) ? "On" : "Off"}
+                </div>
+              )}
+              <CaretRight size={14} weight="bold" className="text-white/80" />
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+      {/* Tooltip for default skills - only render when skill list is passed isDefault */}
+      {isDefault && (
+        <Tooltip
+          id="default-skill"
+          place="bottom"
+          delayShow={300}
+          className="tooltip !text-xs"
+        />
+      )}
+    </>
   );
 }
