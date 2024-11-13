@@ -1,3 +1,4 @@
+const { parseLMStudioBasePath } = require("../../AiProviders/lmStudio");
 const { maximumChunkLength } = require("../../helpers");
 
 class LMStudioEmbedder {
@@ -9,7 +10,7 @@ class LMStudioEmbedder {
 
     const { OpenAI: OpenAIApi } = require("openai");
     this.lmstudio = new OpenAIApi({
-      baseURL: process.env.EMBEDDING_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
+      baseURL: parseLMStudioBasePath(process.env.EMBEDDING_BASE_PATH),
       apiKey: null,
     });
     this.model = process.env.EMBEDDING_MODEL_PREF;
