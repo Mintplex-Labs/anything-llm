@@ -78,9 +78,9 @@ export default function UploadFile({
   return (
     <div>
       <div
-        className={`w-[560px] border-2 border-dashed rounded-2xl bg-theme-bg-primary p-3 ${
+        className={`w-[560px] border-2 border-dashed rounded-2xl bg-theme-bg-primary transition-colors duration-300 light:bg-theme-settings-input-bg p-3 ${
           ready ? "cursor-pointer" : "cursor-not-allowed"
-        } hover:bg-theme-bg-secondary`}
+        } hover:bg-theme-bg-secondary light:hover:bg-transparent`}
         {...getRootProps()}
       >
         <input {...getInputProps()} />

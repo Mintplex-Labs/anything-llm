@@ -257,13 +257,13 @@ function Directory({
           </div>
           {amountSelected !== 0 && (
             <div className="absolute bottom-[12px] left-0 right-0 flex justify-center pointer-events-none">
-              <div className="mx-auto bg-white/40 rounded-lg py-1 px-2 pointer-events-auto">
+              <div className="mx-auto bg-white/40 light:bg-white rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
                 <div className="flex flex-row items-center gap-x-2">
                   <button
                     onClick={moveToWorkspace}
                     onMouseEnter={() => setHighlightWorkspace(true)}
                     onMouseLeave={() => setHighlightWorkspace(false)}
-                    className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
+                    className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                   >
                     Move to Workspace
                   </button>
@@ -272,9 +272,9 @@ function Directory({
                       onClick={() =>
                         setShowFolderSelection(!showFolderSelection)
                       }
-                      className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 flex justify-center items-center group"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center group"
                     >
-                      <MoveToFolderIcon className="text-dark-text group-hover:text-white" />
+                      <MoveToFolderIcon className="text-dark-text light:text-[#026AA2] group-hover:text-white" />
                     </button>
                     {showFolderSelection && (
                       <FolderSelectionPopup
@@ -288,7 +288,7 @@ function Directory({
                   </div>
                   <button
                     onClick={deleteFiles}
-                    className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-dark-text hover:text-white hover:bg-neutral-800/80 flex justify-center items-center"
+                    className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center"
                   >
                     <Trash size={18} weight="bold" />
                   </button>

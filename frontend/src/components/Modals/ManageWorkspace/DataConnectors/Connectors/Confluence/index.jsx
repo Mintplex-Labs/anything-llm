@@ -58,11 +58,11 @@ export default function ConfluenceOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                    <p className="font-bold text-white">
+                    <p className="font-bold text-theme-text-primary">
                       Confluence deployment type
                     </p>
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-theme-text-secondary">
                     Determine if your Confluence instance is hosted on Atlassian
                     cloud or self-hosted.
                   </p>
@@ -85,7 +85,7 @@ export default function ConfluenceOptions() {
                   <label className="text-white text-sm font-bold flex gap-x-2 items-center">
                     <p className="font-bold text-white">Confluence base URL</p>
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-theme-text-secondary">
                     This is the base URL of your Confluence space.
                   </p>
                 </div>
@@ -104,7 +104,7 @@ export default function ConfluenceOptions() {
                   <label className="text-white text-sm font-bold">
                     Confluence space key
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-theme-text-secondary">
                     This is the spaces key of your confluence instance that will
                     be used. Usually begins with ~
                   </p>
@@ -124,7 +124,7 @@ export default function ConfluenceOptions() {
                   <label className="text-white text-sm font-bold">
                     Confluence Username
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-theme-text-secondary">
                     Your Confluence username.
                   </p>
                 </div>
@@ -153,7 +153,7 @@ export default function ConfluenceOptions() {
                     <Tooltip
                       delayHide={300}
                       id="access-token-tooltip"
-                      className="max-w-xs"
+                      className="max-w-xs z-99"
                       clickable={true}
                     >
                       <p className="text-sm">
@@ -172,7 +172,7 @@ export default function ConfluenceOptions() {
                       </p>
                     </Tooltip>
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-theme-text-secondary">
                     Access token for authentication.
                   </p>
                 </div>
@@ -198,7 +198,7 @@ export default function ConfluenceOptions() {
               {loading ? "Collecting pages..." : "Submit"}
             </button>
             {loading && (
-              <p className="text-xs text-white/50">
+              <p className="text-xs text-theme-text-secondary">
                 Once complete, all pages will be available for embedding into
                 workspaces.
               </p>

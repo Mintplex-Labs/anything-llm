@@ -70,7 +70,7 @@ export default function GithubOptions() {
                   <label className="text-white text-sm font-bold">
                     GitHub Repo URL
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-theme-text-secondary">
                     Url of the GitHub repo you wish to collect.
                   </p>
                 </div>
@@ -90,12 +90,12 @@ export default function GithubOptions() {
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white font-bold text-sm flex gap-x-2 items-center">
                     <p className="font-bold text-white">Github Access Token</p>{" "}
-                    <p className="text-xs text-white/50 font-light flex items-center">
-                      optional
+                    <p className="text-xs font-light flex items-center">
+                      <span className="text-theme-text-secondary">optional</span>
                       <PATTooltip accessToken={accessToken} />
                     </p>
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-theme-text-secondary">
                     Access Token to prevent rate limiting.
                   </p>
                 </div>
@@ -191,7 +191,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
       <div className="flex flex-col w-60">
         <div className="flex flex-col gap-y-1 mb-4">
           <label className="text-white text-sm font-bold">Branch</label>
-          <p className="text-xs font-normal text-white/50">
+          <p className="text-xs font-normal text-theme-text-secondary">
             Branch you wish to collect files from.
           </p>
         </div>
@@ -212,7 +212,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
     <div className="flex flex-col w-60">
       <div className="flex flex-col gap-y-1 mb-4">
         <label className="text-white text-sm font-bold">Branch</label>
-        <p className="text-xs font-normal text-white/50">
+        <p className="text-xs font-normal text-theme-text-secondary">
           Branch you wish to collect files from.
         </p>
       </div>
@@ -276,7 +276,7 @@ function PATTooltip({ accessToken }) {
       <Tooltip
         delayHide={300}
         id="access-token-tooltip"
-        className="max-w-xs"
+        className="max-w-xs z-99"
         clickable={true}
       >
         <p className="text-sm">

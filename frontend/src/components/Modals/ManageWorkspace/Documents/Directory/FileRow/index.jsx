@@ -12,7 +12,7 @@ export default function FileRow({ item, selected, toggleSelection }) {
     <tr
       onClick={() => toggleSelection(item)}
       className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
-        selected ? "selected" : ""
+        selected ? "selected light:text-white" : ""
       }`}
     >
       <div
@@ -20,7 +20,9 @@ export default function FileRow({ item, selected, toggleSelection }) {
         className="col-span-10 w-fit flex gap-x-[4px] items-center relative"
       >
         <div
-          className="shrink-0 w-3 h-3 rounded border-[1px] border-white light:invert flex justify-center items-center cursor-pointer"
+          className={`shrink-0 w-3 h-3 rounded border-[1px] border-white ${
+            selected ? "text-white" : "text-theme-text-primary light:invert"
+          } flex justify-center items-center cursor-pointer`}
           role="checkbox"
           aria-checked={selected}
           tabIndex={0}
@@ -37,7 +39,7 @@ export default function FileRow({ item, selected, toggleSelection }) {
       </div>
       <div className="col-span-2 flex justify-end items-center">
         {item?.cached && (
-          <div className="bg-white/10 rounded-3xl">
+          <div className="bg-theme-settings-input-active rounded-3xl">
             <p className="text-xs px-2 py-0.5">Cached</p>
           </div>
         )}
@@ -46,10 +48,10 @@ export default function FileRow({ item, selected, toggleSelection }) {
         id={`directory-item-${item.url}`}
         place="bottom"
         delayShow={800}
-        className="tooltip invert z-99"
+        className="tooltip invert light:invert-0 z-99 max-w-[400px]"
       >
         <div className="text-xs ">
-          <p className="text-white">{item.title}</p>
+          <p>{item.title}</p>
           <div className="flex mt-1 gap-x-2">
             <p className="">
               Date: <b>{formatDate(item?.published)}</b>

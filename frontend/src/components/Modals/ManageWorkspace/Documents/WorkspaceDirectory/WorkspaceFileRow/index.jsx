@@ -57,9 +57,11 @@ export default function WorkspaceFileRow({
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
   return (
     <div
-      className={`items-center h-[34px] text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 ${
-        !disableSelection ? "hover:bg-sky-500/20 cursor-pointer" : ""
-      } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${selected ? "selected" : ""}`}
+      className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 h-[34px] items-center ${
+        !disableSelection ? "hover:bg-theme-file-picker-hover cursor-pointer" : ""
+      } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${
+        selected ? "selected light:text-white" : ""
+      }`}
       onClick={toggleRowSelection}
     >
       <div
@@ -69,7 +71,9 @@ export default function WorkspaceFileRow({
         <div className="shrink-0 w-3 h-3">
           {!disableSelection ? (
             <div
-              className="w-full h-full rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+            className={`shrink-0 w-3 h-3 rounded border-[1px] border-white ${
+              selected ? "text-white" : "text-theme-text-primary light:invert"
+            } flex justify-center items-center cursor-pointer`}
               role="checkbox"
               aria-checked={selected}
               tabIndex={0}
@@ -110,10 +114,10 @@ export default function WorkspaceFileRow({
         id={`ws-directory-item-${item.url}`}
         place="bottom"
         delayShow={800}
-        className="tooltip invert z-99"
+        className="tooltip invert light:invert-0 z-99 max-w-[400px]"
       >
         <div className="text-xs ">
-          <p className="text-white">{item.title}</p>
+          <p>{item.title}</p>
           <div className="flex mt-1 gap-x-2">
             <p className="">
               Date: <b>{formatDate(item?.published)}</b>
@@ -172,7 +176,7 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="flex gap-x-2 items-center hover:bg-main-gradient p-[2px] rounded ml-2"
+      className="flex gap-x-2 items-center hover:bg-theme-file-picker-hover p-[2px] rounded ml-2"
     >
       <PushPin
         data-tooltip-id={`pin-${item.id}`}
@@ -188,7 +192,7 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
         id={`pin-${item.id}`}
         place="bottom"
         delayShow={300}
-        className="tooltip invert !text-xs"
+        className="tooltip invert light:invert-0 !text-xs"
       />
     </div>
   );
@@ -260,7 +264,7 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
         id={`watch-changes-${item.id}`}
         place="bottom"
         delayShow={300}
-        className="tooltip invert !text-xs"
+        className="tooltip invert light:invert-0 !text-xs"
       />
     </div>
   );
@@ -279,7 +283,7 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
         id={`remove-${item.id}`}
         place="bottom"
         delayShow={300}
-        className="tooltip invert !text-xs"
+        className="tooltip invert light:invert-0 !text-xs"
       />
     </div>
   );

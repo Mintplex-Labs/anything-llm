@@ -130,7 +130,7 @@ function WorkspaceDirectory({
                 {!hasChanges &&
                 files.items.some((folder) => folder.items.length > 0) ? (
                   <div
-                    className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+                  className={`shrink-0 w-3 h-3 rounded border-[1px] border-white text-theme-text-primary light:invert flex justify-center items-center cursor-pointer`}
                     role="checkbox"
                     aria-checked={
                       Object.keys(selectedItems).length ===
@@ -151,7 +151,7 @@ function WorkspaceDirectory({
                 ) : (
                   <div className="shrink-0 w-3 h-3" />
                 )}
-                <p className="ml-[7px]">Name</p>
+                <p className="ml-[7px] light:text-theme-text-primary">Name</p>
               </div>
               <p className="col-span-2" />
             </div>
@@ -185,13 +185,14 @@ function WorkspaceDirectory({
                 </div>
               )}
             </div>
+
             {Object.keys(selectedItems).length > 0 && !hasChanges && (
               <div className="absolute bottom-[12px] left-0 right-0 flex justify-center pointer-events-none">
-                <div className="mx-auto bg-white/40 rounded-lg py-1 px-2 pointer-events-auto">
+                <div className="mx-auto bg-white/40 light:bg-white rounded-lg py-1 px-2 pointer-events-auto light:shadow-lg">
                   <div className="flex flex-row items-center gap-x-2">
                     <button
                       onClick={toggleSelectAll}
-                      className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
                       {Object.keys(selectedItems).length ===
                       files.items.reduce(
@@ -203,7 +204,7 @@ function WorkspaceDirectory({
                     </button>
                     <button
                       onClick={removeSelectedItems}
-                      className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
                       Remove Selected
                     </button>
