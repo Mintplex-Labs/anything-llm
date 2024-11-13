@@ -6,11 +6,10 @@ const { v4: uuidv4 } = require("uuid");
 const { getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
 const COLLECTION_REGEX = new RegExp();
-  
 
 const Elasticsearch = {
-    name: "Elasticsearch",
-  
+  name: "Elasticsearch",
+
   normalize: function (inputString) {
     if (COLLECTION_REGEX.test(inputString)) return inputString;
     let normalized = inputString.replace(/[^a-zA-Z0-9_-]/g, "-");
@@ -21,7 +20,10 @@ const Elasticsearch = {
       normalized = "anythingllm-" + normalized.slice(1);
     }
 
-    if (normalized[normalized.length - 1] && !/^[a-zA-Z0-9]$/.test(normalized[normalized.length - 1])) {
+    if (
+      normalized[normalized.length - 1] &&
+      !/^[a-zA-Z0-9]$/.test(normalized[normalized.length - 1])
+    ) {
       normalized = normalized.slice(0, -1);
     }
 
@@ -43,20 +45,23 @@ const Elasticsearch = {
       throw new Error("Elasticsearch::Invalid ENV settings");
 
     const client = new Client({
-      node: process.env.ELASTIC_ENDPOINT || 'http://localhost:9200',
+      node: process.env.ELASTIC_ENDPOINT || "http://localhost:9200",
       ...(!!process.env.ELASTIC_API_HEADER && !!process.env.ELASTIC_API_KEY
         ? {
             headers: {
-              [process.env.ELASTIC_API_HEADER || 'Authorization']: process.env.ELASTIC_API_KEY
-            }
+              [process.env.ELASTIC_API_HEADER || "Authorization"]:
+                process.env.ELASTIC_API_KEY,
+            },
           }
         : {}),
     });
 
     const isAlive = await client.cluster.health();
     if (!isAlive)
-      throw new Error("ElasticsearchDB::Cluster health check failed - is the instance online?");
-    
+      throw new Error(
+        "ElasticsearchDB::Cluster health check failed - is the instance online?"
+      );
+
     return { client };
   },
 
@@ -68,7 +73,7 @@ const Elasticsearch = {
 
   totalVectors: async function () {
     const { client } = await this.connect();
-    const indexStats = await client.indices.stats({ metric: 'docs' });
+    const indexStats = await client.indices.stats({ metric: "docs" });
     return indexStats.body._all.total.docs.count || 0;
   },
 
@@ -102,26 +107,28 @@ const Elasticsearch = {
           script_score: {
             query: { match_all: {} },
             script: {
-              source:"cosineSimilarity(params.queryVector, 'embedding') + 1.0", 
+              source: "cosineSimilarity(params.queryVector, 'embedding') + 1.0",
               params: { queryVector },
             },
-          }
+          },
         },
-        size: topN
-      }
+        size: topN,
+      },
     });
-  
+
     const result = {
       contextTexts: [],
       sourceDocuments: [],
-      scores: []
+      scores: [],
     };
 
-    response.body.hits.hits.forEach(hit => {
+    response.body.hits.hits.forEach((hit) => {
       const score = this.distanceToSimilarity(hit._score);
       if (score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(hit._source.metadata))) {
-        console.log("Elasticsearch: A source was filtered from context as its parent document is pinned.");
+        console.log(
+          "Elasticsearch: A source was filtered from context as its parent document is pinned."
+        );
         return;
       }
 
@@ -180,25 +187,25 @@ const Elasticsearch = {
 
               documentVectors.push({ docId, vectorId: id });
 
-              if (!(await this.namespaceExists(client, namespace))){
+              if (!(await this.namespaceExists(client, namespace))) {
                 await client.indices.create({
                   index: indexName,
                   body: {
                     mappings: {
                       properties: {
                         text: {
-                          type: "text"
+                          type: "text",
                         },
                         embedding: {
                           type: "dense_vector",
-                          dims: vectorChunk.values.length
+                          dims: vectorChunk.values.length,
                         },
                         metadata: {
-                          type: "object"
-                        }
-                      }
-                    }
-                  }
+                          type: "object",
+                        },
+                      },
+                    },
+                  },
                 });
               }
               const response = await client.index({
@@ -207,11 +214,12 @@ const Elasticsearch = {
                 body: {
                   text: metadata.text,
                   embedding: vectorChunk.values,
-                  metadata
-                }
+                  metadata,
+                },
               });
 
-              if (!response) throw new Error("Error embedding into ElasticsearchDB");
+              if (!response)
+                throw new Error("Error embedding into ElasticsearchDB");
             }
 
             await DocumentVectors.bulkInsert(documentVectors);
@@ -225,7 +233,7 @@ const Elasticsearch = {
       const textSplitter = new TextSplitter({
         chunkSize: TextSplitter.determineMaxChunkSize(
           await SystemSettings.getValueOrFallback({
-            label: "text_splitter_chunk_size"
+            label: "text_splitter_chunk_size",
           }),
           EmbedderEngine?.embeddingMaxChunkLength
         ),
@@ -253,7 +261,7 @@ const Elasticsearch = {
           values: vector,
           metadata: { ...metadata, text: textChunks[i] },
         };
-        if (!(await this.namespaceExists(client, namespace))){
+        if (!(await this.namespaceExists(client, namespace))) {
           await client.indices.create({
             index: indexName,
             body: {
@@ -261,14 +269,14 @@ const Elasticsearch = {
                 properties: {
                   embedding: {
                     type: "dense_vector",
-                    dims: vectorRecord.values.length
+                    dims: vectorRecord.values.length,
                   },
                   metadata: {
-                    type: "object"
-                  }
-                }
-              }
-            }
+                    type: "object",
+                  },
+                },
+              },
+            },
           });
         }
         await client.index({
@@ -277,8 +285,8 @@ const Elasticsearch = {
           body: {
             text: textChunks[i],
             embedding: vectorRecord.values,
-            metadata: vectorRecord.metadata
-          }
+            metadata: vectorRecord.metadata,
+          },
         });
 
         documentVectors.push({ docId, vectorId: vectorRecord.id });
@@ -302,16 +310,16 @@ const Elasticsearch = {
 
     if (knownDocuments.length === 0) return;
 
-    const vectorIds = knownDocuments.map(doc => doc.vectorId);
+    const vectorIds = knownDocuments.map((doc) => doc.vectorId);
 
     for (const vectorId of vectorIds) {
       await client.delete({
         index: indexName,
-        id: vectorId
+        id: vectorId,
       });
     }
 
-    const indexes = knownDocuments.map(doc => doc.id);
+    const indexes = knownDocuments.map((doc) => doc.id);
     await DocumentVectors.deleteIds(indexes);
     return true;
   },
@@ -337,7 +345,7 @@ const Elasticsearch = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    
+
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
@@ -372,7 +380,6 @@ const Elasticsearch = {
 
     return documents;
   },
-
- };
+};
 
 module.exports.ElasticsearchDB = Elasticsearch;

@@ -56,7 +56,7 @@
  */
 function getVectorDbClass() {
   const vectorSelection = process.env.VECTOR_DB || "lancedb";
- 
+
   switch (vectorSelection) {
     case "pinecone":
       const { Pinecone } = require("../vectorDbProviders/pinecone");
@@ -83,7 +83,7 @@ function getVectorDbClass() {
       const { AstraDB } = require("../vectorDbProviders/astra");
       return AstraDB;
     case "elasticsearch":
-      const { ElasticsearchDB }= require("../vectorDbProviders/elasticsearch");
+      const { ElasticsearchDB } = require("../vectorDbProviders/elasticsearch");
       return ElasticsearchDB;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
