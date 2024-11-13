@@ -21,7 +21,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
     const model =
       config?.model || process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
     const client = new OpenAI({
-      baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH), // here is the URL to your LMStudio instance
+      baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH),
       apiKey: null,
       maxRetries: 3,
     });
