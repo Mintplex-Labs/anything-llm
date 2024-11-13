@@ -92,7 +92,7 @@ function WorkspaceDirectory({
           </h3>
         </div>
         <div className="relative w-[560px] h-[445px] bg-theme-settings-input-bg rounded-2xl mt-5 border border-theme-modal-border">
-          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-theme-settings-input-bg sticky top-0 z-10 rounded-t-2xl">
+          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-theme-settings-input-bg sticky top-0 z-10 rounded-t-2xl shadow-lg">
             <div className="col-span-10 flex items-center gap-x-[4px]">
               <div className="shrink-0 w-3 h-3" />
               <p className="ml-[7px]">Name</p>
@@ -125,7 +125,7 @@ function WorkspaceDirectory({
             }`}
           />
           <div className="relative w-full h-full bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
-            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-theme-settings-input-bg sticky top-0 z-10">
+            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-theme-settings-input-bg sticky top-0 z-10 shadow-md">
               <div className="col-span-10 flex items-center gap-x-[4px]">
                 {!hasChanges &&
                 files.items.some((folder) => folder.items.length > 0) ? (
