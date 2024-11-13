@@ -11,7 +11,7 @@ class LMStudioLLM {
 
     const { OpenAI: OpenAIApi } = require("openai");
     this.lmstudio = new OpenAIApi({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
+      baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH), // here is the URL to your LMStudio instance
       apiKey: null,
     });
 
@@ -173,6 +173,23 @@ class LMStudioLLM {
   }
 }
 
+/**
+ * Parse the base path for the LMStudio API. Since the base path must end in /v1 and cannot have a trailing slash,
+ * and the user can possibly set it to anything and likely incorrectly due to pasting behaviors, we need to ensure it is in the correct format.
+ * @param {string} basePath
+ * @returns {string}
+ */
+function parseLMStudioBasePath(providedBasePath = "") {
+  try {
+    const baseURL = new URL(providedBasePath);
+    const basePath = `${baseURL.origin}/v1`;
+    return basePath;
+  } catch (e) {
+    return providedBasePath;
+  }
+}
+
 module.exports = {
   LMStudioLLM,
+  parseLMStudioBasePath,
 };
