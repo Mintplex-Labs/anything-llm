@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { SpeakerHigh, PauseCircle, CircleNotch } from "@phosphor-icons/react";
-import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 
@@ -83,12 +82,6 @@ export default function AsyncTTSMessage({ slug, chatId }) {
           controls={false}
         />
       </button>
-      <Tooltip
-        id="message-to-speech"
-        place="bottom"
-        delayShow={300}
-        className="tooltip !text-xs"
-      />
     </div>
   );
 }

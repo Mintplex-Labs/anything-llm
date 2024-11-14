@@ -1,4 +1,7 @@
-import { COMPLETE_QUESTIONNAIRE } from "@/utils/constants";
+import {
+  COMPLETE_QUESTIONNAIRE,
+  ONBOARDING_SURVEY_URL,
+} from "@/utils/constants";
 import paths from "@/utils/paths";
 import { CheckCircle } from "@phosphor-icons/react";
 import React, { useState, useEffect, useRef } from "react";
@@ -13,22 +16,31 @@ async function sendQuestionnaire({ email, useCase, comment }) {
     return;
   }
 
-  return fetch(`https://onboarding-wxich7363q-uc.a.run.app`, {
-    method: "POST",
-    body: JSON.stringify({
-      email,
-      useCase,
-      comment,
-      sourceId: "0VRjqHh6Vukqi0x0Vd0n/m8JuT7k8nOz",
-    }),
-  })
-    .then(() => {
-      window.localStorage.setItem(COMPLETE_QUESTIONNAIRE, true);
-      console.log(`✅ Questionnaire responses sent.`);
+  const data = JSON.stringify({
+    email,
+    useCase,
+    comment,
+    sourceId: "0VRjqHh6Vukqi0x0Vd0n/m8JuT7k8nOz",
+  });
+
+  if (!navigator.sendBeacon) {
+    console.log("navigator.sendBeacon not supported, falling back to fetch");
+    return fetch(ONBOARDING_SURVEY_URL, {
+      method: "POST",
+      body: data,
     })
-    .catch((error) => {
-      console.error(`sendQuestionnaire`, error.message);
-    });
+      .then(() => {
+        window.localStorage.setItem(COMPLETE_QUESTIONNAIRE, true);
+        console.log(`✅ Questionnaire responses sent.`);
+      })
+      .catch((error) => {
+        console.error(`sendQuestionnaire`, error.message);
+      });
+  }
+
+  navigator.sendBeacon(ONBOARDING_SURVEY_URL, data);
+  window.localStorage.setItem(COMPLETE_QUESTIONNAIRE, true);
+  console.log(`✅ Questionnaire responses sent.`);
 }
 
 export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {

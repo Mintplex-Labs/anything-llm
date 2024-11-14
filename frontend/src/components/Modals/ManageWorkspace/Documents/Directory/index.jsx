@@ -13,6 +13,8 @@ import NewFolderModal from "./NewFolderModal";
 import debounce from "lodash.debounce";
 import { filterFileSearchResults } from "./utils";
 import ContextMenu from "./ContextMenu";
+import { Tooltip } from "react-tooltip";
+import { safeJsonParse } from "@/utils/request";
 
 function Directory({
   files,
@@ -273,9 +275,7 @@ function Directory({
                   </button>
                   <div className="relative">
                     <button
-                      onClick={() =>
-                        setShowFolderSelection(!showFolderSelection)
-                      }
+                      onClick={() => setShowFolderSelection(!showFolderSelection)}
                       className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center group"
                     >
                       <MoveToFolderIcon className="text-dark-text light:text-[#026AA2] group-hover:text-white" />
@@ -326,6 +326,38 @@ function Directory({
         setSelectedItems={setSelectedItems}
       />
     </div>
+  );
+}
+
+/**
+ * Tooltips for the directory components. Renders when the directory is shown
+ * or updated so that tooltips are attached as the items are changed.
+ */
+function DirectoryTooltips() {
+  return (
+    <Tooltip
+      id="directory-item"
+      place="bottom"
+      delayShow={800}
+      className="tooltip invert z-99"
+      render={({ content }) => {
+        const data = safeJsonParse(content, null);
+        if (!data) return null;
+        return (
+          <div className="text-xs">
+            <p className="text-white">{data.title}</p>
+            <div className="flex mt-1 gap-x-2">
+              <p className="">
+                Date: <b>{data.date}</b>
+              </p>
+              <p className="">
+                Type: <b>{data.extension}</b>
+              </p>
+            </div>
+          </div>
+        );
+      }}
+    />
   );
 }
 

@@ -17,6 +17,7 @@ import DnDFileUploaderWrapper from "./DnDWrapper";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
+import { ChatTooltips } from "./ChatTooltips";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -284,6 +285,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           attachments={files}
         />
       </DnDFileUploaderWrapper>
+      <ChatTooltips />
     </div>
   );
 }

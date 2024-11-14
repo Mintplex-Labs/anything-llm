@@ -8,7 +8,6 @@ import { ArrowUUpLeft, Eye, File, PushPin } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
-import { Tooltip } from "react-tooltip";
 
 export default function WorkspaceFileRow({
   item,
@@ -66,7 +65,12 @@ export default function WorkspaceFileRow({
     >
       <div
         className="col-span-10 w-fit flex gap-x-[2px] items-center relative"
-        data-tooltip-id={`ws-directory-item-${item.url}`}
+        data-tooltip-id="ws-directory-item"
+        data-tooltip-content={JSON.stringify({
+          title: item.title,
+          date: formatDate(item?.published),
+          extension: getFileExtension(item.url).toUpperCase(),
+        })}
       >
         <div className="shrink-0 w-3 h-3">
           {!disableSelection ? (
@@ -110,24 +114,6 @@ export default function WorkspaceFileRow({
           </div>
         )}
       </div>
-      <Tooltip
-        id={`ws-directory-item-${item.url}`}
-        place="bottom"
-        delayShow={800}
-        className="tooltip invert light:invert-0 z-99 max-w-[400px]"
-      >
-        <div className="text-xs ">
-          <p>{item.title}</p>
-          <div className="flex mt-1 gap-x-2">
-            <p className="">
-              Date: <b>{formatDate(item?.published)}</b>
-            </p>
-            <p className="">
-              Type: <b>{getFileExtension(item.url).toUpperCase()}</b>
-            </p>
-          </div>
-        </div>
-      </Tooltip>
     </div>
   );
 }
@@ -179,7 +165,7 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
       className="flex gap-x-2 items-center hover:bg-theme-file-picker-hover p-[2px] rounded ml-2"
     >
       <PushPin
-        data-tooltip-id={`pin-${item.id}`}
+        data-tooltip-id="pin-document"
         data-tooltip-content={
           pinned ? "Un-Pin from workspace" : "Pin to workspace"
         }
@@ -187,12 +173,6 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
         onClick={updatePinStatus}
         weight={hover || pinned ? "fill" : "regular"}
         className="outline-none text-base font-bold flex-shrink-0 cursor-pointer"
-      />
-      <Tooltip
-        id={`pin-${item.id}`}
-        place="bottom"
-        delayShow={300}
-        className="tooltip invert light:invert-0 !text-xs"
       />
     </div>
   );
@@ -251,7 +231,7 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
       className="flex gap-x-2 items-center hover:bg-main-gradient p-[2px] rounded ml-2"
     >
       <Eye
-        data-tooltip-id={`watch-changes-${item.id}`}
+        data-tooltip-id="watch-changes"
         data-tooltip-content={
           watched ? "Stop watching for changes" : "Watch document for changes"
         }
@@ -259,12 +239,6 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
         onClick={updateWatchStatus}
         weight={hover || watched ? "fill" : "regular"}
         className="outline-none text-base font-bold flex-shrink-0 cursor-pointer"
-      />
-      <Tooltip
-        id={`watch-changes-${item.id}`}
-        place="bottom"
-        delayShow={300}
-        className="tooltip invert light:invert-0 !text-xs"
       />
     </div>
   );
@@ -274,16 +248,10 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
   return (
     <div>
       <ArrowUUpLeft
-        data-tooltip-id={`remove-${item.id}`}
+        data-tooltip-id="remove-document"
         data-tooltip-content="Remove document from workspace"
         onClick={onClick}
         className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
-      />
-      <Tooltip
-        id={`remove-${item.id}`}
-        place="bottom"
-        delayShow={300}
-        className="tooltip invert light:invert-0 !text-xs"
       />
     </div>
   );
