@@ -512,7 +512,7 @@ const SystemSettings = {
       GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
 
       AwsBedrockLLMConnectionMethod:
-        process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam",
+        process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam_role",
       AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
       AwsBedrockLLMAccessKey: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
       AwsBedrockLLMSessionToken: !!process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,

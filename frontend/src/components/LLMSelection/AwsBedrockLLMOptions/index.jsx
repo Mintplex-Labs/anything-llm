@@ -3,8 +3,8 @@ import { AWS_REGIONS } from "./regions";
 import { useState } from "react";
 
 export default function AwsBedrockLLMOptions({ settings }) {
-  const [useSessionToken, setUseSessionToken] = useState(
-    settings?.AwsBedrockLLMConnectionMethod === "sessionToken"
+  const [useIamRole, setUseIamRole] = useState(
+    settings?.AwsBedrockLLMConnectionMethod === "iam_role"
   );
 
   return (
@@ -14,7 +14,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
           <div className="gap-x-2 flex items-center">
             <Info size={40} />
             <p className="text-base">
-              You should use a properly defined IAM user for inferencing.
+              You should use a properly defined IAM role for inferencing.
               <br />
               <a
                 href="https://docs.anythingllm.com/setup/llm-configuration/cloud/aws-bedrock"
@@ -28,16 +28,15 @@ export default function AwsBedrockLLMOptions({ settings }) {
           </div>
         </div>
       )}
-
       <div className="flex flex-col gap-y-2">
         <input
           type="hidden"
           name="AwsBedrockLLMConnectionMethod"
-          value={useSessionToken ? "sessionToken" : "iam"}
+          value={useIamRole ? "iam_role" : "iam_user"}
         />
         <div className="flex flex-col w-full">
           <label className="text-white text-sm font-semibold block mb-3">
-            Use session token
+            Use IAM Role
           </label>
           <p className="text-white/50 text-sm">
             Select the method to authenticate with AWS Bedrock.
@@ -45,81 +44,65 @@ export default function AwsBedrockLLMOptions({ settings }) {
         </div>
         <div className="flex items-center justify-start gap-x-4 bg-zinc-900 p-2.5 rounded-lg w-fit">
           <span
-            className={`text-sm ${!useSessionToken ? "text-white" : "text-white/50"}`}
+            className={`text-sm ${!useIamRole ? "text-white" : "text-white/50"}`}
           >
-            IAM
+            Explicit Credentials
           </span>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
               className="sr-only peer"
-              checked={useSessionToken}
-              onChange={(e) => setUseSessionToken(e.target.checked)}
+              checked={useIamRole}
+              onChange={(e) => setUseIamRole(e.target.checked)}
             />
             <div className="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-button"></div>
           </label>
           <span
-            className={`text-sm ${useSessionToken ? "text-white" : "text-white/50"}`}
+            className={`text-sm ${useIamRole ? "text-white" : "text-white/50"}`}
           >
-            Session Token
+            IAM Role
           </span>
         </div>
       </div>
-
-      <div className="w-full flex items-center gap-[36px] my-1.5">
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            AWS Bedrock IAM Access ID
-          </label>
-          <input
-            type="password"
-            name="AwsBedrockLLMAccessKeyId"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="AWS Bedrock IAM User Access ID"
-            defaultValue={
-              settings?.AwsBedrockLLMAccessKeyId ? "*".repeat(20) : ""
-            }
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            AWS Bedrock IAM Access Key
-          </label>
-          <input
-            type="password"
-            name="AwsBedrockLLMAccessKey"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="AWS Bedrock IAM User Access Key"
-            defaultValue={
-              settings?.AwsBedrockLLMAccessKey ? "*".repeat(20) : ""
-            }
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-        {useSessionToken && (
+      {!useIamRole && (
+        <div className="w-full flex items-center gap-[36px] my-1.5">
           <div className="flex flex-col w-60">
             <label className="text-white text-sm font-semibold block mb-3">
-              AWS Bedrock Session Token
+              AWS Bedrock IAM Access ID
             </label>
             <input
               type="password"
-              name="AwsBedrockLLMSessionToken"
+              name="AwsBedrockLLMAccessKeyId"
               className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-              placeholder="AWS Bedrock Session Token"
+              placeholder="AWS Bedrock IAM User Access ID"
               defaultValue={
-                settings?.AwsBedrockLLMSessionToken ? "*".repeat(20) : ""
+                settings?.AwsBedrockLLMAccessKeyId ? "*".repeat(20) : ""
               }
-              required={true}
+              required={!useIamRole}
               autoComplete="off"
               spellCheck={false}
             />
           </div>
-        )}
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3">
+              AWS Bedrock IAM Access Key
+            </label>
+            <input
+              type="password"
+              name="AwsBedrockLLMAccessKey"
+              className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="AWS Bedrock IAM User Access Key"
+              defaultValue={
+                settings?.AwsBedrockLLMAccessKey ? "*".repeat(20) : ""
+              }
+              required={!useIamRole}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+        </div>
+      )}
+      <div className="w-full flex items-center gap-[36px] my-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
             AWS region
@@ -140,7 +123,6 @@ export default function AwsBedrockLLMOptions({ settings }) {
           </select>
         </div>
       </div>
-
       <div className="w-full flex items-center gap-[36px] my-1.5">
         {!settings?.credentialsOnly && (
           <>
