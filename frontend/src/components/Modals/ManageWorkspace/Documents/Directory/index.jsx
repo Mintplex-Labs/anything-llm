@@ -209,8 +209,12 @@ function Directory({
             className="flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-theme-sidebar-subitem-hover z-20 relative"
             onClick={openFolderModal}
           >
-            <Plus size={18} weight="bold" color="var(--theme-text-primary)" />
-            <div className="text-theme-text-primary text-xs font-bold leading-[18px]">
+            <Plus
+              size={18}
+              weight="bold"
+              className="text-theme-text-primary light:text-[#0ba5ec]"
+            />
+            <div className="text-theme-text-primary light:text-[#0ba5ec] text-xs font-bold leading-[18px]">
               New Folder
             </div>
           </button>

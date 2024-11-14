@@ -7,7 +7,7 @@ function SideBarSelection({ setStep, currentStep }) {
   const currentIndex = Object.keys(FineTuningSteps).indexOf(currentStep);
   return (
     <div
-      className={`bg-white/5 light:bg-[#E0F2FE] text-theme-text-primary rounded-xl py-1 px-4 ${
+      className={`bg-white/5 light:bg-white text-theme-text-primary rounded-xl py-1 px-4 shadow-lg ${
         isMobile ? "w-full" : "min-w-[360px] w-fit"
       }`}
     >
