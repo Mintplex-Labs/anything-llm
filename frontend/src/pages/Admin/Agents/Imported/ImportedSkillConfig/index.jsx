@@ -105,7 +105,7 @@ export default function ImportedSkillConfig({
       <div className="p-2">
         <div className="flex flex-col gap-y-[18px] max-w-[500px]">
           <div className="flex items-center gap-x-2">
-            <Plug size={24} color="white" weight="bold" />
+            <Plug size={24} weight="bold" className="text-white" />
             <label htmlFor="name" className="text-white text-md font-bold">
               {sentenceCase(config.name)}
             </label>

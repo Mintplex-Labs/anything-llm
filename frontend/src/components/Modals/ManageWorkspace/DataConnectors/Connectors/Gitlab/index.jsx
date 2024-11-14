@@ -159,9 +159,9 @@ export default function GitlabOptions() {
                 name="ignores"
                 placeholder="!*.js, images/*, .DS_Store, bin/*"
                 classNames={{
-                  tag: "bg-blue-300/10 text-zinc-800",
+                  tag: "bg-theme-settings-input-bg light:bg-black/10 bg-blue-300/10 text-zinc-800",
                   input:
-                    "flex p-1 bg-theme-bg-secondary text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
+                    "flex p-1 !bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
                 }}
               />
             </div>

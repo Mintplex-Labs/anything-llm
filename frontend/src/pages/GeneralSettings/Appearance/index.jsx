@@ -32,7 +32,6 @@ export default function Appearance() {
               {t("appearance.description")}
             </p>
           </div>
-          {/* TODO: Enable when we have other themes */}
           <ThemePreference />
           <LanguagePreference />
           <ShowScrollbar />

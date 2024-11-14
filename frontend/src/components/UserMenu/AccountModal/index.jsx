@@ -5,6 +5,7 @@ import { AUTH_USER } from "@/utils/constants";
 import showToast from "@/utils/toast";
 import { Plus, X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
@@ -85,7 +86,7 @@ export default function AccountModal({ user, hideModal }) {
           <form onSubmit={handleUpdate} className="space-y-6">
             <div className="flex flex-col md:flex-row items-center justify-center gap-8">
               <div className="flex flex-col items-center">
-                <label className="group w-48 h-48 flex flex-col items-center justify-center bg-theme-settings-input-bg/50 hover:bg-theme-settings-input-bg transition-all duration-300 rounded-full mt-8 border-2 border-dashed border-white light:border-theme-settings-input-bg border-opacity-60 cursor-pointer hover:opacity-60">
+                <label className="group w-48 h-48 flex flex-col items-center justify-center bg-theme-bg-primary hover:bg-theme-bg-secondary transition-colors duration-300 rounded-full mt-8 border-2 border-dashed border-white light:border-[#686C6F] light:bg-[#E0F2FE] light:hover:bg-transparent cursor-pointer hover:opacity-60">
                   <input
                     id="logo-upload"
                     type="file"
@@ -163,7 +164,10 @@ export default function AccountModal({ user, hideModal }) {
                   Password must be at least 8 characters long
                 </p>
               </div>
-              <LanguagePreference />
+              <div className="flex flex-row gap-x-8">
+                <ThemePreference />
+                <LanguagePreference />
+              </div>
             </div>
             <div className="flex justify-between items-center border-t border-theme-modal-border pt-4 p-6">
               <button
@@ -216,6 +220,33 @@ function LanguagePreference() {
             </option>
           );
         })}
+      </select>
+    </div>
+  );
+}
+
+function ThemePreference() {
+  const { theme, setTheme, availableThemes } = useTheme();
+
+  return (
+    <div>
+      <label
+        htmlFor="theme"
+        className="block mb-2 text-sm font-medium text-white"
+      >
+        Theme Preference
+      </label>
+      <select
+        name="theme"
+        value={theme}
+        onChange={(e) => setTheme(e.target.value)}
+        className="bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+      >
+        {Object.entries(availableThemes).map(([key, value]) => (
+          <option key={key} value={key}>
+            {value}
+          </option>
+        ))}
       </select>
     </div>
   );
