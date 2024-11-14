@@ -25,7 +25,7 @@ const PromptReply = ({
         <div className="py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
           <div className="flex gap-x-5">
             <WorkspaceProfileImage workspace={workspace} />
-            <div className="mt-3 ml-5 dot-falling"></div>
+            <div className="mt-3 ml-5 dot-falling light:invert"></div>
           </div>
         </div>
       </div>

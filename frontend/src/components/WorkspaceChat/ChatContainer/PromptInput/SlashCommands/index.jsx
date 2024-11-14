@@ -12,13 +12,13 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
       data-tooltip-id="tooltip-slash-cmd-btn"
       data-tooltip-content="View all available slash commands for chatting."
       onClick={() => setShowSlashCommand(!showing)}
-      className={`flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${
+      className={`flex justify-center items-center cursor-pointer ${
         showing ? "!opacity-100" : ""
       }`}
     >
       <SlashCommandIcon
         color="var(--theme-sidebar-footer-icon-fill)"
-        className="w-[20px] h-[20px] pointer-events-none"
+        className={`w-[20px] h-[20px] pointer-events-none opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60`}
       />
       <Tooltip
         id="tooltip-slash-cmd-btn"

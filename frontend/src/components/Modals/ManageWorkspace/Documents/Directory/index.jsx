@@ -190,8 +190,9 @@ function Directory({
   };
 
   return (
-    <div className="px-8 pb-8" onContextMenu={handleContextMenu}>
-      <div className="flex flex-col gap-y-6">
+    <>
+      <div className="px-8 pb-8" onContextMenu={handleContextMenu}>
+        <div className="flex flex-col gap-y-6">
         <div className="flex items-center justify-between w-[560px] px-5 relative">
           <h3 className="text-white text-base font-bold">My Documents</h3>
           <div className="relative">
@@ -326,6 +327,8 @@ function Directory({
         setSelectedItems={setSelectedItems}
       />
     </div>
+      <DirectoryTooltips />
+    </>
   );
 }
 
@@ -339,13 +342,13 @@ function DirectoryTooltips() {
       id="directory-item"
       place="bottom"
       delayShow={800}
-      className="tooltip invert z-99"
+      className="tooltip invert light:invert-0 z-99 max-w-[200px]"
       render={({ content }) => {
         const data = safeJsonParse(content, null);
         if (!data) return null;
         return (
           <div className="text-xs">
-            <p className="text-white">{data.title}</p>
+            <p className="text-white light:invert font-medium">{data.title}</p>
             <div className="flex mt-1 gap-x-2">
               <p className="">
                 Date: <b>{data.date}</b>

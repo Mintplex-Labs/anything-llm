@@ -408,7 +408,7 @@ function SkillList({
           id="default-skill"
           place="bottom"
           delayShow={300}
-          className="tooltip !text-xs"
+          className="tooltip light:invert-0 !text-xs"
         />
       )}
     </>

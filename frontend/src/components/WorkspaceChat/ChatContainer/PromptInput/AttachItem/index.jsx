@@ -29,13 +29,13 @@ export default function AttachItem() {
           color="var(--theme-sidebar-footer-icon-fill)"
           className="w-[22px] h-[22px] pointer-events-none text-white rotate-90 -scale-y-100"
         />
-        <Tooltip
-          id="attach-item-btn"
-          place="top"
-          delayShow={300}
-          className="tooltip !text-xs z-99"
-        />
       </button>
+      <Tooltip
+        id="attach-item-btn"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs z-[99]"
+      />
     </>
   );
 }
