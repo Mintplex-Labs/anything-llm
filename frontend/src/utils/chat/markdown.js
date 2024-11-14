@@ -48,7 +48,7 @@ const markdown = markdownIt({
 
 // Add custom renderer for strong tags to handle theme colors
 markdown.renderer.rules.strong_open = () => '<strong class="text-white">';
-markdown.renderer.rules.strong_close = () => '</strong>';
+markdown.renderer.rules.strong_close = () => "</strong>";
 
 // Custom renderer for responsive images rendered in markdown
 markdown.renderer.rules.image = function (tokens, idx) {

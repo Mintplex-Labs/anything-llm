@@ -90,15 +90,21 @@ export default function Confirmation({ settings, setSettings, setStep }) {
             <div className="flex flex-col gap-y-3 text-sm">
               <div className="flex items-start gap-x-1">
                 <p className="w-1/3">Contact e-mail:</p>
-                <p className="text-theme-text-secondary w-2/3">{settings.email}</p>
+                <p className="text-theme-text-secondary w-2/3">
+                  {settings.email}
+                </p>
               </div>
               <div className="flex items-start gap-x-1">
                 <p className="w-1/3">Base LLM:</p>
-                <p className="text-theme-text-secondary w-2/3">{settings.baseModel}</p>
+                <p className="text-theme-text-secondary w-2/3">
+                  {settings.baseModel}
+                </p>
               </div>
               <div className="flex items-start gap-x-1">
                 <p className="w-1/3">Output model name:</p>
-                <p className="text-theme-text-secondary w-2/3">"{settings.modelName}"</p>
+                <p className="text-theme-text-secondary w-2/3">
+                  "{settings.modelName}"
+                </p>
               </div>
               <div className="flex items-start gap-x-1">
                 <p className="w-1/3">Training on workspaces:</p>
@@ -126,20 +132,34 @@ export default function Confirmation({ settings, setSettings, setStep }) {
             <div className="mt-4">
               <ul className="flex flex-col gap-y-1 text-sm">
                 <li className="flex items-center gap-x-2">
-                  <Check className="text-theme-text-primary" size={12} weight="bold" />
+                  <Check
+                    className="text-theme-text-primary"
+                    size={12}
+                    weight="bold"
+                  />
                   <p className="text-theme-text-secondary">
                     Agreed to Terms and Conditions
                   </p>
                 </li>
                 <li className="flex items-center gap-x-2">
-                  <Check className="text-theme-text-primary" size={12} weight="bold" />
+                  <Check
+                    className="text-theme-text-primary"
+                    size={12}
+                    weight="bold"
+                  />
                   <p className="text-theme-text-secondary">
                     Understand privacy & data handling
                   </p>
                 </li>
                 <li className="flex items-center gap-x-2">
-                  <Check className="text-theme-text-primary" size={12} weight="bold" />
-                  <p className="text-theme-text-secondary">Agreed to Fulfillment terms</p>
+                  <Check
+                    className="text-theme-text-primary"
+                    size={12}
+                    weight="bold"
+                  />
+                  <p className="text-theme-text-secondary">
+                    Agreed to Fulfillment terms
+                  </p>
                 </li>
               </ul>
             </div>

@@ -275,7 +275,9 @@ function DatasetSummary({ workspaces = [], feedback = null }) {
       {stats.count < stats.recommendedMin ? (
         <div className="flex items-center gap-x-1 text-red-500 text-sm p-2 rounded-lg bg-red-500/20 w-fit my-2">
           <Warning size={12} weight="bold" />
-          <p>Dataset size is below recommended minimum ({stats.recommendedMin})</p>
+          <p>
+            Dataset size is below recommended minimum ({stats.recommendedMin})
+          </p>
         </div>
       ) : (
         <div className="flex items-center gap-x-1 text-green-500 text-sm p-2 rounded-lg bg-green-500/20 w-fit my-2">

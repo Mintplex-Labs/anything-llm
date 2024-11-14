@@ -126,7 +126,10 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
     <div className="w-full flex justify-center bo">
       <form onSubmit={handleSubmit} ref={formRef} className="">
         <div className="md:min-w-[400px]">
-          <label htmlFor="email" className="text-theme-text-primary text-base font-medium">
+          <label
+            htmlFor="email"
+            className="text-theme-text-primary text-base font-medium"
+          >
             What's your email?{" "}
           </label>
           <input
@@ -147,9 +150,11 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           </label>
           <div className="mt-2 gap-y-3 flex flex-col">
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${selectedOption === "job" ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-                : "border-theme-sidebar-border"
-                } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
+                selectedOption === "job"
+                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+                  : "border-theme-sidebar-border"
+              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
             >
               <input
                 type="radio"
@@ -160,18 +165,22 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${selectedOption === "job" ? "bg-[var(--theme-sidebar-item-workspace-active)]" : ""
-                  }`}
+                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                  selectedOption === "job"
+                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                    : ""
+                }`}
               ></div>
               <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
                 For work
               </div>
             </label>
             <label
-              className={`transition-all  duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${selectedOption === "personal"
-                ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-                : "border-theme-sidebar-border"
-                } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              className={`transition-all  duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
+                selectedOption === "personal"
+                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+                  : "border-theme-sidebar-border"
+              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
             >
               <input
                 type="radio"
@@ -182,18 +191,22 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${selectedOption === "personal" ? "bg-[var(--theme-sidebar-item-workspace-active)]" : ""
-                  }`}
+                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                  selectedOption === "personal"
+                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                    : ""
+                }`}
               ></div>
               <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
                 For my personal use
               </div>
             </label>
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${selectedOption === "other"
-                ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-                : "border-theme-sidebar-border"
-                } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
+                selectedOption === "other"
+                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+                  : "border-theme-sidebar-border"
+              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
             >
               <input
                 type="radio"
@@ -204,8 +217,11 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${selectedOption === "other" ? "bg-[var(--theme-sidebar-item-workspace-active)]" : ""
-                  }`}
+                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                  selectedOption === "other"
+                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                    : ""
+                }`}
               ></div>
               <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
                 Other

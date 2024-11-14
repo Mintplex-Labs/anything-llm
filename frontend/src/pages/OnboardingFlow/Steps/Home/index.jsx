@@ -38,7 +38,9 @@ export default function OnboardingHome() {
 
         <div className="relative flex justify-center items-center m-auto">
           <div className="flex flex-col justify-center items-center">
-            <p className="text-theme-text-primary font-thin text-[24px]">Welcome to</p>
+            <p className="text-theme-text-primary font-thin text-[24px]">
+              Welcome to
+            </p>
             <img
               src={AnythingLLMLogo}
               alt="AnythingLLM"

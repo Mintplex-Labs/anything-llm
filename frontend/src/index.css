@@ -50,16 +50,16 @@
   --theme-loader: #000000;
 
   --theme-bg-primary: #ffffff;
-  --theme-bg-secondary: #FFFFFF;
-  --theme-bg-sidebar: #EDF2FA;
-  --theme-bg-container: #F9FBFD;
+  --theme-bg-secondary: #ffffff;
+  --theme-bg-sidebar: #edf2fa;
+  --theme-bg-container: #f9fbfd;
 
-  --theme-bg-chat: #FFFFFF;
+  --theme-bg-chat: #ffffff;
   --theme-bg-chat-input: #eaeaea;
   --theme-text-primary: #0e0f0f;
   --theme-text-secondary: #7a7d7e;
   --theme-sidebar-item-default: #ffffff;
-  --theme-sidebar-item-selected: #FFFFFF;
+  --theme-sidebar-item-selected: #ffffff;
   --theme-sidebar-item-hover: #c8efff;
 
   --theme-sidebar-item-text-inactive: #7a7d7e;
@@ -69,27 +69,27 @@
   --theme-sidebar-item-workspace-inactive: #7a7d7e;
 
   --theme-sidebar-subitem-default: transparent;
-  --theme-sidebar-subitem-selected: #E2E7EE;
-  --theme-sidebar-thread-selected: #FFFFFF;
-  --theme-sidebar-subitem-hover: #E2E7EE;
+  --theme-sidebar-subitem-selected: #e2e7ee;
+  --theme-sidebar-thread-selected: #ffffff;
+  --theme-sidebar-subitem-hover: #e2e7ee;
   --theme-sidebar-border: #d3d4d4;
 
-  --theme-sidebar-footer-icon: #FFFFFF;
-  --theme-sidebar-footer-icon-fill: #6E6F6F;
+  --theme-sidebar-footer-icon: #ffffff;
+  --theme-sidebar-footer-icon-fill: #6e6f6f;
   --theme-sidebar-footer-icon-hover: #d8d6d6;
 
   --theme-chat-input-border: #cccccc;
   --theme-action-menu-bg: #eaeaea;
   --theme-action-menu-item-hover: rgba(0, 0, 0, 0.1);
-  --theme-settings-input-bg: #F5F5F5;
+  --theme-settings-input-bg: #f5f5f5;
   --theme-settings-input-placeholder: rgba(0, 0, 0, 0.5);
   --theme-settings-input-active: rgb(0 0 0 / 0.2);
   --theme-settings-input-text: #0e0f0f;
   --theme-modal-border: #d3d3d3;
   --theme-button-primary-hover: #dedede;
 
-  --theme-file-row-even: #F5F5F5;
-  --theme-file-row-odd: #E9E9E9;
+  --theme-file-row-even: #f5f5f5;
+  --theme-file-row-odd: #e9e9e9;
   --theme-file-row-selected-even: #0ba5ec;
   --theme-file-row-selected-odd: #0ba5ec;
   --theme-file-picker-hover: #e2e7ee;
@@ -242,17 +242,21 @@ a {
 
 @media (prefers-color-scheme: light) {
   .fade-up-border {
-    background: linear-gradient(to bottom,
-        rgba(220, 221, 223, 10%),
-        rgb(220, 221, 223) 89%);
+    background: linear-gradient(
+      to bottom,
+      rgba(220, 221, 223, 10%),
+      rgb(220, 221, 223) 89%
+    );
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .fade-up-border {
-    background: linear-gradient(to bottom,
-        rgba(41, 37, 36, 50%),
-        rgb(41 37 36) 90%);
+    background: linear-gradient(
+      to bottom,
+      rgba(41, 37, 36, 50%),
+      rgb(41 37 36) 90%
+    );
   }
 }
 
@@ -417,7 +421,7 @@ a {
   height: 100px !important;
 }
 
-.grid-loader>circle {
+.grid-loader > circle {
   fill: #008eff;
 }
 
@@ -480,9 +484,11 @@ dialog::backdrop {
 }
 
 .login-input-gradient {
-  background: linear-gradient(180deg,
-      rgba(61, 65, 71, 0.3) 0%,
-      rgba(44, 47, 53, 0.3) 100%) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(61, 65, 71, 0.3) 0%,
+    rgba(44, 47, 53, 0.3) 100%
+  ) !important;
   box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
 }
 
@@ -507,11 +513,11 @@ dialog::backdrop {
   top: 100%;
 }
 
-.user-reply>div:first-of-type {
+.user-reply > div:first-of-type {
   border: 2px solid white;
 }
 
-.reply>*:last-child::after {
+.reply > *:last-child::after {
   content: "|";
   animation: blink 1.5s steps(1) infinite;
   color: white;
@@ -592,7 +598,7 @@ dialog::backdrop {
  * ==============================================
  */
 .markdown,
-.markdown>* {
+.markdown > * {
   font-weight: 400;
 }
 
@@ -664,7 +670,6 @@ dialog::backdrop {
 }
 
 @media (max-width: 600px) {
-
   .markdown table th,
   .markdown table td {
     padding: 10px;
@@ -730,7 +735,7 @@ dialog::backdrop {
   text-decoration: underline;
 }
 
-.markdown ul li>ul {
+.markdown ul li > ul {
   padding-left: 20px;
   margin: 0px;
 }
@@ -740,7 +745,7 @@ dialog::backdrop {
   margin: 0.35rem;
 }
 
-.markdown>p>a,
+.markdown > p > a,
 .markdown p a {
   text-decoration: underline;
 }
@@ -826,7 +831,7 @@ does not extend the close button beyond the viewport. */
 }
 
 /* Recharts rendering styles */
-.recharts-text>* {
+.recharts-text > * {
   fill: #fff;
 }
 

@@ -185,7 +185,7 @@ export default function WorkspaceChats() {
                 {t("recorded.description")}
               </p>
             </div>
-          <div className="overflow-x-auto mt-6">
+            <div className="overflow-x-auto mt-6">
               <ChatsContainer
                 loading={loading}
                 chats={chats}
@@ -195,7 +195,7 @@ export default function WorkspaceChats() {
                 canNext={canNext}
                 t={t}
               />
-          </div>
+            </div>
           </div>
         </div>
       </div>

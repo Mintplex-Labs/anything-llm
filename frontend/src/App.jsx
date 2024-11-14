@@ -80,9 +80,12 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<PrivateRoute Component={Main} />} />
                   <Route path="/login" element={<Login />} />
-                  <Route path="/sso/simple" element={<SimpleSSOPassthrough />} />
+                  <Route
+                    path="/sso/simple"
+                    element={<SimpleSSOPassthrough />}
+                  />
 
-                <Route
+                  <Route
                     path="/workspace/:slug/settings/:tab"
                     element={<ManagerRoute Component={WorkspaceSettings} />}
                   />

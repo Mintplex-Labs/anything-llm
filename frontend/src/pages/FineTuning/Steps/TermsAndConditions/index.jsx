@@ -22,8 +22,12 @@ export default function TermsAndConditions({ setSettings, setStep }) {
           </p>
           <div className="flex flex-col gap-y-2 text-theme-text-secondary text-xs font-semibold rounded-lg p-4 h-[60vh] overflow-y-auto bg-theme-bg-container mt-2">
             <div className="text-xs">
-              <h1 className="text-theme-text-primary">Mintplex Labs Inc. Fine-Tuning Terms of Service</h1>
-              <p className="text-theme-text-secondary">Last Updated: July 15, 2024</p>
+              <h1 className="text-theme-text-primary">
+                Mintplex Labs Inc. Fine-Tuning Terms of Service
+              </h1>
+              <p className="text-theme-text-secondary">
+                Last Updated: July 15, 2024
+              </p>
             </div>
             <p className="text-theme-text-secondary">
               This Agreement is between Mintplex Labs Inc. ("Company") and the
@@ -33,7 +37,9 @@ export default function TermsAndConditions({ setSettings, setStep }) {
               be bound by the terms and conditions outlined below.
             </p>
 
-            <h2 className="text-theme-text-primary mt-4">1. Services Provided</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              1. Services Provided
+            </h2>
             <p className="text-theme-text-secondary">
               Mintplex Labs Inc. provides model fine-tuning services for
               customers. The deliverable for these services is a download link
@@ -71,7 +77,9 @@ export default function TermsAndConditions({ setSettings, setStep }) {
               </li>
             </ul>
 
-            <h2 className="text-theme-text-primary mt-4">4. Customer Responsibilities</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              4. Customer Responsibilities
+            </h2>
             <p className="text-theme-text-secondary">
               The Customer must provide all necessary data and information
               required for model fine-tuning.
@@ -109,7 +117,9 @@ export default function TermsAndConditions({ setSettings, setStep }) {
               with the laws of the State of California.
             </p>
 
-            <h2 className="text-theme-text-primary mt-4">7. Dispute Resolution</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              7. Dispute Resolution
+            </h2>
             <p className="text-theme-text-secondary">
               Any disputes arising out of or in connection with this Agreement
               shall be resolved in the state or federal courts located in

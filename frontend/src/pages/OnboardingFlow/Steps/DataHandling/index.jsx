@@ -406,7 +406,9 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <div className="p-8 flex flex-col gap-8">
         <div className="flex flex-col gap-y-2 border-b border-theme-sidebar-border pb-4">
-          <div className="text-theme-text-primary text-base font-bold">LLM Selection</div>
+          <div className="text-theme-text-primary text-base font-bold">
+            LLM Selection
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={LLM_SELECTION_PRIVACY[llmChoice].logo}
@@ -447,7 +449,9 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
         </div>
 
         <div className="flex flex-col gap-y-2 pb-4">
-          <div className="text-theme-text-primary text-base font-bold">Vector Database</div>
+          <div className="text-theme-text-primary text-base font-bold">
+            Vector Database
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={VECTOR_DB_PRIVACY[vectorDb].logo}

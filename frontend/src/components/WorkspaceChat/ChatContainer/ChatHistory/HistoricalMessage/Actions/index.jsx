@@ -102,9 +102,17 @@ function CopyMessage({ message }) {
           aria-label="Copy"
         >
           {copied ? (
-            <Check color="var(--theme-sidebar-footer-icon-fill)" size={20} className="mb-1" />
+            <Check
+              color="var(--theme-sidebar-footer-icon-fill)"
+              size={20}
+              className="mb-1"
+            />
           ) : (
-            <Copy color="var(--theme-sidebar-footer-icon-fill)" size={20} className="mb-1" />
+            <Copy
+              color="var(--theme-sidebar-footer-icon-fill)"
+              size={20}
+              className="mb-1"
+            />
           )}
         </button>
       </div>

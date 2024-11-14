@@ -39,7 +39,9 @@ export default function PrivacyHandling({ setSettings, setStep }) {
               services.
             </p>
 
-            <h2 className="text-theme-text-primary mt-4">2. Information We Collect</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              2. Information We Collect
+            </h2>
             <p className="text-theme-text-secondary">
               When you place an order with us for tuning and large language
               model (LLM) fulfillment, we collect certain personal information
@@ -51,7 +53,9 @@ export default function PrivacyHandling({ setSettings, setStep }) {
               <li>Uploaded training data</li>
             </ul>
 
-            <h2 className="text-theme-text-primary mt-4">3. Use of Information</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              3. Use of Information
+            </h2>
             <p className="text-theme-text-secondary">
               We use the information we collect for the following purposes:
             </p>
@@ -61,7 +65,9 @@ export default function PrivacyHandling({ setSettings, setStep }) {
               <li>To improve our services</li>
             </ul>
 
-            <h2 className="text-theme-text-primary mt-4">4. Data Retention and Deletion</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              4. Data Retention and Deletion
+            </h2>
             <p className="text-theme-text-secondary">
               Uploaded training data is only retained for the duration of the
               model training. Upon training completion, failure, or order
@@ -83,7 +89,9 @@ export default function PrivacyHandling({ setSettings, setStep }) {
               storage.
             </p>
 
-            <h2 className="text-theme-text-primary mt-4">5. Data Storage and Security</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              5. Data Storage and Security
+            </h2>
             <p className="text-theme-text-secondary">
               Our cloud storage provider is AWS. We have implement standard
               encryption and protection policies to ensure the security of your
@@ -95,7 +103,9 @@ export default function PrivacyHandling({ setSettings, setStep }) {
               e-mail you used during checkout.
             </p>
 
-            <h2 className="text-theme-text-primary mt-4">6. Payment Processing</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              6. Payment Processing
+            </h2>
             <p className="text-theme-text-secondary">
               We use Stripe as our payment processor. Your email may be shared
               with Stripe for customer service and payment management purposes.
@@ -122,7 +132,9 @@ export default function PrivacyHandling({ setSettings, setStep }) {
               .
             </p>
 
-            <h2 className="text-theme-text-primary mt-4">9. California Privacy Rights</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              9. California Privacy Rights
+            </h2>
             <p className="text-theme-text-secondary">
               Under the California Consumer Privacy Act as amended by the
               California Privacy Rights Act (the "CCPA"), California residents

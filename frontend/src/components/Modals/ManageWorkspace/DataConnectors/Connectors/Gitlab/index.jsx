@@ -91,7 +91,9 @@ export default function GitlabOptions() {
                   <label className="text-white font-bold text-sm flex gap-x-2 items-center">
                     <p className="font-bold text-white">GitLab Access Token</p>{" "}
                     <p className="text-xs font-light flex items-center">
-                      <span className="text-theme-text-secondary">optional</span>
+                      <span className="text-theme-text-secondary">
+                        optional
+                      </span>
                       <PATTooltip accessToken={accessToken} />
                     </p>
                   </label>

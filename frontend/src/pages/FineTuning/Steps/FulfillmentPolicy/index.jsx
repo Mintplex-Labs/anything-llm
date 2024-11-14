@@ -24,7 +24,9 @@ export default function Fulfillment({ setSettings, setStep }) {
           <div className="flex flex-col gap-y-2 text-theme-text-secondary text-xs font-semibold rounded-lg p-4 h-[60vh] overflow-y-auto bg-theme-bg-container mt-2">
             <div className="text-xs">
               <h1 className="text-theme-text-primary">Fulfillment Terms</h1>
-              <p className="text-theme-text-secondary">Last updated: July 15, 2024</p>
+              <p className="text-theme-text-secondary">
+                Last updated: July 15, 2024
+              </p>
             </div>
             <p className="text-theme-text-secondary">
               These fulfillment terms outline the agreement between Mintplex
@@ -48,7 +50,9 @@ export default function Fulfillment({ setSettings, setStep }) {
               documentation and resources for guidance on using the model.
             </p>
 
-            <h2 className="text-theme-text-primary mt-4">Requesting Download Links</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              Requesting Download Links
+            </h2>
             <p className="text-theme-text-secondary">
               Customers may request refreshed download links from
               my.mintplexlabs.com as long as the model is retained in our cloud
@@ -57,7 +61,9 @@ export default function Fulfillment({ setSettings, setStep }) {
               links are valid for 24 hours.
             </p>
 
-            <h2 className="text-theme-text-primary mt-4">Cancellation and Refunds</h2>
+            <h2 className="text-theme-text-primary mt-4">
+              Cancellation and Refunds
+            </h2>
             <p className="text-theme-text-secondary">
               Mintplex Labs Inc. reserves the right to cancel any fine-tuning
               job at our discretion. In the event of a cancellation, a refund

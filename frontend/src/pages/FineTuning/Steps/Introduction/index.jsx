@@ -47,22 +47,38 @@ export default function Introduction({ setSettings, setStep }) {
             </p>
             <ul className="flex flex-col gap-y-1">
               <li className="flex items-center gap-x-2">
-                <Check className="text-theme-text-primary" size={12} weight="bold" /> Setting
-                the style, tone, format, or other qualitative aspects without
-                prompting
+                <Check
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
+                Setting the style, tone, format, or other qualitative aspects
+                without prompting
               </li>
               <li className="flex items-center gap-x-2">
-                <Check className="text-theme-text-primary" size={12} weight="bold" />{" "}
+                <Check
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
                 Improving reliability at producing a desired output
               </li>
               <li className="flex items-center gap-x-2">
-                <Check className="text-theme-text-primary" size={12} weight="bold" />{" "}
+                <Check
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
                 Correcting failures to follow complex prompts, citations, or
                 lack of background knowledge
               </li>
               <li className="flex items-center gap-x-2">
-                <Check className="text-theme-text-primary" size={12} weight="bold" /> You
-                want to run this model privately or offline
+                <Check
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
+                You want to run this model privately or offline
               </li>
             </ul>
           </div>
@@ -78,12 +94,21 @@ export default function Introduction({ setSettings, setStep }) {
             </p>
             <ul>
               <li className="flex items-center gap-x-1">
-                <X className="text-theme-text-primary" size={12} weight="bold" /> You need
-                perfect recall of some piece of literature or reference document
+                <X
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
+                You need perfect recall of some piece of literature or reference
+                document
               </li>
               <li className="flex items-center gap-x-1">
-                <X className="text-theme-text-primary" size={12} weight="bold" /> You want
-                your model to have perfect memory or recollection
+                <X
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
+                You want your model to have perfect memory or recollection
               </li>
             </ul>
           </div>

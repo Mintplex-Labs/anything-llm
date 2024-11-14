@@ -57,7 +57,9 @@ export default function WorkspaceFileRow({
   return (
     <div
       className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 h-[34px] items-center ${
-        !disableSelection ? "hover:bg-theme-file-picker-hover cursor-pointer" : ""
+        !disableSelection
+          ? "hover:bg-theme-file-picker-hover cursor-pointer"
+          : ""
       } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${
         selected ? "selected light:text-white" : ""
       }`}
@@ -75,9 +77,9 @@ export default function WorkspaceFileRow({
         <div className="shrink-0 w-3 h-3">
           {!disableSelection ? (
             <div
-            className={`shrink-0 w-3 h-3 rounded border-[1px] border-white ${
-              selected ? "text-white" : "text-theme-text-primary light:invert"
-            } flex justify-center items-center cursor-pointer`}
+              className={`shrink-0 w-3 h-3 rounded border-[1px] border-white ${
+                selected ? "text-white" : "text-theme-text-primary light:invert"
+              } flex justify-center items-center cursor-pointer`}
               role="checkbox"
               aria-checked={selected}
               tabIndex={0}

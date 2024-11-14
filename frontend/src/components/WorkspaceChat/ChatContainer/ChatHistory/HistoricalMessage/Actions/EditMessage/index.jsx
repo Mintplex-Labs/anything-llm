@@ -51,7 +51,11 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
         className="border-none text-zinc-300"
         aria-label={`Edit ${role === "user" ? "Prompt" : "Response"}`}
       >
-        <Pencil color="var(--theme-sidebar-footer-icon-fill)" size={21} className="mb-1" />
+        <Pencil
+          color="var(--theme-sidebar-footer-icon-fill)"
+          size={21}
+          className="mb-1"
+        />
       </button>
     </div>
   );

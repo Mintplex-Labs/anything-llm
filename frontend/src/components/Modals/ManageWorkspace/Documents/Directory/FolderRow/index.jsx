@@ -26,9 +26,11 @@ export default function FolderRow({
           selected ? "selected light:text-white !text-white" : ""
         }`}
       >
-        <div className={`col-span-6 flex gap-x-[4px] items-center ${
-          selected ? "!text-white" : "text-theme-text-primary"
-        }`}>
+        <div
+          className={`col-span-6 flex gap-x-[4px] items-center ${
+            selected ? "!text-white" : "text-theme-text-primary"
+          }`}
+        >
           <div
             className={`shrink-0 w-3 h-3 rounded border-[1px] border-white ${
               selected ? "text-white" : "text-theme-text-primary light:invert"

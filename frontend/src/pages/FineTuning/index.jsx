@@ -23,7 +23,9 @@ function SideBarSelection({ setStep, currentStep }) {
             className={[
               "py-3 flex items-center justify-between transition-all duration-300",
               isSelected ? "rounded-t-xl" : "",
-              isLast ? "" : "border-b border-white/10 light:border-[#026AA2]/10",
+              isLast
+                ? ""
+                : "border-b border-white/10 light:border-[#026AA2]/10",
             ].join(" ")}
           >
             {isDone || isSelected ? (

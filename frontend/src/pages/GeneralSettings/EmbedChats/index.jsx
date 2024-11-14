@@ -139,9 +139,9 @@ export default function EmbedChats() {
                 {t("embed-chats.description")}
               </p>
             </div>
-          <div className="overflow-x-auto mt-6">
+            <div className="overflow-x-auto mt-6">
               <ChatsContainer />
-          </div>
+            </div>
           </div>
         </div>
       </div>

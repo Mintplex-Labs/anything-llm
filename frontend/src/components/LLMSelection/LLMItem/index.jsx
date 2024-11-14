@@ -9,8 +9,9 @@ export default function LLMItem({
   return (
     <div
       onClick={() => onClick(value)}
-      className={`w-full p-2 rounded-md hover:cursor-pointer hover:bg-theme-bg-secondary ${checked ? "bg-theme-bg-secondary" : ""
-        }`}
+      className={`w-full p-2 rounded-md hover:cursor-pointer hover:bg-theme-bg-secondary ${
+        checked ? "bg-theme-bg-secondary" : ""
+      }`}
     >
       <input
         type="checkbox"
