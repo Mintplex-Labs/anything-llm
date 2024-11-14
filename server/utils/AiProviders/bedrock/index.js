@@ -27,6 +27,7 @@ class AWSBedrockLLM {
 
     this.model =
       modelPreference || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
+    this.authMethod = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || 'iam_role';
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -44,7 +45,10 @@ class AWSBedrockLLM {
       region: process.env.AWS_BEDROCK_LLM_REGION,
       temperature,
     };
-    if (process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID && process.env.AWS_BEDROCK_LLM_ACCESS_KEY) {
+
+    const authMethod = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || 'iam_role';
+
+    if (authMethod === 'iam_user' && process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID && process.env.AWS_BEDROCK_LLM_ACCESS_KEY) {
       clientConfig.credentials = {
         accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,

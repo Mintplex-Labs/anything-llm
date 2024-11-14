@@ -16,31 +16,59 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(_config = {}) {
     super();
+    this.verbose = true;
+    this._lastConfig = null;
+    this._lastAuthMethod = null;
+    this.refreshClient();
+  }
+
+  get client() {
+    if (this.shouldRefreshClient()) {
+      this.refreshClient();
+    }
+    return this._client;
+  }
+
+  getClientConfig() {
     const model = process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
     const region = process.env.AWS_BEDROCK_LLM_REGION;
+    const authMethod = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD;
+
     const clientConfig = {
       region,
       model,
     };
-    if (process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID && process.env.AWS_BEDROCK_LLM_ACCESS_KEY) {
+
+    if (authMethod === 'iam_user' && process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID && process.env.AWS_BEDROCK_LLM_ACCESS_KEY) {
       clientConfig.credentials = {
         accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
       };
     }
-    const client = new ChatBedrockConverse(clientConfig);
 
-    this._client = client;
-    this.model = model;
-    this.verbose = true;
+    return clientConfig;
   }
 
-  get client() {
-    if (!this._client) {
-      this._client = new BedrockRuntimeClient({
-        region: this.region,
-      });
-    }
+  getCurrentAuthMethod() {
+    return process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || 'iam_role';
+  }
+
+  shouldRefreshClient() {
+    if (!this._client || !this._lastConfig) return true;
+
+    const currentConfig = this.getClientConfig();
+    const currentAuthMethod = this.getCurrentAuthMethod();
+
+    return JSON.stringify(currentConfig) !== JSON.stringify(this._lastConfig) ||
+           currentAuthMethod !== this._lastAuthMethod;
+  }
+
+  refreshClient() {
+    const config = this.getClientConfig();
+    this._client = new ChatBedrockConverse(config);
+    this.model = config.model;
+    this._lastConfig = config;
+    this._lastAuthMethod = this.getCurrentAuthMethod();
     return this._client;
   }
 
