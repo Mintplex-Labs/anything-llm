@@ -15,7 +15,8 @@ class GenericOpenAiEmbedder {
     this.model = process.env.EMBEDDING_MODEL_PREF ?? null;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
-    this.maxConcurrentChunks = 500;
+    this.maxConcurrentChunks =
+      process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS ?? 500;
 
     // Refer to your specific model and provider you use this class with to determine a valid maxChunkLength
     this.embeddingMaxChunkLength = 8_191;
