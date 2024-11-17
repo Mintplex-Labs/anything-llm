@@ -25,6 +25,7 @@ import Italian from "./it/common.js";
 import Portuguese from "./pt_BR/common.js";
 import Hebrew from "./he/common.js";
 import Dutch from "./nl/common.js";
+import TraditionalChinese from "./zh_TW/common.js";
 
 export const defaultNS = "common";
 export const resources = {
@@ -61,4 +62,7 @@ export const resources = {
   nl: {
     common: Dutch,
   },
+  zh_TW: {
+    common: TraditionalChinese,
+  }
 };
