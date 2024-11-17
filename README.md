@@ -68,7 +68,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - Full Developer API for custom integrations!
 - Much more...install and find out!
 
-### Supported LLMs, Embedder Models, Speech models, and Vector Databases
+### Supported LLMs, Embedder Models, Speech models, Vector Databases, and Misc.
 
 **Large Language Models (LLMs):**
 
@@ -135,6 +135,10 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
+
+**Misc:**
+
+- [GPTLocalhost](https://gptlocalhost.com/demo/) - A local Word Add-in for you to use AnythingLLM in Microsoft Word. Alternative to "Copilot in Word" and completely local.
 
 ### Technical Overview
 
