@@ -127,6 +127,7 @@ export default function Footer() {
               {
                 weight: "fill",
                 className: "h-5 w-5",
+                color: "var(--theme-sidebar-footer-icon-fill)",
               }
             )}
           </a>

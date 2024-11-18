@@ -202,8 +202,8 @@ function DemoVoiceSample({ voiceId }) {
             </>
           ) : (
             <>
-              <PlayCircle size={20} className="flex-shrink-0" />
-              <p className="text-sm flex-shrink-0">Play sample</p>
+              <PlayCircle size={20} className="flex-shrink-0 text-white" />
+              <p className="text-white text-sm flex-shrink-0">Play sample</p>
             </>
           )}
         </>

@@ -180,7 +180,7 @@ function WorkspaceSelector({
                   return (
                     <div
                       key={workspace.slug}
-                      className="flex items-center justify-between rounded-full h-[20px] bg-theme-bg-container px-2 py-1 text-xs font-medium text-theme-text-primary shadow-sm"
+                      className="flex items-center justify-between rounded-full h-[20px] bg-theme-bg-container px-2 py-1 text-xs font-medium text-theme-text-primary shadow-sm light:border light:bg-theme-bg-secondary"
                     >
                       <span className="truncate mr-1">{workspace.name}</span>
                       <button
