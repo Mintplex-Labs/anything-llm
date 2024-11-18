@@ -71,12 +71,12 @@ const FineTuningWalkthrough = lazy(() => import("@/pages/FineTuning"));
 
 export default function App() {
   return (
-    <Suspense fallback={<FullScreenLoader />}>
-      <ContextWrapper>
-        <LogoProvider>
-          <PfpProvider>
-            <I18nextProvider i18n={i18n}>
-              <ThemeProvider>
+    <ThemeProvider>
+      <Suspense fallback={<FullScreenLoader />}>
+        <ContextWrapper>
+          <LogoProvider>
+            <PfpProvider>
+              <I18nextProvider i18n={i18n}>
                 <Routes>
                   <Route path="/" element={<PrivateRoute Component={Main} />} />
                   <Route path="/login" element={<Login />} />
@@ -209,11 +209,11 @@ export default function App() {
                   />
                 </Routes>
                 <ToastContainer />
-              </ThemeProvider>
-            </I18nextProvider>
-          </PfpProvider>
-        </LogoProvider>
-      </ContextWrapper>
-    </Suspense>
+              </I18nextProvider>
+            </PfpProvider>
+          </LogoProvider>
+        </ContextWrapper>
+      </Suspense>
+    </ThemeProvider>
   );
 }

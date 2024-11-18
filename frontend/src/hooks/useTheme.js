@@ -28,6 +28,21 @@ export function useTheme() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
+  // In development, attach keybind combinations to toggle theme
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    function toggleOnKeybind(e) {
+      e.preventDefault();
+      if (e.metaKey && e.key === ".") {
+        const newTheme = theme === "light" ? "default" : "light";
+        console.log("toggling theme to ", newTheme);
+        setTheme(newTheme);
+      }
+    }
+    document.addEventListener("keydown", toggleOnKeybind);
+    return () => document.removeEventListener("keydown", toggleOnKeybind);
+  }, []);
+
   // Refresh on theme change
   const setTheme = (newTheme) => {
     _setTheme(newTheme);

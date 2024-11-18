@@ -544,7 +544,6 @@ dialog::backdrop {
   }
 }
 
-
 .tooltip {
   @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
 }
