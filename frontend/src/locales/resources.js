@@ -62,7 +62,7 @@ export const resources = {
   nl: {
     common: Dutch,
   },
-    vi: { 
+  vi: { 
     common: Vietnamese,
   },
 
