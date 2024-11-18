@@ -60,22 +60,24 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           {React.createElement(ICON_COMPONENTS[selectedIcon] || Plus, {
-            className: "h-5 w-5 text-white",
+            className: "h-5 w-5",
             weight: selectedIcon === "Plus" ? "bold" : "fill",
+            color: "var(--theme-sidebar-footer-icon-fill)",
           })}
         </div>
         {isDropdownOpen && (
-          <div className="absolute z-10 grid grid-cols-4 bg-[#41444C] mt-2 rounded-md w-[150px] h-[78px] overflow-y-auto border border-white/20 shadow-lg">
+          <div className="absolute z-10 grid grid-cols-4 bg-theme-settings-input-bg mt-2 rounded-md w-[150px] h-[78px] overflow-y-auto border border-white/20 shadow-lg">
             {Object.keys(ICON_COMPONENTS).map((iconName) => (
               <button
                 key={iconName}
                 type="button"
-                className="flex justify-center items-center border border-transparent hover:bg-dark-highlight hover:border-slate-100 rounded-full p-2"
+                className="flex justify-center items-center border border-transparent hover:bg-theme-sidebar-footer-icon-hover hover:border-slate-100 light:hover:border-black/80 rounded-full p-2"
                 onClick={() => handleIconChange(iconName)}
               >
                 {React.createElement(ICON_COMPONENTS[iconName], {
-                  className: "h-5 w-5 text-white",
+                  className: "h-5 w-5",
                   weight: "fill",
+                  color: "var(--theme-sidebar-footer-icon-fill)",
                 })}
               </button>
             ))}

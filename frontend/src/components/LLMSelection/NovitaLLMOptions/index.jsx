@@ -4,16 +4,16 @@ import { useState, useEffect } from "react";
 
 export default function NovitaLLMOptions({ settings }) {
   return (
-    <div className="flex flex-col gap-y-4 mt-1.5">
-      <div className="flex gap-[36px]">
+    <div className="w-full flex flex-col gap-y-7">
+      <div className="w-full flex items-start gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-theme-text-primary text-sm font-semibold block mb-3">
             Novita API Key
           </label>
           <input
             type="password"
             name="NovitaLLMApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Novita API Key"
             defaultValue={settings?.NovitaLLMApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -35,27 +35,29 @@ function AdvancedControls({ settings }) {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <button
-        type="button"
-        onClick={() => setShowAdvancedControls(!showAdvancedControls)}
-        className="text-white hover:text-white/70 flex items-center text-sm"
-      >
-        {showAdvancedControls ? "Hide" : "Show"} advanced controls
-        {showAdvancedControls ? (
-          <CaretUp size={14} className="ml-1" />
-        ) : (
-          <CaretDown size={14} className="ml-1" />
-        )}
-      </button>
+      <div className="flex justify-start">
+        <button
+          type="button"
+          onClick={() => setShowAdvancedControls(!showAdvancedControls)}
+          className="text-theme-text-primary hover:text-theme-text-secondary flex items-center text-sm"
+        >
+          {showAdvancedControls ? "Hide" : "Show"} advanced settings
+          {showAdvancedControls ? (
+            <CaretUp size={14} className="ml-1" />
+          ) : (
+            <CaretDown size={14} className="ml-1" />
+          )}
+        </button>
+      </div>
       <div hidden={!showAdvancedControls}>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
+          <label className="text-theme-text-primary text-sm font-semibold block mb-3">
             Stream Timeout (ms)
           </label>
           <input
             type="number"
             name="NovitaLLMTimeout"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Timeout value between token responses to auto-timeout the stream"
             defaultValue={settings?.NovitaLLMTimeout ?? 500}
             autoComplete="off"
@@ -63,6 +65,9 @@ function AdvancedControls({ settings }) {
             min={500}
             step={1}
           />
+          <p className="text-xs leading-[18px] font-base text-theme-text-primary text-opacity-60 mt-2">
+            Timeout value between token responses to auto-timeout the stream.
+          </p>
         </div>
       </div>
     </div>
@@ -83,10 +88,8 @@ function NovitaModelSelection({ settings }) {
           acc[model.organization].push(model);
           return acc;
         }, {});
-
         setGroupedModels(modelsByOrganization);
       }
-
       setLoading(false);
     }
     findCustomModels();
@@ -95,13 +98,13 @@ function NovitaModelSelection({ settings }) {
   if (loading || Object.keys(groupedModels).length === 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-theme-text-primary text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
           name="NovitaLLMModelPref"
           disabled={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -113,13 +116,13 @@ function NovitaModelSelection({ settings }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-3">
+      <label className="text-theme-text-primary text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select
         name="NovitaLLMModelPref"
         required={true}
-        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
       >
         {Object.keys(groupedModels)
           .sort()
