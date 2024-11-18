@@ -32,8 +32,8 @@ export function useTheme() {
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     function toggleOnKeybind(e) {
-      e.preventDefault();
       if (e.metaKey && e.key === ".") {
+        e.preventDefault();
         const newTheme = theme === "light" ? "default" : "light";
         console.log("toggling theme to ", newTheme);
         setTheme(newTheme);

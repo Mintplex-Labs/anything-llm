@@ -7,8 +7,17 @@ const { normalizePath, isWithin } = require(".");
 const LOGO_FILENAME = "anything-llm.png";
 const LOGO_FILENAME_DARK = "anything-llm-dark.png";
 
+/**
+ * Checks if the filename is the default logo filename for dark or light mode.
+ * @param {string} filename - The filename to check.
+ * @returns {boolean} Whether the filename is the default logo filename.
+ */
+function isDefaultFilename(filename) {
+  return [LOGO_FILENAME, LOGO_FILENAME_DARK].includes(filename);
+}
+
 function validFilename(newFilename = "") {
-  return ![LOGO_FILENAME, LOGO_FILENAME_DARK].includes(newFilename);
+  return !isDefaultFilename(newFilename);
 }
 
 /**
@@ -100,5 +109,6 @@ module.exports = {
   validFilename,
   getDefaultFilename,
   determineLogoFilepath,
+  isDefaultFilename,
   LOGO_FILENAME,
 };

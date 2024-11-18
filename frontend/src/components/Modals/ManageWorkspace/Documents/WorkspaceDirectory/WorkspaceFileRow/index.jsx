@@ -230,7 +230,7 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="flex gap-x-2 items-center hover:bg-main-gradient p-[2px] rounded ml-2"
+      className="flex gap-x-2 items-center hover:bg-theme-file-picker-hover p-[2px] rounded ml-2"
     >
       <Eye
         data-tooltip-id="watch-changes"

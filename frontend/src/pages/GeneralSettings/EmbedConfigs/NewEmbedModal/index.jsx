@@ -89,7 +89,7 @@ export default function NewEmbedModal({ closeModal }) {
               <p className="text-white text-opacity-60 text-xs md:text-sm">
                 After creating an embed you will be provided a link that you can
                 publish on your website with a simple
-                <code className="bg-stone-800 text-white mx-1 px-1 rounded-sm">
+                <code className="light:bg-stone-300 bg-stone-900 text-white mx-1 px-1 rounded-sm">
                   &lt;script&gt;
                 </code>{" "}
                 tag.
@@ -136,7 +136,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
         >
           Workspace
         </label>
-        <p className="text-slate-300 text-xs">
+        <p className="text-secondary text-xs">
           This is the workspace your chat window will be based on. All defaults
           will be inherited from the workspace unless overridden by this config.
         </p>
@@ -174,7 +174,7 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
         >
           Allowed chat method
         </label>
-        <p className="text-slate-300 text-xs">
+        <p className="text-secondary text-xs">
           Set how your chatbot should operate. Query means it will only respond
           if a document helps answer the query.
           <br />
@@ -184,9 +184,11 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
       </div>
       <div className="mt-2 gap-y-3 flex flex-col">
         <label
-          className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-            chatMode === "chat" ? "border-white border-opacity-40" : ""
-          } hover:border-white/60`}
+          className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
+            chatMode === "chat"
+              ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+              : "border-theme-sidebar-border"
+          } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
         >
           <input
             type="radio"
@@ -197,18 +199,22 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
             className="hidden"
           />
           <div
-            className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-              chatMode === "chat" ? "bg-white" : ""
+            className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+              chatMode === "chat"
+                ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                : ""
             }`}
           ></div>
-          <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+          <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
             Chat: Respond to all questions regardless of context
           </div>
         </label>
         <label
-          className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-            chatMode === "query" ? "border-white border-opacity-40" : ""
-          } hover:border-white/60`}
+          className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
+            chatMode === "query"
+              ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+              : "border-theme-sidebar-border"
+          } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
         >
           <input
             type="radio"
@@ -219,11 +225,13 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
             className="hidden"
           />
           <div
-            className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-              chatMode === "query" ? "bg-white" : ""
+            className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+              chatMode === "query"
+                ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                : ""
             }`}
           ></div>
-          <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+          <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
             Query: Only respond to chats related to documents in workspace
           </div>
         </label>
@@ -279,7 +287,7 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
         >
           Restrict requests from domains
         </label>
-        <p className="text-slate-300 text-xs">
+        <p className="test-secondary text-xs">
           This filter will block any requests that come from a domain other than
           the list below.
           <br />
@@ -309,7 +317,7 @@ export const NumberInput = ({ name, title, hint, defaultValue = 0 }) => {
         <label htmlFor={name} className="block text-sm font-medium text-white">
           {title}
         </label>
-        <p className="text-slate-300 text-xs">{hint}</p>
+        <p className="test-secondary text-xs">{hint}</p>
       </div>
       <input
         type="number"
@@ -332,7 +340,7 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
         <label htmlFor={name} className="block text-sm font-medium text-white">
           {title}
         </label>
-        <p className="text-slate-300 text-xs">{hint}</p>
+        <p className="test-secondary text-xs">{hint}</p>
       </div>
       <label className="relative inline-flex cursor-pointer items-center">
         <input

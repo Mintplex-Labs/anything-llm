@@ -166,9 +166,11 @@ function WorkspaceOption({ workspace, selected, toggleSelection }) {
     <button
       type="button"
       onClick={() => toggleSelection(workspace.id)}
-      className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-        selected ? "border-white border-opacity-40" : "border-none "
-      } hover:border-white/60`}
+      className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
+        selected
+          ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+          : "border-theme-sidebar-border"
+      } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
     >
       <input
         type="radio"
@@ -178,11 +180,11 @@ function WorkspaceOption({ workspace, selected, toggleSelection }) {
         className="hidden"
       />
       <div
-        className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-          selected ? "bg-white" : ""
+        className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+          selected ? "bg-[var(--theme-sidebar-item-workspace-active)]" : ""
         }`}
       ></div>
-      <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+      <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
         {workspace.name}
       </div>
     </button>

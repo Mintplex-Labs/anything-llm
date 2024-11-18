@@ -27,6 +27,7 @@ const {
   renameLogoFile,
   removeCustomLogo,
   LOGO_FILENAME,
+  isDefaultFilename,
 } = require("../utils/files/logo");
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
@@ -598,7 +599,8 @@ function systemEndpoints(app) {
         "Content-Length": size,
         "X-Is-Custom-Logo":
           currentLogoFilename !== null &&
-          currentLogoFilename !== defaultFilename,
+          currentLogoFilename !== defaultFilename &&
+          !isDefaultFilename(currentLogoFilename),
       });
       response.end(Buffer.from(buffer, "base64"));
       return;

@@ -85,13 +85,25 @@ const EventMetadata = ({ metadata, expanded = false }) => {
 };
 
 const EventBadge = ({ event }) => {
-  let colorTheme = { bg: "bg-sky-600/20", text: "text-sky-400 " };
+  let colorTheme = {
+    bg: "bg-sky-600/20",
+    text: "text-sky-400 light:text-sky-800",
+  };
   if (event.includes("update"))
-    colorTheme = { bg: "bg-yellow-600/20", text: "text-yellow-400 " };
+    colorTheme = {
+      bg: "bg-yellow-600/20",
+      text: "text-yellow-400 light:text-yellow-800",
+    };
   if (event.includes("failed_") || event.includes("deleted"))
-    colorTheme = { bg: "bg-red-600/20", text: "text-red-400 " };
+    colorTheme = {
+      bg: "bg-red-600/20",
+      text: "text-red-400 light:text-red-800",
+    };
   if (event === "login_event")
-    colorTheme = { bg: "bg-green-600/20", text: "text-green-400 " };
+    colorTheme = {
+      bg: "bg-green-600/20",
+      text: "text-green-400 light:text-green-800",
+    };
 
   return (
     <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">

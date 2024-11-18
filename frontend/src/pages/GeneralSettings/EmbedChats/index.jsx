@@ -106,7 +106,7 @@ export default function EmbedChats() {
                   <button
                     ref={openMenuButton}
                     onClick={toggleMenu}
-                    className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-theme-text-primary text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                    className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:light:bg-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                   >
                     <Download size={18} weight="bold" />
                     {t("embed-chats.export")}
@@ -116,7 +116,7 @@ export default function EmbedChats() {
                     ref={menuRef}
                     className={`${
                       showMenu ? "slide-down" : "slide-up hidden"
-                    } z-20 w-fit rounded-lg absolute top-full right-0 bg-theme-bg-secondary mt-2 shadow-md`}
+                    } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary light:bg-theme-bg-secondary mt-2 shadow-md`}
                   >
                     <div className="py-2">
                       {Object.entries(exportOptions).map(([key, data]) => (
@@ -126,7 +126,7 @@ export default function EmbedChats() {
                             handleDumpChats(key);
                             setShowMenu(false);
                           }}
-                          className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147]"
+                          className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
                         >
                           {data.name}
                         </button>
