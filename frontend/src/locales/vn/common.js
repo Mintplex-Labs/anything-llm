@@ -221,8 +221,8 @@ const TRANSLATIONS = {
       resetting: "Clearing vectors...",
       confirm:
         "You are about to reset this workspace's vector database. This will remove all vector embeddings currently embedded.\n\nThe original source files will remain untouched. This action is irreversible.",
-      Lỗi: "Workspace vector database could not be reset!",
-      Thành công: "Workspace vector database was reset!",
+      error: "Workspace vector database could not be reset!",
+      success: "Workspace vector database was reset!",
     },
   },
 
