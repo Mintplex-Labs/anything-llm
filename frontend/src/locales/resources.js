@@ -25,7 +25,7 @@ import Italian from "./it/common.js";
 import Portuguese from "./pt_BR/common.js";
 import Hebrew from "./he/common.js";
 import Dutch from "./nl/common.js";
-import Vietnamese from "./vi/common.js"; 
+import Vietnamese from "./vn/common.js"; 
 
 export const defaultNS = "common";
 export const resources = {
