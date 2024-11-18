@@ -16,7 +16,9 @@ export default function EditingChatBubble({
 
   return (
     <div>
-      <p className={`text-xs text-white light:text-black/80 ${isUser ? "text-right" : ""}`}>
+      <p
+        className={`text-xs text-white light:text-black/80 ${isUser ? "text-right" : ""}`}
+      >
         {isUser ? t("common.user") : t("appearance.message.assistant")}
       </p>
       <div

@@ -112,6 +112,17 @@
   border-color: var(--theme-sidebar-border);
 }
 
+/*
+This is to override the default border color for the select and input elements
+in the onboarding flow when the theme is not light. This only applies to the
+onboarding flow since its background is dark and is the same fill as the inputs.
+*/
+[data-layout="onboarding"] > * select:not([data-theme="light"]),
+[data-layout="onboarding"] > * input:not([data-theme="light"]),
+[data-layout="onboarding"] > * textarea:not([data-theme="light"]) {
+  border: 1px solid #ffffff;
+}
+
 html,
 body {
   padding: 0;
