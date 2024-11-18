@@ -64,7 +64,7 @@ export default function CustomMessages() {
           {t("appearance.message.description")}
         </p>
       </div>
-      <div className="mt-3 flex flex-col gap-y-6 bg-dark-highlight rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px]">
+      <div className="mt-3 flex flex-col gap-y-6 bg-theme-settings-input-bg rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px]">
         {messages.map((message, index) => (
           <div key={index} className="flex flex-col gap-y-2">
             {message.user && (
@@ -89,7 +89,7 @@ export default function CustomMessages() {
         ))}
         <div className="flex gap-4 mt-12 justify-between pb-[15px]">
           <button
-            className="self-end text-white hover:text-white/60 transition"
+            className="self-end text-white hover:text-white/60 light:hover:text-black/60 transition"
             onClick={() => addMessage("response")}
           >
             <div className="flex items-center justify-start text-sm font-normal -ml-2">
@@ -104,7 +104,7 @@ export default function CustomMessages() {
             </div>
           </button>
           <button
-            className="self-end text-white hover:text-white/60 transition"
+            className="self-end text-white hover:text-white/60 light:hover:text-black/60 transition"
             onClick={() => addMessage("user")}
           >
             <div className="flex items-center justify-start text-sm font-normal">

@@ -10,8 +10,8 @@ export default function FileRow({ item, selected, toggleSelection }) {
   return (
     <tr
       onClick={() => toggleSelection(item)}
-      className={`text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer file-row ${
-        selected ? "selected" : ""
+      className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
+        selected ? "selected light:text-white" : ""
       }`}
     >
       <div
@@ -24,7 +24,9 @@ export default function FileRow({ item, selected, toggleSelection }) {
         })}
       >
         <div
-          className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+          className={`shrink-0 w-3 h-3 rounded border-[1px] border-white ${
+            selected ? "text-white" : "text-theme-text-primary light:invert"
+          } flex justify-center items-center cursor-pointer`}
           role="checkbox"
           aria-checked={selected}
           tabIndex={0}
@@ -41,7 +43,7 @@ export default function FileRow({ item, selected, toggleSelection }) {
       </div>
       <div className="col-span-2 flex justify-end items-center">
         {item?.cached && (
-          <div className="bg-white/10 rounded-3xl">
+          <div className="bg-theme-settings-input-active rounded-3xl">
             <p className="text-xs px-2 py-0.5">Cached</p>
           </div>
         )}

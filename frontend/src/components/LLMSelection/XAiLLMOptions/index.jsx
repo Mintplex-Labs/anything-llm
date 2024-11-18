@@ -14,7 +14,7 @@ export default function XAILLMOptions({ settings }) {
         <input
           type="password"
           name="XAIApiKey"
-          className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="xAI API Key"
           defaultValue={settings?.XAIApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -61,19 +61,19 @@ function XAIModelSelection({ apiKey, settings }) {
   if (loading) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
+        <label className="text-theme-text-primary text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
           name="XAIModelPref"
           disabled={true}
-          className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             --loading available models--
           </option>
         </select>
-        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+        <p className="text-xs leading-[18px] font-base text-theme-text-primary opacity-60 mt-2">
           Enter a valid API key to view all available models for your account.
         </p>
       </div>
@@ -82,13 +82,13 @@ function XAIModelSelection({ apiKey, settings }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-3">
+      <label className="text-theme-text-primary text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select
         name="XAIModelPref"
         required={true}
-        className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Available models">
@@ -106,7 +106,7 @@ function XAIModelSelection({ apiKey, settings }) {
           </optgroup>
         )}
       </select>
-      <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+      <p className="text-xs leading-[18px] font-base text-theme-text-primary opacity-60 mt-2">
         Select the xAI model you want to use for your conversations.
       </p>
     </div>

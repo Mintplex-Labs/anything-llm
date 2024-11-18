@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['2602-page-load-speed'] # put your current branch to create a build. Core team only.
+    branches: ['light-mode-1'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

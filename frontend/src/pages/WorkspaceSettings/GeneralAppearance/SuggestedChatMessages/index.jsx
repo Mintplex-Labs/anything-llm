@@ -130,7 +130,7 @@ export default function SuggestedChatMessages({ slug }) {
             <button
               key={index}
               onClick={(e) => startEditing(e, index)}
-              className={`text-left p-2.5 border rounded-xl w-full border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient ${
+              className={`text-left p-2.5 border rounded-xl w-full border-white/20 bg-theme-settings-input-bg hover:bg-theme-sidebar-item-selected-gradient ${
                 editingIndex === index ? "border-sky-400" : ""
               }`}
             >
@@ -148,7 +148,7 @@ export default function SuggestedChatMessages({ slug }) {
             </label>
             <input
               placeholder="Message heading"
-              className=" bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
+              className=" bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
               value={newMessage.heading}
               name="heading"
               onChange={onEditChange}
@@ -160,7 +160,7 @@ export default function SuggestedChatMessages({ slug }) {
             </label>
             <input
               placeholder="Message"
-              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
+              className="bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
               value={newMessage.message}
               name="message"
               onChange={onEditChange}

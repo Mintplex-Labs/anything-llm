@@ -44,9 +44,9 @@ export default function Citations({ sources = [] }) {
     <div className="flex flex-col mt-4 justify-left">
       <button
         onClick={() => setOpen(!open)}
-        className={`text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${
+        className={`text-white/50 light:text-black/50 font-medium italic text-sm text-left ml-14 pt-2 ${
           open ? "pb-2" : ""
-        } hover:text-white/75 transition-all duration-300`}
+        } hover:text-white/75 hover:light:text-black/75 transition-all duration-300`}
       >
         {open ? "Hide Citations" : "Show Citations"}
         <CaretRight
@@ -96,24 +96,6 @@ const Citation = memo(({ source, onClick }) => {
   );
 });
 
-function SkeletonLine() {
-  const numOfBoxes = Math.floor(Math.random() * 5) + 2;
-  return (
-    <div className="flex space-x-2 mb-2">
-      {Array.from({ length: numOfBoxes }).map((_, index) => (
-        <div
-          key={index}
-          className="bg-white/20 rounded"
-          style={{
-            width: `${Math.random() * 150 + 50}px`,
-            height: "20px",
-          }}
-        ></div>
-      ))}
-    </div>
-  );
-}
-
 function omitChunkHeader(text) {
   if (!text.startsWith("<document_metadata>")) return text;
   return text.split("</document_metadata>")[1].trim();
@@ -125,8 +107,8 @@ function CitationDetailModal({ source, onClose }) {
 
   return (
     <ModalWrapper isOpen={source}>
-      <div className="w-full max-w-2xl bg-main-gradient rounded-lg shadow border border-white/10 overflow-hidden">
-        <div className="relative p-6 border-b rounded-t border-gray-500/50">
+      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             {isUrl ? (
               <a
@@ -154,43 +136,42 @@ function CitationDetailModal({ source, onClose }) {
           <button
             onClick={onClose}
             type="button"
-            className="absolute top-6 right-6 transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-gray-300 text-lg" />
+            <X size={24} weight="bold" className="text-white" />
           </button>
         </div>
         <div
           className="h-full w-full overflow-y-auto"
           style={{ maxHeight: "calc(100vh - 200px)" }}
         >
-          <div className="p-6 space-y-2 flex-col">
-            {[...Array(3)].map((_, idx) => (
-              <SkeletonLine key={idx} />
-            ))}
+          <div className="py-7 px-9 space-y-2 flex-col">
             {chunks.map(({ text, score }, idx) => (
-              <div key={idx} className="pt-6 text-white">
-                <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
-                  <p className="text-white whitespace-pre-line">
-                    {HTMLDecode(omitChunkHeader(text))}
-                  </p>
+              <>
+                <div key={idx} className="pt-6 text-white">
+                  <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
+                    <p className="text-white whitespace-pre-line">
+                      {HTMLDecode(omitChunkHeader(text))}
+                    </p>
 
-                  {!!score && (
-                    <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
-                      <div
-                        data-tooltip-id="similarity-score"
-                        data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
-                        className="flex items-center gap-x-1"
-                      >
-                        <Info size={14} />
-                        <p>{toPercentString(score)} match</p>
+                    {!!score && (
+                      <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
+                        <div
+                          data-tooltip-id="similarity-score"
+                          data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
+                          className="flex items-center gap-x-1"
+                        >
+                          <Info size={14} />
+                          <p>{toPercentString(score)} match</p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-                {[...Array(3)].map((_, idx) => (
-                  <SkeletonLine key={idx} />
-                ))}
-              </div>
+                {idx !== chunks.length - 1 && (
+                  <hr className="border-theme-modal-border" />
+                )}
+              </>
             ))}
             <div className="mb-6"></div>
           </div>

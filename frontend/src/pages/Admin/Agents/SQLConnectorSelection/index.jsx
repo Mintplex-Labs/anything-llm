@@ -26,8 +26,15 @@ export default function AgentSQLConnectorSelection({
       <div className="p-2">
         <div className="flex flex-col gap-y-[18px] max-w-[500px]">
           <div className="flex items-center gap-x-2">
-            <Database size={24} color="white" weight="bold" />
-            <label htmlFor="name" className="text-white text-md font-bold">
+            <Database
+              size={24}
+              color="var(--theme-text-primary)"
+              weight="bold"
+            />
+            <label
+              htmlFor="name"
+              className="text-theme-text-primary text-md font-bold"
+            >
               SQL Agent
             </label>
             <label className="border-none relative inline-flex cursor-pointer items-center ml-auto">
@@ -46,7 +53,7 @@ export default function AgentSQLConnectorSelection({
             alt="SQL Agent"
             className="w-full rounded-md"
           />
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
             Enable your agent to be able to leverage SQL to answer you questions
             by connecting to various SQL database providers.
           </p>
@@ -64,7 +71,7 @@ export default function AgentSQLConnectorSelection({
                 )}
               />
               <div className="flex flex-col mt-2 gap-y-2">
-                <p className="text-white font-semibold text-sm">
+                <p className="text-theme-text-primary font-semibold text-sm">
                   Your database connections
                 </p>
                 <div className="flex flex-col gap-y-3">
@@ -89,17 +96,17 @@ export default function AgentSQLConnectorSelection({
                   <button
                     type="button"
                     onClick={openModal}
-                    className="w-fit relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg"
+                    className="w-fit relative flex h-[40px] items-center border-none hover:bg-theme-bg-secondary rounded-lg"
                   >
                     <div className="flex w-full gap-x-2 items-center p-4">
-                      <div className="bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+                      <div className="bg-theme-bg-secondary p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
                         <Plus
                           weight="bold"
                           size={14}
-                          className="shrink-0 text-slate-100"
+                          className="shrink-0 text-theme-text-primary"
                         />
                       </div>
-                      <p className="text-left text-slate-100 text-sm">
+                      <p className="text-left text-theme-text-primary text-sm">
                         New SQL connection
                       </p>
                     </div>

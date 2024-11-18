@@ -1,4 +1,3 @@
-import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { Pencil } from "@phosphor-icons/react";
 import { useState, useEffect, useRef } from "react";
 
@@ -52,7 +51,11 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
         className="border-none text-zinc-300"
         aria-label={`Edit ${role === "user" ? "Prompt" : "Response"}`}
       >
-        <Pencil size={21} className="mb-1" />
+        <Pencil
+          color="var(--theme-sidebar-footer-icon-fill)"
+          size={21}
+          className="mb-1"
+        />
       </button>
     </div>
   );
@@ -95,9 +98,7 @@ export function EditMessageForm({
       <textarea
         ref={formRef}
         name="editedMessage"
-        className={`w-full rounded ${
-          role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-        } border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y`}
+        className="w-full rounded bg-theme-bg-secondary border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y"
         defaultValue={message}
         onChange={adjustTextArea}
       />
@@ -110,7 +111,7 @@ export function EditMessageForm({
         </button>
         <button
           type="button"
-          className="px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          className="px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 light:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           onClick={cancelEdits}
         >
           Cancel
