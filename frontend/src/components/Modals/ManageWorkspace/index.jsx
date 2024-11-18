@@ -89,7 +89,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
               type="button"
               className="z-29 text-white bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
             >
-              <X size={20} weight="bold" className="text-gray-300" />
+              <X size={20} weight="bold" className="text-white" />
             </button>
           </div>
 

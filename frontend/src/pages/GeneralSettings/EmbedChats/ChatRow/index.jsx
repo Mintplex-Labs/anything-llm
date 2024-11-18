@@ -114,9 +114,9 @@ const TextPreview = ({ text, closeModal }) => {
           <button
             onClick={closeModal}
             type="button"
-            className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+            className="bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-gray-300 text-lg" />
+            <X className="text-white text-lg" />
           </button>
         </div>
         <div className="w-full p-6">
@@ -144,17 +144,21 @@ const ConnectionDetails = ({
   if (verbose) {
     return (
       <>
-        <p className="text-xs text-slate-400">sessionID: {sessionId}</p>
+        <p className="text-xs text-theme-text-secondary">
+          sessionID: {sessionId}
+        </p>
         {details.username && (
-          <p className="text-xs text-slate-400">username: {details.username}</p>
+          <p className="text-xs text-theme-text-secondary">
+            username: {details.username}
+          </p>
         )}
         {details.ip && (
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-theme-text-secondary">
             client ip address: {details.ip}
           </p>
         )}
         {details.host && (
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-theme-text-secondary">
             client host URL: {details.host}
           </p>
         )}
@@ -165,10 +169,14 @@ const ConnectionDetails = ({
   return (
     <>
       {details.username && (
-        <p className="text-xs text-slate-400">{details.username}</p>
+        <p className="text-xs text-theme-text-secondary">{details.username}</p>
       )}
-      {details.ip && <p className="text-xs text-slate-400">{details.ip}</p>}
-      {details.host && <p className="text-xs text-slate-400">{details.host}</p>}
+      {details.ip && (
+        <p className="text-xs text-theme-text-secondary">{details.ip}</p>
+      )}
+      {details.host && (
+        <p className="text-xs text-theme-text-secondary">{details.host}</p>
+      )}
     </>
   );
 };

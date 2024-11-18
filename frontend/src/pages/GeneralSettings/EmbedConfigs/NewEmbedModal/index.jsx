@@ -301,9 +301,9 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
         onBlur={handleBlur}
         placeholder="https://mysite.com, https://anythingllm.com"
         classNames={{
-          tag: "bg-blue-300/10 text-zinc-800 m-1",
+          tag: "bg-theme-settings-input-bg light:bg-black/10 bg-blue-300/10 text-zinc-800",
           input:
-            "flex bg-zinc-900 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5",
+            "flex p-1 !bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
         }}
       />
     </div>

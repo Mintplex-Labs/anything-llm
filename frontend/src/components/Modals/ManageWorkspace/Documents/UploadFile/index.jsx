@@ -78,15 +78,17 @@ export default function UploadFile({
   return (
     <div>
       <div
-        className={`w-[560px] border-2 border-dashed light:border-[#686C6F] rounded-2xl bg-theme-bg-primary transition-colors duration-300 light:bg-[#E0F2FE] p-3 ${
-          ready ? "cursor-pointer" : "cursor-not-allowed"
-        } hover:bg-theme-bg-secondary light:hover:bg-transparent`}
+        className={`w-[560px] border-2 border-dashed light:border-[#686C6F] rounded-2xl bg-theme-bg-primary transition-colors duration-300 p-3 ${
+          ready
+            ? " light:bg-[#E0F2FE] cursor-pointer hover:bg-theme-bg-secondary light:hover:bg-transparent"
+            : "cursor-not-allowed"
+        }`}
         {...getRootProps()}
       >
         <input {...getInputProps()} />
         {ready === false ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <CloudArrowUp className="w-8 h-8 text-white/80" />
+            <CloudArrowUp className="w-8 h-8 text-white/80 light:invert" />
             <div className="text-white text-opacity-80 text-sm font-semibold py-1">
               Document Processor Unavailable
             </div>
