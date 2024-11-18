@@ -27,6 +27,7 @@ const {
   renameLogoFile,
   removeCustomLogo,
   LOGO_FILENAME,
+  isDefaultFilename,
 } = require("../utils/files/logo");
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
@@ -574,9 +575,11 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/logo", async function (_, response) {
+  app.get("/system/logo", async function (request, response) {
     try {
-      const defaultFilename = getDefaultFilename();
+      const darkMode =
+        !request?.query?.theme || request?.query?.theme === "default";
+      const defaultFilename = getDefaultFilename(darkMode);
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
 
@@ -596,7 +599,8 @@ function systemEndpoints(app) {
         "Content-Length": size,
         "X-Is-Custom-Logo":
           currentLogoFilename !== null &&
-          currentLogoFilename !== defaultFilename,
+          currentLogoFilename !== defaultFilename &&
+          !isDefaultFilename(currentLogoFilename),
       });
       response.end(Buffer.from(buffer, "base64"));
       return;

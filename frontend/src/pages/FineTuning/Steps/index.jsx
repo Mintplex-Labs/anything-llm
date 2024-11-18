@@ -133,7 +133,7 @@ export function FineTuningCreationLayout({ setStep, children }) {
   return (
     <div
       id="fine-tune-create-order-container"
-      className="w-screen h-screen overflow-hidden bg-sidebar flex md:mt-0 mt-6"
+      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
     >
       <Sidebar />
       <div

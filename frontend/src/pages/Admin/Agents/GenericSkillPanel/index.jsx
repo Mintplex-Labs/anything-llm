@@ -17,10 +17,13 @@ export default function GenericSkillPanel({
           {icon &&
             React.createElement(icon, {
               size: 24,
-              color: "white",
+              color: "var(--theme-text-primary)",
               weight: "bold",
             })}
-          <label htmlFor="name" className="text-white text-md font-bold">
+          <label
+            htmlFor="name"
+            className="text-theme-text-primary text-md font-bold"
+          >
             {title}
           </label>
           <label
@@ -40,7 +43,7 @@ export default function GenericSkillPanel({
           </label>
         </div>
         <img src={image} alt={title} className="w-full rounded-md" />
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
           {description}
         </p>
       </div>

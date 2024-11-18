@@ -52,14 +52,14 @@ export default function YoutubeOptions() {
                   <label className="text-white text-sm font-bold">
                     YouTube Video URL
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-theme-text-secondary">
                     URL of the YouTube video you wish to transcribe.
                   </p>
                 </div>
                 <input
                   type="url"
                   name="url"
-                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://youtube.com/watch?v=abc123"
                   required={true}
                   autoComplete="off"
@@ -78,7 +78,7 @@ export default function YoutubeOptions() {
               {loading ? "Collecting transcript..." : "Collect transcript"}
             </button>
             {loading && (
-              <p className="text-xs text-white/50 max-w-sm">
+              <p className="text-xs text-theme-text-secondary max-w-sm">
                 Once complete, the transcription will be available for embedding
                 into workspaces in the document picker.
               </p>

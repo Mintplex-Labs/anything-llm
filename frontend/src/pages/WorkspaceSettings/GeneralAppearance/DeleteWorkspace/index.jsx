@@ -35,14 +35,14 @@ export default function DeleteWorkspace({ workspace }) {
   return (
     <div className="flex flex-col mt-10">
       <label className="block input-label">{t("general.delete.title")}</label>
-      <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+      <p className="text-theme-text-secondary text-xs font-medium py-1.5">
         {t("general.delete.description")}
       </p>
       <button
         disabled={deleting}
         onClick={deleteWorkspace}
         type="button"
-        className="w-60 mt-4 transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-red-500/25 text-red-200 hover:text-white hover:bg-red-600 disabled:bg-red-600 disabled:text-red-200 disabled:animate-pulse"
+        className="w-60 mt-4 transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-red-500/25 text-red-200 light:text-red-500 hover:light:text-[#FFFFFF] hover:text-[#FFFFFF] hover:bg-red-600 disabled:bg-red-600 disabled:text-red-200 disabled:animate-pulse"
       >
         {deleting ? t("general.delete.deleting") : t("general.delete.delete")}
       </button>

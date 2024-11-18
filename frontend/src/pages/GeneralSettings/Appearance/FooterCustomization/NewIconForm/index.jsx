@@ -56,26 +56,28 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
     <form onSubmit={handleSubmit} className="flex items-center gap-x-1.5">
       <div className="relative" ref={dropdownRef}>
         <div
-          className="h-[34px] w-[34px] bg-dark-highlight rounded-full flex items-center justify-center cursor-pointer hover:outline-primary-button hover:outline"
+          className="h-[34px] w-[34px] bg-theme-settings-input-bg rounded-full flex items-center justify-center cursor-pointer hover:outline-primary-button hover:outline"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           {React.createElement(ICON_COMPONENTS[selectedIcon] || Plus, {
-            className: "h-5 w-5 text-white",
+            className: "h-5 w-5",
             weight: selectedIcon === "Plus" ? "bold" : "fill",
+            color: "var(--theme-sidebar-footer-icon-fill)",
           })}
         </div>
         {isDropdownOpen && (
-          <div className="absolute z-10 grid grid-cols-4 bg-[#41444C] mt-2 rounded-md w-[150px] h-[78px] overflow-y-auto border border-white/20 shadow-lg">
+          <div className="absolute z-10 grid grid-cols-4 bg-theme-settings-input-bg mt-2 rounded-md w-[150px] h-[78px] overflow-y-auto border border-white/20 shadow-lg">
             {Object.keys(ICON_COMPONENTS).map((iconName) => (
               <button
                 key={iconName}
                 type="button"
-                className="flex justify-center items-center border border-transparent hover:bg-dark-highlight hover:border-slate-100 rounded-full p-2"
+                className="flex justify-center items-center border border-transparent hover:bg-theme-sidebar-footer-icon-hover hover:border-slate-100 light:hover:border-black/80 rounded-full p-2"
                 onClick={() => handleIconChange(iconName)}
               >
                 {React.createElement(ICON_COMPONENTS[iconName], {
-                  className: "h-5 w-5 text-white",
+                  className: "h-5 w-5",
                   weight: "fill",
+                  color: "var(--theme-sidebar-footer-icon-fill)",
                 })}
               </button>
             ))}
@@ -87,7 +89,7 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
         value={selectedUrl}
         onChange={handleUrlChange}
         placeholder="https://example.com"
-        className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[32px] focus:outline-primary-button active:outline-primary-button outline-none"
+        className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-[300px] h-[32px] focus:outline-primary-button active:outline-primary-button outline-none"
         required
       />
       {selectedIcon !== "Plus" && (

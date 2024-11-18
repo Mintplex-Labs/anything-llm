@@ -23,16 +23,19 @@ export default function AttachItem() {
           document?.getElementById("dnd-chat-file-uploader")?.click();
           return;
         }}
-        className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer`}
+        className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer`}
       >
-        <PaperclipHorizontal className="w-6 h-6 pointer-events-none text-white rotate-90 -scale-y-100" />
-        <Tooltip
-          id="attach-item-btn"
-          place="top"
-          delayShow={300}
-          className="tooltip !text-xs z-99"
+        <PaperclipHorizontal
+          color="var(--theme-sidebar-footer-icon-fill)"
+          className="w-[22px] h-[22px] pointer-events-none text-white rotate-90 -scale-y-100"
         />
       </button>
+      <Tooltip
+        id="attach-item-btn"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs z-[99]"
+      />
     </>
   );
 }

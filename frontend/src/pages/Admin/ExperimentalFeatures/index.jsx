@@ -65,7 +65,7 @@ export default function ExperimentalFeatures() {
         {/* Selected feature setting panel */}
         <FeatureVerification>
           <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-            <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
+            <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
               {selectedFeature ? (
                 <SelectedFeatureComponent
                   feature={configurableFeatures[selectedFeature]}
@@ -90,7 +90,7 @@ function FeatureLayout({ children }) {
   return (
     <div
       id="workspace-feature-settings-container"
-      className="w-screen h-screen overflow-hidden bg-sidebar flex md:mt-0 mt-6"
+      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
     >
       <Sidebar />
       <div
@@ -113,7 +113,7 @@ function FeatureList({
 
   return (
     <div
-      className={`bg-white/5 text-white rounded-xl ${
+      className={`bg-theme-bg-secondary text-white rounded-xl ${
         isMobile ? "w-full" : "min-w-[360px] w-fit"
       }`}
     >
@@ -126,17 +126,23 @@ function FeatureList({
             index === Object.keys(features).length - 1
               ? "rounded-b-xl"
               : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
-            selectedFeature === feature ? "bg-white/10" : ""
+          } cursor-pointer transition-all duration-300 hover:bg-white/5 ${
+            selectedFeature === feature
+              ? "bg-white/10 light:bg-theme-bg-sidebar  "
+              : ""
           }`}
           onClick={() => handleClick?.(feature)}
         >
           <div className="text-sm font-light">{settings.title}</div>
           <div className="flex items-center gap-x-2">
-            <div className="text-sm text-white/60 font-medium">
+            <div className="text-sm text-theme-text-secondary font-medium">
               {activeFeatures.includes(settings.key) ? "On" : "Off"}
             </div>
-            <CaretRight size={14} weight="bold" className="text-white/80" />
+            <CaretRight
+              size={14}
+              weight="bold"
+              className="text-theme-text-secondary"
+            />
           </div>
         </div>
       ))}
@@ -179,18 +185,18 @@ function FeatureVerification({ children }) {
     return (
       <>
         <ModalWrapper isOpen={true}>
-          <form
-            onSubmit={acceptTos}
-            className="relative w-full max-w-2xl max-h-full"
-          >
-            <div className="relative bg-main-gradient rounded-lg shadow">
-              <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
+          <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+            <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+              <div className="flex items-center gap-2">
+                <Flask size={24} className="text-theme-text-primary" />
                 <h3 className="text-xl font-semibold text-white">
                   Terms of use for experimental features
                 </h3>
               </div>
-              <div className="p-6 space-y-6 flex h-full w-full">
-                <div className="w-full flex flex-col gap-y-4 text-white">
+            </div>
+            <form onSubmit={acceptTos}>
+              <div className="py-7 px-9 space-y-4 flex-col">
+                <div className="w-full text-white text-md flex flex-col gap-y-4">
                   <p>
                     Experimental features of AnythingLLM are features that we
                     are piloting and are <b>opt-in</b>. We proactively will
@@ -203,7 +209,7 @@ function FeatureVerification({ children }) {
                       Use of any feature on this page can result in, but not
                       limited to, the following possibilities.
                     </p>
-                    <ul className="list-disc ml-6 text-sm font-mono">
+                    <ul className="list-disc ml-6 text-sm font-mono mt-2">
                       <li>Loss of data.</li>
                       <li>Change in quality of results.</li>
                       <li>Increased storage.</li>
@@ -221,7 +227,7 @@ function FeatureVerification({ children }) {
                       Use of an experimental feature also comes with the
                       following list of non-exhaustive conditions.
                     </p>
-                    <ul className="list-disc ml-6 text-sm font-mono">
+                    <ul className="list-disc ml-6 text-sm font-mono mt-2">
                       <li>Feature may not exist in future updates.</li>
                       <li>The feature being used is not currently stable.</li>
                       <li>
@@ -255,22 +261,22 @@ function FeatureVerification({ children }) {
                   </p>
                 </div>
               </div>
-              <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+              <div className="flex w-full justify-between items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
                 <a
                   href={paths.home()}
-                  className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
+                  className="px-4 py-2 rounded-lg text-theme-text-primary hover:bg-red-500/50 light:hover:bg-red-300/50 transition-all duration-300"
                 >
-                  Reject & Close
+                  Reject & close
                 </a>
                 <button
                   type="submit"
-                  className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                  className="transition-all duration-300 text-theme-text-primary hover:bg-blue-300/50 light:hover:bg-blue-300 px-4 py-2 rounded-lg text-sm"
                 >
                   I understand
                 </button>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </ModalWrapper>
         {children}
       </>

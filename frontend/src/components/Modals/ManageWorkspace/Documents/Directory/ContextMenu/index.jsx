@@ -60,17 +60,17 @@ export default function ContextMenu({
         left: `${contextMenu.x}px`,
         zIndex: 1000,
       }}
-      className="bg-zinc-800 border border-zinc-700 rounded-md shadow-lg"
+      className="bg-theme-bg-secondary border border-theme-modal-border rounded-md shadow-lg"
     >
       <button
         onClick={toggleSelectAll}
-        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-zinc-700"
+        className="block w-full text-left px-4 py-2 text-sm text-theme-text-primary hover:bg-theme-file-picker-hover"
       >
         {isAllSelected() ? "Unselect All" : "Select All"}
       </button>
       <button
         onClick={closeContextMenu}
-        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-zinc-700"
+        className="block w-full text-left px-4 py-2 text-sm text-theme-text-primary hover:bg-theme-file-picker-hover"
       >
         Cancel
       </button>

@@ -11,7 +11,7 @@ export default function OpenAiGenericTextToSpeechOptions({ settings }) {
           <input
             type="url"
             name="TTSOpenAICompatibleEndpoint"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://localhost:7851/v1"
             defaultValue={settings?.TTSOpenAICompatibleEndpoint}
             required={false}
@@ -31,7 +31,7 @@ export default function OpenAiGenericTextToSpeechOptions({ settings }) {
           <input
             type="password"
             name="TTSOpenAICompatibleKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="API Key"
             defaultValue={
               settings?.TTSOpenAICompatibleKey ? "*".repeat(20) : ""
@@ -51,7 +51,7 @@ export default function OpenAiGenericTextToSpeechOptions({ settings }) {
           <input
             type="text"
             name="TTSOpenAICompatibleVoiceModel"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Your voice model identifier"
             defaultValue={settings?.TTSOpenAICompatibleVoiceModel}
             required={true}

@@ -4,12 +4,12 @@ import paths from "@/utils/paths";
 export default function OrderPlaced({ settings }) {
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-[#303237] text-white rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6">
         <div className="w-full flex flex-col gap-y-2 max-w-[700px]">
-          <h2 className="text-base text-white font-semibold">
+          <h2 className="text-base text-theme-text-primary font-semibold">
             Your order is placed!
           </h2>
-          <div className="flex flex-col gap-y-[25px] text-white/80 text-xs">
+          <div className="flex flex-col gap-y-[25px] text-theme-text-secondary text-xs">
             <p>
               Your fine-tune will begin once payment is complete. If the payment
               window did not automatically open - your checkout link is below.
@@ -22,25 +22,25 @@ export default function OrderPlaced({ settings }) {
             >
               {new URL(settings.checkoutUrl).origin}
             </a>
-            <p className="text-xs text-white/80">
+            <p className="text-xs text-theme-text-secondary">
               Your fine-tune does not begin until this payment is completed.
             </p>
 
             <div className="flex flex-col gap-y-2">
-              <p className="text-white/80 font-medium">
+              <p className="text-theme-text-secondary font-medium">
                 Reference: <span className="font-normal">{settings.jobId}</span>
               </p>
-              <p className="text-xs text-white/80">
+              <p className="text-xs text-theme-text-secondary">
                 This reference id is how we will communicate with you about your
                 fine-tune training status. <b>Save this reference id.</b>
               </p>
             </div>
 
             <div className="flex flex-col gap-y-2">
-              <p className="text-white/80 font-medium">
+              <p className="text-theme-text-secondary font-medium">
                 Contact: <span className="font-normal">{settings.email}</span>
               </p>
-              <p className="text-xs text-white/80">
+              <p className="text-xs text-theme-text-secondary">
                 Check the email above for order confirmation, status updates,
                 and more. Mintplex Labs will only contact you about your order
                 via email.
@@ -64,7 +64,7 @@ export default function OrderPlaced({ settings }) {
               </a>
             </div>
 
-            <p className="text-xs text-white/80">
+            <p className="text-xs text-theme-text-secondary">
               You can close this window or navigate away once you see the
               confirmation email in your inbox.
             </p>
