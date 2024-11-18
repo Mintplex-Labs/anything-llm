@@ -44,9 +44,9 @@ export default function Citations({ sources = [] }) {
     <div className="flex flex-col mt-4 justify-left">
       <button
         onClick={() => setOpen(!open)}
-        className={`text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${
+        className={`text-white/50 light:text-black/50 font-medium italic text-sm text-left ml-14 pt-2 ${
           open ? "pb-2" : ""
-        } hover:text-white/75 transition-all duration-300`}
+        } hover:text-white/75 hover:light:text-black/75 transition-all duration-300`}
       >
         {open ? "Hide Citations" : "Show Citations"}
         <CaretRight
@@ -95,24 +95,6 @@ const Citation = memo(({ source, onClick }) => {
     </div>
   );
 });
-
-function SkeletonLine() {
-  const numOfBoxes = Math.floor(Math.random() * 5) + 2;
-  return (
-    <div className="flex space-x-2 mb-2">
-      {Array.from({ length: numOfBoxes }).map((_, index) => (
-        <div
-          key={index}
-          className="bg-white/20 rounded"
-          style={{
-            width: `${Math.random() * 150 + 50}px`,
-            height: "20px",
-          }}
-        ></div>
-      ))}
-    </div>
-  );
-}
 
 function omitChunkHeader(text) {
   if (!text.startsWith("<document_metadata>")) return text;
@@ -164,33 +146,32 @@ function CitationDetailModal({ source, onClose }) {
           style={{ maxHeight: "calc(100vh - 200px)" }}
         >
           <div className="py-7 px-9 space-y-2 flex-col">
-            {[...Array(3)].map((_, idx) => (
-              <SkeletonLine key={idx} />
-            ))}
             {chunks.map(({ text, score }, idx) => (
-              <div key={idx} className="pt-6 text-white">
-                <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
-                  <p className="text-white whitespace-pre-line">
-                    {HTMLDecode(omitChunkHeader(text))}
-                  </p>
+              <>
+                <div key={idx} className="pt-6 text-white">
+                  <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
+                    <p className="text-white whitespace-pre-line">
+                      {HTMLDecode(omitChunkHeader(text))}
+                    </p>
 
-                  {!!score && (
-                    <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
-                      <div
-                        data-tooltip-id="similarity-score"
-                        data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
-                        className="flex items-center gap-x-1"
-                      >
-                        <Info size={14} />
-                        <p>{toPercentString(score)} match</p>
+                    {!!score && (
+                      <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
+                        <div
+                          data-tooltip-id="similarity-score"
+                          data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
+                          className="flex items-center gap-x-1"
+                        >
+                          <Info size={14} />
+                          <p>{toPercentString(score)} match</p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-                {[...Array(3)].map((_, idx) => (
-                  <SkeletonLine key={idx} />
-                ))}
-              </div>
+                {idx !== chunks.length - 1 && (
+                  <hr className="border-theme-modal-border" />
+                )}
+              </>
             ))}
             <div className="mb-6"></div>
           </div>
