@@ -5,7 +5,6 @@ import {
   middleTruncate,
 } from "@/utils/directories";
 import { File } from "@phosphor-icons/react";
-import { Tooltip } from "react-tooltip";
 
 export default function FileRow({ item, selected, toggleSelection }) {
   return (
@@ -16,8 +15,13 @@ export default function FileRow({ item, selected, toggleSelection }) {
       }`}
     >
       <div
-        data-tooltip-id={`directory-item-${item.url}`}
+        data-tooltip-id={`directory-item`}
         className="col-span-10 w-fit flex gap-x-[4px] items-center relative"
+        data-tooltip-content={JSON.stringify({
+          title: item.title,
+          date: formatDate(item?.published),
+          extension: getFileExtension(item.url).toUpperCase(),
+        })}
       >
         <div
           className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
@@ -42,24 +46,6 @@ export default function FileRow({ item, selected, toggleSelection }) {
           </div>
         )}
       </div>
-      <Tooltip
-        id={`directory-item-${item.url}`}
-        place="bottom"
-        delayShow={800}
-        className="tooltip invert z-99"
-      >
-        <div className="text-xs ">
-          <p className="text-white">{item.title}</p>
-          <div className="flex mt-1 gap-x-2">
-            <p className="">
-              Date: <b>{formatDate(item?.published)}</b>
-            </p>
-            <p className="">
-              Type: <b>{getFileExtension(item.url).toUpperCase()}</b>
-            </p>
-          </div>
-        </div>
-      </Tooltip>
     </tr>
   );
 }

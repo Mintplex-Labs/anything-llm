@@ -6,15 +6,14 @@ class VoyageAiEmbedder {
     const {
       VoyageEmbeddings,
     } = require("@langchain/community/embeddings/voyage");
-    const voyage = new VoyageEmbeddings({
-      apiKey: process.env.VOYAGEAI_API_KEY,
-    });
 
-    this.voyage = voyage;
     this.model = process.env.EMBEDDING_MODEL_PREF || "voyage-3-lite";
-
-    // Limit of how many strings we can process in a single pass to stay with resource or network limits
-    this.batchSize = 128; // Voyage AI's limit per request is 128 https://docs.voyageai.com/docs/rate-limits#use-larger-batches
+    this.voyage = new VoyageEmbeddings({
+      apiKey: process.env.VOYAGEAI_API_KEY,
+      modelName: this.model,
+      // Voyage AI's limit per request is 128 https://docs.voyageai.com/docs/rate-limits#use-larger-batches
+      batchSize: 128,
+    });
     this.embeddingMaxChunkLength = this.#getMaxEmbeddingLength();
   }
 
@@ -40,8 +39,7 @@ class VoyageAiEmbedder {
 
   async embedTextInput(textInput) {
     const result = await this.voyage.embedDocuments(
-      Array.isArray(textInput) ? textInput : [textInput],
-      { modelName: this.model }
+      Array.isArray(textInput) ? textInput : [textInput]
     );
 
     // If given an array return the native Array[Array] format since that should be the outcome.
@@ -51,10 +49,7 @@ class VoyageAiEmbedder {
 
   async embedChunks(textChunks = []) {
     try {
-      const embeddings = await this.voyage.embedDocuments(textChunks, {
-        modelName: this.model,
-        batchSize: this.batchSize,
-      });
+      const embeddings = await this.voyage.embedDocuments(textChunks);
       return embeddings;
     } catch (error) {
       console.error("Voyage AI Failed to embed:", error);

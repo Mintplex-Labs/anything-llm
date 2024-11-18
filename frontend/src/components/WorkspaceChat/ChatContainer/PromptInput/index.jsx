@@ -18,6 +18,8 @@ import AttachItem from "./AttachItem";
 import { PASTE_ATTACHMENT_EVENT } from "../DnDWrapper";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
+const MAX_EDIT_STACK_SIZE = 100;
+
 export default function PromptInput({
   submit,
   onChange,
@@ -32,12 +34,22 @@ export default function PromptInput({
   const formRef = useRef(null);
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
+  const undoStack = useRef([]);
+  const redoStack = useRef([]);
 
-  // To prevent too many re-renders we remotely listen for updates from the parent
-  // via an event cycle. Otherwise, using message as a prop leads to a re-render every
-  // change on the input.
+  /**
+   * To prevent too many re-renders we remotely listen for updates from the parent
+   * via an event cycle. Otherwise, using message as a prop leads to a re-render every
+   * change on the input.
+   * @param {Event} e
+   */
   function handlePromptUpdate(e) {
     setPromptInput(e?.detail ?? "");
+  }
+
+  function resetTextAreaHeight() {
+    if (!textareaRef.current) return;
+    textareaRef.current.style.height = "auto";
   }
 
   useEffect(() => {
@@ -48,51 +60,120 @@ export default function PromptInput({
   }, []);
 
   useEffect(() => {
-    if (!inputDisabled && textareaRef.current) {
-      textareaRef.current.focus();
-    }
+    if (!inputDisabled && textareaRef.current) textareaRef.current.focus();
     resetTextAreaHeight();
   }, [inputDisabled]);
 
-  const handleSubmit = (e) => {
+  /**
+   * Save the current state before changes
+   * @param {number} adjustment
+   */
+  function saveCurrentState(adjustment = 0) {
+    if (undoStack.current.length >= MAX_EDIT_STACK_SIZE)
+      undoStack.current.shift();
+    undoStack.current.push({
+      value: promptInput,
+      cursorPositionStart: textareaRef.current.selectionStart + adjustment,
+      cursorPositionEnd: textareaRef.current.selectionEnd + adjustment,
+    });
+  }
+  const debouncedSaveState = debounce(saveCurrentState, 250);
+
+  function handleSubmit(e) {
     setFocused(false);
     submit(e);
-  };
+  }
 
-  const resetTextAreaHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-    }
-  };
+  function resetTextAreaHeight() {
+    if (!textareaRef.current) return;
+    textareaRef.current.style.height = "auto";
+  }
 
-  const checkForSlash = (e) => {
+  function checkForSlash(e) {
     const input = e.target.value;
     if (input === "/") setShowSlashCommand(true);
     if (showSlashCommand) setShowSlashCommand(false);
     return;
-  };
+  }
+  const watchForSlash = debounce(checkForSlash, 300);
 
-  const checkForAt = (e) => {
+  function checkForAt(e) {
     const input = e.target.value;
     if (input === "@") return setShowAgents(true);
     if (showAgents) return setShowAgents(false);
-  };
+  }
+  const watchForAt = debounce(checkForAt, 300);
 
-  const captureEnter = (event) => {
-    if (event.keyCode == 13) {
-      if (!event.shiftKey) {
-        submit(event);
-      }
+  /**
+   * Capture enter key press to handle submission, redo, or undo
+   * via keyboard shortcuts
+   * @param {KeyboardEvent} event
+   */
+  function captureEnterOrUndo(event) {
+    // Is simple enter key press w/o shift key
+    if (event.keyCode === 13 && !event.shiftKey) {
+      event.preventDefault();
+      return submit(event);
     }
-  };
 
-  const adjustTextArea = (event) => {
+    // Is undo with Ctrl+Z or Cmd+Z + Shift key = Redo
+    if (
+      (event.ctrlKey || event.metaKey) &&
+      event.key === "z" &&
+      event.shiftKey
+    ) {
+      event.preventDefault();
+      if (redoStack.current.length === 0) return;
+
+      const nextState = redoStack.current.pop();
+      if (!nextState) return;
+
+      undoStack.current.push({
+        value: promptInput,
+        cursorPositionStart: textareaRef.current.selectionStart,
+        cursorPositionEnd: textareaRef.current.selectionEnd,
+      });
+      setPromptInput(nextState.value);
+      setTimeout(() => {
+        textareaRef.current.setSelectionRange(
+          nextState.cursorPositionStart,
+          nextState.cursorPositionEnd
+        );
+      }, 0);
+    }
+
+    // Undo with Ctrl+Z or Cmd+Z
+    if (
+      (event.ctrlKey || event.metaKey) &&
+      event.key === "z" &&
+      !event.shiftKey
+    ) {
+      if (undoStack.current.length === 0) return;
+      const lastState = undoStack.current.pop();
+      if (!lastState) return;
+
+      redoStack.current.push({
+        value: promptInput,
+        cursorPositionStart: textareaRef.current.selectionStart,
+        cursorPositionEnd: textareaRef.current.selectionEnd,
+      });
+      setPromptInput(lastState.value);
+      setTimeout(() => {
+        textareaRef.current.setSelectionRange(
+          lastState.cursorPositionStart,
+          lastState.cursorPositionEnd
+        );
+      }, 0);
+    }
+  }
+
+  function adjustTextArea(event) {
     const element = event.target;
     element.style.height = "auto";
     element.style.height = `${element.scrollHeight}px`;
-  };
+  }
 
-  const handlePasteEvent = (e) => {
+  function handlePasteEvent(e) {
     e.preventDefault();
     if (e.clipboardData.items.length === 0) return false;
 
@@ -140,10 +221,16 @@ export default function PromptInput({
       }, 0);
     }
     return;
-  };
+  }
 
-  const watchForSlash = debounce(checkForSlash, 300);
-  const watchForAt = debounce(checkForAt, 300);
+  function handleChange(e) {
+    debouncedSaveState(-1);
+    onChange(e);
+    watchForSlash(e);
+    watchForAt(e);
+    adjustTextArea(e);
+    setPromptInput(e.target.value);
+  }
 
   return (
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
@@ -168,15 +255,12 @@ export default function PromptInput({
             <div className="flex items-center w-full border-b-2 border-gray-500/50">
               <textarea
                 ref={textareaRef}
-                onChange={(e) => {
-                  onChange(e);
-                  watchForSlash(e);
-                  watchForAt(e);
-                  adjustTextArea(e);
-                  setPromptInput(e.target.value);
+                onChange={handleChange}
+                onKeyDown={captureEnterOrUndo}
+                onPaste={(e) => {
+                  saveCurrentState();
+                  handlePasteEvent(e);
                 }}
-                onKeyDown={captureEnter}
-                onPaste={handlePasteEvent}
                 required={true}
                 disabled={inputDisabled}
                 onFocus={() => setFocused(true)}

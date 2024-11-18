@@ -272,7 +272,7 @@ function PATAlert({ accessToken }) {
           <br />
           <br />
           <a
-            href="https://gitlab.com/-/profile/personal_access_tokens"
+            href="https://gitlab.com/-/user_settings/personal_access_tokens"
             rel="noreferrer"
             target="_blank"
             className="underline"
@@ -319,7 +319,7 @@ function PATTooltip({ accessToken }) {
           , the GitLab API may limit the number of files that can be collected
           due to rate limits. You can{" "}
           <a
-            href="https://gitlab.com/-/profile/personal_access_tokens"
+            href="https://gitlab.com/-/user_settings/personal_access_tokens"
             rel="noreferrer"
             target="_blank"
             className="underline"
