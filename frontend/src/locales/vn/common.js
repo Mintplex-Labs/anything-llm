@@ -1,8 +1,8 @@
 const TRANSLATIONS = {
   common: {
     "workspaces-name": "Tên không gian làm việc",
-    Lỗi: "Lỗi",
-    Thành công: "Thành công",
+    error: "Lỗi",
+    success: "Thành công",
     user: "Người dùng",
     selection: "Lựa chọn mô hình",
     saving: "Đang lưu...",
