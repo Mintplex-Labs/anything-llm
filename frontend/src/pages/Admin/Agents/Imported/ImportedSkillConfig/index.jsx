@@ -105,7 +105,7 @@ export default function ImportedSkillConfig({
       <div className="p-2">
         <div className="flex flex-col gap-y-[18px] max-w-[500px]">
           <div className="flex items-center gap-x-2">
-            <Plug size={24} color="white" weight="bold" />
+            <Plug size={24} weight="bold" className="text-white" />
             <label htmlFor="name" className="text-white text-md font-bold">
               {sentenceCase(config.name)}
             </label>
@@ -151,7 +151,7 @@ export default function ImportedSkillConfig({
                       setInputs({ ...inputs, [key]: e.target.value })
                     }
                     placeholder={props?.input?.placeholder || ""}
-                    className="bg-transparent border border-white border-opacity-20 rounded-md p-2 text-white text-sm"
+                    className="bg-transparent border border-white light:border-black rounded-md p-2 text-white text-sm"
                   />
                   <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
                     {props?.input?.hint}
@@ -162,7 +162,7 @@ export default function ImportedSkillConfig({
                 <button
                   onClick={handleSubmit}
                   type="button"
-                  className="bg-blue-500 text-white rounded-md p-2"
+                  className="bg-blue-500 text-white light:text-white rounded-md p-2"
                 >
                   Save
                 </button>

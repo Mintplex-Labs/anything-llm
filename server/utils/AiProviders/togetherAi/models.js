@@ -1,81 +1,9 @@
 const MODELS = {
-  "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo": {
-    id: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
-    organization: "Meta",
-    name: "Llama 3.1 8B Instruct Turbo",
-    maxLength: 128000,
-  },
-  "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": {
-    id: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-    organization: "Meta",
-    name: "Llama 3.1 70B Instruct Turbo",
-    maxLength: 128000,
-  },
-  "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": {
-    id: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
-    organization: "Meta",
-    name: "Llama 3.1 405B Instruct Turbo",
-    maxLength: 4096,
-  },
-  "meta-llama/Meta-Llama-3-8B-Instruct-Turbo": {
-    id: "meta-llama/Meta-Llama-3-8B-Instruct-Turbo",
-    organization: "Meta",
-    name: "Llama 3 8B Instruct Turbo",
-    maxLength: 8192,
-  },
-  "meta-llama/Meta-Llama-3-70B-Instruct-Turbo": {
-    id: "meta-llama/Meta-Llama-3-70B-Instruct-Turbo",
-    organization: "Meta",
-    name: "Llama 3 70B Instruct Turbo",
-    maxLength: 8192,
-  },
-  "meta-llama/Meta-Llama-3-8B-Instruct-Lite": {
-    id: "meta-llama/Meta-Llama-3-8B-Instruct-Lite",
-    organization: "Meta",
-    name: "Llama 3 8B Instruct Lite",
-    maxLength: 8192,
-  },
-  "meta-llama/Meta-Llama-3-70B-Instruct-Lite": {
-    id: "meta-llama/Meta-Llama-3-70B-Instruct-Lite",
-    organization: "Meta",
-    name: "Llama 3 70B Instruct Lite",
-    maxLength: 8192,
-  },
-  "google/gemma-2-27b-it": {
-    id: "google/gemma-2-27b-it",
-    organization: "Google",
-    name: "Gemma 2 27B",
-    maxLength: 8192,
-  },
-  "google/gemma-2-9b-it": {
-    id: "google/gemma-2-9b-it",
-    organization: "Google",
-    name: "Gemma 2 9B",
-    maxLength: 8192,
-  },
-  "allenai/OLMo-7B-Instruct": {
-    id: "allenai/OLMo-7B-Instruct",
-    organization: "Allen AI",
-    name: "OLMo Instruct (7B)",
-    maxLength: 2048,
-  },
   "zero-one-ai/Yi-34B-Chat": {
     id: "zero-one-ai/Yi-34B-Chat",
     organization: "01.AI",
     name: "01-ai Yi Chat (34B)",
     maxLength: 4096,
-  },
-  "allenai/OLMo-7B-Twin-2T": {
-    id: "allenai/OLMo-7B-Twin-2T",
-    organization: "Allen AI",
-    name: "OLMo Twin-2T (7B)",
-    maxLength: 2048,
-  },
-  "allenai/OLMo-7B": {
-    id: "allenai/OLMo-7B",
-    organization: "Allen AI",
-    name: "OLMo (7B)",
-    maxLength: 2048,
   },
   "Austism/chronos-hermes-13b": {
     id: "Austism/chronos-hermes-13b",
@@ -129,6 +57,12 @@ const MODELS = {
     id: "Gryphe/MythoMax-L2-13b",
     organization: "Gryphe",
     name: "MythoMax-L2 (13B)",
+    maxLength: 4096,
+  },
+  "Gryphe/MythoMax-L2-13b-Lite": {
+    id: "Gryphe/MythoMax-L2-13b-Lite",
+    organization: "Gryphe",
+    name: "MythoMax-L2 Lite (13B)",
     maxLength: 4096,
   },
   "lmsys/vicuna-13b-v1.5": {
@@ -196,6 +130,36 @@ const MODELS = {
     organization: "Meta",
     name: "LLaMA-3 Chat (70B)",
     maxLength: 8192,
+  },
+  "meta-llama/Meta-Llama-3-8B-Instruct-Turbo": {
+    id: "meta-llama/Meta-Llama-3-8B-Instruct-Turbo",
+    organization: "Meta",
+    name: "LLaMA-3 Chat (8B) Turbo",
+    maxLength: 8192,
+  },
+  "meta-llama/Meta-Llama-3-70B-Instruct-Turbo": {
+    id: "meta-llama/Meta-Llama-3-70B-Instruct-Turbo",
+    organization: "Meta",
+    name: "LLaMA-3 Chat (70B) Turbo",
+    maxLength: 8192,
+  },
+  "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo": {
+    id: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+    organization: "Meta",
+    name: "Llama 3.1 8B Instruct Turbo",
+    maxLength: 8192,
+  },
+  "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": {
+    id: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+    organization: "Meta",
+    name: "Llama 3.1 70B Instruct Turbo",
+    maxLength: 8192,
+  },
+  "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": {
+    id: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+    organization: "Meta",
+    name: "Llama 3.1 405B Instruct Turbo",
+    maxLength: 4096,
   },
   "mistralai/Mistral-7B-Instruct-v0.1": {
     id: "mistralai/Mistral-7B-Instruct-v0.1",

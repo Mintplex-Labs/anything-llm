@@ -68,7 +68,7 @@ export default function UserRow({ currUser, user }) {
           {canModify && (
             <button
               onClick={openModal}
-              className="text-sm font-medium text-white/80 rounded-lg hover:text-white px-2 py-1 hover:bg-white hover:bg-opacity-10"
+              className="text-sm font-medium text-white/80 light:text-black/80 rounded-lg hover:text-white hover:light:text-gray-500 px-2 py-1 hover:bg-white hover:bg-opacity-10"
             >
               Edit
             </button>
@@ -77,13 +77,13 @@ export default function UserRow({ currUser, user }) {
             <>
               <button
                 onClick={handleSuspend}
-                className="text-sm font-medium text-white/80 hover:text-orange-300 rounded-lg px-2 py-1 hover:bg-white hover:bg-opacity-10"
+                className="text-sm font-medium text-white/80 light:text-black/80 hover:light:text-orange-500 hover:text-orange-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-orange-50 hover:bg-opacity-10"
               >
                 {suspended ? "Unsuspend" : "Suspend"}
               </button>
               <button
                 onClick={handleDelete}
-                className="text-sm font-medium text-white/80 hover:text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
+                className="text-sm font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
               >
                 Delete
               </button>

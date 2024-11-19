@@ -345,7 +345,13 @@ const System = {
     return { appName: customAppName, error: null };
   },
   fetchLogo: async function () {
-    return await fetch(`${API_BASE}/system/logo`, {
+    const url = new URL(`${API_BASE}/system/logo`);
+    url.searchParams.append(
+      "theme",
+      localStorage.getItem("theme") || "default"
+    );
+
+    return await fetch(url, {
       method: "GET",
       cache: "no-cache",
     })

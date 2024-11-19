@@ -66,15 +66,15 @@ export default function MenuOption({
           rounded-[6px]
           ${
             isActive
-              ? "bg-white/5 font-medium border-outline"
-              : "hover:bg-white/5"
+              ? "bg-theme-sidebar-subitem-selected font-medium border-outline"
+              : "hover:bg-theme-sidebar-subitem-hover"
           }
         `}
       >
         <Link
           to={href}
           className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${
-            isChild ? "text-white/70 hover:text-white" : "text-white"
+            isChild ? "hover:text-white" : "text-white light:text-black"
           }`}
           onClick={hasChildren ? handleClick : undefined}
         >
@@ -83,7 +83,9 @@ export default function MenuOption({
             className={`${
               isChild ? "text-xs" : "text-sm"
             } leading-loose whitespace-nowrap overflow-hidden ml-2 ${
-              isActive ? "text-white" : ""
+              isActive
+                ? "text-white font-semibold"
+                : "text-white light:text-black"
             } ${!icon && "pl-5"}`}
           >
             {btnText}
@@ -94,7 +96,8 @@ export default function MenuOption({
             <CaretRight
               size={16}
               weight="bold"
-              className={`transition-transform ${
+              // color={isExpanded ? "#000000" : "var(--theme-sidebar-subitem-icon)"}
+              className={`transition-transform text-white light:text-black ${
                 isExpanded ? "rotate-90" : ""
               }`}
             />

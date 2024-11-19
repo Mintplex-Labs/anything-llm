@@ -112,7 +112,7 @@ function FileUploadProgressComponent({
     <div
       className={`${
         isFadingOut ? "file-upload-fadeout" : "file-upload"
-      } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40`}
+      } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white border border-white/40 shadow-md`}
     >
       <div className="w-6 h-6 flex-shrink-0">
         {status !== "complete" ? (

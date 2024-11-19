@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { SpeakerHigh, PauseCircle, CircleNotch } from "@phosphor-icons/react";
-import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 
@@ -61,7 +60,7 @@ export default function AsyncTTSMessage({ slug, chatId }) {
         data-tooltip-content={
           speaking ? "Pause TTS speech of message" : "TTS Speak message"
         }
-        className="border-none text-zinc-300"
+        className="border-none text-[var(--theme-sidebar-footer-icon-fill)]"
         aria-label={speaking ? "Pause speech" : "Speak message"}
       >
         {speaking ? (
@@ -83,12 +82,6 @@ export default function AsyncTTSMessage({ slug, chatId }) {
           controls={false}
         />
       </button>
-      <Tooltip
-        id="message-to-speech"
-        place="bottom"
-        delayShow={300}
-        className="tooltip !text-xs"
-      />
     </div>
   );
 }

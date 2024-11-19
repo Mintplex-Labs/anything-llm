@@ -7,7 +7,7 @@ function SideBarSelection({ setStep, currentStep }) {
   const currentIndex = Object.keys(FineTuningSteps).indexOf(currentStep);
   return (
     <div
-      className={`bg-white/5 text-white rounded-xl py-1 px-4 ${
+      className={`bg-white/5 light:bg-white text-theme-text-primary rounded-xl py-1 px-4 shadow-lg ${
         isMobile ? "w-full" : "min-w-[360px] w-fit"
       }`}
     >
@@ -23,18 +23,20 @@ function SideBarSelection({ setStep, currentStep }) {
             className={[
               "py-3 flex items-center justify-between transition-all duration-300",
               isSelected ? "rounded-t-xl" : "",
-              isLast ? "" : "border-b border-white/10",
+              isLast
+                ? ""
+                : "border-b border-white/10 light:border-[#026AA2]/10",
             ].join(" ")}
           >
             {isDone || isSelected ? (
               <button
                 onClick={() => setStep(stepKey)}
-                className="border-none hover:underline text-sm font-medium"
+                className="border-none hover:underline text-sm font-medium text-theme-text-primary"
               >
                 {props.name}
               </button>
             ) : (
-              <div className="text-sm text-white/40 font-medium">
+              <div className="text-sm text-theme-text-secondary font-medium">
                 {props.name}
               </div>
             )}
@@ -45,7 +47,7 @@ function SideBarSelection({ setStep, currentStep }) {
                 </div>
               ) : (
                 <div
-                  className={`w-[14px] h-[14px] rounded-full border border-white ${
+                  className={`w-[14px] h-[14px] rounded-full border border-theme-text-primary ${
                     isSelected ? "animate-pulse" : "opacity-50"
                   }`}
                 />
@@ -69,14 +71,14 @@ export default function FineTuningFlow() {
       {(settings, setSettings, setStep) => (
         <div className="flex-1 flex h-full">
           <div className="flex flex-col gap-y-[18px] p-4 mt-10 w-[360px] flex-shrink-0">
-            <div className="text-white flex items-center gap-x-2">
+            <div className="text-theme-text-primary flex items-center gap-x-2">
               <Sparkle size={24} />
               <p className="text-lg font-medium">Custom Fine-Tuned Model</p>
             </div>
             <SideBarSelection setStep={setStep} currentStep={step} />
           </div>
           <div className="flex-1 overflow-y-auto p-4 mt-10 pb-[74px] h-screen">
-            <div className=" ml-8">
+            <div className="ml-8">
               {StepPage.component({ settings, setSettings, setStep })}
             </div>
           </div>

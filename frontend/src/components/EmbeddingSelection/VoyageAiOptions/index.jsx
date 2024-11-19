@@ -9,7 +9,7 @@ export default function VoyageAiOptions({ settings }) {
           <input
             type="password"
             name="VoyageAiApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Voyage AI API Key"
             defaultValue={settings?.VoyageAiApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -25,7 +25,7 @@ export default function VoyageAiOptions({ settings }) {
             name="EmbeddingModelPref"
             required={true}
             defaultValue={settings?.EmbeddingModelPref}
-            className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
             <optgroup label="Available embedding models">
               {[

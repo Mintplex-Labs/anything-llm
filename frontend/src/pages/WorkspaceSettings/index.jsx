@@ -73,16 +73,16 @@ function ShowWorkspaceChat() {
 
   const TabContent = TABS[tab];
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       {!isMobile && <Sidebar />}
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline"
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll"
       >
         <div className="flex gap-x-10 pt-6 pb-4 ml-16 mr-8 border-b-2 border-white border-opacity-10">
           <Link
             to={paths.workspace.chat(slug)}
-            className="absolute top-2 left-2 md:top-4 md:left-4 transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border z-10"
+            className="absolute top-2 left-2 md:top-4 md:left-4 transition-all duration-300 p-2 rounded-full text-white bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover z-10"
           >
             <ArrowUUpLeft className="h-5 w-5" weight="fill" />
           </Link>

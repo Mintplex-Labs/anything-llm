@@ -61,12 +61,12 @@ export default function Confirmation({ settings, setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-[#303237] text-white rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6">
         <div className="w-full flex flex-col gap-y-3 max-w-[700px]">
-          <h2 className="text-base text-white font-semibold">
+          <h2 className="text-base text-theme-text-primary font-semibold">
             Confirm & Submit
           </h2>
-          <p className="text-white/80 text-sm">
+          <p className="text-theme-text-secondary text-sm">
             Below are your fine-tuning order details. If you have any questions
             before or after ordering your fine-tune you can checkout the{" "}
             <a
@@ -86,27 +86,33 @@ export default function Confirmation({ settings, setSettings, setStep }) {
             </a>
             .
           </p>
-          <div className="p-4 bg-zinc-900 text-white flex flex-col gap-y-2 rounded-lg mt-4">
+          <div className="p-4 bg-theme-bg-container text-theme-text-primary flex flex-col gap-y-2 rounded-lg mt-4">
             <div className="flex flex-col gap-y-3 text-sm">
               <div className="flex items-start gap-x-1">
                 <p className="w-1/3">Contact e-mail:</p>
-                <p className="text-white/80 w-2/3">{settings.email}</p>
+                <p className="text-theme-text-secondary w-2/3">
+                  {settings.email}
+                </p>
               </div>
               <div className="flex items-start gap-x-1">
                 <p className="w-1/3">Base LLM:</p>
-                <p className="text-white/80 w-2/3">{settings.baseModel}</p>
+                <p className="text-theme-text-secondary w-2/3">
+                  {settings.baseModel}
+                </p>
               </div>
               <div className="flex items-start gap-x-1">
                 <p className="w-1/3">Output model name:</p>
-                <p className="text-white/80 w-2/3">"{settings.modelName}"</p>
+                <p className="text-theme-text-secondary w-2/3">
+                  "{settings.modelName}"
+                </p>
               </div>
               <div className="flex items-start gap-x-1">
                 <p className="w-1/3">Training on workspaces:</p>
-                <div className="text-white/80 w-2/3 flex flex-wrap gap-1">
-                  {settings.trainingData.slugs.map((slug, i) => (
+                <div className="text-theme-text-secondary w-2/3 flex flex-wrap gap-1">
+                  {settings.trainingData.slugs.map((slug) => (
                     <span
                       key={slug}
-                      className={`rounded-full bg-white/10 px-2 py-0.5 h-[20px] text-xs font-medium text-white shadow-sm`}
+                      className="rounded-full bg-theme-bg-secondary px-2 py-0.5 h-[20px] text-xs font-medium text-theme-text-primary shadow-sm"
                     >
                       {getWorkspaceName(slug)}
                     </span>
@@ -115,7 +121,7 @@ export default function Confirmation({ settings, setSettings, setStep }) {
               </div>
               <div className="flex items-start gap-x-1">
                 <p className="w-1/3">Training data:</p>
-                <p className="text-white/80 w-2/3">
+                <p className="text-theme-text-secondary w-2/3">
                   {settings.trainingData.feedback === true
                     ? "Training on positive-feedback chats only"
                     : "Training on all chats"}
@@ -126,39 +132,53 @@ export default function Confirmation({ settings, setSettings, setStep }) {
             <div className="mt-4">
               <ul className="flex flex-col gap-y-1 text-sm">
                 <li className="flex items-center gap-x-2">
-                  <Check className="text-white" size={12} weight="bold" />
-                  <p className="text-white/80">
+                  <Check
+                    className="text-theme-text-primary"
+                    size={12}
+                    weight="bold"
+                  />
+                  <p className="text-theme-text-secondary">
                     Agreed to Terms and Conditions
                   </p>
                 </li>
                 <li className="flex items-center gap-x-2">
-                  <Check className="text-white" size={12} weight="bold" />
-                  <p className="text-white/80">
+                  <Check
+                    className="text-theme-text-primary"
+                    size={12}
+                    weight="bold"
+                  />
+                  <p className="text-theme-text-secondary">
                     Understand privacy & data handling
                   </p>
                 </li>
                 <li className="flex items-center gap-x-2">
-                  <Check className="text-white" size={12} weight="bold" />
-                  <p className="text-white/80">Agreed to Fulfillment terms</p>
+                  <Check
+                    className="text-theme-text-primary"
+                    size={12}
+                    weight="bold"
+                  />
+                  <p className="text-theme-text-secondary">
+                    Agreed to Fulfillment terms
+                  </p>
                 </li>
               </ul>
             </div>
 
-            <div className="mt-4 border-white/40 pt-2">
+            <div className="mt-4 border-theme-border pt-2">
               <div className="flex items-center gap-x-1 text-lg mb-0">
-                <p className="">Total one-time cost:</p>
-                <p className="text-white/80">
+                <p className="text-theme-text-primary">Total one-time cost:</p>
+                <p className="text-theme-text-secondary">
                   {dollarFormat(settings.tuningInfo.pricing.usd)}
                   <sup>*</sup>
                 </p>
               </div>
-              <p className="m-0 p-0 text-xs text-white/60">
+              <p className="m-0 p-0 text-xs text-theme-text-tertiary">
                 <sup>*</sup> price does not include any coupons, incentives, or
                 discounts you can apply at checkout.
               </p>
             </div>
           </div>
-          <p className="text-xs text-white/80 mt-4">
+          <p className="text-xs text-theme-text-secondary mt-4">
             Once you proceed to checkout, if you do not complete this purchase
             your data will be deleted from our servers within 1 hour of
             abandonment of the creation of the checkout in accordance to our
