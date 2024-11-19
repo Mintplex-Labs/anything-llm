@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Toolbox } from "@phosphor-icons/react";
 import { isMobile } from "react-device-detect";
 import CommunityHubImportItemSteps, {
   CommunityHubImportItemLayout,
@@ -11,7 +10,7 @@ function SideBarSelection({ setStep, currentStep }) {
   );
   return (
     <div
-      className={`bg-white/5 text-white rounded-xl py-1 px-4 ${
+      className={`bg-white/5 light:bg-white text-theme-text-primary light:border rounded-xl py-1 px-4 shadow-lg ${
         isMobile ? "w-full" : "min-w-[360px] w-fit"
       }`}
     >
@@ -30,18 +29,20 @@ function SideBarSelection({ setStep, currentStep }) {
               className={[
                 "py-3 flex items-center justify-between transition-all duration-300",
                 isSelected ? "rounded-t-xl" : "",
-                isLast ? "" : "border-b border-white/10",
+                isLast
+                  ? ""
+                  : "border-b border-white/10 light:border-[#026AA2]/10",
               ].join(" ")}
             >
               {isDone || isSelected ? (
                 <button
                   onClick={() => setStep(stepKey)}
-                  className="border-none hover:underline text-sm font-medium"
+                  className="border-none hover:underline text-sm font-medium text-theme-text-primary"
                 >
                   {props.name}
                 </button>
               ) : (
-                <div className="text-sm text-white/40 font-medium">
+                <div className="text-sm text-theme-text-secondary font-medium">
                   {props.name}
                 </div>
               )}
@@ -52,7 +53,7 @@ function SideBarSelection({ setStep, currentStep }) {
                   </div>
                 ) : (
                   <div
-                    className={`w-[14px] h-[14px] rounded-full border border-white ${
+                    className={`w-[14px] h-[14px] rounded-full border border-theme-text-primary ${
                       isSelected ? "animate-pulse" : "opacity-50"
                     }`}
                   />
@@ -76,17 +77,26 @@ export default function CommunityHubImportItemFlow() {
   return (
     <CommunityHubImportItemLayout setStep={setStep}>
       {(settings, setSettings, setStep) => (
-        <div className="flex-1 flex h-full">
-          <div className="flex flex-col gap-y-[18px] p-4 mt-10 w-[360px] flex-shrink-0">
-            <div className="text-white flex items-center gap-x-2">
-              <Toolbox size={24} />
-              <p className="text-lg font-medium">Import a Community Item</p>
+        <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
+          <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
+            <div className="items-center">
+              <p className="text-lg leading-6 font-bold text-theme-text-primary">
+                Import a Community Item
+              </p>
             </div>
-            <SideBarSelection setStep={setStep} currentStep={step} />
+            <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
+              Import items from the AnythingLLM Community Hub to enhance your
+              instance with community-created prompts, skills, and commands.
+            </p>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 mt-10 pb-[74px] h-screen">
-            <div className=" ml-8">
-              {StepPage.component({ settings, setSettings, setStep })}
+          <div className="flex-1 flex h-full">
+            <div className="flex flex-col gap-y-[18px] mt-10 w-[360px] flex-shrink-0">
+              <SideBarSelection setStep={setStep} currentStep={step} />
+            </div>
+            <div className="overflow-y-auto pb-[74px] h-screen">
+              <div className="ml-8">
+                {StepPage.component({ settings, setSettings, setStep })}
+              </div>
             </div>
           </div>
         </div>

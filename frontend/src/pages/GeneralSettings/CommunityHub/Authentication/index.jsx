@@ -86,7 +86,7 @@ export default function CommunityHubAuthentication() {
   } = useCommunityHubAuthentication();
   if (loading) return <FullScreenLoader />;
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
       <ContextualSaveBar
         showing={hasChanges}
@@ -95,16 +95,16 @@ export default function CommunityHubAuthentication() {
       />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+          <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
             <div className="items-center">
-              <p className="text-lg leading-6 font-bold text-white">
+              <p className="text-lg leading-6 font-bold text-theme-text-primary">
                 Your AnythingLLM Community Hub Account
               </p>
             </div>
-            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+            <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
               Connecting your AnythingLLM Community Hub account allows you to
               access your <b>private</b> AnythingLLM Community Hub items as well
               as upload your own items to the AnythingLLM Community Hub.
@@ -112,16 +112,15 @@ export default function CommunityHubAuthentication() {
           </div>
 
           {!connectionKey && (
-            <div className="border border-white/10 my-2 flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-1/2 rounded-lg px-4 py-2">
+            <div className="border border-theme-border my-2 flex flex-col md:flex-row md:items-center gap-x-2 text-theme-text-primary mb-4 bg-theme-settings-input-bg w-1/2 rounded-lg px-4 py-2">
               <div className="flex flex-col gap-y-2">
                 <div className="gap-x-2 flex items-center">
                   <Info size={25} />
                   <h1 className="text-lg font-semibold">
-                    {" "}
-                    Why connect my AnythingLLM Community Hub account?{" "}
+                    Why connect my AnythingLLM Community Hub account?
                   </h1>
                 </div>
-                <p className="text-sm">
+                <p className="text-sm text-theme-text-secondary">
                   Connecting your AnythingLLM Community Hub account allows you
                   to pull in your <b>private</b> items from the AnythingLLM
                   Community Hub as well as upload your own items to the
@@ -141,17 +140,17 @@ export default function CommunityHubAuthentication() {
           {/* API Key Section */}
           <div className="mt-6 mb-12">
             <div className="flex flex-col w-full max-w-[400px]">
-              <label className="text-white text-sm font-semibold block mb-2">
+              <label className="text-theme-text-primary text-sm font-semibold block mb-2">
                 AnythingLLM Hub API Key
               </label>
               <input
-                type={"password"}
+                type="password"
                 value={connectionKey || ""}
                 onChange={onConnectionKeyChange}
-                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="Enter your AnythingLLM Hub API key"
               />
-              <p className="text-white/60 text-xs mt-2">
+              <p className="text-theme-text-secondary text-xs mt-2">
                 You can get your API key from your{" "}
                 <a
                   href={paths.communityHub.profile()}

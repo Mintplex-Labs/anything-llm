@@ -3,12 +3,12 @@ import CTAButton from "@/components/lib/CTAButton";
 export default function Completed({ settings, setSettings, setStep }) {
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-[#303237] text-white rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-primary light:bg-slate-100 shadow-lg text-theme-text-primary rounded-xl flex-1 p-6">
         <div className="w-full flex flex-col gap-y-2 max-w-[700px]">
-          <h2 className="text-base text-white font-semibold">
+          <h2 className="text-base font-semibold">
             Community Hub Item Imported
           </h2>
-          <div className="flex flex-col gap-y-[25px] text-white/80 text-sm">
+          <div className="flex flex-col gap-y-[25px] text-theme-text-secondary text-sm">
             <p>
               The "{settings.item.name}" {settings.item.itemType} has been
               imported successfully! It is now available in your AnythingLLM
