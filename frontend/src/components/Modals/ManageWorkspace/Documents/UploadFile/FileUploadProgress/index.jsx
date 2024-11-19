@@ -61,9 +61,9 @@ function FileUploadProgressComponent({
       }
 
       // Begin fadeout timer to clear uploader queue.
-      // setTimeout(() => {
-      //   fadeOut(() => setTimeout(() => beginFadeOut(), 300));
-      // }, 5000);
+      setTimeout(() => {
+        fadeOut(() => setTimeout(() => beginFadeOut(), 300));
+      }, 5000);
     }
     !!file && !rejected && uploadFile();
   }, []);
