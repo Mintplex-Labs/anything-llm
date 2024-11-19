@@ -60,7 +60,7 @@ export default function AsyncTTSMessage({ slug, chatId }) {
         data-tooltip-content={
           speaking ? "Pause TTS speech of message" : "TTS Speak message"
         }
-        className="border-none text-zinc-300"
+        className="border-none text-[var(--theme-sidebar-footer-icon-fill)]"
         aria-label={speaking ? "Pause speech" : "Speak message"}
       >
         {speaking ? (

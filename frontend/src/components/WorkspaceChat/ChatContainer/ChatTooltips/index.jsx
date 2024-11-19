@@ -57,9 +57,9 @@ export function ChatTooltips() {
         id="similarity-score"
         place="top"
         delayShow={100}
-        // z-[99] to ensure it renders above the chat history
+        // z-[100] to ensure it renders above the chat history
         // as the citation modal is z-indexed above the chat history
-        className="tooltip !text-xs z-[99]"
+        className="tooltip !text-xs z-[100]"
       />
     </>
   );

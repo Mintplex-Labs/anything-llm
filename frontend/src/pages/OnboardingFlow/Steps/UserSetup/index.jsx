@@ -54,7 +54,7 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
 
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
-      <div className="flex flex-col border rounded-lg border-white/20 p-8 items-center gap-y-4 w-full max-w-[600px]">
+      <div className="flex flex-col border rounded-lg border-white/20 light:border-theme-sidebar-border p-8 items-center gap-y-4 w-full max-w-[600px]">
         <div className=" text-white text-sm font-semibold md:-ml-44">
           How many people will be using your instance?
         </div>
@@ -64,7 +64,7 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
             className={`${
               selectedOption === "just_me"
                 ? "text-sky-400 border-sky-400/70"
-                : "text-white border-white/40"
+                : "text-theme-text-primary border-theme-sidebar-border"
             } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">Just me</div>
@@ -74,7 +74,7 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
             className={`${
               selectedOption === "my_team"
                 ? "text-sky-400 border-sky-400/70"
-                : "text-white border-white/40"
+                : "text-theme-text-primary border-theme-sidebar-border"
             } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">My team</div>
@@ -160,7 +160,7 @@ const JustMe = ({
   });
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
-      <div className="flex flex-col border rounded-lg border-white/20 p-8 items-center gap-y-4 w-full max-w-[600px]">
+      <div className="flex flex-col border rounded-lg border-white/20 light:border-theme-sidebar-border p-8 items-center gap-y-4 w-full max-w-[600px]">
         <div className=" text-white text-sm font-semibold md:-ml-56">
           Would you like to set up a password?
         </div>
@@ -170,7 +170,7 @@ const JustMe = ({
             className={`${
               enablePassword && itemSelected
                 ? "text-sky-400 border-sky-400/70"
-                : "text-white border-white/40"
+                : "text-theme-text-primary border-theme-sidebar-border"
             } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">Yes</div>
@@ -180,7 +180,7 @@ const JustMe = ({
             className={`${
               !enablePassword && itemSelected
                 ? "text-sky-400 border-sky-400/70"
-                : "text-white border-white/40"
+                : "text-theme-text-primary border-theme-sidebar-border"
             } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">No</div>
@@ -197,7 +197,7 @@ const JustMe = ({
             <input
               name="password"
               type="password"
-              className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
+              className="bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-secondary"
               placeholder="Your admin password"
               minLength={6}
               required={true}
@@ -265,7 +265,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
     }
   }, [username, password]);
   return (
-    <div className="w-full flex items-center justify-center border max-w-[600px] rounded-lg border-white/20">
+    <div className="w-full flex items-center justify-center border max-w-[600px] rounded-lg border-white/20 light:border-theme-sidebar-border">
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col w-full md:px-8 px-2 py-4">
           <div className="space-y-6 flex h-full w-full">
@@ -280,7 +280,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                 <input
                   name="username"
                   type="text"
-                  className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
+                  className="bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin username"
                   minLength={6}
                   required={true}
@@ -303,7 +303,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                 <input
                   name="password"
                   type="password"
-                  className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none"
+                  className="bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin password"
                   minLength={8}
                   required={true}
@@ -317,8 +317,8 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
             </div>
           </div>
         </div>
-        <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b border-gray-500/50">
-          <div className=" text-white text-opacity-80 text-xs font-base">
+        <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b border-theme-sidebar-border">
+          <div className="text-theme-text-secondary text-opacity-80 text-xs font-base">
             By default, you will be the only admin. Once onboarding is completed
             you can create and invite others to be users or admins. Do not lose
             your password as only admins can reset passwords.

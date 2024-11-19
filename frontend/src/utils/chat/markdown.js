@@ -13,7 +13,7 @@ const markdown = markdownIt({
     if (lang && hljs.getLanguage(lang)) {
       try {
         return (
-          `<div class="whitespace-pre-line w-full rounded-lg bg-black-900 px-4 pb-4 relative font-mono font-normal text-sm text-slate-200">
+          `<div class="whitespace-pre-line w-full rounded-lg bg-black-900 px-4 pb-4 relative font-mono font-normal text-sm text-slate-200 light:invert">
             <div class="w-full flex items-center absolute top-0 left-0 text-slate-200 bg-stone-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md">
               <div class="flex gap-2">
                 <code class="text-xs">${lang || ""}</code>
@@ -31,7 +31,7 @@ const markdown = markdownIt({
     }
 
     return (
-      `<div class="whitespace-pre-line w-full rounded-lg bg-black-900 px-4 pb-4 relative font-mono font-normal text-sm text-slate-200">
+      `<div class="whitespace-pre-line w-full rounded-lg bg-black-900 px-4 pb-4 relative font-mono font-normal text-sm text-slate-200 light:invert">
         <div class="w-full flex items-center absolute top-0 left-0 text-slate-200 bg-stone-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md">
           <div class="flex gap-2"><code class="text-xs"></code></div>
           <button data-code-snippet data-code="code-${uuid}" class="flex items-center gap-x-2">
@@ -45,6 +45,10 @@ const markdown = markdownIt({
     );
   },
 });
+
+// Add custom renderer for strong tags to handle theme colors
+markdown.renderer.rules.strong_open = () => '<strong class="text-white">';
+markdown.renderer.rules.strong_close = () => "</strong>";
 
 // Custom renderer for responsive images rendered in markdown
 markdown.renderer.rules.image = function (tokens, idx) {

@@ -12,12 +12,12 @@ export default function Introduction({ setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-[#303237] text-white rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6">
         <div className="w-full flex flex-col gap-y-2 max-w-[700px]">
-          <h2 className="text-base text-white font-semibold">
+          <h2 className="text-base text-theme-text-primary font-semibold">
             What is a "Fine-Tuned" model?
           </h2>
-          <div className="flex flex-col gap-y-[25px] text-white/80 text-sm">
+          <div className="flex flex-col gap-y-[25px] text-theme-text-secondary text-sm">
             <p>
               Fine-tuned models are basically "customized"
               Language-Learning-Models (LLMs). These can be based on popular
@@ -37,8 +37,8 @@ export default function Introduction({ setSettings, setStep }) {
             </p>
           </div>
 
-          <div className="flex flex-col gap-y-2 text-white/80 text-sm mt-4">
-            <h3 className="text-base text-white font-semibold">
+          <div className="flex flex-col gap-y-2 text-theme-text-secondary text-sm mt-4">
+            <h3 className="text-base text-theme-text-primary font-semibold">
               When should I get a fine-tuned model?
             </h3>
             <p>
@@ -47,28 +47,44 @@ export default function Introduction({ setSettings, setStep }) {
             </p>
             <ul className="flex flex-col gap-y-1">
               <li className="flex items-center gap-x-2">
-                <Check className="text-white" size={12} weight="bold" /> Setting
-                the style, tone, format, or other qualitative aspects without
-                prompting
+                <Check
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
+                Setting the style, tone, format, or other qualitative aspects
+                without prompting
               </li>
               <li className="flex items-center gap-x-2">
-                <Check className="text-white" size={12} weight="bold" />{" "}
+                <Check
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
                 Improving reliability at producing a desired output
               </li>
               <li className="flex items-center gap-x-2">
-                <Check className="text-white" size={12} weight="bold" />{" "}
+                <Check
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
                 Correcting failures to follow complex prompts, citations, or
                 lack of background knowledge
               </li>
               <li className="flex items-center gap-x-2">
-                <Check className="text-white" size={12} weight="bold" /> You
-                want to run this model privately or offline
+                <Check
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
+                You want to run this model privately or offline
               </li>
             </ul>
           </div>
 
-          <div className="flex flex-col gap-y-2 text-white/80 text-sm mt-4">
-            <h3 className="text-base text-white font-semibold">
+          <div className="flex flex-col gap-y-2 text-theme-text-secondary text-sm mt-4">
+            <h3 className="text-base text-theme-text-primary font-semibold">
               What are fine-tunes bad for?
             </h3>
             <p>
@@ -78,17 +94,26 @@ export default function Introduction({ setSettings, setStep }) {
             </p>
             <ul>
               <li className="flex items-center gap-x-1">
-                <X className="text-white" size={12} weight="bold" /> You need
-                perfect recall of some piece of literature or reference document
+                <X
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
+                You need perfect recall of some piece of literature or reference
+                document
               </li>
               <li className="flex items-center gap-x-1">
-                <X className="text-white" size={12} weight="bold" /> You want
-                your model to have perfect memory or recollection
+                <X
+                  className="text-theme-text-primary"
+                  size={12}
+                  weight="bold"
+                />{" "}
+                You want your model to have perfect memory or recollection
               </li>
             </ul>
           </div>
 
-          <div className="flex flex-col gap-y-2 text-white/80 text-sm">
+          <div className="flex flex-col gap-y-2 text-theme-text-secondary text-sm">
             <p>
               In summary, if you are getting good results with RAG currently,
               creating a fine-tune can squeeze <b>even more performance</b> out

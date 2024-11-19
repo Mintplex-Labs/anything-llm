@@ -43,7 +43,7 @@ function NativeModelSelection({ settings }) {
         <select
           name="NativeLLMModelPref"
           disabled={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- waiting for models --
@@ -62,7 +62,7 @@ function NativeModelSelection({ settings }) {
         <select
           name="NativeLLMModelPref"
           required={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         >
           {customModels.length > 0 && (
             <optgroup label="Your loaded models">
@@ -88,7 +88,7 @@ function NativeModelSelection({ settings }) {
         <input
           type="number"
           name="NativeLLMTokenLimit"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="4096"
           min={1}
           onScroll={(e) => e.target.blur()}

@@ -16,7 +16,7 @@ export default function DeepSeekOptions({ settings }) {
         <input
           type="password"
           name="DeepSeekApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="DeepSeek API Key"
           defaultValue={settings?.DeepSeekApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -65,7 +65,7 @@ function DeepSeekModelSelection({ apiKey, settings }) {
         <select
           name="DeepSeekModelPref"
           disabled={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -83,7 +83,7 @@ function DeepSeekModelSelection({ apiKey, settings }) {
       <select
         name="DeepSeekModelPref"
         required={true}
-        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {models.map((model) => (
           <option

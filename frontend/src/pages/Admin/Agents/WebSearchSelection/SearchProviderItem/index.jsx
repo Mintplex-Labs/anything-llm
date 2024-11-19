@@ -3,8 +3,8 @@ export default function SearchProviderItem({ provider, checked, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`w-full p-2 rounded-md hover:cursor-pointer hover:bg-white/10 ${
-        checked ? "bg-white/10" : ""
+      className={`w-full p-2 rounded-md hover:cursor-pointer hover:bg-theme-bg-secondary ${
+        checked ? "bg-theme-bg-secondary" : ""
       }`}
     >
       <input

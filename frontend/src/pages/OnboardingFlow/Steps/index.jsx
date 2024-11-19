@@ -37,14 +37,17 @@ export function OnboardingLayout({ children }) {
 
   if (isMobile) {
     return (
-      <div className="w-screen h-screen overflow-y-auto bg-mobile-onboarding overflow-hidden">
+      <div
+        data-layout="onboarding"
+        className="w-screen h-screen overflow-y-auto bg-theme-bg-primary overflow-hidden"
+      >
         <div className="flex flex-col">
           <div className="w-full relative py-10 px-2">
             <div className="flex flex-col w-fit mx-auto gap-y-1 mb-[55px]">
-              <h1 className="text-white font-semibold text-center text-2xl">
+              <h1 className="text-theme-text-primary font-semibold text-center text-2xl">
                 {header.title}
               </h1>
-              <p className="text-zinc-400 text-base text-center">
+              <p className="text-theme-text-secondary text-base text-center">
                 {header.description}
               </p>
             </div>
@@ -87,17 +90,20 @@ export function OnboardingLayout({ children }) {
   }
 
   return (
-    <div className="w-screen overflow-y-auto bg-mobile-onboarding md:bg-main-gradient flex justify-center overflow-hidden">
+    <div
+      data-layout="onboarding"
+      className="w-screen overflow-y-auto bg-theme-bg-primary flex justify-center overflow-hidden"
+    >
       <div className="flex w-1/5 h-screen justify-center items-center">
         {backBtn.showing && (
           <button
             disabled={backBtn.disabled}
             onClick={backBtn.onClick}
-            className="group p-2 rounded-lg border-2 border-zinc-600 h-fit w-fit disabled:cursor-not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-theme-bg-secondary disabled:hover:bg-transparent"
             aria-label="Back"
           >
             <ArrowLeft
-              className="group-hover:text-black text-gray-500"
+              className="text-theme-text-secondary group-hover:text-theme-text-primary group-disabled:text-gray-500"
               size={30}
             />
           </button>
@@ -106,10 +112,10 @@ export function OnboardingLayout({ children }) {
 
       <div className="w-full md:w-3/5 relative h-full py-10">
         <div className="flex flex-col w-fit mx-auto gap-y-1 mb-[55px]">
-          <h1 className="text-white font-semibold text-center text-2xl">
+          <h1 className="text-theme-text-primary font-semibold text-center text-2xl">
             {header.title}
           </h1>
-          <p className="text-zinc-400 text-base text-center">
+          <p className="text-theme-text-secondary text-base text-center">
             {header.description}
           </p>
         </div>
@@ -121,11 +127,11 @@ export function OnboardingLayout({ children }) {
           <button
             disabled={forwardBtn.disabled}
             onClick={forwardBtn.onClick}
-            className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:cursor-not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-theme-bg-secondary disabled:hover:bg-transparent"
             aria-label="Continue"
           >
             <ArrowRight
-              className="text-white group-hover:text-black group-disabled:text-gray-500"
+              className="text-theme-text-secondary group-hover:text-theme-text-primary group-disabled:text-gray-500"
               size={30}
             />
           </button>

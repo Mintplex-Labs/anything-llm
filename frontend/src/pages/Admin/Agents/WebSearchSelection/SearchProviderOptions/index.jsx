@@ -20,7 +20,7 @@ export function GoogleSearchOptions({ settings }) {
           <input
             type="text"
             name="env::AgentGoogleSearchEngineId"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Google Search Engine Id"
             defaultValue={settings?.AgentGoogleSearchEngineId}
             required={true}
@@ -35,7 +35,7 @@ export function GoogleSearchOptions({ settings }) {
           <input
             type="password"
             name="env::AgentGoogleSearchEngineKey"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Google Search Engine API Key"
             defaultValue={
               settings?.AgentGoogleSearchEngineKey ? "*".repeat(20) : ""
@@ -87,7 +87,7 @@ export function SearchApiOptions({ settings }) {
           <input
             type="password"
             name="env::AgentSearchApiKey"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="SearchApi API Key"
             defaultValue={settings?.AgentSearchApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -102,7 +102,7 @@ export function SearchApiOptions({ settings }) {
           <select
             name="env::AgentSearchApiEngine"
             required={true}
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             defaultValue={settings?.AgentSearchApiEngine || "google"}
           >
             {SearchApiEngines.map(({ name, value }) => (
@@ -114,7 +114,7 @@ export function SearchApiOptions({ settings }) {
           {/* <input
             type="text"
             name="env::AgentSearchApiEngine"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="SearchApi engine (Google, Bing...)"
             defaultValue={settings?.AgentSearchApiEngine || "google"}
             required={true}
@@ -149,7 +149,7 @@ export function SerperDotDevOptions({ settings }) {
           <input
             type="password"
             name="env::AgentSerperApiKey"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Serper.dev API Key"
             defaultValue={settings?.AgentSerperApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -184,7 +184,7 @@ export function BingSearchOptions({ settings }) {
           <input
             type="password"
             name="env::AgentBingSearchApiKey"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Bing Web Search API Key"
             defaultValue={settings?.AgentBingSearchApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -247,7 +247,7 @@ export function SerplySearchOptions({ settings }) {
           <input
             type="password"
             name="env::AgentSerplyApiKey"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Serply API Key"
             defaultValue={settings?.AgentSerplyApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -270,7 +270,7 @@ export function SearXNGOptions({ settings }) {
         <input
           type="url"
           name="env::AgentSearXNGApiUrl"
-          className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="SearXNG API Key"
           defaultValue={settings?.AgentSearXNGApiUrl}
           required={true}
@@ -304,7 +304,7 @@ export function TavilySearchOptions({ settings }) {
           <input
             type="password"
             name="env::AgentTavilyApiKey"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Tavily API Key"
             defaultValue={settings?.AgentTavilyApiKey ? "*".repeat(20) : ""}
             required={true}
