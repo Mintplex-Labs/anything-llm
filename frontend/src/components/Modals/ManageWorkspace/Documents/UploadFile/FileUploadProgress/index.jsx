@@ -61,9 +61,9 @@ function FileUploadProgressComponent({
       }
 
       // Begin fadeout timer to clear uploader queue.
-      // setTimeout(() => {
-      //   fadeOut(() => setTimeout(() => beginFadeOut(), 300));
-      // }, 5000);
+      setTimeout(() => {
+        fadeOut(() => setTimeout(() => beginFadeOut(), 300));
+      }, 5000);
     }
     !!file && !rejected && uploadFile();
   }, []);
@@ -111,7 +111,7 @@ function FileUploadProgressComponent({
             {truncate(file.name, 30)}
           </p>
           <p className="text-red-100 light:text-red-600 text-xs font-medium">
-            {reason || "this file failed to upload"}
+            {error}
           </p>
         </div>
       </div>
