@@ -20,6 +20,7 @@ import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
+import PortkeyLogo from "@/media/llmprovider/portkey.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
@@ -117,7 +118,7 @@ export const LLM_SELECTION_PRIVACY = {
     description: [
       "Your model and chats are not visible to Portkey when using the OpenSOurce Version",
     ],
-    logo: LMStudioLogo,
+    logo: PortkeyLogo,
   },
   fireworksai: {
     name: "FireworksAI",

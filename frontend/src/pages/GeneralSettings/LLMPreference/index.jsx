@@ -25,6 +25,7 @@ import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
+import PortkeyLogo from "@/media/llmprovider/portkey.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
@@ -153,7 +154,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
   {
     name: "Portkey",
     value: "portkey",
-    logo: TogetherAILogo,
+    logo: PortkeyLogo,
     options: (settings) => <PortkeyOptions settings={settings} />,
     description: "Connect to various LLMs through Portkey's routing service.",
     requiredConfig: ["PortkeyBasePath", "PortkeyApiKey"],
