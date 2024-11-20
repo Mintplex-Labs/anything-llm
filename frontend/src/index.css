@@ -37,6 +37,8 @@
   --theme-settings-input-active: rgb(255 255 255 / 0.2);
   --theme-settings-input-text: #ffffff;
   --theme-modal-border: #3f3f42;
+
+  --theme-button-primary: #46c8ff;
   --theme-button-primary-hover: #434343;
 
   --theme-file-row-even: #0e0f0f;
@@ -86,6 +88,8 @@
   --theme-settings-input-active: rgb(0 0 0 / 0.2);
   --theme-settings-input-text: #0e0f0f;
   --theme-modal-border: #d3d3d3;
+
+  --theme-button-primary: #0ba5ec;
   --theme-button-primary-hover: #dedede;
 
   --theme-file-row-even: #f5f5f5;
