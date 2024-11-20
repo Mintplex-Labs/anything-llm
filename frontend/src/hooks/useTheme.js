@@ -1,3 +1,4 @@
+import { REFETCH_LOGO_EVENT } from "@/LogoContext";
 import { useState, useEffect } from "react";
 
 const availableThemes = {
@@ -26,6 +27,7 @@ export function useTheme() {
     document.documentElement.setAttribute("data-theme", theme);
     document.body.classList.toggle("light", theme === "light");
     localStorage.setItem("theme", theme);
+    window.dispatchEvent(new Event(REFETCH_LOGO_EVENT));
   }, [theme]);
 
   // In development, attach keybind combinations to toggle theme
@@ -34,20 +36,21 @@ export function useTheme() {
     function toggleOnKeybind(e) {
       if (e.metaKey && e.key === ".") {
         e.preventDefault();
-        const newTheme = theme === "light" ? "default" : "light";
-        console.log("toggling theme to ", newTheme);
-        setTheme(newTheme);
+        setTheme((prev) => (prev === "light" ? "default" : "light"));
       }
     }
     document.addEventListener("keydown", toggleOnKeybind);
     return () => document.removeEventListener("keydown", toggleOnKeybind);
   }, []);
 
-  // Refresh on theme change
-  const setTheme = (newTheme) => {
+  /**
+   * Sets the theme of the application and runs any
+   * other necessary side effects
+   * @param {string} newTheme The new theme to set
+   */
+  function setTheme(newTheme) {
     _setTheme(newTheme);
-    window.location.reload();
-  };
+  }
 
   return { theme, setTheme, availableThemes };
 }
