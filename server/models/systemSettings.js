@@ -442,6 +442,15 @@ const SystemSettings = {
       LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
       LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
 
+      // Portkey Keys
+      PortkeyApiKey: !!process.env.PORTKEY_API_KEY,
+      PortkeyBasePath: process.env.PORTKEY_BASE_PATH,
+      PortkeyModelPref: process.env.PORTKEY_MODEL_PREF,
+      PortkeyTokenLimit: process.env.PORTKEY_MODEL_TOKEN_LIMIT,
+      PortkeyConfigSlug: process.env.PORTKEY_CONFIG_SLUG,
+      PortkeyVirtualKey: process.env.PORTKEY_VIRTUAL_KEY,
+      
+
       // Ollama LLM Keys
       OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
       OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,

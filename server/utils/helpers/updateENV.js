@@ -409,6 +409,33 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+
+    // Portkey Settings
+  PortkeyModelPref: {
+    envKey: "PORTKEY_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  PortkeyTokenLimit: {
+    envKey: "PORTKEY_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  PortkeyBasePath: {
+    envKey: "PORTKEY_BASE_PATH",
+    checks: [isValidURL],
+  },
+  PortkeyApiKey: {
+    envKey: "PORTKEY_API_KEY",
+    checks: [isNotEmpty],
+  },
+  PortkeyConfigSlug: {
+    envKey: "PORTKEY_CONFIG_SLUG",
+    checks: [],
+  },
+  PortkeyVirtualKey: {
+    envKey: "PORTKEY_VIRTUAL_KEY",
+    checks: [],
+  },
+
   // Groq Options
   GroqApiKey: {
     envKey: "GROQ_API_KEY",
@@ -656,6 +683,7 @@ function validLocalWhisper(input = "") {
 function supportedLLM(input = "") {
   const validSelection = [
     "openai",
+    "portkey",
     "azure",
     "anthropic",
     "gemini",

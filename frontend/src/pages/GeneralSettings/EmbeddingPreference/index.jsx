@@ -94,6 +94,14 @@ const EMBEDDERS = [
     description: "Run powerful embedding models from Voyage AI.",
   },
   {
+    name: "Portkey",
+    value: "portkey",
+    logo: VoyageAiLogo,
+    options: (settings) => <PortkeyOptions settings={settings} />,
+    description: "Connect to various LLMs through Portkey's routing service.",
+    requiredConfig: ["PortkeyBasePath", "PortkeyApiKey"],
+  },
+  {
     name: "LiteLLM",
     value: "litellm",
     logo: LiteLLMLogo,

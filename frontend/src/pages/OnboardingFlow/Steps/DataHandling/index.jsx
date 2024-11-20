@@ -112,6 +112,13 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: TogetherAILogo,
   },
+  portkey: {
+    name: "Portkey AI",
+    description: [
+      "Your model and chats are not visible to Portkey when using the OpenSOurce Version",
+    ],
+    logo: LMStudioLogo,
+  },
   fireworksai: {
     name: "FireworksAI",
     description: [

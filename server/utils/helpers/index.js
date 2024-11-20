@@ -111,6 +111,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "lmstudio":
       const { LMStudioLLM } = require("../AiProviders/lmStudio");
       return new LMStudioLLM(embedder, model);
+    case "portkey":
+    const { Portkey } = require("../AiProviders/portkey");
+    return new Portkey(embedder, model);
     case "localai":
       const { LocalAiLLM } = require("../AiProviders/localAi");
       return new LocalAiLLM(embedder, model);
@@ -231,6 +234,9 @@ function getEmbeddingEngineSelection() {
  */
 function getLLMProviderClass({ provider = null } = {}) {
   switch (provider) {
+    case "portkey":
+    const { Portkey } = require("../AiProviders/portkey");
+    return Portkey;
     case "openai":
       const { OpenAiLLM } = require("../AiProviders/openAi");
       return OpenAiLLM;
