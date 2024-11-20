@@ -37,15 +37,15 @@ export default function AgentSQLConnectorSelection({
             >
               SQL Agent
             </label>
-            <label className="border-none relative inline-flex cursor-pointer items-center ml-auto">
+            <label className="border-none relative inline-flex items-center ml-auto cursor-pointer">
               <input
                 type="checkbox"
                 className="peer sr-only"
                 checked={enabled}
                 onChange={() => toggleSkill(skill)}
               />
-              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
-              <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
+              <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+              <span className="ml-3 text-sm font-medium"></span>
             </label>
           </div>
           <img

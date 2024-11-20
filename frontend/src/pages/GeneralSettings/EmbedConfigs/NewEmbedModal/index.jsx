@@ -136,7 +136,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
         >
           Workspace
         </label>
-        <p className="text-secondary text-xs">
+        <p className="text-theme-text-secondary text-xs">
           This is the workspace your chat window will be based on. All defaults
           will be inherited from the workspace unless overridden by this config.
         </p>
@@ -174,7 +174,7 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
         >
           Allowed chat method
         </label>
-        <p className="text-secondary text-xs">
+        <p className="text-theme-text-secondary text-xs">
           Set how your chatbot should operate. Query means it will only respond
           if a document helps answer the query.
           <br />
@@ -187,8 +187,8 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
           className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
             chatMode === "chat"
               ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-              : "border-theme-sidebar-border"
-          } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              : "border-theme-sidebar-border hover:border-theme-sidebar-border hover:bg-theme-bg-secondary"
+          } `}
         >
           <input
             type="radio"
@@ -213,8 +213,8 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
           className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
             chatMode === "query"
               ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-              : "border-theme-sidebar-border"
-          } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              : "border-theme-sidebar-border hover:border-theme-sidebar-border hover:bg-theme-bg-secondary"
+          } `}
         >
           <input
             type="radio"
@@ -287,7 +287,7 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
         >
           Restrict requests from domains
         </label>
-        <p className="test-secondary text-xs">
+        <p className="text-theme-text-secondary text-xs">
           This filter will block any requests that come from a domain other than
           the list below.
           <br />
@@ -317,7 +317,7 @@ export const NumberInput = ({ name, title, hint, defaultValue = 0 }) => {
         <label htmlFor={name} className="block text-sm font-medium text-white">
           {title}
         </label>
-        <p className="test-secondary text-xs">{hint}</p>
+        <p className="text-theme-text-secondary text-xs">{hint}</p>
       </div>
       <input
         type="number"
@@ -340,7 +340,7 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
         <label htmlFor={name} className="block text-sm font-medium text-white">
           {title}
         </label>
-        <p className="test-secondary text-xs">{hint}</p>
+        <p className="text-theme-text-secondary text-xs">{hint}</p>
       </div>
       <label className="relative inline-flex cursor-pointer items-center">
         <input
@@ -350,7 +350,7 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
           checked={status}
           className="peer sr-only pointer-events-none"
         />
-        <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800" />
+        <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
       </label>
     </div>
   );
