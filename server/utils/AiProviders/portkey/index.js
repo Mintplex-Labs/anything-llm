@@ -35,7 +35,7 @@ class Portkey {
       baseURL: this.basePath,
       apiKey,
       defaultHeaders: {
-        'x-portkey-config-slug': configSlug || '',
+        'x-portkey-config': configSlug || '',
         'x-portkey-virtual-key': virtualKey || ''
       }
     });
