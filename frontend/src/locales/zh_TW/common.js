@@ -58,8 +58,7 @@ const TRANSLATIONS = {
     },
     "password-reset": {
       title: "重設密碼",
-      description:
-        "請在下方提供必要資訊以重設您的密碼。",
+      description: "請在下方提供必要資訊以重設您的密碼。",
       "recovery-codes": "復原碼",
       "recovery-code": "復原碼 {{index}}",
       "back-to-login": "返回登入頁面",
@@ -78,8 +77,7 @@ const TRANSLATIONS = {
     part4:
       "很簡單。所有資料集都組織成我們稱之為「工作區」的儲存區。工作區是檔案、文件、圖片、PDF 和其他檔案的儲存區，這些檔案將會被轉換成 LLM 可以理解並在對話中使用的格式。\n\n您可以隨時新增和移除檔案。",
     createWorkspace: "建立您的第一個工作區",
-    user2:
-      "這像是 AI Dropbox 之類的嗎？那對話功能呢？它是一個對話機器人嗎？",
+    user2: "這像是 AI Dropbox 之類的嗎？那對話功能呢？它是一個對話機器人嗎？",
     part5:
       "AnythingLLM 不僅是一個更聰明的 Dropbox。\n\nAnythingLLM 提供兩種與您的資料互動的方式：\n\n<i>查詢：</i> 您的對話將會根據工作區中可存取的文件內容，傳回資料或推論。新增更多文件到工作區會讓它變得更聰明！\n\n<i>對話：</i> 您的文件加上持續進行中的對話紀錄，兩者會同時貢獻給 LLM 的知識庫。這非常適合用於附加即時的文字資訊，或是修正 LLM 可能產生的誤解。\n\n您可以在<i>對話過程中</i>隨時切換這兩種模式！",
     user3: "哇，這聽起來很棒，讓我馬上試試看！",
@@ -113,8 +111,7 @@ const TRANSLATIONS = {
     },
     message: {
       title: "建議對話訊息",
-      description:
-        "自訂要建議給工作區使用者的訊息。",
+      description: "自訂要建議給工作區使用者的訊息。",
       add: "新增訊息",
       save: "儲存訊息",
       heading: "請向我說明",
@@ -122,15 +119,13 @@ const TRANSLATIONS = {
     },
     pfp: {
       title: "助理個人檔案圖片",
-      description:
-        "自訂此工作區助理的個人檔案圖片。",
+      description: "自訂此工作區助理的個人檔案圖片。",
       image: "工作區圖片",
       remove: "移除工作區圖片",
     },
     delete: {
       title: "刪除工作區",
-      description:
-        "刪除此工作區及其所有資料。這將會為所有使用者刪除該工作區。",
+      description: "刪除此工作區及其所有資料。這將會為所有使用者刪除該工作區。",
       delete: "刪除工作區",
       deleting: "正在刪除工作區...",
       "confirm-start": "您即將刪除整個",
@@ -170,11 +165,9 @@ const TRANSLATIONS = {
     },
     history: {
       title: "對話紀錄",
-      "desc-start":
-        "先前對話訊息數量，將會包含在回應的短期記憶體中。",
+      "desc-start": "先前對話訊息數量，將會包含在回應的短期記憶體中。",
       recommend: "建議 20。",
-      "desc-end":
-        "根據訊息大小，任何超過 45 的數值都可能會導致對話持續失敗。",
+      "desc-end": "根據訊息大小，任何超過 45 的數值都可能會導致對話持續失敗。",
     },
     prompt: {
       title: "提示詞",
@@ -185,13 +178,11 @@ const TRANSLATIONS = {
       title: "查詢模式拒絕回應",
       "desc-start": "在",
       query: "查詢",
-      "desc-end":
-        "模式下，當找不到內容時，您可能需要傳回自訂的拒絕回應。",
+      "desc-end": "模式下，當找不到內容時，您可能需要傳回自訂的拒絕回應。",
     },
     temperature: {
       title: "LLM 溫度值",
-      "desc-start":
-        "此設定控制 LLM 回應的「創意度」。",
+      "desc-start": "此設定控制 LLM 回應的「創意度」。",
       "desc-end":
         "數值越高，創意度越高。對於某些模型，設定過高可能會導致不連貫的回應。",
       hint: "大多數 LLM 都有各種可接受的有效值範圍。請查詢您的 LLM 提供者以取得該資訊。",
@@ -232,18 +223,15 @@ const TRANSLATIONS = {
       "不直接支援工具呼叫的 LLM 的效能，高度取決於模型的功能和精確度。某些功能可能受限或無法使用。",
     provider: {
       title: "工作區智慧代理人 LLM 提供者",
-      description:
-        "此工作區 @agent 智慧代理人將使用的特定 LLM 提供者與模型。",
+      description: "此工作區 @agent 智慧代理人將使用的特定 LLM 提供者與模型。",
     },
     mode: {
       chat: {
         title: "工作區智慧代理人對話模型",
-        description:
-          "此工作區 @agent 智慧代理人將使用的特定對話模型。",
+        description: "此工作區 @agent 智慧代理人將使用的特定對話模型。",
       },
       title: "工作區智慧代理人模型",
-      description:
-        "此工作區 @agent 智慧代理人將使用的特定 LLM 模型。",
+      description: "此工作區 @agent 智慧代理人將使用的特定 LLM 模型。",
       wait: "-- 等待模型中 --",
     },
 
@@ -258,13 +246,11 @@ const TRANSLATIONS = {
       },
       view: {
         title: "檢視與摘要文件",
-        description:
-          "允許智慧代理人列出並摘要目前已嵌入的工作區檔案內容。",
+        description: "允許智慧代理人列出並摘要目前已嵌入的工作區檔案內容。",
       },
       scrape: {
         title: "擷取網站",
-        description:
-          "允許智慧代理人瀏覽並擷取網站內容。",
+        description: "允許智慧代理人瀏覽並擷取網站內容。",
       },
       generate: {
         title: "產生圖表",
@@ -289,8 +275,7 @@ const TRANSLATIONS = {
   // 工作區對話紀錄
   recorded: {
     title: "工作區對話紀錄",
-    description:
-      "這些是所有已記錄的對話和訊息，依建立日期排序。",
+    description: "這些是所有已記錄的對話和訊息，依建立日期排序。",
     export: "匯出",
     table: {
       id: "編號",
@@ -327,8 +312,7 @@ const TRANSLATIONS = {
     },
     icons: {
       title: "自訂頁尾圖示",
-      description:
-        "自訂顯示在側邊欄底端的頁尾圖示。",
+      description: "自訂顯示在側邊欄底端的頁尾圖示。",
       icon: "圖示",
       link: "連結",
     },
@@ -362,10 +346,8 @@ const TRANSLATIONS = {
     provider: "語音轉錄提供者",
     "warn-start":
       "在記憶體或處理器資源有限的電腦上使用本機 Whisper 模型，處理媒體檔案時可能會造成 AnythingLLM 停頓。",
-    "warn-recommend":
-      "我們建議至少 2GB 的記憶體，並且上傳小於 10MB 的檔案。",
-    "warn-end":
-      "內建模型將會在第一次使用時自動下載。",
+    "warn-recommend": "我們建議至少 2GB 的記憶體，並且上傳小於 10MB 的檔案。",
+    "warn-end": "內建模型將會在第一次使用時自動下載。",
   },
 
   embedding: {
@@ -376,8 +358,7 @@ const TRANSLATIONS = {
       "嵌入是將文字轉換成向量的過程。這些憑證是用於將您的檔案和提示詞轉換成 AnythingLLM 可以處理的格式。",
     provider: {
       title: "向量嵌入提供者",
-      description:
-        "使用 AnythingLLM 的原生嵌入引擎時，不需要任何設定。",
+      description: "使用 AnythingLLM 的原生嵌入引擎時，不需要任何設定。",
     },
   },
 
@@ -392,15 +373,13 @@ const TRANSLATIONS = {
     "warn-end": "，而不會套用至現有文件。",
     size: {
       title: "文字區塊大小",
-      description:
-        "這是單一向量中可包含的最大字元長度。",
+      description: "這是單一向量中可包含的最大字元長度。",
       recommend: "嵌入模型的最大長度為",
     },
 
     overlap: {
       title: "文字區塊重疊",
-      description:
-        "這是區塊化過程中，兩個相鄰文字區塊之間的最大字元重疊數。",
+      description: "這是區塊化過程中，兩個相鄰文字區塊之間的最大字元重疊數。",
     },
   },
 
@@ -431,8 +410,7 @@ const TRANSLATIONS = {
   "embed-chats": {
     title: "嵌入對話",
     export: "匯出",
-    description:
-      "這些是來自您已發布的任何嵌入內容的所有已記錄對話和訊息。",
+    description: "這些是來自您已發布的任何嵌入內容的所有已記錄對話和訊息。",
     table: {
       embed: "嵌入",
       sender: "傳送者",
@@ -444,8 +422,7 @@ const TRANSLATIONS = {
 
   multi: {
     title: "多使用者模式",
-    description:
-      "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",
+    description: "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",
     enable: {
       "is-enable": "多使用者模式已啟用",
       enable: "啟用多使用者模式",
@@ -470,8 +447,7 @@ const TRANSLATIONS = {
   // 事件記錄
   event: {
     title: "事件記錄",
-    description:
-      "檢視此系統上發生的所有動作和事件，以進行監控。",
+    description: "檢視此系統上發生的所有動作和事件，以進行監控。",
     clear: "清除事件記錄",
     table: {
       type: "事件類型",

@@ -35,6 +35,9 @@ export const resources = {
   zh: {
     common: Mandarin,
   },
+  "zh-tw": {
+    common: TraditionalChinese,
+  },
   es: {
     common: Spanish,
   },
@@ -62,7 +65,4 @@ export const resources = {
   nl: {
     common: Dutch,
   },
-  zh_TW: {
-    common: TraditionalChinese,
-  }
 };
