@@ -34,7 +34,7 @@
     "moment": "^2.29.4",
     "node-html-parser": "^6.1.13",
     "node-xlsx": "^0.24.0",
-    "officeparser": "^4.0.5",
+    "officeparser": "^5.1.1",
     "openai": "4.38.5",
     "pdf-parse": "^1.1.1",
     "puppeteer": "~21.5.2",
