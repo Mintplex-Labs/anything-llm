@@ -752,6 +752,7 @@ function supportedEmbeddingModel(input = "") {
     "voyageai",
     "litellm",
     "generic-openai",
+    "mistral",
   ];
   return supported.includes(input)
     ? null
