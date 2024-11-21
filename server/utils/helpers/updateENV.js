@@ -267,6 +267,10 @@ const KEY_MAPPING = {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",
     checks: [],
   },
+  GenericOpenAiEmbeddingMaxConcurrentChunks: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS",
+    checks: [nonZero],
+  },
 
   // Vector Database Selection Settings
   VectorDB: {
