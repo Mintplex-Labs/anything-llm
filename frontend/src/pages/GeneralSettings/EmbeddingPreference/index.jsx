@@ -199,7 +199,6 @@ export default function GeneralEmbeddingPreference() {
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
-      console.log("settings", _settings);
       setSettings(_settings);
       setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
       setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
