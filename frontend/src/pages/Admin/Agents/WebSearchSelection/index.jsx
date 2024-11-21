@@ -155,19 +155,26 @@ export default function AgentWebSearchSelection({
     <div className="p-2">
       <div className="flex flex-col gap-y-[18px] max-w-[500px]">
         <div className="flex items-center gap-x-2">
-          <ListMagnifyingGlass size={24} color="white" weight="bold" />
-          <label htmlFor="name" className="text-white text-md font-bold">
+          <ListMagnifyingGlass
+            size={24}
+            color="var(--theme-text-primary)"
+            weight="bold"
+          />
+          <label
+            htmlFor="name"
+            className="text-theme-text-primary text-md font-bold"
+          >
             Live web search and browsing
           </label>
-          <label className="border-none relative inline-flex cursor-pointer items-center ml-auto">
+          <label className="border-none relative inline-flex items-center ml-auto cursor-pointer">
             <input
               type="checkbox"
               className="peer sr-only"
               checked={enabled}
               onChange={() => toggleSkill(skill)}
             />
-            <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
-            <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
+            <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+            <span className="ml-3 text-sm font-medium"></span>
           </label>
         </div>
         <img
@@ -175,7 +182,7 @@ export default function AgentWebSearchSelection({
           alt="Web Search"
           className="w-full rounded-md"
         />
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
           Enable your agent to search the web to answer your questions by
           connecting to a web-search (SERP) provider. Web search during agent
           sessions will not work until this is set up.
@@ -194,20 +201,20 @@ export default function AgentWebSearchSelection({
               />
             )}
             {searchMenuOpen ? (
-              <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-dark-input rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
+              <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
                 <div className="w-full flex flex-col gap-y-1">
-                  <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-dark-input">
+                  <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
                     <MagnifyingGlass
                       size={20}
                       weight="bold"
-                      className="absolute left-4 z-30 text-white -ml-4 my-2"
+                      className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
                     />
                     <input
                       type="text"
                       name="web-provider-search"
                       autoComplete="off"
                       placeholder="Search available web-search providers"
-                      className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-white placeholder:text-white placeholder:font-medium"
+                      className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
                       onChange={(e) => setSearchQuery(e.target.value)}
                       ref={searchInputRef}
                       onKeyDown={(e) => {
@@ -237,7 +244,7 @@ export default function AgentWebSearchSelection({
               </div>
             ) : (
               <button
-                className="w-full max-w-[640px] h-[64px] bg-dark-input rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
+                className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
                 type="button"
                 onClick={() => setSearchMenuOpen(true)}
               >

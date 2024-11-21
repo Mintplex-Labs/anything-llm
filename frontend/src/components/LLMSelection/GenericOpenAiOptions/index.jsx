@@ -9,7 +9,7 @@ export default function GenericOpenAiOptions({ settings }) {
           <input
             type="url"
             name="GenericOpenAiBasePath"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="eg: https://proxy.openai.com"
             defaultValue={settings?.GenericOpenAiBasePath}
             required={true}
@@ -24,7 +24,7 @@ export default function GenericOpenAiOptions({ settings }) {
           <input
             type="password"
             name="GenericOpenAiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Generic service API Key"
             defaultValue={settings?.GenericOpenAiKey ? "*".repeat(20) : ""}
             required={false}
@@ -39,7 +39,7 @@ export default function GenericOpenAiOptions({ settings }) {
           <input
             type="text"
             name="GenericOpenAiModelPref"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Model id used for chat requests"
             defaultValue={settings?.GenericOpenAiModelPref}
             required={true}
@@ -55,7 +55,7 @@ export default function GenericOpenAiOptions({ settings }) {
           <input
             type="number"
             name="GenericOpenAiTokenLimit"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Content window limit (eg: 4096)"
             min={1}
             onScroll={(e) => e.target.blur()}
@@ -71,7 +71,7 @@ export default function GenericOpenAiOptions({ settings }) {
           <input
             type="number"
             name="GenericOpenAiMaxTokens"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Max tokens per request (eg: 1024)"
             min={1}
             defaultValue={settings?.GenericOpenAiMaxTokens || 1024}

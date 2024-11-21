@@ -40,86 +40,91 @@ export default function BrowserExtensionApiKeys() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+          <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <div className="items-center flex gap-x-4">
-              <p className="text-lg leading-6 font-bold text-white">
+              <p className="text-lg leading-6 font-bold text-theme-text-primary">
                 Browser Extension API Keys
               </p>
             </div>
-            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+            <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
               Manage API keys for browser extensions connecting to your
               AnythingLLM instance.
             </p>
           </div>
           <div className="w-full justify-end flex">
-            <CTAButton onClick={openModal} className="mt-3 mr-0 -mb-6 z-10">
+            <CTAButton
+              onClick={openModal}
+              className="mt-3 mr-0 mb-4 md:-mb-14 z-10"
+            >
               <PlusCircle className="h-4 w-4" weight="bold" />
               Generate New API Key
             </CTAButton>
           </div>
-          {loading ? (
-            <Skeleton.default
-              height="80vh"
-              width="100%"
-              highlightColor="#3D4147"
-              baseColor="#2C2F35"
-              count={1}
-              className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
-              containerClassName="flex w-full"
-            />
-          ) : error ? (
-            <div className="text-red-500 mt-6">Error: {error}</div>
-          ) : (
-            <table className="w-full text-sm text-left rounded-lg mt-6">
-              <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
-                <tr>
-                  <th scope="col" className="px-6 py-3 rounded-tl-lg">
-                    Extension Connection String
-                  </th>
-                  {isMultiUser && (
-                    <th scope="col" className="px-6 py-3">
-                      Created By
+          <div className="overflow-x-auto mt-6">
+            {loading ? (
+              <Skeleton.default
+                height="80vh"
+                width="100%"
+                highlightColor="var(--theme-bg-primary)"
+                baseColor="var(--theme-bg-secondary)"
+                count={1}
+                className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm"
+                containerClassName="flex w-full"
+              />
+            ) : error ? (
+              <div className="text-red-500 mt-6">Error: {error}</div>
+            ) : (
+              <table className="w-full text-sm text-left rounded-lg min-w-[640px] md:mt-6 mt-0">
+                <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 rounded-tl-lg">
+                      Extension Connection String
                     </th>
-                  )}
-                  <th scope="col" className="px-6 py-3">
-                    Created At
-                  </th>
-                  <th scope="col" className="px-6 py-3 rounded-tr-lg">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {apiKeys.length === 0 ? (
-                  <tr className="bg-transparent text-white text-opacity-80 text-sm font-medium">
-                    <td
-                      colSpan={isMultiUser ? "4" : "3"}
-                      className="px-6 py-4 text-center"
-                    >
-                      No API keys found
-                    </td>
+                    {isMultiUser && (
+                      <th scope="col" className="px-6 py-3">
+                        Created By
+                      </th>
+                    )}
+                    <th scope="col" className="px-6 py-3">
+                      Created At
+                    </th>
+                    <th scope="col" className="px-6 py-3 rounded-tr-lg">
+                      Actions
+                    </th>
                   </tr>
-                ) : (
-                  apiKeys.map((apiKey) => (
-                    <BrowserExtensionApiKeyRow
-                      key={apiKey.id}
-                      apiKey={apiKey}
-                      removeApiKey={removeApiKey}
-                      connectionString={`${fullApiUrl()}|${apiKey.key}`}
-                      isMultiUser={isMultiUser}
-                    />
-                  ))
-                )}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody>
+                  {apiKeys.length === 0 ? (
+                    <tr className="bg-transparent text-theme-text-secondary text-sm font-medium">
+                      <td
+                        colSpan={isMultiUser ? "4" : "3"}
+                        className="px-6 py-4 text-center"
+                      >
+                        No API keys found
+                      </td>
+                    </tr>
+                  ) : (
+                    apiKeys.map((apiKey) => (
+                      <BrowserExtensionApiKeyRow
+                        key={apiKey.id}
+                        apiKey={apiKey}
+                        removeApiKey={removeApiKey}
+                        connectionString={`${fullApiUrl()}|${apiKey.key}`}
+                        isMultiUser={isMultiUser}
+                      />
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
       <ModalWrapper isOpen={isOpen}>

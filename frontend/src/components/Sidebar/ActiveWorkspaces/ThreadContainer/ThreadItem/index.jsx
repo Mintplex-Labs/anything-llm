@@ -33,7 +33,7 @@ export default function ThreadItem({
 
   return (
     <div
-      className="w-full relative flex h-[38px] items-center border-none hover:bg-slate-600/20 rounded-lg"
+      className="w-full relative flex h-[38px] items-center border-none rounded-lg"
       role="listitem"
     >
       {/* Curved line Element and leader if required */}
@@ -41,9 +41,9 @@ export default function ThreadItem({
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
         className={`${
           isActive
-            ? "border-l-2 border-b-2 border-white"
-            : "border-l border-b border-slate-300"
-        } h-[50%] absolute top-0 z-10 left-2 rounded-bl-lg`}
+            ? "border-l-2 border-b-2 border-white light:border-theme-sidebar-border z-30"
+            : "border-l border-b border-[#6F6F71] light:border-theme-sidebar-border z-10"
+        } h-[50%] absolute top-0 left-2 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
       {hasNext && (
@@ -51,9 +51,9 @@ export default function ThreadItem({
           style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
           className={`${
             idx <= activeIdx && !isActive
-              ? "border-l-2 border-white"
-              : "border-l border-slate-300"
-          } h-[100%] absolute top-0 z-1 left-2`}
+              ? "border-l-2 border-white light:border-theme-sidebar-border z-20"
+              : "border-l border-[#6F6F71] light:border-theme-sidebar-border z-10"
+          } h-[100%] absolute top-0 left-2`}
         ></div>
       )}
 
@@ -62,11 +62,15 @@ export default function ThreadItem({
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH + 8 }}
         className="h-full"
       />
-      <div className="flex w-full items-center justify-between pr-2 group relative">
+      <div
+        className={`flex w-full items-center justify-between pr-2 group relative ${isActive ? "bg-[var(--theme-sidebar-thread-selected)] border border-solid border-transparent light:border-blue-400" : "hover:bg-theme-sidebar-subitem-hover"} rounded-[4px]`}
+      >
         {thread.deleted ? (
           <div className="w-full flex justify-between">
-            <div className="w-full ">
-              <p className={`text-left text-sm text-slate-400/50 italic`}>
+            <div className="w-full pl-2 py-1">
+              <p
+                className={`text-left text-sm text-slate-400/50 light:text-slate-500 italic`}
+              >
                 deleted thread
               </p>
             </div>
@@ -77,7 +81,7 @@ export default function ThreadItem({
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <ArrowCounterClockwise
-                  className="text-zinc-300 hover:text-white"
+                  className="text-zinc-300 hover:text-white light:text-theme-text-secondary hover:light:text-theme-text-primary"
                   size={18}
                 />
               </button>
@@ -88,12 +92,12 @@ export default function ThreadItem({
             href={
               window.location.pathname === linkTo || ctrlPressed ? "#" : linkTo
             }
-            className="w-full"
+            className="w-full pl-2 py-1"
             aria-current={isActive ? "page" : ""}
           >
             <p
               className={`text-left text-sm ${
-                isActive ? "font-medium text-white" : "text-slate-400"
+                isActive ? "font-medium text-white" : "text-theme-text-primary"
               }`}
             >
               {truncate(thread.name, 25)}
@@ -101,7 +105,9 @@ export default function ThreadItem({
           </a>
         )}
         {!!thread.slug && !thread.deleted && (
-          <div ref={optionsContainer}>
+          <div ref={optionsContainer} className="flex items-center">
+            {" "}
+            {/* Added flex and items-center */}
             {ctrlPressed ? (
               <button
                 type="button"
@@ -109,7 +115,7 @@ export default function ThreadItem({
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <X
-                  className="text-zinc-300 hover:text-white"
+                  className="text-zinc-300 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
                   weight="bold"
                   size={18}
                 />
@@ -122,7 +128,10 @@ export default function ThreadItem({
                   onClick={() => setShowOptions(!showOptions)}
                   aria-label="Thread options"
                 >
-                  <DotsThree className="text-slate-300" size={25} />
+                  <DotsThree
+                    className="text-slate-300 light:text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary"
+                    size={25}
+                  />
                 </button>
               </div>
             )}
@@ -225,12 +234,12 @@ function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
   return (
     <div
       ref={menuRef}
-      className="absolute w-fit z-[20] top-[25px] right-[10px] bg-zinc-900 rounded-lg p-1"
+      className="absolute w-fit z-[20] top-[25px] right-[10px] bg-zinc-900 light:bg-theme-bg-sidebar light:border-[1px] light:border-theme-sidebar-border rounded-lg p-1"
     >
       <button
         onClick={renameThread}
         type="button"
-        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-slate-500/20 text-slate-300"
+        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-slate-500/20 text-slate-300 light:text-theme-text-primary"
       >
         <PencilSimple size={18} />
         <p className="text-sm">Rename</p>
@@ -238,7 +247,7 @@ function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
       <button
         onClick={handleDelete}
         type="button"
-        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 hover:text-red-100"
+        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 light:text-theme-text-primary hover:text-red-100"
       >
         <Trash size={18} />
         <p className="text-sm">Delete Thread</p>

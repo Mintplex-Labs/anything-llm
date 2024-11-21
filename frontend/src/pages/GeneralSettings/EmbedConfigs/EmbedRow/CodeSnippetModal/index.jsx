@@ -2,36 +2,36 @@ import React, { useState } from "react";
 import { CheckCircle, CopySimple, X } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import hljs from "highlight.js";
-import "highlight.js/styles/github-dark-dimmed.min.css";
+import "@/utils/chat/themes/github-dark.css";
+import "@/utils/chat/themes/github.css";
 
 export default function CodeSnippetModal({ embed, closeModal }) {
   return (
-    <div className="relative max-w-2xl max-h-full">
-      <div className="relative bg-main-gradient rounded-lg shadow">
-        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-          <h3 className="text-xl font-semibold text-white">
-            Copy your embed code
-          </h3>
+    <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+          <div className="w-full flex gap-x-2 items-center">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              Copy your embed code
+            </h3>
+          </div>
           <button
             onClick={closeModal}
             type="button"
-            className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-            data-modal-hide="staticModal"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-gray-300 text-lg" />
+            <X size={24} weight="bold" className="text-white" />
           </button>
         </div>
-        <div>
-          <div className="p-6 space-y-6 flex h-auto max-h-[80vh] w-full overflow-y-scroll">
-            <div className="w-full flex flex-col gap-y-6">
-              <ScriptTag embed={embed} />
-            </div>
+        <div className="px-7 py-6">
+          <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+            <ScriptTag embed={embed} />
           </div>
-          <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+          <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
             <button
               onClick={closeModal}
               type="button"
-              className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
+              className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
             >
               Close
             </button>
@@ -67,6 +67,8 @@ const ScriptTag = ({ embed }) => {
     ? "http://localhost:3001"
     : window.location.origin;
   const snippet = createScriptTagSnippet(embed, scriptHost, serverHost);
+  const theme =
+    window.localStorage.getItem("theme") === "light" ? "github" : "github-dark";
 
   const handleClick = () => {
     window.navigator.clipboard.writeText(snippet);
@@ -83,14 +85,14 @@ const ScriptTag = ({ embed }) => {
         <label className="block text-sm font-medium text-white">
           HTML Script Tag Embed Code
         </label>
-        <p className="text-slate-300 text-xs">
+        <p className="text-theme-text-secondary text-xs">
           Have your workspace chat embed function like a help desk chat bottom
           in the corner of your website.
         </p>
         <a
           href="https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md"
           target="_blank"
-          className="text-blue-300 hover:underline"
+          className="text-blue-300 light:text-blue-500 hover:underline"
         >
           View all style and configuration options &rarr;
         </a>
@@ -98,7 +100,7 @@ const ScriptTag = ({ embed }) => {
       <button
         disabled={copied}
         onClick={handleClick}
-        className="disabled:border disabled:border-green-300 border border-transparent relative w-full font-mono flex bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
+        className={`disabled:border disabled:border-green-300 disabled:light:border-green-600 border border-transparent relative w-full font-mono flex hljs ${theme} light:border light:border-gray-700 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5`}
       >
         <div
           className="flex w-full text-left flex-col gap-y-1 pr-6 pl-4 whitespace-pre-line"
@@ -112,7 +114,7 @@ const ScriptTag = ({ embed }) => {
         {copied ? (
           <CheckCircle
             size={14}
-            className="text-green-300 absolute top-2 right-2"
+            className="text-green-300 light:text-green-600 absolute top-2 right-2"
           />
         ) : (
           <CopySimple size={14} className="absolute top-2 right-2" />

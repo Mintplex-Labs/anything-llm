@@ -193,6 +193,8 @@ const SystemSettings = {
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
+      GenericOpenAiEmbeddingMaxConcurrentChunks:
+        process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs

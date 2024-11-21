@@ -24,11 +24,10 @@ export default function GitlabOptions() {
     try {
       setLoading(true);
       showToast(
-        `Fetching all files for repo ${repo} - this may take a while.`,
+        "Fetching all files for repo - this may take a while.",
         "info",
         { clear: true, autoClose: false }
       );
-
       const { data, error } = await System.dataConnectors.gitlab.collect({
         repo: form.get("repo"),
         accessToken: form.get("accessToken"),
@@ -71,40 +70,41 @@ export default function GitlabOptions() {
                   <label className="text-white text-sm font-bold">
                     GitLab Repo URL
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-theme-text-secondary">
                     URL of the GitLab repo you wish to collect.
                   </p>
                 </div>
                 <input
                   type="url"
                   name="repo"
-                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://gitlab.com/gitlab-org/gitlab"
                   required={true}
                   autoComplete="off"
                   onChange={(e) => setRepo(e.target.value)}
                   onBlur={() => setSettings({ ...settings, repo })}
                   spellCheck={false}
-                  rows={2}
                 />
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white font-bold text-sm flex gap-x-2 items-center">
                     <p className="font-bold text-white">GitLab Access Token</p>{" "}
-                    <p className="text-xs text-white/50 font-light flex items-center">
-                      optional
+                    <p className="text-xs font-light flex items-center">
+                      <span className="text-theme-text-secondary">
+                        optional
+                      </span>
                       <PATTooltip accessToken={accessToken} />
                     </p>
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-theme-text-secondary">
                     Access Token to prevent rate limiting.
                   </p>
                 </div>
                 <input
                   type="text"
                   name="accessToken"
-                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="glpat-XXXXXXXXXXXXXXXXXXXX"
                   required={false}
                   autoComplete="off"
@@ -130,7 +130,7 @@ export default function GitlabOptions() {
                       value={true}
                       className="peer sr-only"
                     />
-                    <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
+                    <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
                     <span className="ml-3 text-sm font-medium text-white">
                       Fetch Issues as Documents
                     </span>
@@ -148,7 +148,7 @@ export default function GitlabOptions() {
                 <label className="text-white text-sm flex gap-x-2 items-center">
                   <p className="text-white text-sm font-bold">File Ignores</p>
                 </label>
-                <p className="text-xs font-normal text-white/50">
+                <p className="text-xs font-normal text-theme-text-secondary">
                   List in .gitignore format to ignore specific files during
                   collection. Press enter after each entry you want to save.
                 </p>
@@ -159,9 +159,9 @@ export default function GitlabOptions() {
                 name="ignores"
                 placeholder="!*.js, images/*, .DS_Store, bin/*"
                 classNames={{
-                  tag: "bg-blue-300/10 text-zinc-800",
+                  tag: "bg-theme-settings-input-bg light:bg-black/10 bg-blue-300/10 text-zinc-800",
                   input:
-                    "flex bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white",
+                    "flex p-1 !bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
                 }}
               />
             </div>
@@ -217,14 +217,14 @@ function GitLabBranchSelection({ repo, accessToken }) {
       <div className="flex flex-col w-60">
         <div className="flex flex-col gap-y-1 mb-4">
           <label className="text-white text-sm font-bold">Branch</label>
-          <p className="text-xs font-normal text-white/50">
+          <p className="text-xs font-normal text-theme-text-secondary">
             Branch you wish to collect files from.
           </p>
         </div>
         <select
           name="branch"
           required={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available branches --
@@ -238,14 +238,14 @@ function GitLabBranchSelection({ repo, accessToken }) {
     <div className="flex flex-col w-60">
       <div className="flex flex-col gap-y-1 mb-4">
         <label className="text-white text-sm font-bold">Branch</label>
-        <p className="text-xs font-normal text-white/50">
+        <p className="text-xs font-normal text-theme-text-secondary">
           Branch you wish to collect files from.
         </p>
       </div>
       <select
         name="branch"
         required={true}
-        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
       >
         {allBranches.map((branch) => {
           return (
@@ -302,7 +302,7 @@ function PATTooltip({ accessToken }) {
       <Tooltip
         delayHide={300}
         id="access-token-tooltip"
-        className="max-w-xs"
+        className="max-w-xs z-99"
         clickable={true}
       >
         <p className="text-sm">

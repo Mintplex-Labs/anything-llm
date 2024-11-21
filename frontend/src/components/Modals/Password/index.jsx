@@ -13,7 +13,7 @@ import illustration from "@/media/illustrations/login-illustration.svg";
 export default function PasswordModal({ mode = "single" }) {
   const { loginLogo } = useLogo();
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-[#25272C] flex flex-col md:flex-row items-center justify-center">
+    <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-theme-bg-primary flex flex-col md:flex-row items-center justify-center">
       <div
         style={{
           background: `
@@ -33,13 +33,13 @@ export default function PasswordModal({ mode = "single" }) {
           alt="login illustration"
         />
       </div>
-      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative -mt-20">
+      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative md:-mt-20 mt-0 !border-none bg-theme-bg-secondary md:bg-transparent">
         <img
           src={loginLogo}
           alt="Logo"
           className={`hidden relative md:flex rounded-2xl w-fit m-4 z-30 ${
             mode === "single" ? "md:top-2" : "md:top-12"
-          } absolute max-h-[65px] md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+          } absolute max-h-[65px]`}
           style={{ objectFit: "contain" }}
         />
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}

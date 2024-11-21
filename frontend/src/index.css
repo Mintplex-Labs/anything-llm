@@ -2,6 +2,131 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Default theme */
+  --theme-loader: #ffffff;
+  --theme-bg-primary: #0e0f0f;
+  --theme-bg-secondary: #1b1b1e;
+  --theme-bg-sidebar: #0e0f0f;
+  --theme-bg-container: #0e0f0f;
+  --theme-bg-chat: #1b1b1e;
+  --theme-bg-chat-input: #27282a;
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: rgba(255, 255, 255, 0.6);
+  --theme-sidebar-item-default: rgba(255, 255, 255, 0.1);
+  --theme-sidebar-item-selected: rgba(255, 255, 255, 0.3);
+  --theme-sidebar-item-hover: #3f3f42;
+  --theme-sidebar-subitem-default: rgba(255, 255, 255, 0.05);
+  --theme-sidebar-subitem-selected: rgba(255, 255, 255, 0.05);
+  --theme-sidebar-thread-selected: rgba(255, 255, 255, 0.05);
+
+  --theme-sidebar-subitem-hover: rgba(255, 255, 255, 0.05);
+  --theme-sidebar-border: rgba(255, 255, 255, 0.1);
+  --theme-sidebar-item-workspace-active: #ffffff;
+  --theme-sidebar-item-workspace-inactive: #ffffff;
+
+  --theme-sidebar-footer-icon: rgba(255, 255, 255, 0.1);
+  --theme-sidebar-footer-icon-fill: #ffffff;
+  --theme-sidebar-footer-icon-hover: rgba(255, 255, 255, 0.2);
+
+  --theme-chat-input-border: #525355;
+  --theme-action-menu-bg: #27282a;
+  --theme-action-menu-item-hover: rgba(255, 255, 255, 0.1);
+  --theme-settings-input-bg: #0e0f0f;
+  --theme-settings-input-placeholder: rgba(255, 255, 255, 0.5);
+  --theme-settings-input-active: rgb(255 255 255 / 0.2);
+  --theme-settings-input-text: #ffffff;
+  --theme-modal-border: #3f3f42;
+
+  --theme-button-primary: #46c8ff;
+  --theme-button-primary-hover: #434343;
+
+  --theme-file-row-even: #0e0f0f;
+  --theme-file-row-odd: #1b1b1e;
+  --theme-file-row-selected-even: rgba(14, 165, 233, 0.2);
+  --theme-file-row-selected-odd: rgba(14, 165, 233, 0.1);
+  --theme-file-picker-hover: rgb(14 165 233 / 0.2);
+}
+
+[data-theme="light"] {
+  --theme-loader: #000000;
+
+  --theme-bg-primary: #ffffff;
+  --theme-bg-secondary: #ffffff;
+  --theme-bg-sidebar: #edf2fa;
+  --theme-bg-container: #f9fbfd;
+
+  --theme-bg-chat: #ffffff;
+  --theme-bg-chat-input: #eaeaea;
+  --theme-text-primary: #0e0f0f;
+  --theme-text-secondary: #7a7d7e;
+  --theme-sidebar-item-default: #ffffff;
+  --theme-sidebar-item-selected: #ffffff;
+  --theme-sidebar-item-hover: #c8efff;
+
+  --theme-sidebar-item-text-inactive: #7a7d7e;
+  --theme-sidebar-item-text-active: #184558;
+
+  --theme-sidebar-item-workspace-active: #000000;
+  --theme-sidebar-item-workspace-inactive: #7a7d7e;
+
+  --theme-sidebar-subitem-default: transparent;
+  --theme-sidebar-subitem-selected: #e2e7ee;
+  --theme-sidebar-thread-selected: #ffffff;
+  --theme-sidebar-subitem-hover: #e2e7ee;
+  --theme-sidebar-border: #d3d4d4;
+
+  --theme-sidebar-footer-icon: #ffffff;
+  --theme-sidebar-footer-icon-fill: #6e6f6f;
+  --theme-sidebar-footer-icon-hover: #d8d6d6;
+
+  --theme-chat-input-border: #cccccc;
+  --theme-action-menu-bg: #eaeaea;
+  --theme-action-menu-item-hover: rgba(0, 0, 0, 0.1);
+  --theme-settings-input-bg: #f5f5f5;
+  --theme-settings-input-placeholder: rgba(0, 0, 0, 0.5);
+  --theme-settings-input-active: rgb(0 0 0 / 0.2);
+  --theme-settings-input-text: #0e0f0f;
+  --theme-modal-border: #d3d3d3;
+
+  --theme-button-primary: #0ba5ec;
+  --theme-button-primary-hover: #dedede;
+
+  --theme-file-row-even: #f5f5f5;
+  --theme-file-row-odd: #e9e9e9;
+  --theme-file-row-selected-even: #0ba5ec;
+  --theme-file-row-selected-odd: #0ba5ec;
+  --theme-file-picker-hover: #e2e7ee;
+}
+
+[data-theme="light"] .text-white {
+  color: var(--theme-text-primary);
+}
+
+[data-theme="light"] .text-description,
+[data-theme="light"] .text-white\/60 {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme="light"] .bg-theme-bg-secondary {
+  border: 1px solid var(--theme-sidebar-border);
+}
+
+[data-theme="light"] .border-white\/10 {
+  border-color: var(--theme-sidebar-border);
+}
+
+/*
+This is to override the default border color for the select and input elements
+in the onboarding flow when the theme is not light. This only applies to the
+onboarding flow since its background is dark and is the same fill as the inputs.
+*/
+[data-layout="onboarding"] > * select:not([data-theme="light"]),
+[data-layout="onboarding"] > * input:not([data-theme="light"]),
+[data-layout="onboarding"] > * textarea:not([data-theme="light"]) {
+  border: 1px solid #ffffff;
+}
+
 html,
 body {
   padding: 0;
@@ -434,10 +559,6 @@ dialog::backdrop {
   }
 }
 
-.rti--container {
-  @apply !bg-zinc-900 !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
-}
-
 .tooltip {
   @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
 }
@@ -654,19 +775,21 @@ dialog::backdrop {
 }
 
 .file-row:nth-child(even) {
-  @apply bg-dark-highlight;
+  @apply bg-theme-bg-primary;
+  background-color: var(--theme-file-row-even);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .file-row:nth-child(odd) {
-  @apply bg-[#2C2C2C];
+  @apply bg-theme-bg-secondary;
+  background-color: var(--theme-file-row-odd);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.file-row.selected:nth-child(even) {
-  @apply bg-sky-500/20;
-}
-
+.file-row.selected:nth-child(even),
 .file-row.selected:nth-child(odd) {
-  @apply bg-sky-500/10;
+  background-color: var(--theme-file-row-selected-even);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Flex upload modal to be a column when on small screens so that the UI
@@ -812,4 +935,8 @@ does not extend the close button beyond the viewport. */
 
 .katex-mathml {
   font-size: 20px;
+}
+
+.rti--container {
+  @apply !bg-theme-settings-input-bg !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
 }

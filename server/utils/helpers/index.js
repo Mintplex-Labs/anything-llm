@@ -214,6 +214,9 @@ function getEmbeddingEngineSelection() {
     case "litellm":
       const { LiteLLMEmbedder } = require("../EmbeddingEngines/liteLLM");
       return new LiteLLMEmbedder();
+    case "mistral":
+      const { MistralEmbedder } = require("../EmbeddingEngines/mistral");
+      return new MistralEmbedder();
     case "generic-openai":
       const {
         GenericOpenAiEmbedder,
