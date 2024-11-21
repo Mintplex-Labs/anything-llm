@@ -349,6 +349,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: VoyageAiLogo,
   },
+  mistral: {
+    name: "Mistral AI",
+    description: [
+      "Data sent to Mistral AI's servers is shared according to the terms of service of https://mistral.ai.",
+    ],
+    logo: MistralLogo,
+  },
   litellm: {
     name: "LiteLLM",
     description: [
