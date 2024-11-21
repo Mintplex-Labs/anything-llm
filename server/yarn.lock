@@ -4906,10 +4906,10 @@ kuler@^2.0.0:
   resolved "https://registry.yarnpkg.com/kuler/-/kuler-2.0.0.tgz#e2c570a3800388fb44407e851531c1d670b061b3"
   integrity sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==
 
-ky@^0.33.1:
-  version "0.33.3"
-  resolved "https://registry.yarnpkg.com/ky/-/ky-0.33.3.tgz#bf1ad322a3f2c3428c13cfa4b3af95e6c4a2f543"
-  integrity sha512-CasD9OCEQSFIam2U8efFK81Yeg8vNMTBUqtMOHlrcWQHqUX3HeCl9Dr31u4toV7emlH8Mymk5+9p0lL6mKb/Xw==
+ky@^1.1.0:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/ky/-/ky-1.7.2.tgz#b97d9b997ba51ff1e152f0815d3d27b86513eb1c"
+  integrity sha512-OzIvbHKKDpi60TnF9t7UUVAF1B4mcqc02z5PIvrm08Wyb+yOcz63GRvEuVxNT18a9E1SrNouhB4W2NNLeD7Ykg==
 
 langchain@0.1.36:
   version "0.1.36"
@@ -5962,12 +5962,12 @@ picomatch@^2.0.4, picomatch@^2.2.1:
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.3.1.tgz#3ba3833733646d9d3e4995946c1365a67fb07a42"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
 
-pinecone-client@^1.1.0:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/pinecone-client/-/pinecone-client-1.1.2.tgz#8410ace620d89e74115769ac1594c56a4d9784b0"
-  integrity sha512-b5phC4tXXo9DCmhaoi1YNgtE/MWxocDIDUEc92ZN/uVFe38uQVYYu0XSj5SpjYQXRv4Pclsq+eN+iBafhMQEcw==
+pinecone-client@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/pinecone-client/-/pinecone-client-2.0.0.tgz#e3e2db597ddd4e1ca161d643eac80ebaa9e0f266"
+  integrity sha512-CxpKuck4zxi/LaGaTrnWQNs9NmXiMB3UtynOhD6dVDoWRKGEXmgRbSFipMUdqGyyQEKMFXzTKvzo4qMHi2Gj8Q==
   dependencies:
-    ky "^0.33.1"
+    ky "^1.1.0"
 
 pirates@^3.0.2:
   version "3.0.2"
