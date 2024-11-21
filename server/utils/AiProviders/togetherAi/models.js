@@ -161,6 +161,18 @@ const MODELS = {
     name: "Llama 3.1 405B Instruct Turbo",
     maxLength: 4096,
   },
+  "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo": {
+    id: "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
+    organization: "Meta",
+    name: "Llama 3.2 11B Vision Instruct Turbo",
+    maxLength: 4096,
+  },
+  "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo": {
+    id: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
+    organization: "Meta",
+    name: "Llama 3.2 90B Vision Instruct Turbo",
+    maxLength: 4096,
+  },
   "mistralai/Mistral-7B-Instruct-v0.1": {
     id: "mistralai/Mistral-7B-Instruct-v0.1",
     organization: "mistralai",

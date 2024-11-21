@@ -18,6 +18,7 @@ class TogetherAiLLM {
       apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
     });
     this.model = modelPreference || process.env.TOGETHER_AI_MODEL_PREF;
+    console.log("this.model", this.model);
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -38,6 +39,23 @@ class TogetherAiLLM {
         })
         .join("")
     );
+  }
+
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+    return content.flat();
   }
 
   allModelInformation() {
@@ -70,12 +88,20 @@ class TogetherAiLLM {
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...chatHistory,
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
