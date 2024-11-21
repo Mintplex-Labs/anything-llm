@@ -50,7 +50,7 @@
     "@types/react": "^18.2.23",
     "@types/react-dom": "^18.2.8",
     "@types/react-router-dom": "^5.3.3",
-    "@vitejs/plugin-react": "^4.0.0-beta.0",
+    "@vitejs/plugin-react": "^4.3.3",
     "autoprefixer": "^10.4.14",
     "buffer": "^6.0.3",
     "eslint": "^8.50.0",
