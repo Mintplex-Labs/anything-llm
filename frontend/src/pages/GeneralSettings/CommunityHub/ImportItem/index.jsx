@@ -93,7 +93,7 @@ export default function CommunityHubImportItemFlow() {
             <div className="flex flex-col gap-y-[18px] mt-10 w-[360px] flex-shrink-0">
               <SideBarSelection setStep={setStep} currentStep={step} />
             </div>
-            <div className="overflow-y-auto pb-[74px] h-screen">
+            <div className="overflow-y-auto pb-[200px] h-screen no-scroll">
               <div className="ml-8">
                 {StepPage.component({ settings, setSettings, setStep })}
               </div>

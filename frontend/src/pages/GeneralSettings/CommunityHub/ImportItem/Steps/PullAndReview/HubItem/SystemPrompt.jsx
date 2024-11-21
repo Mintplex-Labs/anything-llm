@@ -63,7 +63,9 @@ export default function SystemPrompt({ item, setStep }) {
         </p>
 
         <div className="flex flex-col gap-y-2">
-          <p className="text-white/60 light:text-theme-text-secondary font-semibold">Provided system prompt:</p>
+          <p className="text-white/60 light:text-theme-text-secondary font-semibold">
+            Provided system prompt:
+          </p>
           <div className="w-full text-theme-text-primary text-md flex flex-col max-h-[calc(300px)] overflow-y-auto">
             <p className="text-white/60 light:text-theme-text-secondary font-mono bg-zinc-900 light:bg-slate-200 px-2 py-1 rounded-md text-sm whitespace-pre-line">
               {item.prompt}

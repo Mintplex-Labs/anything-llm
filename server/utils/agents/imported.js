@@ -125,6 +125,20 @@ class ImportedPlugin {
   }
 
   /**
+   * Deletes a plugin. Removes the entire folder of the object.
+   * @param {string} hubId - The hub ID of the plugin.
+   * @returns {boolean} - True if the plugin was deleted, false otherwise.
+   */
+  static deletePlugin(hubId) {
+    if (!hubId) throw new Error("No plugin hubID passed.");
+    const pluginFolder = path.resolve(pluginsPath, normalizePath(hubId));
+    if (!this.isValidLocation(pluginFolder)) return;
+    fs.rmSync(pluginFolder, { recursive: true });
+    return true;
+  }
+
+  /**
+  /**
    * Validates if the handler.js file exists for the given plugin.
    * @param {string} hubId - The hub ID of the plugin.
    * @returns {boolean} - True if the handler.js file exists, false otherwise.
@@ -195,6 +209,9 @@ class ImportedPlugin {
    */
   static async importCommunityItemFromUrl(url, item) {
     this.checkPluginFolderExists();
+    const hubId = item.id;
+    if (!hubId) return { success: false, error: "No hubId passed to import." };
+
     const zipFilePath = path.resolve(pluginsPath, `${item.id}.zip`);
     const pluginFile = item.manifest.files.find(
       (file) => file.name === "plugin.json"
@@ -204,10 +221,6 @@ class ImportedPlugin {
         success: false,
         error: "No plugin.json file found in manifest.",
       };
-
-    const hubId = safeJsonParse(pluginFile.content).hubId || null;
-    if (!hubId)
-      return { success: false, error: "No hubId found in plugin.json." };
 
     const pluginFolder = path.resolve(pluginsPath, normalizePath(hubId));
     if (fs.existsSync(pluginFolder))
@@ -261,6 +274,14 @@ class ImportedPlugin {
       const AdmZip = require("adm-zip");
       const zip = new AdmZip(zipFilePath);
       zip.extractAllTo(pluginFolder);
+
+      // We want to make sure specific keys are set to the proper values for
+      // plugin.json so we read and overwrite the file with the proper values.
+      const pluginJsonPath = path.resolve(pluginFolder, "plugin.json");
+      const pluginJson = safeJsonParse(fs.readFileSync(pluginJsonPath, "utf8"));
+      pluginJson.active = false;
+      pluginJson.hubId = hubId;
+      fs.writeFileSync(pluginJsonPath, JSON.stringify(pluginJson, null, 2));
 
       console.log(
         `ImportedPlugin.importCommunityItemFromUrl - successfully imported plugin to agent-skills/${hubId}`
