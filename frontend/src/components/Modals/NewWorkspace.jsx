@@ -3,6 +3,7 @@ import { X } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
+import ModalWrapper from "@/components/ModalWrapper";
 
 const noop = () => false;
 export default function NewWorkspaceModal({ hideModal = noop }) {
@@ -23,27 +24,28 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-black bg-opacity-50 flex items-center justify-center">
-      <div
-        className="flex fixed top-0 left-0 right-0 w-full h-full"
-        onClick={hideModal}
-      />
-      <div className="relative w-[500px] max-h-full">
-        <div className="relative bg-modal-gradient rounded-lg shadow-md border-2 border-accent">
-          <div className="flex items-start justify-between p-4 border-b rounded-t border-white/10">
-            <h3 className="text-xl font-semibold text-white">
+    <ModalWrapper isOpen={true}>
+      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+          <div className="w-full flex gap-x-2 items-center">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
               {t("new-workspace.title")}
             </h3>
-            <button
-              onClick={hideModal}
-              type="button"
-              className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-            >
-              <X className="text-gray-300 text-lg" />
-            </button>
           </div>
+          <button
+            onClick={hideModal}
+            type="button"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+          >
+            <X size={24} weight="bold" className="text-white" />
+          </button>
+        </div>
+        <div
+          className="h-full w-full overflow-y-auto"
+          style={{ maxHeight: "calc(100vh - 200px)" }}
+        >
           <form ref={formEl} onSubmit={handleCreate}>
-            <div className="p-6 space-y-6 flex h-full w-full">
+            <div className="py-7 px-9 space-y-2 flex-col">
               <div className="w-full flex flex-col gap-y-4">
                 <div>
                   <label
@@ -56,7 +58,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                     name="name"
                     type="text"
                     id="name"
-                    className="bg-zinc-900 w-full text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder={t("new-workspace.placeholder")}
                     required={true}
                     autoComplete="off"
@@ -67,10 +69,10 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                 )}
               </div>
             </div>
-            <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-white/10 rounded-b">
+            <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
               <button
                 type="submit"
-                className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
                 Save
               </button>
@@ -78,7 +80,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
           </form>
         </div>
       </div>
-    </div>
+    </ModalWrapper>
   );
 }
 

@@ -12,6 +12,7 @@ import { defaultSkills, configurableSkills } from "./skills";
 import { DefaultBadge } from "./Badges/default";
 import ImportedSkillList from "./Imported/SkillList";
 import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
+import { Tooltip } from "react-tooltip";
 
 export default function AdminAgents() {
   const [hasChanges, setHasChanges] = useState(false);
@@ -145,7 +146,7 @@ export default function AdminAgents() {
 
           {/* Skill settings nav */}
           <div hidden={showSkillModal} className="flex flex-col gap-y-[18px]">
-            <div className="text-white flex items-center gap-x-2">
+            <div className="text-theme-text-primary flex items-center gap-x-2">
               <Robot size={24} />
               <p className="text-lg font-medium">Agent Skills</p>
             </div>
@@ -170,7 +171,7 @@ export default function AdminAgents() {
               activeSkills={agentSkills}
             />
 
-            <div className="text-white flex items-center gap-x-2">
+            <div className="text-theme-text-primary flex items-center gap-x-2">
               <Plug size={24} />
               <p className="text-lg font-medium">Custom Skills</p>
             </div>
@@ -201,7 +202,7 @@ export default function AdminAgents() {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className="bg-[#303237] text-white rounded-xl p-4">
+                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4">
                     {SelectedSkillComponent ? (
                       <>
                         {selectedSkill.imported ? (
@@ -225,7 +226,7 @@ export default function AdminAgents() {
                         )}
                       </>
                     ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-white/60">
+                      <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                         <Robot size={40} />
                         <p className="font-medium">Select an agent skill</p>
                       </div>
@@ -260,7 +261,7 @@ export default function AdminAgents() {
 
         {/* Skill settings nav */}
         <div className="flex flex-col gap-y-[18px]">
-          <div className="text-white flex items-center gap-x-2">
+          <div className="text-theme-text-primary flex items-center gap-x-2">
             <Robot size={24} />
             <p className="text-lg font-medium">Agent Skills</p>
           </div>
@@ -280,7 +281,7 @@ export default function AdminAgents() {
             activeSkills={agentSkills}
           />
 
-          <div className="text-white flex items-center gap-x-2">
+          <div className="text-theme-text-primary flex items-center gap-x-2">
             <Plug size={24} />
             <p className="text-lg font-medium">Custom Skills</p>
           </div>
@@ -293,7 +294,7 @@ export default function AdminAgents() {
 
         {/* Selected agent skill setting panel */}
         <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
+          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
             {SelectedSkillComponent ? (
               <>
                 {selectedSkill.imported ? (
@@ -317,7 +318,7 @@ export default function AdminAgents() {
                 )}
               </>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-white/60">
+              <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                 <Robot size={40} />
                 <p className="font-medium">Select an agent skill</p>
               </div>
@@ -333,7 +334,7 @@ function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
   return (
     <div
       id="workspace-agent-settings-container"
-      className="w-screen h-screen overflow-hidden bg-sidebar flex md:mt-0 mt-6"
+      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
     >
       <Sidebar />
       <div
@@ -361,38 +362,55 @@ function SkillList({
   if (skills.length === 0) return null;
 
   return (
-    <div
-      className={`bg-white/5 text-white rounded-xl ${
-        isMobile ? "w-full" : "min-w-[360px] w-fit"
-      }`}
-    >
-      {Object.entries(skills).map(([skill, settings], index) => (
-        <div
-          key={skill}
-          className={`py-3 px-4 flex items-center justify-between ${
-            index === 0 ? "rounded-t-xl" : ""
-          } ${
-            index === Object.keys(skills).length - 1
-              ? "rounded-b-xl"
-              : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
-            selectedSkill === skill ? "bg-white/10" : ""
-          }`}
-          onClick={() => handleClick?.(skill)}
-        >
-          <div className="text-sm font-light">{settings.title}</div>
-          <div className="flex items-center gap-x-2">
-            {isDefault ? (
-              <DefaultBadge title={skill} />
-            ) : (
-              <div className="text-sm text-white/60 font-medium">
-                {activeSkills.includes(skill) ? "On" : "Off"}
-              </div>
-            )}
-            <CaretRight size={14} weight="bold" className="text-white/80" />
+    <>
+      <div
+        className={`bg-theme-bg-secondary text-white rounded-xl ${
+          isMobile ? "w-full" : "min-w-[360px] w-fit"
+        }`}
+      >
+        {Object.entries(skills).map(([skill, settings], index) => (
+          <div
+            key={skill}
+            className={`py-3 px-4 flex items-center justify-between ${
+              index === 0 ? "rounded-t-xl" : ""
+            } ${
+              index === Object.keys(skills).length - 1
+                ? "rounded-b-xl"
+                : "border-b border-white/10"
+            } cursor-pointer transition-all duration-300  hover:bg-theme-bg-primary ${
+              selectedSkill === skill
+                ? "bg-white/10 light:bg-theme-bg-sidebar"
+                : ""
+            }`}
+            onClick={() => handleClick?.(skill)}
+          >
+            <div className="text-sm font-light">{settings.title}</div>
+            <div className="flex items-center gap-x-2">
+              {isDefault ? (
+                <DefaultBadge title={skill} />
+              ) : (
+                <div className="text-sm text-theme-text-secondary font-medium">
+                  {activeSkills.includes(skill) ? "On" : "Off"}
+                </div>
+              )}
+              <CaretRight
+                size={14}
+                weight="bold"
+                className="text-theme-text-secondary"
+              />
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+      {/* Tooltip for default skills - only render when skill list is passed isDefault */}
+      {isDefault && (
+        <Tooltip
+          id="default-skill"
+          place="bottom"
+          delayShow={300}
+          className="tooltip light:invert-0 !text-xs"
+        />
+      )}
+    </>
   );
 }

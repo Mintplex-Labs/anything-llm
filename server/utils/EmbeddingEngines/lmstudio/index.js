@@ -1,3 +1,4 @@
+const { parseLMStudioBasePath } = require("../../AiProviders/lmStudio");
 const { maximumChunkLength } = require("../../helpers");
 
 class LMStudioEmbedder {
@@ -6,10 +7,14 @@ class LMStudioEmbedder {
       throw new Error("No embedding base path was set.");
     if (!process.env.EMBEDDING_MODEL_PREF)
       throw new Error("No embedding model was set.");
-    this.basePath = `${process.env.EMBEDDING_BASE_PATH}/embeddings`;
+
+    const { OpenAI: OpenAIApi } = require("openai");
+    this.lmstudio = new OpenAIApi({
+      baseURL: parseLMStudioBasePath(process.env.EMBEDDING_BASE_PATH),
+      apiKey: null,
+    });
     this.model = process.env.EMBEDDING_MODEL_PREF;
 
-    // Limit of how many strings we can process in a single pass to stay with resource or network limits
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 1;
     this.embeddingMaxChunkLength = maximumChunkLength();
@@ -20,10 +25,9 @@ class LMStudioEmbedder {
   }
 
   async #isAlive() {
-    return await fetch(`${this.basePath}/models`, {
-      method: "HEAD",
-    })
-      .then((res) => res.ok)
+    return await this.lmstudio.models
+      .list()
+      .then((res) => res?.data?.length > 0)
       .catch((e) => {
         this.log(e.message);
         return false;
@@ -55,29 +59,29 @@ class LMStudioEmbedder {
     for (const chunk of textChunks) {
       if (hasError) break; // If an error occurred don't continue and exit early.
       results.push(
-        await fetch(this.basePath, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        await this.lmstudio.embeddings
+          .create({
             model: this.model,
             input: chunk,
-          }),
-        })
-          .then((res) => res.json())
-          .then((json) => {
-            const embedding = json.data[0].embedding;
+          })
+          .then((result) => {
+            const embedding = result.data?.[0]?.embedding;
             if (!Array.isArray(embedding) || !embedding.length)
               throw {
                 type: "EMPTY_ARR",
                 message: "The embedding was empty from LMStudio",
               };
+            console.log(`Embedding length: ${embedding.length}`);
             return { data: embedding, error: null };
           })
-          .catch((error) => {
+          .catch((e) => {
+            e.type =
+              e?.response?.data?.error?.code ||
+              e?.response?.status ||
+              "failed_to_embed";
+            e.message = e?.response?.data?.error?.message || e.message;
             hasError = true;
-            return { data: [], error };
+            return { data: [], error: e };
           })
       );
     }

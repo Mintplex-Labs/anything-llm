@@ -5,6 +5,7 @@ const { togetherAiModels } = require("../AiProviders/togetherAi");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const { fetchNovitaModels } = require("../AiProviders/novita");
+const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
   "localai",
@@ -235,7 +236,9 @@ async function getLMStudioModels(basePath = null) {
   try {
     const { OpenAI: OpenAIApi } = require("openai");
     const openai = new OpenAIApi({
-      baseURL: basePath || process.env.LMSTUDIO_BASE_PATH,
+      baseURL: parseLMStudioBasePath(
+        basePath || process.env.LMSTUDIO_BASE_PATH
+      ),
       apiKey: null,
     });
     const models = await openai.models

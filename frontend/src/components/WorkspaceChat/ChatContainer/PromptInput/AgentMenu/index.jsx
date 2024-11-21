@@ -13,11 +13,14 @@ export default function AvailableAgentsButton({ showing, setShowAgents }) {
       data-tooltip-content="View all available agents you can use for chatting."
       aria-label="View all available agents you can use for chatting."
       onClick={() => setShowAgents(!showing)}
-      className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
+      className={`flex justify-center items-center cursor-pointer ${
         showing ? "!opacity-100" : ""
       }`}
     >
-      <At className="w-6 h-6 pointer-events-none text-white" />
+      <At
+        color="var(--theme-sidebar-footer-icon-fill)"
+        className={`w-[22px] h-[22px] pointer-events-none text-theme-text-primary opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60`}
+      />
       <Tooltip
         id="tooltip-agent-list-btn"
         place="top"
@@ -30,7 +33,7 @@ export default function AvailableAgentsButton({ showing, setShowAgents }) {
 
 function AbilityTag({ text }) {
   return (
-    <div className="px-2 bg-white/20 text-white/60 text-black text-xs w-fit rounded-sm">
+    <div className="px-2 bg-theme-action-menu-item-hover text-theme-text-secondary text-xs w-fit rounded-sm">
       <p>{text}</p>
     </div>
   );
@@ -66,7 +69,7 @@ export function AvailableAgents({
         <div className="w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4">
           <div
             ref={formRef}
-            className="w-[600px] p-2 bg-zinc-800 rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"
+            className="w-[600px] p-2 bg-theme-action-menu-bg rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"
           >
             <button
               onClick={() => {
@@ -74,10 +77,10 @@ export function AvailableAgents({
                 sendCommand("@agent ", false);
                 promptRef?.current?.focus();
               }}
-              className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-col justify-start group"
+              className="w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start group"
             >
               <div className="w-full flex-col text-left flex pointer-events-none">
-                <div className="text-white text-sm">
+                <div className="text-theme-text-primary text-sm">
                   <b>@agent</b> - the default agent for this workspace.
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -97,7 +100,7 @@ export function AvailableAgents({
               className="w-full rounded-xl flex flex-col justify-start group"
             >
               <div className="w-full flex-col text-center flex pointer-events-none">
-                <div className="text-white text-xs text-white/50 italic">
+                <div className="text-theme-text-secondary text-xs italic">
                   custom agents are coming soon!
                 </div>
               </div>

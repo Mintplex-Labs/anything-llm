@@ -9,7 +9,7 @@ export default function GeminiLLMOptions({ settings }) {
           <input
             type="password"
             name="GeminiLLMApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Google Gemini API Key"
             defaultValue={settings?.GeminiLLMApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -28,7 +28,7 @@ export default function GeminiLLMOptions({ settings }) {
                 name="GeminiLLMModelPref"
                 defaultValue={settings?.GeminiLLMModelPref || "gemini-pro"}
                 required={true}
-                className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+                className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
               >
                 <optgroup label="Stable Models">
                   {[
@@ -50,6 +50,9 @@ export default function GeminiLLMOptions({ settings }) {
                     "gemini-1.5-pro-exp-0827",
                     "gemini-1.5-flash-exp-0827",
                     "gemini-1.5-flash-8b-exp-0827",
+                    "gemini-exp-1114",
+                    "gemini-exp-1121",
+                    "learnlm-1.5-pro-experimental",
                   ].map((model) => {
                     return (
                       <option key={model} value={model}>
@@ -70,7 +73,7 @@ export default function GeminiLLMOptions({ settings }) {
                   settings?.GeminiSafetySetting || "BLOCK_MEDIUM_AND_ABOVE"
                 }
                 required={true}
-                className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+                className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
               >
                 <option value="BLOCK_NONE">None</option>
                 <option value="BLOCK_ONLY_HIGH">Block few</option>
