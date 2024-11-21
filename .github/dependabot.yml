@@ -12,10 +12,6 @@ updates:
     directory: "/collector"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "npm"
-    directory: "/embed"
-    schedule:
-      interval: "weekly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
