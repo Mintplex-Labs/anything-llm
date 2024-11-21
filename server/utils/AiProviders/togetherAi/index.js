@@ -18,7 +18,6 @@ class TogetherAiLLM {
       apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
     });
     this.model = modelPreference || process.env.TOGETHER_AI_MODEL_PREF;
-    console.log("this.model", this.model);
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
