@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['light-mode-1'] # put your current branch to create a build. Core team only.
+    branches: ['2670-feat-can-the-font-size-of-the-chat-input-box-be-increased'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
