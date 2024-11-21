@@ -28,7 +28,7 @@
     "@langchain/anthropic": "0.1.16",
     "@langchain/aws": "^0.0.5",
     "@langchain/community": "0.0.53",
-    "@langchain/core": "0.1.61",
+    "@langchain/core": "0.3.18",
     "@langchain/openai": "0.0.28",
     "@langchain/textsplitters": "0.0.0",
     "@mintplex-labs/bree": "^9.2.5",
