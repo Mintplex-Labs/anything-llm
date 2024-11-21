@@ -1800,17 +1800,10 @@ jintr@^1.1.0:
   dependencies:
     acorn "^8.8.0"
 
-js-tiktoken@^1.0.11, js-tiktoken@^1.0.7, js-tiktoken@^1.0.8:
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/js-tiktoken/-/js-tiktoken-1.0.11.tgz#d7d707b849f703841112660d9d55169424a35344"
-  integrity sha512-PajXFLq2vx7/8jllQZ43vzNpAai/0MOVdJjW/UrNyJorNQRTjHrqdGJG/mjHVy7h9M6dW6CaG43eNLMYFkTh6w==
-  dependencies:
-    base64-js "^1.5.1"
-
-js-tiktoken@^1.0.12:
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/js-tiktoken/-/js-tiktoken-1.0.12.tgz#af0f5cf58e5e7318240d050c8413234019424211"
-  integrity sha512-L7wURW1fH9Qaext0VzaUDpFGVQgjkdE3Dgsy9/+yXyGEpBKnylTd0mU0bfbNkKDlXRb6TEsZkwuflu1B8uQbJQ==
+js-tiktoken@^1.0.11, js-tiktoken@^1.0.12, js-tiktoken@^1.0.15, js-tiktoken@^1.0.7, js-tiktoken@^1.0.8:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/js-tiktoken/-/js-tiktoken-1.0.15.tgz#92a7d829f6950c2cfb35cc52555502e3d6e2ebac"
+  integrity sha512-65ruOWWXDEZHHbAo7EjOcNxOGasQKbL4Fq3jEr2xsCqSsoOo6VVSqzWQb6PRIqypFSDcma4jO90YP0w5X8qVXQ==
   dependencies:
     base64-js "^1.5.1"
 
