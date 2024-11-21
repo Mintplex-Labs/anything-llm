@@ -701,6 +701,9 @@ function validGeminiModel(input = "") {
     "gemini-1.5-pro-exp-0827",
     "gemini-1.5-flash-exp-0827",
     "gemini-1.5-flash-8b-exp-0827",
+    "gemini-exp-1114",
+    "gemini-exp-1121",
+    "learnlm-1.5-pro-experimental",
   ];
   return validModels.includes(input)
     ? null
@@ -750,6 +753,7 @@ function supportedEmbeddingModel(input = "") {
     "voyageai",
     "litellm",
     "generic-openai",
+    "mistral",
   ];
   return supported.includes(input)
     ? null

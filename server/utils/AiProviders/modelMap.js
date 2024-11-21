@@ -10,8 +10,6 @@ const MODEL_MAP = {
     "claude-3-haiku-20240307": 200_000,
     "claude-3-sonnet-20240229": 200_000,
     "claude-3-opus-20240229": 200_000,
-    "claude-3-haiku-20240307": 200_000,
-    "claude-3-sonnet-20240229": 200_000,
     "claude-3-opus-latest": 200_000,
     "claude-3-5-haiku-latest": 200_000,
     "claude-3-5-haiku-20241022": 200_000,
@@ -36,6 +34,9 @@ const MODEL_MAP = {
     "gemini-1.5-pro-exp-0827": 2_097_152,
     "gemini-1.5-flash-exp-0827": 1_048_576,
     "gemini-1.5-flash-8b-exp-0827": 1_048_576,
+    "gemini-exp-1114": 32_767,
+    "gemini-exp-1121": 32_767,
+    "learnlm-1.5-pro-experimental": 32_767,
   },
   groq: {
     "gemma2-9b-it": 8192,
