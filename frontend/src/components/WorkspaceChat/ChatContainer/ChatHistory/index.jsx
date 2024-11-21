@@ -11,6 +11,7 @@ import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
+import useTextSize from "@/hooks/useTextSize";
 
 export default function ChatHistory({
   history = [],
@@ -26,39 +27,10 @@ export default function ChatHistory({
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
-  const [textSize, setTextSize] = useState("normal");
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
-
-  const getTextSizeClass = (size) => {
-    switch (size) {
-      case "small":
-        return "text-[12px]";
-      case "large":
-        return "text-[18px]";
-      default:
-        return "text-[14px]";
-    }
-  };
-
-  useEffect(() => {
-    const storedTextSize = window.localStorage.getItem("anythingllm_text_size");
-    if (storedTextSize) {
-      setTextSize(getTextSizeClass(storedTextSize));
-    }
-
-    const handleTextSizeChange = (event) => {
-      const size = event.detail;
-      setTextSize(getTextSizeClass(size));
-    };
-
-    window.addEventListener("textSizeChange", handleTextSizeChange);
-
-    return () => {
-      window.removeEventListener("textSizeChange", handleTextSizeChange);
-    };
-  }, []);
+  const { textSizeClass } = useTextSize();
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -204,7 +176,7 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
+      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
         showScrollbar ? "show-scrollbar" : "no-scroll"
       }`}
       id="chat-history"
