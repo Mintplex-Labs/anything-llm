@@ -28,7 +28,7 @@ export default {
         "historical-msg-system": "rgba(255, 255, 255, 0.05);",
         "historical-msg-user": "#2C2F35",
         outline: "#4E5153",
-        "primary-button": "#46C8FF",
+        "primary-button": "var(--theme-button-primary)",
         secondary: "#2C2F36",
         "dark-input": "#18181B",
         "mobile-onboarding": "#2C2F35",

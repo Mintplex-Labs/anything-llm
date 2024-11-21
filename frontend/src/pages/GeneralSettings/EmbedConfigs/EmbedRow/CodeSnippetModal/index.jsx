@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { CheckCircle, CopySimple, X } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import hljs from "highlight.js";
-import "highlight.js/styles/github-dark-dimmed.min.css";
+import "@/utils/chat/themes/github-dark.css";
+import "@/utils/chat/themes/github.css";
 
 export default function CodeSnippetModal({ embed, closeModal }) {
   return (
@@ -66,6 +67,8 @@ const ScriptTag = ({ embed }) => {
     ? "http://localhost:3001"
     : window.location.origin;
   const snippet = createScriptTagSnippet(embed, scriptHost, serverHost);
+  const theme =
+    window.localStorage.getItem("theme") === "light" ? "github" : "github-dark";
 
   const handleClick = () => {
     window.navigator.clipboard.writeText(snippet);
@@ -82,7 +85,7 @@ const ScriptTag = ({ embed }) => {
         <label className="block text-sm font-medium text-white">
           HTML Script Tag Embed Code
         </label>
-        <p className="text-secondary text-xs">
+        <p className="text-theme-text-secondary text-xs">
           Have your workspace chat embed function like a help desk chat bottom
           in the corner of your website.
         </p>
@@ -97,7 +100,7 @@ const ScriptTag = ({ embed }) => {
       <button
         disabled={copied}
         onClick={handleClick}
-        className="disabled:border disabled:border-green-300 disabled:light:border-green-600 border border-transparent relative w-full font-mono flex bg-zinc-900 light:invert text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
+        className={`disabled:border disabled:border-green-300 disabled:light:border-green-600 border border-transparent relative w-full font-mono flex hljs ${theme} light:border light:border-gray-700 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5`}
       >
         <div
           className="flex w-full text-left flex-col gap-y-1 pr-6 pl-4 whitespace-pre-line"
