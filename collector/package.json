@@ -18,7 +18,7 @@
     "@langchain/community": "^0.2.23",
     "@xenova/transformers": "^2.11.0",
     "bcrypt": "^5.1.0",
-    "body-parser": "^1.20.2",
+    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "epub2": "^3.0.2",
