@@ -136,11 +136,12 @@ const WorkspaceThread = {
 
     try {
       const { ApiChatHandler } = require("../utils/chats/apiChatHandler");
+      const trimmedUserInput = newName.slice(0, 300); // don't sent the entire message to LLM to save on tokens
       const systemPrompt =
         "You are a helpful AI that generates short, descriptive titles for conversations. Keep titles under 23 characters.";
       const result = await ApiChatHandler.chatSync({
         workspace,
-        message: `Based on the user's initial input, concisely create a title for this conversation in the format of: {action} {thing}. For example 'Building' (action) 'a brick wall' (thing). Return only text a-z, 0-9 and spaces. This is the user's initial input: ${newName}`,
+        message: `Based on the user's initial input, concisely create a title for this conversation in the format of: {action} {thing}. For example 'Building' (action) 'a brick wall' (thing). Return text only [a-zA-Z0-9 ]. Sentence case. This is the user's initial input: ${trimmedUserInput}`,
         mode: "chat",
         systemPrompt,
       });
