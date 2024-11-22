@@ -124,20 +124,43 @@ const WorkspaceThread = {
   }) {
     if (!workspace || !thread || !newName) return false;
     if (thread.name !== this.defaultName) return false; // don't rename if already named.
-
+  
     const { WorkspaceChats } = require("./workspaceChats");
     const chatCount = await WorkspaceChats.count({
       workspaceId: workspace.id,
       user_id: user?.id || null,
       thread_id: thread.id,
     });
+  
     if (chatCount !== 1) return { renamed: false, thread };
-    const { thread: updatedThread } = await this.update(thread, {
-      name: newName,
-    });
-
-    onRename?.(updatedThread);
-    return true;
+  
+    try {
+      const { ApiChatHandler } = require("../utils/chats/apiChatHandler");
+      const systemPrompt = "You are a helpful AI that generates short, descriptive titles for conversations. Keep titles under 30 characters.";
+      const result = await ApiChatHandler.chatSync({
+        workspace,
+        message: `Based on the user's initial input, concisely create a title for this conversation in the format of: {action} {thing}. For example 'building' (action) 'a brick wall' (thing). Return only text a-z, 0-9 and spaces. This is the user's initial input: ${newName}`,
+        mode: "chat",
+        systemPrompt,
+      });
+  
+      const suggestedName = result.textResponse?.trim() || truncate(newName, 22);
+      const { thread: updatedThread } = await this.update(thread, {
+        name: suggestedName,
+      });
+  
+      onRename?.(updatedThread);
+      return true;
+    } catch (error) {
+      console.error("Failed to generate thread name with LLM:", error);
+      // Fallback to original truncation method
+      const { thread: updatedThread } = await this.update(thread, {
+        name: truncate(newName, 22),
+      });
+  
+      onRename?.(updatedThread);
+      return true;
+    }
   },
 };
 
