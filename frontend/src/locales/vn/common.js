@@ -58,8 +58,7 @@ const TRANSLATIONS = {
     },
     "password-reset": {
       title: "Mật khẩu Đặt lại",
-      description:
-        "Cung cấp thông tin cần thiết dưới đây để đặt lại mật khẩu.",
+      description: "Cung cấp thông tin cần thiết dưới đây để đặt lại mật khẩu.",
       "recovery-codes": "Mã khôi phục",
       "recovery-code": "Mã khôi phục {{index}}",
       "back-to-login": "Back to Đăng nhập",

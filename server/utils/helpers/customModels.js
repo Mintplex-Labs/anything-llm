@@ -389,10 +389,12 @@ async function getAPIPieModels(apiKey = null) {
     return { models: [], error: null };
 
   const models = Object.values(knownModels)
-    .filter(model => {
+    .filter((model) => {
       // Filter for chat models
-      return model.subtype &&
-        (model.subtype.includes('chat') || model.subtype.includes('chatx'));
+      return (
+        model.subtype &&
+        (model.subtype.includes("chat") || model.subtype.includes("chatx"))
+      );
     })
     .map((model) => {
       return {

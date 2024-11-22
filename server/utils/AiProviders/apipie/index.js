@@ -96,14 +96,20 @@ class ApiPieLLM {
 
   chatModels() {
     const allModels = this.models();
-    return Object.entries(allModels).reduce((chatModels, [modelId, modelInfo]) => {
-      // Filter for chat models
-      if (modelInfo.subtype &&
-         (modelInfo.subtype.includes('chat') || modelInfo.subtype.includes('chatx'))) {
-        chatModels[modelId] = modelInfo;
-      }
-      return chatModels;
-    }, {});
+    return Object.entries(allModels).reduce(
+      (chatModels, [modelId, modelInfo]) => {
+        // Filter for chat models
+        if (
+          modelInfo.subtype &&
+          (modelInfo.subtype.includes("chat") ||
+            modelInfo.subtype.includes("chatx"))
+        ) {
+          chatModels[modelId] = modelInfo;
+        }
+        return chatModels;
+      },
+      {}
+    );
   }
 
   streamingEnabled() {
