@@ -136,6 +136,7 @@ const DataConnector = {
       spaceKey,
       username,
       accessToken,
+      personalAccessToken,
       cloud,
     }) {
       return await fetch(`${API_BASE}/ext/confluence`, {
@@ -146,6 +147,7 @@ const DataConnector = {
           spaceKey,
           username,
           accessToken,
+	  personalAccessToken,
           cloud,
         }),
       })

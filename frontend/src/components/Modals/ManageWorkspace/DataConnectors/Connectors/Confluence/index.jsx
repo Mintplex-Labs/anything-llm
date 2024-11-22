@@ -26,6 +26,7 @@ export default function ConfluenceOptions() {
         spaceKey: form.get("spaceKey"),
         username: form.get("username"),
         accessToken: form.get("accessToken"),
+	personalAccessToken: form.get("personalAccessToken"),
         cloud: form.get("isCloud") === "true",
       });
 
@@ -133,7 +134,7 @@ export default function ConfluenceOptions() {
                   name="username"
                   className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="jdoe@example.com"
-                  required={true}
+                  required={false}
                   autoComplete="off"
                   spellCheck={false}
                 />
@@ -157,7 +158,7 @@ export default function ConfluenceOptions() {
                       clickable={true}
                     >
                       <p className="text-sm">
-                        You need to provide an access token for authentication.
+                        You need to provide a username and access token or a personal access token for authentication.
                         You can generate an access token{" "}
                         <a
                           href="https://id.atlassian.com/manage-profile/security/api-tokens"
@@ -181,7 +182,45 @@ export default function ConfluenceOptions() {
                   name="accessToken"
                   className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="abcd1234"
-                  required={true}
+                  required={false}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="flex flex-col pr-10">
+                <div className="flex flex-col gap-y-1 mb-4">
+                  <label className="text-white text-sm font-bold flex gap-x-2 items-center">
+                    <p className="font-bold text-white">
+                      Confluence Personal Access Token
+                    </p>
+                    <Warning
+                      size={14}
+                      className="ml-1 text-orange-500 cursor-pointer"
+                      data-tooltip-id="personal-access-token-tooltip"
+                      data-tooltip-place="right"
+                    />
+                    <Tooltip
+                      delayHide={300}
+                      id="personal-access-token-tooltip"
+                      className="max-w-xs z-99"
+                      clickable={true}
+                    >
+                      <p className="text-sm">
+                        You need to either provide a personal access token or a username and password for authentication.
+	                You can create a personal access token in your confluence user settings
+                      </p>
+                    </Tooltip>
+                  </label>
+                  <p className="text-xs font-normal text-theme-text-secondary">
+                    Personal access token for authentication.
+                  </p>
+                </div>
+                <input
+                  type="password"
+                  name="personalAccessToken"
+                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  placeholder="abcd1234"
+                  required={false}
                   autoComplete="off"
                   spellCheck={false}
                 />
