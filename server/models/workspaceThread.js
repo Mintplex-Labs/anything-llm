@@ -140,7 +140,7 @@ const WorkspaceThread = {
         "You are a helpful AI that generates short, descriptive titles for conversations. Keep titles under 23 characters.";
       const result = await ApiChatHandler.chatSync({
         workspace,
-        message: `Based on the user's initial input, concisely create a title for this conversation in the format of: {action} {thing}. For example 'building' (action) 'a brick wall' (thing). Return only text a-z, 0-9 and spaces. This is the user's initial input: ${newName}`,
+        message: `Based on the user's initial input, concisely create a title for this conversation in the format of: {action} {thing}. For example 'Building' (action) 'a brick wall' (thing). Return only text a-z, 0-9 and spaces. This is the user's initial input: ${newName}`,
         mode: "chat",
         systemPrompt,
       });
