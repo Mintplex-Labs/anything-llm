@@ -136,7 +136,7 @@ const WorkspaceThread = {
 
     try {
       const { ApiChatHandler } = require("../utils/chats/apiChatHandler");
-      const trimmedUserInput = newName.slice(0, 300); // don't sent the entire message to LLM to save on tokens
+      const trimmedUserInput = newName.slice(0, 300); // don't send the entire message to LLM to save on tokens
       const systemPrompt =
         "You are a helpful AI that generates short, descriptive titles for conversations. Keep titles under 23 characters.";
       const result = await ApiChatHandler.chatSync({
