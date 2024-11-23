@@ -345,7 +345,7 @@ const System = {
     return { appName: customAppName, error: null };
   },
   fetchLogo: async function () {
-    const url = new URL(`${API_BASE}/system/logo`);
+    const url = new URL(`${fullApiUrl()}/system/logo`);
     url.searchParams.append(
       "theme",
       localStorage.getItem("theme") || "default"
