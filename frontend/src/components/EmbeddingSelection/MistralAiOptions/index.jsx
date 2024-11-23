@@ -8,7 +8,7 @@ export default function MistralAiOptions({ settings }) {
           </label>
           <input
             type="password"
-            name="MistralAiApiKey"
+            name="MistralApiKey"
             className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Mistral AI API Key"
             defaultValue={settings?.MistralApiKey ? "*".repeat(20) : ""}
