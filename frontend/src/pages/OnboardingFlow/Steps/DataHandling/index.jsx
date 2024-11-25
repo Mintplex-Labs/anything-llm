@@ -116,7 +116,7 @@ export const LLM_SELECTION_PRIVACY = {
   portkey: {
     name: "Portkey AI",
     description: [
-      "Your model and chats are not visible to Portkey when using the OpenSOurce Version",
+      "Your model and chats are not visible to Portkey when using the OpenSource Version",
     ],
     logo: PortkeyLogo,
   },
