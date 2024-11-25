@@ -3,6 +3,7 @@ const path = require("path");
 const { safeJsonParse } = require("../http");
 const { isWithin, normalizePath } = require("../files");
 const { CollectorApi } = require("../collectorApi");
+const { Telemetry } = require("../../models/telemetry");
 const pluginsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../storage/plugins/agent-skills")
@@ -186,6 +187,7 @@ class ImportedPlugin {
           description: this.config.description,
           logger: aibitat?.handlerProps?.log || console.log, // Allows plugin to log to the console.
           introspect: aibitat?.introspect || console.log, // Allows plugin to display a "thought" the chat window UI.
+          runtime: "docker",
           webScraper: sharedWebScraper,
           examples: this.config.examples ?? [],
           parameters: {
