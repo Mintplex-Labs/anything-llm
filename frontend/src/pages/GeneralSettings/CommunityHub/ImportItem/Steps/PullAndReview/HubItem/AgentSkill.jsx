@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import renderMarkdown from "@/utils/chat/markdown";
 import DOMPurify from "dompurify";
 import CommunityHub from "@/models/communityHub";
+import { setEventDelegatorForCodeSnippets } from "@/components/WorkspaceChat";
 
 export default function AgentSkill({ item, settings, setStep }) {
   const [loading, setLoading] = useState(false);
@@ -29,6 +30,10 @@ export default function AgentSkill({ item, settings, setStep }) {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    setEventDelegatorForCodeSnippets();
+  }, []);
 
   return (
     <div className="flex flex-col mt-4 gap-y-4">
@@ -112,11 +117,6 @@ function FileReview({ item }) {
   const files = item.manifest.files || [];
   const [index, setIndex] = useState(0);
   const [file, setFile] = useState(files[index]);
-
-  useEffect(() => {
-    if (files.length > 0) setFile(files?.[index] || files[0]);
-  }, [index]);
-
   function handlePrevious() {
     if (index > 0) setIndex(index - 1);
   }
@@ -124,6 +124,24 @@ function FileReview({ item }) {
   function handleNext() {
     if (index < files.length - 1) setIndex(index + 1);
   }
+
+  function fileMarkup(file) {
+    const extension = file.name.split(".").pop();
+    switch (extension) {
+      case "js":
+        return "javascript";
+      case "json":
+        return "json";
+      case "md":
+        return "markdown";
+      default:
+        return "text";
+    }
+  }
+
+  useEffect(() => {
+    if (files.length > 0) setFile(files?.[index] || files[0]);
+  }, [index]);
 
   if (!file) return null;
   return (
@@ -153,10 +171,12 @@ function FileReview({ item }) {
           </button>
         </div>
         <span
-          className="whitespace-pre-line flex flex-col gap-y-1 text-sm leading-[20px] max-h-[500px] overflow-y-auto"
+          className="whitespace-pre-line flex flex-col gap-y-1 text-sm leading-[20px] max-h-[500px] overflow-y-auto hljs"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(
-              renderMarkdown(`\`\`\`javascript\n${file.content}\n\`\`\``)
+              renderMarkdown(
+                `\`\`\`${fileMarkup(file)}\n${file.content}\n\`\`\``
+              )
             ),
           }}
         />

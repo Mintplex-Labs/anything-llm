@@ -55,6 +55,11 @@ export default function ImportedSkillConfig({
       prev.map((s) => (s.hubId === config.hubId ? updatedConfig : s))
     );
     setConfig(updatedConfig);
+    showToast(
+      `Skill ${updatedConfig.active ? "activated" : "deactivated"}.`,
+      "success",
+      { clear: true }
+    );
   }
 
   async function handleSubmit(e) {
@@ -91,6 +96,7 @@ export default function ImportedSkillConfig({
       )
     );
     showToast("Skill config updated successfully.", "success");
+    setHasChanges(false);
   }
 
   useEffect(() => {
