@@ -2,10 +2,12 @@ const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../http");
 const { isWithin, normalizePath } = require("../files");
+const { CollectorApi } = require("../collectorApi");
 const pluginsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../storage/plugins/agent-skills")
     : path.resolve(process.env.STORAGE_DIR, "plugins", "agent-skills");
+const sharedWebScraper = new CollectorApi();
 
 class ImportedPlugin {
   constructor(config) {
@@ -184,6 +186,7 @@ class ImportedPlugin {
           description: this.config.description,
           logger: aibitat?.handlerProps?.log || console.log, // Allows plugin to log to the console.
           introspect: aibitat?.introspect || console.log, // Allows plugin to display a "thought" the chat window UI.
+          webScraper: sharedWebScraper,
           examples: this.config.examples ?? [],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",

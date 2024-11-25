@@ -96,7 +96,7 @@ export default function ImportedSkillConfig({
   useEffect(() => {
     setHasChanges(
       JSON.stringify(inputs) !==
-      JSON.stringify(inputsFromArgs(selectedSkill.setup_args))
+        JSON.stringify(inputsFromArgs(selectedSkill.setup_args))
     );
   }, [inputs]);
 
