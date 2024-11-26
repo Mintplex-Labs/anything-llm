@@ -9,6 +9,10 @@ export default function UserItems({ connectionKey }) {
   const { createdByMe = {}, teamItems = [] } = userItems || {};
 
   if (loading) return <HubItemCardSkeleton />;
+  const hasItems = (items) => {
+    return Object.values(items).some(category => category?.items?.length > 0);
+  };
+
   return (
     <div className="flex flex-col gap-y-8">
       {/* Created By Me Section */}
@@ -46,6 +50,11 @@ export default function UserItems({ connectionKey }) {
               </div>
             );
           })}
+          {!hasItems(createdByMe) && (
+            <p className="text-white/60 text-xs text-center mt-4">
+              You haven&apos;t created any items yet.
+            </p>
+          )}
         </div>
       </div>
 
@@ -66,7 +75,7 @@ export default function UserItems({ connectionKey }) {
                 {team.teamName}
               </h3>
               {Object.keys(team.items).map((type) => {
-                if (team.items[type].items.length === 0) return null;
+                if (!team.items[type]?.items?.length) return null;
                 return (
                   <div key={type} className="rounded-lg w-full">
                     <h3 className="text-white capitalize font-medium mb-3">
@@ -80,6 +89,11 @@ export default function UserItems({ connectionKey }) {
                   </div>
                 );
               })}
+              {!hasItems(team.items) && (
+                <p className="text-white/60 text-xs text-center mt-4">
+                  No items shared with this team yet.
+                </p>
+              )}
             </div>
           ))}
         </div>
