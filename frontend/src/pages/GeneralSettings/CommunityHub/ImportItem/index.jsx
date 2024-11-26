@@ -10,7 +10,7 @@ function SideBarSelection({ setStep, currentStep }) {
   );
   return (
     <div
-      className={`bg-white/5 light:bg-white text-theme-text-primary light:border rounded-xl py-1 px-4 shadow-lg ${
+      className={`bg-white/5 light:bg-white text-theme-text-primary rounded-xl py-1 px-4 shadow-lg ${
         isMobile ? "w-full" : "min-w-[360px] w-fit"
       }`}
     >

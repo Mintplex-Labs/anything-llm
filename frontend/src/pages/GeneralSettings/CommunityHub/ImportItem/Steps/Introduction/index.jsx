@@ -14,12 +14,12 @@ export default function Introduction({ settings, setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-theme-bg-primary light:bg-slate-100 shadow-lg text-theme-text-primary rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6">
         <div className="w-full flex flex-col gap-y-2 max-w-[700px]">
-          <h2 className="text-base font-semibold">
+          <h2 className="text-base text-theme-text-primary font-semibold">
             Import an item from the community hub
           </h2>
-          <div className="flex flex-col gap-y-[25px] text-theme-text-secondary">
+          <div className="flex flex-col gap-y-[25px] text-theme-text-secondary text-sm">
             <p>
               The community hub is a place where you can find, share, and import
               agent-skills, system prompts, slash commands, and more!
@@ -35,12 +35,12 @@ export default function Introduction({ settings, setSettings, setStep }) {
               items are visible to everyone.
             </p>
 
-            <p className="p-4 bg-yellow-800/30 light:bg-yellow-100 rounded-lg border border-yellow-500 text-yellow-500">
+            <p className="p-4 bg-yellow-800/30 light:bg-orange-100 light:text-orange-500 light:border-orange-500 rounded-lg border border-yellow-500 text-yellow-500">
               If you are pulling in a private item, make sure it is{" "}
               <b>shared with a team</b> you belong to, and you have added a{" "}
               <a
                 href={paths.communityHub.authentication()}
-                className="underline text-yellow-100 light:text-yellow-500 font-semibold"
+                className="underline text-yellow-100 light:text-orange-500 font-semibold"
               >
                 Connection Key.
               </a>
@@ -50,7 +50,7 @@ export default function Introduction({ settings, setSettings, setStep }) {
           <div className="flex flex-col gap-y-2 mt-4">
             <div className="w-full flex flex-col gap-y-4">
               <div className="flex flex-col w-full">
-                <label className="text-sm font-semibold block mb-3">
+                <label className="text-theme-text-primary text-sm font-semibold block mb-3">
                   Community Hub Item Import ID
                 </label>
                 <input
@@ -58,7 +58,7 @@ export default function Introduction({ settings, setSettings, setStep }) {
                   value={itemId}
                   onChange={(e) => setItemId(e.target.value)}
                   placeholder="allm-community-id:agent-skill:1234567890"
-                  className="bg-zinc-900 light:bg-white text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 />
               </div>
             </div>

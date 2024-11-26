@@ -146,7 +146,7 @@ export default function CommunityHubAuthentication() {
                 type="password"
                 value={connectionKey || ""}
                 onChange={onConnectionKeyChange}
-                className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="Enter your AnythingLLM Hub API key"
               />
               <p className="text-theme-text-secondary text-xs mt-2">

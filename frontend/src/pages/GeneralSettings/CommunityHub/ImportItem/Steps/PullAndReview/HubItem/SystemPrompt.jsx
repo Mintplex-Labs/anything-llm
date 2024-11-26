@@ -81,7 +81,7 @@ export default function SystemPrompt({ item, setStep }) {
             name="destinationWorkspaceSlug"
             required={true}
             onChange={(e) => setDestinationWorkspaceSlug(e.target.value)}
-            className="bg-zinc-900 light:bg-white border-gray-500 text-theme-text-primary text-sm rounded-lg block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
             <optgroup label="Available workspaces">
               {workspaces.map((workspace) => (

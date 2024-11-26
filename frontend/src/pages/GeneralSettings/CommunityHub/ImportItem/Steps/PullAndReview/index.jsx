@@ -37,12 +37,14 @@ export default function PullAndReview({ settings, setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-theme-bg-primary light:bg-slate-100 shadow-lg text-theme-text-primary rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6">
         <div className="w-full flex flex-col gap-y-2 max-w-[700px]">
-          <h2 className="text-base font-semibold">Review item</h2>
+          <h2 className="text-base text-theme-text-primary font-semibold">
+            Review item
+          </h2>
 
           {loading && (
-            <div className="flex h-[200px] min-w-[746px] bg-theme-bg-container light:bg-slate-200 rounded-lg animate-pulse">
+            <div className="flex h-[200px] min-w-[746px] rounded-lg animate-pulse">
               <div className="w-full h-full flex items-center justify-center">
                 <p className="text-sm text-theme-text-secondary">
                   Pulling item details from community hub...

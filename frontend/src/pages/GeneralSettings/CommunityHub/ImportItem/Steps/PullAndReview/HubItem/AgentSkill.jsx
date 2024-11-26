@@ -37,7 +37,7 @@ export default function AgentSkill({ item, settings, setStep }) {
 
   return (
     <div className="flex flex-col mt-4 gap-y-4">
-      <div className="border border-white/10 light:border-orange-500/20 my-2 flex flex-col md:flex-row md:items-center gap-x-2 text-theme-text-primary mb-4 bg-orange-800/30 light:bg-orange-500/10 rounded-lg px-4 py-2">
+      <div className="border border-white/10 light:border-orange-500/20 my-2 flex flex-col md:flex-row md:items-center gap-x-2 text-theme-text-primary light:text-orange-600 mb-4 bg-orange-800/30 light:bg-orange-500/10 rounded-lg px-4 py-2">
         <div className="flex flex-col gap-y-2">
           <div className="gap-x-2 flex items-center">
             <Warning size={25} />
