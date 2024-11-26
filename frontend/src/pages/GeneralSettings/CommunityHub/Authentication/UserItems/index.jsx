@@ -10,7 +10,7 @@ export default function UserItems({ connectionKey }) {
 
   if (loading) return <HubItemCardSkeleton />;
   const hasItems = (items) => {
-    return Object.values(items).some(category => category?.items?.length > 0);
+    return Object.values(items).some((category) => category?.items?.length > 0);
   };
 
   return (
