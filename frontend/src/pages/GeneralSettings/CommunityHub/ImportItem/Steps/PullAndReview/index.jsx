@@ -3,6 +3,7 @@ import CommunityHubImportItemSteps from "..";
 import CTAButton from "@/components/lib/CTAButton";
 import { useEffect, useState } from "react";
 import HubItemComponent from "./HubItem";
+import PreLoader from "@/components/Preloader";
 
 function useGetCommunityHubItem({ importId, updateSettings }) {
   const [item, setItem] = useState(null);
@@ -13,6 +14,7 @@ function useGetCommunityHubItem({ importId, updateSettings }) {
     async function fetchItem() {
       if (!importId) return;
       setLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       const { error, item } = await CommunityHub.getItemFromImportId(importId);
       if (error) setError(error);
       setItem(item);
@@ -40,7 +42,13 @@ export default function PullAndReview({ settings, setSettings, setStep }) {
           <h2 className="text-base font-semibold">Review item</h2>
 
           {loading && (
-            <div className="flex h-[200px] bg-theme-bg-container light:bg-slate-200 rounded-lg animate-pulse" />
+            <div className="flex h-[200px] min-w-[746px] bg-theme-bg-container light:bg-slate-200 rounded-lg animate-pulse">
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-sm text-theme-text-secondary">
+                  Pulling item details from community hub...
+                </p>
+              </div>
+            </div>
           )}
           {!loading && error && (
             <>
@@ -62,7 +70,7 @@ export default function PullAndReview({ settings, setSettings, setStep }) {
               </CTAButton>
             </>
           )}
-          {item && (
+          {!loading && !error && item && (
             <ItemComponent
               item={item}
               settings={settings}
