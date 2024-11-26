@@ -100,7 +100,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
               e.stopPropagation();
               handleEditPreset(preset);
             }}
-            className="text-theme-text-primary text-sm p-1 hover:cursor-pointer hover:bg-theme-action-menu-item-hover rounded-full mt-1"
+            className="border-none text-theme-text-primary text-sm p-1 hover:cursor-pointer hover:bg-theme-action-menu-item-hover rounded-full mt-1"
           >
             <DotsThree size={24} weight="bold" />
           </button>

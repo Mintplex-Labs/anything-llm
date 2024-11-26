@@ -46,6 +46,26 @@ function useCommunityHubAuthentication() {
     }
   }
 
+  async function disconnectHub() {
+    setLoading(true);
+    try {
+      const response = await CommunityHub.updateSettings({
+        hub_api_key: "",
+      });
+      if (!response.success)
+        return showToast("Failed to disconnect from hub", "error");
+      setHasChanges(false);
+      showToast("Disconnected from AnythingLLM Community Hub", "success");
+      setOriginalConnectionKey("");
+      setConnectionKey("");
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to disconnect from hub", "error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -70,6 +90,7 @@ function useCommunityHubAuthentication() {
     updateConnectionKey,
     hasChanges,
     resetChanges,
+    disconnectHub,
   };
 }
 
@@ -82,6 +103,7 @@ export default function CommunityHubAuthentication() {
     updateConnectionKey,
     hasChanges,
     resetChanges,
+    disconnectHub,
   } = useCommunityHubAuthentication();
   if (loading) return <FullScreenLoader />;
   return (
@@ -149,16 +171,26 @@ export default function CommunityHubAuthentication() {
                 className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="Enter your AnythingLLM Hub API key"
               />
-              <p className="text-theme-text-secondary text-xs mt-2">
-                You can get your API key from your{" "}
-                <a
-                  href={paths.communityHub.profile()}
-                  className="underline text-primary-button"
-                >
-                  AnythingLLM Community Hub profile page
-                </a>
-                .
-              </p>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-theme-text-secondary text-xs">
+                  You can get your API key from your{" "}
+                  <a
+                    href={paths.communityHub.profile()}
+                    className="underline text-primary-button"
+                  >
+                    AnythingLLM Community Hub profile page
+                  </a>
+                  .
+                </p>
+                {!!originalConnectionKey && (
+                  <button
+                    onClick={disconnectHub}
+                    className="text-red-500 hover:text-red-600 text-sm font-medium transition-colors duration-200"
+                  >
+                    Disconnect
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

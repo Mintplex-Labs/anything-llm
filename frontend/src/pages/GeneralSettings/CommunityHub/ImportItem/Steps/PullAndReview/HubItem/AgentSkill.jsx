@@ -150,7 +150,7 @@ function FileReview({ item }) {
         <div className="flex justify-between items-center">
           <button
             type="button"
-            className={`bg-black/70 light:bg-slate-200 rounded-md p-1 text-white/60 light:text-theme-text-secondary text-xs font-mono ${
+            className={`border-none bg-black/70 light:bg-slate-200 rounded-md p-1 text-white/60 light:text-theme-text-secondary text-xs font-mono ${
               index === 0 ? "opacity-50 cursor-not-allowed" : ""
             }`}
             onClick={handlePrevious}
@@ -162,7 +162,7 @@ function FileReview({ item }) {
           </p>
           <button
             type="button"
-            className={`bg-black/70 light:bg-slate-200 rounded-md p-1 text-white/60 light:text-theme-text-secondary text-xs font-mono ${
+            className={`border-none bg-black/70 light:bg-slate-200 rounded-md p-1 text-white/60 light:text-theme-text-secondary text-xs font-mono ${
               index === files.length - 1 ? "opacity-50 cursor-not-allowed" : ""
             }`}
             onClick={handleNext}
@@ -171,11 +171,15 @@ function FileReview({ item }) {
           </button>
         </div>
         <span
-          className="whitespace-pre-line flex flex-col gap-y-1 text-sm leading-[20px] max-h-[500px] overflow-y-auto hljs"
+          className="whitespace-pre-line flex flex-col gap-y-1 text-sm leading-[20px] max-h-[500px] overflow-y-auto hljs text-theme-text-primary"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(
               renderMarkdown(
-                `\`\`\`${fileMarkup(file)}\n${file.content}\n\`\`\``
+                `\`\`\`${fileMarkup(file)}\n${
+                  fileMarkup(file) === "markdown"
+                    ? file.content.replace(/```/g, "~~~") // Escape triple backticks in markdown
+                    : file.content
+                }\n\`\`\``
               )
             ),
           }}
