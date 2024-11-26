@@ -1619,10 +1619,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@qdrant/js-client-rest@^1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@qdrant/js-client-rest/-/js-client-rest-1.9.0.tgz#deef8acb520f47f9db1c1517758ccf88c12e69fe"
-  integrity sha512-YiX/IskbRCoAY2ujyPDI6FBcO0ygAS4pgkGaJ7DcrJFh4SZV2XHs+u0KM7mO72RWJn1eJQFF2PQwxG+401xxJg==
+"@qdrant/js-client-rest@^1.12.0":
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/@qdrant/js-client-rest/-/js-client-rest-1.12.0.tgz#94f06e08476e80e081b991c8d841e97d41d6f955"
+  integrity sha512-H8VokZq2DYe9yfKG3c7xPNR+Oc5ZvwMUtPEr1wUO4xVi9w5P89MScJaCc9UW8mS5AR+/Y1h2t1YjSxBFPIYT2Q==
   dependencies:
     "@qdrant/openapi-typescript-fetch" "1.2.6"
     "@sevinf/maybe" "0.5.0"
