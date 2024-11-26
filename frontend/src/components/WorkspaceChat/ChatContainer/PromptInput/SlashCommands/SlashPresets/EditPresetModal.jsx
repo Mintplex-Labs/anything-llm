@@ -85,7 +85,7 @@ export default function EditPresetModal({
                       value={command}
                       onChange={handleCommandChange}
                       required={true}
-                      className="bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     />
                   </div>
                 </div>
@@ -101,7 +101,7 @@ export default function EditPresetModal({
                     placeholder="This is a test prompt. Please respond with a poem about LLMs."
                     defaultValue={preset.prompt}
                     required={true}
-                    className="bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   ></textarea>
                 </div>
                 <div>
@@ -117,7 +117,7 @@ export default function EditPresetModal({
                     defaultValue={preset.description}
                     placeholder="Responds with a poem about LLMs."
                     required={true}
-                    className="bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   />
                 </div>
               </div>

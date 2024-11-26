@@ -77,7 +77,7 @@ export default function GitlabOptions() {
                 <input
                   type="url"
                   name="repo"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="https://gitlab.com/gitlab-org/gitlab"
                   required={true}
                   autoComplete="off"
@@ -104,7 +104,7 @@ export default function GitlabOptions() {
                 <input
                   type="text"
                   name="accessToken"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="glpat-XXXXXXXXXXXXXXXXXXXX"
                   required={false}
                   autoComplete="off"
@@ -224,7 +224,7 @@ function GitLabBranchSelection({ repo, accessToken }) {
         <select
           name="branch"
           required={true}
-          className="bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available branches --
@@ -245,7 +245,7 @@ function GitLabBranchSelection({ repo, accessToken }) {
       <select
         name="branch"
         required={true}
-        className="bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
       >
         {allBranches.map((branch) => {
           return (

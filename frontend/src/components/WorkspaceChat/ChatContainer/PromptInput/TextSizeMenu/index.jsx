@@ -15,7 +15,7 @@ export default function TextSizeButton() {
         data-tooltip-content="Change text size"
         aria-label="Change text size"
         onClick={() => setShowTextSizeMenu(!showTextSizeMenu)}
-        className={`relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${
+        className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${
           showTextSizeMenu ? "!opacity-100" : ""
         }`}
       >

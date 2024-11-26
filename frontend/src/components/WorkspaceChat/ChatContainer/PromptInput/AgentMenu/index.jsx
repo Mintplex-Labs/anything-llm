@@ -77,7 +77,7 @@ export function AvailableAgents({
                 sendCommand("@agent ", false);
                 promptRef?.current?.focus();
               }}
-              className="w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start group"
+              className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start group"
             >
               <div className="w-full flex-col text-left flex pointer-events-none">
                 <div className="text-theme-text-primary text-sm">

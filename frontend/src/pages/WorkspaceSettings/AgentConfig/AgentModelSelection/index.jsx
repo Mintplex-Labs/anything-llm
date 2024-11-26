@@ -78,7 +78,7 @@ export default function AgentModelSelection({
           name="agentModel"
           required={true}
           disabled={true}
-          className="bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {t("agent.mode.wait")}
@@ -105,7 +105,7 @@ export default function AgentModelSelection({
         onChange={() => {
           setHasChanges(true);
         }}
-        className="bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
       >
         {defaultModels.length > 0 && (
           <optgroup label="General models">

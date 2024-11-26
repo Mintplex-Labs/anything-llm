@@ -66,7 +66,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
         <select
           name="OpenAiModelPref"
           disabled={true}
-          className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -84,7 +84,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
       <select
         name="OpenAiModelPref"
         required={true}
-        className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {Object.keys(groupedModels)
           .sort()

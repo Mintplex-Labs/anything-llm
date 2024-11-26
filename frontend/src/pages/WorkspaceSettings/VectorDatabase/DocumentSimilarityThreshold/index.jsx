@@ -18,7 +18,7 @@ export default function DocumentSimilarityThreshold({
       <select
         name="similarityThreshold"
         defaultValue={workspace?.similarityThreshold ?? 0.25}
-        className="bg-theme-settings-input-bg text-white text-sm mt-2 rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-white text-sm mt-2 rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         onChange={() => setHasChanges(true)}
         required={true}
       >

@@ -69,7 +69,7 @@ export default function ConfluenceOptions() {
                 </div>
                 <select
                   name="isCloud"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   required={true}
                   autoComplete="off"
                   spellCheck={false}
@@ -92,7 +92,7 @@ export default function ConfluenceOptions() {
                 <input
                   type="url"
                   name="baseUrl"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="eg: https://example.atlassian.net, http://localhost:8211, etc..."
                   required={true}
                   autoComplete="off"
@@ -112,7 +112,7 @@ export default function ConfluenceOptions() {
                 <input
                   type="text"
                   name="spaceKey"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="eg: ~7120208c08555d52224113949698b933a3bb56"
                   required={true}
                   autoComplete="off"
@@ -131,7 +131,7 @@ export default function ConfluenceOptions() {
                 <input
                   type="text"
                   name="username"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="jdoe@example.com"
                   required={true}
                   autoComplete="off"
@@ -179,7 +179,7 @@ export default function ConfluenceOptions() {
                 <input
                   type="password"
                   name="accessToken"
-                  className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="abcd1234"
                   required={true}
                   autoComplete="off"
