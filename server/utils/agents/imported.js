@@ -3,7 +3,6 @@ const path = require("path");
 const { safeJsonParse } = require("../http");
 const { isWithin, normalizePath } = require("../files");
 const { CollectorApi } = require("../collectorApi");
-const { Telemetry } = require("../../models/telemetry");
 const pluginsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../storage/plugins/agent-skills")
