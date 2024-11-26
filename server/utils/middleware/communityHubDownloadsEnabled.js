@@ -13,7 +13,7 @@ const { reqBody } = require("../http");
  * who self-host can still unlock this feature manually by setting the environment variable
  * which would require someone who likely has the capacity to understand the risks and the
  * implications of importing unverified items that can run code on their system, container, or instance.
- * @see {@link https://docs.anythingllm.com/docs/community-hub/importing-items}
+ * @see {@link https://docs.anythingllm.com/docs/community-hub/import}
  * @param {import("express").Request} request
  * @param {import("express").Response} response
  * @param {import("express").NextFunction} next
@@ -23,7 +23,7 @@ function communityHubDownloadsEnabled(request, response, next) {
   if (!("COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED" in process.env)) {
     return response.status(422).json({
       error:
-        "Community Hub bundle downloads are not enabled. The system administrator must enable this feature manually to allow this instance to download these types of items.",
+        "Community Hub bundle downloads are not enabled. The system administrator must enable this feature manually to allow this instance to download these types of items. See https://docs.anythingllm.com/configuration#anythingllm-hub-agent-skills",
     });
   }
 
@@ -37,7 +37,7 @@ function communityHubDownloadsEnabled(request, response, next) {
   ) {
     return response.status(422).json({
       error:
-        "Community hub bundle downloads are limited to verified public items or private team items only. Please contact the system administrator to review or modify this setting.",
+        "Community hub bundle downloads are limited to verified public items or private team items only. Please contact the system administrator to review or modify this setting. See https://docs.anythingllm.com/configuration#anythingllm-hub-agent-skills",
     });
   }
   next();

@@ -170,7 +170,7 @@ export default {
       return `${this.website()}/me`;
     },
     noPrivateItems: () => {
-      return "https://docs.anythingllm.com/community-hub/no-private-items";
+      return "https://docs.anythingllm.com/community-hub/faq#no-private-items";
     },
   },
 
