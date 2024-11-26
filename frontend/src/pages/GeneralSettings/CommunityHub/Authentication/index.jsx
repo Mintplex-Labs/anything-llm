@@ -1,6 +1,5 @@
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import CommunityHub from "@/models/communityHub";
 import ContextualSaveBar from "@/components/ContextualSaveBar";

@@ -2,20 +2,7 @@ import paths from "@/utils/paths";
 import HubItemCard from "../../Trending/HubItems/HubItemCard";
 import { useUserItems } from "../useUserItems";
 import { HubItemCardSkeleton } from "../../Trending/HubItems";
-
-function readableType(type) {
-  switch (type) {
-    case "agentSkills":
-    case "agentSkill":
-      return "Agent Skills";
-    case "systemPrompt":
-    case "systemPrompts":
-      return "System Prompts";
-    case "slashCommand":
-    case "slashCommands":
-      return "Slash Commands";
-  }
-}
+import { readableType } from "../../utils";
 
 export default function UserItems({ connectionKey }) {
   const { loading, userItems } = useUserItems({ connectionKey });

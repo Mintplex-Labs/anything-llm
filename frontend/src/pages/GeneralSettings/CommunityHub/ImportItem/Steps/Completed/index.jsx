@@ -1,5 +1,6 @@
 import CommunityHubImportItemSteps from "..";
 import CTAButton from "@/components/lib/CTAButton";
+
 export default function Completed({ settings, setSettings, setStep }) {
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">

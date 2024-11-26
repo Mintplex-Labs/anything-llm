@@ -4,34 +4,7 @@ import paths from "@/utils/paths";
 import HubItemCard from "./HubItemCard";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-
-function readableType(type) {
-  switch (type) {
-    case "agentSkills":
-    case "agentSkill":
-      return "Agent Skills";
-    case "systemPrompt":
-    case "systemPrompts":
-      return "System Prompts";
-    case "slashCommand":
-    case "slashCommands":
-      return "Slash Commands";
-  }
-}
-
-function typeToPath(type) {
-  switch (type) {
-    case "agentSkill":
-    case "agentSkills":
-      return "agent-skills";
-    case "systemPrompt":
-    case "systemPrompts":
-      return "system-prompts";
-    case "slashCommand":
-    case "slashCommands":
-      return "slash-commands";
-  }
-}
+import { readableType, typeToPath } from "../../utils";
 
 const DEFAULT_EXPLORE_ITEMS = {
   agentSkills: { items: [], hasMore: false, totalCount: 0 },

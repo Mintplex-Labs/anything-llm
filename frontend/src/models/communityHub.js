@@ -7,7 +7,7 @@ const CommunityHub = {
    * @param {string} importId - The import ID of the item.
    * @returns {Promise<{error: string | null, item: object | null}>}
    */
-  async getItemFromImportId(importId) {
+  getItemFromImportId: async (importId) => {
     return await fetch(`${API_BASE}/community-hub/item`, {
       method: "POST",
       headers: baseHeaders(),
@@ -29,7 +29,7 @@ const CommunityHub = {
    * @param {object} options - Additional options for applying the item for whatever the item type requires.
    * @returns {Promise<{success: boolean, error: string | null}>}
    */
-  async applyItem(importId, options = {}) {
+  applyItem: async (importId, options = {}) => {
     return await fetch(`${API_BASE}/community-hub/apply`, {
       method: "POST",
       headers: baseHeaders(),
@@ -50,7 +50,7 @@ const CommunityHub = {
    * @param {string} importId - The import ID of the item.
    * @returns {Promise<{error: string | null, item: object | null}>}
    */
-  async importBundleItem(importId) {
+  importBundleItem: async (importId) => {
     return await fetch(`${API_BASE}/community-hub/import`, {
       method: "POST",
       headers: baseHeaders(),
