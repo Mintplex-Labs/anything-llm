@@ -21,7 +21,7 @@ Open your terminal
 
   ```
 
-  gcloud deployment-manager deployments create anything-llm-deployment --config gcp/deployment/gcp_deploy_anything_llm_with_env.yaml
+  gcloud deployment-manager deployments create anything-llm-deployment --config gcp/deployment/gcp_deploy_anything_llm.yaml
 
   ```
 
