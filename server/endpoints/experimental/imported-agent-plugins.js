@@ -45,6 +45,21 @@ function importedAgentPluginEndpoints(app) {
       }
     }
   );
+
+  app.delete(
+    "/experimental/agent-plugins/:hubId",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { hubId } = request.params;
+        const result = ImportedPlugin.deletePlugin(hubId);
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e);
+        response.status(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { importedAgentPluginEndpoints };

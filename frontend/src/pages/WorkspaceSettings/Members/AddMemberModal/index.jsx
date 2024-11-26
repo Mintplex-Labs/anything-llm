@@ -81,8 +81,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
           <button
             onClick={closeModal}
             type="button"
-            className="bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
-            data-modal-hide="staticModal"
+            className="border-none bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
             <X className="text-white text-lg" />
           </button>
@@ -98,7 +97,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                     onClick={() => handleUserSelect(user.id)}
                   >
                     <div
-                      className="shrink-0 w-3 h-3 rounded border-[1px] border-white light:border-black flex justify-center items-center"
+                      className="shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white light:border-black flex justify-center items-center"
                       role="checkbox"
                       aria-checked={isUserSelected(user.id)}
                       tabIndex={0}

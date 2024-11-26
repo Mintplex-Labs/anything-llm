@@ -38,6 +38,20 @@ const AgentPlugins = {
         return false;
       });
   },
+  deletePlugin: async function (hubId) {
+    return await fetch(`${API_BASE}/experimental/agent-plugins/${hubId}`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not delete agent plugin config.");
+        return true;
+      })
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
 };
 
 export default AgentPlugins;

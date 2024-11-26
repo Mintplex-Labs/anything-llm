@@ -168,7 +168,7 @@ function WorkspaceSelector({
             }, 500)
           }
           placeholder="Enter a workspace name"
-          className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-theme-text-primary text-xs placeholder:text-theme-text-secondary/50"
+          className="border-none bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-theme-text-primary text-xs placeholder:text-theme-text-secondary/50"
         />
       </div>
       <div className="flex flex-col items-center -ml-2">
@@ -221,7 +221,7 @@ function WorkspaceSuggestions({
   if (availableWorkspaces.length === 0) {
     return (
       <div className="w-full mt-[2px] bg-theme-bg-container top-[45px] h-40 rounded-lg p-2 text-sm">
-        <p className="text-center text-theme-text-secondary/40">
+        <p className="text-center text-theme-text-secondary">
           no workspaces available to select.
         </p>
       </div>
@@ -245,7 +245,7 @@ function WorkspaceSuggestions({
             key={workspace.slug}
             onClick={() => addWorkspace(workspace)}
             type="button"
-            className="text-left text-theme-text-primary hover:bg-theme-bg-secondary rounded-lg p-1"
+            className="border-none text-left text-theme-text-primary hover:bg-theme-bg-secondary rounded-lg p-1"
           >
             {workspace.name}
           </button>

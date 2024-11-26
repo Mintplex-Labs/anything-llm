@@ -58,7 +58,7 @@ export default function NewFolderModal({ closeModal, files, setFiles }) {
                 <input
                   name="folderName"
                   type="text"
-                  className="bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="Enter folder name"
                   required={true}
                   autoComplete="off"

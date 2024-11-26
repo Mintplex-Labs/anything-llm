@@ -61,7 +61,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 <input
                   name="username"
                   type="text"
-                  className="bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="User's username"
                   defaultValue={user.username}
                   minLength={2}
@@ -83,7 +83,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 <input
                   name="password"
                   type="text"
-                  className="bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder={`${user.username}'s new password`}
                   autoComplete="off"
                   minLength={8}
@@ -104,7 +104,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   required={true}
                   defaultValue={user.role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 >
                   <option value="default">Default</option>
                   <option value="manager">Manager</option>

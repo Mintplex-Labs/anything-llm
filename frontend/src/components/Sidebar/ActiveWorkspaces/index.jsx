@@ -63,7 +63,7 @@ export default function ActiveWorkspaces() {
                   flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
                   bg-theme-sidebar-item-default
                   hover:bg-theme-sidebar-subitem-hover hover:font-bold
-                  ${isActive ? "bg-theme-sidebar-item-selected font-bold border-2 border-transparent light:border-blue-400" : ""}
+                  ${isActive ? "bg-theme-sidebar-item-selected font-bold border-solid border-2 border-transparent light:border-blue-400" : ""}
                 `}
               >
                 <div className="flex flex-row justify-between w-full">
@@ -101,7 +101,7 @@ export default function ActiveWorkspaces() {
                           setSelectedWs(workspace);
                           showModal();
                         }}
-                        className="rounded-md flex items-center justify-center ml-auto p-[2px] hover:bg-[#646768] text-[#A7A8A9] hover:text-white"
+                        className="border-none rounded-md flex items-center justify-center ml-auto p-[2px] hover:bg-[#646768] text-[#A7A8A9] hover:text-white"
                       >
                         <UploadSimple
                           className="h-[20px] w-[20px]"

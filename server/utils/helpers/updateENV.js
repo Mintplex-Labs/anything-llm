@@ -939,6 +939,8 @@ function dumpENV() {
     "DISABLE_VIEW_CHAT_HISTORY",
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
+    // Community Hub
+    "COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

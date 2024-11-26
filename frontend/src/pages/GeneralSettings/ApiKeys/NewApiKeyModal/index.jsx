@@ -61,7 +61,7 @@ export default function NewApiKeyModal({ closeModal }) {
                   type="text"
                   defaultValue={`${apiKey.secret}`}
                   disabled={true}
-                  className="bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 />
               )}
               <p className="text-white text-opacity-60 text-xs md:text-sm">

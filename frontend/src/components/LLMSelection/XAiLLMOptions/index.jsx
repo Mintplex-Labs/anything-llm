@@ -14,7 +14,7 @@ export default function XAILLMOptions({ settings }) {
         <input
           type="password"
           name="XAIApiKey"
-          className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="xAI API Key"
           defaultValue={settings?.XAIApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -67,7 +67,7 @@ function XAIModelSelection({ apiKey, settings }) {
         <select
           name="XAIModelPref"
           disabled={true}
-          className="bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             --loading available models--
@@ -88,7 +88,7 @@ function XAIModelSelection({ apiKey, settings }) {
       <select
         name="XAIModelPref"
         required={true}
-        className="bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Available models">
