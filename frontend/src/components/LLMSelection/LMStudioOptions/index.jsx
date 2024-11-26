@@ -56,7 +56,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           <input
             type="number"
             name="LMStudioTokenLimit"
-            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             defaultChecked="4096"
             min={1}
@@ -77,7 +77,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
             e.preventDefault();
             setShowAdvancedControls(!showAdvancedControls);
           }}
-          className="text-white hover:text-white/70 flex items-center text-sm"
+          className="border-none text-white hover:text-white/70 flex items-center text-sm"
         >
           {showAdvancedControls ? "Hide" : "Show"} Manual Endpoint Input
           {showAdvancedControls ? (
@@ -113,7 +113,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
             <input
               type="url"
               name="LMStudioBasePath"
-              className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://localhost:1234/v1"
               value={basePathValue.value}
               required={true}
@@ -169,7 +169,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
         <select
           name="LMStudioModelPref"
           disabled={true}
-          className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {!!basePath
@@ -193,7 +193,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
       <select
         name="LMStudioModelPref"
         required={true}
-        className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

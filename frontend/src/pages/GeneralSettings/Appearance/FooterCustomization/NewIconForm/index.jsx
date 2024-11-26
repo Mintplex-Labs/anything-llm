@@ -89,7 +89,7 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
         value={selectedUrl}
         onChange={handleUrlChange}
         placeholder="https://example.com"
-        className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-[300px] h-[32px] focus:outline-primary-button active:outline-primary-button outline-none"
+        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-[300px] h-[32px] focus:outline-primary-button active:outline-primary-button outline-none"
         required
       />
       {selectedIcon !== "Plus" && (

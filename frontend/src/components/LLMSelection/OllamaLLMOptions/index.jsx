@@ -40,7 +40,7 @@ export default function OllamaLLMOptions({ settings }) {
           <input
             type="number"
             name="OllamaLLMTokenLimit"
-            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             defaultChecked="4096"
             min={1}
@@ -61,7 +61,7 @@ export default function OllamaLLMOptions({ settings }) {
             e.preventDefault();
             setShowAdvancedControls(!showAdvancedControls);
           }}
-          className="text-white hover:text-white/70 flex items-center text-sm"
+          className="border-none text-white hover:text-white/70 flex items-center text-sm"
         >
           {showAdvancedControls ? "Hide" : "Show"} advanced settings
           {showAdvancedControls ? (
@@ -97,7 +97,7 @@ export default function OllamaLLMOptions({ settings }) {
             <input
               type="url"
               name="OllamaLLMBasePath"
-              className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://127.0.0.1:11434"
               value={basePathValue.value}
               required={true}
@@ -118,7 +118,7 @@ export default function OllamaLLMOptions({ settings }) {
             <select
               name="OllamaLLMKeepAliveSeconds"
               required={true}
-              className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
               defaultValue={settings?.OllamaLLMKeepAliveSeconds ?? "300"}
             >
               <option value="0">No cache</option>
@@ -153,7 +153,7 @@ export default function OllamaLLMOptions({ settings }) {
             <select
               name="OllamaLLMPerformanceMode"
               required={true}
-              className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
               value={performanceMode}
               onChange={(e) => setPerformanceMode(e.target.value)}
             >
@@ -223,7 +223,7 @@ function OllamaLLMModelSelection({ settings, basePath = null }) {
         <select
           name="OllamaLLMModelPref"
           disabled={true}
-          className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {!!basePath
@@ -247,7 +247,7 @@ function OllamaLLMModelSelection({ settings, basePath = null }) {
       <select
         name="OllamaLLMModelPref"
         required={true}
-        className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

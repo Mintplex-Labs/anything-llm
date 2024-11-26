@@ -148,7 +148,7 @@ export default function SuggestedChatMessages({ slug }) {
             </label>
             <input
               placeholder="Message heading"
-              className=" bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
               value={newMessage.heading}
               name="heading"
               onChange={onEditChange}
@@ -160,7 +160,7 @@ export default function SuggestedChatMessages({ slug }) {
             </label>
             <input
               placeholder="Message"
-              className="bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
               value={newMessage.message}
               name="message"
               onChange={onEditChange}

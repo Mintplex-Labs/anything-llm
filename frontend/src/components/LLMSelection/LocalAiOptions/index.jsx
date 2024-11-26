@@ -56,7 +56,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
               <input
                 type="number"
                 name="LocalAiTokenLimit"
-                className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 placeholder="4096"
                 min={1}
                 onScroll={(e) => e.target.blur()}
@@ -77,7 +77,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <input
             type="password"
             name="LocalAiApiKey"
-            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="sk-mysecretkey"
             defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
@@ -93,7 +93,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             e.preventDefault();
             setShowAdvancedControls(!showAdvancedControls);
           }}
-          className="text-white hover:text-white/70 flex items-center text-sm"
+          className="border-none text-white hover:text-white/70 flex items-center text-sm"
         >
           {showAdvancedControls ? "Hide" : "Show"} advanced settings
           {showAdvancedControls ? (
@@ -128,7 +128,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             <input
               type="url"
               name="LocalAiBasePath"
-              className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://localhost:8080/v1"
               value={basePathValue.value}
               required={true}
@@ -176,7 +176,7 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
         <select
           name="LocalAiModelPref"
           disabled={true}
-          className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -196,7 +196,7 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
       <select
         name="LocalAiModelPref"
         required={true}
-        className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

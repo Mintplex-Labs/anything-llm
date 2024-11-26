@@ -150,7 +150,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           </label>
           <div className="mt-2 gap-y-3 flex flex-col">
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
+              className={`border-solid transition-all  duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
                 selectedOption === "job"
                   ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
                   : "border-theme-sidebar-border"
@@ -176,7 +176,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
               </div>
             </label>
             <label
-              className={`transition-all  duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
+              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
                 selectedOption === "personal"
                   ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
                   : "border-theme-sidebar-border"
@@ -202,7 +202,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
               </div>
             </label>
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
+              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
                 selectedOption === "other"
                   ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
                   : "border-theme-sidebar-border"

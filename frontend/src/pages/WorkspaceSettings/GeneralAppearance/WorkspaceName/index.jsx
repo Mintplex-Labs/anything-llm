@@ -18,7 +18,7 @@ export default function WorkspaceName({ workspace, setHasChanges }) {
         minLength={2}
         maxLength={80}
         defaultValue={workspace?.name}
-        className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
         placeholder="My Workspace"
         required={true}
         autoComplete="off"

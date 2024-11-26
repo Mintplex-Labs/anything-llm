@@ -73,7 +73,7 @@ export default function NewBrowserExtensionApiKeyModal({
                   type="text"
                   defaultValue={apiKey}
                   disabled={true}
-                  className="bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg block w-full p-2.5"
                 />
               )}
               {isMultiUser && (

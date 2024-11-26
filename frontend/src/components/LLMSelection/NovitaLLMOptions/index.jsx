@@ -13,7 +13,7 @@ export default function NovitaLLMOptions({ settings }) {
           <input
             type="password"
             name="NovitaLLMApiKey"
-            className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Novita API Key"
             defaultValue={settings?.NovitaLLMApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -39,7 +39,7 @@ function AdvancedControls({ settings }) {
         <button
           type="button"
           onClick={() => setShowAdvancedControls(!showAdvancedControls)}
-          className="text-theme-text-primary hover:text-theme-text-secondary flex items-center text-sm"
+          className="border-none text-theme-text-primary hover:text-theme-text-secondary flex items-center text-sm"
         >
           {showAdvancedControls ? "Hide" : "Show"} advanced settings
           {showAdvancedControls ? (
@@ -57,7 +57,7 @@ function AdvancedControls({ settings }) {
           <input
             type="number"
             name="NovitaLLMTimeout"
-            className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Timeout value between token responses to auto-timeout the stream"
             defaultValue={settings?.NovitaLLMTimeout ?? 500}
             autoComplete="off"
@@ -104,7 +104,7 @@ function NovitaModelSelection({ settings }) {
         <select
           name="NovitaLLMModelPref"
           disabled={true}
-          className="bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -122,7 +122,7 @@ function NovitaModelSelection({ settings }) {
       <select
         name="NovitaLLMModelPref"
         required={true}
-        className="bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-theme-text-primary border-theme-border text-sm rounded-lg block w-full p-2.5"
       >
         {Object.keys(groupedModels)
           .sort()
