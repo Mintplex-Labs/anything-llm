@@ -73,7 +73,7 @@ export default function UserButton() {
             {mode === "multi" && !!user && (
               <button
                 onClick={handleOpenAccountModal}
-                className="text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
+                className="border-none text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
               >
                 Account
               </button>

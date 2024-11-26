@@ -85,7 +85,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
             setShowing(false);
             sendCommand(`${preset.command} `, false);
           }}
-          className="w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start"
+          className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start"
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
             <div className="text-theme-text-primary text-sm font-bold">
@@ -108,7 +108,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
       ))}
       <button
         onClick={openAddModal}
-        className="w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-1 rounded-xl flex flex-col justify-start"
+        className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-1 rounded-xl flex flex-col justify-start"
       >
         <div className="w-full flex-row flex pointer-events-none items-center gap-2">
           <Plus size={24} weight="fill" className="text-theme-text-primary" />

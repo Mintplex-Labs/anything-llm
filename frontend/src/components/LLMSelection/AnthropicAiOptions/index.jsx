@@ -9,7 +9,7 @@ export default function AnthropicAiOptions({ settings }) {
           <input
             type="password"
             name="AnthropicApiKey"
-            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Anthropic Claude-2 API Key"
             defaultValue={settings?.AnthropicApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -27,7 +27,7 @@ export default function AnthropicAiOptions({ settings }) {
               name="AnthropicModelPref"
               defaultValue={settings?.AnthropicModelPref || "claude-2"}
               required={true}
-              className="bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
             >
               {[
                 "claude-instant-1.2",

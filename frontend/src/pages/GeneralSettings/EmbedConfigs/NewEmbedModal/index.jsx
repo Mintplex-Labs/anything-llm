@@ -322,7 +322,7 @@ export const NumberInput = ({ name, title, hint, defaultValue = 0 }) => {
       <input
         type="number"
         name={name}
-        className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[15rem] p-2.5"
+        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[15rem] p-2.5"
         min={0}
         defaultValue={defaultValue}
         onScroll={(e) => e.target.blur()}

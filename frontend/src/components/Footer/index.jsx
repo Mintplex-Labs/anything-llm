@@ -15,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import SettingsButton from "../SettingsButton";
 import { isMobile } from "react-device-detect";
 import { Tooltip } from "react-tooltip";
+import { Link } from "react-router-dom";
 
 export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
@@ -49,8 +50,8 @@ export default function Footer() {
       <div className="flex justify-center mb-2">
         <div className="flex space-x-4">
           <div className="flex w-fit">
-            <a
-              href={paths.github()}
+            <Link
+              to={paths.github()}
               target="_blank"
               rel="noreferrer"
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
@@ -63,11 +64,11 @@ export default function Footer() {
                 className="h-5 w-5"
                 color="var(--theme-sidebar-footer-icon-fill)"
               />
-            </a>
+            </Link>
           </div>
           <div className="flex w-fit">
-            <a
-              href={paths.docs()}
+            <Link
+              to={paths.docs()}
               target="_blank"
               rel="noreferrer"
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
@@ -80,11 +81,11 @@ export default function Footer() {
                 className="h-5 w-5"
                 color="var(--theme-sidebar-footer-icon-fill)"
               />
-            </a>
+            </Link>
           </div>
           <div className="flex w-fit">
-            <a
-              href={paths.discord()}
+            <Link
+              to={paths.discord()}
               target="_blank"
               rel="noreferrer"
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
@@ -97,7 +98,7 @@ export default function Footer() {
                 className="h-5 w-5"
                 color="var(--theme-sidebar-footer-icon-fill)"
               />
-            </a>
+            </Link>
           </div>
           {!isMobile && <SettingsButton />}
         </div>
@@ -120,7 +121,7 @@ export default function Footer() {
             href={item.url}
             target="_blank"
             rel="noreferrer"
-            className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
+            className="transition-all duration-300 flex w-fit h-fit p-2 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover hover:border-slate-100"
           >
             {React.createElement(
               ICON_COMPONENTS?.[item.icon] ?? ICON_COMPONENTS.Info,

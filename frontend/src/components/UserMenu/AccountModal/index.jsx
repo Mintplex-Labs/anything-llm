@@ -134,7 +134,7 @@ export default function AccountModal({ user, hideModal }) {
                 <input
                   name="username"
                   type="text"
-                  className="bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="User's username"
                   minLength={2}
                   defaultValue={user.username}
@@ -156,7 +156,7 @@ export default function AccountModal({ user, hideModal }) {
                 <input
                   name="password"
                   type="text"
-                  className="bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder={`${user.username}'s new password`}
                   minLength={8}
                 />
@@ -209,7 +209,7 @@ function LanguagePreference() {
       </label>
       <select
         name="userLang"
-        className="bg-theme-settings-input-bg w-fit mt-2 px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+        className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
         defaultValue={currentLanguage || "en"}
         onChange={(e) => changeLanguage(e.target.value)}
       >
@@ -240,7 +240,7 @@ function ThemePreference() {
         name="theme"
         value={theme}
         onChange={(e) => setTheme(e.target.value)}
-        className="bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+        className="border-none bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
       >
         {Object.entries(availableThemes).map(([key, value]) => (
           <option key={key} value={key}>
