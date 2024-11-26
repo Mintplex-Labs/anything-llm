@@ -14,7 +14,7 @@ function isNullOrNaN(value) {
 }
 
 const SystemSettings = {
-  protectedFields: ["multi_user_mode"],
+  protectedFields: ["multi_user_mode", "hub_api_key"],
   publicFields: [
     "footer_data",
     "support_email",
@@ -49,6 +49,9 @@ const SystemSettings = {
 
     // beta feature flags
     "experimental_live_file_sync",
+
+    // Hub settings
+    "hub_api_key",
   ],
   validations: {
     footer_data: (updates) => {
@@ -164,6 +167,10 @@ const SystemSettings = {
       } finally {
         new MetaGenerator().clearConfig();
       }
+    },
+    hub_api_key: (apiKey) => {
+      if (!apiKey) return null;
+      return String(apiKey);
     },
   },
   currentSettings: async function () {
@@ -562,6 +569,22 @@ const SystemSettings = {
         (await SystemSettings.get({ label: "experimental_live_file_sync" }))
           ?.value === "enabled",
     };
+  },
+
+  /**
+   * Get user configured Community Hub Settings
+   * Connection key is used to authenticate with the Community Hub API
+   * for your account.
+   * @returns {Promise<{connectionKey: string}>}
+   */
+  hubSettings: async function () {
+    try {
+      const hubKey = await this.get({ label: "hub_api_key" });
+      return { connectionKey: hubKey?.value || null };
+    } catch (error) {
+      console.error(error.message);
+      return { connectionKey: null };
+    }
   },
 };
 

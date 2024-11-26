@@ -11,6 +11,7 @@ import {
   PencilSimpleLine,
   Nut,
   Toolbox,
+  Globe,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { isMobile } from "react-device-detect";
@@ -290,6 +291,30 @@ const SidebarOptions = ({ user = null, t }) => (
           user={user}
           flex={true}
           roles={["admin"]}
+        />
+        <Option
+          btnText="Community Hub"
+          icon={<Globe className="h-5 w-5 flex-shrink-0" />}
+          childOptions={[
+            {
+              btnText: "Explore Trending",
+              href: paths.communityHub.trending(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
+              btnText: "Your Account",
+              href: paths.communityHub.authentication(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
+              btnText: "Import Item",
+              href: paths.communityHub.importItem(),
+              flex: true,
+              roles: ["admin"],
+            },
+          ]}
         />
         <Option
           btnText={t("settings.customization")}

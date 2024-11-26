@@ -69,6 +69,16 @@ const LiveDocumentSyncManage = lazy(
 );
 const FineTuningWalkthrough = lazy(() => import("@/pages/FineTuning"));
 
+const CommunityHubTrending = lazy(
+  () => import("@/pages/GeneralSettings/CommunityHub/Trending")
+);
+const CommunityHubAuthentication = lazy(
+  () => import("@/pages/GeneralSettings/CommunityHub/Authentication")
+);
+const CommunityHubImportItem = lazy(
+  () => import("@/pages/GeneralSettings/CommunityHub/ImportItem")
+);
+
 export default function App() {
   return (
     <ThemeProvider>
@@ -206,6 +216,21 @@ export default function App() {
                   <Route
                     path="/fine-tuning"
                     element={<AdminRoute Component={FineTuningWalkthrough} />}
+                  />
+
+                  <Route
+                    path="/settings/community-hub/trending"
+                    element={<AdminRoute Component={CommunityHubTrending} />}
+                  />
+                  <Route
+                    path="/settings/community-hub/authentication"
+                    element={
+                      <AdminRoute Component={CommunityHubAuthentication} />
+                    }
+                  />
+                  <Route
+                    path="/settings/community-hub/import-item"
+                    element={<AdminRoute Component={CommunityHubImportItem} />}
                   />
                 </Routes>
                 <ToastContainer />
