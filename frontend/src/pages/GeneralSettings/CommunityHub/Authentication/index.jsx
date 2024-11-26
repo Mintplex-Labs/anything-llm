@@ -185,7 +185,7 @@ export default function CommunityHubAuthentication() {
                 {!!originalConnectionKey && (
                   <button
                     onClick={disconnectHub}
-                    className="text-red-500 hover:text-red-600 text-sm font-medium transition-colors duration-200"
+                    className="border-none text-red-500 hover:text-red-600 text-sm font-medium transition-colors duration-200"
                   >
                     Disconnect
                   </button>
