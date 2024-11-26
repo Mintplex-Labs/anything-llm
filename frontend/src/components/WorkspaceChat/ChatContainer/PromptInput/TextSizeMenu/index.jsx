@@ -15,7 +15,7 @@ export default function TextSizeButton() {
         data-tooltip-content="Change text size"
         aria-label="Change text size"
         onClick={() => setShowTextSizeMenu(!showTextSizeMenu)}
-        className={`relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${
+        className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${
           showTextSizeMenu ? "!opacity-100" : ""
         }`}
       >
@@ -81,7 +81,7 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
             setShowing(false);
             handleTextSizeChange("small");
           }}
-          className={`w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
+          className={`border-none w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
             selectedSize === "small"
               ? "bg-theme-action-menu-item-hover"
               : "hover:bg-theme-action-menu-item-hover"
@@ -98,7 +98,7 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
             setShowing(false);
             handleTextSizeChange("normal");
           }}
-          className={`w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
+          className={`border-none w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
             selectedSize === "normal"
               ? "bg-theme-action-menu-item-hover"
               : "hover:bg-theme-action-menu-item-hover"
@@ -115,7 +115,7 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
             setShowing(false);
             handleTextSizeChange("large");
           }}
-          className={`w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
+          className={`border-none w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
             selectedSize === "large"
               ? "bg-theme-action-menu-item-hover"
               : "hover:bg-theme-action-menu-item-hover"

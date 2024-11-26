@@ -99,7 +99,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
           <input
             type="password"
             name="AwsBedrockLLMAccessKey"
-            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="AWS Bedrock IAM User Access Key"
             defaultValue={
               settings?.AwsBedrockLLMAccessKey ? "*".repeat(20) : ""
@@ -117,7 +117,7 @@ export default function AwsBedrockLLMOptions({ settings }) {
             <input
               type="password"
               name="AwsBedrockLLMSessionToken"
-              className="bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="AWS Bedrock Session Token"
               defaultValue={
                 settings?.AwsBedrockLLMSessionToken ? "*".repeat(20) : ""
