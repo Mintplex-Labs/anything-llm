@@ -24,7 +24,7 @@ export default function FileRow({ item, selected, toggleSelection }) {
         })}
       >
         <div
-          className={`shrink-0 w-3 h-3 rounded border-[1px] border-white ${
+          className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white ${
             selected ? "text-white" : "text-theme-text-primary light:invert"
           } flex justify-center items-center cursor-pointer`}
           role="checkbox"

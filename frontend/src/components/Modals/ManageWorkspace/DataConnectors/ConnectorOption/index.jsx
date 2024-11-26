@@ -9,7 +9,7 @@ export default function ConnectorOption({
   return (
     <button
       onClick={() => setSelectedConnector(slug)}
-      className={`flex text-left gap-x-3.5 items-center py-2 px-4 hover:bg-theme-file-picker-hover ${
+      className={`border-none flex text-left gap-x-3.5 items-center py-2 px-4 hover:bg-theme-file-picker-hover ${
         selectedConnector === slug ? "bg-theme-file-picker-hover" : ""
       } rounded-lg cursor-pointer w-full`}
     >

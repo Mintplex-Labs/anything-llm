@@ -212,7 +212,7 @@ function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
       className="w-full relative flex h-[40px] items-center border-none hover:bg-red-400/20 rounded-lg group"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
-        <div className="bg-zinc-600 light:bg-transparent p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+        <div className="bg-transparent p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
           <Trash
             weight="bold"
             size={14}

@@ -89,7 +89,7 @@ export default function CustomMessages() {
         ))}
         <div className="flex gap-4 mt-12 justify-between pb-[15px]">
           <button
-            className="self-end text-white hover:text-white/60 light:hover:text-black/60 transition"
+            className="border-none self-end text-white hover:text-white/60 light:hover:text-black/60 transition"
             onClick={() => addMessage("response")}
           >
             <div className="flex items-center justify-start text-sm font-normal -ml-2">
@@ -104,7 +104,7 @@ export default function CustomMessages() {
             </div>
           </button>
           <button
-            className="self-end text-white hover:text-white/60 light:hover:text-black/60 transition"
+            className="border-none self-end text-white hover:text-white/60 light:hover:text-black/60 transition"
             onClick={() => addMessage("user")}
           >
             <div className="flex items-center justify-start text-sm font-normal">
