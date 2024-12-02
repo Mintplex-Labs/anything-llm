@@ -15,7 +15,7 @@
     "@mintplex-labs/piper-tts-web": "^1.0.4",
     "@phosphor-icons/react": "^2.1.7",
     "@tremor/react": "^3.15.1",
-    "dompurify": "^3.0.8",
+    "dompurify": "^3.2.2",
     "file-saver": "^2.0.5",
     "he": "^1.2.0",
     "highlight.js": "^11.9.0",
