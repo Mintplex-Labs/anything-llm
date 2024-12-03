@@ -29,11 +29,11 @@ export default function Sidebar() {
         className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
         aria-label="Home"
       >
-        <img
+        {/* <img
           src={logo}
           alt="Logo"
           className="rounded max-h-[24px] object-contain"
-        />
+        /> */}
       </Link>
       <div
         ref={sidebarRef}
@@ -60,7 +60,7 @@ export default function Sidebar() {
               </div>
             </div>
             <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
-              <Footer />
+              {/* <Footer /> */}
             </div>
           </div>
         </div>
