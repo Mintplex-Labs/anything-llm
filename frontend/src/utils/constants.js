@@ -37,6 +37,13 @@ export const LOCALAI_COMMON_URLS = [
   "http://172.17.0.1:8080/v1",
 ];
 
+export const NVIDIA_NIM_COMMON_URLS = [
+  "http://127.0.0.1:8000/v1/version",
+  "http://localhost:8000/v1/version",
+  "http://host.docker.internal:8000/v1/version",
+  "http://172.17.0.1:8000/v1/version",
+];
+
 export function fullApiUrl() {
   if (API_BASE !== "/api") return API_BASE;
   return `${window.location.origin}/api`;
