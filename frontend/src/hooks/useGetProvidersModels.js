@@ -43,6 +43,7 @@ const PROVIDER_DEFAULT_MODELS = {
   ollama: [],
   togetherai: [],
   fireworksai: [],
+  "nvidia-nim": [],
   groq: [],
   native: [],
   cohere: [

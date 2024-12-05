@@ -547,6 +547,10 @@ const SystemSettings = {
       // xAI LLM API Keys
       XAIApiKey: !!process.env.XAI_LLM_API_KEY,
       XAIModelPref: process.env.XAI_LLM_MODEL_PREF,
+
+      // Nvidia NIM Keys
+      NvidiaNimLLMBasePath: process.env.NVIDIA_NIM_LLM_BASE_PATH,
+      NvidiaNimLLMModelPref: process.env.NVIDIA_NIM_LLM_MODEL_PREF,
     };
   },
 

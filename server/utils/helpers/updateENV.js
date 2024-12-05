@@ -578,6 +578,29 @@ const KEY_MAPPING = {
     envKey: "XAI_LLM_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // Nvidia NIM Options
+  NvidiaNimLLMBasePath: {
+    envKey: "NVIDIA_NIM_LLM_BASE_PATH",
+    checks: [isValidURL],
+    postUpdate: [
+      (_, __, nextValue) => {
+        const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
+        process.env.NVIDIA_NIM_LLM_BASE_PATH =
+          parseNvidiaNimBasePath(nextValue);
+      },
+    ],
+  },
+  NvidiaNimLLMModelPref: {
+    envKey: "NVIDIA_NIM_LLM_MODEL_PREF",
+    checks: [],
+    postUpdate: [
+      async (_, __, nextValue) => {
+        const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
+        await NvidiaNimLLM.setModelTokenLimit(nextValue);
+      },
+    ],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -684,6 +707,7 @@ function supportedLLM(input = "") {
     "deepseek",
     "apipie",
     "xai",
+    "nvidia-nim",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
