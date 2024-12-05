@@ -965,6 +965,9 @@ function dumpENV() {
     "SIMPLE_SSO_ENABLED",
     // Community Hub
     "COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED",
+
+    // Nvidia NIM Keys that are automatically managed
+    "NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
