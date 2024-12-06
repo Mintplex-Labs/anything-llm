@@ -224,6 +224,11 @@ function parseChunkSource({ title = "", chunks = [] }) {
       icon = "confluence";
     }
 
+    if (url.host.includes("drupal-wiki.net")) {
+      text = title;
+      icon = "drupalwiki";
+    }
+
     return {
       isUrl: true,
       href: url.toString(),
