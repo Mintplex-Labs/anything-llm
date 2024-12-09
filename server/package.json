@@ -37,7 +37,7 @@
     "@prisma/client": "5.3.1",
     "@qdrant/js-client-rest": "^1.9.0",
     "@xenova/transformers": "^2.14.0",
-    "@zilliz/milvus2-sdk-node": "^2.3.5",
+    "@zilliz/milvus2-sdk-node": "^2.5.1",
     "adm-zip": "^0.5.16",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
