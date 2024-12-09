@@ -127,6 +127,27 @@ function extensionEndpoints(app) {
       }
     }
   );
+  app.post(
+    "/ext/drupalwiki",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const responseFromProcessor =
+          await new CollectorApi().forwardExtensionRequest({
+            endpoint: "/ext/drupalwiki",
+            method: "POST",
+            body: request.body,
+          });
+        await Telemetry.sendTelemetry("extension_invoked", {
+          type: "drupalwiki",
+        });
+        response.status(200).json(responseFromProcessor);
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { extensionEndpoints };
