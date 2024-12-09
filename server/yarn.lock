@@ -882,22 +882,22 @@
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
 
-"@grpc/grpc-js@^1.10.1":
-  version "1.10.6"
-  resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.10.6.tgz#1e3eb1af911dc888fbef7452f56a7573b8284d54"
-  integrity sha512-xP58G7wDQ4TCmN/cMUHh00DS7SRDv/+lC+xFLrTkMIN8h55X5NhZMLYbvy7dSELP15qlI6hPhNCRWVMtZMwqLA==
+"@grpc/grpc-js@^1.12.1":
+  version "1.12.4"
+  resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.12.4.tgz#3208808435ebf1e495f9a5c5c5a0bc3dc8c9e891"
+  integrity sha512-NBhrxEWnFh0FxeA0d//YP95lRFsSx2TNLEUQg4/W+5f/BMxcCjgOOIT24iD+ZB/tZw057j44DaIxja7w4XMrhg==
   dependencies:
-    "@grpc/proto-loader" "^0.7.10"
+    "@grpc/proto-loader" "^0.7.13"
     "@js-sdsl/ordered-map" "^4.4.2"
 
-"@grpc/proto-loader@^0.7.10":
-  version "0.7.12"
-  resolved "https://registry.yarnpkg.com/@grpc/proto-loader/-/proto-loader-0.7.12.tgz#787b58e3e3771df30b1567c057b6ab89e3a42911"
-  integrity sha512-DCVwMxqYzpUCiDMl7hQ384FqP4T3DbNpXU8pt681l3UWCip1WUiD5JrkImUwCB9a7f2cq4CUTmi5r/xIMRPY1Q==
+"@grpc/proto-loader@^0.7.10", "@grpc/proto-loader@^0.7.13":
+  version "0.7.13"
+  resolved "https://registry.yarnpkg.com/@grpc/proto-loader/-/proto-loader-0.7.13.tgz#f6a44b2b7c9f7b609f5748c6eac2d420e37670cf"
+  integrity sha512-AiXO/bfe9bmxBjxxtYxFAXGZvMaN5s8kO+jBHAJCON8rJoB5YS/D6X7ZNc6XQkuHNmyl4CYaMI1fJ/Gn27RGGw==
   dependencies:
     lodash.camelcase "^4.3.0"
     long "^5.0.0"
-    protobufjs "^7.2.4"
+    protobufjs "^7.2.5"
     yargs "^17.7.2"
 
 "@hapi/hoek@^9.0.0", "@hapi/hoek@^9.3.0":
@@ -2224,12 +2224,12 @@
   optionalDependencies:
     onnxruntime-node "1.14.0"
 
-"@zilliz/milvus2-sdk-node@^2.3.5":
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/@zilliz/milvus2-sdk-node/-/milvus2-sdk-node-2.4.2.tgz#50d9460aa9bfa8bea26c2ca7f523189b65c4a168"
-  integrity sha512-fkPu7XXzfUvHoCnSPVOjqQpWuSnnn9x2NMmmCcIOyRzMeXIsrz4Mf/+M7LUzmT8J9F0Khx65B0rJgCu27YzWQw==
+"@zilliz/milvus2-sdk-node@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@zilliz/milvus2-sdk-node/-/milvus2-sdk-node-2.5.1.tgz#4afcb2e54826da8d96164a5fe60e96d56e7a356c"
+  integrity sha512-awb5Y2uT9Ku+YJ7m+16T6TphoPIzwgtOXxf7s53qK54mv4F+7YWN4mBE9R2ScVO5H499ra6k+QxbGRbxAuO53g==
   dependencies:
-    "@grpc/grpc-js" "^1.10.1"
+    "@grpc/grpc-js" "^1.12.1"
     "@grpc/proto-loader" "^0.7.10"
     "@petamoriken/float16" "^3.8.6"
     dayjs "^1.11.7"
@@ -6111,10 +6111,10 @@ protobufjs@^6.8.8:
     "@types/node" ">=13.7.0"
     long "^4.0.0"
 
-protobufjs@^7.2.4, protobufjs@^7.2.6:
-  version "7.2.6"
-  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.2.6.tgz#4a0ccd79eb292717aacf07530a07e0ed20278215"
-  integrity sha512-dgJaEDDL6x8ASUZ1YqWciTRrdOuYNzoOf27oHNfdyvKqHr5i0FV7FSLU+aIeFjyFgVxrpTOtQUi0BLLBymZaBw==
+protobufjs@^7.2.5, protobufjs@^7.2.6:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.4.0.tgz#7efe324ce9b3b61c82aae5de810d287bc08a248a"
+  integrity sha512-mRUWCc3KUU4w1jU8sGxICXH/gNS94DvI1gxqDvBzhj1JpcsimQkYiOJfwsPUykUI5ZaspFbSgmBLER8IrQ3tqw==
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
     "@protobufjs/base64" "^1.1.2"
