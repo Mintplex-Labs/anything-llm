@@ -40,6 +40,11 @@
     js-tokens "^4.0.0"
     picocolors "^1.0.0"
 
+"@bufbuild/protobuf@^2.0.0":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@bufbuild/protobuf/-/protobuf-2.2.3.tgz#9cd136f6b687e63e9b517b3a54211ece942897ee"
+  integrity sha512-tFQoXHJdkEOSwj5tRIZSPNUuXK3RaR7T1nUrPgbYX1pUbvqqaaZAsfo+NXBPsz5rZMSKVFrgK1WL8Q/MSLvprg==
+
 "@colors/colors@1.6.0", "@colors/colors@^1.6.0":
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.6.0.tgz#ec6cd237440700bc23ca23087f513c75508958b0"
@@ -1793,10 +1798,10 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-jintr@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/jintr/-/jintr-1.1.0.tgz#223a3b07f5e03d410cec6e715c537c8ad1e714c3"
-  integrity sha512-Tu9wk3BpN2v+kb8yT6YBtue+/nbjeLFv4vvVC4PJ7oCidHKbifWhvORrAbQfxVIQZG+67am/mDagpiGSVtvrZg==
+jintr@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/jintr/-/jintr-3.1.0.tgz#5d4ec7ba695dfae3cc3f487545939a4ed1ad69b8"
+  integrity sha512-azhCHApkRfBH8INpiUCwKBYaNCdB5G+x3NApsI2MxQXSlgFAx7rap3YwE3JAkN08GO8f3ilZsGB0Yvc+412ntQ==
   dependencies:
     acorn "^8.8.0"
 
@@ -3603,12 +3608,13 @@ yauzl@^2.10.0, yauzl@^2.4.2:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.1.0"
 
-youtubei.js@^9.1.0:
-  version "9.4.0"
-  resolved "https://registry.yarnpkg.com/youtubei.js/-/youtubei.js-9.4.0.tgz#ccccaf4a295b96e3e17134a66730bbc82461594b"
-  integrity sha512-8plCOZD2WabqWSEgZU3RjzigIIeR7sF028EERJENYrC9xO/6awpLMZfeoE1gNrNEbKcA+bzbMvonqlvBdxGdKg==
+youtubei.js@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/youtubei.js/-/youtubei.js-12.0.0.tgz#a36159918bf3e255a052d42afc9ca9c0f8c82a8c"
+  integrity sha512-pGmVb1I9b2gseqmuMx+BCajzVUi04+r+8zxj4Fk/iQaGQGvBCbY87Tu9mdvEgIQYTkkb4Fza7GZGrH9AjYNbrw==
   dependencies:
-    jintr "^1.1.0"
+    "@bufbuild/protobuf" "^2.0.0"
+    jintr "^3.1.0"
     tslib "^2.5.0"
     undici "^5.19.1"
 
