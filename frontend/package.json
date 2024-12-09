@@ -39,7 +39,7 @@
     "react-tag-input-component": "^2.0.2",
     "react-toastify": "^9.1.3",
     "react-tooltip": "^5.25.2",
-    "recharts": "^2.12.5",
+    "recharts": "^2.14.1",
     "recharts-to-png": "^2.3.1",
     "text-case": "^1.0.9",
     "truncate": "^3.0.0",
