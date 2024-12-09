@@ -41,7 +41,7 @@
     "adm-zip": "^0.5.16",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
-    "chalk": "^4",
+    "chalk": "^5",
     "check-disk-space": "^3.4.0",
     "chromadb": "^1.5.2",
     "cohere-ai": "^7.9.5",
