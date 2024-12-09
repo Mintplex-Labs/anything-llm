@@ -25,7 +25,7 @@
     "express": "^4.18.2",
     "fluent-ffmpeg": "^2.1.2",
     "html-to-text": "^9.0.5",
-    "ignore": "^5.3.0",
+    "ignore": "^6.0.2",
     "js-tiktoken": "^1.0.8",
     "langchain": "0.1.36",
     "mammoth": "^1.6.0",
