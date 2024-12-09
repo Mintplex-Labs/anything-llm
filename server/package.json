@@ -51,7 +51,7 @@
     "express": "^4.18.2",
     "extract-json-from-string": "^1.0.1",
     "graphql": "^16.7.1",
-    "joi": "^17.11.0",
+    "joi": "^17.13.3",
     "joi-password-complexity": "^5.2.0",
     "js-tiktoken": "^1.0.7",
     "jsonrepair": "^3.7.0",
