@@ -148,8 +148,7 @@ export default function UploadFile({
         </button>
       </form>
       <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
-        These files will be uploaded to the document processor running on this
-        AnythingLLM instance. These files are not sent or shared with a third
+        These files will be uploaded to the document processor running on this instance. These files are not sent or shared with a third
         party.
       </div>
     </div>
