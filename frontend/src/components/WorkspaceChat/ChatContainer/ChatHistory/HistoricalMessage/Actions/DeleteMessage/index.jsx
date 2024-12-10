@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Trash } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
+import { useTranslation } from "react-i18next";
 
 const DELETE_EVENT = "delete-message";
 
@@ -39,6 +40,7 @@ export function useWatchDeleteMessage({ chatId = null, role = "user" }) {
 }
 
 export function DeleteMessage({ chatId, isEditing, role }) {
+  const { t } = useTranslation();
   if (!chatId || isEditing || role === "user") return null;
 
   function emitDeleteEvent() {
@@ -52,7 +54,7 @@ export function DeleteMessage({ chatId, isEditing, role }) {
       role="menuitem"
     >
       <Trash size={21} weight="fill" />
-      <p>Delete</p>
+      <p>{t("general.message.delete")}</p>
     </button>
   );
 }

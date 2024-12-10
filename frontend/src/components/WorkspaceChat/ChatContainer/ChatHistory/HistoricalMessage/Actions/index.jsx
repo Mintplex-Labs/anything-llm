@@ -4,6 +4,7 @@ import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { EditMessageAction } from "./EditMessage";
 import ActionMenu from "./ActionMenu";
+import { useTranslation } from "react-i18next";
 
 const Actions = ({
   message,
@@ -17,6 +18,7 @@ const Actions = ({
   role,
 }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
+  const { t } = useTranslation();
   const handleFeedback = async (newFeedback) => {
     const updatedFeedback =
       selectedFeedback === newFeedback ? null : newFeedback;
@@ -46,7 +48,7 @@ const Actions = ({
               isSelected={selectedFeedback === true}
               handleFeedback={() => handleFeedback(true)}
               tooltipId="feedback-button"
-              tooltipContent="Good response"
+              tooltipContent={t("general.message.feedback.good-response")}
               IconComponent={ThumbsUp}
             />
           )}
@@ -90,6 +92,7 @@ function FeedbackButton({
 
 function CopyMessage({ message }) {
   const { copied, copyText } = useCopyText();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -97,9 +100,9 @@ function CopyMessage({ message }) {
         <button
           onClick={() => copyText(message)}
           data-tooltip-id="copy-assistant-text"
-          data-tooltip-content="Copy"
+          data-tooltip-content={t("general.message.feedback.copy")}
           className="text-zinc-300"
-          aria-label="Copy"
+          aria-label={t("general.message.feedback.copy")}
         >
           {copied ? (
             <Check
@@ -121,15 +124,16 @@ function CopyMessage({ message }) {
 }
 
 function RegenerateMessage({ regenerateMessage, chatId }) {
+  const { t } = useTranslation();
   if (!chatId) return null;
   return (
     <div className="mt-3 relative">
       <button
         onClick={() => regenerateMessage(chatId)}
         data-tooltip-id="regenerate-assistant-text"
-        data-tooltip-content="Regenerate response"
+        data-tooltip-content={t("general.message.feedback.regenerate")}
         className="border-none text-zinc-300"
-        aria-label="Regenerate"
+        aria-label={t("general.message.feedback.regenerate")}
       >
         <ArrowsClockwise
           color="var(--theme-sidebar-footer-icon-fill)"

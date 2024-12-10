@@ -5,6 +5,7 @@ import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 export const THREAD_RENAME_EVENT = "renameThread";
 
 export default function ThreadContainer({ workspace }) {
@@ -153,6 +154,8 @@ export default function ThreadContainer({ workspace }) {
 
 function NewThreadButton({ workspace }) {
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
+
   const onClick = async () => {
     setLoading(true);
     const { thread, error } = await Workspace.threads.new(workspace.slug);
@@ -190,11 +193,11 @@ function NewThreadButton({ workspace }) {
 
         {loading ? (
           <p className="text-left text-white light:text-theme-text-primary text-sm">
-            Starting Thread...
+            {t("threads.start")}
           </p>
         ) : (
           <p className="text-left text-white light:text-theme-text-primary text-sm">
-            New Thread
+            {t("threads.new")}
           </p>
         )}
       </div>
@@ -203,6 +206,7 @@ function NewThreadButton({ workspace }) {
 }
 
 function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
+  const { t } = useTranslation();
   if (!ctrlPressed || threads.filter((t) => t.deleted).length === 0)
     return null;
   return (
@@ -220,7 +224,7 @@ function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
           />
         </div>
         <p className="text-white light:text-theme-text-secondary text-left text-sm group-hover:text-red-400">
-          Delete Selected
+          {t("threads.delete.selected")}
         </p>
       </div>
     </button>

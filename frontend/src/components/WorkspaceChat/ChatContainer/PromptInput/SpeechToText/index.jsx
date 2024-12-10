@@ -2,6 +2,7 @@ import { useEffect, useCallback } from "react";
 import { Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import _regeneratorRuntime from "regenerator-runtime";
+import { useTranslation } from "react-i18next";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
@@ -20,6 +21,7 @@ export default function SpeechToText({ sendCommand }) {
   } = useSpeechRecognition({
     clearTranscriptOnListen: true,
   });
+  const { t } = useTranslation();
 
   function startSTTSession() {
     if (!isMicrophoneAvailable) {
@@ -95,8 +97,8 @@ export default function SpeechToText({ sendCommand }) {
     <div
       id="text-size-btn"
       data-tooltip-id="tooltip-text-size-btn"
-      data-tooltip-content="Speak your prompt"
-      aria-label="Speak your prompt"
+      data-tooltip-content={t("chat.prompt.speak")}
+      aria-label={t("chat.prompt.speak")}
       onClick={listening ? endTTSSession : startSTTSession}
       className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${
         !!listening ? "!opacity-100" : ""

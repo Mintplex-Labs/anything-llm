@@ -38,6 +38,8 @@ const TRANSLATIONS = {
     "experimental-features": "Experimentelle Funktionen",
     contact: "Support kontaktieren",
     "browser-extension": "Browser-Erweiterung",
+    "back-to-workspaces": "zurück zum Arbeitsbereich",
+    open: "Einstellungen öffnen",
   },
 
   login: {
@@ -113,8 +115,20 @@ const TRANSLATIONS = {
         "Passen Sie die Nachrichten an, die Ihren Arbeitsbereich-Benutzern vorgeschlagen werden.",
       add: "Neue Nachricht hinzufügen",
       save: "Nachrichten speichern",
+      delete: "Löschen",
+      fork: "Aufteilen",
+      "more-actions": "Weitere Aktionen",
       heading: "Erkläre mir",
       body: "die Vorteile von AnythingLLM",
+      edit: {
+        prompt: "Prompt bearbeiten",
+        response: "Antwort bearbeiten",
+      },
+      feedback: {
+        "good-response": "Gute Antwort",
+        regenerate: "Neu erzeugen",
+        copy: "Kopieren",
+      },
     },
     pfp: {
       title: "Assistent-Profilbild",
@@ -175,6 +189,14 @@ const TRANSLATIONS = {
       title: "Prompt",
       description:
         "Der Prompt, der in diesem Arbeitsbereich verwendet wird. Definieren Sie den Kontext und die Anweisungen für die KI, um eine Antwort zu generieren. Sie sollten einen sorgfältig formulierten Prompt bereitstellen, damit die KI eine relevante und genaue Antwort generieren kann.",
+      input: {
+        "send-message": "Nachricht abschicken",
+        "send-prompt-to-workspace": "Prompt an Workspace senden",
+      },
+      attach: "Datei an Chat anhängen",
+      commands: "Verfügbare Slash-Befehle für Chat anzeigen",
+      "text-size": "Schriftgröße ändern",
+      speak: "Mündliche Eingabe",
     },
     refusal: {
       title: "Abfragemodus-Ablehnungsantwort",
@@ -277,6 +299,12 @@ const TRANSLATIONS = {
         "desc-end":
           "Die Websuche während Agentensitzungen funktioniert erst, wenn dies eingerichtet ist.",
       },
+    },
+    menu: {
+      available:
+        "Verfügbare Agenten, die zum Chatten verwendet werden können, anzeigen.",
+      default: " - Standardagent für diesen Arbeitsbereich.",
+      custom: "dedizierte Agenten gibt es bald!",
     },
   },
 
@@ -478,6 +506,39 @@ const TRANSLATIONS = {
     embedding: "Einbettungspräferenz",
     vector: "Vektordatenbank",
     anonymous: "Anonyme Telemetrie aktiviert",
+  },
+  "chat-history": {
+    welcome: "Willkommen in Ihrem Arbeitsbereich.",
+    "get-started-either": "Zum Anfang:",
+    "upload-doc": "Dokument hochladen",
+    or: "oder",
+    "send-chat": "Chat abschicken.",
+    "get-started": "Zum Anfang: ,",
+    tts: {
+      "start-tts": "TTS Nachricht vorlesen",
+      "pause-tts": "TTS Nachricht pausieren",
+      start: "Nachricht vorlesen",
+      pause: "Nachricht pausieren",
+    },
+  },
+  citations: {
+    hide: "Zitate ausblenden",
+    show: "Zitate anzeigen",
+  },
+  threads: {
+    new: "Neuer Thread",
+    start: "Thread startet ...",
+    delete: {
+      selected: "Ausgewählte Threads löschen",
+      delete: "Thread löschen",
+      question:
+        "Möchten Sie diesen Thread wirklich löschen? Alle Chats in diesem Thread werden gelöscht. Diese Aktion ist irreversibel.",
+      success: "Thread erfolgreich gelöscht!",
+      failure: "Thread konnte nicht gelöscht werden!",
+    },
+    options: "Thread Optionen",
+    rename: "Umbenennen",
+    rename_question: "Wie möchten Sie den Thread umbenennen?",
   },
 };
 

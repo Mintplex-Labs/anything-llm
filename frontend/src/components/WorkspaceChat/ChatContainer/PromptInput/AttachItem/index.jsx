@@ -1,6 +1,7 @@
 import useUser from "@/hooks/useUser";
 import { PaperclipHorizontal } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
 
 /**
  * This is a simple proxy component that clicks on the DnD file uploader for the user.
@@ -8,6 +9,7 @@ import { Tooltip } from "react-tooltip";
  */
 export default function AttachItem() {
   const { user } = useUser();
+  const { t } = useTranslation();
   if (!!user && user.role === "default") return null;
 
   return (
@@ -15,13 +17,12 @@ export default function AttachItem() {
       <button
         id="attach-item-btn"
         data-tooltip-id="attach-item-btn"
-        data-tooltip-content="Attach a file to this chat"
-        aria-label="Attach a file to this chat"
+        data-tooltip-content={t("chat.prompt.attach")}
+        aria-label={t("chat.prompt.attach")}
         type="button"
         onClick={(e) => {
           e?.target?.blur();
           document?.getElementById("dnd-chat-file-uploader")?.click();
-          return;
         }}
         className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer`}
       >
