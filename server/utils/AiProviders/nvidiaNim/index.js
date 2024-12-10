@@ -45,7 +45,7 @@ class NvidiaNimLLM {
   }
 
   /**
-   * Set the model token limit `NVIDIA_NIM_LLM_TOKEN_LIMIT` for the given model ID
+   * Set the model token limit `NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT` for the given model ID
    * @param {string} modelId
    * @param {string} basePath
    * @returns {Promise<void>}
@@ -69,7 +69,7 @@ class NvidiaNimLLM {
     if (!model.length) return;
     const modelInfo = model.find((model) => model.id === modelId);
     if (!modelInfo) return;
-    process.env.NVIDIA_NIM_LLM_TOKEN_LIMIT = Number(
+    process.env.NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT = Number(
       modelInfo.max_model_len || 4096
     );
   }
