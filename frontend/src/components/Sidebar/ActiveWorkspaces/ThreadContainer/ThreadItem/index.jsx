@@ -227,6 +227,7 @@ function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
     if (success) {
       showToast("Thread deleted successfully!", "success", { clear: true });
       onRemove(thread.id);
+      window.location.href = paths.workspace.chat(workspace.slug);
       return;
     }
   };
