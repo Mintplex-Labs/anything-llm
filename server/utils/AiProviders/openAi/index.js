@@ -62,7 +62,9 @@ class OpenAiLLM {
   // we don't want to hit the OpenAI api every chat because it will get spammed
   // and introduce latency for no reason.
   async isValidChatCompletionModel(modelName = "") {
-    const isPreset = modelName.toLowerCase().includes("gpt");
+    const isPreset =
+      modelName.toLowerCase().includes("gpt") ||
+      modelName.toLowerCase().includes("o1");
     if (isPreset) return true;
 
     const model = await this.openai.models

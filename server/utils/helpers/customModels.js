@@ -141,9 +141,17 @@ async function openAiModels(apiKey = null) {
     });
 
   const gpts = allModels
-    .filter((model) => model.id.startsWith("gpt") || model.id.startsWith("o1"))
     .filter(
-      (model) => !model.id.includes("vision") && !model.id.includes("instruct")
+      (model) =>
+        (model.id.includes("gpt") && !model.id.startsWith("ft:")) ||
+        model.id.includes("o1")
+    )
+    .filter(
+      (model) =>
+        !model.id.includes("vision") &&
+        !model.id.includes("instruct") &&
+        !model.id.includes("audio") &&
+        !model.id.includes("realtime")
     )
     .map((model) => {
       return {
