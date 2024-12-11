@@ -24,7 +24,7 @@ export default function ThreadItem({
   hasNext,
   ctrlPressed = false,
 }) {
-  const { slug } = useParams();
+  const { slug, threadSlug = null } = useParams();
   const optionsContainer = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
   const linkTo = !thread.slug
@@ -142,6 +142,7 @@ export default function ThreadItem({
                 thread={thread}
                 onRemove={onRemove}
                 close={() => setShowOptions(false)}
+                threadSlug={threadSlug}
               />
             )}
           </div>
@@ -151,7 +152,7 @@ export default function ThreadItem({
   );
 }
 
-function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
+function OptionsMenu({ containerRef, workspace, thread, onRemove, close, threadSlug }) {
   const menuRef = useRef(null);
 
   // Ref menu options
@@ -212,7 +213,7 @@ function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
     close();
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (threadSlug) => {
     if (
       !window.confirm(
         "Are you sure you want to delete this thread? All of its chats will be deleted. You cannot undo this."
@@ -227,7 +228,10 @@ function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
     if (success) {
       showToast("Thread deleted successfully!", "success", { clear: true });
       onRemove(thread.id);
-      window.location.href = paths.workspace.chat(workspace.slug);
+      // Redirect if deleting the active thread
+      if (threadSlug === thread.slug) {
+        window.location.href = paths.workspace.chat(workspace.slug);
+      }
       return;
     }
   };
@@ -246,7 +250,7 @@ function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
         <p className="text-sm">Rename</p>
       </button>
       <button
-        onClick={handleDelete}
+        onClick={() => handleDelete(threadSlug)}
         type="button"
         className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 light:text-theme-text-primary hover:text-red-100"
       >
