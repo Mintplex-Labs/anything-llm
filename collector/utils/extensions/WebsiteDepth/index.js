@@ -48,7 +48,7 @@ async function getPageLinks(url, baseUrl) {
   try {
     const loader = new PuppeteerWebBaseLoader(url, {
       launchOptions: { headless: "new" },
-      gotoOptions: { waitUntil: "networkidle0" },
+      gotoOptions: { waitUntil: "networkidle2" },
     });
     const docs = await loader.load();
     const html = docs[0].pageContent;
@@ -92,7 +92,7 @@ async function bulkScrapePages(links, outFolderPath) {
     try {
       const loader = new PuppeteerWebBaseLoader(link, {
         launchOptions: { headless: "new" },
-        gotoOptions: { waitUntil: "networkidle0" },
+        gotoOptions: { waitUntil: "networkidle2" },
         async evaluate(page, browser) {
           const result = await page.evaluate(() => document.body.innerText);
           await browser.close();
@@ -145,9 +145,9 @@ async function websiteScraper(startUrl, depth = 1, maxLinks = 20) {
   const outFolderPath =
     process.env.NODE_ENV === "development"
       ? path.resolve(
-          __dirname,
-          `../../../../server/storage/documents/${outFolder}`
-        )
+        __dirname,
+        `../../../../server/storage/documents/${outFolder}`
+      )
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
   console.log("Discovering links...");
