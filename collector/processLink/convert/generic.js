@@ -61,7 +61,7 @@ async function getPageContent(link) {
         ignoreHTTPSErrors: true,
       },
       gotoOptions: {
-        waitUntil: "domcontentloaded",
+        waitUntil: "networkidle0",
       },
       async evaluate(page, browser) {
         const result = await page.evaluate(() => document.body.innerText);
