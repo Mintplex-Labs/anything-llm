@@ -152,7 +152,14 @@ export default function ThreadItem({
   );
 }
 
-function OptionsMenu({ containerRef, workspace, thread, onRemove, close, threadSlug }) {
+function OptionsMenu({
+  containerRef,
+  workspace,
+  thread,
+  onRemove,
+  close,
+  threadSlug,
+}) {
   const menuRef = useRef(null);
 
   // Ref menu options
