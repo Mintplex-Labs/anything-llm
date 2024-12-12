@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { FullScreenLoader } from "@/components/Preloader";
-import { Navigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import useQuery from "@/hooks/useQuery";
 import System from "@/models/system";
