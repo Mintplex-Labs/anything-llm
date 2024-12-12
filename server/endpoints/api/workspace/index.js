@@ -863,7 +863,7 @@ function apiWorkspaceEndpoints(app) {
           example: {
             query: "What is the meaning of life?",
             topN: 4,
-            similarityThreshold: 0.75
+            scoreThreshold: 0.75
           }
         }
       }
@@ -889,7 +889,7 @@ function apiWorkspaceEndpoints(app) {
                     wordCount: 8,
                     tokenCount: 9
                   },
-                  similarity: 0.541887640953064,
+                  distance: 0.541887640953064,
                   score: 0.45811235904693604
                 }
               ]
@@ -901,7 +901,7 @@ function apiWorkspaceEndpoints(app) {
     */
       try {
         const { slug } = request.params;
-        const { query, topN, similarityThreshold } = reqBody(request);
+        const { query, topN, scoreThreshold } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
@@ -932,8 +932,7 @@ function apiWorkspaceEndpoints(app) {
           namespace: workspace.slug,
           input: query,
           LLMConnector,
-          similarityThreshold:
-            similarityThreshold ?? workspace?.similarityThreshold,
+          similarityThreshold: scoreThreshold ?? workspace?.similarityThreshold,
           topN: topN ?? workspace?.topN ?? 4,
         });
 
@@ -954,7 +953,7 @@ function apiWorkspaceEndpoints(app) {
               wordCount: source.wordCount,
               tokenCount: source.token_count_estimate
             },
-            similarity: source._distance,
+            distance: source._distance,
             score: source.score
           })),
         });
