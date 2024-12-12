@@ -142,7 +142,7 @@ export default function ThreadItem({
                 thread={thread}
                 onRemove={onRemove}
                 close={() => setShowOptions(false)}
-                threadSlug={threadSlug}
+                currentThreadSlug={threadSlug}
               />
             )}
           </div>
@@ -158,7 +158,7 @@ function OptionsMenu({
   thread,
   onRemove,
   close,
-  threadSlug,
+  currentThreadSlug,
 }) {
   const menuRef = useRef(null);
 
@@ -220,7 +220,7 @@ function OptionsMenu({
     close();
   };
 
-  const handleDelete = async (threadSlug) => {
+  const handleDelete = async () => {
     if (
       !window.confirm(
         "Are you sure you want to delete this thread? All of its chats will be deleted. You cannot undo this."
@@ -236,7 +236,7 @@ function OptionsMenu({
       showToast("Thread deleted successfully!", "success", { clear: true });
       onRemove(thread.id);
       // Redirect if deleting the active thread
-      if (threadSlug === thread.slug) {
+      if (currentThreadSlug === thread.slug) {
         window.location.href = paths.workspace.chat(workspace.slug);
       }
       return;
@@ -257,7 +257,7 @@ function OptionsMenu({
         <p className="text-sm">Rename</p>
       </button>
       <button
-        onClick={() => handleDelete(threadSlug)}
+        onClick={handleDelete}
         type="button"
         className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 light:text-theme-text-primary hover:text-red-100"
       >
