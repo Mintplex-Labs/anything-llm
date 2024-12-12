@@ -38,7 +38,7 @@ const MODEL_MAP = {
     "gemini-exp-1121": 32_767,
     "gemini-exp-1206": 32_767,
     "learnlm-1.5-pro-experimental": 32_767,
-    "gemini-2.0-flash-exp-1206": 1_048_576,
+    "gemini-2.0-flash-exp": 1_048_576,
   },
   groq: {
     "gemma2-9b-it": 8192,

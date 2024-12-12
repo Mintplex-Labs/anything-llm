@@ -54,7 +54,7 @@ export default function GeminiLLMOptions({ settings }) {
                     "gemini-exp-1121",
                     "gemini-exp-1206",
                     "learnlm-1.5-pro-experimental",
-                    "gemini-2.0-flash-exp-1206",
+                    "gemini-2.0-flash-exp",
                   ].map((model) => {
                     return (
                       <option key={model} value={model}>
