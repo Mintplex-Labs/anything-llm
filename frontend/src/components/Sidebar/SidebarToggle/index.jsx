@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SidebarSimple } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import { Tooltip } from "react-tooltip";
+const SIDEBAR_TOGGLE_STORAGE_KEY = "anythingllm_sidebar_toggle";
 
 /**
  * Returns the previous state of the sidebar from localStorage.
@@ -11,9 +12,7 @@ import { Tooltip } from "react-tooltip";
  * @returns {boolean}
  */
 function previousSidebarState() {
-  const previousState = window.localStorage.getItem(
-    "anythingllm_sidebar_state"
-  );
+  const previousState = window.localStorage.getItem(SIDEBAR_TOGGLE_STORAGE_KEY);
   if (previousState === "closed") return false;
   return true;
 }
@@ -45,7 +44,7 @@ export function useSidebarToggle() {
         setShowSidebar((prev) => {
           const newState = !prev;
           window.localStorage.setItem(
-            "anythingllm_sidebar_state",
+            SIDEBAR_TOGGLE_STORAGE_KEY,
             newState ? "open" : "closed"
           );
           return newState;
@@ -60,7 +59,7 @@ export function useSidebarToggle() {
 
   useEffect(() => {
     window.localStorage.setItem(
-      "anythingllm_sidebar_state",
+      SIDEBAR_TOGGLE_STORAGE_KEY,
       showSidebar ? "open" : "closed"
     );
   }, [showSidebar]);
