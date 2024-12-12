@@ -24,7 +24,7 @@ import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import NovitaLogo from "@/media/llmprovider/novita.png";
 import XAILogo from "@/media/llmprovider/xai.png";
-
+import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -51,6 +51,7 @@ import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
+import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -90,6 +91,14 @@ const LLMS = [
     logo: GeminiLogo,
     options: (settings) => <GeminiLLMOptions settings={settings} />,
     description: "Google's largest and most capable AI model",
+  },
+  {
+    name: "Nvidia NIM",
+    value: "nvidia-nim",
+    logo: NvidiaNimLogo,
+    options: (settings) => <NvidiaNimOptions settings={settings} />,
+    description:
+      "Run full parameter LLMs directly on your GPU using Nvidia's inference microservice via Docker.",
   },
   {
     name: "HuggingFace",

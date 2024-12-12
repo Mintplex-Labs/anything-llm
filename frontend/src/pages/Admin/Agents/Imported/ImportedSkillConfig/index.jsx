@@ -1,7 +1,7 @@
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import { Plug } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { Gear, Plug } from "@phosphor-icons/react";
+import { useEffect, useState, useRef } from "react";
 import { sentenceCase } from "text-case";
 
 /**
@@ -55,6 +55,11 @@ export default function ImportedSkillConfig({
       prev.map((s) => (s.hubId === config.hubId ? updatedConfig : s))
     );
     setConfig(updatedConfig);
+    showToast(
+      `Skill ${updatedConfig.active ? "activated" : "deactivated"}.`,
+      "success",
+      { clear: true }
+    );
   }
 
   async function handleSubmit(e) {
@@ -91,6 +96,7 @@ export default function ImportedSkillConfig({
       )
     );
     showToast("Skill config updated successfully.", "success");
+    setHasChanges(false);
   }
 
   useEffect(() => {
@@ -119,6 +125,10 @@ export default function ImportedSkillConfig({
               <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
               <span className="ml-3 text-sm font-medium"></span>
             </label>
+            <ManageSkillMenu
+              config={config}
+              setImportedSkills={setImportedSkills}
+            />
           </div>
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
             {config.description} by{" "}
@@ -151,7 +161,7 @@ export default function ImportedSkillConfig({
                       setInputs({ ...inputs, [key]: e.target.value })
                     }
                     placeholder={props?.input?.placeholder || ""}
-                    className="bg-transparent border border-white light:border-black rounded-md p-2 text-white text-sm"
+                    className="border-solid bg-transparent border border-white light:border-black rounded-md p-2 text-white text-sm"
                   />
                   <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
                     {props?.input?.hint}
@@ -176,5 +186,66 @@ export default function ImportedSkillConfig({
         </div>
       </div>
     </>
+  );
+}
+
+function ManageSkillMenu({ config, setImportedSkills }) {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  async function deleteSkill() {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this skill? This action cannot be undone."
+      )
+    )
+      return;
+    const success = await System.experimentalFeatures.agentPlugins.deletePlugin(
+      config.hubId
+    );
+    if (success) {
+      setImportedSkills((prev) => prev.filter((s) => s.hubId !== config.hubId));
+      showToast("Skill deleted successfully.", "success");
+      setOpen(false);
+    } else {
+      showToast("Failed to delete skill.", "error");
+    }
+  }
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  if (!config.hubId) return null;
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`border-none transition duration-200 hover:rotate-90 outline-none ring-none ${open ? "rotate-90" : ""}`}
+      >
+        <Gear size={24} weight="bold" />
+      </button>
+      {open && (
+        <div className="absolute w-[100px] -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
+          <button
+            type="button"
+            onClick={deleteSkill}
+            className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
+          >
+            <span className="text-sm">Delete Skill</span>
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

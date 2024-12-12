@@ -59,13 +59,13 @@ export default function ApiKeyRow({ apiKey }) {
           <button
             onClick={copyApiKey}
             disabled={copied}
-            className="font-medium text-blue-300 rounded-lg hover:text-white hover:light:text-blue-500 hover:text-opacity-60 hover:underline"
+            className="border-none font-medium text-blue-300 rounded-lg hover:text-white hover:light:text-blue-500 hover:text-opacity-60 hover:underline"
           >
             {copied ? "Copied" : "Copy API Key"}
           </button>
           <button
             onClick={handleDelete}
-            className="font-medium px-2 py-1 rounded-lg text-theme-text-primary hover:text-red-500"
+            className="border-none font-medium px-2 py-1 rounded-lg text-theme-text-primary hover:text-red-500"
           >
             <Trash className="h-5 w-5" />
           </button>

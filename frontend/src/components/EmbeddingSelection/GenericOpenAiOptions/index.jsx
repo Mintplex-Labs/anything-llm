@@ -13,7 +13,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
           <input
             type="url"
             name="EmbeddingBasePath"
-            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="https://api.openai.com/v1"
             defaultValue={settings?.EmbeddingBasePath}
             required={true}
@@ -28,7 +28,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
           <input
             type="text"
             name="EmbeddingModelPref"
-            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="text-embedding-ada-002"
             defaultValue={settings?.EmbeddingModelPref}
             required={true}
@@ -43,7 +43,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"
-            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="8192"
             min={1}
             onScroll={(e) => e.target.blur()}
@@ -63,7 +63,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
           <input
             type="password"
             name="GenericOpenAiEmbeddingApiKey"
-            className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="sk-mysecretkey"
             defaultValue={
               settings?.GenericOpenAiEmbeddingApiKey ? "*".repeat(20) : ""
@@ -79,7 +79,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
             e.preventDefault();
             setShowAdvancedControls(!showAdvancedControls);
           }}
-          className="text-white hover:text-white/70 flex items-center text-sm"
+          className="border-none text-theme-text-primary hover:text-theme-text-secondary flex items-center text-sm"
         >
           {showAdvancedControls ? "Hide" : "Show"} advanced settings
           {showAdvancedControls ? (
@@ -101,7 +101,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
             <input
               type="number"
               name="GenericOpenAiEmbeddingMaxConcurrentChunks"
-              className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="500"
               min={1}
               onScroll={(e) => e.target.blur()}

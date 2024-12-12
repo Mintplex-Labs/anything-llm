@@ -78,6 +78,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [AWS Bedrock](https://aws.amazon.com/bedrock/)
 - [Anthropic](https://www.anthropic.com/)
+- [NVIDIA NIM (chat models)](https://build.nvidia.com/explore/discover)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Hugging Face (chat models)](https://huggingface.co/)
 - [Ollama (chat models)](https://ollama.ai/)
@@ -199,7 +200,7 @@ Set `DISABLE_TELEMETRY` in your server or docker .env settings to "true" to opt 
 
 We will only track usage details that help us make product and roadmap decisions, specifically:
 
-- Typ of your installation (Docker or Desktop)
+- Type of your installation (Docker or Desktop)
 - When a document is added or removed. No information _about_ the document. Just that the event occurred. This gives us an idea of use.
 - Type of vector database in use. Let's us know which vector database provider is the most used to prioritize changes when updates arrive for that provider.
 - Type of LLM in use. Let's us know the most popular choice and prioritize changes when updates arrive for that provider.

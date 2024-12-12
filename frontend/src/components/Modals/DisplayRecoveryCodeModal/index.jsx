@@ -55,7 +55,7 @@ export default function RecoveryCodeModal({
               <b className="mt-4">These recovery codes are only shown once!</b>
             </p>
             <div
-              className="bg-theme-settings-input-bg text-white hover:text-primary-button
+              className="border-none bg-theme-settings-input-bg text-white hover:text-primary-button
                    flex items-center justify-center rounded-md mt-6 cursor-pointer"
               onClick={handleCopyToClipboard}
             >

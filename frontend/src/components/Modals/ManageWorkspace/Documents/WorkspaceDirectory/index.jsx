@@ -132,7 +132,7 @@ function WorkspaceDirectory({
                 {!hasChanges &&
                 files.items.some((folder) => folder.items.length > 0) ? (
                   <div
-                    className={`shrink-0 w-3 h-3 rounded border-[1px] border-white text-theme-text-primary light:invert flex justify-center items-center cursor-pointer`}
+                    className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white text-theme-text-primary light:invert flex justify-center items-center cursor-pointer`}
                     role="checkbox"
                     aria-checked={
                       Object.keys(selectedItems).length ===

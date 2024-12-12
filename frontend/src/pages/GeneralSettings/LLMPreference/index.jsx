@@ -29,6 +29,7 @@ import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
+import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -56,6 +57,7 @@ import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
+import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -93,6 +95,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <GeminiLLMOptions settings={settings} />,
     description: "Google's largest and most capable AI model",
     requiredConfig: ["GeminiLLMApiKey"],
+  },
+  {
+    name: "Nvidia NIM",
+    value: "nvidia-nim",
+    logo: NvidiaNimLogo,
+    options: (settings) => <NvidiaNimOptions settings={settings} />,
+    description:
+      "Run full parameter LLMs directly on your GPU using Nvidia's inference microservice via Docker.",
+    requiredConfig: ["NvidiaNimLLMBasePath"],
   },
   {
     name: "HuggingFace",
@@ -422,7 +433,7 @@ export default function GeneralLLMPreference() {
                           name="llm-search"
                           autoComplete="off"
                           placeholder="Search all LLM providers"
-                          className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
+                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
                           onKeyDown={(e) => {

@@ -10,7 +10,7 @@ export default function ChatQueryRefusalResponse({ workspace, setHasChanges }) {
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           {t("chat.refusal.desc-start")}{" "}
-          <code className="bg-theme-settings-input-bg p-0.5 rounded-sm">
+          <code className="border-none bg-theme-settings-input-bg p-0.5 rounded-sm">
             {t("chat.refusal.query")}
           </code>{" "}
           {t("chat.refusal.desc-end")}
