@@ -904,36 +904,47 @@ function apiWorkspaceEndpoints(app) {
         const { query, topN, scoreThreshold } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
-        if (!workspace) {
-          response.status(400).json({
+        if (!workspace)
+          return response.status(400).json({
             message: `Workspace ${slug} is not a valid workspace.`,
           });
-          return;
-        }
 
-        if (!query?.length) {
-          response.status(400).json({
+        if (!query?.length)
+          return response.status(400).json({
             message: "Query parameter cannot be empty.",
           });
-          return;
-        }
 
         const VectorDb = getVectorDbClass();
         const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
         const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
-        if (!hasVectorizedSpace || embeddingsCount === 0) {
-          response.status(200).json({ results: [] });
-          return;
-        }
+        if (!hasVectorizedSpace || embeddingsCount === 0)
+          return response
+            .status(200)
+            .json({
+              results: [],
+              message: "No embeddings found for this workspace.",
+            });
 
-        const LLMConnector = getLLMProvider();
+        const parseSimilarityThreshold = () => {
+          let input = parseFloat(scoreThreshold);
+          if (isNaN(input) || input < 0 || input > 1)
+            return workspace?.similarityThreshold ?? 0.25;
+          return input;
+        };
+
+        const parseTopN = () => {
+          let input = Number(topN);
+          if (isNaN(input) || input < 1) return workspace?.topN ?? 4;
+          return input;
+        };
+
         const results = await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: query,
-          LLMConnector,
-          similarityThreshold: scoreThreshold ?? workspace?.similarityThreshold,
-          topN: topN ?? workspace?.topN ?? 4,
+          input: String(query),
+          LLMConnector: getLLMProvider(),
+          similarityThreshold: parseSimilarityThreshold(),
+          topN: parseTopN(),
         });
 
         response.status(200).json({
@@ -949,10 +960,10 @@ function apiWorkspaceEndpoints(app) {
               chunkSource: source.chunkSource,
               published: source.published,
               wordCount: source.wordCount,
-              tokenCount: source.token_count_estimate
+              tokenCount: source.token_count_estimate,
             },
             distance: source._distance,
-            score: source.score
+            score: source.score,
           })),
         });
       } catch (e) {

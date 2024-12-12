@@ -2056,6 +2056,80 @@
         }
       }
     },
+    "/v1/workspace/{slug}/vector-search": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Perform a vector similarity search in a workspace",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace to search in"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "results": [
+                      {
+                        "id": "5a6bee0a-306c-47fc-942b-8ab9bf3899c4",
+                        "text": "Document chunk content...",
+                        "metadata": {
+                          "url": "file://document.txt",
+                          "title": "document.txt",
+                          "author": "no author specified",
+                          "description": "no description found",
+                          "docSource": "post:123456",
+                          "chunkSource": "document.txt",
+                          "published": "12/1/2024, 11:39:39 AM",
+                          "wordCount": 8,
+                          "tokenCount": 9
+                        },
+                        "distance": 0.541887640953064,
+                        "score": 0.45811235904693604
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Query to perform vector search with and optional parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "query": "What is the meaning of life?",
+                "topN": 4,
+                "scoreThreshold": 0.75
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/system/env-dump": {
       "get": {
         "tags": [
