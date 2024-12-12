@@ -167,14 +167,14 @@ export default function GeneralEmbeddingPreference() {
     try {
       const success = await Workspace.wipeAllVectorDbs();
       if (!success) {
-        showToast('Failed to reset workspace vector databases.', 'error');
+        showToast("Failed to reset workspace vector databases.", "error");
         setSaving(false);
         closeModal();
         return;
       }
     } catch (error) {
-      console.error('Failed to reset workspace vector DBs:', error);
-      showToast('Failed to reset workspace vector databases.', 'error');
+      console.error("Failed to reset workspace vector DBs:", error);
+      showToast("Failed to reset workspace vector databases.", "error");
       setSaving(false);
       closeModal();
       return;

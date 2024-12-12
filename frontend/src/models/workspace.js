@@ -238,7 +238,7 @@ const Workspace = {
       .then((res) => res.ok)
       .catch(() => false);
   },
-  wipeAllVectorDbs: async function() {
+  wipeAllVectorDbs: async function () {
     console.log("wiping all vector dbs");
     return await fetch(`${API_BASE}/workspace/reset-all-vector-dbs`, {
       method: "POST",

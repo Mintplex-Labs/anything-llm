@@ -344,7 +344,7 @@ function workspaceEndpoints(app) {
         const allDocuments = new Set();
         for (const workspace of workspaces) {
           const docs = await Document.forWorkspace(workspace.id);
-          docs.forEach(doc => allDocuments.add(doc.docpath));
+          docs.forEach((doc) => allDocuments.add(doc.docpath));
         }
 
         // Clear vector cache for cached documents

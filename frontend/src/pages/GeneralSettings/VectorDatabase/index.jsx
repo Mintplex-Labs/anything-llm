@@ -68,9 +68,15 @@ export default function GeneralVectorDatabase() {
       if (selectedVDB !== settings?.VectorDB) {
         const success = await Workspace.wipeAllVectorDbs();
         if (success) {
-          showToast("Vector database preferences saved and all vectors cleared successfully.", "success");
+          showToast(
+            "Vector database preferences saved and all vectors cleared successfully.",
+            "success"
+          );
         } else {
-          showToast("Vector database preferences saved but failed to clear existing vectors.", "warning");
+          showToast(
+            "Vector database preferences saved but failed to clear existing vectors.",
+            "warning"
+          );
         }
       } else {
         showToast("Vector database preferences saved successfully.", "success");
