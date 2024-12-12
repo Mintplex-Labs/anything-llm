@@ -92,41 +92,23 @@ jobs:
           echo "CVE_EXCEPTIONS=$CVE_NAMES" >> $GITHUB_OUTPUT
         shell: bash
 
-
-      cve_matrix:
-        strategy:
-          matrix:
-            cve: ${{ fromJSON(format('[{0}]', steps.cve-list.outputs.CVE_EXCEPTIONS)) }}
-        steps:
-          - name: Add VEX attestations
-            uses: docker/scout-cli-action@v1
-            with:
-              command: attestation-add
-              only-severity: critical,high
-              tags: ${{ steps.meta.outputs.tags }}
-              file: ./docker/vex/${{ matrix.cve }}.vex.json
-              predicate-type: https://openvex.dev/ns/v0.2.0
-
       # About VEX attestations https://docs.docker.com/scout/explore/exceptions/
       # Justifications https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#status-justifications
-      # - name: Add VEX attestations
-      #   uses: docker/scout-cli-action@v1
-      #   with:
-      #     command: attestation-add
-      #     only-severity: critical,high
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     file: ./docker/vex/${{ matrix.cve }}.vex.json
-      #     predicate-type: https://openvex.dev/ns/v0.2.0        strategy:
-
-       # run: |
-        #   echo $CVE_EXCEPTIONS
-        #   curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
-        #   for cve in $CVE_EXCEPTIONS; do
-        #     for tag in "${{ join(fromJSON(steps.meta.outputs.json).tags, ' ') }}"; do
-        #       echo "Attaching VEX exception $cve to $tag"
-        #       docker scout attestation add \
-        #       --file "./docker/vex/$cve.vex.json" \
-        #       --predicate-type https://openvex.dev/ns/v0.2.0 \
-        #       $tag
-        #     done
-        #   done
+      # Fixed to use v1.15.1 of scout-cli as v1.16.0 install script is broken
+      # https://github.com/docker/scout-cli
+      - name: Add VEX attestations
+        env:
+          CVE_EXCEPTIONS: ${{ steps.cve-list.outputs.CVE_EXCEPTIONS }}
+        run: |
+          echo $CVE_EXCEPTIONS
+          curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s -- v1.15.1
+          for cve in $CVE_EXCEPTIONS; do
+            for tag in "${{ join(fromJSON(steps.meta.outputs.json).tags, ' ') }}"; do
+              echo "Attaching VEX exception $cve to $tag"
+              docker scout attestation add \
+              --file "./docker/vex/$cve.vex.json" \
+              --predicate-type https://openvex.dev/ns/v0.2.0 \
+              $tag
+            done
+          done
+        shell: bash
