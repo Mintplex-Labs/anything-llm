@@ -155,6 +155,14 @@ class Provider {
           apiKey: process.env.XAI_LLM_API_KEY ?? null,
           ...config,
         });
+      case "novita":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.novita.ai/v3/openai",
+          },
+          apiKey: process.env.NOVITA_LLM_API_KEY ?? null,
+          ...config,
+        });
 
       // OSS Model Runners
       // case "anythingllm_ollama":
@@ -207,12 +215,12 @@ class Provider {
           apiKey: process.env.LITE_LLM_API_KEY ?? null,
           ...config,
         });
-      case "novita":
+      case "nvidia-nim":
         return new ChatOpenAI({
           configuration: {
-            baseURL: "https://api.novita.ai/v3/openai",
+            baseURL: process.env.NVIDIA_NIM_LLM_BASE_PATH,
           },
-          apiKey: process.env.NOVITA_LLM_API_KEY ?? null,
+          apiKey: null,
           ...config,
         });
 

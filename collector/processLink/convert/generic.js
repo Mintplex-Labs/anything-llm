@@ -62,7 +62,7 @@ async function getPageContent(link) {
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
       },
       gotoOptions: {
-        waitUntil: "domcontentloaded",
+        waitUntil: "networkidle2",
       },
       async evaluate(page, browser) {
         const result = await page.evaluate(() => document.body.innerText);

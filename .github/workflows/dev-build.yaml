@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['2545-feat-community-hub-integration'] # put your current branch to create a build. Core team only.
+    branches: ['docker-scout-patch'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
@@ -94,12 +94,14 @@ jobs:
 
       # About VEX attestations https://docs.docker.com/scout/explore/exceptions/
       # Justifications https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#status-justifications
+      # Fixed to use v1.15.1 of scout-cli as v1.16.0 install script is broken
+      # https://github.com/docker/scout-cli
       - name: Add VEX attestations
         env:
           CVE_EXCEPTIONS: ${{ steps.cve-list.outputs.CVE_EXCEPTIONS }}
         run: |
           echo $CVE_EXCEPTIONS
-          curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
+          curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s -- v1.15.1
           for cve in $CVE_EXCEPTIONS; do
             for tag in "${{ join(fromJSON(steps.meta.outputs.json).tags, ' ') }}"; do
               echo "Attaching VEX exception $cve to $tag"
@@ -110,5 +112,3 @@ jobs:
             done
           done
         shell: bash
-
-      
