@@ -28,7 +28,10 @@ export default function Sidebar() {
   return (
     <>
       <div
-        style={{ width: showSidebar ? "292px" : "0px" }}
+        style={{
+          width: showSidebar ? "292px" : "0px",
+          paddingLeft: showSidebar ? "0px" : "16px",
+        }}
         className="transition-all duration-500"
       >
         <div className="flex shrink-0 w-full justify-center my-[18px]">
