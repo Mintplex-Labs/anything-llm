@@ -47,7 +47,7 @@ export default function SimpleSSOPassthrough() {
         </p>
       </div>
     );
-  if (ready) return <Navigate to={redirectPath} />;
+  if (ready) return window.location.replace(redirectPath);
 
   // Loading state by default
   return <FullScreenLoader />;
