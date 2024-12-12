@@ -919,12 +919,10 @@ function apiWorkspaceEndpoints(app) {
         const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
         if (!hasVectorizedSpace || embeddingsCount === 0)
-          return response
-            .status(200)
-            .json({
-              results: [],
-              message: "No embeddings found for this workspace.",
-            });
+          return response.status(200).json({
+            results: [],
+            message: "No embeddings found for this workspace.",
+          });
 
         const parseSimilarityThreshold = () => {
           let input = parseFloat(scoreThreshold);
