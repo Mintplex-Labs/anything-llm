@@ -41,8 +41,8 @@ export default function ThreadItem({
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
         className={`${
           isActive
-            ? "border-l-2 border-b-2 border-white light:border-theme-sidebar-border z-30"
-            : "border-l border-b border-[#6F6F71] light:border-theme-sidebar-border z-10"
+            ? "border-l-2 border-b-2 border-white light:border-theme-sidebar-border z-[2]"
+            : "border-l border-b border-[#6F6F71] light:border-theme-sidebar-border z-[1]"
         } h-[50%] absolute top-0 left-2 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
@@ -51,8 +51,8 @@ export default function ThreadItem({
           style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
           className={`${
             idx <= activeIdx && !isActive
-              ? "border-l-2 border-white light:border-theme-sidebar-border z-20"
-              : "border-l border-[#6F6F71] light:border-theme-sidebar-border z-10"
+              ? "border-l-2 border-white light:border-theme-sidebar-border z-[2]"
+              : "border-l border-[#6F6F71] light:border-theme-sidebar-border z-[1]"
           } h-[100%] absolute top-0 left-2`}
         ></div>
       )}
