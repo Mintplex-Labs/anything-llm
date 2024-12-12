@@ -238,14 +238,6 @@ const Workspace = {
       .then((res) => res.ok)
       .catch(() => false);
   },
-  wipeAllVectorDbs: async function () {
-    return await fetch(`${API_BASE}/workspace/reset-all-vector-dbs`, {
-      method: "POST",
-      headers: baseHeaders(),
-    })
-      .then((res) => res.ok)
-      .catch(() => false);
-  },
   uploadFile: async function (slug, formData) {
     const response = await fetch(`${API_BASE}/workspace/${slug}/upload`, {
       method: "POST",

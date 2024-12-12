@@ -1,3 +1,5 @@
+const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
+
 const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
@@ -248,6 +250,7 @@ const KEY_MAPPING = {
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
+    postUpdate: [handleVectorStoreReset],
   },
   EmbeddingBasePath: {
     envKey: "EMBEDDING_BASE_PATH",
@@ -256,6 +259,7 @@ const KEY_MAPPING = {
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
+    postUpdate: [handleVectorStoreReset],
   },
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
@@ -276,6 +280,7 @@ const KEY_MAPPING = {
   VectorDB: {
     envKey: "VECTOR_DB",
     checks: [isNotEmpty, supportedVectorDB],
+    postUpdate: [handleVectorStoreReset],
   },
 
   // Chroma Options
@@ -876,6 +881,14 @@ function noRestrictedChars(input = "") {
   return !regExp.test(input)
     ? `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`
     : null;
+}
+
+async function handleVectorStoreReset(key, prevValue, nextValue) {
+  if (prevValue === nextValue) return;
+  console.log(
+    `Vector configuration changed (${key}) - resetting all vector stores`
+  );
+  await resetAllVectorStores();
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or

@@ -27,7 +27,6 @@ import ModalWrapper from "@/components/ModalWrapper";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
-import Workspace from "@/models/workspace";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -65,22 +64,7 @@ export default function GeneralVectorDatabase() {
       showToast(`Failed to save vector database settings: ${error}`, "error");
       setHasChanges(true);
     } else {
-      if (selectedVDB !== settings?.VectorDB) {
-        const success = await Workspace.wipeAllVectorDbs();
-        if (success) {
-          showToast(
-            "Vector database preferences saved and all vectors cleared successfully.",
-            "success"
-          );
-        } else {
-          showToast(
-            "Vector database preferences saved but failed to clear existing vectors.",
-            "warning"
-          );
-        }
-      } else {
-        showToast("Vector database preferences saved successfully.", "success");
-      }
+      showToast("Vector database preferences saved successfully.", "success");
       setHasChanges(false);
     }
     setSaving(false);

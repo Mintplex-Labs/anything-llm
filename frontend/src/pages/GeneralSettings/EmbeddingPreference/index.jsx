@@ -35,7 +35,6 @@ import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
 import MistralAiOptions from "@/components/EmbeddingSelection/MistralAiOptions";
-import Workspace from "@/models/workspace";
 
 const EMBEDDERS = [
   {
@@ -163,23 +162,6 @@ export default function GeneralEmbeddingPreference() {
 
   const handleSaveSettings = async () => {
     setSaving(true);
-
-    try {
-      const success = await Workspace.wipeAllVectorDbs();
-      if (!success) {
-        showToast("Failed to reset workspace vector databases.", "error");
-        setSaving(false);
-        closeModal();
-        return;
-      }
-    } catch (error) {
-      console.error("Failed to reset workspace vector DBs:", error);
-      showToast("Failed to reset workspace vector databases.", "error");
-      setSaving(false);
-      closeModal();
-      return;
-    }
-
     const form = document.getElementById("embedding-form");
     const settingsData = {};
     const formData = new FormData(form);
