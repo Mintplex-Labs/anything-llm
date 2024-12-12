@@ -24,7 +24,7 @@ export default function ThreadItem({
   hasNext,
   ctrlPressed = false,
 }) {
-  const { slug } = useParams();
+  const { slug, threadSlug = null } = useParams();
   const optionsContainer = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
   const linkTo = !thread.slug
@@ -142,6 +142,7 @@ export default function ThreadItem({
                 thread={thread}
                 onRemove={onRemove}
                 close={() => setShowOptions(false)}
+                currentThreadSlug={threadSlug}
               />
             )}
           </div>
@@ -151,7 +152,14 @@ export default function ThreadItem({
   );
 }
 
-function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
+function OptionsMenu({
+  containerRef,
+  workspace,
+  thread,
+  onRemove,
+  close,
+  currentThreadSlug,
+}) {
   const menuRef = useRef(null);
 
   // Ref menu options
@@ -227,6 +235,10 @@ function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
     if (success) {
       showToast("Thread deleted successfully!", "success", { clear: true });
       onRemove(thread.id);
+      // Redirect if deleting the active thread
+      if (currentThreadSlug === thread.slug) {
+        window.location.href = paths.workspace.chat(workspace.slug);
+      }
       return;
     }
   };

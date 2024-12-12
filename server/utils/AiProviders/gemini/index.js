@@ -30,7 +30,7 @@ class GeminiLLM {
           "gemini-exp-1121",
           "gemini-exp-1206",
           "learnlm-1.5-pro-experimental",
-          "gemini-2.0-flash-exp-1206",
+          "gemini-2.0-flash-exp",
         ].includes(this.model)
           ? "v1beta"
           : "v1",
@@ -120,7 +120,7 @@ class GeminiLLM {
       "gemini-exp-1121",
       "gemini-exp-1206",
       "learnlm-1.5-pro-experimental",
-      "gemini-2.0-flash-exp-1206",
+      "gemini-2.0-flash-exp",
     ];
     return validModels.includes(modelName);
   }
