@@ -87,6 +87,11 @@ export default function ThreadContainer({ workspace }) {
     const slugs = threads.filter((t) => t.deleted === true).map((t) => t.slug);
     await Workspace.threads.deleteBulk(workspace.slug, slugs);
     setThreads((prev) => prev.filter((t) => !t.deleted));
+
+    // Only redirect if current thread is being deleted
+    if (slugs.includes(threadSlug)) {
+      window.location.href = paths.workspace.chat(workspace.slug);
+    }
   };
 
   function removeThread(threadId) {
