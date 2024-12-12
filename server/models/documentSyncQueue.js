@@ -4,13 +4,13 @@ const { SystemSettings } = require("./systemSettings");
 const { Telemetry } = require("./telemetry");
 
 /**
- * @typedef {('link'|'youtube'|'confluence'|'github')} validFileType
+ * @typedef {('link'|'youtube'|'confluence'|'github'|'gitlab')} validFileType
  */
 
 const DocumentSyncQueue = {
   featureKey: "experimental_live_file_sync",
   // update the validFileTypes and .canWatch properties when adding elements here.
-  validFileTypes: ["link", "youtube", "confluence", "github"],
+  validFileTypes: ["link", "youtube", "confluence", "github", "gitlab"],
   defaultStaleAfter: 604800000,
   maxRepeatFailures: 5, // How many times a run can fail in a row before pruning.
   writable: [],
@@ -51,6 +51,7 @@ const DocumentSyncQueue = {
     if (chunkSource.startsWith("youtube://")) return true; // If is a youtube link
     if (chunkSource.startsWith("confluence://")) return true; // If is a confluence document link
     if (chunkSource.startsWith("github://")) return true; // If is a Github file reference
+    if (chunkSource.startsWith("gitlab://")) return true; // If is a Gitlab file reference
     return false;
   },
 
