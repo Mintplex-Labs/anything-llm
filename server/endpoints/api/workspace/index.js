@@ -936,8 +936,6 @@ function apiWorkspaceEndpoints(app) {
           topN: topN ?? workspace?.topN ?? 4,
         });
 
-        console.log(results);
-
         response.status(200).json({
           results: results.sources.map((source) => ({
             id: source.id,
