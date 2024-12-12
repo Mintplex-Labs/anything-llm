@@ -27,6 +27,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import Workspace from "@/models/workspace";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -64,7 +65,16 @@ export default function GeneralVectorDatabase() {
       showToast(`Failed to save vector database settings: ${error}`, "error");
       setHasChanges(true);
     } else {
-      showToast("Vector database preferences saved successfully.", "success");
+      if (selectedVDB !== settings?.VectorDB) {
+        const success = await Workspace.wipeAllVectorDbs();
+        if (success) {
+          showToast("Vector database preferences saved and all vectors cleared successfully.", "success");
+        } else {
+          showToast("Vector database preferences saved but failed to clear existing vectors.", "warning");
+        }
+      } else {
+        showToast("Vector database preferences saved successfully.", "success");
+      }
       setHasChanges(false);
     }
     setSaving(false);
@@ -308,7 +318,7 @@ export default function GeneralVectorDatabase() {
       )}
       <ModalWrapper isOpen={isOpen}>
         <ChangeWarningModal
-          warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
+          warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. All documents will be unembedded and removed from your workspaces. Your uploaded documents will not be deleted, they will be available for re-embedding."
           onClose={closeModal}
           onConfirm={handleSaveSettings}
         />

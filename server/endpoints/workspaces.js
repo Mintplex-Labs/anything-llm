@@ -34,6 +34,7 @@ const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
+const { purgeVectorCache } = require("../utils/files");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -324,6 +325,58 @@ function workspaceEndpoints(app) {
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/reset-all-vector-dbs",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const VectorDb = getVectorDbClass();
+
+        const workspaces = multiUserMode(response)
+          ? await Workspace.whereWithUser(user)
+          : await Workspace.where();
+
+        const allDocuments = new Set();
+        for (const workspace of workspaces) {
+          const docs = await Document.forWorkspace(workspace.id);
+          docs.forEach(doc => allDocuments.add(doc.docpath));
+        }
+
+        // Clear vector cache for cached documents
+        for (const docpath of allDocuments) {
+          console.log(`Purging vector cache for ${docpath}`);
+          await purgeVectorCache(docpath);
+        }
+
+        // Clear vector db for each workspace
+        for (const workspace of workspaces) {
+          await DocumentVectors.deleteForWorkspace(workspace.id);
+          await Document.delete({ workspaceId: Number(workspace.id) });
+
+          await EventLogs.logEvent(
+            "workspace_vectors_reset",
+            {
+              workspaceName: workspace?.name || "Unknown Workspace",
+            },
+            user?.id
+          );
+
+          try {
+            await VectorDb["delete-namespace"]({ namespace: workspace.slug });
+          } catch (e) {
+            console.error(e.message);
+          }
+        }
+
+        response.sendStatus(200);
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500);
       }
     }
   );
