@@ -876,12 +876,21 @@ function apiWorkspaceEndpoints(app) {
             example: {
               results: [
                 {
+                  id: "5a6bee0a-306c-47fc-942b-8ab9bf3899c4",
                   text: "Document chunk content...",
                   metadata: {
-                    title: "document.pdf",
-                    source: "documents/file.pdf"
+                    url: "file://document.txt",
+                    title: "document.txt",
+                    author: "no author specified",
+                    description: "no description found",
+                    docSource: "post:123456",
+                    chunkSource: "document.txt",
+                    published: "12/1/2024, 11:39:39 AM",
+                    wordCount: 8,
+                    tokenCount: 9
                   },
-                  similarity: 0.89
+                  similarity: 0.541887640953064,
+                  score: 0.45811235904693604
                 }
               ]
             }
@@ -928,14 +937,25 @@ function apiWorkspaceEndpoints(app) {
           topN: topN ?? workspace?.topN ?? 4,
         });
 
+        console.log(results);
+
         response.status(200).json({
           results: results.sources.map((source) => ({
+            id: source.id,
             text: source.text,
             metadata: {
+              url: source.url,
               title: source.title,
-              source: source.source,
+              author: source.docAuthor,
+              description: source.description,
+              docSource: source.docSource,
+              chunkSource: source.chunkSource,
+              published: source.published,
+              wordCount: source.wordCount,
+              tokenCount: source.token_count_estimate
             },
-            similarity: source.similarity,
+            similarity: source._distance,
+            score: source.score
           })),
         });
       } catch (e) {
