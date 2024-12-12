@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { FullScreenLoader } from "@/components/Preloader";
-import { Navigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import useQuery from "@/hooks/useQuery";
 import System from "@/models/system";
@@ -47,7 +46,7 @@ export default function SimpleSSOPassthrough() {
         </p>
       </div>
     );
-  if (ready) return <Navigate to={redirectPath} />;
+  if (ready) return window.location.replace(redirectPath);
 
   // Loading state by default
   return <FullScreenLoader />;
