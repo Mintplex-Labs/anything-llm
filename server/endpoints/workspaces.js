@@ -34,7 +34,6 @@ const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
-const { purgeVectorCache } = require("../utils/files");
 
 function workspaceEndpoints(app) {
   if (!app) return;
