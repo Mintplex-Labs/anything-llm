@@ -841,6 +841,109 @@ function apiWorkspaceEndpoints(app) {
       }
     }
   );
+
+  app.post(
+    "/v1/workspace/:slug/vector-search",
+    [validApiKey],
+    async (request, response) => {
+      /*
+    #swagger.tags = ['Workspaces']
+    #swagger.description = 'Perform a vector similarity search in a workspace'
+    #swagger.parameters['slug'] = {
+        in: 'path',
+        description: 'Unique slug of workspace to search in',
+        required: true,
+        type: 'string'
+    }
+    #swagger.requestBody = {
+      description: 'Query to perform vector search with and optional parameters',
+      required: true,
+      content: {
+        "application/json": {
+          example: {
+            query: "What is the meaning of life?",
+            topN: 4,
+            similarityThreshold: 0.75
+          }
+        }
+      }
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              results: [
+                {
+                  text: "Document chunk content...",
+                  metadata: {
+                    title: "document.pdf",
+                    source: "documents/file.pdf"
+                  },
+                  similarity: 0.89
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+    */
+      try {
+        const { slug } = request.params;
+        const { query, topN, similarityThreshold } = reqBody(request);
+        const workspace = await Workspace.get({ slug: String(slug) });
+
+        if (!workspace) {
+          response.status(400).json({
+            message: `Workspace ${slug} is not a valid workspace.`,
+          });
+          return;
+        }
+
+        if (!query?.length) {
+          response.status(400).json({
+            message: "Query parameter cannot be empty.",
+          });
+          return;
+        }
+
+        const VectorDb = getVectorDbClass();
+        const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
+        const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+
+        if (!hasVectorizedSpace || embeddingsCount === 0) {
+          response.status(200).json({ results: [] });
+          return;
+        }
+
+        const LLMConnector = getLLMProvider();
+        const results = await VectorDb.performSimilaritySearch({
+          namespace: workspace.slug,
+          input: query,
+          LLMConnector,
+          similarityThreshold:
+            similarityThreshold ?? workspace?.similarityThreshold,
+          topN: topN ?? workspace?.topN ?? 4,
+        });
+
+        response.status(200).json({
+          results: results.sources.map((source) => ({
+            text: source.text,
+            metadata: {
+              title: source.title,
+              source: source.source,
+            },
+            similarity: source.similarity,
+          })),
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { apiWorkspaceEndpoints };
