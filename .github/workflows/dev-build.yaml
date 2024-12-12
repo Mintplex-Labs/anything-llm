@@ -92,19 +92,31 @@ jobs:
           echo "CVE_EXCEPTIONS=$CVE_NAMES" >> $GITHUB_OUTPUT
         shell: bash
 
-      # About VEX attestations https://docs.docker.com/scout/explore/exceptions/
-      # Justifications https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#status-justifications
-      - name: Add VEX attestations
-        uses: docker/scout-cli-action@v1
-        with:
-          command: attestation-add
-          only-severity: critical,high
-          tags: ${{ steps.meta.outputs.tags }}
-          file: ./docker/vex/${{ matrix.cve }}.vex.json
-          predicate-type: https://openvex.dev/ns/v0.2.0
+
+      cve_matrix:
         strategy:
           matrix:
             cve: ${{ fromJSON(format('[{0}]', steps.cve-list.outputs.CVE_EXCEPTIONS)) }}
+        steps:
+          - name: Add VEX attestations
+            uses: docker/scout-cli-action@v1
+            with:
+              command: attestation-add
+              only-severity: critical,high
+              tags: ${{ steps.meta.outputs.tags }}
+              file: ./docker/vex/${{ matrix.cve }}.vex.json
+              predicate-type: https://openvex.dev/ns/v0.2.0
+
+      # About VEX attestations https://docs.docker.com/scout/explore/exceptions/
+      # Justifications https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#status-justifications
+      # - name: Add VEX attestations
+      #   uses: docker/scout-cli-action@v1
+      #   with:
+      #     command: attestation-add
+      #     only-severity: critical,high
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     file: ./docker/vex/${{ matrix.cve }}.vex.json
+      #     predicate-type: https://openvex.dev/ns/v0.2.0        strategy:
 
        # run: |
         #   echo $CVE_EXCEPTIONS
