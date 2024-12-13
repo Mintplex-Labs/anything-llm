@@ -1,17 +1,16 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
-const {
-  handleDefaultStreamResponseV2,
-} = require("../../helpers/chat/responses");
-
 const { v4: uuidv4 } = require("uuid");
 const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
-
 const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "apipie")
@@ -174,19 +173,35 @@ class ApiPieLLM {
         `ApiPie chat: ${this.model} is not valid for chat completion!`
       );
 
-    const result = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        temperature,
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature,
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage?.prompt_tokens || 0,
+        completion_tokens: result.output.usage?.completion_tokens || 0,
+        total_tokens: result.output.usage?.total_tokens || 0,
+        outputTps:
+          (result.output.usage?.completion_tokens || 0) / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   // APIPie says it supports streaming, but it does not work across all models and providers.
