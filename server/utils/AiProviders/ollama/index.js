@@ -4,7 +4,9 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
-const { LLMPerformanceMonitor } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -213,7 +215,9 @@ class OllamaAILLM {
               "Stream returned undefined chunk. Aborting reply - check model provider logs."
             );
 
-          const content = chunk.hasOwnProperty("content") ? chunk.content : chunk;
+          const content = chunk.hasOwnProperty("content")
+            ? chunk.content
+            : chunk;
           fullText += content;
 
           writeResponseChunk(response, {

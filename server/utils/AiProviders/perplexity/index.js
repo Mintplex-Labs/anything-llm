@@ -101,7 +101,10 @@ class PerplexityLLM {
         })
     );
 
-    if (!result.output.hasOwnProperty("choices") || result.output.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
 
     return {
