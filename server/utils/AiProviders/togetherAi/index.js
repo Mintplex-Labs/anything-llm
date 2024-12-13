@@ -2,7 +2,9 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
-const { LLMPerformanceMonitor } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 function togetherAiModels() {
   const { MODELS } = require("./models.js");
@@ -122,7 +124,10 @@ class TogetherAiLLM {
         })
     );
 
-    if (!result.output.hasOwnProperty("choices") || result.output.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
 
     return {
