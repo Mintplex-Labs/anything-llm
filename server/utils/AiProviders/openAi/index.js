@@ -179,6 +179,8 @@ class OpenAiLLM {
         temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
       }),
       messages
+      // runPromptTokenCalculation: true - We manually count the tokens because OpenAI does not provide them in the stream
+      // since we are not using the OpenAI API version that supports this `stream_options` param.
     );
 
     return measuredStreamRequest;

@@ -12,7 +12,7 @@ function clientAbortedHandler(resolve, fullText) {
 /**
  * Handles the default stream response for a chat.
  * @param {import("express").Response} response
- * @param {import("openai/streaming").Stream<import("openai").OpenAI.ChatCompletionChunk> & {endMeasurement?: (usage: object) => {duration: number}}} stream
+ * @param {import('./LLMPerformanceMonitor').MonitoredStream} stream
  * @param {Object} responseProps
  * @returns {Promise<string>}
  */
@@ -24,9 +24,11 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
   // 1. This parameter is not available in our current API version (TODO: update)
   // 2. The usage metrics are not available in _every_ provider that uses this function
   // 3. We need to track the usage metrics for every provider that uses this function - not just OpenAI
+  // Other keys are added by the LLMPerformanceMonitor.measureStream method
+  let hasUsageMetrics = false;
   let usage = {
-    // Other keys are added by the LLMPerformanceMonitor.measureStream method
-    // we only need to track the completion tokens explicitly
+    // prompt_tokens can be in this object if the provider supports it - otherwise we manually count it
+    // When the stream is created in the LLMProviders `streamGetChatCompletion` `LLMPerformanceMonitor.measureStream` call.
     completion_tokens: 0,
   };
 
@@ -49,9 +51,24 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
 
+        // If we see usage metrics in the chunk, we can use them directly
+        // instead of estimating them, but we only want to assign values if
+        // the response object is the exact same key:value pair we expect.
+        if (chunk.hasOwnProperty("usage")) {
+          if (usage.hasOwnProperty("prompt_tokens")) {
+            hasUsageMetrics = true;
+            usage.prompt_tokens = Number(chunk.usage.prompt_tokens);
+          }
+          if (usage.hasOwnProperty("completion_tokens")) {
+            hasUsageMetrics = true;
+            usage.completion_tokens = Number(chunk.usage.completion_tokens);
+          }
+        }
+
         if (token) {
           fullText += token;
-          usage.completion_tokens++;
+          // If we never saw a usage metric, we can estimate them by number of completion chunks
+          if (!hasUsageMetrics) usage.completion_tokens++;
           writeResponseChunk(response, {
             uuid,
             sources: [],
