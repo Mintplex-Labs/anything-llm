@@ -4,6 +4,7 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { LLMPerformanceMonitor } = require("../../helpers/chat/LLMPerformanceMonitor");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -150,27 +151,45 @@ class OllamaAILLM {
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const model = this.#ollamaClient({ temperature });
-    const textResponse = await model
-      .pipe(new StringOutputParser())
-      .invoke(this.#convertToLangchainPrototypes(messages))
-      .catch((e) => {
-        throw new Error(
-          `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
-        );
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      model
+        .pipe(new StringOutputParser())
+        .invoke(this.#convertToLangchainPrototypes(messages))
+        .catch((e) => {
+          throw new Error(
+            `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
+          );
+        })
+    );
 
-    if (!textResponse || !textResponse.length)
+    if (!result.output || !result.output.length)
       throw new Error(`Ollama::getChatCompletion text response was empty.`);
 
-    return textResponse;
+    const promptTokens = LLMPerformanceMonitor.countTokens(messages);
+    const completionTokens = LLMPerformanceMonitor.countTokens(result.output);
+
+    return {
+      textResponse: result.output,
+      metrics: {
+        prompt_tokens: promptTokens,
+        completion_tokens: completionTokens,
+        total_tokens: promptTokens + completionTokens,
+        outputTps: completionTokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     const model = this.#ollamaClient({ temperature });
-    const stream = await model
-      .pipe(new StringOutputParser())
-      .stream(this.#convertToLangchainPrototypes(messages));
-    return stream;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      model
+        .pipe(new StringOutputParser())
+        .stream(this.#convertToLangchainPrototypes(messages)),
+      messages,
+      true
+    );
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {
@@ -178,12 +197,13 @@ class OllamaAILLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      let usage = {};
 
-      // Establish listener to early-abort a streaming response
-      // in case things go sideways or the user does not like the response.
-      // We preserve the generated text but continue as if chat was completed
-      // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        usage.completion_tokens = LLMPerformanceMonitor.countTokens(fullText);
+        stream?.endMeasurement(usage);
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       try {
@@ -193,10 +213,9 @@ class OllamaAILLM {
               "Stream returned undefined chunk. Aborting reply - check model provider logs."
             );
 
-          const content = chunk.hasOwnProperty("content")
-            ? chunk.content
-            : chunk;
+          const content = chunk.hasOwnProperty("content") ? chunk.content : chunk;
           fullText += content;
+
           writeResponseChunk(response, {
             uuid,
             sources: [],
@@ -216,6 +235,8 @@ class OllamaAILLM {
           error: false,
         });
         response.removeListener("close", handleAbort);
+        usage.completion_tokens = LLMPerformanceMonitor.countTokens(fullText);
+        stream?.endMeasurement(usage);
         resolve(fullText);
       } catch (error) {
         writeResponseChunk(response, {
