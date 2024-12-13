@@ -54,13 +54,17 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         // If we see usage metrics in the chunk, we can use them directly
         // instead of estimating them, but we only want to assign values if
         // the response object is the exact same key:value pair we expect.
-        if (chunk.hasOwnProperty("usage")) {
-          if (usage.hasOwnProperty("prompt_tokens")) {
-            hasUsageMetrics = true;
+        if (
+          chunk.hasOwnProperty("usage") && // exists
+          !!chunk.usage && // is not null
+          Object.values(chunk.usage).length > 0 // has values
+        ) {
+          if (chunk.usage.hasOwnProperty("prompt_tokens")) {
             usage.prompt_tokens = Number(chunk.usage.prompt_tokens);
           }
-          if (usage.hasOwnProperty("completion_tokens")) {
-            hasUsageMetrics = true;
+
+          if (chunk.usage.hasOwnProperty("completion_tokens")) {
+            hasUsageMetrics = true; // to stop estimating counter
             usage.completion_tokens = Number(chunk.usage.completion_tokens);
           }
         }
