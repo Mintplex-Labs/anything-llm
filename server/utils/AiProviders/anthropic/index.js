@@ -165,8 +165,6 @@ class AnthropicLLM {
 
   /**
    * Handles the stream response from the Anthropic API.
-   * Anthropic does not return the usage metrics in the stream response and 1msg != 1token
-   * so we need to manually estimate the completion tokens.
    * @param {Object} response - the response object
    * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream - the stream response from the Anthropic API w/tracking
    * @param {Object} responseProps - the response properties
