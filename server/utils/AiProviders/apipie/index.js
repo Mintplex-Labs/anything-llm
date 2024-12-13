@@ -228,13 +228,16 @@ class ApiPieLLM {
         `ApiPie chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      temperature,
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+      }),
+      messages
+    );
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {
@@ -247,7 +250,12 @@ class ApiPieLLM {
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement({
+          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+        });
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       try {
@@ -277,6 +285,9 @@ class ApiPieLLM {
               error: false,
             });
             response.removeListener("close", handleAbort);
+            stream?.endMeasurement({
+              completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+            });
             resolve(fullText);
           }
         }
@@ -290,6 +301,9 @@ class ApiPieLLM {
           error: e.message,
         });
         response.removeListener("close", handleAbort);
+        stream?.endMeasurement({
+          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+        });
         resolve(fullText);
       }
     });
