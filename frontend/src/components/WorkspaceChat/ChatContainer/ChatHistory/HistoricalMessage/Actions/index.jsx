@@ -15,6 +15,7 @@ const Actions = ({
   forkThread,
   isEditing,
   role,
+  metrics = {},
 }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
   const handleFeedback = async (newFeedback) => {
@@ -58,6 +59,7 @@ const Actions = ({
           />
         </div>
       </div>
+      <RenderMetrics metrics={metrics} />
     </div>
   );
 };
@@ -138,6 +140,18 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
           weight="fill"
         />
       </button>
+    </div>
+  );
+}
+
+function RenderMetrics({ metrics = {} }) {
+  if (!metrics || Object.keys(metrics).length === 0) return null;
+
+  return (
+    <div className="flex justify-end items-center gap-x-[8px]">
+      <p className="text-xs font-mono text-theme-text-secondary opacity-50">
+        {metrics.duration.toFixed(3)}s ({metrics.outputTps.toFixed(2)} tps)
+      </p>
     </div>
   );
 }

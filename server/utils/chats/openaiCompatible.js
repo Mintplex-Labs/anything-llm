@@ -156,7 +156,7 @@ async function chatSync({
   });
 
   // Send the text completion.
-  const textResponse = await LLMConnector.getChatCompletion(messages, {
+  const { textResponse } = await LLMConnector.getChatCompletion(messages, {
     temperature:
       temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
   });

@@ -9,8 +9,26 @@ function clientAbortedHandler(resolve, fullText) {
   return;
 }
 
+/**
+ * Handles the default stream response for a chat.
+ * @param {import("express").Response} response
+ * @param {import("openai/streaming").Stream<import("openai").OpenAI.ChatCompletionChunk> & {endMeasurement?: (usage: object) => {duration: number}}} stream
+ * @param {Object} responseProps
+ * @returns {Promise<string>}
+ */
 function handleDefaultStreamResponseV2(response, stream, responseProps) {
   const { uuid = uuidv4(), sources = [] } = responseProps;
+
+  // Why are we doing this?
+  // OpenAI do enable the usage metrics in the stream response but:
+  // 1. This parameter is not available in our current API version (TODO: update)
+  // 2. The usage metrics are not availale in _every_ provider that uses this function
+  // 3. We need to track the usage metrics for every provider that uses this function - not just OpenAI
+  let usage = {
+    // Other keys are added by the LLMPerformanceMonitor.measureStream method
+    // we only need to track the completion tokens
+    completion_tokens: 0,
+  };
 
   return new Promise(async (resolve) => {
     let fullText = "";
@@ -19,7 +37,10 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
     // in case things go sideways or the user does not like the response.
     // We preserve the generated text but continue as if chat was completed
     // to preserve previously generated content.
-    const handleAbort = () => clientAbortedHandler(resolve, fullText);
+    const handleAbort = () => {
+      stream?.endMeasurement(usage);
+      clientAbortedHandler(resolve, fullText);
+    };
     response.on("close", handleAbort);
 
     // Now handle the chunks from the streamed response and append to fullText.
@@ -30,6 +51,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
 
         if (token) {
           fullText += token;
+          usage.completion_tokens++;
           writeResponseChunk(response, {
             uuid,
             sources: [],
@@ -56,6 +78,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
             error: false,
           });
           response.removeListener("close", handleAbort);
+          stream?.endMeasurement(usage);
           resolve(fullText);
           break; // Break streaming when a valid finish_reason is first encountered
         }
@@ -70,6 +93,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         close: true,
         error: e.message,
       });
+      stream?.endMeasurement(usage);
       resolve(fullText); // Return what we currently have - if anything.
     }
   });
@@ -111,6 +135,7 @@ function convertToChatHistory(history = []) {
         chatId: id,
         sentAt: moment(createdAt).unix(),
         feedbackScore,
+        metrics: data?.metrics || {},
       },
     ]);
   }
