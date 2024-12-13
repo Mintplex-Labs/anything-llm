@@ -4,6 +4,7 @@ import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { EditMessageAction } from "./EditMessage";
 import ActionMenu from "./ActionMenu";
+import { numberWithCommas } from "@/utils/numbers";
 
 const Actions = ({
   message,
@@ -152,10 +153,14 @@ function RenderMetrics({ metrics = {} }) {
     return null;
   }
 
+  const formattedTps =
+    metrics.outputTps < 1000
+      ? metrics.outputTps.toFixed(2)
+      : numberWithCommas(metrics.outputTps.toFixed(0));
   return (
     <div className="flex justify-end items-center gap-x-[8px]">
       <p className="text-xs font-mono text-theme-text-secondary opacity-50">
-        {metrics.duration.toFixed(3)}s ({metrics.outputTps.toFixed(2)} tps)
+        {metrics.duration.toFixed(3)}s ({formattedTps} tps)
       </p>
     </div>
   );
