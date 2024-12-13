@@ -416,7 +416,6 @@ async function getAPIPieModels(apiKey = null) {
         name: model.name,
       };
     });
-  console.log(models.length);
   return { models, error: null };
 }
 

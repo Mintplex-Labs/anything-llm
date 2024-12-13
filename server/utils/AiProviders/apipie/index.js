@@ -202,6 +202,7 @@ class ApiPieLLM {
       return null;
     return result.choices[0].message.content;
   }
+
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
