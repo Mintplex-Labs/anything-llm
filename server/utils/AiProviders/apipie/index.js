@@ -97,6 +97,24 @@ class ApiPieLLM {
     );
   }
 
+  chatModels() {
+    const allModels = this.models();
+    return Object.entries(allModels).reduce(
+      (chatModels, [modelId, modelInfo]) => {
+        // Filter for chat models
+        if (
+          modelInfo.subtype &&
+          (modelInfo.subtype.includes("chat") ||
+            modelInfo.subtype.includes("chatx"))
+        ) {
+          chatModels[modelId] = modelInfo;
+        }
+        return chatModels;
+      },
+      {}
+    );
+  }
+
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
@@ -113,13 +131,13 @@ class ApiPieLLM {
   }
 
   promptWindowLimit() {
-    const availableModels = this.models();
+    const availableModels = this.chatModels();
     return availableModels[this.model]?.maxLength || 4096;
   }
 
   async isValidChatCompletionModel(model = "") {
     await this.#syncModels();
-    const availableModels = this.models();
+    const availableModels = this.chatModels();
     return availableModels.hasOwnProperty(model);
   }
 
@@ -204,22 +222,20 @@ class ApiPieLLM {
     };
   }
 
-  // APIPie says it supports streaming, but it does not work across all models and providers.
-  // Notably, it is not working for OpenRouter models at all.
-  // async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-  //   if (!(await this.isValidChatCompletionModel(this.model)))
-  //     throw new Error(
-  //       `ApiPie chat: ${this.model} is not valid for chat completion!`
-  //     );
+  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+    if (!(await this.isValidChatCompletionModel(this.model)))
+      throw new Error(
+        `ApiPie chat: ${this.model} is not valid for chat completion!`
+      );
 
-  //   const streamRequest = await this.openai.chat.completions.create({
-  //     model: this.model,
-  //     stream: true,
-  //     messages,
-  //     temperature,
-  //   });
-  //   return streamRequest;
-  // }
+    const streamRequest = await this.openai.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+      temperature,
+    });
+    return streamRequest;
+  }
 
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
@@ -279,10 +295,6 @@ class ApiPieLLM {
     });
   }
 
-  // handleStream(response, stream, responseProps) {
-  //   return handleDefaultStreamResponseV2(response, stream, responseProps);
-  // }
-
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
   async embedTextInput(textInput) {
     return await this.embedder.embedTextInput(textInput);
@@ -315,6 +327,7 @@ async function fetchApiPieModels(providedApiKey = null) {
           id: `${model.provider}/${model.model}`,
           name: `${model.provider}/${model.model}`,
           organization: model.provider,
+          subtype: model.subtype,
           maxLength: model.max_tokens,
         };
       });
