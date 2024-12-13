@@ -147,6 +147,11 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
 function RenderMetrics({ metrics = {} }) {
   if (!metrics || Object.keys(metrics).length === 0) return null;
 
+  if (!metrics.duration || !metrics.outputTps) {
+    console.log(`No metrics fround for duration or outputTps props`, metrics);
+    return null;
+  }
+
   return (
     <div className="flex justify-end items-center gap-x-[8px]">
       <p className="text-xs font-mono text-theme-text-secondary opacity-50">

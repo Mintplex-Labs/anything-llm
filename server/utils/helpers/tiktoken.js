@@ -53,11 +53,6 @@ class TokenManager {
         0
       );
       const diffCoefficient = 5;
-      console.log({
-        perMessageFactorTokens,
-        tokensFromContent,
-        diffCoefficient,
-      });
       return perMessageFactorTokens + tokensFromContent + diffCoefficient;
     }
 
