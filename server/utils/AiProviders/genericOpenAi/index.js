@@ -1,5 +1,8 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { toValidNumber } = require("../../http");
@@ -91,31 +94,52 @@ class GenericOpenAiLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const result = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        temperature,
-        max_tokens: this.maxTokens,
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature,
+          max_tokens: this.maxTokens,
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output?.usage?.prompt_tokens || 0,
+        completion_tokens: result.output?.usage?.completion_tokens || 0,
+        total_tokens: result.output?.usage?.total_tokens || 0,
+        outputTps:
+          (result.output?.usage?.completion_tokens || 0) / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      temperature,
-      max_tokens: this.maxTokens,
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+        max_tokens: this.maxTokens,
+      }),
+      messages
+      // runPromptTokenCalculation: true - There is not way to know if the generic provider connected is returning
+      // the correct usage metrics if any at all since any provider could be connected.
+    );
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {
