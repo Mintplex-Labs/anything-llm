@@ -200,7 +200,10 @@ class OllamaAILLM {
     return new Promise(async (resolve) => {
       let fullText = "";
       let usage = {};
-
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
       const handleAbort = () => {
         usage.completion_tokens = LLMPerformanceMonitor.countTokens(fullText);
         stream?.endMeasurement(usage);
