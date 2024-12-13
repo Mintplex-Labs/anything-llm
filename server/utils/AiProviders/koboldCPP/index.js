@@ -3,7 +3,9 @@ const {
   clientAbortedHandler,
   writeResponseChunk,
 } = require("../../helpers/chat/responses");
-const { LLMPerformanceMonitor } = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 const { v4: uuidv4 } = require("uuid");
 
 class KoboldCPPLLM {
@@ -135,12 +137,15 @@ class KoboldCPPLLM {
         })
     );
 
-    if (!result.output.hasOwnProperty("choices") || result.output.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
 
     const promptTokens = LLMPerformanceMonitor.countTokens(messages);
     const completionTokens = LLMPerformanceMonitor.countTokens([
-      { content: result.output.choices[0].message.content }
+      { content: result.output.choices[0].message.content },
     ]);
 
     return {
@@ -180,7 +185,7 @@ class KoboldCPPLLM {
 
       const handleAbort = () => {
         usage.completion_tokens = LLMPerformanceMonitor.countTokens([
-          { content: fullText }
+          { content: fullText },
         ]);
         stream?.endMeasurement(usage);
         clientAbortedHandler(resolve, fullText);
@@ -219,7 +224,7 @@ class KoboldCPPLLM {
           });
           response.removeListener("close", handleAbort);
           usage.completion_tokens = LLMPerformanceMonitor.countTokens([
-            { content: fullText }
+            { content: fullText },
           ]);
           stream?.endMeasurement(usage);
           resolve(fullText);
