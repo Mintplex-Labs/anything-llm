@@ -885,10 +885,20 @@ function noRestrictedChars(input = "") {
 
 async function handleVectorStoreReset(key, prevValue, nextValue) {
   if (prevValue === nextValue) return;
-  console.log(
-    `Vector configuration changed (${key}) - resetting all vector stores`
-  );
-  await resetAllVectorStores();
+  if (key === "VectorDB") {
+    console.log(
+      `Vector configuration changed from ${prevValue} to ${nextValue} - resetting ${prevValue} namespaces`
+    );
+    return await resetAllVectorStores({ vectorDbKey: prevValue });
+  }
+
+  if (key === "EmbeddingEngine" || key === "EmbeddingModelPref") {
+    console.log(
+      `${key} changed from ${prevValue} to ${nextValue} - resetting ${process.env.VECTOR_DB} namespaces`
+    );
+    return await resetAllVectorStores({ vectorDbKey: process.env.VECTOR_DB });
+  }
+  return false;
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or

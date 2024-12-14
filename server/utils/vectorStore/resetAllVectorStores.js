@@ -1,38 +1,36 @@
 const { Workspace } = require("../../models/workspace");
 const { Document } = require("../../models/documents");
 const { DocumentVectors } = require("../../models/vectors");
-const { getVectorDbClass } = require("../helpers");
 const { EventLogs } = require("../../models/eventLogs");
-const { purgeVectorCache } = require("../files");
+const { purgeEntireVectorCache } = require("../files");
+const { getVectorDbClass } = require("../helpers");
 
-async function resetAllVectorStores() {
+/**
+ * Resets all vector database and associated content:
+ * - Purges the entire vector-cache folder.
+ * - Deletes all document vectors from the database.
+ * - Deletes all documents from the database.
+ * - Deletes all vector db namespaces for each workspace.
+ * - Logs an event indicating the reset.
+ * @param {string} vectorDbKey - The _previous_ vector database provider name that we will be resetting.
+ * @returns {Promise<boolean>} - True if successful, false otherwise.
+ */
+async function resetAllVectorStores({ vectorDbKey }) {
   try {
-    const VectorDb = getVectorDbClass();
     const workspaces = await Workspace.where();
+    purgeEntireVectorCache(); // Purges the entire vector-cache folder.
+    await DocumentVectors.delete(); // Deletes all document vectors from the database.
+    await Document.delete(); // Deletes all documents from the database.
+    await EventLogs.logEvent("workspace_vectors_reset", {
+      reason: "System vector configuration changed",
+    });
 
-    // Collect all documents across workspaces
-    const allDocuments = new Set();
+    console.log(
+      "Resetting anythingllm managed vector namespaces for",
+      vectorDbKey
+    );
+    const VectorDb = getVectorDbClass(vectorDbKey);
     for (const workspace of workspaces) {
-      const docs = await Document.forWorkspace(workspace.id);
-      docs.forEach((doc) => allDocuments.add(doc.docpath));
-    }
-
-    // Clear vector cache for cached documents
-    for (const docpath of allDocuments) {
-      console.log(`Purging vector cache for ${docpath}`);
-      await purgeVectorCache(docpath);
-    }
-
-    // Clear vector db for each workspace
-    for (const workspace of workspaces) {
-      await DocumentVectors.deleteForWorkspace(workspace.id);
-      await Document.delete({ workspaceId: Number(workspace.id) });
-
-      await EventLogs.logEvent("workspace_vectors_reset", {
-        workspaceName: workspace?.name || "Unknown Workspace",
-        reason: "System vector configuration changed",
-      });
-
       try {
         await VectorDb["delete-namespace"]({ namespace: workspace.slug });
       } catch (e) {
