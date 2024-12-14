@@ -123,6 +123,7 @@ function apiWorkspaceEndpoints(app) {
             select: {
               user_id: true,
               slug: true,
+              name: true,
             },
           },
         },
