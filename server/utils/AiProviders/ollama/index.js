@@ -76,7 +76,9 @@ class OllamaAILLM {
     if (!attachments.length) {
       return { content: userPrompt };
     }
-    const images = attachments.map((attachment) => attachment.contentString);
+    const images = attachments.map((attachment) => {
+      return attachment.contentString.split('base64,')[1];
+    });
     return { content: userPrompt, images };
   }
 
