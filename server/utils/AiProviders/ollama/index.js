@@ -1,4 +1,3 @@
-const { StringOutputParser } = require("@langchain/core/output_parsers");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -7,6 +6,7 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const { Ollama } = require("ollama");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -26,47 +26,9 @@ class OllamaAILLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
+    this.client = new Ollama({ host: this.basePath });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
-  }
-
-  #ollamaClient({ temperature = 0.07 }) {
-    const { ChatOllama } = require("@langchain/community/chat_models/ollama");
-    return new ChatOllama({
-      baseUrl: this.basePath,
-      model: this.model,
-      keepAlive: this.keepAlive,
-      useMLock: true,
-      // There are currently only two performance settings so if its not "base" - its max context.
-      ...(this.performanceMode === "base"
-        ? {}
-        : { numCtx: this.promptWindowLimit() }),
-      temperature,
-    });
-  }
-
-  // For streaming we use Langchain's wrapper to handle weird chunks
-  // or otherwise absorb headaches that can arise from Ollama models
-  #convertToLangchainPrototypes(chats = []) {
-    const {
-      HumanMessage,
-      SystemMessage,
-      AIMessage,
-    } = require("@langchain/core/messages");
-    const langchainChats = [];
-    const roleToMessageMap = {
-      system: SystemMessage,
-      user: HumanMessage,
-      assistant: AIMessage,
-    };
-
-    for (const chat of chats) {
-      if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
-      const MessageClass = roleToMessageMap[chat.role];
-      langchainChats.push(new MessageClass({ content: chat.content }));
-    }
-
-    return langchainChats;
   }
 
   #appendContext(contextTexts = []) {
@@ -152,11 +114,32 @@ class OllamaAILLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const model = this.#ollamaClient({ temperature });
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
-      model
-        .pipe(new StringOutputParser())
-        .invoke(this.#convertToLangchainPrototypes(messages))
+      this.client
+        .chat({
+          model: this.model,
+          stream: false,
+          messages,
+          keep_alive: this.keepAlive,
+          options: {
+            temperature,
+            useMLock: true,
+            // There are currently only two performance settings so if its not "base" - its max context.
+            ...(this.performanceMode === "base"
+              ? {}
+              : { numCtx: this.promptWindowLimit() }),
+          },
+        })
+        .then((res) => {
+          return {
+            content: res.message.content,
+            usage: {
+              prompt_tokens: res.prompt_eval_count,
+              completion_tokens: res.eval_count,
+              total_tokens: res.prompt_eval_count + res.eval_count,
+            },
+          };
+        })
         .catch((e) => {
           throw new Error(
             `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
@@ -164,48 +147,65 @@ class OllamaAILLM {
         })
     );
 
-    if (!result.output || !result.output.length)
+    if (!result.output.content || !result.output.content.length)
       throw new Error(`Ollama::getChatCompletion text response was empty.`);
 
-    const promptTokens = LLMPerformanceMonitor.countTokens(messages);
-    const completionTokens = LLMPerformanceMonitor.countTokens(result.output);
-
     return {
-      textResponse: result.output,
+      textResponse: result.output.content,
       metrics: {
-        prompt_tokens: promptTokens,
-        completion_tokens: completionTokens,
-        total_tokens: promptTokens + completionTokens,
-        outputTps: completionTokens / result.duration,
+        prompt_tokens: result.output.usage.prompt_tokens,
+        completion_tokens: result.output.usage.completion_tokens,
+        total_tokens: result.output.usage.total_tokens,
+        outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
       },
     };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const model = this.#ollamaClient({ temperature });
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      model
-        .pipe(new StringOutputParser())
-        .stream(this.#convertToLangchainPrototypes(messages)),
+      this.client.chat({
+        model: this.model,
+        stream: true,
+        messages,
+        keep_alive: this.keepAlive,
+        options: {
+          temperature,
+          useMLock: true,
+          // There are currently only two performance settings so if its not "base" - its max context.
+          ...(this.performanceMode === "base"
+            ? {}
+            : { numCtx: this.promptWindowLimit() }),
+        },
+      }),
       messages,
-      true
+      false
     );
     return measuredStreamRequest;
   }
 
+  /**
+   * Handles streaming responses from Ollama.
+   * @param {import("express").Response} response
+   * @param {import("../../helpers/chat/LLMPerformanceMonitor").MonitoredStream} stream
+   * @param {import("express").Request} request
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
       let fullText = "";
-      let usage = {};
+      let usage = {
+        prompt_tokens: 0,
+        completion_tokens: 0,
+      };
+
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
       const handleAbort = () => {
-        usage.completion_tokens = LLMPerformanceMonitor.countTokens(fullText);
         stream?.endMeasurement(usage);
         clientAbortedHandler(resolve, fullText);
       };
@@ -218,33 +218,36 @@ class OllamaAILLM {
               "Stream returned undefined chunk. Aborting reply - check model provider logs."
             );
 
-          const content = chunk.hasOwnProperty("content")
-            ? chunk.content
-            : chunk;
-          fullText += content;
+          if (chunk.done) {
+            usage.prompt_tokens = chunk.prompt_eval_count;
+            usage.completion_tokens = chunk.eval_count;
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: "",
+              close: true,
+              error: false,
+            });
+            response.removeListener("close", handleAbort);
+            stream?.endMeasurement(usage);
+            resolve(fullText);
+            break;
+          }
 
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: content,
-            close: false,
-            error: false,
-          });
+          if (chunk.hasOwnProperty("message")) {
+            const content = chunk.message.content;
+            fullText += content;
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: content,
+              close: false,
+              error: false,
+            });
+          }
         }
-
-        writeResponseChunk(response, {
-          uuid,
-          sources,
-          type: "textResponseChunk",
-          textResponse: "",
-          close: true,
-          error: false,
-        });
-        response.removeListener("close", handleAbort);
-        usage.completion_tokens = LLMPerformanceMonitor.countTokens(fullText);
-        stream?.endMeasurement(usage);
-        resolve(fullText);
       } catch (error) {
         writeResponseChunk(response, {
           uuid,
@@ -252,11 +255,12 @@ class OllamaAILLM {
           type: "textResponseChunk",
           textResponse: "",
           close: true,
-          error: `Ollama:streaming - could not stream chat. ${
-            error?.cause ?? error.message
-          }`,
+          error: `Ollama:streaming - could not stream chat. ${error?.cause ?? error.message
+            }`,
         });
         response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
+        resolve(fullText);
       }
     });
   }
