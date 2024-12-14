@@ -401,13 +401,21 @@ async function getAPIPieModels(apiKey = null) {
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 
-  const models = Object.values(knownModels).map((model) => {
-    return {
-      id: model.id,
-      organization: model.organization,
-      name: model.name,
-    };
-  });
+  const models = Object.values(knownModels)
+    .filter((model) => {
+      // Filter for chat models
+      return (
+        model.subtype &&
+        (model.subtype.includes("chat") || model.subtype.includes("chatx"))
+      );
+    })
+    .map((model) => {
+      return {
+        id: model.id,
+        organization: model.organization,
+        name: model.name,
+      };
+    });
   return { models, error: null };
 }
 
