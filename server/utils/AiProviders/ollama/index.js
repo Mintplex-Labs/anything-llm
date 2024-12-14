@@ -73,11 +73,24 @@ class OllamaAILLM {
    * @returns {{content: string, images: string[]}}
    */
   #generateContent({ userPrompt, attachments = [] }) {
-    if (!attachments.length) {
-      return { content: userPrompt };
-    }
+    if (!attachments.length) return { content: userPrompt };
     const images = attachments.map((attachment) => attachment.contentString);
     return { content: userPrompt, images };
+  }
+
+  /**
+   * Handles errors from the Ollama API to make them more user friendly.
+   * @param {Error} e
+   */
+  #errorHandler(e) {
+    switch (e.message) {
+      case "fetch failed":
+        throw new Error(
+          "Your Ollama instance could not be reached or is not responding. Please make sure it is running the API server and your connection information is correct in AnythingLLM."
+        );
+      default:
+        return e;
+    }
   }
 
   /**
@@ -135,7 +148,7 @@ class OllamaAILLM {
         })
         .catch((e) => {
           throw new Error(
-            `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
+            `Ollama::getChatCompletion failed to communicate with Ollama. ${this.#errorHandler(e).message}`
           );
         })
     );
@@ -173,7 +186,9 @@ class OllamaAILLM {
       }),
       messages,
       false
-    );
+    ).catch((e) => {
+      throw this.#errorHandler(e);
+    });
     return measuredStreamRequest;
   }
 
