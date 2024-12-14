@@ -73,12 +73,10 @@ class OllamaAILLM {
    * @returns {{content: string, images: string[]}}
    */
   #generateContent({ userPrompt, attachments = [] }) {
-    if (!attachments.length) {
-      return { content: userPrompt };
-    }
-    const images = attachments.map((attachment) => {
-      return attachment.contentString.split('base64,')[1];
-    });
+    if (!attachments.length) return { content: userPrompt };
+    const images = attachments.map(
+      (attachment) => attachment.contentString.split("base64,").slice(-1)[0]
+    );
     return { content: userPrompt, images };
   }
 
