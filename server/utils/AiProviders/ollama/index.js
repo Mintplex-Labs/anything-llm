@@ -70,21 +70,14 @@ class OllamaAILLM {
   /**
    * Generates appropriate content array for a message + attachments.
    * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
-   * @returns {string|object[]}
+   * @returns {{content: string, images: string[]}}
    */
   #generateContent({ userPrompt, attachments = [] }) {
     if (!attachments.length) {
       return { content: userPrompt };
     }
-
-    const content = [{ type: "text", text: userPrompt }];
-    for (let attachment of attachments) {
-      content.push({
-        type: "image_url",
-        image_url: attachment.contentString,
-      });
-    }
-    return { content: content.flat() };
+    const images = attachments.map((attachment) => attachment.contentString);
+    return { content: userPrompt, images };
   }
 
   /**
@@ -255,8 +248,9 @@ class OllamaAILLM {
           type: "textResponseChunk",
           textResponse: "",
           close: true,
-          error: `Ollama:streaming - could not stream chat. ${error?.cause ?? error.message
-            }`,
+          error: `Ollama:streaming - could not stream chat. ${
+            error?.cause ?? error.message
+          }`,
         });
         response.removeListener("close", handleAbort);
         stream?.endMeasurement(usage);
