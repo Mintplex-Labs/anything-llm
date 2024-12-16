@@ -71,7 +71,11 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const { name = null, ...additionalFields } = reqBody(request);
-      const { workspace, message } = await Workspace.new(name, null, additionalFields);
+      const { workspace, message } = await Workspace.new(
+        name,
+        null,
+        additionalFields
+      );
 
       if (!workspace) {
         response.status(400).json({ workspace: null, message });

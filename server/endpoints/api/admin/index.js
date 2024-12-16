@@ -610,24 +610,20 @@ function apiAdminEndpoints(app) {
         const workspaceUsers = await Workspace.workspaceUsers(workspace.id);
 
         if (!workspace) {
-          response
-            .status(404)
-            .json({
-              success: false,
-              error: `Workspace ${workspaceSlug} not found`,
-              users: workspaceUsers,
-            });
+          response.status(404).json({
+            success: false,
+            error: `Workspace ${workspaceSlug} not found`,
+            users: workspaceUsers,
+          });
           return;
         }
 
         if (userIds.length === 0) {
-          response
-            .status(404)
-            .json({
-              success: false,
-              error: `No valid user IDs provided.`,
-              users: workspaceUsers,
-            });
+          response.status(404).json({
+            success: false,
+            error: `No valid user IDs provided.`,
+            users: workspaceUsers,
+          });
           return;
         }
 
@@ -637,13 +633,11 @@ function apiAdminEndpoints(app) {
             workspace.id,
             userIds
           );
-          return response
-            .status(200)
-            .json({
-              success,
-              error,
-              users: await Workspace.workspaceUsers(workspace.id),
-            });
+          return response.status(200).json({
+            success,
+            error,
+            users: await Workspace.workspaceUsers(workspace.id),
+          });
         }
 
         // Add new users to the workspace if they are not already in the workspace
@@ -653,13 +647,11 @@ function apiAdminEndpoints(app) {
         );
         if (usersToAdd.length > 0)
           await WorkspaceUser.createManyUsers(usersToAdd, workspace.id);
-        response
-          .status(200)
-          .json({
-            success: true,
-            error: null,
-            users: await Workspace.workspaceUsers(workspace.id),
-          });
+        response.status(200).json({
+          success: true,
+          error: null,
+          users: await Workspace.workspaceUsers(workspace.id),
+        });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
