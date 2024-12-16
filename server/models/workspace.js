@@ -243,6 +243,11 @@ const Workspace = {
     }
   },
 
+  /**
+   * Get all users for a workspace.
+   * @param {number} workspaceId - The ID of the workspace to get users for.
+   * @returns {Promise<Array<{userId: number, username: string, role: string}>>} A promise that resolves to an array of user objects.
+   */
   workspaceUsers: async function (workspaceId) {
     try {
       const users = (
@@ -270,6 +275,12 @@ const Workspace = {
     }
   },
 
+  /**
+   * Update the users for a workspace. Will remove all existing users and replace them with the new list.
+   * @param {number} workspaceId - The ID of the workspace to update.
+   * @param {number[]} userIds - An array of user IDs to add to the workspace.
+   * @returns {Promise<{success: boolean, error: string | null}>} A promise that resolves to an object containing the success status and an error message if applicable.
+   */
   updateUsers: async function (workspaceId, userIds = []) {
     try {
       await WorkspaceUser.delete({ workspace_id: Number(workspaceId) });
