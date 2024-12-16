@@ -17,6 +17,12 @@ const WorkspaceUser = {
     return;
   },
 
+  /**
+   * Create many workspace users.
+   * @param {Array<number>} userIds - An array of user IDs to create workspace users for.
+   * @param {number} workspaceId - The ID of the workspace to create workspace users for.
+   * @returns {Promise<void>} A promise that resolves when the workspace users are created.
+   */
   createManyUsers: async function (userIds = [], workspaceId) {
     if (userIds.length === 0) return;
     try {
