@@ -28,7 +28,12 @@ export default function ChangeWarningModal({
       >
         <div className="py-7 px-9 space-y-2 flex-col">
           <p className="text-white">
-            {warningText}
+            {warningText.split("\\n").map((line, index) => (
+              <span key={index}>
+                {line}
+                <br />
+              </span>
+            ))}
             <br />
             <br />
             Are you sure you want to proceed?
