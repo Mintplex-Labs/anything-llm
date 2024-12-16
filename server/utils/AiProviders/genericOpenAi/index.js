@@ -78,10 +78,22 @@ class GenericOpenAiLLM {
   }
 
   /**
-     * Generates appropriate content array for a message + attachments.
-     * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
-     * @returns {string|object[]}
-     */
+   * Generates appropriate content array for a message + attachments.
+   *
+   * ## Developer Note
+   * This function assumes the generic OpenAI provider is _actually_ OpenAI compatible.
+   * For example, Ollama is "OpenAI compatible" but does not support images as a content array.
+   * The contentString also is the base64 string WITH `data:image/xxx;base64,` prefix, which may not be the case for all providers.
+   * If your provider does not work exactly this way, then attachments will not function or potentially break vision requests.
+   * If you encounter this issue, you are welcome to open an issue asking for your specific provider to be supported.
+   *
+   * This function will **not** be updated for providers that **do not** support images as a content array like OpenAI does.
+   * Do not open issues to update this function due to your specific provider not being compatible. Open an issue to request support for your specific provider.
+   * @param {Object} props
+   * @param {string} props.userPrompt - the user prompt to be sent to the model
+   * @param {import("../../helpers").Attachment[]} props.attachments - the array of attachments to be sent to the model
+   * @returns {string|object[]}
+   */
   #generateContent({ userPrompt, attachments = [] }) {
     if (!attachments.length) {
       return userPrompt;
@@ -110,7 +122,7 @@ class GenericOpenAiLLM {
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
-    attachments = [], // This is the specific attachment for only this prompt,
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
