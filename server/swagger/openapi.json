@@ -1451,6 +1451,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -1471,12 +1474,20 @@
           }
         },
         "requestBody": {
-          "description": "JSON object containing new display name of workspace.",
+          "description": "JSON object containing workspace configuration.",
           "required": true,
           "content": {
             "application/json": {
               "example": {
-                "name": "My New Workspace"
+                "name": "My New Workspace",
+                "slug": "custom-slug",
+                "similarityThreshold": 0.7,
+                "openAiTemp": 0.7,
+                "openAiHistory": 20,
+                "openAiPrompt": "Custom prompt for responses",
+                "queryRefusalResponse": "Custom refusal message",
+                "chatMode": "chat",
+                "topN": 4
               }
             }
           }
