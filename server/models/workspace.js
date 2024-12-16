@@ -53,9 +53,9 @@ const Workspace = {
     return slugifyModule(...args);
   },
 
-  new: async function (name = null, creatorId = null) {
-    if (!name) return { result: null, message: "name cannot be null" };
-    var slug = this.slugify(name, { lower: true });
+  new: async function (name = null, creatorId = null, additionalFields = {}) {
+    if (!name) return { workspace: null, message: "name cannot be null" };
+    var slug = additionalFields.slug || this.slugify(name, { lower: true });
     slug = slug || uuidv4();
 
     const existingBySlug = await this.get({ slug });
@@ -64,9 +64,23 @@ const Workspace = {
       slug = this.slugify(`${name}-${slugSeed}`, { lower: true });
     }
 
+    // Filter only valid fields
+    const validFields = Object.keys(additionalFields).filter((key) =>
+      this.writable.includes(key)
+    );
+
+    const validAdditionalFields = {};
+    validFields.forEach((key) => {
+      validAdditionalFields[key] = additionalFields[key];
+    });
+
     try {
       const workspace = await prisma.workspaces.create({
-        data: { name, slug },
+        data: {
+          name,
+          slug,
+          ...validAdditionalFields,
+        },
       });
 
       // If created with a user then we need to create the relationship as well.
