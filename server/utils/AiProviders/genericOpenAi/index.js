@@ -77,17 +77,65 @@ class GenericOpenAiLLM {
     return true;
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   *
+   * ## Developer Note
+   * This function assumes the generic OpenAI provider is _actually_ OpenAI compatible.
+   * For example, Ollama is "OpenAI compatible" but does not support images as a content array.
+   * The contentString also is the base64 string WITH `data:image/xxx;base64,` prefix, which may not be the case for all providers.
+   * If your provider does not work exactly this way, then attachments will not function or potentially break vision requests.
+   * If you encounter this issue, you are welcome to open an issue asking for your specific provider to be supported.
+   *
+   * This function will **not** be updated for providers that **do not** support images as a content array like OpenAI does.
+   * Do not open issues to update this function due to your specific provider not being compatible. Open an issue to request support for your specific provider.
+   * @param {Object} props
+   * @param {string} props.userPrompt - the user prompt to be sent to the model
+   * @param {import("../../helpers").Attachment[]} props.attachments - the array of attachments to be sent to the model
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+          detail: "high",
+        },
+      });
+    }
+    return content.flat();
+  }
+
+  /**
+   * Construct the user prompt for this model.
+   * @param {{attachments: import("../../helpers").Attachment[]}} param0
+   * @returns
+   */
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...chatHistory,
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
