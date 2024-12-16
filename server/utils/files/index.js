@@ -281,6 +281,16 @@ async function getWatchedDocumentFilenames(filenames = []) {
   }, {});
 }
 
+/**
+ * Purges the entire vector-cache folder and recreates it.
+ * @returns {void}
+ */
+function purgeEntireVectorCache() {
+  fs.rmSync(vectorCachePath, { recursive: true, force: true });
+  fs.mkdirSync(vectorCachePath);
+  return;
+}
+
 module.exports = {
   findDocumentInDocuments,
   cachedVectorInformation,
@@ -293,4 +303,5 @@ module.exports = {
   isWithin,
   documentsPath,
   hasVectorCachedFiles,
+  purgeEntireVectorCache,
 };
