@@ -38,31 +38,37 @@ const Workspace = {
 
   validations: {
     name: (value) => {
-      if (!value || typeof value !== "string") return null;
+      // If the name is not provided or is not a string then we will use a default name.
+      // as the name field is not nullable in the db schema or has a default value.
+      if (!value || typeof value !== "string") return "My Workspace";
       return String(value).slice(0, 255);
     },
     openAiTemp: (value) => {
       if (value === null || value === undefined) return null;
       const temp = parseFloat(value);
-      if (isNullOrNaN(temp)) return null;
+      if (isNullOrNaN(temp) || temp < 0) return null;
       return temp;
     },
     openAiHistory: (value) => {
       if (value === null || value === undefined) return 20;
       const history = parseInt(value);
-      if (isNullOrNaN(history) || history < 0) return 20;
+      if (isNullOrNaN(history)) return 20;
+      if (history < 0) return 0;
       return history;
     },
     similarityThreshold: (value) => {
       if (value === null || value === undefined) return 0.25;
       const threshold = parseFloat(value);
-      if (isNullOrNaN(threshold) || threshold < 0 || threshold > 1) return 0.25;
+      if (isNullOrNaN(threshold)) return 0.25;
+      if (threshold < 0) return 0.0;
+      if (threshold > 1) return 1.0;
       return threshold;
     },
     topN: (value) => {
       if (value === null || value === undefined) return 4;
       const n = parseInt(value);
-      if (isNullOrNaN(n) || n < 1) return 4;
+      if (isNullOrNaN(n)) return 4;
+      if (n < 1) return 1;
       return n;
     },
     chatMode: (value) => {
@@ -70,7 +76,7 @@ const Workspace = {
       return value;
     },
     chatProvider: (value) => {
-      if (!value || typeof value !== "string") return null;
+      if (!value || typeof value !== "string" || value === "none") return null;
       return String(value);
     },
     chatModel: (value) => {
@@ -78,7 +84,7 @@ const Workspace = {
       return String(value);
     },
     agentProvider: (value) => {
-      if (!value || typeof value !== "string") return null;
+      if (!value || typeof value !== "string" || value === "none") return null;
       return String(value);
     },
     agentModel: (value) => {
