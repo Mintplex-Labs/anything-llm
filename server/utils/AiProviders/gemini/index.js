@@ -1,5 +1,8 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
@@ -227,13 +230,29 @@ class GeminiLLM {
       history: this.formatMessages(messages),
       safetySettings: this.#safetySettings(),
     });
-    const result = await chatThread.sendMessage(prompt);
-    const response = result.response;
-    const responseText = response.text();
 
+    const { output: result, duration } =
+      await LLMPerformanceMonitor.measureAsyncFunction(
+        chatThread.sendMessage(prompt)
+      );
+    const responseText = result.response.text();
     if (!responseText) throw new Error("Gemini: No response could be parsed.");
 
-    return responseText;
+    const promptTokens = LLMPerformanceMonitor.countTokens(messages);
+    const completionTokens = LLMPerformanceMonitor.countTokens([
+      { content: responseText },
+    ]);
+
+    return {
+      textResponse: responseText,
+      metrics: {
+        prompt_tokens: promptTokens,
+        completion_tokens: completionTokens,
+        total_tokens: promptTokens + completionTokens,
+        outputTps: (promptTokens + completionTokens) / duration,
+        duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = [], _opts = {}) {
@@ -249,11 +268,14 @@ class GeminiLLM {
       history: this.formatMessages(messages),
       safetySettings: this.#safetySettings(),
     });
-    const responseStream = await chatThread.sendMessageStream(prompt);
-    if (!responseStream.stream)
-      throw new Error("Could not stream response stream from Gemini.");
+    const responseStream = await LLMPerformanceMonitor.measureStream(
+      (await chatThread.sendMessageStream(prompt)).stream,
+      messages
+    );
 
-    return responseStream.stream;
+    if (!responseStream)
+      throw new Error("Could not stream response stream from Gemini.");
+    return responseStream;
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
@@ -264,6 +286,10 @@ class GeminiLLM {
 
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
+    // Usage is not available for Gemini streams
+    // so we need to calculate the completion tokens manually
+    // because 1 chunk != 1 token in gemini responses and it buffers
+    // many tokens before sending them to the client as a "chunk"
 
     return new Promise(async (resolve) => {
       let fullText = "";
@@ -272,7 +298,14 @@ class GeminiLLM {
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement({
+          completion_tokens: LLMPerformanceMonitor.countTokens([
+            { content: fullText },
+          ]),
+        });
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       for await (const chunk of stream) {
@@ -292,6 +325,7 @@ class GeminiLLM {
             close: true,
             error: e.message,
           });
+          stream?.endMeasurement({ completion_tokens: 0 });
           resolve(e.message);
           return;
         }
@@ -316,6 +350,11 @@ class GeminiLLM {
         error: false,
       });
       response.removeListener("close", handleAbort);
+      stream?.endMeasurement({
+        completion_tokens: LLMPerformanceMonitor.countTokens([
+          { content: fullText },
+        ]),
+      });
       resolve(fullText);
     });
   }
