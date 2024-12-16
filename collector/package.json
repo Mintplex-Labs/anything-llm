@@ -46,7 +46,7 @@
     "youtubei.js": "^9.1.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22",
+    "nodemon": "^3.1.9",
     "prettier": "^2.4.1"
   }
 }
