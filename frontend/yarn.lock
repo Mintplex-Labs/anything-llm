@@ -1780,12 +1780,12 @@ flow-bin@^0.217.0:
   resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.217.2.tgz#96affa17f3cb303019f740bffeb28cfab7ce1250"
   integrity sha512-fk4NcfybYjzlww1sEsfk71nqXvonAYpMRFEjmZxibDWWBiaw8DGmqXWZ7XzSunVB15VkJfOstn/sYP1EYPPyWg==
 
-flow-remove-types@^2.217.1:
-  version "2.241.0"
-  resolved "https://registry.yarnpkg.com/flow-remove-types/-/flow-remove-types-2.241.0.tgz#82509ffa5dc38e198add2c25b5547081896b25e9"
-  integrity sha512-JPmVPy6QNNSFpj24yKBPdSoQ4zT+XquVm2JxrGwegzYXUr1LeH3t52UIIyRo6e29rwgivDyrgYhyxODJQtYv8w==
+flow-remove-types@^2.256.0:
+  version "2.256.0"
+  resolved "https://registry.yarnpkg.com/flow-remove-types/-/flow-remove-types-2.256.0.tgz#3721221c97c2b39be373a63905b807e544c103af"
+  integrity sha512-R2SbUlCUdQb69fvU2dXRfM+gP+qItF5rMzebxmTzJX556i3BNExzc9oONWC1da6camios6fuo+dAJ6cyRbbhpQ==
   dependencies:
-    hermes-parser "0.22.0"
+    hermes-parser "0.25.1"
     pirates "^3.0.2"
     vlq "^0.2.1"
 
@@ -2009,10 +2009,10 @@ hermes-estree@0.15.1:
   resolved "https://registry.yarnpkg.com/hermes-estree/-/hermes-estree-0.15.1.tgz#d06d4ddf87e91857b0130a083a9d7696d7aec61f"
   integrity sha512-XrQH+GATG/8DYbzlrVs6Vf/EDxLhYEHXvzt/Xve4b/NXXpsNLDN8bdBEKp5z0XeOMoL1XMEexxIIf1a5bH6kYA==
 
-hermes-estree@0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/hermes-estree/-/hermes-estree-0.22.0.tgz#38559502b119f728901d2cfe2ef422f277802a1d"
-  integrity sha512-FLBt5X9OfA8BERUdc6aZS36Xz3rRuB0Y/mfocSADWEJfomc1xfene33GdyAmtTkKTBXTN/EgAy+rjTKkkZJHlw==
+hermes-estree@0.25.1:
+  version "0.25.1"
+  resolved "https://registry.yarnpkg.com/hermes-estree/-/hermes-estree-0.25.1.tgz#6aeec17d1983b4eabf69721f3aa3eb705b17f480"
+  integrity sha512-0wUoCcLp+5Ev5pDW2OriHC2MJCbwLwuRx+gAqMTOkGKJJiBCLjtrvy4PWUGn6MIVefecRpzoOZ/UV6iGdOr+Cw==
 
 hermes-parser@0.15.1:
   version "0.15.1"
@@ -2021,12 +2021,12 @@ hermes-parser@0.15.1:
   dependencies:
     hermes-estree "0.15.1"
 
-hermes-parser@0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/hermes-parser/-/hermes-parser-0.22.0.tgz#fc8e0e6c7bfa8db85b04c9f9544a102c4fcb4040"
-  integrity sha512-gn5RfZiEXCsIWsFGsKiykekktUoh0PdFWYocXsUdZIyWSckT6UIyPcyyUIPSR3kpnELWeK3n3ztAse7Mat6PSA==
+hermes-parser@0.25.1:
+  version "0.25.1"
+  resolved "https://registry.yarnpkg.com/hermes-parser/-/hermes-parser-0.25.1.tgz#5be0e487b2090886c62bd8a11724cd766d5f54d1"
+  integrity sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==
   dependencies:
-    hermes-estree "0.22.0"
+    hermes-estree "0.25.1"
 
 highlight.js@^11.9.0:
   version "11.10.0"
@@ -3250,7 +3250,16 @@ string-natural-compare@^3.0.1:
   resolved "https://registry.yarnpkg.com/string-natural-compare/-/string-natural-compare-3.0.1.tgz#7a42d58474454963759e8e8b7ae63d71c1e7fdf4"
   integrity sha512-n3sPwynL1nwKi3WJ6AIsClwBMa0zTi54fn2oLU6ndfTSIO05xaznjSf15PcBZU6FNWbmN5Q6cxT4V5hGvB4taw==
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -3322,7 +3331,14 @@ string.prototype.trimstart@^1.0.8:
     define-properties "^1.2.1"
     es-object-atoms "^1.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -3838,7 +3854,16 @@ word-wrap@^1.2.5:
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.5.tgz#d2c45c6dd4fbce621a66f136cbe328afd0410b34"
   integrity sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
