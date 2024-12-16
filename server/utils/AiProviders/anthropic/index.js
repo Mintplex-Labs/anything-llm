@@ -5,6 +5,9 @@ const {
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { MODEL_MAP } = require("../modelMap");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -111,18 +114,31 @@ class AnthropicLLM {
       );
 
     try {
-      const response = await this.anthropic.messages.create({
-        model: this.model,
-        max_tokens: 4096,
-        system: messages[0].content, // Strip out the system message
-        messages: messages.slice(1), // Pop off the system message
-        temperature: Number(temperature ?? this.defaultTemp),
-      });
+      const result = await LLMPerformanceMonitor.measureAsyncFunction(
+        this.anthropic.messages.create({
+          model: this.model,
+          max_tokens: 4096,
+          system: messages[0].content, // Strip out the system message
+          messages: messages.slice(1), // Pop off the system message
+          temperature: Number(temperature ?? this.defaultTemp),
+        })
+      );
 
-      return response.content[0].text;
+      const promptTokens = result.output.usage.input_tokens;
+      const completionTokens = result.output.usage.output_tokens;
+      return {
+        textResponse: result.output.content[0].text,
+        metrics: {
+          prompt_tokens: promptTokens,
+          completion_tokens: completionTokens,
+          total_tokens: promptTokens + completionTokens,
+          outputTps: completionTokens / result.duration,
+          duration: result.duration,
+        },
+      };
     } catch (error) {
       console.log(error);
-      return error;
+      return { textResponse: error, metrics: {} };
     }
   }
 
@@ -132,26 +148,45 @@ class AnthropicLLM {
         `Anthropic chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.anthropic.messages.stream({
-      model: this.model,
-      max_tokens: 4096,
-      system: messages[0].content, // Strip out the system message
-      messages: messages.slice(1), // Pop off the system message
-      temperature: Number(temperature ?? this.defaultTemp),
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.anthropic.messages.stream({
+        model: this.model,
+        max_tokens: 4096,
+        system: messages[0].content, // Strip out the system message
+        messages: messages.slice(1), // Pop off the system message
+        temperature: Number(temperature ?? this.defaultTemp),
+      }),
+      messages,
+      false
+    );
+
+    return measuredStreamRequest;
   }
 
+  /**
+   * Handles the stream response from the Anthropic API.
+   * @param {Object} response - the response object
+   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream - the stream response from the Anthropic API w/tracking
+   * @param {Object} responseProps - the response properties
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
     return new Promise((resolve) => {
       let fullText = "";
       const { uuid = v4(), sources = [] } = responseProps;
+      let usage = {
+        prompt_tokens: 0,
+        completion_tokens: 0,
+      };
 
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement(usage);
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       stream.on("error", (event) => {
@@ -173,11 +208,18 @@ class AnthropicLLM {
           error: parseErrorMsg(event),
         });
         response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
         resolve(fullText);
       });
 
       stream.on("streamEvent", (message) => {
         const data = message;
+
+        if (data.type === "message_start")
+          usage.prompt_tokens = data?.message?.usage?.input_tokens;
+        if (data.type === "message_delta")
+          usage.completion_tokens = data?.usage?.output_tokens;
+
         if (
           data.type === "content_block_delta" &&
           data.delta.type === "text_delta"
@@ -208,6 +250,7 @@ class AnthropicLLM {
             error: false,
           });
           response.removeListener("close", handleAbort);
+          stream?.endMeasurement(usage);
           resolve(fullText);
         }
       });

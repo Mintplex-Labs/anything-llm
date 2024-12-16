@@ -54,6 +54,7 @@ async function streamChatWithForEmbed(
   }
 
   let completeText;
+  let metrics = {};
   let contextTexts = [];
   let sources = [];
   let pinnedDocIdentifiers = [];
@@ -164,9 +165,12 @@ async function streamChatWithForEmbed(
     console.log(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
-    completeText = await LLMConnector.getChatCompletion(messages, {
-      temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    const { textResponse, metrics: performanceMetrics } =
+      await LLMConnector.getChatCompletion(messages, {
+        temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      });
+    completeText = textResponse;
+    metrics = performanceMetrics;
     writeResponseChunk(response, {
       uuid,
       sources: [],
@@ -183,12 +187,13 @@ async function streamChatWithForEmbed(
       uuid,
       sources: [],
     });
+    metrics = stream.metrics;
   }
 
   await EmbedChats.new({
     embedId: embed.id,
     prompt: message,
-    response: { text: completeText, type: chatMode, sources },
+    response: { text: completeText, type: chatMode, sources, metrics },
     connection_information: response.locals.connection
       ? {
           ...response.locals.connection,

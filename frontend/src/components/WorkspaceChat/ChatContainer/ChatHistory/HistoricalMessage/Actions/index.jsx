@@ -3,6 +3,7 @@ import useCopyText from "@/hooks/useCopyText";
 import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { EditMessageAction } from "./EditMessage";
+import RenderMetrics from "./RenderMetrics";
 import ActionMenu from "./ActionMenu";
 
 const Actions = ({
@@ -15,6 +16,7 @@ const Actions = ({
   forkThread,
   isEditing,
   role,
+  metrics = {},
 }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
   const handleFeedback = async (newFeedback) => {
@@ -58,6 +60,7 @@ const Actions = ({
           />
         </div>
       </div>
+      <RenderMetrics metrics={metrics} />
     </div>
   );
 };

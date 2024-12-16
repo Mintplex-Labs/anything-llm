@@ -3,6 +3,9 @@ const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -132,19 +135,34 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const result = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage.prompt_tokens || 0,
+        completion_tokens: result.output.usage.completion_tokens || 0,
+        total_tokens: result.output.usage.total_tokens || 0,
+        outputTps: result.output.usage.completion_tokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -153,13 +171,19 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
+      }),
+      messages
+      // runPromptTokenCalculation: true - We manually count the tokens because OpenAI does not provide them in the stream
+      // since we are not using the OpenAI API version that supports this `stream_options` param.
+    );
+
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {

@@ -18,6 +18,7 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
+import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -268,14 +269,16 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     >
       {isMobile && <SidebarMobileHeader />}
       <DnDFileUploaderWrapper>
-        <ChatHistory
-          history={chatHistory}
-          workspace={workspace}
-          sendCommand={sendCommand}
-          updateHistory={setChatHistory}
-          regenerateAssistantMessage={regenerateAssistantMessage}
-          hasAttachments={files.length > 0}
-        />
+        <MetricsProvider>
+          <ChatHistory
+            history={chatHistory}
+            workspace={workspace}
+            sendCommand={sendCommand}
+            updateHistory={setChatHistory}
+            regenerateAssistantMessage={regenerateAssistantMessage}
+            hasAttachments={files.length > 0}
+          />
+        </MetricsProvider>
         <PromptInput
           submit={handleSubmit}
           onChange={handleMessageChange}
