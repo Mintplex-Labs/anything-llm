@@ -85,7 +85,7 @@ class AWSBedrockLLM {
   }
 
   // For streaming we use Langchain's wrapper to handle weird chunks
-  // or otherwise absorb headaches that can arise from Ollama models
+  // or otherwise absorb headaches that can arise from Bedrock models
   #convertToLangchainPrototypes(chats = []) {
     const {
       HumanMessage,
@@ -228,7 +228,7 @@ class AWSBedrockLLM {
         .invoke(this.#convertToLangchainPrototypes(messages))
         .catch((e) => {
           throw new Error(
-            `AWSBedrock::getChatCompletion failed to communicate with Ollama. ${e.message}`
+            `AWSBedrock::getChatCompletion failed to communicate with Bedrock client. ${e.message}`
           );
         })
     );
