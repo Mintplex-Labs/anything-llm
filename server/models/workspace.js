@@ -15,30 +15,12 @@ const Workspace = {
   defaultPrompt:
     "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
 
-  // Internal fields that should not be configurable via API
-  systemManaged: ["slug", "vectorTag", "pfpFilename", "lastUpdatedAt"],
-
-  // Fields that can be configured via API by users/developers
-  configurableFields: [
-    "name",
-    "openAiTemp",
-    "openAiHistory",
-    "openAiPrompt",
-    "similarityThreshold",
-    "chatProvider",
-    "chatModel",
-    "topN",
-    "chatMode",
-    "agentProvider",
-    "agentModel",
-    "queryRefusalResponse",
-  ],
-
   // Used for generic updates so we can validate keys in request body
+  // commented fields are not writable, but are available on the db object
   writable: [
     "name",
-    "slug",
-    "vectorTag",
+    // "slug",
+    // "vectorTag",
     "openAiTemp",
     "openAiHistory",
     "lastUpdatedAt",
@@ -48,7 +30,7 @@ const Workspace = {
     "chatModel",
     "topN",
     "chatMode",
-    "pfpFilename",
+    // "pfpFilename",
     "agentProvider",
     "agentModel",
     "queryRefusalResponse",
@@ -62,7 +44,7 @@ const Workspace = {
     openAiTemp: (value) => {
       if (value === null || value === undefined) return null;
       const temp = parseFloat(value);
-      if (isNullOrNaN(temp) || temp < 0 || temp > 1) return null;
+      if (isNullOrNaN(temp)) return null;
       return temp;
     },
     openAiHistory: (value) => {
@@ -138,6 +120,32 @@ const Workspace = {
     return slugifyModule(...args);
   },
 
+  /**
+   * Validate the fields for a workspace update.
+   * @param {Object} updates - The updates to validate - should be writable fields
+   * @returns {Object} The validated updates. Only valid fields are returned.
+   */
+  validateFields: function (updates = {}) {
+    const validatedFields = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (!this.writable.includes(key)) continue;
+      if (this.validations[key]) {
+        validatedFields[key] = this.validations[key](value);
+      } else {
+        // If there is no validation for the field then we will just pass it through.
+        validatedFields[key] = value;
+      }
+    }
+    return validatedFields;
+  },
+
+  /**
+   * Create a new workspace.
+   * @param {string} name - The name of the workspace.
+   * @param {number} creatorId - The ID of the user creating the workspace.
+   * @param {Object} additionalFields - Additional fields to apply to the workspace - will be validated.
+   * @returns {Promise<{workspace: Object | null, message: string | null}>} A promise that resolves to an object containing the created workspace and an error message if applicable.
+   */
   new: async function (name = null, creatorId = null, additionalFields = {}) {
     if (!name) return { workspace: null, message: "name cannot be null" };
     var slug = this.slugify(name, { lower: true });
@@ -149,21 +157,11 @@ const Workspace = {
       slug = this.slugify(`${name}-${slugSeed}`, { lower: true });
     }
 
-    // Validate all configurable fields
-    const validatedFields = {
-      name: this.validations.name(name),
-    };
-
-    Object.keys(additionalFields).forEach((key) => {
-      if (this.configurableFields.includes(key) && this.validations[key]) {
-        validatedFields[key] = this.validations[key](additionalFields[key]);
-      }
-    });
-
     try {
       const workspace = await prisma.workspaces.create({
         data: {
-          ...validatedFields,
+          name: this.validations.name(name),
+          ...this.validateFields(additionalFields),
           slug,
         },
       });
@@ -179,35 +177,36 @@ const Workspace = {
     }
   },
 
+  /**
+   * Update the settings for a workspace. Applies validations to the updates provided.
+   * @param {number} id - The ID of the workspace to update.
+   * @param {Object} updates - The data to update.
+   * @returns {Promise<{workspace: Object | null, message: string | null}>} A promise that resolves to an object containing the updated workspace and an error message if applicable.
+   */
   update: async function (id = null, updates = {}) {
     if (!id) throw new Error("No workspace id provided for update");
 
-    const validFields = Object.keys(updates).filter((key) =>
-      this.writable.includes(key)
-    );
-
-    Object.entries(updates).forEach(([key]) => {
-      if (validFields.includes(key)) return;
-      delete updates[key];
-    });
-
-    if (Object.keys(updates).length === 0)
+    const validatedUpdates = this.validateFields(updates);
+    if (Object.keys(validatedUpdates).length === 0)
       return { workspace: { id }, message: "No valid fields to update!" };
 
     // If the user unset the chatProvider we will need
     // to then clear the chatModel as well to prevent confusion during
     // LLM loading.
-    if (updates?.chatProvider === "default") {
-      updates.chatProvider = null;
-      updates.chatModel = null;
+    if (validatedUpdates?.chatProvider === "default") {
+      validatedUpdates.chatProvider = null;
+      validatedUpdates.chatModel = null;
     }
 
-    return this._update(id, updates);
+    return this._update(id, validatedUpdates);
   },
 
-  // Explicit update of settings + key validations.
-  // Only use this method when directly setting a key value
-  // that takes no user input for the keys being modified.
+  /**
+   * Direct update of workspace settings without any validation.
+   * @param {number} id - The ID of the workspace to update.
+   * @param {Object} data - The data to update.
+   * @returns {Promise<{workspace: Object | null, message: string | null}>} A promise that resolves to an object containing the updated workspace and an error message if applicable.
+   */
   _update: async function (id = null, data = {}) {
     if (!id) throw new Error("No workspace id provided for update");
 
