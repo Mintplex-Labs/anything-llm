@@ -29,7 +29,6 @@ function apiWorkspaceEndpoints(app) {
         "application/json": {
           example: {
             name: "My New Workspace",
-            slug: "custom-slug",
             similarityThreshold: 0.7,
             openAiTemp: 0.7,
             openAiHistory: 20,
