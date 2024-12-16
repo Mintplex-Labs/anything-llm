@@ -6,11 +6,36 @@ const { ROLES } = require("../utils/middleware/multiUserProtected");
 const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
 
+function isNullOrNaN(value) {
+  if (value === null) return true;
+  return isNaN(value);
+}
+
 const Workspace = {
   defaultPrompt:
     "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+
+  // Internal fields that should not be configurable via API
+  systemManaged: ["slug", "vectorTag", "pfpFilename", "lastUpdatedAt"],
+
+  // Fields that can be configured via API by users/developers
+  configurableFields: [
+    "name",
+    "openAiTemp",
+    "openAiHistory",
+    "openAiPrompt",
+    "similarityThreshold",
+    "chatProvider",
+    "chatModel",
+    "topN",
+    "chatMode",
+    "agentProvider",
+    "agentModel",
+    "queryRefusalResponse",
+  ],
+
+  // Used for generic updates so we can validate keys in request body
   writable: [
-    // Used for generic updates so we can validate keys in request body
     "name",
     "slug",
     "vectorTag",
@@ -28,6 +53,66 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
   ],
+
+  validations: {
+    name: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value).slice(0, 255);
+    },
+    openAiTemp: (value) => {
+      if (value === null || value === undefined) return null;
+      const temp = parseFloat(value);
+      if (isNullOrNaN(temp) || temp < 0 || temp > 1) return null;
+      return temp;
+    },
+    openAiHistory: (value) => {
+      if (value === null || value === undefined) return 20;
+      const history = parseInt(value);
+      if (isNullOrNaN(history) || history < 0) return 20;
+      return history;
+    },
+    similarityThreshold: (value) => {
+      if (value === null || value === undefined) return 0.25;
+      const threshold = parseFloat(value);
+      if (isNullOrNaN(threshold) || threshold < 0 || threshold > 1) return 0.25;
+      return threshold;
+    },
+    topN: (value) => {
+      if (value === null || value === undefined) return 4;
+      const n = parseInt(value);
+      if (isNullOrNaN(n) || n < 1) return 4;
+      return n;
+    },
+    chatMode: (value) => {
+      if (!value || !["chat", "query"].includes(value)) return "chat";
+      return value;
+    },
+    chatProvider: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value);
+    },
+    chatModel: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value);
+    },
+    agentProvider: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value);
+    },
+    agentModel: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value);
+    },
+    queryRefusalResponse: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value);
+    },
+    openAiPrompt: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value);
+    },
+  },
+
   /**
    * The default Slugify module requires some additional mapping to prevent downstream issues
    * with some vector db providers and instead of building a normalization method for every provider
@@ -55,7 +140,7 @@ const Workspace = {
 
   new: async function (name = null, creatorId = null, additionalFields = {}) {
     if (!name) return { workspace: null, message: "name cannot be null" };
-    var slug = additionalFields.slug || this.slugify(name, { lower: true });
+    var slug = this.slugify(name, { lower: true });
     slug = slug || uuidv4();
 
     const existingBySlug = await this.get({ slug });
@@ -64,22 +149,22 @@ const Workspace = {
       slug = this.slugify(`${name}-${slugSeed}`, { lower: true });
     }
 
-    // Filter only valid fields
-    const validFields = Object.keys(additionalFields).filter((key) =>
-      this.writable.includes(key)
-    );
+    // Validate all configurable fields
+    const validatedFields = {
+      name: this.validations.name(name),
+    };
 
-    const validAdditionalFields = {};
-    validFields.forEach((key) => {
-      validAdditionalFields[key] = additionalFields[key];
+    Object.keys(additionalFields).forEach((key) => {
+      if (this.configurableFields.includes(key) && this.validations[key]) {
+        validatedFields[key] = this.validations[key](additionalFields[key]);
+      }
     });
 
     try {
       const workspace = await prisma.workspaces.create({
         data: {
-          name,
+          ...validatedFields,
           slug,
-          ...validAdditionalFields,
         },
       });
 
