@@ -35,7 +35,7 @@
     "node-html-parser": "^6.1.13",
     "node-xlsx": "^0.24.0",
     "officeparser": "^4.0.5",
-    "openai": "4.38.5",
+    "openai": "4.76.3",
     "pdf-parse": "^1.1.1",
     "puppeteer": "~21.5.2",
     "slugify": "^1.6.6",
