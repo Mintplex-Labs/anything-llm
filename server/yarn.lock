@@ -3354,16 +3354,19 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
-elevenlabs@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/elevenlabs/-/elevenlabs-0.5.0.tgz#07eb1a943b0ab99b925875bd5c57833a3a024e58"
-  integrity sha512-jfex4ecuWIlyAUuMrMJAJNa5MLziqYQOCDw4ZYuoc9PCYLxtHwaYBWpZoDhnYMcceLI7rRRvmbLMcT9HlVMfHA==
+elevenlabs@^1.50.2:
+  version "1.50.2"
+  resolved "https://registry.yarnpkg.com/elevenlabs/-/elevenlabs-1.50.2.tgz#2100b52290b5597527b403f250b00550bf01b954"
+  integrity sha512-Zq5fFACjctRB1Ix1k5dLnx+GLPy3Z3fKrilmXGDAdEA7WOT6GL4SA6aH7/v13Tw5CSKu/z/XzBz/7T3JeyK8LA==
   dependencies:
     command-exists "^1.2.9"
     execa "^5.1.1"
-    form-data "4.0.0"
+    form-data "^4.0.0"
+    form-data-encoder "^4.0.2"
+    formdata-node "^6.0.3"
     node-fetch "2.7.0"
     qs "6.11.2"
+    readable-stream "^4.5.2"
     url-join "4.0.1"
 
 emoji-regex@^10.2.1:
@@ -3964,6 +3967,11 @@ form-data-encoder@1.7.2:
   resolved "https://registry.yarnpkg.com/form-data-encoder/-/form-data-encoder-1.7.2.tgz#1f1ae3dccf58ed4690b86d87e4f57c654fbab040"
   integrity sha512-qfqtYan3rxrnCk1VYaA4H+Ms9xdpPqvLZa6xmMgFvhO32x7/3J/ExcTd6qpxM0vH2GdMI+poehyBZvqfMTto8A==
 
+form-data-encoder@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/form-data-encoder/-/form-data-encoder-4.0.2.tgz#dd286fd5f9049e8ded1d44ce427f5e29185c7c12"
+  integrity sha512-KQVhvhK8ZkWzxKxOr56CPulAhH3dobtuQ4+hNQ+HekH/Wp5gSOafqRAeTphQUJAIk0GBvHZgJ2ZGRWd5kphMuw==
+
 form-data@4.0.0, form-data@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.0.tgz#93919daeaf361ee529584b9b31664dc12c9fa452"
@@ -3989,6 +3997,11 @@ formdata-node@^4.3.2:
   dependencies:
     node-domexception "1.0.0"
     web-streams-polyfill "4.0.0-beta.3"
+
+formdata-node@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/formdata-node/-/formdata-node-6.0.3.tgz#48f8e2206ae2befded82af621ef015f08168dc6d"
+  integrity sha512-8e1++BCiTzUno9v5IZ2J6bv4RU+3UKDmqWUQD0MIMVCd9AdhWkO1gw57oo1mNEX1dMq2EGI+FbWz4B92pscSQg==
 
 forwarded@0.2.0:
   version "0.2.0"
@@ -6236,7 +6249,7 @@ readable-stream@^3.1.1, readable-stream@^3.4.0, readable-stream@^3.6.0:
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
 
-readable-stream@^4.2.0:
+readable-stream@^4.2.0, readable-stream@^4.5.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-4.5.2.tgz#9e7fc4c45099baeed934bff6eb97ba6cf2729e09"
   integrity sha512-yjavECdqeZ3GLXNgRXgeQEdz9fvDDkNKyHnbHRFtOr7/LcfgBcmct7t/ET+HaCTqfh06OzoAxrkN/IfjJBVe+g==
