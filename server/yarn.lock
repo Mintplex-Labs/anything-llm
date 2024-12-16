@@ -10,10 +10,10 @@
     lodash.assignwith "^4.2.0"
     typical "^7.1.1"
 
-"@anthropic-ai/sdk@^0.20.1":
-  version "0.20.9"
-  resolved "https://registry.yarnpkg.com/@anthropic-ai/sdk/-/sdk-0.20.9.tgz#f7c983861774e1595d5941a4d02774b7aa87c780"
-  integrity sha512-Lq74+DhiEQO6F9/gdVOLmHx57pX45ebK2Q/zH14xYe1157a7QeUVknRqIp0Jz5gQI01o7NKbuv9Dag2uQsLjDg==
+"@anthropic-ai/sdk@^0.25.2":
+  version "0.25.2"
+  resolved "https://registry.yarnpkg.com/@anthropic-ai/sdk/-/sdk-0.25.2.tgz#ad790b0876e2a72da9a9d6b4cea88a10b2dbc181"
+  integrity sha512-F1Hck/asswwidFLtGdMg3XYgRxEUfygNbpkq5KEaEGsHNaSfxeX18/uZGQCL0oQNcj/tYNx8BaFXVwRhFDi45g==
   dependencies:
     "@types/node" "^18.11.18"
     "@types/node-fetch" "^2.6.4"
@@ -22,7 +22,6 @@
     form-data-encoder "1.7.2"
     formdata-node "^4.3.2"
     node-fetch "^2.6.7"
-    web-streams-polyfill "^3.2.1"
 
 "@anthropic-ai/sdk@^0.32.1":
   version "0.32.1"
@@ -1143,14 +1142,14 @@
     "@lancedb/lancedb-linux-x64-gnu" "0.5.2"
     "@lancedb/lancedb-win32-x64-msvc" "0.5.2"
 
-"@langchain/anthropic@0.1.16":
-  version "0.1.16"
-  resolved "https://registry.yarnpkg.com/@langchain/anthropic/-/anthropic-0.1.16.tgz#c2a9d3dd4e02df7118dd97cf2503c9bd1a4de5ad"
-  integrity sha512-vCbwkZ3pkMSKf67fBgNlslvuW9f3EZGBbO8Ic2etgX3xFl6L0WuMtfS26P1FCDpRwaKuC1BrCj2aLAeMzMq/Fg==
+"@langchain/anthropic@0.2.18":
+  version "0.2.18"
+  resolved "https://registry.yarnpkg.com/@langchain/anthropic/-/anthropic-0.2.18.tgz#dedc8709d88ddf760324f6f73bced9d8411f7cd4"
+  integrity sha512-4ZDTxMwGKTPRAi2Supu/faBSmwPIm/ga5QlazyO78Mf/8QbDR2DcvM5394FAy+X/nRAfnMbyXteO5IRJm653gw==
   dependencies:
-    "@anthropic-ai/sdk" "^0.20.1"
-    "@langchain/core" "~0.1.56"
-    fast-xml-parser "^4.3.5"
+    "@anthropic-ai/sdk" "^0.25.2"
+    "@langchain/core" ">=0.2.21 <0.3.0"
+    fast-xml-parser "^4.4.1"
     zod "^3.22.4"
     zod-to-json-schema "^3.22.4"
 
@@ -1198,17 +1197,16 @@
     zod "^3.22.4"
     zod-to-json-schema "^3.22.3"
 
-"@langchain/core@>=0.2.16 <0.3.0":
-  version "0.2.18"
-  resolved "https://registry.yarnpkg.com/@langchain/core/-/core-0.2.18.tgz#1ac4f307fa217ab3555c9634147a6c4ad9826092"
-  integrity sha512-ru542BwNcsnDfjTeDbIkFIchwa54ctHZR+kVrC8U9NPS9/36iM8p8ruprOV7Zccj/oxtLE5UpEhV+9MZhVcFlA==
+"@langchain/core@>=0.2.16 <0.3.0", "@langchain/core@>=0.2.21 <0.3.0":
+  version "0.2.36"
+  resolved "https://registry.yarnpkg.com/@langchain/core/-/core-0.2.36.tgz#75754c33aa5b9310dcf117047374a1ae011005a4"
+  integrity sha512-qHLvScqERDeH7y2cLuJaSAlMwg3f/3Oc9nayRSXRU2UuaK/SOhI42cxiPLj1FnuHJSmN0rBQFkrLx02gI4mcVg==
   dependencies:
     ansi-styles "^5.0.0"
     camelcase "6"
     decamelize "1.2.0"
     js-tiktoken "^1.0.12"
-    langsmith "~0.1.39"
-    ml-distance "^4.0.0"
+    langsmith "^0.1.56-rc.1"
     mustache "^4.2.0"
     p-queue "^6.6.2"
     p-retry "4"
@@ -2197,6 +2195,11 @@
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/@types/triple-beam/-/triple-beam-1.3.5.tgz#74fef9ffbaa198eb8b588be029f38b00299caa2c"
   integrity sha512-6WaYesThRMCl19iryMYP7/x2OVgCtbIVflDGFpWnb9irXI3UjYE4AzmYuiUKY1AJstGijoY+MgUszMgRxIYTYw==
+
+"@types/uuid@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-10.0.0.tgz#e9c07fe50da0f53dc24970cca94d619ff03f6f6d"
+  integrity sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==
 
 "@types/uuid@^9.0.1":
   version "9.0.8"
@@ -3838,10 +3841,10 @@ fast-xml-parser@4.2.5:
   dependencies:
     strnum "^1.0.5"
 
-fast-xml-parser@^4.3.5:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.5.0.tgz#2882b7d01a6825dfdf909638f2de0256351def37"
-  integrity sha512-/PlTQCI96+fZMAOLMZK4CWG1ItCbfZ/0jx7UIJFChPNrx7tcEgerUgWbeieCM9MfHInUDyK8DWYZ+YrywDJuTg==
+fast-xml-parser@^4.4.1:
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.5.1.tgz#a7e665ff79b7919100a5202f23984b6150f9b31e"
+  integrity sha512-y655CeyUQ+jj7KBbYMc4FG01V8ZQqjN+gDYGJ50RtfsUB8iG9AmwmwoAgeKLJdmueKKMrH1RJ7yXHTSoczdv5w==
   dependencies:
     strnum "^1.0.5"
 
@@ -4945,21 +4948,22 @@ langchainhub@~0.0.8:
   resolved "https://registry.yarnpkg.com/langchainhub/-/langchainhub-0.0.8.tgz#fd4b96dc795e22e36c1a20bad31b61b0c33d3110"
   integrity sha512-Woyb8YDHgqqTOZvWIbm2CaFDGfZ4NTSyXV687AG4vXEfoNo7cGQp7nhl7wL3ehenKWmNEmcxCLgOZzW8jE6lOQ==
 
+langsmith@^0.1.56-rc.1:
+  version "0.1.68"
+  resolved "https://registry.yarnpkg.com/langsmith/-/langsmith-0.1.68.tgz#848332e822fe5e6734a07f1c36b6530cc1798afb"
+  integrity sha512-otmiysWtVAqzMx3CJ4PrtUBhWRG5Co8Z4o7hSZENPjlit9/j3/vm3TSvbaxpDYakZxtMjhkcJTqrdYFipISEiQ==
+  dependencies:
+    "@types/uuid" "^10.0.0"
+    commander "^10.0.1"
+    p-queue "^6.6.2"
+    p-retry "4"
+    semver "^7.6.3"
+    uuid "^10.0.0"
+
 langsmith@~0.1.1, langsmith@~0.1.7:
   version "0.1.21"
   resolved "https://registry.yarnpkg.com/langsmith/-/langsmith-0.1.21.tgz#0e6cb361b4dddcc713f9d1364509fea0da3429b6"
   integrity sha512-pC9uujQAQFez9IdkPK4LPJLTnHLRKElImcYGxDrOJTZ2KZ/LIsRn6kPLKx1ZdT9h5CbDbT+ivXiS4bsxQGcbXA==
-  dependencies:
-    "@types/uuid" "^9.0.1"
-    commander "^10.0.1"
-    p-queue "^6.6.2"
-    p-retry "4"
-    uuid "^9.0.0"
-
-langsmith@~0.1.39:
-  version "0.1.39"
-  resolved "https://registry.yarnpkg.com/langsmith/-/langsmith-0.1.39.tgz#cc99f1828a9c0f5ba24bec6b0121edc44e8d282d"
-  integrity sha512-K2/qbc96JhrZbSL74RbZ0DBOpTB9Mxicu8RQrZ88Xsp1bH2O3+y5EdcvC0g/1YzQWQhcQ4peknCA24c3VTNiNA==
   dependencies:
     "@types/uuid" "^9.0.1"
     commander "^10.0.1"
@@ -6413,6 +6417,11 @@ semver@^7.3.5, semver@^7.5.4:
   integrity sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==
   dependencies:
     lru-cache "^6.0.0"
+
+semver@^7.6.3:
+  version "7.6.3"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.3.tgz#980f7b5550bc175fb4dc09403085627f9eb33143"
+  integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==
 
 semver@~7.0.0:
   version "7.0.0"

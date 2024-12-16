@@ -25,7 +25,7 @@
     "@google/generative-ai": "^0.7.1",
     "@ladjs/graceful": "^3.2.2",
     "@lancedb/lancedb": "0.5.2",
-    "@langchain/anthropic": "0.1.16",
+    "@langchain/anthropic": "0.2.18",
     "@langchain/aws": "^0.0.5",
     "@langchain/community": "0.0.53",
     "@langchain/core": "0.1.61",
