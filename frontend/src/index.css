@@ -147,6 +147,12 @@ body {
   background-color: white;
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0E0F0F;
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
