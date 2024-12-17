@@ -7,7 +7,7 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
-const { defaultGeminiModels } = require("./defaultModals");
+const { defaultGeminiModels, v1BetaModels } = require("./defaultModals");
 
 class GeminiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -22,7 +22,17 @@ class GeminiLLM {
     this.gemini = genAI.getGenerativeModel(
       { model: this.model },
       {
-        apiVersion: this.model.includes("exp") ? "v1beta" : "v1",
+        apiVersion:
+          /**
+           * There are some models that are only available in the v1beta API
+           * and some models that are only available in the v1 API
+           * generally, v1beta models have `exp` in the name, but not always
+           * so we check for both against a static list as well.
+           * @see {v1BetaModels}
+           */
+          this.model.includes("exp") || v1BetaModels.includes(this.model)
+            ? "v1beta"
+            : "v1",
       }
     );
     this.limits = {
