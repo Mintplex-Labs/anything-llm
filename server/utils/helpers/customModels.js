@@ -7,6 +7,7 @@ const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const { fetchNovitaModels } = require("../AiProviders/novita");
 const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
+const { GeminiLLM } = require("../AiProviders/gemini");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -28,6 +29,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "apipie",
   "novita",
   "xai",
+  "gemini",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -73,6 +75,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getXAIModels(apiKey);
     case "nvidia-nim":
       return await getNvidiaNimModels(basePath);
+    case "gemini":
+      return await getGeminiModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -570,6 +574,17 @@ async function getNvidiaNimModels(basePath = null) {
     console.error(`Nvidia NIM:getNvidiaNimModels`, e.message);
     return { models: [], error: "Could not fetch Nvidia NIM Models" };
   }
+}
+
+async function getGeminiModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.GEMINI_API_KEY
+      : _apiKey || process.env.GEMINI_API_KEY || null;
+  const models = await GeminiLLM.fetchModels(apiKey);
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.GEMINI_API_KEY = apiKey;
+  return { models, error: null };
 }
 
 module.exports = {

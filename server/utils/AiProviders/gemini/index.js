@@ -7,6 +7,7 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const { defaultGeminiModels, v1BetaModels } = require("./defaultModals");
 
 class GeminiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -21,22 +22,17 @@ class GeminiLLM {
     this.gemini = genAI.getGenerativeModel(
       { model: this.model },
       {
-        // Gemini-1.5-pro-* and Gemini-1.5-flash are only available on the v1beta API.
-        apiVersion: [
-          "gemini-1.5-pro-latest",
-          "gemini-1.5-flash-latest",
-          "gemini-1.5-pro-exp-0801",
-          "gemini-1.5-pro-exp-0827",
-          "gemini-1.5-flash-exp-0827",
-          "gemini-1.5-flash-8b-exp-0827",
-          "gemini-exp-1114",
-          "gemini-exp-1121",
-          "gemini-exp-1206",
-          "learnlm-1.5-pro-experimental",
-          "gemini-2.0-flash-exp",
-        ].includes(this.model)
-          ? "v1beta"
-          : "v1",
+        apiVersion:
+          /**
+           * There are some models that are only available in the v1beta API
+           * and some models that are only available in the v1 API
+           * generally, v1beta models have `exp` in the name, but not always
+           * so we check for both against a static list as well.
+           * @see {v1BetaModels}
+           */
+          this.model.includes("exp") || v1BetaModels.includes(this.model)
+            ? "v1beta"
+            : "v1",
       }
     );
     this.limits = {
@@ -48,6 +44,11 @@ class GeminiLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7; // not used for Gemini
     this.safetyThreshold = this.#fetchSafetyThreshold();
+    this.#log(`Initialized with model: ${this.model}`);
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[GeminiLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -109,25 +110,63 @@ class GeminiLLM {
     return MODEL_MAP.gemini[this.model] ?? 30_720;
   }
 
-  isValidChatCompletionModel(modelName = "") {
-    const validModels = [
-      "gemini-pro",
-      "gemini-1.0-pro",
-      "gemini-1.5-pro-latest",
-      "gemini-1.5-flash-latest",
-      "gemini-1.5-pro-exp-0801",
-      "gemini-1.5-pro-exp-0827",
-      "gemini-1.5-flash-exp-0827",
-      "gemini-1.5-flash-8b-exp-0827",
-      "gemini-exp-1114",
-      "gemini-exp-1121",
-      "gemini-exp-1206",
-      "learnlm-1.5-pro-experimental",
-      "gemini-2.0-flash-exp",
-    ];
-    return validModels.includes(modelName);
+  /**
+   * Fetches Gemini models from the Google Generative AI API
+   * @param {string} apiKey - The API key to use for the request
+   * @param {number} limit - The maximum number of models to fetch
+   * @param {string} pageToken - The page token to use for pagination
+   * @returns {Promise<[{id: string, name: string, contextWindow: number, experimental: boolean}]>} A promise that resolves to an array of Gemini models
+   */
+  static async fetchModels(apiKey, limit = 1_000, pageToken = null) {
+    const url = new URL(
+      "https://generativelanguage.googleapis.com/v1beta/models"
+    );
+    url.searchParams.set("pageSize", limit);
+    url.searchParams.set("key", apiKey);
+    if (pageToken) url.searchParams.set("pageToken", pageToken);
+
+    return fetch(url.toString(), {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) throw new Error(data.error.message);
+        return data.models ?? [];
+      })
+      .then((models) =>
+        models
+          .filter(
+            (model) => !model.displayName.toLowerCase().includes("tuning")
+          )
+          .filter((model) =>
+            model.supportedGenerationMethods.includes("generateContent")
+          ) //  Only generateContent is supported
+          .map((model) => {
+            return {
+              id: model.name.split("/").pop(),
+              name: model.displayName,
+              contextWindow: model.inputTokenLimit,
+              experimental: model.name.includes("exp"),
+            };
+          })
+      )
+      .catch((e) => {
+        console.error(`Gemini:getGeminiModels`, e.message);
+        return defaultGeminiModels;
+      });
   }
 
+  /**
+   * Checks if a model is valid for chat completion (unused)
+   * @deprecated
+   * @param {string} modelName - The name of the model to check
+   * @returns {Promise<boolean>} A promise that resolves to a boolean indicating if the model is valid
+   */
+  async isValidChatCompletionModel(modelName = "") {
+    const models = await this.fetchModels(true);
+    return models.some((model) => model.id === modelName);
+  }
   /**
    * Generates appropriate content array for a message + attachments.
    * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
@@ -218,11 +257,6 @@ class GeminiLLM {
   }
 
   async getChatCompletion(messages = [], _opts = {}) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
-      );
-
     const prompt = messages.find(
       (chat) => chat.role === "USER_PROMPT"
     )?.content;
@@ -256,11 +290,6 @@ class GeminiLLM {
   }
 
   async streamGetChatCompletion(messages = [], _opts = {}) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
-      );
-
     const prompt = messages.find(
       (chat) => chat.role === "USER_PROMPT"
     )?.content;

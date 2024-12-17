@@ -52,7 +52,7 @@ const KEY_MAPPING = {
   },
   GeminiLLMModelPref: {
     envKey: "GEMINI_LLM_MODEL_PREF",
-    checks: [isNotEmpty, validGeminiModel],
+    checks: [isNotEmpty],
   },
   GeminiSafetySetting: {
     envKey: "GEMINI_SAFETY_SETTING",
@@ -722,27 +722,6 @@ function supportedTranscriptionProvider(input = "") {
   return validSelection
     ? null
     : `${input} is not a valid transcription model provider.`;
-}
-
-function validGeminiModel(input = "") {
-  const validModels = [
-    "gemini-pro",
-    "gemini-1.0-pro",
-    "gemini-1.5-pro-latest",
-    "gemini-1.5-flash-latest",
-    "gemini-1.5-pro-exp-0801",
-    "gemini-1.5-pro-exp-0827",
-    "gemini-1.5-flash-exp-0827",
-    "gemini-1.5-flash-8b-exp-0827",
-    "gemini-exp-1114",
-    "gemini-exp-1121",
-    "gemini-exp-1206",
-    "learnlm-1.5-pro-experimental",
-    "gemini-2.0-flash-exp",
-  ];
-  return validModels.includes(input)
-    ? null
-    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
 }
 
 function validGeminiSafetySetting(input = "") {
