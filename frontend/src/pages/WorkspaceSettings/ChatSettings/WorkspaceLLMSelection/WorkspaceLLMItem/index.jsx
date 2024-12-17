@@ -155,7 +155,9 @@ function SetupProvider({
                   To use {LLMOption.name} as this workspace's LLM you need to
                   set it up first.
                 </p>
-                <div>{LLMOption.options({ credentialsOnly: true })}</div>
+                <div>
+                  {LLMOption.options(settings, { credentialsOnly: true })}
+                </div>
               </div>
             </div>
             <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border px-7 pb-6">
