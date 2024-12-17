@@ -368,6 +368,48 @@ class GeminiLLM {
   }
 }
 
+async function fetchGeminiModels(apiKey = null) {
+  if (!apiKey && !process.env.GEMINI_API_KEY) {
+    return { models: [], error: "No API key provided" };
+  }
+
+  try {
+    const key = apiKey || process.env.GEMINI_API_KEY;
+    const responses = await Promise.all([
+      fetch(`https://generativelanguage.googleapis.com/v1/models?key=${key}`),
+      fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`
+      ),
+    ]);
+
+    const [v1Data, v1betaData] = await Promise.all(
+      responses.map((r) => r.json())
+    );
+    const allModels = [...(v1Data.models || []), ...(v1betaData.models || [])];
+
+    // Filter for only chat/content generation models
+    const chatModels = allModels.filter(
+      (model) =>
+        model.supportedGenerationMethods?.includes("generateContent") &&
+        !model.name.includes("embedding") &&
+        !model.name.includes("aqa")
+    );
+
+    const models = chatModels.map((model) => ({
+      id: model.name.split("/")[1],
+      name: model.displayName,
+      organization: "Google",
+      maxLength: model.inputTokenLimit || 30720,
+    }));
+
+    return { models, error: null };
+  } catch (error) {
+    console.error("Error fetching Gemini models:", error);
+    return { models: [], error: error.message };
+  }
+}
+
 module.exports = {
+  fetchGeminiModels,
   GeminiLLM,
 };
