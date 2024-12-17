@@ -127,9 +127,9 @@ class MetaGenerator {
       { tag: "link", props: { rel: "icon", href: "/favicon.png" } },
       { tag: "link", props: { rel: "apple-touch-icon", href: "/favicon.png" } },
       // PWA tags
-      { tag: 'meta', props: { name: 'mobile-web-app-capable', content: 'yes' } },
-      { tag: 'meta', props: { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' } },
-      { tag: 'link', props: { rel: 'manifest', href: '/manifest.json' } },
+      { tag: "meta", props: { name: "mobile-web-app-capable", content: "yes" } },
+      { tag: "meta", props: { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" } },
+      { tag: "link", props: { rel: "manifest", href: "/manifest.json" } },
     ];
   }
 
