@@ -147,6 +147,12 @@ body {
   background-color: white;
 }
 
+@media (max-width: 600px) {
+  html {
+    overscroll-behavior: none;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #0E0F0F;
