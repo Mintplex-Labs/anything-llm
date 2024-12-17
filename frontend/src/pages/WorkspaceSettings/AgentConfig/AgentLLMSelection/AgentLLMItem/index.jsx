@@ -31,6 +31,8 @@ export default function AgentLLMItem({
   }, [isOpen]);
 
   function handleProviderSelection() {
+    // Determine if provider needs additional setup because its minimum required keys are
+    // not yet set in settings.
     if (!checked) {
       const requiresAdditionalSetup = (llm.requiredConfig || []).some(
         (key) => !currentSettings[key]
@@ -150,8 +152,8 @@ function SetupProvider({
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto p-1">
                 <p className="text-sm text-white/60">
-                  To use {LLMOption.name} as this workspace's agent LLM you need to
-                  set it up first.
+                  To use {LLMOption.name} as this workspace's agent LLM you need
+                  to set it up first.
                 </p>
                 <div>
                   {LLMOption.options(settings, { credentialsOnly: true })}
