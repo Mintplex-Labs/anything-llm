@@ -23,12 +23,19 @@ function apiWorkspaceEndpoints(app) {
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Create a new workspace'
     #swagger.requestBody = {
-      description: 'JSON object containing new display name of workspace.',
+      description: 'JSON object containing workspace configuration.',
       required: true,
       content: {
         "application/json": {
           example: {
             name: "My New Workspace",
+            similarityThreshold: 0.7,
+            openAiTemp: 0.7,
+            openAiHistory: 20,
+            openAiPrompt: "Custom prompt for responses",
+            queryRefusalResponse: "Custom refusal message",
+            chatMode: "chat",
+            topN: 4
           }
         }
       }
@@ -62,8 +69,18 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const { name = null } = reqBody(request);
-      const { workspace, message } = await Workspace.new(name);
+      const { name = null, ...additionalFields } = reqBody(request);
+      const { workspace, message } = await Workspace.new(
+        name,
+        null,
+        additionalFields
+      );
+
+      if (!workspace) {
+        response.status(400).json({ workspace: null, message });
+        return;
+      }
+
       await Telemetry.sendTelemetry("workspace_created", {
         multiUserMode: multiUserMode(response),
         LLMSelection: process.env.LLM_PROVIDER || "openai",

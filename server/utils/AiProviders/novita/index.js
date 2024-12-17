@@ -7,6 +7,9 @@ const {
 const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "novita")
@@ -188,19 +191,34 @@ class NovitaLLM {
         `Novita chat: ${this.model} is not valid for chat completion!`
       );
 
-    const result = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        temperature,
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature,
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage.prompt_tokens || 0,
+        completion_tokens: result.output.usage.completion_tokens || 0,
+        total_tokens: result.output.usage.total_tokens || 0,
+        outputTps: result.output.usage.completion_tokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -209,15 +227,25 @@ class NovitaLLM {
         `Novita chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      temperature,
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+      }),
+      messages
+    );
+    return measuredStreamRequest;
   }
 
+  /**
+   * Handles the default stream response for a chat.
+   * @param {import("express").Response} response
+   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream
+   * @param {Object} responseProps
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
     const timeoutThresholdMs = this.timeout;
     const { uuid = uuidv4(), sources = [] } = responseProps;
@@ -230,7 +258,12 @@ class NovitaLLM {
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement({
+          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+        });
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       // NOTICE: Not all Novita models will return a stop reason
@@ -259,6 +292,9 @@ class NovitaLLM {
           });
           clearInterval(timeoutCheck);
           response.removeListener("close", handleAbort);
+          stream?.endMeasurement({
+            completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+          });
           resolve(fullText);
         }
       }, 500);
@@ -291,6 +327,9 @@ class NovitaLLM {
               error: false,
             });
             response.removeListener("close", handleAbort);
+            stream?.endMeasurement({
+              completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+            });
             resolve(fullText);
           }
         }
@@ -304,6 +343,9 @@ class NovitaLLM {
           error: e.message,
         });
         response.removeListener("close", handleAbort);
+        stream?.endMeasurement({
+          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+        });
         resolve(fullText);
       }
     });
