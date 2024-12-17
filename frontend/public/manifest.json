@@ -2,7 +2,5 @@
   "name":"AnythingLLM",
   "short_name":"AnythingLLM",
   "display":"standalone",
-  "orientation":"portrait",
-  "theme_color":"#0B0C0C",
-  "background_color":"#0B0C0C"
+  "orientation":"portrait"
 }
