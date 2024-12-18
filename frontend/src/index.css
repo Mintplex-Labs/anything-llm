@@ -116,6 +116,7 @@
   border-color: var(--theme-sidebar-border);
 }
 
+
 /*
 This is to override the default border color for the select and input elements
 in the onboarding flow when the theme is not light. This only applies to the
@@ -772,6 +773,10 @@ dialog::backdrop {
 .markdown strong {
   font-weight: 600;
   color: #fff;
+}
+
+[data-theme="light"] .markdown table {
+  @apply invert;
 }
 
 .file-row:nth-child(even) {
