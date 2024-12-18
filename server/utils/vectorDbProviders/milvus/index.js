@@ -245,7 +245,7 @@ const Milvus = {
             data: chunk.map((item) => ({
               id: item.id,
               vector: item.values,
-              metadata: chunk.metadata,
+              metadata: item.metadata,
             })),
           });
 
