@@ -1,4 +1,3 @@
-const { fineTuningEndpoints } = require("./fineTuning");
 const { liveSyncEndpoints } = require("./liveSync");
 const { importedAgentPluginEndpoints } = require("./imported-agent-plugins");
 
@@ -7,7 +6,6 @@ const { importedAgentPluginEndpoints } = require("./imported-agent-plugins");
 // When a feature is promoted it should be removed from here and added to the appropriate scope.
 function experimentalEndpoints(router) {
   liveSyncEndpoints(router);
-  fineTuningEndpoints(router);
   importedAgentPluginEndpoints(router);
 }
 

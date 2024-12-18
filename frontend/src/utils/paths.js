@@ -76,9 +76,6 @@ export default {
   apiDocs: () => {
     return `${API_BASE}/docs`;
   },
-  orderFineTune: () => {
-    return `/fine-tuning`;
-  },
   settings: {
     users: () => {
       return `/settings/users`;
