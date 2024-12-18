@@ -116,6 +116,10 @@
   border-color: var(--theme-sidebar-border);
 }
 
+[data-theme="light"] table {
+  @apply invert;
+}
+
 /*
 This is to override the default border color for the select and input elements
 in the onboarding flow when the theme is not light. This only applies to the
