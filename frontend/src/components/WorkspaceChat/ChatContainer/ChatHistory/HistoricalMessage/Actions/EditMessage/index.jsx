@@ -1,5 +1,6 @@
 import { Pencil } from "@phosphor-icons/react";
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 const EDIT_EVENT = "toggle-message-edit";
 
@@ -29,6 +30,7 @@ export function useEditMessage({ chatId, role }) {
 }
 
 export function EditMessageAction({ chatId = null, role, isEditing }) {
+  const { t } = useTranslation();
   function handleEditClick() {
     window.dispatchEvent(
       new CustomEvent(EDIT_EVENT, { detail: { chatId, role } })
@@ -45,11 +47,13 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
       <button
         onClick={handleEditClick}
         data-tooltip-id="edit-input-text"
-        data-tooltip-content={`Edit ${
-          role === "user" ? "Prompt" : "Response"
-        } `}
+        data-tooltip-content={t(
+          `general.message.edit.${role === "user" ? "prompt" : "response"}`
+        )}
         className="border-none text-zinc-300"
-        aria-label={`Edit ${role === "user" ? "Prompt" : "Response"}`}
+        aria-label={t(
+          `general.message.edit.${role === "user" ? "prompt" : "response"}`
+        )}
       >
         <Pencil
           color="var(--theme-sidebar-footer-icon-fill)"
