@@ -18,15 +18,16 @@ async function loadConfluence(
     spaceKey = null,
     username = null,
     accessToken = null,
+    personalAccessToken = null,
     cloud = true,
   },
   response
 ) {
-  if (!baseUrl || !spaceKey || !username || !accessToken) {
+  if (!accessToken && !personalAccessToken || accessToken && !username || personalAccessToken && username) {
     return {
       success: false,
       reason:
-        "You need either a username and access token, or a personal access token (PAT), to use the Confluence connector.",
+        "You need either a username and access token, or only a personal access token (PAT), to use the Confluence connector.",
     };
   }
 
@@ -51,6 +52,7 @@ async function loadConfluence(
     spaceKey,
     username,
     accessToken,
+    personalAccessToken,
     cloud,
   });
 
@@ -98,7 +100,7 @@ async function loadConfluence(
       description: doc.metadata.title,
       docSource: `${origin} Confluence`,
       chunkSource: generateChunkSource(
-        { doc, baseUrl: origin, spaceKey, accessToken, username, cloud },
+        { doc, baseUrl: origin, spaceKey, accessToken, personalAccessToken, username, cloud },
         response.locals.encryptionWorker
       ),
       published: new Date().toLocaleString(),
@@ -137,14 +139,14 @@ async function fetchConfluencePage({
   spaceKey,
   username,
   accessToken,
+  personalAccessToken,
   cloud = true,
 }) {
-  if (!pageUrl || !baseUrl || !spaceKey || !username || !accessToken) {
+  if (!accessToken && !personalAccessToken || accessToken && !username || personalAccessToken && username) {
     return {
       success: false,
-      content: null,
       reason:
-        "You need either a username and access token, or a personal access token (PAT), to use the Confluence connector.",
+        "You need either a username and access token, or only a personal access token (PAT), to use the Confluence connector.",
     };
   }
 
@@ -170,6 +172,7 @@ async function fetchConfluencePage({
     spaceKey,
     username,
     accessToken,
+    personalAccessToken,
     cloud,
   });
 
@@ -234,9 +237,12 @@ function validBaseUrl(baseUrl) {
  * @returns {string}
  */
 function generateChunkSource(
-  { doc, baseUrl, spaceKey, accessToken, username, cloud },
+  { doc, baseUrl, spaceKey, accessToken, personalAccessToken, username, cloud },
   encryptionWorker
 ) {
+  if (personalAccessToken) {
+    accessToken = personalAccessToken;
+  }
   const payload = {
     baseUrl,
     spaceKey,
