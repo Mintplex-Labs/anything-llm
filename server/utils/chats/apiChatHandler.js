@@ -572,7 +572,7 @@ async function streamChat({
     console.log(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
-    const { textResponse, metrics: performanceMetrics } =
+    const { textResponse, citations = [], metrics: performanceMetrics } =
       await LLMConnector.getChatCompletion(messages, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
@@ -581,6 +581,7 @@ async function streamChat({
     writeResponseChunk(response, {
       uuid,
       sources,
+      citations,
       type: "textResponseChunk",
       textResponse: completeText,
       close: true,
@@ -594,6 +595,7 @@ async function streamChat({
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
       sources,
+      citations: stream.citations || [],
     });
     metrics = stream.metrics;
   }
@@ -602,7 +604,13 @@ async function streamChat({
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: message,
-      response: { text: completeText, sources, type: chatMode, metrics },
+      response: {
+        text: completeText,
+        sources,
+        citations: stream?.citations || [],
+        type: chatMode,
+        metrics
+      },
       threadId: thread?.id || null,
       apiSessionId: sessionId,
       user,
@@ -614,6 +622,7 @@ async function streamChat({
       close: true,
       error: false,
       chatId: chat.id,
+      citations: stream?.citations || [],
       metrics,
     });
     return;

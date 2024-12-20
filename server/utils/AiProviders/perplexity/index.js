@@ -52,7 +52,8 @@ class PerplexityLLM {
   }
 
   streamingEnabled() {
-    return "streamGetChatCompletion" in this;
+    // return "streamGetChatCompletion" in this;
+    return false;
   }
 
   static promptWindowLimit(modelName) {
@@ -107,8 +108,11 @@ class PerplexityLLM {
     )
       return null;
 
+    console.log("Perplexity Citations:", result.output.citations);
+
     return {
       textResponse: result.output.choices[0].message.content,
+      citations: result.output.citations || [],
       metrics: {
         prompt_tokens: result.output.usage?.prompt_tokens || 0,
         completion_tokens: result.output.usage?.completion_tokens || 0,
@@ -134,10 +138,41 @@ class PerplexityLLM {
       }),
       messages
     );
+
+    // Store citations in the stream object so they can be accessed later
+    measuredStreamRequest.citations = [];
+    const originalStream = measuredStreamRequest.stream;
+    measuredStreamRequest.stream = async function* () {
+      try {
+        for await (const chunk of originalStream) {
+          // Debug the raw chunk to see what we're getting
+          console.log("Perplexity Stream Chunk:", JSON.stringify(chunk, null, 2));
+
+          // Check if citations exist in the chunk or its choices
+          if (chunk.citations) {
+            console.log("Found citations in chunk:", chunk.citations);
+            measuredStreamRequest.citations = chunk.citations;
+          } else if (chunk.choices?.[0]?.delta?.citations) {
+            console.log("Found citations in delta:", chunk.choices[0].delta.citations);
+            measuredStreamRequest.citations = chunk.choices[0].delta.citations;
+          }
+          yield chunk;
+        }
+      } catch (error) {
+        console.error("Error in stream processing:", error);
+        throw error;
+      }
+    }();
+
     return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {
+    // Store citations in responseProps so they get passed to the response chunks
+    if (stream.citations && stream.citations.length > 0) {
+      console.log("Perplexity handleStream Citations:", stream.citations);
+      responseProps.citations = stream.citations;
+    }
     return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 

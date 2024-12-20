@@ -17,7 +17,7 @@ function clientAbortedHandler(resolve, fullText) {
  * @returns {Promise<string>}
  */
 function handleDefaultStreamResponseV2(response, stream, responseProps) {
-  const { uuid = uuidv4(), sources = [] } = responseProps;
+  const { uuid = uuidv4(), sources = [], citations = [] } = responseProps;
 
   // Why are we doing this?
   // OpenAI do enable the usage metrics in the stream response but:
@@ -76,6 +76,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
           writeResponseChunk(response, {
             uuid,
             sources: [],
+            citations,
             type: "textResponseChunk",
             textResponse: token,
             close: false,
@@ -93,6 +94,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
           writeResponseChunk(response, {
             uuid,
             sources,
+            citations,
             type: "textResponseChunk",
             textResponse: "",
             close: true,
@@ -111,6 +113,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         type: "abort",
         textResponse: null,
         sources: [],
+        citations: [],
         close: true,
         error: e.message,
       });
