@@ -952,7 +952,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/custom-models",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { provider, apiKey = null, basePath = null } = reqBody(request);
