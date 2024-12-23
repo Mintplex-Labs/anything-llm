@@ -31,12 +31,14 @@ function apiWorkspaceThreadEndpoints(app) {
           type: 'string'
       }
       #swagger.requestBody = {
-        description: 'Optional userId associated with the thread',
+        description: 'Optional userId associated with the thread, thread slug and thread name',
         required: false,
         content: {
           "application/json": {
             example: {
-              userId: 1
+              userId: 1,
+              name: 'Name',
+              slug: 'thread-slug'
             }
           }
         }
@@ -67,9 +69,9 @@ function apiWorkspaceThreadEndpoints(app) {
       }
       */
       try {
-        const { slug } = request.params;
-        let { userId = null } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const wslug = request.params.slug;
+        let { userId = null, name = null, slug = null } = reqBody(request);
+        const workspace = await Workspace.get({ slug: wslug });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -83,7 +85,8 @@ function apiWorkspaceThreadEndpoints(app) {
 
         const { thread, message } = await WorkspaceThread.new(
           workspace,
-          userId ? Number(userId) : null
+          userId ? Number(userId) : null,
+          { name, slug }
         );
 
         await Telemetry.sendTelemetry("workspace_thread_created", {

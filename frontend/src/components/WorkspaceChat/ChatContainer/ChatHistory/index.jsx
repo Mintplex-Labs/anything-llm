@@ -11,6 +11,7 @@ import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
+import useTextSize from "@/hooks/useTextSize";
 
 export default function ChatHistory({
   history = [],
@@ -26,39 +27,10 @@ export default function ChatHistory({
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
-  const [textSize, setTextSize] = useState("normal");
   const [isUserScrolling, setIsUserScrolling] = useState(false);
-  const showScrollbar = Appearance.getSettings()?.showScrollbar || false;
   const isStreaming = history[history.length - 1]?.animate;
-
-  const getTextSizeClass = (size) => {
-    switch (size) {
-      case "small":
-        return "text-[12px]";
-      case "large":
-        return "text-[18px]";
-      default:
-        return "text-[14px]";
-    }
-  };
-
-  useEffect(() => {
-    const storedTextSize = window.localStorage.getItem("anythingllm_text_size");
-    if (storedTextSize) {
-      setTextSize(getTextSizeClass(storedTextSize));
-    }
-
-    const handleTextSizeChange = (event) => {
-      const size = event.detail;
-      setTextSize(getTextSizeClass(size));
-    };
-
-    window.addEventListener("textSizeChange", handleTextSizeChange);
-
-    return () => {
-      window.removeEventListener("textSizeChange", handleTextSizeChange);
-    };
-  }, []);
+  const { showScrollbar } = Appearance.getSettings();
+  const { textSizeClass } = useTextSize();
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -204,8 +176,8 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`markdown text-white/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
-        showScrollbar ? "" : "no-scroll"
+      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
+        showScrollbar ? "show-scrollbar" : "no-scroll"
       }`}
       id="chat-history"
       ref={chatHistoryRef}
@@ -255,6 +227,7 @@ export default function ChatHistory({
             isLastMessage={isLastBotReply}
             saveEditedMessage={saveEditedMessage}
             forkThread={forkThread}
+            metrics={props.metrics}
           />
         );
       })}
@@ -299,11 +272,11 @@ function StatusResponse({ props }) {
 function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
   if (suggestions.length === 0) return null;
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-white/60 text-xs mt-10 w-full justify-center">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-theme-text-primary text-xs mt-10 w-full justify-center">
       {suggestions.map((suggestion, index) => (
         <button
           key={index}
-          className="text-left p-2.5 border rounded-xl border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient"
+          className="text-left p-2.5 rounded-xl bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover border border-theme-border"
           onClick={() => sendSuggestion(suggestion.heading, suggestion.message)}
         >
           <p className="font-semibold">{suggestion.heading}</p>

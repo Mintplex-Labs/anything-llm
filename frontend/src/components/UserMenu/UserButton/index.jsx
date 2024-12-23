@@ -54,12 +54,12 @@ export default function UserButton() {
 
   if (mode === null) return null;
   return (
-    <div className="absolute top-3 right-4 md:top-9 md:right-10 w-fit h-fit z-99">
+    <div className="absolute top-3 right-4 md:top-9 md:right-10 w-fit h-fit z-40">
       <button
         ref={buttonRef}
         onClick={() => setShowMenu(!showMenu)}
         type="button"
-        className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient justify-center text-white p-2 hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+        className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover justify-center text-white p-2 hover:border-slate-100 hover:border-opacity-50 border-transparent border"
       >
         {mode === "multi" ? <UserDisplay /> : <Person size={14} />}
       </button>
@@ -67,20 +67,20 @@ export default function UserButton() {
       {showMenu && (
         <div
           ref={menuRef}
-          className="w-fit rounded-lg absolute top-12 right-0 bg-sidebar p-4 flex items-center-justify-center"
+          className="w-fit rounded-lg absolute top-12 right-0 bg-theme-action-menu-bg p-2 flex items-center-justify-center"
         >
           <div className="flex flex-col gap-y-2">
             {mode === "multi" && !!user && (
               <button
                 onClick={handleOpenAccountModal}
-                className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+                className="border-none text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
               >
                 Account
               </button>
             )}
             <a
               href={supportEmail}
-              className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+              className="text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
             >
               Support
             </a>
@@ -92,7 +92,7 @@ export default function UserButton() {
                 window.location.replace(paths.home());
               }}
               type="button"
-              className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+              className="text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
             >
               Sign out
             </button>

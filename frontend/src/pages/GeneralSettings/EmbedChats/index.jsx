@@ -11,6 +11,7 @@ import { CaretDown, Download } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { saveAs } from "file-saver";
 import System from "@/models/system";
+import { CanViewChatHistory } from "@/components/CanViewChatHistory";
 
 const exportOptions = {
   csv: {
@@ -88,17 +89,54 @@ export default function EmbedChats() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      <Sidebar />
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
-      >
-        <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
-            <div className="flex gap-x-4 items-center">
-              <p className="text-lg leading-6 font-bold text-white">
-                {t("embed-chats.title")}
+    <CanViewChatHistory>
+      <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+        <Sidebar />
+        <div
+          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+        >
+          <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
+            <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
+              <div className="flex flex-wrap gap-4 items-center">
+                <p className="text-lg leading-6 font-bold text-theme-text-primary">
+                  {t("embed-chats.title")}
+                </p>
+                <div className="relative">
+                  <button
+                    ref={openMenuButton}
+                    onClick={toggleMenu}
+                    className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:light:bg-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  >
+                    <Download size={18} weight="bold" />
+                    {t("embed-chats.export")}
+                    <CaretDown size={18} weight="bold" />
+                  </button>
+                  <div
+                    ref={menuRef}
+                    className={`${
+                      showMenu ? "slide-down" : "slide-up hidden"
+                    } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary light:bg-theme-bg-secondary mt-2 shadow-md`}
+                  >
+                    <div className="py-2">
+                      {Object.entries(exportOptions).map(([key, data]) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            handleDumpChats(key);
+                            setShowMenu(false);
+                          }}
+                          className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
+                        >
+                          {data.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
+                {t("embed-chats.description")}
               </p>
               <div className="relative">
                 <button
@@ -133,14 +171,13 @@ export default function EmbedChats() {
                 </div>
               </div>
             </div>
-            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              {t("embed-chats.description")}
-            </p>
+            <div className="overflow-x-auto mt-6">
+              <ChatsContainer />
+            </div>
           </div>
-          <ChatsContainer />
         </div>
       </div>
-    </div>
+    </CanViewChatHistory>
   );
 }
 
@@ -178,10 +215,10 @@ function ChatsContainer() {
       <Skeleton.default
         height="80vh"
         width="100%"
-        highlightColor="#3D4147"
-        baseColor="#2C2F35"
+        highlightColor="var(--theme-bg-primary)"
+        baseColor="var(--theme-bg-secondary)"
         count={1}
-        className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm"
         containerClassName="flex w-full"
       />
     );
@@ -189,8 +226,8 @@ function ChatsContainer() {
 
   return (
     <>
-      <table className="w-full text-sm text-left rounded-lg mt-5">
-        <thead className="text-white text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
+      <table className="w-full text-sm text-left rounded-lg min-w-[640px] border-spacing-0">
+        <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
               {t("embed-chats.table.embed")}
@@ -219,10 +256,10 @@ function ChatsContainer() {
             ))}
         </tbody>
       </table>
-      <div className="flex w-full justify-between items-center">
+      <div className="flex w-full justify-between items-center mt-6">
         <button
           onClick={handlePrevious}
-          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
+          className="px-4 py-2 rounded-lg border border-theme-text-secondary text-theme-text-secondary text-sm items-center flex gap-x-2 hover:bg-theme-text-secondary hover:text-theme-bg-secondary disabled:invisible"
           disabled={offset === 0}
         >
           {" "}
@@ -230,7 +267,7 @@ function ChatsContainer() {
         </button>
         <button
           onClick={handleNext}
-          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
+          className="px-4 py-2 rounded-lg border border-theme-text-secondary text-theme-text-secondary text-sm items-center flex gap-x-2 hover:bg-theme-text-secondary hover:text-theme-bg-secondary disabled:invisible"
           disabled={!canNext}
         >
           {t("common.next")}

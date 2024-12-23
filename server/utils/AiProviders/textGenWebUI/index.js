@@ -2,6 +2,9 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 class TextGenWebUILLM {
   constructor(embedder = null) {
@@ -119,29 +122,47 @@ class TextGenWebUILLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const result = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        temperature,
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature,
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage?.prompt_tokens || 0,
+        completion_tokens: result.output.usage?.completion_tokens || 0,
+        total_tokens: result.output.usage?.total_tokens || 0,
+        outputTps: result.output.usage?.completion_tokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      temperature,
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+      }),
+      messages
+    );
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {

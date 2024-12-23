@@ -3,7 +3,6 @@ import BrowserExtensionApiKey from "@/models/browserExtensionApiKey";
 import showToast from "@/utils/toast";
 import { Trash, Copy, Check, Plug } from "@phosphor-icons/react";
 import { POPUP_BROWSER_EXTENSION_EVENT } from "@/utils/constants";
-import { Tooltip } from "react-tooltip";
 
 export default function BrowserExtensionApiKeyRow({
   apiKey,
@@ -66,36 +65,24 @@ export default function BrowserExtensionApiKeyRow({
         <div className="flex items-center space-x-2">
           <button
             onClick={handleCopy}
-            data-tooltip-id={`copy-connection-text-${apiKey.id}`}
+            data-tooltip-id="copy-connection-text"
             data-tooltip-content="Copy connection string"
-            className="text-white hover:text-white/80 transition-colors duration-200 p-1 rounded"
+            className="border-none text-theme-text-primary hover:text-theme-text-secondary transition-colors duration-200 p-1 rounded"
           >
             {copied ? (
               <Check className="h-5 w-5 text-green-500" />
             ) : (
               <Copy className="h-5 w-5" />
             )}
-            <Tooltip
-              id={`copy-connection-text-${apiKey.id}`}
-              place="bottom"
-              delayShow={300}
-              className="allm-tooltip !allm-text-xs"
-            />
           </button>
 
           <button
             onClick={handleConnect}
-            data-tooltip-id={`auto-connection-${apiKey.id}`}
+            data-tooltip-id="auto-connection"
             data-tooltip-content="Automatically connect to extension"
-            className="text-white hover:text-white/80 transition-colors duration-200 p-1 rounded"
+            className="border-none text-theme-text-primary hover:text-theme-text-secondary transition-colors duration-200 p-1 rounded"
           >
             <Plug className="h-5 w-5" />
-            <Tooltip
-              id={`auto-connection-${apiKey.id}`}
-              place="bottom"
-              delayShow={300}
-              className="allm-tooltip !allm-text-xs"
-            />
           </button>
         </div>
       </td>
@@ -110,7 +97,7 @@ export default function BrowserExtensionApiKeyRow({
       <td className="px-6 py-4">
         <button
           onClick={handleRevoke}
-          className="font-medium px-2 py-1 rounded-lg hover:bg-sidebar-gradient text-white hover:text-white/80 hover:bg-opacity-20"
+          className="border-none font-medium px-2 py-1 rounded-lg text-theme-text-primary hover:text-red-500"
         >
           <Trash className="h-5 w-5" />
         </button>

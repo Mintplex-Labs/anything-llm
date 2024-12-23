@@ -13,7 +13,8 @@ const PromptReply = ({
   sources = [],
   closed = true,
 }) => {
-  const assistantBackgroundColor = "bg-historical-msg-system";
+  const assistantBackgroundColor = "bg-theme-bg-chat";
+
   if (!reply && sources.length === 0 && !pending && !error) return null;
 
   if (pending) {
@@ -24,7 +25,7 @@ const PromptReply = ({
         <div className="py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
           <div className="flex gap-x-5">
             <WorkspaceProfileImage workspace={workspace} />
-            <div className="mt-3 ml-5 dot-falling"></div>
+            <div className="mt-3 ml-5 dot-falling light:invert"></div>
           </div>
         </div>
       </div>
@@ -57,11 +58,11 @@ const PromptReply = ({
       key={uuid}
       className={`flex justify-center items-end w-full ${assistantBackgroundColor}`}
     >
-      <div className="py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
+      <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <WorkspaceProfileImage workspace={workspace} />
           <span
-            className={`reply flex flex-col gap-y-1 mt-2`}
+            className={`overflow-x-scroll break-words no-scroll`}
             dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
           />
         </div>

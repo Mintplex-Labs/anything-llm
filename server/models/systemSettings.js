@@ -14,10 +14,8 @@ function isNullOrNaN(value) {
 }
 
 const SystemSettings = {
-  protectedFields: ["multi_user_mode"],
+  protectedFields: ["multi_user_mode", "hub_api_key"],
   publicFields: [
-    "limit_user_messages",
-    "message_limit",
     "footer_data",
     "support_email",
     "text_splitter_chunk_size",
@@ -33,8 +31,6 @@ const SystemSettings = {
     "meta_page_favicon",
   ],
   supportedFields: [
-    "limit_user_messages",
-    "message_limit",
     "logo_filename",
     "telemetry_id",
     "footer_data",
@@ -53,6 +49,9 @@ const SystemSettings = {
 
     // beta feature flags
     "experimental_live_file_sync",
+
+    // Hub settings
+    "hub_api_key",
   ],
   validations: {
     footer_data: (updates) => {
@@ -104,6 +103,7 @@ const SystemSettings = {
             "serply-engine",
             "searxng-engine",
             "tavily-search",
+            "duckduckgo-engine",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -168,6 +168,10 @@ const SystemSettings = {
         new MetaGenerator().clearConfig();
       }
     },
+    hub_api_key: (apiKey) => {
+      if (!apiKey) return null;
+      return String(apiKey);
+    },
   },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
@@ -196,6 +200,8 @@ const SystemSettings = {
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
+      GenericOpenAiEmbeddingMaxConcurrentChunks:
+        process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
 
       // --------------------------------------------------------
       // Azure Providers
@@ -233,12 +239,18 @@ const SystemSettings = {
       TextToSpeechProvider: process.env.TTS_PROVIDER || "native",
       TTSOpenAIKey: !!process.env.TTS_OPEN_AI_KEY,
       TTSOpenAIVoiceModel: process.env.TTS_OPEN_AI_VOICE_MODEL,
+
       // Eleven Labs TTS
       TTSElevenLabsKey: !!process.env.TTS_ELEVEN_LABS_KEY,
       TTSElevenLabsVoiceModel: process.env.TTS_ELEVEN_LABS_VOICE_MODEL,
       // Piper TTS
       TTSPiperTTSVoiceModel:
         process.env.TTS_PIPER_VOICE_MODEL ?? "en_US-hfc_female-medium",
+      // OpenAI Generic TTS
+      TTSOpenAICompatibleKey: !!process.env.TTS_OPEN_AI_COMPATIBLE_KEY,
+      TTSOpenAICompatibleVoiceModel:
+        process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
+      TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
 
       // --------------------------------------------------------
       // Agent Settings & Configs
@@ -252,6 +264,13 @@ const SystemSettings = {
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
+
+      // --------------------------------------------------------
+      // Compliance Settings
+      // --------------------------------------------------------
+      // Disable View Chat History for the whole instance.
+      DisableViewChatHistory:
+        "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
     };
   },
 
@@ -447,6 +466,11 @@ const SystemSettings = {
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
       OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
 
+      // Novita LLM Keys
+      NovitaLLMApiKey: !!process.env.NOVITA_LLM_API_KEY,
+      NovitaLLMModelPref: process.env.NOVITA_LLM_MODEL_PREF,
+      NovitaLLMTimeout: process.env.NOVITA_LLM_TIMEOUT_MS,
+
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
@@ -504,8 +528,11 @@ const SystemSettings = {
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
       GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
 
+      AwsBedrockLLMConnectionMethod:
+        process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam",
       AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
       AwsBedrockLLMAccessKey: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+      AwsBedrockLLMSessionToken: !!process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
       AwsBedrockLLMRegion: process.env.AWS_BEDROCK_LLM_REGION,
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
       AwsBedrockLLMTokenLimit: process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT,
@@ -520,6 +547,19 @@ const SystemSettings = {
       // DeepSeek API Keys
       DeepSeekApiKey: !!process.env.DEEPSEEK_API_KEY,
       DeepSeekModelPref: process.env.DEEPSEEK_MODEL_PREF,
+
+      // APIPie LLM API Keys
+      ApipieLLMApiKey: !!process.env.APIPIE_LLM_API_KEY,
+      ApipieLLMModelPref: process.env.APIPIE_LLM_MODEL_PREF,
+
+      // xAI LLM API Keys
+      XAIApiKey: !!process.env.XAI_LLM_API_KEY,
+      XAIModelPref: process.env.XAI_LLM_MODEL_PREF,
+
+      // Nvidia NIM Keys
+      NvidiaNimLLMBasePath: process.env.NVIDIA_NIM_LLM_BASE_PATH,
+      NvidiaNimLLMModelPref: process.env.NVIDIA_NIM_LLM_MODEL_PREF,
+      NvidiaNimLLMTokenLimit: process.env.NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT,
     };
   },
 
@@ -542,6 +582,22 @@ const SystemSettings = {
         (await SystemSettings.get({ label: "experimental_live_file_sync" }))
           ?.value === "enabled",
     };
+  },
+
+  /**
+   * Get user configured Community Hub Settings
+   * Connection key is used to authenticate with the Community Hub API
+   * for your account.
+   * @returns {Promise<{connectionKey: string}>}
+   */
+  hubSettings: async function () {
+    try {
+      const hubKey = await this.get({ label: "hub_api_key" });
+      return { connectionKey: hubKey?.value || null };
+    } catch (error) {
+      console.error(error.message);
+      return { connectionKey: null };
+    }
   },
 };
 

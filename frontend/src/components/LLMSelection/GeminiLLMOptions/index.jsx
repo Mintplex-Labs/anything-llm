@@ -1,4 +1,10 @@
+import System from "@/models/system";
+import { useEffect, useState } from "react";
+
 export default function GeminiLLMOptions({ settings }) {
+  const [inputValue, setInputValue] = useState(settings?.GeminiLLMApiKey);
+  const [geminiApiKey, setGeminiApiKey] = useState(settings?.GeminiLLMApiKey);
+
   return (
     <div className="w-full flex flex-col">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
@@ -9,57 +15,20 @@ export default function GeminiLLMOptions({ settings }) {
           <input
             type="password"
             name="GeminiLLMApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Google Gemini API Key"
             defaultValue={settings?.GeminiLLMApiKey ? "*".repeat(20) : ""}
             required={true}
             autoComplete="off"
             spellCheck={false}
+            onChange={(e) => setInputValue(e.target.value)}
+            onBlur={() => setGeminiApiKey(inputValue)}
           />
         </div>
 
         {!settings?.credentialsOnly && (
           <>
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-3">
-                Chat Model Selection
-              </label>
-              <select
-                name="GeminiLLMModelPref"
-                defaultValue={settings?.GeminiLLMModelPref || "gemini-pro"}
-                required={true}
-                className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
-              >
-                <optgroup label="Stable Models">
-                  {[
-                    "gemini-pro",
-                    "gemini-1.0-pro",
-                    "gemini-1.5-pro-latest",
-                    "gemini-1.5-flash-latest",
-                  ].map((model) => {
-                    return (
-                      <option key={model} value={model}>
-                        {model}
-                      </option>
-                    );
-                  })}
-                </optgroup>
-                <optgroup label="Experimental Models">
-                  {[
-                    "gemini-1.5-pro-exp-0801",
-                    "gemini-1.5-pro-exp-0827",
-                    "gemini-1.5-flash-exp-0827",
-                    "gemini-1.5-flash-8b-exp-0827",
-                  ].map((model) => {
-                    return (
-                      <option key={model} value={model}>
-                        {model}
-                      </option>
-                    );
-                  })}
-                </optgroup>
-              </select>
-            </div>
+            <GeminiModelSelection apiKey={geminiApiKey} settings={settings} />
             <div className="flex flex-col w-60">
               <label className="text-white text-sm font-semibold block mb-3">
                 Safety Setting
@@ -70,7 +39,7 @@ export default function GeminiLLMOptions({ settings }) {
                   settings?.GeminiSafetySetting || "BLOCK_MEDIUM_AND_ABOVE"
                 }
                 required={true}
-                className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
               >
                 <option value="BLOCK_NONE">None</option>
                 <option value="BLOCK_ONLY_HIGH">Block few</option>
@@ -83,6 +52,82 @@ export default function GeminiLLMOptions({ settings }) {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+function GeminiModelSelection({ apiKey, settings }) {
+  const [groupedModels, setGroupedModels] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function findCustomModels() {
+      setLoading(true);
+      const { models } = await System.customModels("gemini", apiKey);
+
+      if (models?.length > 0) {
+        const modelsByOrganization = models.reduce((acc, model) => {
+          acc[model.experimental ? "Experimental" : "Stable"] =
+            acc[model.experimental ? "Experimental" : "Stable"] || [];
+          acc[model.experimental ? "Experimental" : "Stable"].push(model);
+          return acc;
+        }, {});
+        setGroupedModels(modelsByOrganization);
+      }
+      setLoading(false);
+    }
+    findCustomModels();
+  }, [apiKey]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col w-60">
+        <label className="text-white text-sm font-semibold block mb-3">
+          Chat Model Selection
+        </label>
+        <select
+          name="GeminiLLMModelPref"
+          disabled={true}
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        >
+          <option disabled={true} selected={true}>
+            -- loading available models --
+          </option>
+        </select>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col w-60">
+      <label className="text-white text-sm font-semibold block mb-3">
+        Chat Model Selection
+      </label>
+      <select
+        name="GeminiLLMModelPref"
+        required={true}
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+      >
+        {Object.keys(groupedModels)
+          .sort((a, b) => {
+            if (a === "Stable") return -1;
+            if (b === "Stable") return 1;
+            return a.localeCompare(b);
+          })
+          .map((organization) => (
+            <optgroup key={organization} label={organization}>
+              {groupedModels[organization].map((model) => (
+                <option
+                  key={model.id}
+                  value={model.id}
+                  selected={settings?.GeminiLLMModelPref === model.id}
+                >
+                  {model.name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+      </select>
     </div>
   );
 }

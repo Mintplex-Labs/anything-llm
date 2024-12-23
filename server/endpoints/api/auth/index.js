@@ -122,7 +122,7 @@ function apiAuthEndpoints(app) {
       }
 
       let user = await User.get({ username: String(username) });
-
+      
       if (!user) {
         const { user: newUser, error } = await User.createWithAzureAuthProviders({
           username: String(username),

@@ -4,9 +4,26 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 // Docs: https://js.langchain.com/v0.2/docs/integrations/chat/bedrock_converse
 class AWSBedrockLLM {
+  /**
+   * These models do not support system prompts
+   * It is not explicitly stated but it is observed that they do not use the system prompt
+   * in their responses and will crash when a system prompt is provided.
+   * We can add more models to this list as we discover them or new models are added.
+   * We may want to extend this list or make a user-config if using custom bedrock models.
+   */
+  noSystemPromptModels = [
+    "amazon.titan-text-express-v1",
+    "amazon.titan-text-lite-v1",
+    "cohere.command-text-v14",
+    "cohere.command-light-text-v14",
+  ];
+
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID)
       throw new Error("No AWS Bedrock LLM profile id was set.");
@@ -16,6 +33,14 @@ class AWSBedrockLLM {
 
     if (!process.env.AWS_BEDROCK_LLM_REGION)
       throw new Error("No AWS Bedrock LLM region was set.");
+
+    if (
+      process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD === "sessionToken" &&
+      !process.env.AWS_BEDROCK_LLM_SESSION_TOKEN
+    )
+      throw new Error(
+        "No AWS Bedrock LLM session token was set while using session token as the authentication method."
+      );
 
     this.model =
       modelPreference || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
@@ -27,23 +52,40 @@ class AWSBedrockLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.#log(
+      `Loaded with model: ${this.model}. Will communicate with AWS Bedrock using ${this.authMethod} authentication.`
+    );
+  }
+
+  /**
+   * Get the authentication method for the AWS Bedrock LLM.
+   * There are only two valid values for this setting - anything else will default to "iam".
+   * @returns {"iam"|"sessionToken"}
+   */
+  get authMethod() {
+    const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
+    if (!["iam", "sessionToken"].includes(method)) return "iam";
+    return method;
   }
 
   #bedrockClient({ temperature = 0.7 }) {
     const { ChatBedrockConverse } = require("@langchain/aws");
     return new ChatBedrockConverse({
-      model: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
+      model: this.model,
       region: process.env.AWS_BEDROCK_LLM_REGION,
       credentials: {
         accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+        ...(this.authMethod === "sessionToken"
+          ? { sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN }
+          : {}),
       },
       temperature,
     });
   }
 
   // For streaming we use Langchain's wrapper to handle weird chunks
-  // or otherwise absorb headaches that can arise from Ollama models
+  // or otherwise absorb headaches that can arise from Bedrock models
   #convertToLangchainPrototypes(chats = []) {
     const {
       HumanMessage,
@@ -59,6 +101,22 @@ class AWSBedrockLLM {
 
     for (const chat of chats) {
       if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
+
+      // When a model does not support system prompts, we need to handle it.
+      // We will add a new message that simulates the system prompt via a user message and AI response.
+      // This will allow the model to respond without crashing but we can still inject context.
+      if (
+        this.noSystemPromptModels.includes(this.model) &&
+        chat.role === "system"
+      ) {
+        this.#log(
+          `Model does not support system prompts! Simulating system prompt via Human/AI message pairs.`
+        );
+        langchainChats.push(new HumanMessage({ content: chat.content }));
+        langchainChats.push(new AIMessage({ content: "Okay." }));
+        continue;
+      }
+
       const MessageClass = roleToMessageMap[chat.role];
       langchainChats.push(new MessageClass({ content: chat.content }));
     }
@@ -76,6 +134,10 @@ class AWSBedrockLLM {
         })
         .join("")
     );
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[AWSBedrock]\x1b[0m ${text}`, ...args);
   }
 
   streamingEnabled() {
@@ -160,40 +222,73 @@ class AWSBedrockLLM {
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const model = this.#bedrockClient({ temperature });
-    const textResponse = await model
-      .pipe(new StringOutputParser())
-      .invoke(this.#convertToLangchainPrototypes(messages))
-      .catch((e) => {
-        throw new Error(
-          `AWSBedrock::getChatCompletion failed to communicate with Ollama. ${e.message}`
-        );
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      model
+        .pipe(new StringOutputParser())
+        .invoke(this.#convertToLangchainPrototypes(messages))
+        .catch((e) => {
+          throw new Error(
+            `AWSBedrock::getChatCompletion failed to communicate with Bedrock client. ${e.message}`
+          );
+        })
+    );
 
-    if (!textResponse || !textResponse.length)
-      throw new Error(`AWSBedrock::getChatCompletion text response was empty.`);
+    if (!result.output || result.output.length === 0) return null;
 
-    return textResponse;
+    // Langchain does not return the usage metrics in the response so we estimate them
+    const promptTokens = LLMPerformanceMonitor.countTokens(messages);
+    const completionTokens = LLMPerformanceMonitor.countTokens([
+      { content: result.output },
+    ]);
+
+    return {
+      textResponse: result.output,
+      metrics: {
+        prompt_tokens: promptTokens,
+        completion_tokens: completionTokens,
+        total_tokens: promptTokens + completionTokens,
+        outputTps: completionTokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     const model = this.#bedrockClient({ temperature });
-    const stream = await model
-      .pipe(new StringOutputParser())
-      .stream(this.#convertToLangchainPrototypes(messages));
-    return stream;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      model
+        .pipe(new StringOutputParser())
+        .stream(this.#convertToLangchainPrototypes(messages)),
+      messages
+    );
+    return measuredStreamRequest;
   }
 
+  /**
+   * Handles the stream response from the AWS Bedrock API.
+   * Bedrock does not support usage metrics in the stream response so we need to estimate them.
+   * @param {Object} response - the response object
+   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream - the stream response from the AWS Bedrock API w/tracking
+   * @param {Object} responseProps - the response properties
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      let usage = {
+        completion_tokens: 0,
+      };
 
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement(usage);
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       try {
@@ -207,6 +302,7 @@ class AWSBedrockLLM {
             ? chunk.content
             : chunk;
           fullText += content;
+          if (!!content) usage.completion_tokens++; // Dont count empty chunks
           writeResponseChunk(response, {
             uuid,
             sources: [],
@@ -226,6 +322,7 @@ class AWSBedrockLLM {
           error: false,
         });
         response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
         resolve(fullText);
       } catch (error) {
         writeResponseChunk(response, {
@@ -239,6 +336,7 @@ class AWSBedrockLLM {
           }`,
         });
         response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
       }
     });
   }

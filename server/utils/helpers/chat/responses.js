@@ -9,8 +9,28 @@ function clientAbortedHandler(resolve, fullText) {
   return;
 }
 
+/**
+ * Handles the default stream response for a chat.
+ * @param {import("express").Response} response
+ * @param {import('./LLMPerformanceMonitor').MonitoredStream} stream
+ * @param {Object} responseProps
+ * @returns {Promise<string>}
+ */
 function handleDefaultStreamResponseV2(response, stream, responseProps) {
   const { uuid = uuidv4(), sources = [] } = responseProps;
+
+  // Why are we doing this?
+  // OpenAI do enable the usage metrics in the stream response but:
+  // 1. This parameter is not available in our current API version (TODO: update)
+  // 2. The usage metrics are not available in _every_ provider that uses this function
+  // 3. We need to track the usage metrics for every provider that uses this function - not just OpenAI
+  // Other keys are added by the LLMPerformanceMonitor.measureStream method
+  let hasUsageMetrics = false;
+  let usage = {
+    // prompt_tokens can be in this object if the provider supports it - otherwise we manually count it
+    // When the stream is created in the LLMProviders `streamGetChatCompletion` `LLMPerformanceMonitor.measureStream` call.
+    completion_tokens: 0,
+  };
 
   return new Promise(async (resolve) => {
     let fullText = "";
@@ -19,7 +39,10 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
     // in case things go sideways or the user does not like the response.
     // We preserve the generated text but continue as if chat was completed
     // to preserve previously generated content.
-    const handleAbort = () => clientAbortedHandler(resolve, fullText);
+    const handleAbort = () => {
+      stream?.endMeasurement(usage);
+      clientAbortedHandler(resolve, fullText);
+    };
     response.on("close", handleAbort);
 
     // Now handle the chunks from the streamed response and append to fullText.
@@ -28,8 +51,28 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         const message = chunk?.choices?.[0];
         const token = message?.delta?.content;
 
+        // If we see usage metrics in the chunk, we can use them directly
+        // instead of estimating them, but we only want to assign values if
+        // the response object is the exact same key:value pair we expect.
+        if (
+          chunk.hasOwnProperty("usage") && // exists
+          !!chunk.usage && // is not null
+          Object.values(chunk.usage).length > 0 // has values
+        ) {
+          if (chunk.usage.hasOwnProperty("prompt_tokens")) {
+            usage.prompt_tokens = Number(chunk.usage.prompt_tokens);
+          }
+
+          if (chunk.usage.hasOwnProperty("completion_tokens")) {
+            hasUsageMetrics = true; // to stop estimating counter
+            usage.completion_tokens = Number(chunk.usage.completion_tokens);
+          }
+        }
+
         if (token) {
           fullText += token;
+          // If we never saw a usage metric, we can estimate them by number of completion chunks
+          if (!hasUsageMetrics) usage.completion_tokens++;
           writeResponseChunk(response, {
             uuid,
             sources: [],
@@ -56,6 +99,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
             error: false,
           });
           response.removeListener("close", handleAbort);
+          stream?.endMeasurement(usage);
           resolve(fullText);
           break; // Break streaming when a valid finish_reason is first encountered
         }
@@ -70,6 +114,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         close: true,
         error: e.message,
       });
+      stream?.endMeasurement(usage);
       resolve(fullText); // Return what we currently have - if anything.
     }
   });
@@ -111,6 +156,7 @@ function convertToChatHistory(history = []) {
         chatId: id,
         sentAt: moment(createdAt).unix(),
         feedbackScore,
+        metrics: data?.metrics || {},
       },
     ]);
   }

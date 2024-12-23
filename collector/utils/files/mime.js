@@ -38,6 +38,10 @@ class MimeDetector {
           "pas",
           "r",
           "go",
+          "ino",
+          "hpp",
+          "linq",
+          "cs",
         ],
       },
       true
@@ -47,7 +51,7 @@ class MimeDetector {
   // These are file types that are not detected by the mime library and need to be processed as text files.
   // You should only add file types that are not detected by the mime library, are parsable as text, and are files
   // with no extension. Otherwise, their extension should be added to the overrides array.
-  #specialTextFileTypes = ["dockerfile", "jenkinsfile"];
+  #specialTextFileTypes = ["dockerfile", "jenkinsfile", "dockerignore"];
 
   /**
    * Returns the MIME type of the file. If the file has no extension found, it will be processed as a text file.

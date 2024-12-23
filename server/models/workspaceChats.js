@@ -55,6 +55,31 @@ const WorkspaceChats = {
     }
   },
 
+  forWorkspaceByApiSessionId: async function (
+    workspaceId = null,
+    apiSessionId = null,
+    limit = null,
+    orderBy = null
+  ) {
+    if (!workspaceId || !apiSessionId) return [];
+    try {
+      const chats = await prisma.workspace_chats.findMany({
+        where: {
+          workspaceId,
+          user_id: null,
+          api_session_id: String(apiSessionId),
+          thread_id: null,
+        },
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : { orderBy: { id: "asc" } }),
+      });
+      return chats;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
+
   forWorkspace: async function (
     workspaceId = null,
     limit = null,
