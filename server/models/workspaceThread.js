@@ -1,16 +1,44 @@
 const prisma = require("../utils/prisma");
+const slugifyModule = require("slugify");
 const { v4: uuidv4 } = require("uuid");
 
 const WorkspaceThread = {
   defaultName: "Thread",
   writable: ["name"],
 
-  new: async function (workspace, userId = null) {
+  /**
+   * The default Slugify module requires some additional mapping to prevent downstream issues
+   * if the user is able to define a slug externally. We have to block non-escapable URL chars
+   * so that is the slug is rendered it doesn't break the URL or UI when visited.
+   * @param  {...any} args - slugify args for npm package.
+   * @returns {string}
+   */
+  slugify: function (...args) {
+    slugifyModule.extend({
+      "+": " plus ",
+      "!": " bang ",
+      "@": " at ",
+      "*": " splat ",
+      ".": " dot ",
+      ":": "",
+      "~": "",
+      "(": "",
+      ")": "",
+      "'": "",
+      '"': "",
+      "|": "",
+    });
+    return slugifyModule(...args);
+  },
+
+  new: async function (workspace, userId = null, data = {}) {
     try {
       const thread = await prisma.workspace_threads.create({
         data: {
-          name: this.defaultName,
-          slug: uuidv4(),
+          name: data.name ? String(data.name) : this.defaultName,
+          slug: data.slug
+            ? this.slugify(data.slug, { lowercase: true })
+            : uuidv4(),
           user_id: userId ? Number(userId) : null,
           workspace_id: workspace.id,
         },

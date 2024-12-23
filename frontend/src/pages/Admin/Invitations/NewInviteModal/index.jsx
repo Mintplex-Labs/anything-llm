@@ -58,103 +58,104 @@ export default function NewInviteModal({ closeModal }) {
   }, []);
 
   return (
-    <div className="relative w-[500px] max-w-2xl max-h-full overflow-auto">
-      <div className="relative bg-main-gradient rounded-lg shadow">
-        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-          <h3 className="text-xl font-semibold text-white">
-            Create new invite
-          </h3>
+    <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+          <div className="w-full flex gap-x-2 items-center">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              Create new invite
+            </h3>
+          </div>
           <button
             onClick={closeModal}
             type="button"
-            className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-            data-modal-hide="staticModal"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-gray-300 text-lg" />
+            <X size={24} weight="bold" className="text-white" />
           </button>
         </div>
-        <form onSubmit={handleCreate}>
-          <div className="p-6 space-y-6 flex h-full w-full">
-            <div className="w-full flex flex-col gap-y-4">
+        <div className="p-6">
+          <form onSubmit={handleCreate}>
+            <div className="space-y-4">
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
               {invite && (
                 <input
                   type="url"
                   defaultValue={`${window.location.origin}/accept-invite/${invite.code}`}
                   disabled={true}
-                  className="rounded-lg px-4 py-2 text-white bg-zinc-900 border border-gray-500/50"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 />
               )}
-              <p className="text-white text-xs md:text-sm">
+              <p className="text-white text-opacity-60 text-xs md:text-sm">
                 After creation you will be able to copy the invite and send it
                 to a new user where they can create an account as the{" "}
                 <b>default</b> role and automatically be added to workspaces
                 selected.
               </p>
             </div>
-          </div>
 
-          {workspaces.length > 0 && !invite && (
-            <div className="p-6 flex w-full justify-between">
-              <div className="w-full">
-                <div className="flex flex-col gap-y-1  mb-2">
-                  <label
-                    htmlFor="workspaces"
-                    className="text-sm font-medium text-white"
-                  >
-                    Auto-add invitee to workspaces
-                  </label>
-                  <p className="text-white/60 text-xs">
-                    You can optionally automatically assign the user to the
-                    workspaces below by selecting them. By default, the user
-                    will not have any workspaces visible. You can assign
-                    workspaces later post-invite acceptance.
-                  </p>
-                </div>
+            {workspaces.length > 0 && !invite && (
+              <div className="mt-6">
+                <div className="w-full">
+                  <div className="flex flex-col gap-y-1 mb-2">
+                    <label
+                      htmlFor="workspaces"
+                      className="block text-sm font-medium text-white"
+                    >
+                      Auto-add invitee to workspaces
+                    </label>
+                    <p className="text-white text-opacity-60 text-xs">
+                      You can optionally automatically assign the user to the
+                      workspaces below by selecting them. By default, the user
+                      will not have any workspaces visible. You can assign
+                      workspaces later post-invite acceptance.
+                    </p>
+                  </div>
 
-                <div className="flex flex-col gap-y-2">
-                  {workspaces.map((workspace) => (
-                    <WorkspaceOption
-                      key={workspace.id}
-                      workspace={workspace}
-                      selected={selectedWorkspaceIds.includes(workspace.id)}
-                      toggleSelection={handleWorkspaceSelection}
-                    />
-                  ))}
+                  <div className="flex flex-col gap-y-2 mt-2">
+                    {workspaces.map((workspace) => (
+                      <WorkspaceOption
+                        key={workspace.id}
+                        workspace={workspace}
+                        selected={selectedWorkspaceIds.includes(workspace.id)}
+                        toggleSelection={handleWorkspaceSelection}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-
-          <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
-            {!invite ? (
-              <>
-                <button
-                  onClick={closeModal}
-                  type="button"
-                  className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                  Create Invite
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={copyInviteLink}
-                type="button"
-                disabled={copied}
-                className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center"
-              >
-                {copied ? "Copied Link" : "Copy Invite Link"}
-              </button>
             )}
-          </div>
-        </form>
+
+            <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
+              {!invite ? (
+                <>
+                  <button
+                    onClick={closeModal}
+                    type="button"
+                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  >
+                    Create Invite
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={copyInviteLink}
+                  type="button"
+                  disabled={copied}
+                  className="w-full transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                >
+                  {copied ? "Copied Link" : "Copy Invite Link"}
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
@@ -165,9 +166,11 @@ function WorkspaceOption({ workspace, selected, toggleSelection }) {
     <button
       type="button"
       onClick={() => toggleSelection(workspace.id)}
-      className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-        selected ? "border-white border-opacity-40" : "border-none "
-      } hover:border-white/60`}
+      className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
+        selected
+          ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+          : "border-theme-sidebar-border"
+      } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
     >
       <input
         type="radio"
@@ -177,11 +180,11 @@ function WorkspaceOption({ workspace, selected, toggleSelection }) {
         className="hidden"
       />
       <div
-        className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-          selected ? "bg-white" : ""
+        className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+          selected ? "bg-[var(--theme-sidebar-item-workspace-active)]" : ""
         }`}
       ></div>
-      <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+      <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
         {workspace.name}
       </div>
     </button>

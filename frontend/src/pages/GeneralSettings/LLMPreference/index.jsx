@@ -11,6 +11,7 @@ import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
+import NovitaLogo from "@/media/llmprovider/novita.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
@@ -26,6 +27,9 @@ import CohereLogo from "@/media/llmprovider/cohere.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
+import APIPieLogo from "@/media/llmprovider/apipie.png";
+import XAILogo from "@/media/llmprovider/xai.png";
+import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -37,6 +41,7 @@ import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
+import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
@@ -50,6 +55,9 @@ import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
+import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
+import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
+import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -89,6 +97,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["GeminiLLMApiKey"],
   },
   {
+    name: "Nvidia NIM",
+    value: "nvidia-nim",
+    logo: NvidiaNimLogo,
+    options: (settings) => <NvidiaNimOptions settings={settings} />,
+    description:
+      "Run full parameter LLMs directly on your GPU using Nvidia's inference microservice via Docker.",
+    requiredConfig: ["NvidiaNimLLMBasePath"],
+  },
+  {
     name: "HuggingFace",
     value: "huggingface",
     logo: HuggingFaceLogo,
@@ -108,6 +125,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <OllamaLLMOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
     requiredConfig: ["OllamaLLMBasePath"],
+  },
+  {
+    name: "Novita AI",
+    value: "novita",
+    logo: NovitaLogo,
+    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    description:
+      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
+    requiredConfig: ["NovitaLLMApiKey"],
   },
   {
     name: "LM Studio",
@@ -222,6 +248,27 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["DeepSeekApiKey"],
   },
   {
+    name: "AWS Bedrock",
+    value: "bedrock",
+    logo: AWSBedrockLogo,
+    options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
+    description: "Run powerful foundation models privately with AWS Bedrock.",
+    requiredConfig: [
+      "AwsBedrockLLMAccessKeyId",
+      "AwsBedrockLLMAccessKey",
+      "AwsBedrockLLMRegion",
+      "AwsBedrockLLMModel",
+    ],
+  },
+  {
+    name: "APIpie",
+    value: "apipie",
+    logo: APIPieLogo,
+    options: (settings) => <ApiPieLLMOptions settings={settings} />,
+    description: "A unified API of AI services from leading providers",
+    requiredConfig: ["ApipieLLMApiKey", "ApipieLLMModelPref"],
+  },
+  {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
@@ -236,18 +283,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     ],
   },
   {
-    name: "AWS Bedrock",
-    value: "bedrock",
-    logo: AWSBedrockLogo,
-    options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
-    description: "Run powerful foundation models privately with AWS Bedrock.",
-    requiredConfig: [
-      "AwsBedrockLLMAccessKeyId",
-      "AwsBedrockLLMAccessKey",
-      "AwsBedrockLLMRegion",
-      "AwsBedrockLLMModel",
-    ],
+    name: "xAI",
+    value: "xai",
+    logo: XAILogo,
+    options: (settings) => <XAILLMOptions settings={settings} />,
+    description: "Run xAI's powerful LLMs like Grok-2 and more.",
+    requiredConfig: ["XAIApiKey", "XAIModelPref"],
   },
+
   {
     name: "Native",
     value: "native",
@@ -328,12 +371,12 @@ export default function GeneralLLMPreference() {
     (llm) => llm.value === selectedLLM
   );
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -342,11 +385,11 @@ export default function GeneralLLMPreference() {
       ) : (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <form onSubmit={handleSubmit} className="flex w-full">
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-              <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+              <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white">
                     {t("llm.title")}
@@ -377,20 +420,20 @@ export default function GeneralLLMPreference() {
                   />
                 )}
                 {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-dark-input rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
+                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
                     <div className="w-full flex flex-col gap-y-1">
-                      <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-dark-input">
+                      <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
                         <MagnifyingGlass
                           size={20}
                           weight="bold"
-                          className="absolute left-4 z-30 text-white -ml-4 my-2"
+                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
                         />
                         <input
                           type="text"
                           name="llm-search"
                           autoComplete="off"
                           placeholder="Search all LLM providers"
-                          className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-white placeholder:text-white placeholder:font-medium"
+                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
                           onKeyDown={(e) => {
@@ -424,7 +467,7 @@ export default function GeneralLLMPreference() {
                   </div>
                 ) : (
                   <button
-                    className="w-full max-w-[640px] h-[64px] bg-dark-input rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
+                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
                     type="button"
                     onClick={() => setSearchMenuOpen(true)}
                   >

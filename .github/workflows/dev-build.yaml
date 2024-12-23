@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['agent-skill-plugins'] # put your current branch to create a build. Core team only.
+    branches: ['docker-scout-patch'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
@@ -94,6 +94,8 @@ jobs:
 
       # About VEX attestations https://docs.docker.com/scout/explore/exceptions/
       # Justifications https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#status-justifications
+      # Fixed to use v1.15.1 of scout-cli as v1.16.0 install script is broken
+      # https://github.com/docker/scout-cli
       - name: Add VEX attestations
         env:
           CVE_EXCEPTIONS: ${{ steps.cve-list.outputs.CVE_EXCEPTIONS }}
@@ -110,5 +112,3 @@ jobs:
             done
           done
         shell: bash
-
-      

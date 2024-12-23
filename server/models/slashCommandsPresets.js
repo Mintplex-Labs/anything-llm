@@ -39,6 +39,18 @@ const SlashCommandPresets = {
   // Command + userId must be unique combination.
   create: async function (userId = null, presetData = {}) {
     try {
+      const existingPreset = await this.get({
+        userId: userId ? Number(userId) : null,
+        command: String(presetData.command),
+      });
+
+      if (existingPreset) {
+        console.log(
+          "SlashCommandPresets.create - preset already exists - will not create"
+        );
+        return existingPreset;
+      }
+
       const preset = await prisma.slash_command_presets.create({
         data: {
           ...presetData,

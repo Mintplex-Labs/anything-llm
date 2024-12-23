@@ -21,7 +21,10 @@ import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
-
+import APIPieLogo from "@/media/llmprovider/apipie.png";
+import NovitaLogo from "@/media/llmprovider/novita.png";
+import XAILogo from "@/media/llmprovider/xai.png";
+import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -45,6 +48,10 @@ import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
 import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
+import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
+import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
+import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
+import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -86,6 +93,14 @@ const LLMS = [
     description: "Google's largest and most capable AI model",
   },
   {
+    name: "Nvidia NIM",
+    value: "nvidia-nim",
+    logo: NvidiaNimLogo,
+    options: (settings) => <NvidiaNimOptions settings={settings} />,
+    description:
+      "Run full parameter LLMs directly on your GPU using Nvidia's inference microservice via Docker.",
+  },
+  {
     name: "HuggingFace",
     value: "huggingface",
     logo: HuggingFaceLogo,
@@ -99,6 +114,14 @@ const LLMS = [
     logo: OllamaLogo,
     options: (settings) => <OllamaLLMOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
+  },
+  {
+    name: "Novita AI",
+    value: "novita",
+    logo: NovitaLogo,
+    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    description:
+      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
   },
   {
     name: "LM Studio",
@@ -196,6 +219,13 @@ const LLMS = [
     description: "Run DeepSeek's powerful LLMs.",
   },
   {
+    name: "APIpie",
+    value: "apipie",
+    logo: APIPieLogo,
+    options: (settings) => <ApiPieLLMOptions settings={settings} />,
+    description: "A unified API of AI services from leading providers",
+  },
+  {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
@@ -209,6 +239,13 @@ const LLMS = [
     logo: AWSBedrockLogo,
     options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
     description: "Run powerful foundation models privately with AWS Bedrock.",
+  },
+  {
+    name: "xAI",
+    value: "xai",
+    logo: XAILogo,
+    options: (settings) => <XAILLMOptions settings={settings} />,
+    description: "Run xAI's powerful LLMs like Grok-2 and more.",
   },
   {
     name: "Native",
@@ -288,18 +325,18 @@ export default function LLMPreference({
   return (
     <div>
       <form ref={formRef} onSubmit={handleSubmit} className="w-full">
-        <div className="w-full relative border-slate-300/40 shadow border-2 rounded-lg text-white">
+        <div className="w-full relative border-theme-chat-input-border shadow border-2 rounded-lg text-white">
           <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
             <div className="w-full flex items-center sticky top-0">
               <MagnifyingGlass
                 size={16}
                 weight="bold"
-                className="absolute left-4 z-30 text-white"
+                className="absolute left-4 z-30 text-theme-text-primary"
               />
               <input
                 type="text"
                 placeholder="Search LLM providers"
-                className="bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:outline-primary-button active:outline-primary-button outline-none text-white"
+                className="bg-theme-bg-secondary placeholder:text-theme-text-secondary z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border border-theme-chat-input-border outline-none focus:outline-primary-button active:outline-primary-button outline-none text-theme-text-primary"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoComplete="off"
                 onKeyDown={(e) => {

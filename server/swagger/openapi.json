@@ -704,6 +704,95 @@
               }
             }
           }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/admin/workspaces/{workspaceSlug}/manage-users": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "Set workspace permissions to be accessible by the given user ids and admins. Methods are disabled until multi user mode is enabled via the UI.",
+        "parameters": [
+          {
+            "name": "workspaceSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "slug of the workspace in the database"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null,
+                    "users": [
+                      {
+                        "userId": 1,
+                        "username": "main-admin",
+                        "role": "admin"
+                      },
+                      {
+                        "userId": 2,
+                        "username": "sample-sam",
+                        "role": "default"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Array of user ids who will be given access to the target workspace. <code>reset</code> will remove all existing users from the workspace and only add the new users - default <code>false</code>.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "userIds": [
+                  1,
+                  2,
+                  4,
+                  12
+                ],
+                "reset": false
+              }
+            }
+          }
         }
       }
     },
@@ -762,52 +851,6 @@
       }
     },
     "/v1/admin/preferences": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "description": "Show all multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "example": {
-                    "settings": {
-                      "limit_user_messages": false,
-                      "message_limit": 10
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Instance is not in Multi-User mode. Method denied"
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidAPIKey"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidAPIKey"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
       "post": {
         "tags": [
           "Admin"
@@ -857,8 +900,7 @@
           "content": {
             "application/json": {
               "example": {
-                "limit_user_messages": true,
-                "message_limit": 5
+                "support_email": "support@example.com"
               }
             }
           }
@@ -1478,6 +1520,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -1498,12 +1543,19 @@
           }
         },
         "requestBody": {
-          "description": "JSON object containing new display name of workspace.",
+          "description": "JSON object containing workspace configuration.",
           "required": true,
           "content": {
             "application/json": {
               "example": {
-                "name": "My New Workspace"
+                "name": "My New Workspace",
+                "similarityThreshold": 0.7,
+                "openAiTemp": 0.7,
+                "openAiHistory": 20,
+                "openAiPrompt": "Custom prompt for responses",
+                "queryRefusalResponse": "Custom refusal message",
+                "chatMode": "chat",
+                "topN": 4
               }
             }
           }
@@ -1589,18 +1641,20 @@
                 "schema": {
                   "type": "object",
                   "example": {
-                    "workspace": {
-                      "id": 79,
-                      "name": "My workspace",
-                      "slug": "my-workspace-123",
-                      "createdAt": "2023-08-17 00:45:03",
-                      "openAiTemp": null,
-                      "lastUpdatedAt": "2023-08-17 00:45:03",
-                      "openAiHistory": 20,
-                      "openAiPrompt": null,
-                      "documents": [],
-                      "threads": []
-                    }
+                    "workspace": [
+                      {
+                        "id": 79,
+                        "name": "My workspace",
+                        "slug": "my-workspace-123",
+                        "createdAt": "2023-08-17 00:45:03",
+                        "openAiTemp": null,
+                        "lastUpdatedAt": "2023-08-17 00:45:03",
+                        "openAiHistory": 20,
+                        "openAiPrompt": null,
+                        "documents": [],
+                        "threads": []
+                      }
+                    ]
                   }
                 }
               }
@@ -1765,6 +1819,33 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
+          },
+          {
+            "name": "apiSessionId",
+            "in": "query",
+            "description": "Optional apiSessionId to filter by",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Optional number of chat messages to return (default: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "Optional order of chat messages (asc or desc)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2143,6 +2224,80 @@
         }
       }
     },
+    "/v1/workspace/{slug}/vector-search": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Perform a vector similarity search in a workspace",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace to search in"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "results": [
+                      {
+                        "id": "5a6bee0a-306c-47fc-942b-8ab9bf3899c4",
+                        "text": "Document chunk content...",
+                        "metadata": {
+                          "url": "file://document.txt",
+                          "title": "document.txt",
+                          "author": "no author specified",
+                          "description": "no description found",
+                          "docSource": "post:123456",
+                          "chunkSource": "document.txt",
+                          "published": "12/1/2024, 11:39:39 AM",
+                          "wordCount": 8,
+                          "tokenCount": 9
+                        },
+                        "distance": 0.541887640953064,
+                        "score": 0.45811235904693604
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Query to perform vector search with and optional parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "query": "What is the meaning of life?",
+                "topN": 4,
+                "scoreThreshold": 0.75
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/system/env-dump": {
       "get": {
         "tags": [
@@ -2507,12 +2662,14 @@
           }
         },
         "requestBody": {
-          "description": "Optional userId associated with the thread",
+          "description": "Optional userId associated with the thread, thread slug and thread name",
           "required": false,
           "content": {
             "application/json": {
               "example": {
-                "userId": 1
+                "userId": 1,
+                "name": "Name",
+                "slug": "thread-slug"
               }
             }
           }
@@ -2982,6 +3139,65 @@
         }
       }
     },
+    "/v1/users/{id}/issue-auth-token": {
+      "get": {
+        "tags": [
+          "User Management"
+        ],
+        "description": "Issue a temporary auth token for a user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the user to issue a temporary auth token for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "token": "1234567890",
+                    "loginPath": "/sso/simple?token=1234567890"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Permission denied."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/v1/openai/models": {
       "get": {
         "tags": [
@@ -3146,7 +3362,7 @@
           "content": {
             "application/json": {
               "example": {
-                "input": [
+                "inputs": [
                   "This is my first string to embed",
                   "This is my second string to embed"
                 ],

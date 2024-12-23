@@ -48,7 +48,7 @@ async function getPageLinks(url, baseUrl) {
   try {
     const loader = new PuppeteerWebBaseLoader(url, {
       launchOptions: { headless: "new" },
-      gotoOptions: { waitUntil: "domcontentloaded" },
+      gotoOptions: { waitUntil: "networkidle2" },
     });
     const docs = await loader.load();
     const html = docs[0].pageContent;
@@ -92,7 +92,7 @@ async function bulkScrapePages(links, outFolderPath) {
     try {
       const loader = new PuppeteerWebBaseLoader(link, {
         launchOptions: { headless: "new" },
-        gotoOptions: { waitUntil: "domcontentloaded" },
+        gotoOptions: { waitUntil: "networkidle2" },
         async evaluate(page, browser) {
           const result = await page.evaluate(() => document.body.innerText);
           await browser.close();
@@ -108,7 +108,8 @@ async function bulkScrapePages(links, outFolderPath) {
       }
 
       const url = new URL(link);
-      const filename = (url.host + "-" + url.pathname).replace(".", "_");
+      const decodedPathname = decodeURIComponent(url.pathname);
+      const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
 
       const data = {
         id: v4(),

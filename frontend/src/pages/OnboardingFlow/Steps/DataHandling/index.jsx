@@ -9,18 +9,22 @@ import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
+import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
+import NovitaLogo from "@/media/llmprovider/novita.png";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
+import APIPieLogo from "@/media/llmprovider/apipie.png";
+import XAILogo from "@/media/llmprovider/xai.png";
 
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
@@ -72,6 +76,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to Google",
     ],
     logo: GeminiLogo,
+  },
+  "nvidia-nim": {
+    name: "Nvidia NIM",
+    description: [
+      "Your model and chats are only accessible on the machine running the Nvidia NIM service",
+    ],
+    logo: NvidiaNimLogo,
   },
   lmstudio: {
     name: "LMStudio",
@@ -147,6 +158,14 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: OpenRouterLogo,
   },
+  novita: {
+    name: "Novita AI",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to Novita AI",
+    ],
+    logo: NovitaLogo,
+  },
   groq: {
     name: "Groq",
     description: [
@@ -201,6 +220,20 @@ export const LLM_SELECTION_PRIVACY = {
     name: "DeepSeek",
     description: ["Your model and chat contents are visible to DeepSeek"],
     logo: DeepSeekLogo,
+  },
+  apipie: {
+    name: "APIpie.AI",
+    description: [
+      "Your model and chat contents are visible to APIpie in accordance with their terms of service.",
+    ],
+    logo: APIPieLogo,
+  },
+  xai: {
+    name: "xAI",
+    description: [
+      "Your model and chat contents are visible to xAI in accordance with their terms of service.",
+    ],
+    logo: XAILogo,
   },
 };
 
@@ -324,6 +357,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: VoyageAiLogo,
   },
+  mistral: {
+    name: "Mistral AI",
+    description: [
+      "Data sent to Mistral AI's servers is shared according to the terms of service of https://mistral.ai.",
+    ],
+    logo: MistralLogo,
+  },
   litellm: {
     name: "LiteLLM",
     description: [
@@ -380,26 +420,28 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <div className="p-8 flex flex-col gap-8">
-        <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-white text-base font-bold">LLM Selection</div>
+        <div className="flex flex-col gap-y-2 border-b border-theme-sidebar-border pb-4">
+          <div className="text-theme-text-primary text-base font-bold">
+            LLM Selection
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={LLM_SELECTION_PRIVACY[llmChoice].logo}
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-white text-sm font-bold">
+            <p className="text-theme-text-primary text-sm font-bold">
               {LLM_SELECTION_PRIVACY[llmChoice].name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
             {LLM_SELECTION_PRIVACY[llmChoice].description.map((desc) => (
-              <li className="text-white/90 text-sm">{desc}</li>
+              <li className="text-theme-text-primary text-sm">{desc}</li>
             ))}
           </ul>
         </div>
-        <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-white text-base font-bold">
+        <div className="flex flex-col gap-y-2 border-b border-theme-sidebar-border pb-4">
+          <div className="text-theme-text-primary text-base font-bold">
             Embedding Preference
           </div>
           <div className="flex items-center gap-2.5">
@@ -408,39 +450,41 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-white text-sm font-bold">
+            <p className="text-theme-text-primary text-sm font-bold">
               {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
             {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].description.map(
               (desc) => (
-                <li className="text-white/90 text-sm">{desc}</li>
+                <li className="text-theme-text-primary text-sm">{desc}</li>
               )
             )}
           </ul>
         </div>
 
         <div className="flex flex-col gap-y-2 pb-4">
-          <div className="text-white text-base font-bold">Vector Database</div>
+          <div className="text-theme-text-primary text-base font-bold">
+            Vector Database
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={VECTOR_DB_PRIVACY[vectorDb].logo}
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-white text-sm font-bold">
+            <p className="text-theme-text-primary text-sm font-bold">
               {VECTOR_DB_PRIVACY[vectorDb].name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
             {VECTOR_DB_PRIVACY[vectorDb].description.map((desc) => (
-              <li className="text-white/90 text-sm">{desc}</li>
+              <li className="text-theme-text-primary text-sm">{desc}</li>
             ))}
           </ul>
         </div>
       </div>
-      <p className="text-white/60 text-sm font-medium py-1">
+      <p className="text-theme-text-secondary text-sm font-medium py-1">
         These settings can be reconfigured at any time in the settings.
       </p>
     </div>

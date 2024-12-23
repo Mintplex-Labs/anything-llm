@@ -756,7 +756,7 @@ ${this.getHistory({ to: route.to })
       case "anthropic":
         return new Providers.AnthropicProvider({ model: config.model });
       case "lmstudio":
-        return new Providers.LMStudioProvider({});
+        return new Providers.LMStudioProvider({ model: config.model });
       case "ollama":
         return new Providers.OllamaProvider({ model: config.model });
       case "groq":
@@ -783,8 +783,18 @@ ${this.getHistory({ to: route.to })
         return new Providers.AWSBedrockProvider({});
       case "fireworksai":
         return new Providers.FireworksAIProvider({ model: config.model });
+      case "nvidia-nim":
+        return new Providers.NvidiaNimProvider({ model: config.model });
       case "deepseek":
         return new Providers.DeepSeekProvider({ model: config.model });
+      case "litellm":
+        return new Providers.LiteLLMProvider({ model: config.model });
+      case "apipie":
+        return new Providers.ApiPieProvider({ model: config.model });
+      case "xai":
+        return new Providers.XAIProvider({ model: config.model });
+      case "novita":
+        return new Providers.NovitaProvider({ model: config.model });
 
       default:
         throw new Error(

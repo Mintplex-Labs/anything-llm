@@ -9,7 +9,7 @@ export default function AnthropicAiOptions({ settings }) {
           <input
             type="password"
             name="AnthropicApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Anthropic Claude-2 API Key"
             defaultValue={settings?.AnthropicApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -27,15 +27,19 @@ export default function AnthropicAiOptions({ settings }) {
               name="AnthropicModelPref"
               defaultValue={settings?.AnthropicModelPref || "claude-2"}
               required={true}
-              className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
             >
               {[
                 "claude-instant-1.2",
                 "claude-2.0",
                 "claude-2.1",
                 "claude-3-haiku-20240307",
-                "claude-3-opus-20240229",
                 "claude-3-sonnet-20240229",
+                "claude-3-opus-latest",
+                "claude-3-5-haiku-latest",
+                "claude-3-5-haiku-20241022",
+                "claude-3-5-sonnet-latest",
+                "claude-3-5-sonnet-20241022",
                 "claude-3-5-sonnet-20240620",
               ].map((model) => {
                 return (

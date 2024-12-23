@@ -25,6 +25,19 @@ const DocumentVectors = {
     }
   },
 
+  where: async function (clause = {}, limit) {
+    try {
+      const results = await prisma.document_vectors.findMany({
+        where: clause,
+        take: limit || undefined,
+      });
+      return results;
+    } catch (error) {
+      console.error("Where query failed", error);
+      return [];
+    }
+  },
+
   deleteForWorkspace: async function (workspaceId) {
     const documents = await Document.forWorkspace(workspaceId);
     const docIds = [...new Set(documents.map((doc) => doc.docId))];
@@ -40,19 +53,6 @@ const DocumentVectors = {
     }
   },
 
-  where: async function (clause = {}, limit) {
-    try {
-      const results = await prisma.document_vectors.findMany({
-        where: clause,
-        take: limit || undefined,
-      });
-      return results;
-    } catch (error) {
-      console.error("Where query failed", error);
-      return [];
-    }
-  },
-
   deleteIds: async function (ids = []) {
     try {
       await prisma.document_vectors.deleteMany({
@@ -61,6 +61,16 @@ const DocumentVectors = {
       return true;
     } catch (error) {
       console.error("Delete IDs failed", error);
+      return false;
+    }
+  },
+
+  delete: async function (clause = {}) {
+    try {
+      await prisma.document_vectors.deleteMany({ where: clause });
+      return true;
+    } catch (error) {
+      console.error("Delete failed", error);
       return false;
     }
   },

@@ -1,8 +1,14 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
+const { fetchApiPieModels } = require("../AiProviders/apipie");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
+const { fetchNovitaModels } = require("../AiProviders/novita");
+const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
+const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
+const { GeminiLLM } = require("../AiProviders/gemini");
+
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
   "localai",
@@ -10,6 +16,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "native-llm",
   "togetherai",
   "fireworksai",
+  "nvidia-nim",
   "mistral",
   "perplexity",
   "openrouter",
@@ -19,6 +26,10 @@ const SUPPORT_CUSTOM_MODELS = [
   "elevenlabs-tts",
   "groq",
   "deepseek",
+  "apipie",
+  "novita",
+  "xai",
+  "gemini",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -56,6 +67,16 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getGroqAiModels(apiKey);
     case "deepseek":
       return await getDeepSeekModels(apiKey);
+    case "apipie":
+      return await getAPIPieModels(apiKey);
+    case "novita":
+      return await getNovitaModels();
+    case "xai":
+      return await getXAIModels(apiKey);
+    case "nvidia-nim":
+      return await getNvidiaNimModels(basePath);
+    case "gemini":
+      return await getGeminiModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -124,9 +145,17 @@ async function openAiModels(apiKey = null) {
     });
 
   const gpts = allModels
-    .filter((model) => model.id.startsWith("gpt"))
     .filter(
-      (model) => !model.id.includes("vision") && !model.id.includes("instruct")
+      (model) =>
+        (model.id.includes("gpt") && !model.id.startsWith("ft:")) ||
+        model.id.includes("o1")
+    )
+    .filter(
+      (model) =>
+        !model.id.includes("vision") &&
+        !model.id.includes("instruct") &&
+        !model.id.includes("audio") &&
+        !model.id.includes("realtime")
     )
     .map((model) => {
       return {
@@ -224,7 +253,9 @@ async function getLMStudioModels(basePath = null) {
   try {
     const { OpenAI: OpenAIApi } = require("openai");
     const openai = new OpenAIApi({
-      baseURL: basePath || process.env.LMSTUDIO_BASE_PATH,
+      baseURL: parseLMStudioBasePath(
+        basePath || process.env.LMSTUDIO_BASE_PATH
+      ),
       apiKey: null,
     });
     const models = await openai.models
@@ -355,6 +386,43 @@ async function getOpenRouterModels() {
   return { models, error: null };
 }
 
+async function getNovitaModels() {
+  const knownModels = await fetchNovitaModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getAPIPieModels(apiKey = null) {
+  const knownModels = await fetchApiPieModels(apiKey);
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels)
+    .filter((model) => {
+      // Filter for chat models
+      return (
+        model.subtype &&
+        (model.subtype.includes("chat") || model.subtype.includes("chatx"))
+      );
+    })
+    .map((model) => {
+      return {
+        id: model.id,
+        organization: model.organization,
+        name: model.name,
+      };
+    });
+  return { models, error: null };
+}
+
 async function getMistralModels(apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
@@ -444,6 +512,78 @@ async function getDeepSeekModels(apiKey = null) {
     });
 
   if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getXAIModels(_apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const apiKey =
+    _apiKey === true
+      ? process.env.XAI_LLM_API_KEY
+      : _apiKey || process.env.XAI_LLM_API_KEY || null;
+  const openai = new OpenAIApi({
+    baseURL: "https://api.x.ai/v1",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`XAI:listModels`, e.message);
+      return [
+        {
+          created: 1725148800,
+          id: "grok-beta",
+          object: "model",
+          owned_by: "xai",
+        },
+      ];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.XAI_LLM_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getNvidiaNimModels(basePath = null) {
+  try {
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: parseNvidiaNimBasePath(
+        basePath ?? process.env.NVIDIA_NIM_LLM_BASE_PATH
+      ),
+      apiKey: null,
+    });
+    const modelResponse = await openai.models
+      .list()
+      .then((results) => results.data)
+      .catch((e) => {
+        throw new Error(e.message);
+      });
+
+    const models = modelResponse.map((model) => {
+      return {
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by,
+      };
+    });
+
+    return { models, error: null };
+  } catch (e) {
+    console.error(`Nvidia NIM:getNvidiaNimModels`, e.message);
+    return { models: [], error: "Could not fetch Nvidia NIM Models" };
+  }
+}
+
+async function getGeminiModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.GEMINI_API_KEY
+      : _apiKey || process.env.GEMINI_API_KEY || null;
+  const models = await GeminiLLM.fetchModels(apiKey);
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.GEMINI_API_KEY = apiKey;
   return { models, error: null };
 }
 

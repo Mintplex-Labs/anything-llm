@@ -78,6 +78,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [AWS Bedrock](https://aws.amazon.com/bedrock/)
 - [Anthropic](https://www.anthropic.com/)
+- [NVIDIA NIM (chat models)](https://build.nvidia.com/explore/discover)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Hugging Face (chat models)](https://huggingface.co/)
 - [Ollama (chat models)](https://ollama.ai/)
@@ -94,6 +95,9 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
 - [LiteLLM](https://github.com/BerriAI/litellm)
 - [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
+- [Apipie](https://apipie.ai/)
+- [xAI](https://x.ai/)
+- [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 
 **Embedder models:**
 
@@ -116,6 +120,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [PiperTTSLocal - runs in browser](https://github.com/rhasspy/piper)
 - [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
 - [ElevenLabs](https://elevenlabs.io/)
+- Any OpenAI Compatible TTS service.
 
 **STT (speech-to-text) support:**
 
@@ -147,7 +152,7 @@ This monorepo consists of three main sections:
 
 Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
-|----------------------------------------|----:|-----|---------------|------------|
+|----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
 | Railway  |  RepoCloud | Elestio |
@@ -168,6 +173,14 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
 
+## External Apps & Integrations
+
+_These are apps that are not maintained by Mintplex Labs, but are compatible with AnythingLLM. A listing here is not an endorsement._
+
+- [Midori AI Subsystem Manager](https://io.midori-ai.xyz/subsystem/anythingllm/) - A streamlined and efficient way to deploy AI systems using Docker container technology.
+- [Coolify](https://coolify.io/docs/services/anythingllm/) - Deploy AnythingLLM with a single click.
+- [GPTLocalhost for Microsoft Word](https://gptlocalhost.com/demo/) - A local Word Add-in for you to use AnythingLLM in Microsoft Word.
+
 ## Telemetry & Privacy
 
 AnythingLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
@@ -187,7 +200,7 @@ Set `DISABLE_TELEMETRY` in your server or docker .env settings to "true" to opt 
 
 We will only track usage details that help us make product and roadmap decisions, specifically:
 
-- Typ of your installation (Docker or Desktop)
+- Type of your installation (Docker or Desktop)
 - When a document is added or removed. No information _about_ the document. Just that the event occurred. This gives us an idea of use.
 - Type of vector database in use. Let's us know which vector database provider is the most used to prioritize changes when updates arrive for that provider.
 - Type of LLM in use. Let's us know the most popular choice and prioritize changes when updates arrive for that provider.

@@ -7,13 +7,37 @@
  */
 
 /**
+ * @typedef {Object} ResponseMetrics
+ * @property {number} prompt_tokens - The number of prompt tokens used
+ * @property {number} completion_tokens - The number of completion tokens used
+ * @property {number} total_tokens - The total number of tokens used
+ * @property {number} outputTps - The output tokens per second
+ * @property {number} duration - The duration of the request in seconds
+ *
+ * @typedef {Object} ChatMessage
+ * @property {string} role - The role of the message sender (e.g. 'user', 'assistant', 'system')
+ * @property {string} content - The content of the message
+ *
+ * @typedef {Object} ChatCompletionResponse
+ * @property {string} textResponse - The text response from the LLM
+ * @property {ResponseMetrics} metrics - The response metrics
+ *
+ * @typedef {Object} ChatCompletionOptions
+ * @property {number} temperature - The sampling temperature for the LLM response
+ *
+ * @typedef {function(Array<ChatMessage>, ChatCompletionOptions): Promise<ChatCompletionResponse>} getChatCompletionFunction
+ *
+ * @typedef {function(Array<ChatMessage>, ChatCompletionOptions): Promise<import("./chat/LLMPerformanceMonitor").MonitoredStream>} streamGetChatCompletionFunction
+ */
+
+/**
  * @typedef {Object} BaseLLMProvider - A basic llm provider object
  * @property {Function} streamingEnabled - Checks if streaming is enabled for chat completions.
  * @property {Function} promptWindowLimit - Returns the token limit for the current model.
  * @property {Function} isValidChatCompletionModel - Validates if the provided model is suitable for chat completion.
  * @property {Function} constructPrompt - Constructs a formatted prompt for the chat completion request.
- * @property {Function} getChatCompletion - Gets a chat completion response from OpenAI.
- * @property {Function} streamGetChatCompletion - Streams a chat completion response from OpenAI.
+ * @property {getChatCompletionFunction} getChatCompletion - Gets a chat completion response from OpenAI.
+ * @property {streamGetChatCompletionFunction} streamGetChatCompletion - Streams a chat completion response from OpenAI.
  * @property {Function} handleStream - Handles the streaming response.
  * @property {Function} embedTextInput - Embeds the provided text input using the specified embedder.
  * @property {Function} embedChunks - Embeds multiple chunks of text using the specified embedder.
@@ -52,10 +76,11 @@
 
 /**
  * Gets the systems current vector database provider.
+ * @param {('pinecone' | 'chroma' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
  * @returns { BaseVectorDatabaseProvider}
  */
-function getVectorDbClass() {
-  const vectorSelection = process.env.VECTOR_DB || "lancedb";
+function getVectorDbClass(getExactly = null) {
+  const vectorSelection = getExactly ?? process.env.VECTOR_DB ?? "lancedb";
   switch (vectorSelection) {
     case "pinecone":
       const { Pinecone } = require("../vectorDbProviders/pinecone");
@@ -162,6 +187,18 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "deepseek":
       const { DeepSeekLLM } = require("../AiProviders/deepseek");
       return new DeepSeekLLM(embedder, model);
+    case "apipie":
+      const { ApiPieLLM } = require("../AiProviders/apipie");
+      return new ApiPieLLM(embedder, model);
+    case "novita":
+      const { NovitaLLM } = require("../AiProviders/novita");
+      return new NovitaLLM(embedder, model);
+    case "xai":
+      const { XAiLLM } = require("../AiProviders/xai");
+      return new XAiLLM(embedder, model);
+    case "nvidia-nim":
+      const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
+      return new NvidiaNimLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -205,6 +242,9 @@ function getEmbeddingEngineSelection() {
     case "litellm":
       const { LiteLLMEmbedder } = require("../EmbeddingEngines/liteLLM");
       return new LiteLLMEmbedder();
+    case "mistral":
+      const { MistralEmbedder } = require("../EmbeddingEngines/mistral");
+      return new MistralEmbedder();
     case "generic-openai":
       const {
         GenericOpenAiEmbedder,
@@ -285,6 +325,21 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "bedrock":
       const { AWSBedrockLLM } = require("../AiProviders/bedrock");
       return AWSBedrockLLM;
+    case "deepseek":
+      const { DeepSeekLLM } = require("../AiProviders/deepseek");
+      return DeepSeekLLM;
+    case "apipie":
+      const { ApiPieLLM } = require("../AiProviders/apipie");
+      return ApiPieLLM;
+    case "novita":
+      const { NovitaLLM } = require("../AiProviders/novita");
+      return NovitaLLM;
+    case "xai":
+      const { XAiLLM } = require("../AiProviders/xai");
+      return XAiLLM;
+    case "nvidia-nim":
+      const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
+      return NvidiaNimLLM;
     default:
       return null;
   }

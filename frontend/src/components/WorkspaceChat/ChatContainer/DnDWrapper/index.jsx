@@ -30,7 +30,6 @@ export function DnDFileUploaderProvider({ workspace, children }) {
   const { user } = useUser();
 
   useEffect(() => {
-    if (!!user && user.role === "default") return false;
     System.checkDocumentProcessorOnline().then((status) => setReady(status));
   }, [user]);
 
@@ -111,6 +110,8 @@ export function DnDFileUploaderProvider({ workspace, children }) {
           type: "attachment",
         });
       } else {
+        // If the user is a default user, we do not want to allow them to upload files.
+        if (!!user && user.role === "default") continue;
         newAccepted.push({
           uid: v4(),
           file,
@@ -146,6 +147,8 @@ export function DnDFileUploaderProvider({ workspace, children }) {
           type: "attachment",
         });
       } else {
+        // If the user is a default user, we do not want to allow them to upload files.
+        if (!!user && user.role === "default") continue;
         newAccepted.push({
           uid: v4(),
           file,
@@ -216,6 +219,8 @@ export default function DnDFileUploaderWrapper({ children }) {
     onDragEnter: () => setDragging(true),
     onDragLeave: () => setDragging(false),
   });
+  const { user } = useUser();
+  const canUploadAll = !user || user?.role !== "default";
 
   return (
     <div
@@ -224,15 +229,26 @@ export default function DnDFileUploaderWrapper({ children }) {
     >
       <div
         hidden={!dragging}
-        className="absolute top-0 w-full h-full bg-dark-text/90 rounded-2xl border-[4px] border-white z-[9999]"
+        className="absolute top-0 w-full h-full bg-dark-text/90 light:bg-[#C2E7FE]/90 rounded-2xl border-[4px] border-white z-[9999]"
       >
         <div className="w-full h-full flex justify-center items-center rounded-xl">
           <div className="flex flex-col gap-y-[14px] justify-center items-center">
             <img src={DndIcon} width={69} height={69} />
-            <p className="text-white text-[24px] font-semibold">Add anything</p>
+            <p className="text-white text-[24px] font-semibold">
+              Add {canUploadAll ? "anything" : "an image"}
+            </p>
             <p className="text-white text-[16px] text-center">
-              Drop your file here to embed it into your <br />
-              workspace auto-magically.
+              {canUploadAll ? (
+                <>
+                  Drop your file here to embed it into your <br />
+                  workspace auto-magically.
+                </>
+              ) : (
+                <>
+                  Drop your image here to chat with it <br />
+                  auto-magically.
+                </>
+              )}
             </p>
           </div>
         </div>
