@@ -659,6 +659,13 @@ function systemEndpoints(app) {
     async function (request, response) {
       try {
         const { id } = request.params;
+
+        // Only allow users to fetch their own profile picture
+        if (response.locals.user.id !== Number(id)) {
+          response.sendStatus(403).end();
+          return;
+        }
+
         const pfpPath = await determinePfpFilepath(id);
 
         if (!pfpPath) {
@@ -674,9 +681,7 @@ function systemEndpoints(app) {
 
         response.writeHead(200, {
           "Content-Type": mime || "image/png",
-          "Content-Disposition": `attachment; filename=${path.basename(
-            pfpPath
-          )}`,
+          "Content-Disposition": `attachment; filename=${path.basename(pfpPath)}`,
           "Content-Length": size,
         });
         response.end(Buffer.from(buffer, "base64"));
