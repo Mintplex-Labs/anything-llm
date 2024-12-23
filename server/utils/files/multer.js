@@ -2,6 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { v4 } = require("uuid");
+const { normalizePath } = require(".");
 
 /**
  * Handle File uploads for auto-uploading.
@@ -19,6 +20,7 @@ const fileUploadStorage = multer.diskStorage({
     file.originalname = Buffer.from(file.originalname, "latin1").toString(
       "utf8"
     );
+    file.originalname = normalizePath(file.originalname);
     cb(null, file.originalname);
   },
 });
@@ -36,6 +38,7 @@ const fileAPIUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
+    file.originalname = normalizePath(file.originalname);
     cb(null, file.originalname);
   },
 });
@@ -54,6 +57,7 @@ const assetUploadStorage = multer.diskStorage({
     file.originalname = Buffer.from(file.originalname, "latin1").toString(
       "utf8"
     );
+    file.originalname = normalizePath(file.originalname);
     cb(null, file.originalname);
   },
 });
