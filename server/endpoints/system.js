@@ -659,25 +659,14 @@ function systemEndpoints(app) {
     async function (request, response) {
       try {
         const { id } = request.params;
-
-        // Only allow users to fetch their own profile picture
-        if (response.locals.user.id !== Number(id)) {
-          response.sendStatus(403).end();
-          return;
-        }
+        if (response.locals?.user?.id !== Number(id))
+          return response.sendStatus(204).end();
 
         const pfpPath = await determinePfpFilepath(id);
-
-        if (!pfpPath) {
-          response.sendStatus(204).end();
-          return;
-        }
+        if (!pfpPath) return response.sendStatus(204).end();
 
         const { found, buffer, size, mime } = fetchPfp(pfpPath);
-        if (!found) {
-          response.sendStatus(204).end();
-          return;
-        }
+        if (!found) return response.sendStatus(204).end();
 
         response.writeHead(200, {
           "Content-Type": mime || "image/png",
