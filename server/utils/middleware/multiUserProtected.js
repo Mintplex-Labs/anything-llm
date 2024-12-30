@@ -8,8 +8,12 @@ const ROLES = {
 };
 const DEFAULT_ROLES = [ROLES.admin, ROLES.admin];
 
-// Explicitly check that multi user mode is enabled as well as that the
-// requesting user has the appropriate role to modify or call the URL.
+/**
+ * Explicitly check that multi user mode is enabled as well as that the
+ * requesting user has the appropriate role to modify or call the URL.
+ * @param {string[]} allowedRoles - The roles that are allowed to access the route
+ * @returns {function}
+ */
 function strictMultiUserRoleValid(allowedRoles = DEFAULT_ROLES) {
   return async (request, response, next) => {
     // If the access-control is allowable for all - skip validations and continue;
@@ -33,9 +37,12 @@ function strictMultiUserRoleValid(allowedRoles = DEFAULT_ROLES) {
   };
 }
 
-// Apply role permission checks IF the current system is in multi-user mode.
-// This is relevant for routes that are shared between MUM and single-user mode.
-// Checks if the requesting user has the appropriate role to modify or call the URL.
+/**
+ * Apply role permission checks IF the current system is in multi-user mode.
+ * This is relevant for routes that are shared between MUM and single-user mode.
+ * @param {string[]} allowedRoles - The roles that are allowed to access the route
+ * @returns {function}
+ */
 function flexUserRoleValid(allowedRoles = DEFAULT_ROLES) {
   return async (request, response, next) => {
     // If the access-control is allowable for all - skip validations and continue;
