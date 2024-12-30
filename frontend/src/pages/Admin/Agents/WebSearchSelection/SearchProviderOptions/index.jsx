@@ -265,13 +265,13 @@ export function SearXNGOptions({ settings }) {
     <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          SearXNG API base URL
+          SearXNG API Base URL
         </label>
         <input
           type="url"
           name="env::AgentSearXNGApiUrl"
           className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-          placeholder="SearXNG API Key"
+          placeholder="SearXNG API Base URL"
           defaultValue={settings?.AgentSearXNGApiUrl}
           required={true}
           autoComplete="off"
