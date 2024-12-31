@@ -250,6 +250,9 @@ function getEmbeddingEngineSelection() {
         GenericOpenAiEmbedder,
       } = require("../EmbeddingEngines/genericOpenAi");
       return new GenericOpenAiEmbedder();
+    case "gemini":
+      const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
+      return new GeminiEmbedder();
     default:
       return new NativeEmbedder();
   }
