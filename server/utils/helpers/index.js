@@ -222,9 +222,6 @@ function getEmbeddingEngineSelection() {
         AzureOpenAiEmbedder,
       } = require("../EmbeddingEngines/azureOpenAi");
       return new AzureOpenAiEmbedder();
-    case "gemini":
-      const { geminiEmbedder } = require("../EmbeddingEngines/gemini");
-      return new geminiEmbedder();
     case "localai":
       const { LocalAiEmbedder } = require("../EmbeddingEngines/localAi");
       return new LocalAiEmbedder();
@@ -253,6 +250,9 @@ function getEmbeddingEngineSelection() {
         GenericOpenAiEmbedder,
       } = require("../EmbeddingEngines/genericOpenAi");
       return new GenericOpenAiEmbedder();
+    case "gemini":
+      const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
+      return new GeminiEmbedder();
     default:
       return new NativeEmbedder();
   }

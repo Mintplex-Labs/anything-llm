@@ -266,6 +266,12 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Gemini Embedding Settings
+  GeminiEmbeddingApiKey: {
+    envKey: "GEMINI_EMBEDDING_API_KEY",
+    checks: [isNotEmpty],
+  },
+
   // Generic OpenAI Embedding Settings
   GenericOpenAiEmbeddingApiKey: {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",

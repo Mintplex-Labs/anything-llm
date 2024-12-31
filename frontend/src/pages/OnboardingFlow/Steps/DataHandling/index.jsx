@@ -378,6 +378,14 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: GenericOpenAiLogo,
   },
+  gemini: {
+    name: "Google Gemini",
+    description: [
+      "Your document text is sent to Google Gemini's servers for processing",
+      "Your document text is stored or managed according to the terms of service of Google Gemini API Terms of Service",
+    ],
+    logo: GeminiLogo,
+  },
 };
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
