@@ -5,6 +5,7 @@ const {
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 const { defaultGeminiModels, v1BetaModels } = require("./defaultModals");
@@ -203,7 +204,7 @@ class GeminiLLM {
     return [
       prompt,
       { role: "assistant", content: "Okay." },
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "USER_PROMPT",
         content: this.#generateContent({ userPrompt, attachments }),
