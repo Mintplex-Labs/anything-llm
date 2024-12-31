@@ -48,6 +48,7 @@ class OpenRouterLLM {
       fs.mkdirSync(cacheFolder, { recursive: true });
     this.cacheModelPath = path.resolve(cacheFolder, "models.json");
     this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+    this.log("Initialized with model:", this.model);
   }
 
   log(text, ...args) {
@@ -163,7 +164,6 @@ class OpenRouterLLM {
         },
       });
     }
-    console.log(content.flat());
     return content.flat();
   }
 
