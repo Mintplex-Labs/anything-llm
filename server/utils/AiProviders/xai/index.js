@@ -28,6 +28,11 @@ class XAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.log("Initialized with model:", this.model);
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -54,13 +59,8 @@ class XAiLLM {
     return MODEL_MAP.xai[this.model] ?? 131_072;
   }
 
-  isValidChatCompletionModel(modelName = "") {
-    switch (modelName) {
-      case "grok-beta":
-        return true;
-      default:
-        return false;
-    }
+  isValidChatCompletionModel(_modelName = "") {
+    return true;
   }
 
   /**
