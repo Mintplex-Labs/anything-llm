@@ -475,7 +475,7 @@ function formatJSON(
   const data = {
     id: chat.uuid ?? chat.id,
     object: "chat.completion",
-    created: Number(new Date()) / 1000, // in seconds
+    created: Math.floor(Number(new Date()) / 1000),
     model: model,
     choices: [
       {
