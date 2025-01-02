@@ -312,14 +312,14 @@ const Milvus = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+    const { contextTexts, sourceDocuments } = await this.similarityResponse({
       client,
       namespace,
       queryVector,
       similarityThreshold,
       topN,
-      filterIdentifiers
-    );
+      filterIdentifiers,
+    });
 
     const sources = sourceDocuments.map((metadata, i) => {
       return { ...metadata, text: contextTexts[i] };
@@ -330,14 +330,14 @@ const Milvus = {
       message: false,
     };
   },
-  similarityResponse: async function (
+  similarityResponse: async function ({
     client,
     namespace,
     queryVector,
     similarityThreshold = 0.25,
     topN = 4,
-    filterIdentifiers = []
-  ) {
+    filterIdentifiers = [],
+  }) {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
