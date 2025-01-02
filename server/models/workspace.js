@@ -34,6 +34,7 @@ const Workspace = {
     "agentProvider",
     "agentModel",
     "queryRefusalResponse",
+    "vectorSearchMode",
   ],
 
   validations: {
@@ -98,6 +99,15 @@ const Workspace = {
     openAiPrompt: (value) => {
       if (!value || typeof value !== "string") return null;
       return String(value);
+    },
+    vectorSearchMode: (value) => {
+      if (
+        !value ||
+        typeof value !== "string" ||
+        !["default", "rerank"].includes(value)
+      )
+        return "default";
+      return value;
     },
   },
 

@@ -384,7 +384,7 @@ const LanceDb = {
     similarityThreshold = 0.25,
     topN = 4,
     filterIdentifiers = [],
-    rerank = true,
+    rerank = false,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");

@@ -961,6 +961,7 @@ function apiWorkspaceEndpoints(app) {
           LLMConnector: getLLMProvider(),
           similarityThreshold: parseSimilarityThreshold(),
           topN: parseTopN(),
+          rerank: workspace?.vectorSearchMode === "rerank",
         });
 
         response.status(200).json({

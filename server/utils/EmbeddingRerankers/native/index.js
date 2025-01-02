@@ -7,18 +7,15 @@ class NativeEmbeddingReranker {
   static #transformers = null;
 
   constructor() {
-    // Model Card: https://huggingface.co/mixedbread-ai/mxbai-rerank-xsmall-v1
-    this.model = "mixedbread-ai/mxbai-rerank-xsmall-v1";
+    // An alternative model to the mixedbread-ai/mxbai-rerank-xsmall-v1 model (speed on CPU is much slower for this model @ 18docs = 6s)
+    // Model Card: https://huggingface.co/Xenova/ms-marco-MiniLM-L-6-v2 (speed on CPU is much faster @ 18docs = 1.6s)
+    this.model = "Xenova/ms-marco-MiniLM-L-6-v2";
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
         ? path.resolve(process.env.STORAGE_DIR, `models`)
         : path.resolve(__dirname, `../../../storage/models`)
     );
-    this.modelPath = path.resolve(
-      this.cacheDir,
-      "mixedbread-ai",
-      "mxbai-rerank-xsmall-v1"
-    );
+    this.modelPath = path.resolve(this.cacheDir, ...this.model.split("/"));
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
     this.log("Initialized");
