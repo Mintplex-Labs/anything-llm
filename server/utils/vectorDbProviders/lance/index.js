@@ -143,22 +143,23 @@ const LanceDb = {
 
   /**
    * Performs a SimilaritySearch on a give LanceDB namespace.
-   * @param {LanceClient} client
-   * @param {string} namespace
-   * @param {number[]} queryVector
-   * @param {number} similarityThreshold
-   * @param {number} topN
-   * @param {string[]} filterIdentifiers
+   * @param {Object} params
+   * @param {LanceClient} params.client
+   * @param {string} params.namespace
+   * @param {number[]} params.queryVector
+   * @param {number} params.similarityThreshold
+   * @param {number} params.topN
+   * @param {string[]} params.filterIdentifiers
    * @returns
    */
-  similarityResponse: async function (
+  similarityResponse: async function ({
     client,
     namespace,
     queryVector,
     similarityThreshold = 0.25,
     topN = 4,
-    filterIdentifiers = []
-  ) {
+    filterIdentifiers = [],
+  }) {
     const collection = await client.openTable(namespace);
     const result = {
       contextTexts: [],
@@ -408,14 +409,14 @@ const LanceDb = {
           topN,
           filterIdentifiers,
         })
-      : await this.similarityResponse(
+      : await this.similarityResponse({
           client,
           namespace,
           queryVector,
           similarityThreshold,
           topN,
-          filterIdentifiers
-        );
+          filterIdentifiers,
+        });
 
     const { contextTexts, sourceDocuments } = result;
     const sources = sourceDocuments.map((metadata, i) => {
