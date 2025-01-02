@@ -2,9 +2,9 @@ const path = require("path");
 const fs = require("fs");
 
 class NativeEmbeddingReranker {
-  static _model = null;
-  static _tokenizer = null;
-  #transformers = null;
+  static #model = null;
+  static #tokenizer = null;
+  static #transformers = null;
 
   constructor() {
     // Model Card: https://huggingface.co/mixedbread-ai/mxbai-rerank-xsmall-v1
@@ -19,17 +19,6 @@ class NativeEmbeddingReranker {
       "mixedbread-ai",
       "mxbai-rerank-xsmall-v1"
     );
-    this.modelDownloaded = fs.existsSync(this.modelPath);
-
-    import("@xenova/transformers").then(
-      ({ AutoModelForSequenceClassification, AutoTokenizer }) => {
-        this.#transformers = {
-          AutoModelForSequenceClassification,
-          AutoTokenizer,
-        };
-      }
-    );
-
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
     this.log("Initialized");
@@ -39,14 +28,56 @@ class NativeEmbeddingReranker {
     console.log(`\x1b[36m[NativeEmbeddingReranker]\x1b[0m ${text}`, ...args);
   }
 
+  /**
+   * This function will preload the reranker suite and tokenizer.
+   * This is useful for reducing the latency of the first rerank call and pre-downloading the models and such
+   * to avoid having to wait for the models to download on the first rerank call.
+   */
+  async preload() {
+    try {
+      this.log(`Preloading reranker suite...`);
+      await this.initClient();
+      this.log(
+        `Preloaded reranker suite. Reranking is available as a service now.`
+      );
+      return;
+    } catch (e) {
+      console.error(e);
+      this.log(
+        `Failed to preload reranker suite. Reranking will be available on the first rerank call.`
+      );
+      return;
+    }
+  }
+
+  async initClient() {
+    if (NativeEmbeddingReranker.#transformers) {
+      this.log(`Reranker suite already initialized - reusing.`);
+      return;
+    }
+
+    await import("@xenova/transformers").then(
+      async ({ AutoModelForSequenceClassification, AutoTokenizer }) => {
+        this.log(`Loading reranker suite...`);
+        NativeEmbeddingReranker.#transformers = {
+          AutoModelForSequenceClassification,
+          AutoTokenizer,
+        };
+        await this.#getPreTrainedModel();
+        await this.#getPreTrainedTokenizer();
+      }
+    );
+    return;
+  }
+
   async #getPreTrainedModel() {
-    if (NativeEmbeddingReranker._model) {
+    if (NativeEmbeddingReranker.#model) {
       this.log(`Loading model from singleton...`);
-      return NativeEmbeddingReranker._model;
+      return NativeEmbeddingReranker.#model;
     }
 
     const model =
-      await this.#transformers.AutoModelForSequenceClassification.from_pretrained(
+      await NativeEmbeddingReranker.#transformers.AutoModelForSequenceClassification.from_pretrained(
         this.model,
         {
           progress_callback: (p) =>
@@ -55,26 +86,29 @@ class NativeEmbeddingReranker {
           cache_dir: this.cacheDir,
         }
       );
-    NativeEmbeddingReranker._model = model;
+    this.log(`Loaded model ${this.model}`);
+    NativeEmbeddingReranker.#model = model;
     return model;
   }
 
   async #getPreTrainedTokenizer() {
-    if (NativeEmbeddingReranker._tokenizer) {
+    if (NativeEmbeddingReranker.#tokenizer) {
       this.log(`Loading tokenizer from singleton...`);
-      return NativeEmbeddingReranker._tokenizer;
+      return NativeEmbeddingReranker.#tokenizer;
     }
 
-    const tokenizer = await this.#transformers.AutoTokenizer.from_pretrained(
-      this.model,
-      {
-        progress_callback: (p) =>
-          p.status === "progress" &&
-          this.log(`Loading tokenizer ${this.model}... ${p?.progress}%`),
-        cache_dir: this.cacheDir,
-      }
-    );
-    NativeEmbeddingReranker._tokenizer = tokenizer;
+    const tokenizer =
+      await NativeEmbeddingReranker.#transformers.AutoTokenizer.from_pretrained(
+        this.model,
+        {
+          progress_callback: (p) =>
+            p.status === "progress" &&
+            this.log(`Loading tokenizer ${this.model}... ${p?.progress}%`),
+          cache_dir: this.cacheDir,
+        }
+      );
+    this.log(`Loaded tokenizer ${this.model}`);
+    NativeEmbeddingReranker.#tokenizer = tokenizer;
     return tokenizer;
   }
 
@@ -87,9 +121,9 @@ class NativeEmbeddingReranker {
    * @returns {Promise<any[]>} - The reranked list of documents.
    */
   async rerank(query, documents, options = { topK: 4 }) {
-    this.log(`Loading model ${this.model}...`);
-    const model = await this.#getPreTrainedModel();
-    const tokenizer = await this.#getPreTrainedTokenizer();
+    await this.initClient();
+    const model = NativeEmbeddingReranker.#model;
+    const tokenizer = NativeEmbeddingReranker.#tokenizer;
 
     const start = Date.now();
     this.log(`Reranking ${documents.length} documents...`);
