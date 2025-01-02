@@ -55,7 +55,6 @@ const QDrant = {
     topN = 4,
     filterIdentifiers = [],
   }) {
-    const { client } = await this.connect();
     const result = {
       contextTexts: [],
       sourceDocuments: [],
