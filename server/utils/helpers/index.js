@@ -56,6 +56,7 @@
  * @property {Function} totalVectors - Returns the total number of vectors in the database.
  * @property {Function} namespaceCount - Returns the count of vectors in a given namespace.
  * @property {Function} similarityResponse - Performs a similarity search on a given namespace.
+ * @property {Function} rerankedSimilarityResponse - Performs a similarity search on a given namespace with reranking (if supported by provider).
  * @property {Function} namespace - Retrieves the specified namespace collection.
  * @property {Function} hasNamespace - Checks if a namespace exists.
  * @property {Function} namespaceExists - Verifies if a namespace exists in the client.
