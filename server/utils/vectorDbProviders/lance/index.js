@@ -124,13 +124,15 @@ const LanceDb = {
             );
             return;
           }
+          const score =
+            item?.rerank_score || this.distanceToSimilarity(item._distance);
 
           result.contextTexts.push(rest.text);
           result.sourceDocuments.push({
             ...rest,
-            score: this.distanceToSimilarity(item._distance),
+            score,
           });
-          result.scores.push(this.distanceToSimilarity(item._distance));
+          result.scores.push(score);
         });
       })
       .catch((e) => {
