@@ -12,7 +12,7 @@ const hint = {
   rerank: {
     title: "Accuracy Optimized",
     description:
-      "LLM responses will be slower, but your responses will be more accurate and relevant.",
+      "LLM responses may take longer to generate, but your responses will be more accurate and relevant.",
   },
 };
 
