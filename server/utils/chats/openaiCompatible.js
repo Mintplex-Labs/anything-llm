@@ -89,7 +89,7 @@ async function chatSync({
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
-          rerank: workspace.vectorSearchMode === "rerank",
+          rerank: workspace?.vectorSearchMode === "rerank",
         })
       : {
           contextTexts: [],
