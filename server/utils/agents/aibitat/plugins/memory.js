@@ -95,6 +95,7 @@ const memory = {
                   input: query,
                   LLMConnector,
                   topN: workspace?.topN ?? 4,
+                  rerank: workspace?.vectorSearchMode === "rerank",
                 });
 
               if (contextTexts.length === 0) {

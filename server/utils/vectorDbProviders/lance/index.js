@@ -5,6 +5,7 @@ const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
+const { NativeEmbeddingReranker } = require("../../EmbeddingRerankers/native");
 
 /**
  * LancedDB Client connection object
@@ -58,23 +59,109 @@ const LanceDb = {
     return (await table.countRows()) || 0;
   },
   /**
-   * Performs a SimilaritySearch on a give LanceDB namespace.
-   * @param {LanceClient} client
-   * @param {string} namespace
-   * @param {number[]} queryVector
-   * @param {number} similarityThreshold
-   * @param {number} topN
-   * @param {string[]} filterIdentifiers
+   * Performs a SimilaritySearch + Reranking on a namespace.
+   * @param {Object} params - The parameters for the rerankedSimilarityResponse.
+   * @param {Object} params.client - The vectorDB client.
+   * @param {string} params.namespace - The namespace to search in.
+   * @param {string} params.query - The query to search for (plain text).
+   * @param {number[]} params.queryVector - The vector of the query.
+   * @param {number} params.similarityThreshold - The threshold for similarity.
+   * @param {number} params.topN - the number of results to return from this process.
+   * @param {string[]} params.filterIdentifiers - The identifiers of the documents to filter out.
    * @returns
    */
-  similarityResponse: async function (
+  rerankedSimilarityResponse: async function ({
+    client,
+    namespace,
+    query,
+    queryVector,
+    topN = 4,
+    similarityThreshold = 0.25,
+    filterIdentifiers = [],
+  }) {
+    const reranker = new NativeEmbeddingReranker();
+    const collection = await client.openTable(namespace);
+    const totalEmbeddings = await this.namespaceCount(namespace);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+
+    /**
+     * For reranking, we want to work with a larger number of results than the topN.
+     * This is because the reranker can only rerank the results it it given and we dont auto-expand the results.
+     * We want to give the reranker a larger number of results to work with.
+     *
+     * However, we cannot make this boundless as reranking is expensive and time consuming.
+     * So we limit the number of results to a maximum of 50 and a minimum of 10.
+     * This is a good balance between the number of results to rerank and the cost of reranking
+     * and ensures workspaces with 10K embeddings will still rerank within a reasonable timeframe on base level hardware.
+     *
+     * Benchmarks:
+     * On Intel Mac: 2.6 GHz 6-Core Intel Core i7 - 20 docs reranked in ~5.2 sec
+     */
+    const searchLimit = Math.max(
+      10,
+      Math.min(50, Math.ceil(totalEmbeddings * 0.1))
+    );
+    const vectorSearchResults = await collection
+      .vectorSearch(queryVector)
+      .distanceType("cosine")
+      .limit(searchLimit)
+      .toArray();
+
+    await reranker
+      .rerank(query, vectorSearchResults, { topK: topN })
+      .then((rerankResults) => {
+        rerankResults.forEach((item) => {
+          if (this.distanceToSimilarity(item._distance) < similarityThreshold)
+            return;
+          const { vector: _, ...rest } = item;
+          if (filterIdentifiers.includes(sourceIdentifier(rest))) {
+            console.log(
+              "LanceDB: A source was filtered from context as it's parent document is pinned."
+            );
+            return;
+          }
+          const score =
+            item?.rerank_score || this.distanceToSimilarity(item._distance);
+
+          result.contextTexts.push(rest.text);
+          result.sourceDocuments.push({
+            ...rest,
+            score,
+          });
+          result.scores.push(score);
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        console.error("LanceDB::rerankedSimilarityResponse", e.message);
+      });
+
+    return result;
+  },
+
+  /**
+   * Performs a SimilaritySearch on a give LanceDB namespace.
+   * @param {Object} params
+   * @param {LanceClient} params.client
+   * @param {string} params.namespace
+   * @param {number[]} params.queryVector
+   * @param {number} params.similarityThreshold
+   * @param {number} params.topN
+   * @param {string[]} params.filterIdentifiers
+   * @returns
+   */
+  similarityResponse: async function ({
     client,
     namespace,
     queryVector,
     similarityThreshold = 0.25,
     topN = 4,
-    filterIdentifiers = []
-  ) {
+    filterIdentifiers = [],
+  }) {
     const collection = await client.openTable(namespace);
     const result = {
       contextTexts: [],
@@ -299,6 +386,7 @@ const LanceDb = {
     similarityThreshold = 0.25,
     topN = 4,
     filterIdentifiers = [],
+    rerank = false,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -313,15 +401,26 @@ const LanceDb = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse(
-      client,
-      namespace,
-      queryVector,
-      similarityThreshold,
-      topN,
-      filterIdentifiers
-    );
+    const result = rerank
+      ? await this.rerankedSimilarityResponse({
+          client,
+          namespace,
+          query: input,
+          queryVector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        })
+      : await this.similarityResponse({
+          client,
+          namespace,
+          queryVector,
+          similarityThreshold,
+          topN,
+          filterIdentifiers,
+        });
 
+    const { contextTexts, sourceDocuments } = result;
     const sources = sourceDocuments.map((metadata, i) => {
       return { metadata: { ...metadata, text: contextTexts[i] } };
     });

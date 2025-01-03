@@ -89,6 +89,7 @@ async function chatSync({
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
+          rerank: workspace?.vectorSearchMode === "rerank",
         })
       : {
           contextTexts: [],
@@ -304,6 +305,7 @@ async function streamChat({
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
+          rerank: workspace?.vectorSearchMode === "rerank",
         })
       : {
           contextTexts: [],
@@ -475,7 +477,7 @@ function formatJSON(
   const data = {
     id: chat.uuid ?? chat.id,
     object: "chat.completion",
-    created: Number(new Date()),
+    created: Math.floor(Number(new Date()) / 1000),
     model: model,
     choices: [
       {
