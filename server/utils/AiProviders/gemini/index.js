@@ -5,6 +5,7 @@ const {
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 const { defaultGeminiModels, v1BetaModels } = require("./defaultModals");
@@ -167,6 +168,7 @@ class GeminiLLM {
     const models = await this.fetchModels(true);
     return models.some((model) => model.id === modelName);
   }
+
   /**
    * Generates appropriate content array for a message + attachments.
    * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
@@ -203,7 +205,7 @@ class GeminiLLM {
     return [
       prompt,
       { role: "assistant", content: "Okay." },
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "USER_PROMPT",
         content: this.#generateContent({ userPrompt, attachments }),
@@ -219,8 +221,17 @@ class GeminiLLM {
       .map((message) => {
         if (message.role === "system")
           return { role: "user", parts: [{ text: message.content }] };
-        if (message.role === "user")
+
+        if (message.role === "user") {
+          // If the content is an array - then we have already formatted the context so return it directly.
+          if (Array.isArray(message.content))
+            return { role: "user", parts: message.content };
+
+          // Otherwise, this was a regular user message with no attachments
+          // so we need to format it for Gemini
           return { role: "user", parts: [{ text: message.content }] };
+        }
+
         if (message.role === "assistant")
           return { role: "model", parts: [{ text: message.content }] };
         return null;
