@@ -39,6 +39,8 @@ const TRANSLATIONS = {
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
+    "back-to-workspaces": "Back to Workspaces",
+    open: "Open settings",
   },
 
   // Page Definitions
@@ -117,8 +119,20 @@ const TRANSLATIONS = {
         "Customize the messages that will be suggested to your workspace users.",
       add: "Add new message",
       save: "Save Messages",
+      delete: "Delete",
+      fork: "Fork",
+      "more-actions": "More actions",
       heading: "Explain to me",
       body: "the benefits of AnythingLLM",
+      edit: {
+        prompt: "Edit Prompt",
+        response: "Edit Response",
+      },
+      feedback: {
+        "good-response": "Good response",
+        regenerate: "Regenerate",
+        copy: "Copy",
+      },
     },
     pfp: {
       title: "Assistant Profile Image",
@@ -180,6 +194,14 @@ const TRANSLATIONS = {
       title: "Prompt",
       description:
         "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+      input: {
+        "send-message": "Send a message",
+        "send-prompt-to-workspace": "Send prompt message to workspace",
+      },
+      attach: "Attach a file to this chat",
+      commands: "View all available slash commands for chatting.",
+      "text-size": "Change text size",
+      speak: "Speak your prompt",
     },
     refusal: {
       title: "Query mode refusal response",
@@ -283,6 +305,11 @@ const TRANSLATIONS = {
         "desc-end":
           "Web search during agent sessions will not work until this is set up.",
       },
+    },
+    menu: {
+      available: "View all available agents you can use for chatting.",
+      default: " - the default agent for this workspace.",
+      custom: "custom agents are coming soon!",
     },
   },
 
@@ -489,6 +516,39 @@ const TRANSLATIONS = {
     embedding: "Embedding Preference",
     vector: "Vector Database",
     anonymous: "Anonymous Telemetry Enabled",
+  },
+  "chat-history": {
+    welcome: "Welcome to your new workspace.",
+    "get-started-either": "To get started either",
+    "upload-doc": "upload a document",
+    or: "or",
+    "send-chat": "send a chat.",
+    "get-started": "To get started",
+    tts: {
+      "start-tts": "TTS Speak message",
+      "pause-tts": "Pause TTS speech of message",
+      start: "Speak message",
+      pause: "Pause speech",
+    },
+  },
+  citations: {
+    hide: "Hide Citations",
+    show: "Show Citations",
+  },
+  threads: {
+    new: "New Thread",
+    start: "Starting Thread...",
+    delete: {
+      selected: "Delete Selected",
+      delete: "Delete Thread",
+      question:
+        "Are you sure you want to delete this thread? All of its chats will be deleted. You cannot undo this.",
+      success: "Thread deleted successfully!",
+      failure: "Thread could not be deleted!",
+    },
+    options: "Thread options",
+    rename: "Rename",
+    rename_question: "What would you like to rename this thread to?",
   },
 };
 
