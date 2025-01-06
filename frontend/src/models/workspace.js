@@ -143,7 +143,9 @@ const Workspace = {
       handleChat({ id: v4(), type: "stopGeneration" });
     });
 
-    await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
+    const workspaceParam = "dof_password_policy,dof_workspace_voilence_policy";
+    const url = `${API_BASE}/workspace/${slug}/stream-chat?workspaces=${encodeURIComponent(workspaceParam)}`;
+    await fetchEventSource(url, {
       method: "POST",
       body: JSON.stringify({ message, attachments }),
       headers: baseHeaders(),

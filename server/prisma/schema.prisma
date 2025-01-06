@@ -185,6 +185,8 @@ model workspace_chats {
   lastUpdatedAt  DateTime @default(now())
   feedbackScore  Boolean?
   users          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  multi_workspaces  String?
+
 }
 
 model workspace_agent_invocations {

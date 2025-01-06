@@ -104,8 +104,12 @@ const WorkspaceThread = {
       handleChat({ id: v4(), type: "stopGeneration" });
     });
 
+
+    const workspaceParam = "dof_password_policy,dof_workspace_voilence_policy";
+    const url = `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/stream-chat?workspaces=${encodeURIComponent(workspaceParam)}`
+
     await fetchEventSource(
-      `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/stream-chat`,
+      url,
       {
         method: "POST",
         body: JSON.stringify({ message, attachments }),

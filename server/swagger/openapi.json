@@ -2433,23 +2433,13 @@
         }
       }
     },
-    "/v1/workspace/{slug}/thread/new": {
+    "/v1/workspace/thread/new": {
       "post": {
         "tags": [
           "Workspace Threads"
         ],
         "description": "Create a new workspace thread",
-        "parameters": [
-          {
-            "name": "slug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Unique slug of workspace"
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -2508,22 +2498,13 @@
         }
       }
     },
-    "/v1/workspace/{slug}/thread/{threadSlug}/update": {
+    "/v1/workspace/thread/{threadSlug}/update": {
       "post": {
         "tags": [
           "Workspace Threads"
         ],
         "description": "Update thread name by its unique slug.",
         "parameters": [
-          {
-            "name": "slug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Unique slug of workspace"
-          },
           {
             "name": "threadSlug",
             "in": "path",
@@ -2590,22 +2571,13 @@
         }
       }
     },
-    "/v1/workspace/{slug}/thread/{threadSlug}": {
+    "/v1/workspace/thread/{threadSlug}": {
       "delete": {
         "tags": [
           "Workspace Threads"
         ],
         "description": "Delete a workspace thread",
         "parameters": [
-          {
-            "name": "slug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Unique slug of workspace"
-          },
           {
             "name": "threadSlug",
             "in": "path",
@@ -2644,22 +2616,13 @@
         }
       }
     },
-    "/v1/workspace/{slug}/thread/{threadSlug}/chats": {
+    "/v1/workspace/thread/{threadSlug}/chats": {
       "get": {
         "tags": [
           "Workspace Threads"
         ],
         "description": "Get chats for a workspace thread",
         "parameters": [
-          {
-            "name": "slug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Unique slug of workspace"
-          },
           {
             "name": "threadSlug",
             "in": "path",
@@ -2723,22 +2686,13 @@
         }
       }
     },
-    "/v1/workspace/{slug}/thread/{threadSlug}/chat": {
+    "/v1/workspace/thread/{threadSlug}/chat": {
       "post": {
         "tags": [
           "Workspace Threads"
         ],
         "description": "Chat with a workspace thread",
         "parameters": [
-          {
-            "name": "slug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Unique slug of workspace"
-          },
           {
             "name": "threadSlug",
             "in": "path",
@@ -2803,29 +2757,21 @@
               "example": {
                 "message": "What is AnythingLLM?",
                 "mode": "query | chat",
-                "userId": 1
+                "userId": 1,
+                "workspaces": "dof_password_policy,dof_workspace_voilence_policy"
               }
             }
           }
         }
       }
     },
-    "/v1/workspace/{slug}/thread/{threadSlug}/stream-chat": {
+    "/v1/workspace/thread/{threadSlug}/stream-chat": {
       "post": {
         "tags": [
           "Workspace Threads"
         ],
         "description": "Stream chat with a workspace thread",
         "parameters": [
-          {
-            "name": "slug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Unique slug of workspace"
-          },
           {
             "name": "threadSlug",
             "in": "path",
@@ -2908,7 +2854,8 @@
               "example": {
                 "message": "What is AnythingLLM?",
                 "mode": "query | chat",
-                "userId": 1
+                "userId": 1,
+                "workspaces": "dof_password_policy,dof_workspace_voilence_policy"
               }
             }
           }

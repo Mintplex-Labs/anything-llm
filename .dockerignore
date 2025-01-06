@@ -16,3 +16,4 @@
 **/.log
 !docker/.env.example
 !frontend/.env.production
+**/collector/yarn.lock

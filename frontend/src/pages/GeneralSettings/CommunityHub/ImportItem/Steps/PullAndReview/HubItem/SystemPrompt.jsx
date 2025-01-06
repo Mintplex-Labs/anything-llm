@@ -14,7 +14,7 @@ export default function SystemPrompt({ item, setStep }) {
     async function getWorkspaces() {
       const workspaces = await Workspace.all();
       setWorkspaces(workspaces);
-      setDestinationWorkspaceSlug(workspaces[0].slug);
+      setDestinationWorkspaceSlug(workspaces[0].slug);  // need to understand the scope of this line for multiple workspaces
     }
     getWorkspaces();
   }, []);

@@ -155,6 +155,43 @@ const Workspace = {
       return null;
     }
   },
+  getWithUserMultipleWS: async function (user = null, clause = {}) {
+    if ([ROLES.admin, ROLES.manager].includes(user.role))
+      return this.getMultipleWS(clause);
+
+    try {
+      const workspaces = await prisma.workspaces.findMany({
+        where: {
+          ...clause,
+          workspace_users: {
+            some: {
+              user_id: user?.id,
+            },
+          },
+        },
+        include: {
+          workspace_users: true,
+          documents: true,
+        },
+      });
+
+      if (!workspaces || workspaces.length === 0) {
+        return null;
+      }
+
+      // Attach documents for each workspace using Document.forWorkspace
+      const enrichedWorkspaces = await Promise.all(
+        workspaces.map(async (workspace) => ({
+          ...workspace,
+          documents: await Document.forWorkspace(workspace.id),
+        }))
+      );
+      return enrichedWorkspaces;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  },
 
   get: async function (clause = {}) {
     try {
@@ -166,6 +203,21 @@ const Workspace = {
       });
 
       return workspace || null;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  },
+  getMultipleWS: async function (clause = {}) {
+    try {
+      const workspaces = await prisma.workspaces.findMany({
+        where: clause,
+        include: {
+          documents: true,
+        },
+      });
+
+      return workspaces.length > 0 ? workspaces : null;
     } catch (error) {
       console.error(error.message);
       return null;

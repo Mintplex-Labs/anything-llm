@@ -18,18 +18,18 @@ function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
 
   app.post(
-    "/v1/workspace/:slug/thread/new",
+    "/v1/workspace/thread/new",
     [validApiKey],
     async (request, response) => {
       /*
       #swagger.tags = ['Workspace Threads']
       #swagger.description = 'Create a new workspace thread'
-      #swagger.parameters['slug'] = {
-          in: 'path',
-          description: 'Unique slug of workspace',
-          required: true,
-          type: 'string'
-      }
+      // #swagger.parameters['slug'] = {
+      //     in: 'path',
+      //     description: 'Unique slug of workspace',
+      //     required: true,
+      //     type: 'string'
+      // }
       #swagger.requestBody = {
         description: 'Optional userId associated with the thread, thread slug and thread name',
         required: false,
@@ -69,9 +69,10 @@ function apiWorkspaceThreadEndpoints(app) {
       }
       */
       try {
-        const wslug = request.params.slug;
+        // const wslug = request.params.slug;
+        // console.log(`wslug: ${wslug}`)
         let { userId = null, name = null, slug = null } = reqBody(request);
-        const workspace = await Workspace.get({ slug: wslug });
+        const workspace = await Workspace.get({ slug: "dof" });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -108,18 +109,18 @@ function apiWorkspaceThreadEndpoints(app) {
   );
 
   app.post(
-    "/v1/workspace/:slug/thread/:threadSlug/update",
+    "/v1/workspace/thread/:threadSlug/update",
     [validApiKey],
     async (request, response) => {
       /*
       #swagger.tags = ['Workspace Threads']
       #swagger.description = 'Update thread name by its unique slug.'
-      #swagger.parameters['slug'] = {
-          in: 'path',
-          description: 'Unique slug of workspace',
-          required: true,
-          type: 'string'
-      }
+      // #swagger.parameters['slug'] = {
+      //     in: 'path',
+      //     description: 'Unique slug of workspace',
+      //     required: true,
+      //     type: 'string'
+      // }
       #swagger.parameters['threadSlug'] = {
           in: 'path',
           description: 'Unique slug of thread',
@@ -165,7 +166,7 @@ function apiWorkspaceThreadEndpoints(app) {
       try {
         const { slug, threadSlug } = request.params;
         const { name } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: "dof" });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
           workspace_id: workspace.id,
@@ -189,18 +190,18 @@ function apiWorkspaceThreadEndpoints(app) {
   );
 
   app.delete(
-    "/v1/workspace/:slug/thread/:threadSlug",
+    "/v1/workspace/thread/:threadSlug",
     [validApiKey],
     async (request, response) => {
       /*
     #swagger.tags = ['Workspace Threads']
     #swagger.description = 'Delete a workspace thread'
-    #swagger.parameters['slug'] = {
-        in: 'path',
-        description: 'Unique slug of workspace',
-        required: true,
-        type: 'string'
-    }
+    // #swagger.parameters['slug'] = {
+    //     in: 'path',
+    //     description: 'Unique slug of workspace',
+    //     required: true,
+    //     type: 'string'
+    // }
     #swagger.parameters['threadSlug'] = {
         in: 'path',
         description: 'Unique slug of thread',
@@ -218,7 +219,7 @@ function apiWorkspaceThreadEndpoints(app) {
     */
       try {
         const { slug, threadSlug } = request.params;
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: "dof" });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -238,18 +239,18 @@ function apiWorkspaceThreadEndpoints(app) {
   );
 
   app.get(
-    "/v1/workspace/:slug/thread/:threadSlug/chats",
+    "/v1/workspace/thread/:threadSlug/chats",
     [validApiKey],
     async (request, response) => {
       /*
       #swagger.tags = ['Workspace Threads']
       #swagger.description = 'Get chats for a workspace thread'
-      #swagger.parameters['slug'] = {
-          in: 'path',
-          description: 'Unique slug of workspace',
-          required: true,
-          type: 'string'
-      }
+      // #swagger.parameters['slug'] = {
+      //     in: 'path',
+      //     description: 'Unique slug of workspace',
+      //     required: true,
+      //     type: 'string'
+      // }
       #swagger.parameters['threadSlug'] = {
           in: 'path',
           description: 'Unique slug of thread',
@@ -286,8 +287,9 @@ function apiWorkspaceThreadEndpoints(app) {
       }
       */
       try {
+        console.log('thread chats history service called')
         const { slug, threadSlug } = request.params;
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({ slug: "dof" });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
           workspace_id: workspace.id,
@@ -318,18 +320,18 @@ function apiWorkspaceThreadEndpoints(app) {
   );
 
   app.post(
-    "/v1/workspace/:slug/thread/:threadSlug/chat",
+    "/v1/workspace/thread/:threadSlug/chat",
     [validApiKey],
     async (request, response) => {
       /*
       #swagger.tags = ['Workspace Threads']
       #swagger.description = 'Chat with a workspace thread'
-      #swagger.parameters['slug'] = {
-          in: 'path',
-          description: 'Unique slug of workspace',
-          required: true,
-          type: 'string'
-      }
+      // #swagger.parameters['slug'] = {
+      //     in: 'path',
+      //     description: 'Unique slug of workspace',
+      //     required: true,
+      //     type: 'string'
+      // }
       #swagger.parameters['threadSlug'] = {
           in: 'path',
           description: 'Unique slug of thread',
@@ -344,7 +346,8 @@ function apiWorkspaceThreadEndpoints(app) {
             example: {
               message: "What is AnythingLLM?",
               mode: "query | chat",
-              userId: 1
+              userId: 1, 
+              workspaces: "dof_password_policy,dof_workspace_voilence_policy"
             }
           }
         }
@@ -374,8 +377,9 @@ function apiWorkspaceThreadEndpoints(app) {
       */
       try {
         const { slug, threadSlug } = request.params;
-        const { message, mode = "query", userId } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const { message, mode = "query", userId, workspaces } = reqBody(request);
+        
+        const workspace = await Workspace.get({ slug: "dof" });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
           workspace_id: workspace.id,
@@ -414,6 +418,7 @@ function apiWorkspaceThreadEndpoints(app) {
           mode,
           user,
           thread,
+          workspaces,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
@@ -443,18 +448,18 @@ function apiWorkspaceThreadEndpoints(app) {
   );
 
   app.post(
-    "/v1/workspace/:slug/thread/:threadSlug/stream-chat",
+    "/v1/workspace/thread/:threadSlug/stream-chat",
     [validApiKey],
     async (request, response) => {
       /*
       #swagger.tags = ['Workspace Threads']
       #swagger.description = 'Stream chat with a workspace thread'
-      #swagger.parameters['slug'] = {
-          in: 'path',
-          description: 'Unique slug of workspace',
-          required: true,
-          type: 'string'
-      }
+      // #swagger.parameters['slug'] = {
+      //     in: 'path',
+      //     description: 'Unique slug of workspace',
+      //     required: true,
+      //     type: 'string'
+      // }
       #swagger.parameters['threadSlug'] = {
           in: 'path',
           description: 'Unique slug of thread',
@@ -469,7 +474,8 @@ function apiWorkspaceThreadEndpoints(app) {
             example: {
               message: "What is AnythingLLM?",
               mode: "query | chat",
-              userId: 1
+              userId: 1,
+              "workspaces": "dof_password_policy,dof_workspace_voilence_policy"
             }
           }
         }
@@ -520,8 +526,8 @@ function apiWorkspaceThreadEndpoints(app) {
       */
       try {
         const { slug, threadSlug } = request.params;
-        const { message, mode = "query", userId } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const { message, mode = "query", userId, workspaces} = reqBody(request);
+        const workspace = await Workspace.get({ slug: "dof" });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
           workspace_id: workspace.id,
@@ -568,6 +574,7 @@ function apiWorkspaceThreadEndpoints(app) {
           mode,
           user,
           thread,
+          workspaces,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",

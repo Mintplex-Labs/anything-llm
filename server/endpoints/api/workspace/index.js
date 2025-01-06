@@ -823,7 +823,7 @@ function apiWorkspaceEndpoints(app) {
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           TTSSelection: process.env.TTS_PROVIDER || "native",
         });
-        await EventLogs.logEvent("api_sent_chat", {
+        await EventLogs.logEvent("api_sent_chat_123", {
           workspaceName: workspace?.name,
           chatModel: workspace?.chatModel || "System Default",
         });

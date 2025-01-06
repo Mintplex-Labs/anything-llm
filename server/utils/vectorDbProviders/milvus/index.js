@@ -10,6 +10,8 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const natural = require('natural');
+const TfIdfClass = natural.TfIdf;
 
 const Milvus = {
   name: "Milvus",
@@ -17,6 +19,61 @@ const Milvus = {
   // so we need to enforce that by re-normalizing the names when communicating with
   // the DB.
   // If the first char of the collection is not an underscore or letter the collection name will be invalid.
+  /**
+ * Generate a sparse vector from a single text chunk.
+ * @param {string} textChunk - The text chunk to be converted into a sparse vector.
+ * @returns {Object} - The sparse vector representation of the text chunk.
+ */
+  generateSparseVectors: function (textChunks) {
+    try {
+      if (!Array.isArray(textChunks) || textChunks.length === 0) {
+        throw new Error('Input must be a non-empty array of text chunks.');
+      }
+
+      // Initialize TF-IDF Vectorizer
+      const tfidf = new TfIdfClass();
+
+      // Add all text chunks to the TF-IDF model
+      textChunks.forEach(chunk => {
+        if (chunk && chunk.trim() !== '') {
+          tfidf.addDocument(chunk);
+        } else {
+          throw new Error('One or more text chunks are empty.');
+        }
+      });
+
+      // Create a global token-to-index map
+      const tokenIndexMap = new Map();
+      let tokenCounter = 0;
+
+      // Build global token index map
+      textChunks.forEach((_, docIndex) => {
+        tfidf.listTerms(docIndex).forEach(item => {
+          if (!tokenIndexMap.has(item.term)) {
+            tokenIndexMap.set(item.term, tokenCounter++);
+          }
+        });
+      });
+
+      // Generate sparse vectors using token indices
+      const sparseVectors = textChunks.map((_, docIndex) => {
+        const sparseVector = {};
+        tfidf.listTerms(docIndex).forEach(item => {
+          const tokenIndex = tokenIndexMap.get(item.term);
+          sparseVector[tokenIndex] = item.tfidf;
+        });
+
+        return sparseVector;
+      });
+
+      // console.log('Sparse Vectors (Milvus Compatible):', sparseVectors);
+      return sparseVectors;
+
+    } catch (error) {
+      console.error('Error generating sparse vectors:', error.message);
+      throw error;
+    }
+  },
   normalize: function (inputString) {
     let normalized = inputString.replace(/[^a-zA-Z0-9_]/g, "_");
     if (new RegExp(/^[a-zA-Z_]/).test(normalized.slice(0, 1)))
@@ -63,6 +120,46 @@ const Milvus = {
     });
     return Number(statistics?.data?.row_count ?? 0);
   },
+  namespaceCountMultiple: async function (_namespaces = []) {
+    const { client } = await this.connect();
+
+    // Initialize a variable to hold the total count
+    let totalCount = 0;
+
+    // Iterate over all provided namespaces
+    for (const _namespace of _namespaces) {
+      // Fetch collection statistics for each namespace
+      const statistics = await client.getCollectionStatistics({
+        collection_name: this.normalize(_namespace.slug),
+      });
+
+      // Add the row count (or 0 if not available) to the total count
+      totalCount += Number(statistics?.data?.row_count ?? 0);
+    }
+
+    // Return the total count
+    return totalCount;
+  },
+  namespaceCountWithWSNames: async function (_namespaces = []) {
+    const { client } = await this.connect();
+
+    // Initialize a variable to hold the total count
+    let totalCount = 0;
+
+    // Iterate over all provided namespaces
+    for (const _namespace of _namespaces) {
+      // Fetch collection statistics for each namespace
+      const statistics = await client.getCollectionStatistics({
+        collection_name: this.normalize(_namespace),
+      });
+
+      // Add the row count (or 0 if not available) to the total count
+      totalCount += Number(statistics?.data?.row_count ?? 0);
+    }
+
+    // Return the total count
+    return totalCount;
+  },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
@@ -74,6 +171,24 @@ const Milvus = {
     if (!namespace) return false;
     const { client } = await this.connect();
     return await this.namespaceExists(client, namespace);
+  },
+  hasNamespaces: async function (workspaces = null) {
+    if (!workspaces || workspaces.length === 0) return false;
+
+    const { client } = await this.connect();
+
+    // Loop through each namespace and check if it exists
+    for (const workspace of workspaces) {
+      const exists = await this.namespaceExists(client, workspace.slug);
+
+      if (!exists) {
+        // If any namespace doesn't exist, return false
+        return false;
+      }
+    }
+
+    // If all namespaces exist, return true
+    return true;
   },
   namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
@@ -94,6 +209,7 @@ const Milvus = {
   // providers do.
   getOrCreateCollection: async function (client, namespace, dimensions = null) {
     const isExists = await this.namespaceExists(client, namespace);
+    console.log(`namespace ${namespace} exists in milvus : ${isExists}`)
     if (!isExists) {
       if (!dimensions)
         throw new Error(
@@ -112,10 +228,15 @@ const Milvus = {
           },
           {
             name: "vector",
-            description: "vector",
+            description: "dense_vector",
             data_type: DataType.FloatVector,
             dim: dimensions,
           },
+          // {
+          //   name: "sparse_vector",
+          //   description: "sparse_vector",
+          //   data_type: DataType.SparseFloatVector,
+          // },
           {
             name: "metadata",
             decription: "metadata",
@@ -129,6 +250,14 @@ const Milvus = {
         index_type: IndexType.AUTOINDEX,
         metric_type: MetricType.COSINE,
       });
+
+      // await client.createIndex({
+      //   collection_name: this.normalize(namespace),
+      //   field_name: "sparse_vector",
+      //   index_type: IndexType.SPARSE_INVERTED_INDEX,
+      //   metric_type: MetricType.IP,
+      // });
+
       await client.loadCollectionSync({
         collection_name: this.normalize(namespace),
       });
@@ -211,6 +340,8 @@ const Milvus = {
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
+    //  const sparseVectors = this.generateSparseVectors(textChunks);
+      // console.log('Final Sparse Vectors:', JSON.stringify(sparseVectors, null, 2));
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
@@ -235,23 +366,42 @@ const Milvus = {
       if (vectors.length > 0) {
         const chunks = [];
         const { client } = await this.connect();
+        console.log(`add/get collection from milvus`)
         await this.getOrCreateCollection(client, namespace, vectorDimension);
 
         console.log("Inserting vectorized chunks into Milvus.");
         for (const chunk of toChunks(vectors, 100)) {
           chunks.push(chunk);
-          const insertResult = await client.insert({
-            collection_name: this.normalize(namespace),
-            data: chunk.map((item) => ({
-              id: item.id,
-              vector: item.values,
-              metadata: chunk.metadata,
-            })),
-          });
+          const data = chunk.map((item) => ({
+            id: item.id,
+            vector: item.values,
+            metadata: item.metadata, // Correcting the metadata reference
+          }));
+          let insertResult;
+          // Validate that `data` is a valid JSON
+          try {
+            JSON.stringify(data); // This will throw an error if `data` is not valid JSON
+
+            // Insert into Milvus
+            insertResult = await client.insert({
+              collection_name: this.normalize(namespace),
+              data,
+            });
+
+            if (insertResult?.status.error_code !== "Success") {
+              throw new Error(
+                `Error embedding into Milvus! Reason: ${insertResult?.status.reason}`
+              );
+            }
+          } catch (error) {
+            console.error("Failed to validate or insert data into Milvus:", error.message);
+            throw error; // Re-throw the error to handle it upstream if needed
+          }
+
 
           if (insertResult?.status.error_code !== "Success") {
             throw new Error(
-              `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
+              `Error embedding into Milvus line 255! Reason:${insertResult?.status.reason}`
             );
           }
         }
@@ -330,6 +480,65 @@ const Milvus = {
       message: false,
     };
   },
+  performSimilaritySearchMultiple: async function ({
+    namespaces = [],
+    input = "",
+    LLMConnector = null,
+    similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = [],
+  }) {
+    if (!Array.isArray(namespaces) || namespaces.length === 0 || !input || !LLMConnector)
+      throw new Error("Invalid request to performSimilaritySearch.");
+
+    const { client } = await this.connect();
+    const results = {
+      contextTexts: [],
+      sources: [],
+      message: false,
+    };
+
+    for (const namespace of namespaces) {
+      console.log(`workspace name : ${namespace.slug}`)
+      if (!(await this.namespaceExists(client, namespace.slug))) {
+        continue; // Skip this namespace if it doesn't exist
+      }
+      console.log(`workspace : ${namespace.slug} exists in milvus`)
+
+      const queryVector = await LLMConnector.embedTextInput(input);
+
+      const { contextTexts, sourceDocuments } = await this.similarityResponse(
+        client,
+        namespace.slug,
+        queryVector,
+        similarityThreshold,
+        topN,
+        filterIdentifiers
+      );
+      // console.log(`###############################################################################################`)
+      // console.log(`###############################################################################################`)
+
+      // console.log(`Response from similarity search for workspace ${namespace.slug}:`, {
+      //   contextTexts,
+      //   sourceDocuments,
+      // });
+      // console.log(`###############################################################################################`)
+      // console.log(`###############################################################################################`)
+
+
+      const sources = sourceDocuments.map((metadata, i) => {
+        return { ...metadata, text: contextTexts[i], namespace };
+      });
+
+      results.contextTexts.push(...contextTexts);
+      results.sources.push(...this.curateSources(sources));
+    }
+
+    // if (results.sources.length === 0) {
+    //   results.message = "Invalid query - no documents found for the provided workspaces!";
+    // }
+    return results;
+  },
   similarityResponse: async function (
     client,
     namespace,
@@ -348,7 +557,11 @@ const Milvus = {
       vectors: queryVector,
       limit: topN,
     });
+
+    const seen = new Set(); // Track unique context texts to remove duplicates
+
     response.results.forEach((match) => {
+      // console.log(`match score is ${match.score}`)
       if (match.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
         console.log(
@@ -356,11 +569,21 @@ const Milvus = {
         );
         return;
       }
+      const contextText = match.metadata.text;
+      
 
-      result.contextTexts.push(match.metadata.text);
-      result.sourceDocuments.push(match);
-      result.scores.push(match.score);
+      // result.contextTexts.push(match.metadata.text);
+      // result.sourceDocuments.push(match);
+      // result.scores.push(match.score);
+      if (!seen.has(contextText)) {
+        seen.add(contextText); // Add to the set to track uniqueness
+        result.contextTexts.push(contextText);
+        result.sourceDocuments.push(match);
+        result.scores.push(match.score);
+      }
     });
+    // console.dir(result, { depth: null });
+    
     return result;
   },
   "namespace-stats": async function (reqBody = {}) {

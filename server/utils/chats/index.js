@@ -37,7 +37,7 @@ async function grepCommand(message, user = null) {
 
 async function recentChatHistory({
   user = null,
-  workspace,
+  // workspace,
   thread = null,
   messageLimit = 20,
   apiSessionId = null,
@@ -45,7 +45,7 @@ async function recentChatHistory({
   const rawHistory = (
     await WorkspaceChats.where(
       {
-        workspaceId: workspace.id,
+        // workspaceId: workspace.id, // will fetch chat history based on user_id and thread_id only.
         user_id: user?.id || null,
         thread_id: thread?.id || null,
         api_session_id: apiSessionId || null,
