@@ -173,14 +173,8 @@ export default function ChatHistory({
           </p>
           {!user || user.role !== "default" ? (
             <p className="w-full items-center text-forest text-lg font-base flex flex-col md:flex-row gap-x-1">
-              To get started either{" "}
-              <span
-                className="underline font-medium cursor-pointer"
-                onClick={showModal}
-              >
-                upload a document
-              </span>
-              or <b className="font-medium italic">send a chat.</b>
+              To get started, you can {" "}
+              <b className="font-medium italic">send a chat.</b>
             </p>
           ) : (
             <p className="w-full items-center text-forest text-lg font-base flex flex-col md:flex-row gap-x-1">
@@ -286,7 +280,7 @@ function StatusResponse({ props }) {
       <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <span
-            className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line`}
+            className={`text-xs inline-block p-2 rounded-lg text-forest/60 font-mono whitespace-pre-line`}
           >
             {props.content}
           </span>

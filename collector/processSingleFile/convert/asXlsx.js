@@ -25,7 +25,7 @@ function convertToCSV(data) {
     .join("\n");
 }
 
-async function asXlsx({ fullFilePath = "", filename = "" }) {
+async function asXlsx({ fullFilePath = "", filename = "", options = {} }) {
   const documents = [];
   const folderName = slugify(`${path.basename(filename)}-${v4().slice(0, 4)}`, {
     lower: true,
@@ -73,7 +73,8 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
         const document = writeToServerDocuments(
           sheetData,
           `sheet-${slugify(name)}`,
-          outFolderPath
+          options.destination
+          //outFolderPath
         );
         documents.push(document);
         console.log(

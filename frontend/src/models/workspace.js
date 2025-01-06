@@ -239,7 +239,7 @@ const Workspace = {
       .catch(() => false);
   },
   uploadFile: async function (slug, formData) {
-    const response = await fetch(`${API_BASE}/workspace/${slug}/upload`, {
+    const response = await fetch(`${API_BASE}/workspace/${slug}/upload1`, {
       method: "POST",
       body: formData,
       headers: baseHeaders(),

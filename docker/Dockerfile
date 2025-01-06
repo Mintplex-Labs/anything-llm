@@ -155,6 +155,7 @@ FROM backend-build AS production-build
 WORKDIR /app
 COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
 USER root
+COPY --chown=anythingllm:anythingllm ./Test1 /app/collector/hotdir
 RUN chown -R anythingllm:anythingllm /app/server && \
     chown -R anythingllm:anythingllm /app/collector
 USER anythingllm

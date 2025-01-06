@@ -42,12 +42,15 @@ class CollectorApi {
       });
   }
 
-  async processDocument(filename = "") {
+  async processDocument(filename = "", destinationPath = null) {
     if (!filename) return false;
 
     const data = JSON.stringify({
       filename,
-      options: this.#attachOptions(),
+      options: {
+        ...this.#attachOptions(),
+        destination: destinationPath
+      },
     });
 
     return await fetch(`${this.endpoint}/process`, {

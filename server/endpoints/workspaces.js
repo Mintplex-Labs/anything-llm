@@ -34,6 +34,32 @@ const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
+const { default: slugify } = require("slugify");
+
+function getAllFiles(dirPath, arrayOfFiles = []) {
+  try {
+    const files = fs.readdirSync(dirPath);
+
+  files.forEach((file) => {
+    const filePath = path.join(dirPath, file);
+
+    if (fs.statSync(filePath).isDirectory()) {
+      // If it's a directory, recurse into it
+      getAllFiles(filePath, arrayOfFiles);
+    } else {
+      // If it's a file, push it to the array
+      arrayOfFiles.push({
+        path: filePath,
+        name: file
+      });
+    }
+  });
+  } catch(err) {
+    console.log(`[INFO] Folder not found ${dirPath}`)
+  }
+
+  return arrayOfFiles;
+}
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -100,6 +126,107 @@ function workspaceEndpoints(app) {
           data
         );
         response.status(200).json({ workspace, message });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/upload1",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      handleFileUpload,
+    ],
+    async function (request, response) {
+      try {
+        const Collector = new CollectorApi();
+
+        const { originalname } = request.file;
+        const processingOnline = await Collector.online();
+
+        if (!processingOnline) {
+          response
+            .status(500)
+            .json({
+              success: false,
+              error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
+            })
+            .end();
+          return;
+        }
+
+        const folderPath = './storage/Test1';
+        const allfiles = getAllFiles(folderPath);
+        console.log(`[INFO] ${JSON.stringify(allfiles)}`)
+        const files = allfiles.map(f => {
+          return {
+            "path": f.path.replace("storage/", ""),
+          "name": f.name
+        }
+        })
+        const destFolder = "/app/collector/hotdir/Test1";
+        await fs.cpSync(folderPath, destFolder, {overwrite: true, recursive: true});
+
+        const destinationFolder = "Test1";
+        const collectDocumentsFolder = "/app/server/storage/documents/" + destinationFolder
+
+        const collectFiles = getAllFiles(collectDocumentsFolder);
+        const finalCollectFiles = collectFiles.map(f =>  f.path);
+        const normalizedFiles = files.map(f => {
+          const targetFilename = f.path.replace(/^(\.\.(\/|\\|$))+/, "");
+          return slugify(targetFilename)
+        })
+        const finalFiles = []
+        for (let i = 0; i < normalizedFiles.length; i++) {
+          let found = false;
+          for(let j = 0; j < finalCollectFiles.length; j++) {
+            console.log(`[INFO] file check ${finalCollectFiles[j].includes(normalizedFiles[i])} ${finalCollectFiles[j]} --- ${normalizedFiles[i]}`)
+            if (finalCollectFiles[j].includes(normalizedFiles[i])) {
+              found = true;
+              break;
+            }
+          }
+          if(!found) {
+            finalFiles.push(files[i])
+          }
+        }
+        console.log(`[INFO] collect files ${JSON.stringify(finalCollectFiles)} }`)
+        console.log(`[INFO] final files ${JSON.stringify(finalFiles)} `)
+
+        let success, reason
+
+        for (let file of finalFiles) {
+          const finalFile = "/app/collector/hotdir" + "/" + file.path;
+          console.log(`[INFO] ${finalFile}`);
+          const res = await Collector.processDocument(finalFile, collectDocumentsFolder);
+          success = res.success;
+          reason += res.reason + " -- " + finalFile;
+        }
+        if (finalFiles.length == 0) {
+          success = true
+        }
+       success = true
+
+        if (!success) {
+          response.status(500).json({ success: false, error: reason }).end();
+          return;
+        }
+
+        Collector.log(
+          `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
+        );
+        await Telemetry.sendTelemetry("document_uploaded");
+        await EventLogs.logEvent(
+          "document_uploaded",
+          {
+            documentName: originalname,
+          },
+          response.locals?.user?.id
+        );
+        response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

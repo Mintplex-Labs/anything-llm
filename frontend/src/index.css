@@ -46,7 +46,7 @@ a {
 }
 
 .greyC {
-  filter: red;
+  filter: gray;
   -webkit-filter: grayscale(100%);
   transition: 0.4s;
 }
@@ -134,8 +134,8 @@ a {
   .fade-up-border {
     background: linear-gradient(
       to bottom,
-      rgba(250, 221, 223, 10%),
-      rgb(250, 221, 223) 89%
+      rgba(220, 221, 223, 10%),
+      rgb(220, 221, 223) 89%
     );
   }
 }
@@ -144,8 +144,8 @@ a {
   .fade-up-border {
     background: linear-gradient(
       to bottom,
-      rgba(250, 37, 36, 50%),
-      rgb(250 37 36) 90%
+      rgba(41, 37, 36, 50%),
+      rgb(41 37 36) 90%
     );
   }
 }
@@ -162,7 +162,7 @@ a {
   height: 10px;
   border-radius: 5px;
   background-color: #eeeeee;
-  color: #cf6d4f;
+  color: #5fa4fa;
   box-shadow: 9999px 0 0 0 #eeeeee;
   animation: dot-falling 1.5s infinite linear;
   animation-delay: 0.1s;
@@ -198,7 +198,7 @@ a {
 
 @keyframes dot-falling {
   0% {
-    box-shadow: 9999px -15px 0 0 rgba(250, 128, 255, 0);
+    box-shadow: 9999px -15px 0 0 rgba(152, 128, 255, 0);
   }
 
   25%,
@@ -292,12 +292,12 @@ dialog[open] {
 }
 
 dialog::backdrop {
-  background: rgba(250, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
 }
 
 .backdrop {
-  background: rgba(250, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
 }
 
@@ -338,8 +338,8 @@ dialog::backdrop {
 .login-input-gradient {
   background: linear-gradient(
     180deg,
-    rgba(250, 65, 71, 0.3) 0%,
-    rgba(250, 47, 53, 0.3) 100%
+    rgba(61, 65, 71, 0.3) 0%,
+    rgba(44, 47, 53, 0.3) 100%
   ) !important;
   box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
 }
@@ -612,7 +612,7 @@ dialog::backdrop {
 
 .markdown strong {
   font-weight: 600;
-  color: #fff;
+  color: #004637;
 }
 
 .file-row:nth-child(even) {
@@ -662,18 +662,18 @@ does not extend the close button beyond the viewport. */
 /* Webkit browsers (Chrome, Safari) */
 .white-scrollbar::-webkit-scrollbar {
   width: 3px;
-  background-color: #db8e5e;
+  background-color: #18181b;
 }
 
 .white-scrollbar::-webkit-scrollbar-track {
-  background-color: #db8e5e;
+  background-color: #18181b;
   margin-right: 8px;
 }
 
 .white-scrollbar::-webkit-scrollbar-thumb {
   background-color: #ffffff;
   border-radius: 4px;
-  border: 2px solid #db8e5e;
+  border: 2px solid #18181b;
 }
 
 .white-scrollbar::-webkit-scrollbar-thumb:hover {

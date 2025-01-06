@@ -9,7 +9,7 @@ const {
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
-async function asMbox({ fullFilePath = "", filename = "" }) {
+async function asMbox({ fullFilePath = "", filename = "", options = {} }) {
   console.log(`-- Working ${filename} --`);
 
   const mails = await mboxParser(fs.createReadStream(fullFilePath))
@@ -59,7 +59,8 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
     item++;
     const document = writeToServerDocuments(
       data,
-      `${slugify(filename)}-${data.id}-msg-${item}`
+      `${slugify(filename)}-${data.id}-msg-${item}`,
+      options.destination
     );
     documents.push(document);
   }

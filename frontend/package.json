@@ -8,8 +8,7 @@
     "dev": "NODE_ENV=development vite --debug --host=0.0.0.0",
     "build": "vite build && node scripts/postbuild.js",
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./src",
-    "preview": "vite preview",
-    "package": "electron-packager . my-vite-app --platform=win32 --arch=x64 --out=build"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@microsoft/fetch-event-source": "^2.0.1",
@@ -54,8 +53,6 @@
     "@vitejs/plugin-react": "^4.0.0-beta.0",
     "autoprefixer": "^10.4.14",
     "buffer": "^6.0.3",
-    "electron": "^33.0.2",
-    "electron-builder": "^25.1.8",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-ft-flow": "^3.0.0",

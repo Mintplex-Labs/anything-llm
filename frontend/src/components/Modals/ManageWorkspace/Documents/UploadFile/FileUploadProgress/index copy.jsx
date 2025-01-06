@@ -40,17 +40,12 @@ function FileUploadProgressComponent({
       setLoadingMessage("Uploading file...");
       const start = Number(new Date());
       const formData = new FormData();
-      
-      // Check if file.file is a Blob or File, if not convert it to a Blob
-      let fileData = file instanceof Blob ? file.file : new Blob([file], { type: "application/octet-stream" });
-      
-      formData.append("file", fileData, file.name); // Ensure the name property is still used for file naming
-      
+      formData.append("file", file, file.name);
       const timer = setInterval(() => {
         setTimerMs(Number(new Date()) - start);
       }, 100);
-  
-      // Attempt upload
+
+      // Chunk streaming not working in production so we just sit and wait
       const { response, data } = await Workspace.uploadFile(slug, formData);
       if (!response.ok) {
         setStatus("failed");
@@ -64,16 +59,14 @@ function FileUploadProgressComponent({
         clearInterval(timer);
         onUploadSuccess();
       }
-  
+
       // Begin fadeout timer to clear uploader queue.
       setTimeout(() => {
         fadeOut(() => setTimeout(() => beginFadeOut(), 300));
       }, 5000);
     }
-    
     !!file && !rejected && uploadFile();
   }, []);
-  
 
   if (rejected) {
     return (

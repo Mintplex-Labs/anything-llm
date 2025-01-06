@@ -8,7 +8,7 @@ const {
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
-async function asOfficeMime({ fullFilePath = "", filename = "" }) {
+async function asOfficeMime({ fullFilePath = "", filename = "", options = {} }) {
   console.log(`-- Working ${filename} --`);
   let content = "";
   try {
@@ -43,7 +43,8 @@ async function asOfficeMime({ fullFilePath = "", filename = "" }) {
 
   const document = writeToServerDocuments(
     data,
-    `${slugify(filename)}-${data.id}`
+    `${slugify(filename)}-${data.id}`,
+    options.destination
   );
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);

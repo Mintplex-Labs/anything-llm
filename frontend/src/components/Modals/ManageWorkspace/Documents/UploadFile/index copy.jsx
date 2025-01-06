@@ -2,6 +2,7 @@ import { CloudArrowUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
+import { useDropzone } from "react-dropzone";
 import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
@@ -43,24 +44,22 @@ export default function UploadFile({
   const handleUploadSuccess = debounce(() => fetchKeys(true), 1000);
   const handleUploadError = (_msg) => null; // stubbed.
 
-  const uploadFilesFromFolder = async () => {
-    try {
-      // Use File System Access API or relevant server-side API to get files from a folder
-      
-      const response = await fetch(`/api/list-files`); // Example endpoint to fetch file list
-      if (!response.ok) {
-        throw new Error("Failed to fetch files from the folder Lalalaala ", response);
-      }
-      const fileList = await response.json();
-      const formattedFiles = fileList.map((file) => ({
+  const onDrop = async (acceptedFiles, rejections) => {
+    const newAccepted = acceptedFiles.map((file) => {
+      return {
         uid: v4(),
         file,
-      }));
-
-      setFiles([formattedFiles[0]]);
-    } catch (error) {
-      showToast(`Error accessing folder:  ${error.message}`, "error");
-    }
+      };
+    });
+    const newRejected = rejections.map((file) => {
+      return {
+        uid: v4(),
+        file: file.file,
+        rejected: true,
+        reason: file.errors[0].code,
+      };
+    });
+    setFiles([...newAccepted, ...newRejected]);
   };
 
   useEffect(() => {
@@ -71,38 +70,61 @@ export default function UploadFile({
     checkProcessorOnline();
   }, []);
 
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    disabled: !ready,
+  });
+
   return (
     <div>
-      <button
-        onClick={uploadFilesFromFolder}
-        disabled={!ready}
-        className={`w-[560px] p-3 mb-4 text-white border-2 rounded-2xl bg-zinc-900/50 ${
-          ready ? "cursor-pointer hover:bg-zinc-900/90" : "cursor-not-allowed"
-        }`}
+      <div
+        className={`w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${
+          ready ? "cursor-pointer" : "cursor-not-allowed"
+        } hover:bg-zinc-900/90`}
+        {...getRootProps()}
       >
-        <CloudArrowUp className="w-8 h-8 text-white/80 inline-block mr-2" />
-        {ready ? "Sync Files from Folder" : "Document Processor Unavailable"}
-      </button>
-
-      {files.length > 0 && (
-        <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[180px] p-1 overflow-y-scroll no-scroll">
-          {files.map((file) => (
-            <FileUploadProgress
-              key={file.uid}
-              file={file.file}
-              uuid={file.uid}
-              setFiles={setFiles}
-              slug={workspace.slug}
-              rejected={file?.rejected}
-              reason={file?.reason}
-              onUploadSuccess={handleUploadSuccess}
-              onUploadError={handleUploadError}
-              setLoading={setLoading}
-              setLoadingMessage={setLoadingMessage}
-            />
-          ))}
-        </div>
-      )}
+        <input {...getInputProps()} />
+        {ready === false ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <CloudArrowUp className="w-8 h-8 text-white/80" />
+            <div className="text-white text-opacity-80 text-sm font-semibold py-1">
+              Document Processor Unavailable
+            </div>
+            <div className="text-white text-opacity-60 text-xs font-medium py-1 px-20 text-center">
+              We can't upload your files right now because the document
+              processor is offline. Please try again later.
+            </div>
+          </div>
+        ) : files.length === 0 ? (
+          <div className="flex flex-col items-center justify-center">
+            <CloudArrowUp className="w-8 h-8 text-white/80" />
+            <div className="text-white text-opacity-80 text-sm font-semibold py-1">
+              Click to upload or drag and drop
+            </div>
+            <div className="text-white text-opacity-60 text-xs font-medium py-1">
+              supports text files, csv's, spreadsheets, audio files, and more!
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[180px] p-1 overflow-y-scroll no-scroll">
+            {files.map((file) => (
+              <FileUploadProgress
+                key={file.uid}
+                file={file.file}
+                uuid={file.uid}
+                setFiles={setFiles}
+                slug={workspace.slug}
+                rejected={file?.rejected}
+                reason={file?.reason}
+                onUploadSuccess={handleUploadSuccess}
+                onUploadError={handleUploadError}
+                setLoading={setLoading}
+                setLoadingMessage={setLoadingMessage}
+              />
+            ))}
+          </div>
+        )}
+      </div>
       <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
         or submit a link
       </div>

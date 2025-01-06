@@ -8,7 +8,7 @@ const { tokenizeString } = require("../../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 const PDFLoader = require("./PDFLoader");
 
-async function asPdf({ fullFilePath = "", filename = "" }) {
+async function asPdf({ fullFilePath = "", filename = "", options = {} }) {
   const pdfLoader = new PDFLoader(fullFilePath, {
     splitPages: true,
   });
@@ -54,7 +54,8 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
 
   const document = writeToServerDocuments(
     data,
-    `${slugify(filename)}-${data.id}`
+    `${slugify(filename)}-${data.id}`,
+    options.destination
   );
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);

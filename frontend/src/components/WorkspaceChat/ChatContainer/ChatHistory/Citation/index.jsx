@@ -45,9 +45,9 @@ export default function Citations({ sources = [] }) {
     <div className="flex flex-col mt-4 justify-left">
       <button
         onClick={() => setOpen(!open)}
-        className={`text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${
+        className={`text-forest/50 font-medium italic text-sm text-left ml-14 pt-2 ${
           open ? "pb-2" : ""
-        } hover:text-white/75 transition-all duration-300`}
+        } hover:text-forest/75 transition-all duration-300`}
       >
         {open ? "Hide Citations" : "Show Citations"}
         <CaretRight

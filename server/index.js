@@ -28,6 +28,7 @@ const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
+const { listFilesEndpoints } = require("./endpoints/listFiles");
 
 app.use(cors({ origin: true }));
 app.use(bodyParser.text({ limit: FILE_LIMIT }));
@@ -45,7 +46,13 @@ if (!!process.env.ENABLE_HTTPS) {
   require("@mintplex-labs/express-ws").default(app); // load WebSockets in non-SSL mode.
 }
 
+
 app.use("/api", apiRouter);
+
+// Existing server setup...
+
+app.use("/api", apiRouter);
+listFilesEndpoints(apiRouter);
 systemEndpoints(apiRouter);
 extensionEndpoints(apiRouter);
 workspaceEndpoints(apiRouter);
@@ -59,6 +66,7 @@ documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
 experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
+
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
