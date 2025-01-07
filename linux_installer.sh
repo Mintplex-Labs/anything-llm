@@ -14,7 +14,7 @@ if [ "$(id -u)" -eq 0 ]; then
     exit 1
 fi
 
-APPIMAGE_URL="https://s3.us-west-1.amazonaws.com/public.useanything.com/latest/AnythingLLMDesktop.AppImage"
+APPIMAGE_URL="https://cdn.useanything.com/latest/AnythingLLMDesktop.AppImage"
 APPIMAGE_FILE="AnythingLLMDesktop.AppImage"
 EXTRACTED_DIR="anythingllm-desktop"
 OUTDIR="$HOME/AnythingLLMDesktop"

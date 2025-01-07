@@ -7,8 +7,7 @@ const PIPER_ASSETS_PATH =
     ? path.resolve(__dirname, "../../storage/models/pipertts")
     : path.resolve(process.env.STORAGE_DIR, `pipertts`);
 
-const BUCKET_BASE =
-  "https://s3.us-west-1.amazonaws.com/public.useanything.com/support/pipertts";
+const BUCKET_BASE = "https://cdn.useanything.com/support/pipertts";
 const AVAILABLE_FILES = [
   "piper_phonemize.data",
   "piper_phonemize.wasm",
