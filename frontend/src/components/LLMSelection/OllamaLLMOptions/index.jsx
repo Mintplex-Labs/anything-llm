@@ -169,18 +169,22 @@ export default function OllamaLLMOptions({ settings }) {
               className="tooltip !text-xs max-w-xs"
             >
               <p className="text-red-500">
-                <strong>Note:</strong> Only change this setting if you
-                understand its implications on performance and resource usage.
+                <strong>Note:</strong> Be careful with the Maximum mode. It may
+                increase resource usage significantly.
               </p>
               <br />
               <p>
                 <strong>Base:</strong> Ollama automatically limits the context
-                to 2048 tokens, reducing VRAM usage. Suitable for most users.
+                to 2048 tokens, keeping resources usage low while maintaining
+                good performance. Suitable for most users and models.
               </p>
               <br />
               <p>
                 <strong>Maximum:</strong> Uses the full context window (up to
-                Max Tokens). May increase VRAM usage significantly.
+                Max Tokens). Will result in increased resource usage but allows
+                for larger context conversations. <br />
+                <br />
+                This is not recommended for most users.
               </p>
             </Tooltip>
           </div>

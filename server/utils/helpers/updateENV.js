@@ -1,3 +1,5 @@
+const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
+
 const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
@@ -50,7 +52,7 @@ const KEY_MAPPING = {
   },
   GeminiLLMModelPref: {
     envKey: "GEMINI_LLM_MODEL_PREF",
-    checks: [isNotEmpty, validGeminiModel],
+    checks: [isNotEmpty],
   },
   GeminiSafetySetting: {
     envKey: "GEMINI_SAFETY_SETTING",
@@ -248,6 +250,7 @@ const KEY_MAPPING = {
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
+    postUpdate: [handleVectorStoreReset],
   },
   EmbeddingBasePath: {
     envKey: "EMBEDDING_BASE_PATH",
@@ -256,10 +259,17 @@ const KEY_MAPPING = {
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
+    postUpdate: [handleVectorStoreReset],
   },
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
+  },
+
+  // Gemini Embedding Settings
+  GeminiEmbeddingApiKey: {
+    envKey: "GEMINI_EMBEDDING_API_KEY",
+    checks: [isNotEmpty],
   },
 
   // Generic OpenAI Embedding Settings
@@ -276,6 +286,7 @@ const KEY_MAPPING = {
   VectorDB: {
     envKey: "VECTOR_DB",
     checks: [isNotEmpty, supportedVectorDB],
+    postUpdate: [handleVectorStoreReset],
   },
 
   // Chroma Options
@@ -719,27 +730,6 @@ function supportedTranscriptionProvider(input = "") {
     : `${input} is not a valid transcription model provider.`;
 }
 
-function validGeminiModel(input = "") {
-  const validModels = [
-    "gemini-pro",
-    "gemini-1.0-pro",
-    "gemini-1.5-pro-latest",
-    "gemini-1.5-flash-latest",
-    "gemini-1.5-pro-exp-0801",
-    "gemini-1.5-pro-exp-0827",
-    "gemini-1.5-flash-exp-0827",
-    "gemini-1.5-flash-8b-exp-0827",
-    "gemini-exp-1114",
-    "gemini-exp-1121",
-    "gemini-exp-1206",
-    "learnlm-1.5-pro-experimental",
-    "gemini-2.0-flash-exp",
-  ];
-  return validModels.includes(input)
-    ? null
-    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
-}
-
 function validGeminiSafetySetting(input = "") {
   const validModes = [
     "BLOCK_NONE",
@@ -775,6 +765,7 @@ function supportedEmbeddingModel(input = "") {
   const supported = [
     "openai",
     "azure",
+    "gemini",
     "localai",
     "native",
     "ollama",
@@ -876,6 +867,24 @@ function noRestrictedChars(input = "") {
   return !regExp.test(input)
     ? `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`
     : null;
+}
+
+async function handleVectorStoreReset(key, prevValue, nextValue) {
+  if (prevValue === nextValue) return;
+  if (key === "VectorDB") {
+    console.log(
+      `Vector configuration changed from ${prevValue} to ${nextValue} - resetting ${prevValue} namespaces`
+    );
+    return await resetAllVectorStores({ vectorDbKey: prevValue });
+  }
+
+  if (key === "EmbeddingEngine" || key === "EmbeddingModelPref") {
+    console.log(
+      `${key} changed from ${prevValue} to ${nextValue} - resetting ${process.env.VECTOR_DB} namespaces`
+    );
+    return await resetAllVectorStores({ vectorDbKey: process.env.VECTOR_DB });
+  }
+  return false;
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or

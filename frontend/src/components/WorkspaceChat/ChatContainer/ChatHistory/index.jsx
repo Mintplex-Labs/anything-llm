@@ -227,6 +227,7 @@ export default function ChatHistory({
             isLastMessage={isLastBotReply}
             saveEditedMessage={saveEditedMessage}
             forkThread={forkThread}
+            metrics={props.metrics}
           />
         );
       })}

@@ -18,6 +18,7 @@ const { Telemetry } = require("../../models/telemetry");
  * @property {object[]} sources
  * @property {boolean} close
  * @property {string|null} error
+ * @property {object} metrics
  */
 
 /**
@@ -120,6 +121,7 @@ async function chatSync({
         text: textResponse,
         sources: [],
         type: chatMode,
+        metrics: {},
       },
       include: false,
       apiSessionId: sessionId,
@@ -132,6 +134,7 @@ async function chatSync({
       close: true,
       error: null,
       textResponse,
+      metrics: {},
     };
   }
 
@@ -177,6 +180,7 @@ async function chatSync({
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
+          rerank: workspace?.vectorSearchMode === "rerank",
         })
       : {
           contextTexts: [],
@@ -193,6 +197,7 @@ async function chatSync({
       sources: [],
       close: true,
       error: vectorSearchResults.message,
+      metrics: {},
     };
   }
 
@@ -228,6 +233,7 @@ async function chatSync({
         text: textResponse,
         sources: [],
         type: chatMode,
+        metrics: {},
       },
       threadId: thread?.id || null,
       include: false,
@@ -242,6 +248,7 @@ async function chatSync({
       close: true,
       error: null,
       textResponse,
+      metrics: {},
     };
   }
 
@@ -259,9 +266,10 @@ async function chatSync({
   );
 
   // Send the text completion.
-  const textResponse = await LLMConnector.getChatCompletion(messages, {
-    temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-  });
+  const { textResponse, metrics: performanceMetrics } =
+    await LLMConnector.getChatCompletion(messages, {
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+    });
 
   if (!textResponse) {
     return {
@@ -271,13 +279,19 @@ async function chatSync({
       sources: [],
       close: true,
       error: "No text completion could be completed with this input.",
+      metrics: performanceMetrics,
     };
   }
 
   const { chat } = await WorkspaceChats.new({
     workspaceId: workspace.id,
     prompt: message,
-    response: { text: textResponse, sources, type: chatMode },
+    response: {
+      text: textResponse,
+      sources,
+      type: chatMode,
+      metrics: performanceMetrics,
+    },
     threadId: thread?.id || null,
     apiSessionId: sessionId,
     user,
@@ -291,6 +305,7 @@ async function chatSync({
     chatId: chat.id,
     textResponse,
     sources,
+    metrics: performanceMetrics,
   };
 }
 
@@ -396,6 +411,7 @@ async function streamChat({
       attachments: [],
       close: true,
       error: null,
+      metrics: {},
     });
     await WorkspaceChats.new({
       workspaceId: workspace.id,
@@ -405,6 +421,7 @@ async function streamChat({
         sources: [],
         type: chatMode,
         attachments: [],
+        metrics: {},
       },
       threadId: thread?.id || null,
       apiSessionId: sessionId,
@@ -418,6 +435,7 @@ async function streamChat({
   // 1. Chatting in "chat" mode and may or may _not_ have embeddings
   // 2. Chatting in "query" mode and has at least 1 embedding
   let completeText;
+  let metrics = {};
   let contextTexts = [];
   let sources = [];
   let pinnedDocIdentifiers = [];
@@ -463,6 +481,7 @@ async function streamChat({
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
+          rerank: workspace?.vectorSearchMode === "rerank",
         })
       : {
           contextTexts: [],
@@ -479,6 +498,7 @@ async function streamChat({
       sources: [],
       close: true,
       error: vectorSearchResults.message,
+      metrics: {},
     });
     return;
   }
@@ -514,6 +534,7 @@ async function streamChat({
       sources: [],
       close: true,
       error: null,
+      metrics: {},
     });
 
     await WorkspaceChats.new({
@@ -524,6 +545,7 @@ async function streamChat({
         sources: [],
         type: chatMode,
         attachments: [],
+        metrics: {},
       },
       threadId: thread?.id || null,
       apiSessionId: sessionId,
@@ -552,9 +574,12 @@ async function streamChat({
     console.log(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
-    completeText = await LLMConnector.getChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    const { textResponse, metrics: performanceMetrics } =
+      await LLMConnector.getChatCompletion(messages, {
+        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      });
+    completeText = textResponse;
+    metrics = performanceMetrics;
     writeResponseChunk(response, {
       uuid,
       sources,
@@ -562,6 +587,7 @@ async function streamChat({
       textResponse: completeText,
       close: true,
       error: false,
+      metrics,
     });
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
@@ -571,13 +597,14 @@ async function streamChat({
       uuid,
       sources,
     });
+    metrics = stream.metrics;
   }
 
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: message,
-      response: { text: completeText, sources, type: chatMode },
+      response: { text: completeText, sources, type: chatMode, metrics },
       threadId: thread?.id || null,
       apiSessionId: sessionId,
       user,
@@ -589,6 +616,7 @@ async function streamChat({
       close: true,
       error: false,
       chatId: chat.id,
+      metrics,
     });
     return;
   }

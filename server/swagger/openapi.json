@@ -635,6 +635,95 @@
               }
             }
           }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/admin/workspaces/{workspaceSlug}/manage-users": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "Set workspace permissions to be accessible by the given user ids and admins. Methods are disabled until multi user mode is enabled via the UI.",
+        "parameters": [
+          {
+            "name": "workspaceSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "slug of the workspace in the database"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null,
+                    "users": [
+                      {
+                        "userId": 1,
+                        "username": "main-admin",
+                        "role": "admin"
+                      },
+                      {
+                        "userId": 2,
+                        "username": "sample-sam",
+                        "role": "default"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Array of user ids who will be given access to the target workspace. <code>reset</code> will remove all existing users from the workspace and only add the new users - default <code>false</code>.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "userIds": [
+                  1,
+                  2,
+                  4,
+                  12
+                ],
+                "reset": false
+              }
+            }
+          }
         }
       }
     },
@@ -1362,6 +1451,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -1382,12 +1474,19 @@
           }
         },
         "requestBody": {
-          "description": "JSON object containing new display name of workspace.",
+          "description": "JSON object containing workspace configuration.",
           "required": true,
           "content": {
             "application/json": {
               "example": {
-                "name": "My New Workspace"
+                "name": "My New Workspace",
+                "similarityThreshold": 0.7,
+                "openAiTemp": 0.7,
+                "openAiHistory": 20,
+                "openAiPrompt": "Custom prompt for responses",
+                "queryRefusalResponse": "Custom refusal message",
+                "chatMode": "chat",
+                "topN": 4
               }
             }
           }
@@ -2803,7 +2902,14 @@
               "example": {
                 "message": "What is AnythingLLM?",
                 "mode": "query | chat",
-                "userId": 1
+                "userId": 1,
+                "attachments": [
+                  {
+                    "name": "image.png",
+                    "mime": "image/png",
+                    "contentString": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+                  }
+                ]
               }
             }
           }
@@ -2908,7 +3014,14 @@
               "example": {
                 "message": "What is AnythingLLM?",
                 "mode": "query | chat",
-                "userId": 1
+                "userId": 1,
+                "attachments": [
+                  {
+                    "name": "image.png",
+                    "mime": "image/png",
+                    "contentString": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+                  }
+                ]
               }
             }
           }

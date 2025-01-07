@@ -7,13 +7,37 @@
  */
 
 /**
+ * @typedef {Object} ResponseMetrics
+ * @property {number} prompt_tokens - The number of prompt tokens used
+ * @property {number} completion_tokens - The number of completion tokens used
+ * @property {number} total_tokens - The total number of tokens used
+ * @property {number} outputTps - The output tokens per second
+ * @property {number} duration - The duration of the request in seconds
+ *
+ * @typedef {Object} ChatMessage
+ * @property {string} role - The role of the message sender (e.g. 'user', 'assistant', 'system')
+ * @property {string} content - The content of the message
+ *
+ * @typedef {Object} ChatCompletionResponse
+ * @property {string} textResponse - The text response from the LLM
+ * @property {ResponseMetrics} metrics - The response metrics
+ *
+ * @typedef {Object} ChatCompletionOptions
+ * @property {number} temperature - The sampling temperature for the LLM response
+ *
+ * @typedef {function(Array<ChatMessage>, ChatCompletionOptions): Promise<ChatCompletionResponse>} getChatCompletionFunction
+ *
+ * @typedef {function(Array<ChatMessage>, ChatCompletionOptions): Promise<import("./chat/LLMPerformanceMonitor").MonitoredStream>} streamGetChatCompletionFunction
+ */
+
+/**
  * @typedef {Object} BaseLLMProvider - A basic llm provider object
  * @property {Function} streamingEnabled - Checks if streaming is enabled for chat completions.
  * @property {Function} promptWindowLimit - Returns the token limit for the current model.
  * @property {Function} isValidChatCompletionModel - Validates if the provided model is suitable for chat completion.
  * @property {Function} constructPrompt - Constructs a formatted prompt for the chat completion request.
- * @property {Function} getChatCompletion - Gets a chat completion response from OpenAI.
- * @property {Function} streamGetChatCompletion - Streams a chat completion response from OpenAI.
+ * @property {getChatCompletionFunction} getChatCompletion - Gets a chat completion response from OpenAI.
+ * @property {streamGetChatCompletionFunction} streamGetChatCompletion - Streams a chat completion response from OpenAI.
  * @property {Function} handleStream - Handles the streaming response.
  * @property {Function} embedTextInput - Embeds the provided text input using the specified embedder.
  * @property {Function} embedChunks - Embeds multiple chunks of text using the specified embedder.
@@ -32,6 +56,7 @@
  * @property {Function} totalVectors - Returns the total number of vectors in the database.
  * @property {Function} namespaceCount - Returns the count of vectors in a given namespace.
  * @property {Function} similarityResponse - Performs a similarity search on a given namespace.
+ * @property {Function} rerankedSimilarityResponse - Performs a similarity search on a given namespace with reranking (if supported by provider).
  * @property {Function} namespace - Retrieves the specified namespace collection.
  * @property {Function} hasNamespace - Checks if a namespace exists.
  * @property {Function} namespaceExists - Verifies if a namespace exists in the client.
@@ -52,10 +77,11 @@
 
 /**
  * Gets the systems current vector database provider.
+ * @param {('pinecone' | 'chroma' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
  * @returns { BaseVectorDatabaseProvider}
  */
-function getVectorDbClass() {
-  const vectorSelection = process.env.VECTOR_DB || "lancedb";
+function getVectorDbClass(getExactly = null) {
+  const vectorSelection = getExactly ?? process.env.VECTOR_DB ?? "lancedb";
   switch (vectorSelection) {
     case "pinecone":
       const { Pinecone } = require("../vectorDbProviders/pinecone");
@@ -225,6 +251,9 @@ function getEmbeddingEngineSelection() {
         GenericOpenAiEmbedder,
       } = require("../EmbeddingEngines/genericOpenAi");
       return new GenericOpenAiEmbedder();
+    case "gemini":
+      const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
+      return new GeminiEmbedder();
     default:
       return new NativeEmbedder();
   }

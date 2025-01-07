@@ -7,8 +7,7 @@ class NativeEmbedder {
   // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
   // endpoint for various reasons. This endpoint is not guaranteed to be active or maintained
   // and may go offline at any time at Mintplex Labs's discretion.
-  #fallbackHost =
-    "https://s3.us-west-1.amazonaws.com/public.useanything.com/support/models/";
+  #fallbackHost = "https://cdn.useanything.com/support/models/";
 
   constructor() {
     // Model Card: https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2

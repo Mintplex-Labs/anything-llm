@@ -26,6 +26,7 @@ const HistoricalMessage = ({
   regenerateMessage,
   saveEditedMessage,
   forkThread,
+  metrics = {},
 }) => {
   const { isEditing } = useEditMessage({ chatId, role });
   const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
@@ -95,7 +96,7 @@ const HistoricalMessage = ({
               saveChanges={saveEditedMessage}
             />
           ) : (
-            <div className="overflow-x-scroll break-words no-scroll">
+            <div className="overflow-x-scroll break-words show-scrollbar">
               <span
                 className="flex flex-col gap-y-1"
                 dangerouslySetInnerHTML={{
@@ -117,6 +118,7 @@ const HistoricalMessage = ({
             isEditing={isEditing}
             role={role}
             forkThread={forkThread}
+            metrics={metrics}
           />
         </div>
         {role === "assistant" && <Citations sources={sources} />}
