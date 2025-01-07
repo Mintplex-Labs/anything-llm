@@ -6,7 +6,7 @@ import showToast from "@/utils/toast";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
-import GemeniAiLogo from "@/media/llmprovider/gemini.png";
+import GeminiAiLogo from "@/media/llmprovider/gemini.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
@@ -64,7 +64,7 @@ const EMBEDDERS = [
   {
     name: "Gemini",
     value: "gemini",
-    logo: GemeniAiLogo,
+    logo: GeminiAiLogo,
     options: (settings) => <GeminiOptions settings={settings} />,
     description: "Run powerful embedding models from Google AI.",
   },
