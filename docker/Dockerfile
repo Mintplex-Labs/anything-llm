@@ -65,6 +65,9 @@ RUN echo "Done running arm64 specific installation steps"
 
 # amd64-specific stage
 FROM base AS build-amd64
+# Build arguments
+ARG ARG_UID=1000
+ARG ARG_GID=1000
 RUN echo "Preparing build of AnythingLLM image for non-ARM architecture"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
