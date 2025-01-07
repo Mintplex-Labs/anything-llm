@@ -1,11 +1,10 @@
 # Setup base image
 FROM ubuntu:jammy-20240627.1 AS base
 
+FROM base AS build-arm64
 # Build arguments
 ARG ARG_UID=1000
 ARG ARG_GID=1000
-
-FROM base AS build-arm64
 RUN echo "Preparing build of AnythingLLM image for arm64 architecture"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
