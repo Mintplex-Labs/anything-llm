@@ -74,6 +74,32 @@ const WorkspaceUser = {
     }
   },
 
+  getUserWorkspaces: async function (clause = {}, limit = null) {
+    try {
+      const results = await prisma.workspace_users.findMany({
+        where: clause,
+        include: {
+          workspaces: {
+            select: { slug: true }  // Only include the 'slug' field from the 'workspace'
+          }
+        },
+        ...(limit !== null ? { take: limit } : {}),
+      });
+      const enhancedResults = results.map(item => {
+        return {
+          ...item,
+          workspaceSlug: item.workspaces?.slug  // Accessing the slug from the joined workspace
+        };
+      });
+
+      return enhancedResults;
+      // return results;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
+
   count: async function (clause = {}) {
     try {
       const count = await prisma.workspace_users.count({ where: clause });

@@ -16,7 +16,7 @@ const PDFLoader = require("./PDFLoader");
 async function extractTextFromApi(fullFilePath) {
   const endpoint = `${process.env.PRISM_OCR_ENDPOINT}${process.env.EXTRACT_API}`;
   console.log(endpoint);
-  const token = `Bearer ${process.env.BEARER_TOKEN}`;
+  const token = `Bearer ${process.env.PRISM_PARSER_BEARER_TOKEN}`;
   const params = new URLSearchParams({
     output_format: process.env.OUTPUT_FORMAT,
     use_ocr: process.env.USE_OCR,

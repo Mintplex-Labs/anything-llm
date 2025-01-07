@@ -4,7 +4,8 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
-const { rerankTexts} = require("../custom/reranker.js")
+const { rerankTexts } = require("../custom/reranker.js")
+const { WorkspaceUser } = require("../../models/workspaceUsers");
 
 const {
   EphemeralAgentHandler,
@@ -37,26 +38,27 @@ const { Telemetry } = require("../../models/telemetry");
  */
 
 
-async function performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount, ) {
+async function performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount,) {
+  // const users = WorkspaceUser.where({ user_id: someUserId })
   // console.log(`hello moto`)
   // console.log("workspaces:", workspaces);
   const VectorDb = getVectorDbClass();
   // Use Promise.all to handle all searches concurrently
-  const searchPromises = workspaces.split(",").map(namespace => {
+  const searchPromises = workspaces.map(namespace => {
     return embeddingsCount !== 0
       ? VectorDb.performSimilaritySearch({
-          namespace: namespace, // Directly using the string from the array
-          input: message,
-          LLMConnector,
-          similarityThreshold: workspace?.similarityThreshold,
-          topN: workspace?.topN,
-          filterIdentifiers: pinnedDocIdentifiers,
-        })
+        namespace: namespace, // Directly using the string from the array
+        input: message,
+        LLMConnector,
+        similarityThreshold: workspace?.similarityThreshold,
+        topN: workspace?.topN,
+        filterIdentifiers: pinnedDocIdentifiers,
+      })
       : Promise.resolve({ // Ensure the promise is resolved even when embeddingsCount is 0
-          contextTexts: [],
-          sources: [],
-          message: null,
-        });
+        contextTexts: [],
+        sources: [],
+        message: null,
+      });
   });
 
   // Wait for all promises to resolve
@@ -83,12 +85,10 @@ async function chatSync({
   mode = "chat",
   user = null,
   thread = null,
-  workspaces,
   sessionId = null,
   attachments = [],
 }) {
-  console.log(`rbac workspaces : ${workspaces}`)
-  const workspacesArray = workspaces.split(",")
+
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
 
@@ -150,9 +150,20 @@ async function chatSync({
   });
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
-  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug); 
-  // const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-  const embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspacesArray);
+  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
+
+  let embeddingsCount;
+  let workspaces;
+
+  if (process.env.ENABLE_MULTI_WORKSPACE_QUERY == 'true') {
+    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null })
+    workspaces = userWorkspaces.map(item => item.workspaceSlug);
+    // console.log('Workspace Users:', workspaceSlugs);
+    embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);
+  } else {
+    embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+  }
+
 
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
@@ -216,25 +227,44 @@ async function chatSync({
       });
     });
 
-  let vectorSearchResults =
-    embeddingsCount !== 0
-      // ? await this.performSimilaritySearches({
-      //     workspace: workspace,
-      //     workspaces: workspaces,
-      //     input: message,
-      //     LLMConnector,
-      //     similarityThreshold: workspace?.similarityThreshold,
-      //     topN: workspace?.topN,
-      //     filterIdentifiers: pinnedDocIdentifiers,
-      //   })
+  // let vectorSearchResults =
+  //   embeddingsCount !== 0
+  //     ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
+
+  //     : {
+  //       contextTexts: [],
+  //       sources: [],
+  //       message: null,
+  //     };
+
+  let vectorSearchResults;
+
+  if (process.env.ENABLE_MULTI_WORKSPACE_QUERY === 'true') {
+    // Perform multi workspace searches if the environment variable is 'true'
+    vectorSearchResults = embeddingsCount !== 0
       ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
-
       : {
-          contextTexts: [],
-          sources: [],
-          message: null,
-        };
-
+        contextTexts: [],
+        sources: [],
+        message: null,
+      };
+  } else {
+    // Perform a single workspace search if the environment variable is not 'true'
+    vectorSearchResults = embeddingsCount !== 0
+      ? await VectorDb.performSimilaritySearch({
+        namespace: workspace.slug,
+        input: message,
+        LLMConnector,
+        similarityThreshold: workspace?.similarityThreshold,
+        topN: workspace?.topN,
+        filterIdentifiers: pinnedDocIdentifiers,
+      })
+      : {
+        contextTexts: [],
+        sources: [],
+        message: null,
+      };
+  }
   // Failed similarity search if it was run at all and failed.
   if (!!vectorSearchResults.message) {
     return {
@@ -247,22 +277,24 @@ async function chatSync({
     };
   }
 
-  // re-rank the sources using re-ranker endpoint
-  const texts = vectorSearchResults.sources
-            .filter(source => source.text) // Ensure source.text exists
-            .map(source => source.text);
+  if (process.env.RERANKER == 'true') {
+    // re-rank the sources using re-ranker endpoint
+    const texts = vectorSearchResults.sources
+      .filter(source => source.text) // Ensure source.text exists
+      .map(source => source.text);
 
-  if (texts.length !== 0) {
-     // Call re-ranker to get top results
-    const rerankedResults = await rerankTexts(texts, message);
-    // Extract only the text values from reranked results for comparison
-    const rerankedTexts = rerankedResults.map(result => result.text);
+    if (texts.length !== 0) {
+      // Call re-ranker to get top results
+      const rerankedResults = await rerankTexts(texts, message);
+      // Extract only the text values from reranked results for comparison
+      const rerankedTexts = rerankedResults.map(result => result.text);
 
-    // Filter the sources and update `sources` directly
-    vectorSearchResults.sources = vectorSearchResults.sources.filter(source => 
-      rerankedTexts.includes(source.text)
-    );
-    // throw new Error('No valid texts found in vectorSearchResults.sources');
+      // Filter the sources and update `sources` directly
+      vectorSearchResults.sources = vectorSearchResults.sources.filter(source =>
+        rerankedTexts.includes(source.text)
+      );
+      // throw new Error('No valid texts found in vectorSearchResults.sources');
+    }
   }
 
   const { fillSourceWindow } = require("../helpers/chat");
@@ -384,14 +416,12 @@ async function streamChat({
   mode = "chat",
   user = null,
   thread = null,
-  workspaces,
   sessionId = null,
   attachments = [],
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
-  console.log(`rbac workspaces : ${workspaces}`)
-  const workspacesArray = workspaces.split(",")
+
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
@@ -452,9 +482,19 @@ async function streamChat({
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
-  
+  let embeddingsCount;
+  let workspaces;
+  if (process.env.ENABLE_MULTI_WORKSPACE_QUERY == 'true') {
+    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null })
+    workspaces = userWorkspaces.map(item => item.workspaceSlug);
+    // console.log('Workspace Users:', workspaceSlugs);
+    embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);
+  } else {
+    embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+  }
+
   // const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-  const embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspacesArray);
+
 
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
@@ -528,25 +568,53 @@ async function streamChat({
       });
     });
 
-  const vectorSearchResults =
-    embeddingsCount !== 0
-      // ? await VectorDb.performSimilaritySearch({
-      //     namespace: workspace.slug,
-      //     input: message,
-      //     LLMConnector,
-      //     similarityThreshold: workspace?.similarityThreshold,
-      //     topN: workspace?.topN,
-      //     filterIdentifiers: pinnedDocIdentifiers,
-      //   })
+  // const vectorSearchResults =
+  //   embeddingsCount !== 0
+  //     // ? await VectorDb.performSimilaritySearch({
+  //     //     namespace: workspace.slug,
+  //     //     input: message,
+  //     //     LLMConnector,
+  //     //     similarityThreshold: workspace?.similarityThreshold,
+  //     //     topN: workspace?.topN,
+  //     //     filterIdentifiers: pinnedDocIdentifiers,
+  //     //   })
 
+  //     ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
+
+  //     : {
+  //       contextTexts: [],
+  //       sources: [],
+  //       message: null,
+  //     };
+
+  let vectorSearchResults;
+
+  if (process.env.ENABLE_MULTI_WORKSPACE_QUERY === 'true') {
+    // Perform multi workspace searches if the environment variable is 'true'
+    vectorSearchResults = embeddingsCount !== 0
       ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
-
       : {
-          contextTexts: [],
-          sources: [],
-          message: null,
-        };
-
+        contextTexts: [],
+        sources: [],
+        message: null,
+      };
+  } else {
+    // Perform a single workspace search if the environment variable is not 'true'
+    vectorSearchResults = embeddingsCount !== 0
+      ? await VectorDb.performSimilaritySearch({
+        namespace: workspace.slug,
+        input: message,
+        LLMConnector,
+        similarityThreshold: workspace?.similarityThreshold,
+        topN: workspace?.topN,
+        filterIdentifiers: pinnedDocIdentifiers,
+      })
+      : {
+        contextTexts: [],
+        sources: [],
+        message: null,
+      };
+  }
   // Failed similarity search if it was run at all and failed.
   if (!!vectorSearchResults.message) {
     writeResponseChunk(response, {
@@ -561,23 +629,26 @@ async function streamChat({
   }
 
 
-  // re-rank the sources using re-ranker endpoint
-  const texts = vectorSearchResults.sources
-            .filter(source => source.text) // Ensure source.text exists
-            .map(source => source.text);
+  if (process.env.RERANKER == 'true') {
+    // re-rank the sources using re-ranker endpoint
+    const texts = vectorSearchResults.sources
+      .filter(source => source.text) // Ensure source.text exists
+      .map(source => source.text);
 
-  if (texts.length !== 0) {
-     // Call re-ranker to get top results
-    const rerankedResults = await rerankTexts(texts, message);
-    // Extract only the text values from reranked results for comparison
-    const rerankedTexts = rerankedResults.map(result => result.text);
+    if (texts.length !== 0) {
+      // Call re-ranker to get top results
+      const rerankedResults = await rerankTexts(texts, message);
+      // Extract only the text values from reranked results for comparison
+      const rerankedTexts = rerankedResults.map(result => result.text);
 
-    // Filter the sources and update `sources` directly
-    vectorSearchResults.sources = vectorSearchResults.sources.filter(source => 
-      rerankedTexts.includes(source.text)
-    );
-    // throw new Error('No valid texts found in vectorSearchResults.sources');
+      // Filter the sources and update `sources` directly
+      vectorSearchResults.sources = vectorSearchResults.sources.filter(source =>
+        rerankedTexts.includes(source.text)
+      );
+      // throw new Error('No valid texts found in vectorSearchResults.sources');
+    }
   }
+
 
 
   const { fillSourceWindow } = require("../helpers/chat");
