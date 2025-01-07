@@ -6,6 +6,11 @@ class NativeEmbeddingReranker {
   static #tokenizer = null;
   static #transformers = null;
 
+  // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
+  // endpoint for various reasons. This endpoint is not guaranteed to be active or maintained
+  // and may go offline at any time at Mintplex Labs's discretion.
+  #fallbackHost = "https://cdn.useanything.com/support/models/";
+
   constructor() {
     // An alternative model to the mixedbread-ai/mxbai-rerank-xsmall-v1 model (speed on CPU is much slower for this model @ 18docs = 6s)
     // Model Card: https://huggingface.co/Xenova/ms-marco-MiniLM-L-6-v2 (speed on CPU is much faster @ 18docs = 1.6s)
@@ -18,11 +23,29 @@ class NativeEmbeddingReranker {
     this.modelPath = path.resolve(this.cacheDir, ...this.model.split("/"));
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
+
+    this.modelDownloaded = fs.existsSync(
+      path.resolve(this.cacheDir, this.model)
+    );
     this.log("Initialized");
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[NativeEmbeddingReranker]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * This function will return the host of the current reranker suite.
+   * If the reranker suite is not initialized, it will return the default HF host.
+   * @returns {string} The host of the current reranker suite.
+   */
+  get host() {
+    if (!NativeEmbeddingReranker.#transformers) return "https://huggingface.co";
+    try {
+      return new URL(NativeEmbeddingReranker.#transformers.env.remoteHost).host;
+    } catch (e) {
+      return this.#fallbackHost;
+    }
   }
 
   /**
@@ -54,12 +77,17 @@ class NativeEmbeddingReranker {
     }
 
     await import("@xenova/transformers").then(
-      async ({ AutoModelForSequenceClassification, AutoTokenizer }) => {
+      async ({ AutoModelForSequenceClassification, AutoTokenizer, env }) => {
         this.log(`Loading reranker suite...`);
         NativeEmbeddingReranker.#transformers = {
           AutoModelForSequenceClassification,
           AutoTokenizer,
+          env,
         };
+        // Attempt to load the model and tokenizer in this order:
+        // 1. From local file system cache
+        // 2. Download and cache from remote host (hf.co)
+        // 3. Download and cache from fallback host (cdn.useanything.com)
         await this.#getPreTrainedModel();
         await this.#getPreTrainedTokenizer();
       }
@@ -67,46 +95,106 @@ class NativeEmbeddingReranker {
     return;
   }
 
+  /**
+   * This function will load the model from the local file system cache, or download and cache it from the remote host.
+   * If the model is not found in the local file system cache, it will download and cache it from the remote host.
+   * If the model is not found in the remote host, it will download and cache it from the fallback host.
+   * @returns {Promise<any>} The loaded model.
+   */
   async #getPreTrainedModel() {
     if (NativeEmbeddingReranker.#model) {
       this.log(`Loading model from singleton...`);
       return NativeEmbeddingReranker.#model;
     }
 
-    const model =
-      await NativeEmbeddingReranker.#transformers.AutoModelForSequenceClassification.from_pretrained(
-        this.model,
-        {
-          progress_callback: (p) =>
-            p.status === "progress" &&
-            this.log(`Loading model ${this.model}... ${p?.progress}%`),
-          cache_dir: this.cacheDir,
-        }
+    try {
+      const model =
+        await NativeEmbeddingReranker.#transformers.AutoModelForSequenceClassification.from_pretrained(
+          this.model,
+          {
+            progress_callback: (p) => {
+              if (!this.modelDownloaded && p.status === "progress") {
+                this.log(
+                  `[${this.host}] Loading model ${this.model}... ${p?.progress}%`
+                );
+              }
+            },
+            cache_dir: this.cacheDir,
+          }
+        );
+      this.log(`Loaded model ${this.model}`);
+      NativeEmbeddingReranker.#model = model;
+      return model;
+    } catch (e) {
+      this.log(
+        `Failed to load model ${this.model} from ${this.host}.`,
+        e.message,
+        e.stack
       );
-    this.log(`Loaded model ${this.model}`);
-    NativeEmbeddingReranker.#model = model;
-    return model;
+      if (
+        NativeEmbeddingReranker.#transformers.env.remoteHost ===
+        this.#fallbackHost
+      ) {
+        this.log(`Failed to load model ${this.model} from fallback host.`);
+        throw e;
+      }
+
+      this.log(`Falling back to fallback host. ${this.#fallbackHost}`);
+      NativeEmbeddingReranker.#transformers.env.remoteHost = this.#fallbackHost;
+      NativeEmbeddingReranker.#transformers.env.remotePathTemplate = "{model}/";
+      return await this.#getPreTrainedModel();
+    }
   }
 
+  /**
+   * This function will load the tokenizer from the local file system cache, or download and cache it from the remote host.
+   * If the tokenizer is not found in the local file system cache, it will download and cache it from the remote host.
+   * If the tokenizer is not found in the remote host, it will download and cache it from the fallback host.
+   * @returns {Promise<any>} The loaded tokenizer.
+   */
   async #getPreTrainedTokenizer() {
     if (NativeEmbeddingReranker.#tokenizer) {
       this.log(`Loading tokenizer from singleton...`);
       return NativeEmbeddingReranker.#tokenizer;
     }
 
-    const tokenizer =
-      await NativeEmbeddingReranker.#transformers.AutoTokenizer.from_pretrained(
-        this.model,
-        {
-          progress_callback: (p) =>
-            p.status === "progress" &&
-            this.log(`Loading tokenizer ${this.model}... ${p?.progress}%`),
-          cache_dir: this.cacheDir,
-        }
+    try {
+      const tokenizer =
+        await NativeEmbeddingReranker.#transformers.AutoTokenizer.from_pretrained(
+          this.model,
+          {
+            progress_callback: (p) => {
+              if (!this.modelDownloaded && p.status === "progress") {
+                this.log(
+                  `[${this.host}] Loading tokenizer ${this.model}... ${p?.progress}%`
+                );
+              }
+            },
+            cache_dir: this.cacheDir,
+          }
+        );
+      this.log(`Loaded tokenizer ${this.model}`);
+      NativeEmbeddingReranker.#tokenizer = tokenizer;
+      return tokenizer;
+    } catch (e) {
+      this.log(
+        `Failed to load tokenizer ${this.model} from ${this.host}.`,
+        e.message,
+        e.stack
       );
-    this.log(`Loaded tokenizer ${this.model}`);
-    NativeEmbeddingReranker.#tokenizer = tokenizer;
-    return tokenizer;
+      if (
+        NativeEmbeddingReranker.#transformers.env.remoteHost ===
+        this.#fallbackHost
+      ) {
+        this.log(`Failed to load tokenizer ${this.model} from fallback host.`);
+        throw e;
+      }
+
+      this.log(`Falling back to fallback host. ${this.#fallbackHost}`);
+      NativeEmbeddingReranker.#transformers.env.remoteHost = this.#fallbackHost;
+      NativeEmbeddingReranker.#transformers.env.remotePathTemplate = "{model}/";
+      return await this.#getPreTrainedTokenizer();
+    }
   }
 
   /**
