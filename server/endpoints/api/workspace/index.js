@@ -9,6 +9,7 @@ const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
 const { EventLogs } = require("../../../models/eventLogs");
+const { User } = require("../../../models/user");
 const {
   convertToChatHistory,
   writeResponseChunk,
@@ -586,6 +587,7 @@ function apiWorkspaceEndpoints(app) {
            example: {
              message: "What is AnythingLLM?",
              mode: "query | chat",
+             userId: 1,
              sessionId: "identifier-to-partition-chats-by-external-id",
              attachments: [
                {
@@ -626,10 +628,15 @@ function apiWorkspaceEndpoints(app) {
         const {
           message,
           mode = "query",
+          userId = null,
           sessionId = null,
           attachments = [],
         } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(slug) });
+        
+        
+
+        const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
+        // const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
           response.status(400).json({
@@ -657,11 +664,25 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
+        const user = userId ? await User.get({ id: Number(userId) }) : null;
+        if(!user) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `User Id missing or invalid`,
+          });
+          return;
+        }
+
+
         const result = await ApiChatHandler.chatSync({
           workspace,
           message,
           mode,
-          user: null,
+          user: user,
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
@@ -708,6 +729,7 @@ function apiWorkspaceEndpoints(app) {
            example: {
              message: "What is AnythingLLM?",
              mode: "query | chat",
+             userId: 1,
              sessionId: "identifier-to-partition-chats-by-external-id",
              attachments: [
                {
@@ -769,10 +791,12 @@ function apiWorkspaceEndpoints(app) {
         const {
           message,
           mode = "query",
+          userId = null,
           sessionId = null,
           attachments = [],
         } = reqBody(request);
-        const workspace = await Workspace.get({ slug: String(slug) });
+        // const workspace = await Workspace.get({ slug: String(slug) });
+        const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
 
         if (!workspace) {
           response.status(400).json({
@@ -806,12 +830,25 @@ function apiWorkspaceEndpoints(app) {
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
 
+        const user = userId ? await User.get({ id: Number(userId) }) : null;
+        if(!user) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `User Id missing or invalid`,
+          });
+          return;
+        }
+
         await ApiChatHandler.streamChat({
           response,
           workspace,
           message,
           mode,
-          user: null,
+          user: user,
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
@@ -823,7 +860,7 @@ function apiWorkspaceEndpoints(app) {
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           TTSSelection: process.env.TTS_PROVIDER || "native",
         });
-        await EventLogs.logEvent("api_sent_chat_123", {
+        await EventLogs.logEvent("api_sent_chat", {
           workspaceName: workspace?.name,
           chatModel: workspace?.chatModel || "System Default",
         });
