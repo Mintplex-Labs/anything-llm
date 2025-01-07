@@ -36,34 +36,35 @@ export default function NewApiKeyModal({ closeModal }) {
   }, [copied]);
 
   return (
-    <div className="relative w-[500px] max-w-2xl max-h-full">
-      <div className="relative bg-main-gradient rounded-lg shadow">
-        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-          <h3 className="text-xl font-semibold text-white">
-            Create new API key
-          </h3>
+    <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+          <div className="w-full flex gap-x-2 items-center">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              Create new API key
+            </h3>
+          </div>
           <button
             onClick={closeModal}
             type="button"
-            className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-            data-modal-hide="staticModal"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-gray-300 text-lg" />
+            <X size={24} weight="bold" className="text-white" />
           </button>
         </div>
-        <form onSubmit={handleCreate}>
-          <div className="p-6 space-y-6 flex h-full w-full">
-            <div className="w-full flex flex-col gap-y-4">
+        <div className="px-7 py-6">
+          <form onSubmit={handleCreate}>
+            <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
               {apiKey && (
                 <input
                   type="text"
                   defaultValue={`${apiKey.secret}`}
                   disabled={true}
-                  className="rounded-lg px-4 py-2 text-white bg-zinc-900 border border-gray-500/50"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                 />
               )}
-              <p className="text-white text-xs md:text-sm">
+              <p className="text-white text-opacity-60 text-xs md:text-sm">
                 Once created the API key can be used to programmatically access
                 and configure this AnythingLLM instance.
               </p>
@@ -76,36 +77,36 @@ export default function NewApiKeyModal({ closeModal }) {
                 Read the API documentation &rarr;
               </a>
             </div>
-          </div>
-          <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
-            {!apiKey ? (
-              <>
+            <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
+              {!apiKey ? (
+                <>
+                  <button
+                    onClick={closeModal}
+                    type="button"
+                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  >
+                    Create API key
+                  </button>
+                </>
+              ) : (
                 <button
-                  onClick={closeModal}
+                  onClick={copyApiKey}
                   type="button"
-                  className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
+                  disabled={copied}
+                  className="w-full transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
                 >
-                  Cancel
+                  {copied ? "Copied API key" : "Copy API key"}
                 </button>
-                <button
-                  type="submit"
-                  className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                  Create API key
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={copyApiKey}
-                type="button"
-                disabled={copied}
-                className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center"
-              >
-                {copied ? "Copied API key" : "Copy API key"}
-              </button>
-            )}
-          </div>
-        </form>
+              )}
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

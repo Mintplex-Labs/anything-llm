@@ -113,7 +113,6 @@ function apiSystemEndpoints(app) {
       #swagger.requestBody = {
         description: 'Key pair object that matches a valid setting and value. Get keys from GET /v1/system or refer to codebase.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {

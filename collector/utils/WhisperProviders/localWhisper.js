@@ -29,6 +29,37 @@ class LocalWhisper {
     console.log(`\x1b[32m[LocalWhisper]\x1b[0m ${text}`, ...args);
   }
 
+  #validateAudioFile(wavFile) {
+    const sampleRate = wavFile.fmt.sampleRate;
+    const duration = wavFile.data.samples / sampleRate;
+
+    // Most speech recognition systems expect minimum 8kHz
+    // But we'll set it lower to be safe
+    if (sampleRate < 4000) {
+      // 4kHz minimum
+      throw new Error(
+        "Audio file sample rate is too low for accurate transcription. Minimum required is 4kHz."
+      );
+    }
+
+    // Typical audio file duration limits
+    const MAX_DURATION_SECONDS = 4 * 60 * 60; // 4 hours
+    if (duration > MAX_DURATION_SECONDS) {
+      throw new Error("Audio file duration exceeds maximum limit of 4 hours.");
+    }
+
+    // Check final sample count after upsampling to prevent memory issues
+    const targetSampleRate = 16000;
+    const upsampledSamples = duration * targetSampleRate;
+    const MAX_SAMPLES = 230_400_000; // ~4 hours at 16kHz
+
+    if (upsampledSamples > MAX_SAMPLES) {
+      throw new Error("Audio file exceeds maximum allowed length.");
+    }
+
+    return true;
+  }
+
   async #convertToWavAudioData(sourcePath) {
     try {
       let buffer;
@@ -81,6 +112,13 @@ class LocalWhisper {
       }
 
       const wavFile = new wavefile.WaveFile(buffer);
+      try {
+        this.#validateAudioFile(wavFile);
+      } catch (error) {
+        this.#log(`Audio validation failed: ${error.message}`);
+        throw new Error(`Invalid audio file: ${error.message}`);
+      }
+
       wavFile.toBitDepth("32f");
       wavFile.toSampleRate(16000);
 

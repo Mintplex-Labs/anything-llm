@@ -6,16 +6,11 @@ const {
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
+const ImportedPlugin = require("./imported");
 
 class AgentHandler {
   #invocationUUID;
   #funcsToLoad = [];
-  #noProviderModelDefault = {
-    azure: "OPEN_MODEL_PREF",
-    lmstudio: "LMSTUDIO_MODEL_PREF",
-    textgenwebui: null, // does not even use `model` in API req
-    "generic-openai": "GENERIC_OPEN_AI_MODEL_PREF",
-  };
   invocation = null;
   aibitat = null;
   channel = null;
@@ -42,6 +37,7 @@ class AgentHandler {
             workspaceId: this.invocation.workspace_id,
             user_id: this.invocation.user_id || null,
             thread_id: this.invocation.thread_id || null,
+            api_session_id: null,
             include: true,
           },
           limit,
@@ -73,7 +69,7 @@ class AgentHandler {
     }
   }
 
-  #checkSetup() {
+  checkSetup() {
     switch (this.provider) {
       case "openai":
         if (!process.env.OPEN_AI_KEY)
@@ -147,11 +143,44 @@ class AgentHandler {
         if (
           !process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID ||
           !process.env.AWS_BEDROCK_LLM_ACCESS_KEY ||
-          !process.env.AWS_BEDROCK_LLM_REGION ||
-          !process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE
+          !process.env.AWS_BEDROCK_LLM_REGION
         )
           throw new Error(
-            "AWS Bedrock Access Keys, model and region must be provided to use agents."
+            "AWS Bedrock Access Keys and region must be provided to use agents."
+          );
+        break;
+      case "fireworksai":
+        if (!process.env.FIREWORKS_AI_LLM_API_KEY)
+          throw new Error(
+            "FireworksAI API Key must be provided to use agents."
+          );
+        break;
+      case "deepseek":
+        if (!process.env.DEEPSEEK_API_KEY)
+          throw new Error("DeepSeek API Key must be provided to use agents.");
+        break;
+      case "litellm":
+        if (!process.env.LITE_LLM_BASE_PATH)
+          throw new Error(
+            "LiteLLM API base path and key must be provided to use agents."
+          );
+        break;
+      case "apipie":
+        if (!process.env.APIPIE_LLM_API_KEY)
+          throw new Error("ApiPie API Key must be provided to use agents.");
+        break;
+      case "xai":
+        if (!process.env.XAI_LLM_API_KEY)
+          throw new Error("xAI API Key must be provided to use agents.");
+        break;
+      case "novita":
+        if (!process.env.NOVITA_LLM_API_KEY)
+          throw new Error("Novita API Key must be provided to use agents.");
+        break;
+      case "nvidia-nim":
+        if (!process.env.NVIDIA_NIM_LLM_BASE_PATH)
+          throw new Error(
+            "Nvidia NIM base path must be provided to use agents."
           );
         break;
 
@@ -162,43 +191,100 @@ class AgentHandler {
     }
   }
 
-  #providerDefault() {
-    switch (this.provider) {
+  /**
+   * Finds the default model for a given provider. If no default model is set for it's associated ENV then
+   * it will return a reasonable base model for the provider if one exists.
+   * @param {string} provider - The provider to find the default model for.
+   * @returns {string|null} The default model for the provider.
+   */
+  providerDefault(provider = this.provider) {
+    switch (provider) {
       case "openai":
-        return "gpt-4o";
+        return process.env.OPEN_MODEL_PREF ?? "gpt-4o";
       case "anthropic":
-        return "claude-3-sonnet-20240229";
+        return process.env.ANTHROPIC_MODEL_PREF ?? "claude-3-sonnet-20240229";
       case "lmstudio":
-        return "server-default";
+        return process.env.LMSTUDIO_MODEL_PREF ?? "server-default";
       case "ollama":
-        return "llama3:latest";
+        return process.env.OLLAMA_MODEL_PREF ?? "llama3:latest";
       case "groq":
-        return "llama3-70b-8192";
+        return process.env.GROQ_MODEL_PREF ?? "llama3-70b-8192";
       case "togetherai":
-        return "mistralai/Mixtral-8x7B-Instruct-v0.1";
+        return (
+          process.env.TOGETHER_AI_MODEL_PREF ??
+          "mistralai/Mixtral-8x7B-Instruct-v0.1"
+        );
       case "azure":
-        return "gpt-3.5-turbo";
+        return null;
       case "koboldcpp":
-        return null;
+        return process.env.KOBOLD_CPP_MODEL_PREF ?? null;
       case "gemini":
-        return "gemini-pro";
+        return process.env.GEMINI_MODEL_PREF ?? "gemini-pro";
       case "localai":
-        return null;
+        return process.env.LOCAL_AI_MODEL_PREF ?? null;
       case "openrouter":
-        return "openrouter/auto";
+        return process.env.OPENROUTER_MODEL_PREF ?? "openrouter/auto";
       case "mistral":
-        return "mistral-medium";
+        return process.env.MISTRAL_MODEL_PREF ?? "mistral-medium";
       case "generic-openai":
-        return null;
+        return process.env.GENERIC_OPEN_AI_MODEL_PREF ?? null;
       case "perplexity":
-        return "sonar-small-online";
+        return process.env.PERPLEXITY_MODEL_PREF ?? "sonar-small-online";
       case "textgenwebui":
         return null;
       case "bedrock":
-        return null;
+        return process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
+      case "fireworksai":
+        return process.env.FIREWORKS_AI_LLM_MODEL_PREF ?? null;
+      case "deepseek":
+        return process.env.DEEPSEEK_MODEL_PREF ?? "deepseek-chat";
+      case "litellm":
+        return process.env.LITE_LLM_MODEL_PREF ?? null;
+      case "apipie":
+        return process.env.APIPIE_LLM_MODEL_PREF ?? null;
+      case "xai":
+        return process.env.XAI_LLM_MODEL_PREF ?? "grok-beta";
+      case "novita":
+        return process.env.NOVITA_LLM_MODEL_PREF ?? "gryphe/mythomax-l2-13b";
+      case "nvidia-nim":
+        return process.env.NVIDIA_NIM_LLM_MODEL_PREF ?? null;
       default:
-        return "unknown";
+        return null;
     }
+  }
+
+  /**
+   * Attempts to find a fallback provider and model to use if the workspace
+   * does not have an explicit `agentProvider` and `agentModel` set.
+   * 1. Fallback to the workspace `chatProvider` and `chatModel` if they exist.
+   * 2. Fallback to the system `LLM_PROVIDER` and try to load the the associated default model via ENV params or a base available model.
+   * 3. Otherwise, return null - will likely throw an error the user can act on.
+   * @returns {object|null} - An object with provider and model keys.
+   */
+  #getFallbackProvider() {
+    // First, fallback to the workspace chat provider and model if they exist
+    if (
+      this.invocation.workspace.chatProvider &&
+      this.invocation.workspace.chatModel
+    ) {
+      return {
+        provider: this.invocation.workspace.chatProvider,
+        model: this.invocation.workspace.chatModel,
+      };
+    }
+
+    // If workspace does not have chat provider and model fallback
+    // to system provider and try to load provider default model
+    const systemProvider = process.env.LLM_PROVIDER;
+    const systemModel = this.providerDefault(systemProvider);
+    if (systemProvider && systemModel) {
+      return {
+        provider: systemProvider,
+        model: systemModel,
+      };
+    }
+
+    return null;
   }
 
   /**
@@ -206,27 +292,35 @@ class AgentHandler {
    * If multi-model loading is supported, we use their agent model selection of the workspace
    * If not supported, we attempt to fallback to the system provider value for the LLM preference
    * and if that fails - we assume a reasonable base model to exist.
-   * @returns {string} the model preference value to use in API calls
+   * @returns {string|null} the model preference value to use in API calls
    */
   #fetchModel() {
-    if (!Object.keys(this.#noProviderModelDefault).includes(this.provider))
-      return this.invocation.workspace.agentModel || this.#providerDefault();
+    // Provider was not explicitly set for workspace, so we are going to run our fallback logic
+    // that will set a provider and model for us to use.
+    if (!this.provider) {
+      const fallback = this.#getFallbackProvider();
+      if (!fallback) throw new Error("No valid provider found for the agent.");
+      this.provider = fallback.provider; // re-set the provider to the fallback provider so it is not null.
+      return fallback.model; // set its defined model based on fallback logic.
+    }
 
-    // Provider has no reliable default (cant load many models) - so we need to look at system
-    // for the model param.
-    const sysModelKey = this.#noProviderModelDefault[this.provider];
-    if (!!sysModelKey)
-      return process.env[sysModelKey] ?? this.#providerDefault();
+    // The provider was explicitly set, so check if the workspace has an agent model set.
+    if (this.invocation.workspace.agentModel)
+      return this.invocation.workspace.agentModel;
 
-    // If all else fails - look at the provider default list
-    return this.#providerDefault();
+    // Otherwise, we have no model to use - so guess a default model to use via the provider
+    // and it's system ENV params and if that fails - we return either a base model or null.
+    return this.providerDefault();
   }
 
   #providerSetupAndCheck() {
-    this.provider = this.invocation.workspace.agentProvider;
+    this.provider = this.invocation.workspace.agentProvider ?? null; // set provider to workspace agent provider if it exists
     this.model = this.#fetchModel();
+
+    if (!this.provider)
+      throw new Error("No valid provider found for the agent.");
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
-    this.#checkSetup();
+    this.checkSetup();
   }
 
   async #validInvocation() {
@@ -238,7 +332,7 @@ class AgentHandler {
     this.invocation = invocation ?? null;
   }
 
-  #parseCallOptions(args, config = {}, pluginName) {
+  parseCallOptions(args, config = {}, pluginName) {
     const callOpts = {};
     for (const [param, definition] of Object.entries(config)) {
       if (
@@ -279,7 +373,7 @@ class AgentHandler {
           continue;
         }
 
-        const callOpts = this.#parseCallOptions(
+        const callOpts = this.parseCallOptions(
           args,
           childPlugin?.startupConfig?.params,
           name
@@ -287,6 +381,27 @@ class AgentHandler {
         this.aibitat.use(childPlugin.plugin(callOpts));
         this.log(
           `Attached ${parent}:${childPluginName} plugin to Agent cluster`
+        );
+        continue;
+      }
+
+      // Load imported plugin. This is marked by `@@` in the array of functions to load.
+      // and is the @@hubID of the plugin.
+      if (name.startsWith("@@")) {
+        const hubId = name.replace("@@", "");
+        const valid = ImportedPlugin.validateImportedPluginHandler(hubId);
+        if (!valid) {
+          this.log(
+            `Imported plugin by hubId ${hubId} not found in plugin directory. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        const plugin = ImportedPlugin.loadPluginByHubId(hubId);
+        const callOpts = plugin.parseCallOptions();
+        this.aibitat.use(plugin.plugin(callOpts));
+        this.log(
+          `Attached ${plugin.name} (${hubId}) imported plugin to Agent cluster`
         );
         continue;
       }
@@ -299,7 +414,7 @@ class AgentHandler {
         continue;
       }
 
-      const callOpts = this.#parseCallOptions(
+      const callOpts = this.parseCallOptions(
         args,
         AgentPlugins[name].startupConfig.params
       );

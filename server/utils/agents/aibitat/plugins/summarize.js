@@ -136,9 +136,11 @@ const docSummarizer = {
                 );
               }
 
+              const { TokenManager } = require("../../../helpers/tiktoken");
               if (
-                document.content?.length <
-                Provider.contextLimit(this.super.provider)
+                new TokenManager(this.super.model).countFromString(
+                  document.content
+                ) < Provider.contextLimit(this.super.provider, this.super.model)
               ) {
                 return document.content;
               }

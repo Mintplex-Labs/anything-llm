@@ -1,3 +1,5 @@
+const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
+
 const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
@@ -50,7 +52,7 @@ const KEY_MAPPING = {
   },
   GeminiLLMModelPref: {
     envKey: "GEMINI_LLM_MODEL_PREF",
-    checks: [isNotEmpty, validGeminiModel],
+    checks: [isNotEmpty],
   },
   GeminiSafetySetting: {
     envKey: "GEMINI_SAFETY_SETTING",
@@ -100,6 +102,10 @@ const KEY_MAPPING = {
   OllamaLLMTokenLimit: {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
+  },
+  OllamaLLMPerformanceMode: {
+    envKey: "OLLAMA_PERFORMANCE_MODE",
+    checks: [],
   },
   OllamaLLMKeepAliveSeconds: {
     envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
@@ -209,6 +215,13 @@ const KEY_MAPPING = {
   },
 
   // AWS Bedrock LLM InferenceSettings
+  AwsBedrockLLMConnectionMethod: {
+    envKey: "AWS_BEDROCK_LLM_CONNECTION_METHOD",
+    checks: [
+      (input) =>
+        ["iam", "sessionToken"].includes(input) ? null : "Invalid value",
+    ],
+  },
   AwsBedrockLLMAccessKeyId: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
     checks: [isNotEmpty],
@@ -216,6 +229,10 @@ const KEY_MAPPING = {
   AwsBedrockLLMAccessKey: {
     envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
     checks: [isNotEmpty],
+  },
+  AwsBedrockLLMSessionToken: {
+    envKey: "AWS_BEDROCK_LLM_SESSION_TOKEN",
+    checks: [],
   },
   AwsBedrockLLMRegion: {
     envKey: "AWS_BEDROCK_LLM_REGION",
@@ -233,6 +250,7 @@ const KEY_MAPPING = {
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
+    postUpdate: [handleVectorStoreReset],
   },
   EmbeddingBasePath: {
     envKey: "EMBEDDING_BASE_PATH",
@@ -241,10 +259,17 @@ const KEY_MAPPING = {
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
+    postUpdate: [handleVectorStoreReset],
   },
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
+  },
+
+  // Gemini Embedding Settings
+  GeminiEmbeddingApiKey: {
+    envKey: "GEMINI_EMBEDDING_API_KEY",
+    checks: [isNotEmpty],
   },
 
   // Generic OpenAI Embedding Settings
@@ -252,11 +277,16 @@ const KEY_MAPPING = {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",
     checks: [],
   },
+  GenericOpenAiEmbeddingMaxConcurrentChunks: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS",
+    checks: [nonZero],
+  },
 
   // Vector Database Selection Settings
   VectorDB: {
     envKey: "VECTOR_DB",
     checks: [isNotEmpty, supportedVectorDB],
+    postUpdate: [handleVectorStoreReset],
   },
 
   // Chroma Options
@@ -346,6 +376,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Fireworks AI Options
+  FireworksAiLLMApiKey: {
+    envKey: "FIREWORKS_AI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  FireworksAiLLMModelPref: {
+    envKey: "FIREWORKS_AI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Perplexity Options
   PerplexityApiKey: {
     envKey: "PERPLEXITY_API_KEY",
@@ -364,6 +404,24 @@ const KEY_MAPPING = {
   OpenRouterModelPref: {
     envKey: "OPENROUTER_MODEL_PREF",
     checks: [isNotEmpty],
+  },
+  OpenRouterTimeout: {
+    envKey: "OPENROUTER_TIMEOUT_MS",
+    checks: [],
+  },
+
+  // Novita Options
+  NovitaLLMApiKey: {
+    envKey: "NOVITA_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  NovitaLLMModelPref: {
+    envKey: "NOVITA_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  NovitaLLMTimeout: {
+    envKey: "NOVITA_LLM_TIMEOUT_MS",
+    checks: [],
   },
 
   // Groq Options
@@ -427,6 +485,14 @@ const KEY_MAPPING = {
     envKey: "AGENT_GSE_KEY",
     checks: [],
   },
+  AgentSearchApiKey: {
+    envKey: "AGENT_SEARCHAPI_API_KEY",
+    checks: [],
+  },
+  AgentSearchApiEngine: {
+    envKey: "AGENT_SEARCHAPI_ENGINE",
+    checks: [],
+  },
   AgentSerperApiKey: {
     envKey: "AGENT_SERPER_DEV_KEY",
     checks: [],
@@ -441,6 +507,10 @@ const KEY_MAPPING = {
   },
   AgentSearXNGApiUrl: {
     envKey: "AGENT_SEARXNG_API_URL",
+    checks: [],
+  },
+  AgentTavilyApiKey: {
+    envKey: "AGENT_TAVILY_API_KEY",
     checks: [],
   },
 
@@ -468,6 +538,79 @@ const KEY_MAPPING = {
   TTSElevenLabsVoiceModel: {
     envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
     checks: [],
+  },
+
+  // PiperTTS Local
+  TTSPiperTTSVoiceModel: {
+    envKey: "TTS_PIPER_VOICE_MODEL",
+    checks: [],
+  },
+
+  // OpenAI Generic TTS
+  TTSOpenAICompatibleKey: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_KEY",
+    checks: [],
+  },
+  TTSOpenAICompatibleVoiceModel: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL",
+    checks: [isNotEmpty],
+  },
+  TTSOpenAICompatibleEndpoint: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_ENDPOINT",
+    checks: [isValidURL],
+  },
+
+  // DeepSeek Options
+  DeepSeekApiKey: {
+    envKey: "DEEPSEEK_API_KEY",
+    checks: [isNotEmpty],
+  },
+  DeepSeekModelPref: {
+    envKey: "DEEPSEEK_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // APIPie Options
+  ApipieLLMApiKey: {
+    envKey: "APIPIE_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ApipieLLMModelPref: {
+    envKey: "APIPIE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // xAI Options
+  XAIApiKey: {
+    envKey: "XAI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  XAIModelPref: {
+    envKey: "XAI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Nvidia NIM Options
+  NvidiaNimLLMBasePath: {
+    envKey: "NVIDIA_NIM_LLM_BASE_PATH",
+    checks: [isValidURL],
+    postUpdate: [
+      (_, __, nextValue) => {
+        const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
+        process.env.NVIDIA_NIM_LLM_BASE_PATH =
+          parseNvidiaNimBasePath(nextValue);
+      },
+    ],
+  },
+  NvidiaNimLLMModelPref: {
+    envKey: "NVIDIA_NIM_LLM_MODEL_PREF",
+    checks: [],
+    postUpdate: [
+      async (_, __, nextValue) => {
+        const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
+        await NvidiaNimLLM.setModelTokenLimit(nextValue);
+      },
+    ],
   },
 };
 
@@ -528,7 +671,13 @@ function validOllamaLLMBasePath(input = "") {
 }
 
 function supportedTTSProvider(input = "") {
-  const validSelection = ["native", "openai", "elevenlabs"].includes(input);
+  const validSelection = [
+    "native",
+    "openai",
+    "elevenlabs",
+    "piper_local",
+    "generic-openai",
+  ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
 
@@ -553,10 +702,12 @@ function supportedLLM(input = "") {
     "ollama",
     "native",
     "togetherai",
+    "fireworksai",
     "mistral",
     "huggingface",
     "perplexity",
     "openrouter",
+    "novita",
     "groq",
     "koboldcpp",
     "textgenwebui",
@@ -564,6 +715,10 @@ function supportedLLM(input = "") {
     "litellm",
     "generic-openai",
     "bedrock",
+    "deepseek",
+    "apipie",
+    "xai",
+    "nvidia-nim",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -573,18 +728,6 @@ function supportedTranscriptionProvider(input = "") {
   return validSelection
     ? null
     : `${input} is not a valid transcription model provider.`;
-}
-
-function validGeminiModel(input = "") {
-  const validModels = [
-    "gemini-pro",
-    "gemini-1.0-pro",
-    "gemini-1.5-pro-latest",
-    "gemini-1.5-flash-latest",
-  ];
-  return validModels.includes(input)
-    ? null
-    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
 }
 
 function validGeminiSafetySetting(input = "") {
@@ -604,9 +747,13 @@ function validAnthropicModel(input = "") {
     "claude-instant-1.2",
     "claude-2.0",
     "claude-2.1",
-    "claude-3-opus-20240229",
-    "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
+    "claude-3-sonnet-20240229",
+    "claude-3-opus-latest",
+    "claude-3-5-haiku-latest",
+    "claude-3-5-haiku-20241022",
+    "claude-3-5-sonnet-latest",
+    "claude-3-5-sonnet-20241022",
     "claude-3-5-sonnet-20240620",
   ];
   return validModels.includes(input)
@@ -618,6 +765,7 @@ function supportedEmbeddingModel(input = "") {
   const supported = [
     "openai",
     "azure",
+    "gemini",
     "localai",
     "native",
     "ollama",
@@ -626,6 +774,7 @@ function supportedEmbeddingModel(input = "") {
     "voyageai",
     "litellm",
     "generic-openai",
+    "mistral",
   ];
   return supported.includes(input)
     ? null
@@ -720,6 +869,24 @@ function noRestrictedChars(input = "") {
     : null;
 }
 
+async function handleVectorStoreReset(key, prevValue, nextValue) {
+  if (prevValue === nextValue) return;
+  if (key === "VectorDB") {
+    console.log(
+      `Vector configuration changed from ${prevValue} to ${nextValue} - resetting ${prevValue} namespaces`
+    );
+    return await resetAllVectorStores({ vectorDbKey: prevValue });
+  }
+
+  if (key === "EmbeddingEngine" || key === "EmbeddingModelPref") {
+    console.log(
+      `${key} changed from ${prevValue} to ${nextValue} - resetting ${process.env.VECTOR_DB} namespaces`
+    );
+    return await resetAllVectorStores({ vectorDbKey: process.env.VECTOR_DB });
+  }
+  return false;
+}
+
 // This will force update .env variables which for any which reason were not able to be parsed or
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
@@ -803,6 +970,15 @@ function dumpENV() {
     "ENABLE_HTTPS",
     "HTTPS_CERT_PATH",
     "HTTPS_KEY_PATH",
+    // Other Configuration Keys
+    "DISABLE_VIEW_CHAT_HISTORY",
+    // Simple SSO
+    "SIMPLE_SSO_ENABLED",
+    // Community Hub
+    "COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED",
+
+    // Nvidia NIM Keys that are automatically managed
+    "NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

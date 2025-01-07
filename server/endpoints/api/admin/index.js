@@ -4,6 +4,7 @@ const { SystemSettings } = require("../../../models/systemSettings");
 const { User } = require("../../../models/user");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
+const { WorkspaceUser } = require("../../../models/workspaceUsers");
 const { canModifyAdmin } = require("../../../utils/helpers/admin");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
@@ -88,7 +89,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
         description: 'Key pair object that will define the new user to add to the system.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -143,7 +143,6 @@ function apiAdminEndpoints(app) {
   app.post("/v1/admin/users/:id", [validApiKey], async (request, response) => {
     /*
     #swagger.tags = ['Admin']
-    #swagger.path = '/v1/admin/users/{id}'
     #swagger.parameters['id'] = {
       in: 'path',
       description: 'id of the user in the database.',
@@ -154,7 +153,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
         description: 'Key pair object that will update the found user. All fields are optional and will not update unless specified.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -221,7 +219,6 @@ function apiAdminEndpoints(app) {
       /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Delete existing user by id. Methods are disabled until multi user mode is enabled via the UI.'
-    #swagger.path = '/v1/admin/users/{id}'
     #swagger.parameters['id'] = {
       in: 'path',
       description: 'id of the user in the database.',
@@ -323,7 +320,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
         description: 'Request body for creation parameters of the invitation',
         required: false,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -382,7 +378,6 @@ function apiAdminEndpoints(app) {
       /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Deactivates (soft-delete) invite by id. Methods are disabled until multi user mode is enabled via the UI.'
-    #swagger.path = '/v1/admin/invite/{id}'
     #swagger.parameters['id'] = {
       in: 'path',
       description: 'id of the invite in the database.',
@@ -426,13 +421,13 @@ function apiAdminEndpoints(app) {
       }
     }
   );
+
   app.get(
     "/v1/admin/workspaces/:workspaceId/users",
     [validApiKey],
     async (request, response) => {
       /*
       #swagger.tags = ['Admin']
-      #swagger.path = '/v1/admin/workspaces/{workspaceId}/users'
       #swagger.parameters['workspaceId'] = {
         in: 'path',
         description: 'id of the workspace.',
@@ -481,13 +476,14 @@ function apiAdminEndpoints(app) {
       }
     }
   );
+
   app.post(
     "/v1/admin/workspaces/:workspaceId/update-users",
     [validApiKey],
     async (request, response) => {
       /*
     #swagger.tags = ['Admin']
-    #swagger.path = '/v1/admin/workspaces/{workspaceId}/update-users'
+    #swagger.deprecated = true
     #swagger.parameters['workspaceId'] = {
       in: 'path',
       description: 'id of the workspace in the database.',
@@ -498,7 +494,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
         description: 'Entire array of user ids who can access the workspace. All fields are optional and will not update unless specified.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             example: {
@@ -548,6 +543,122 @@ function apiAdminEndpoints(app) {
       }
     }
   );
+
+  app.post(
+    "/v1/admin/workspaces/:workspaceSlug/manage-users",
+    [validApiKey],
+    async (request, response) => {
+      /*
+    #swagger.tags = ['Admin']
+    #swagger.parameters['workspaceSlug'] = {
+      in: 'path',
+      description: 'slug of the workspace in the database',
+      required: true,
+      type: 'string'
+    }
+    #swagger.description = 'Set workspace permissions to be accessible by the given user ids and admins. Methods are disabled until multi user mode is enabled via the UI.'
+    #swagger.requestBody = {
+        description: 'Array of user ids who will be given access to the target workspace. <code>reset</code> will remove all existing users from the workspace and only add the new users - default <code>false</code>.',
+        required: true,
+        content: {
+          "application/json": {
+            example: {
+              userIds: [1,2,4,12],
+              reset: false
+            }
+          }
+        }
+      }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              success: true,
+              error: null,
+              users: [
+                {"userId": 1, "username": "main-admin", "role": "admin"},
+                {"userId": 2, "username": "sample-sam", "role": "default"}
+              ]
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+     #swagger.responses[401] = {
+      description: "Instance is not in Multi-User mode. Method denied",
+    }
+    */
+      try {
+        if (!multiUserMode(response)) {
+          response.sendStatus(401).end();
+          return;
+        }
+
+        const { workspaceSlug } = request.params;
+        const { userIds: _uids, reset = false } = reqBody(request);
+        const userIds = (
+          await User.where({ id: { in: _uids.map(Number) } })
+        ).map((user) => user.id);
+        const workspace = await Workspace.get({ slug: String(workspaceSlug) });
+        const workspaceUsers = await Workspace.workspaceUsers(workspace.id);
+
+        if (!workspace) {
+          response.status(404).json({
+            success: false,
+            error: `Workspace ${workspaceSlug} not found`,
+            users: workspaceUsers,
+          });
+          return;
+        }
+
+        if (userIds.length === 0) {
+          response.status(404).json({
+            success: false,
+            error: `No valid user IDs provided.`,
+            users: workspaceUsers,
+          });
+          return;
+        }
+
+        // Reset all users in the workspace and add the new users as the only users in the workspace
+        if (reset) {
+          const { success, error } = await Workspace.updateUsers(
+            workspace.id,
+            userIds
+          );
+          return response.status(200).json({
+            success,
+            error,
+            users: await Workspace.workspaceUsers(workspace.id),
+          });
+        }
+
+        // Add new users to the workspace if they are not already in the workspace
+        const existingUserIds = workspaceUsers.map((user) => user.userId);
+        const usersToAdd = userIds.filter(
+          (userId) => !existingUserIds.includes(userId)
+        );
+        if (usersToAdd.length > 0)
+          await WorkspaceUser.createManyUsers(usersToAdd, workspace.id);
+        response.status(200).json({
+          success: true,
+          error: null,
+          users: await Workspace.workspaceUsers(workspace.id),
+        });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.post(
     "/v1/admin/workspace-chats",
     [validApiKey],
@@ -558,7 +669,6 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
         description: 'Page offset to show of workspace chats. All fields are optional and will not update unless specified.',
         required: false,
-        type: 'integer',
         content: {
           "application/json": {
             example: {
@@ -605,56 +715,6 @@ function apiAdminEndpoints(app) {
     }
   );
 
-  app.get("/v1/admin/preferences", [validApiKey], async (request, response) => {
-    /*
-    #swagger.tags = ['Admin']
-    #swagger.description = 'Show all multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.'
-    #swagger.responses[200] = {
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            example: {
-              settings: {
-                limit_user_messages: false,
-                message_limit: 10,
-              }
-            }
-          }
-        }
-      }
-    }
-    #swagger.responses[403] = {
-      schema: {
-        "$ref": "#/definitions/InvalidAPIKey"
-      }
-    }
-     #swagger.responses[401] = {
-      description: "Instance is not in Multi-User mode. Method denied",
-    }
-    */
-    try {
-      if (!multiUserMode(response)) {
-        response.sendStatus(401).end();
-        return;
-      }
-
-      const settings = {
-        limit_user_messages:
-          (await SystemSettings.get({ label: "limit_user_messages" }))
-            ?.value === "true",
-        message_limit:
-          Number(
-            (await SystemSettings.get({ label: "message_limit" }))?.value
-          ) || 10,
-      };
-      response.status(200).json({ settings });
-    } catch (e) {
-      console.error(e);
-      response.sendStatus(500).end();
-    }
-  });
-
   app.post(
     "/v1/admin/preferences",
     [validApiKey],
@@ -665,12 +725,10 @@ function apiAdminEndpoints(app) {
     #swagger.requestBody = {
       description: 'Object with setting key and new value to set. All keys are optional and will not update unless specified.',
       required: true,
-      type: 'object',
       content: {
         "application/json": {
           example: {
-            limit_user_messages: true,
-            message_limit: 5,
+            support_email: "support@example.com",
           }
         }
       }

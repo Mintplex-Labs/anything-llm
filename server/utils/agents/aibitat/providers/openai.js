@@ -9,9 +9,21 @@ const { RetryError } = require("../error.js");
 class OpenAIProvider extends Provider {
   model;
   static COST_PER_TOKEN = {
+    "gpt-3.5-turbo": {
+      input: 0.0015,
+      output: 0.002,
+    },
+    "gpt-3.5-turbo-16k": {
+      input: 0.003,
+      output: 0.004,
+    },
     "gpt-4": {
       input: 0.03,
       output: 0.06,
+    },
+    "gpt-4-turbo": {
+      input: 0.01,
+      output: 0.03,
     },
     "gpt-4o": {
       input: 0.005,
@@ -21,13 +33,9 @@ class OpenAIProvider extends Provider {
       input: 0.06,
       output: 0.12,
     },
-    "gpt-3.5-turbo": {
-      input: 0.0015,
-      output: 0.002,
-    },
-    "gpt-3.5-turbo-16k": {
-      input: 0.003,
-      output: 0.004,
+    "gpt-4o-mini": {
+      input: 0.00015,
+      output: 0.0006,
     },
   };
 

@@ -27,6 +27,7 @@ const {
   renameLogoFile,
   removeCustomLogo,
   LOGO_FILENAME,
+  isDefaultFilename,
 } = require("../utils/files/logo");
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
@@ -39,10 +40,7 @@ const {
   isMultiUserSetup,
 } = require("../utils/middleware/multiUserProtected");
 const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
-const {
-  prepareWorkspaceChatsForExport,
-  exportChatsAsType,
-} = require("../utils/helpers/chat/convertTo");
+const { exportChatsAsType } = require("../utils/helpers/chat/convertTo");
 const { EventLogs } = require("../models/eventLogs");
 const { CollectorApi } = require("../utils/collectorApi");
 const {
@@ -51,6 +49,13 @@ const {
   generateRecoveryCodes,
 } = require("../utils/PasswordRecovery");
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
+const { EncryptionManager } = require("../utils/EncryptionManager");
+const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
+const {
+  chatHistoryViewable,
+} = require("../utils/middleware/chatHistoryViewable");
+const { simpleSSOEnabled } = require("../utils/middleware/simpleSSOEnabled");
+const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -236,7 +241,10 @@ function systemEndpoints(app) {
         });
         response.status(200).json({
           valid: true,
-          token: makeJWT({ p: password }, "30d"),
+          token: makeJWT(
+            { p: new EncryptionManager().encrypt(password) },
+            "30d"
+          ),
           message: null,
         });
       }
@@ -245,6 +253,49 @@ function systemEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.get(
+    "/request-token/sso/simple",
+    [simpleSSOEnabled],
+    async (request, response) => {
+      const { token: tempAuthToken } = request.query;
+      const { sessionToken, token, error } =
+        await TemporaryAuthToken.validate(tempAuthToken);
+
+      if (error) {
+        await EventLogs.logEvent("failed_login_invalid_temporary_auth_token", {
+          ip: request.ip || "Unknown IP",
+          multiUserMode: true,
+        });
+        return response.status(401).json({
+          valid: false,
+          token: null,
+          message: `[001] An error occurred while validating the token: ${error}`,
+        });
+      }
+
+      await Telemetry.sendTelemetry(
+        "login_event",
+        { multiUserMode: true },
+        token.user.id
+      );
+      await EventLogs.logEvent(
+        "login_event",
+        {
+          ip: request.ip || "Unknown IP",
+          username: token.user.username || "Unknown user",
+        },
+        token.user.id
+      );
+
+      response.status(200).json({
+        valid: true,
+        user: User.filterFields(token.user),
+        token: sessionToken,
+        message: null,
+      });
+    }
+  );
 
   app.post(
     "/system/recover-account",
@@ -477,11 +528,19 @@ function systemEndpoints(app) {
           password,
           role: ROLES.admin,
         });
+
+        if (error || !user) {
+          response.status(400).json({
+            success: false,
+            error: error || "Failed to enable multi-user mode.",
+          });
+          return;
+        }
+
         await SystemSettings._updateSettings({
           multi_user_mode: true,
-          limit_user_messages: false,
-          message_limit: 25,
         });
+        await BrowserExtensionApiKey.migrateApiKeysToMultiUser(user.id);
 
         await updateENV(
           {
@@ -516,9 +575,11 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/logo", async function (_, response) {
+  app.get("/system/logo", async function (request, response) {
     try {
-      const defaultFilename = getDefaultFilename();
+      const darkMode =
+        !request?.query?.theme || request?.query?.theme === "default";
+      const defaultFilename = getDefaultFilename(darkMode);
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
 
@@ -538,7 +599,8 @@ function systemEndpoints(app) {
         "Content-Length": size,
         "X-Is-Custom-Logo":
           currentLogoFilename !== null &&
-          currentLogoFilename !== defaultFilename,
+          currentLogoFilename !== defaultFilename &&
+          !isDefaultFilename(currentLogoFilename),
       });
       response.end(Buffer.from(buffer, "base64"));
       return;
@@ -597,24 +659,18 @@ function systemEndpoints(app) {
     async function (request, response) {
       try {
         const { id } = request.params;
-        const pfpPath = await determinePfpFilepath(id);
+        if (response.locals?.user?.id !== Number(id))
+          return response.sendStatus(204).end();
 
-        if (!pfpPath) {
-          response.sendStatus(204).end();
-          return;
-        }
+        const pfpPath = await determinePfpFilepath(id);
+        if (!pfpPath) return response.sendStatus(204).end();
 
         const { found, buffer, size, mime } = fetchPfp(pfpPath);
-        if (!found) {
-          response.sendStatus(204).end();
-          return;
-        }
+        if (!found) return response.sendStatus(204).end();
 
         response.writeHead(200, {
           "Content-Type": mime || "image/png",
-          "Content-Disposition": `attachment; filename=${path.basename(
-            pfpPath
-          )}`,
+          "Content-Disposition": `attachment; filename=${path.basename(pfpPath)}`,
           "Content-Length": size,
         });
         response.end(Buffer.from(buffer, "base64"));
@@ -890,7 +946,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/custom-models",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { provider, apiKey = null, basePath = null } = reqBody(request);
@@ -951,7 +1007,11 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/workspace-chats",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      chatHistoryViewable,
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+    ],
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);
@@ -991,16 +1051,20 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/export-chats",
-    [validatedRequest, flexUserRoleValid([ROLES.manager, ROLES.admin])],
+    [
+      chatHistoryViewable,
+      validatedRequest,
+      flexUserRoleValid([ROLES.manager, ROLES.admin]),
+    ],
     async (request, response) => {
       try {
-        const { type = "jsonl" } = request.query;
-        const chats = await prepareWorkspaceChatsForExport(type);
-        const { contentType, data } = await exportChatsAsType(chats, type);
+        const { type = "jsonl", chatType = "workspace" } = request.query;
+        const { contentType, data } = await exportChatsAsType(type, chatType);
         await EventLogs.logEvent(
           "exported_chats",
           {
             type,
+            chatType,
           },
           response.locals.user?.id
         );

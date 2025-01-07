@@ -27,7 +27,8 @@ async function scrapeGenericUrl(link, textOnly = false) {
   }
 
   const url = new URL(link);
-  const filename = (url.host + "-" + url.pathname).replace(".", "_");
+  const decodedPathname = decodeURIComponent(url.pathname);
+  const filename = `${url.hostname}${decodedPathname.replace(/\//g, "_")}`;
 
   const data = {
     id: v4(),
@@ -57,9 +58,10 @@ async function getPageContent(link) {
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
+        ignoreHTTPSErrors: true,
       },
       gotoOptions: {
-        waitUntil: "domcontentloaded",
+        waitUntil: "networkidle2",
       },
       async evaluate(page, browser) {
         const result = await page.evaluate(() => document.body.innerText);

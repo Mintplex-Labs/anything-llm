@@ -15,7 +15,7 @@ import React, { useEffect, useState } from "react";
 import SettingsButton from "../SettingsButton";
 import { isMobile } from "react-device-detect";
 import { Tooltip } from "react-tooltip";
-import { v4 } from "uuid";
+import { Link } from "react-router-dom";
 
 export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
@@ -49,50 +49,65 @@ export default function Footer() {
     return (
       <div className="flex justify-center mb-2">
         <div className="flex space-x-4">
-          <ToolTipWrapper id="open-github">
-            <a
-              href={paths.github()}
+          <div className="flex w-fit">
+            <Link
+              to={paths.github()}
               target="_blank"
               rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+              className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Find us on Github"
-              data-tooltip-id="open-github"
+              data-tooltip-id="footer-item"
               data-tooltip-content="View source code on Github"
             >
-              <GithubLogo weight="fill" className="h-5 w-5 " />
-            </a>
-          </ToolTipWrapper>
-          <ToolTipWrapper id="open-documentation">
-            <a
-              href={paths.docs()}
+              <GithubLogo
+                weight="fill"
+                className="h-5 w-5"
+                color="var(--theme-sidebar-footer-icon-fill)"
+              />
+            </Link>
+          </div>
+          <div className="flex w-fit">
+            <Link
+              to={paths.docs()}
               target="_blank"
               rel="noreferrer"
-              className="w-fit transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+              className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Docs"
-              data-tooltip-id="open-documentation"
+              data-tooltip-id="footer-item"
               data-tooltip-content="Open AnythingLLM help docs"
             >
-              <BookOpen weight="fill" className="h-5 w-5 " />
-            </a>
-          </ToolTipWrapper>
-          <ToolTipWrapper id="open-discord">
-            <a
-              href={paths.discord()}
+              <BookOpen
+                weight="fill"
+                className="h-5 w-5"
+                color="var(--theme-sidebar-footer-icon-fill)"
+              />
+            </Link>
+          </div>
+          <div className="flex w-fit">
+            <Link
+              to={paths.discord()}
               target="_blank"
               rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+              className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Join our Discord server"
-              data-tooltip-id="open-discord"
+              data-tooltip-id="footer-item"
               data-tooltip-content="Join the AnythingLLM Discord"
             >
               <DiscordLogo
                 weight="fill"
-                className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
+                className="h-5 w-5"
+                color="var(--theme-sidebar-footer-icon-fill)"
               />
-            </a>
-          </ToolTipWrapper>
+            </Link>
+          </div>
           {!isMobile && <SettingsButton />}
         </div>
+        <Tooltip
+          id="footer-item"
+          place="top"
+          delayShow={300}
+          className="tooltip !text-xs z-99"
+        />
       </div>
     );
   }
@@ -106,29 +121,22 @@ export default function Footer() {
             href={item.url}
             target="_blank"
             rel="noreferrer"
-            className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+            className="transition-all duration-300 flex w-fit h-fit p-2 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover hover:border-slate-100"
           >
             {React.createElement(
               ICON_COMPONENTS?.[item.icon] ?? ICON_COMPONENTS.Info,
               {
                 weight: "fill",
                 className: "h-5 w-5",
+                color: "var(--theme-sidebar-footer-icon-fill)",
               }
             )}
           </a>
         ))}
         {!isMobile && <SettingsButton />}
       </div>
-    </div>
-  );
-}
-
-export function ToolTipWrapper({ id = v4(), children }) {
-  return (
-    <div className="flex w-fit">
-      {children}
       <Tooltip
-        id={id}
+        id="footer-item"
         place="top"
         delayShow={300}
         className="tooltip !text-xs z-99"

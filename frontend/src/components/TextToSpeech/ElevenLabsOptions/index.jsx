@@ -3,7 +3,9 @@ import System from "@/models/system";
 
 export default function ElevenLabsOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.TTSElevenLabsKey);
-  const [openAIKey, setOpenAIKey] = useState(settings?.TTSElevenLabsKey);
+  const [elevenLabsKey, setElevenLabsKey] = useState(
+    settings?.TTSElevenLabsKey
+  );
 
   return (
     <div className="flex gap-x-4">
@@ -14,18 +16,18 @@ export default function ElevenLabsOptions({ settings }) {
         <input
           type="password"
           name="TTSElevenLabsKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="ElevenLabs API Key"
           defaultValue={settings?.TTSElevenLabsKey ? "*".repeat(20) : ""}
           required={true}
           autoComplete="off"
           spellCheck={false}
           onChange={(e) => setInputValue(e.target.value)}
-          onBlur={() => setOpenAIKey(inputValue)}
+          onBlur={() => setElevenLabsKey(inputValue)}
         />
       </div>
       {!settings?.credentialsOnly && (
-        <ElevenLabsModelSelection settings={settings} apiKey={openAIKey} />
+        <ElevenLabsModelSelection settings={settings} apiKey={elevenLabsKey} />
       )}
     </div>
   );
@@ -66,7 +68,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
         <select
           name="TTSElevenLabsVoiceModel"
           disabled={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -84,15 +86,18 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
       <select
         name="TTSElevenLabsVoiceModel"
         required={true}
-        defaultValue={settings?.TTSElevenLabsVoiceModel}
-        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {Object.keys(groupedModels)
           .sort()
           .map((organization) => (
             <optgroup key={organization} label={organization}>
               {groupedModels[organization].map((model) => (
-                <option key={model.id} value={model.id}>
+                <option
+                  key={model.id}
+                  value={model.id}
+                  selected={model.id === settings?.TTSElevenLabsVoiceModel}
+                >
                   {model.name}
                 </option>
               ))}

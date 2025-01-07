@@ -8,7 +8,7 @@
 // copy outputs into the export in ../models.js
 
 // Update the date below if you run this again because TogetherAI added new models.
-// Last Collected: Apr 18, 2024
+// Last Collected: Nov 20, 2024
 // Since last collection Together's docs are broken. I just copied the HTML table
 // and had claude3 convert to markdown and it works well enough.
 

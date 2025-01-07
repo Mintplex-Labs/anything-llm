@@ -3,6 +3,9 @@ const {
   clientAbortedHandler,
   writeResponseChunk,
 } = require("../../helpers/chat/responses");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 const { v4: uuidv4 } = require("uuid");
 
 class KoboldCPPLLM {
@@ -51,6 +54,13 @@ class KoboldCPPLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(_modelName) {
+    const limit = process.env.KOBOLD_CPP_MODEL_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No token context limit was set.");
+    return Number(limit);
+  }
+
   // Ensure the user set a value for the token limit
   // and if undefined - assume 4096 window.
   promptWindowLimit() {
@@ -66,52 +76,120 @@ class KoboldCPPLLM {
     return true;
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+    return content.flat();
+  }
+
+  /**
+   * Construct the user prompt for this model.
+   * @param {{attachments: import("../../helpers").Attachment[]}} param0
+   * @returns
+   */
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...chatHistory,
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const result = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        temperature,
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature,
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    const promptTokens = LLMPerformanceMonitor.countTokens(messages);
+    const completionTokens = LLMPerformanceMonitor.countTokens([
+      { content: result.output.choices[0].message.content },
+    ]);
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: promptTokens,
+        completion_tokens: completionTokens,
+        total_tokens: promptTokens + completionTokens,
+        outputTps: completionTokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      temperature,
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+      }),
+      messages
+    );
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
-    // Custom handler for KoboldCPP stream responses
     return new Promise(async (resolve) => {
       let fullText = "";
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      let usage = {
+        prompt_tokens: LLMPerformanceMonitor.countTokens(stream.messages || []),
+        completion_tokens: 0,
+      };
+
+      const handleAbort = () => {
+        usage.completion_tokens = LLMPerformanceMonitor.countTokens([
+          { content: fullText },
+        ]);
+        stream?.endMeasurement(usage);
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       for await (const chunk of stream) {
@@ -145,6 +223,10 @@ class KoboldCPPLLM {
             error: false,
           });
           response.removeListener("close", handleAbort);
+          usage.completion_tokens = LLMPerformanceMonitor.countTokens([
+            { content: fullText },
+          ]);
+          stream?.endMeasurement(usage);
           resolve(fullText);
         }
       }

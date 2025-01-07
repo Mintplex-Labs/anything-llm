@@ -4,6 +4,10 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { MODEL_MAP } = require("../modelMap");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -32,25 +36,12 @@ class AnthropicLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    return MODEL_MAP.anthropic[modelName] ?? 100_000;
+  }
+
   promptWindowLimit() {
-    switch (this.model) {
-      case "claude-instant-1.2":
-        return 100_000;
-      case "claude-2.0":
-        return 100_000;
-      case "claude-2.1":
-        return 200_000;
-      case "claude-3-opus-20240229":
-        return 200_000;
-      case "claude-3-sonnet-20240229":
-        return 200_000;
-      case "claude-3-haiku-20240307":
-        return 200_000;
-      case "claude-3-5-sonnet-20240620":
-        return 200_000;
-      default:
-        return 100_000; // assume a claude-instant-1.2 model
-    }
+    return MODEL_MAP.anthropic[this.model] ?? 100_000;
   }
 
   isValidChatCompletionModel(modelName = "") {
@@ -58,12 +49,40 @@ class AnthropicLLM {
       "claude-instant-1.2",
       "claude-2.0",
       "claude-2.1",
-      "claude-3-opus-20240229",
-      "claude-3-sonnet-20240229",
       "claude-3-haiku-20240307",
+      "claude-3-sonnet-20240229",
+      "claude-3-opus-latest",
+      "claude-3-5-haiku-latest",
+      "claude-3-5-haiku-20241022",
+      "claude-3-5-sonnet-latest",
+      "claude-3-5-sonnet-20241022",
       "claude-3-5-sonnet-20240620",
     ];
     return validModels.includes(modelName);
+  }
+
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: attachment.mime,
+          data: attachment.contentString.split("base64,")[1],
+        },
+      });
+    }
+    return content.flat();
   }
 
   constructPrompt({
@@ -71,13 +90,21 @@ class AnthropicLLM {
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [], // This is the specific attachment for only this prompt
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
 
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...chatHistory,
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -87,18 +114,31 @@ class AnthropicLLM {
       );
 
     try {
-      const response = await this.anthropic.messages.create({
-        model: this.model,
-        max_tokens: 4096,
-        system: messages[0].content, // Strip out the system message
-        messages: messages.slice(1), // Pop off the system message
-        temperature: Number(temperature ?? this.defaultTemp),
-      });
+      const result = await LLMPerformanceMonitor.measureAsyncFunction(
+        this.anthropic.messages.create({
+          model: this.model,
+          max_tokens: 4096,
+          system: messages[0].content, // Strip out the system message
+          messages: messages.slice(1), // Pop off the system message
+          temperature: Number(temperature ?? this.defaultTemp),
+        })
+      );
 
-      return response.content[0].text;
+      const promptTokens = result.output.usage.input_tokens;
+      const completionTokens = result.output.usage.output_tokens;
+      return {
+        textResponse: result.output.content[0].text,
+        metrics: {
+          prompt_tokens: promptTokens,
+          completion_tokens: completionTokens,
+          total_tokens: promptTokens + completionTokens,
+          outputTps: completionTokens / result.duration,
+          duration: result.duration,
+        },
+      };
     } catch (error) {
       console.log(error);
-      return error;
+      return { textResponse: error, metrics: {} };
     }
   }
 
@@ -108,26 +148,45 @@ class AnthropicLLM {
         `Anthropic chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.anthropic.messages.stream({
-      model: this.model,
-      max_tokens: 4096,
-      system: messages[0].content, // Strip out the system message
-      messages: messages.slice(1), // Pop off the system message
-      temperature: Number(temperature ?? this.defaultTemp),
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.anthropic.messages.stream({
+        model: this.model,
+        max_tokens: 4096,
+        system: messages[0].content, // Strip out the system message
+        messages: messages.slice(1), // Pop off the system message
+        temperature: Number(temperature ?? this.defaultTemp),
+      }),
+      messages,
+      false
+    );
+
+    return measuredStreamRequest;
   }
 
+  /**
+   * Handles the stream response from the Anthropic API.
+   * @param {Object} response - the response object
+   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream - the stream response from the Anthropic API w/tracking
+   * @param {Object} responseProps - the response properties
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
     return new Promise((resolve) => {
       let fullText = "";
       const { uuid = v4(), sources = [] } = responseProps;
+      let usage = {
+        prompt_tokens: 0,
+        completion_tokens: 0,
+      };
 
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement(usage);
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       stream.on("error", (event) => {
@@ -149,11 +208,18 @@ class AnthropicLLM {
           error: parseErrorMsg(event),
         });
         response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
         resolve(fullText);
       });
 
       stream.on("streamEvent", (message) => {
         const data = message;
+
+        if (data.type === "message_start")
+          usage.prompt_tokens = data?.message?.usage?.input_tokens;
+        if (data.type === "message_delta")
+          usage.completion_tokens = data?.usage?.output_tokens;
+
         if (
           data.type === "content_block_delta" &&
           data.delta.type === "text_delta"
@@ -184,6 +250,7 @@ class AnthropicLLM {
             error: false,
           });
           response.removeListener("close", handleAbort);
+          stream?.endMeasurement(usage);
           resolve(fullText);
         }
       });

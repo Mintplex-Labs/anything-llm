@@ -62,13 +62,18 @@ export default function SlashPresets({ setShowing, sendCommand }) {
     }
 
     fetchPresets();
-    closeEditModal();
+    closeEditModalAndResetPreset();
   };
 
   const handleDeletePreset = async (presetId) => {
     await System.deleteSlashCommandPreset(presetId);
     fetchPresets();
+    closeEditModalAndResetPreset();
+  };
+
+  const closeEditModalAndResetPreset = () => {
     closeEditModal();
+    setSelectedPreset(null);
   };
 
   return (
@@ -80,11 +85,13 @@ export default function SlashPresets({ setShowing, sendCommand }) {
             setShowing(false);
             sendCommand(`${preset.command} `, false);
           }}
-          className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-row justify-start"
+          className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start"
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-white text-sm font-bold">{preset.command}</div>
-            <div className="text-white text-opacity-60 text-sm">
+            <div className="text-theme-text-primary text-sm font-bold">
+              {preset.command}
+            </div>
+            <div className="text-theme-text-secondary text-sm">
               {preset.description}
             </div>
           </div>
@@ -93,7 +100,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
               e.stopPropagation();
               handleEditPreset(preset);
             }}
-            className="text-white text-sm p-1 hover:cursor-pointer hover:bg-zinc-900 rounded-full mt-1"
+            className="border-none text-theme-text-primary text-sm p-1 hover:cursor-pointer hover:bg-theme-action-menu-item-hover rounded-full mt-1"
           >
             <DotsThree size={24} weight="bold" />
           </button>
@@ -101,11 +108,13 @@ export default function SlashPresets({ setShowing, sendCommand }) {
       ))}
       <button
         onClick={openAddModal}
-        className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-1 rounded-xl flex flex-col justify-start"
+        className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-1 rounded-xl flex flex-col justify-start"
       >
         <div className="w-full flex-row flex pointer-events-none items-center gap-2">
-          <Plus size={24} weight="fill" fill="white" />
-          <div className="text-white text-sm font-medium">Add New Preset </div>
+          <Plus size={24} weight="fill" className="text-theme-text-primary" />
+          <div className="text-theme-text-primary text-sm font-medium">
+            Add New Preset
+          </div>
         </div>
       </button>
       <AddPresetModal
@@ -116,7 +125,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
       {selectedPreset && (
         <EditPresetModal
           isOpen={isEditModalOpen}
-          onClose={closeEditModal}
+          onClose={closeEditModalAndResetPreset}
           onSave={handleUpdatePreset}
           onDelete={handleDeletePreset}
           preset={selectedPreset}

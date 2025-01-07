@@ -36,67 +36,48 @@ class OllamaEmbedder {
     return result?.[0] || [];
   }
 
+  /**
+   * This function takes an array of text chunks and embeds them using the Ollama API.
+   * chunks are processed sequentially to avoid overwhelming the API with too many requests
+   * or running out of resources on the endpoint running the ollama instance.
+   * @param {string[]} textChunks - An array of text chunks to embed.
+   * @returns {Promise<Array<number[]>>} - A promise that resolves to an array of embeddings.
+   */
   async embedChunks(textChunks = []) {
     if (!(await this.#isAlive()))
       throw new Error(
         `Ollama service could not be reached. Is Ollama running?`
       );
 
-    const embeddingRequests = [];
     this.log(
       `Embedding ${textChunks.length} chunks of text with ${this.model}.`
     );
 
+    let data = [];
+    let error = null;
+
     for (const chunk of textChunks) {
-      embeddingRequests.push(
-        new Promise((resolve) => {
-          fetch(this.basePath, {
-            method: "POST",
-            body: JSON.stringify({
-              model: this.model,
-              prompt: chunk,
-            }),
-          })
-            .then((res) => res.json())
-            .then(({ embedding }) => {
-              resolve({ data: embedding, error: null });
-              return;
-            })
-            .catch((error) => {
-              resolve({ data: [], error: error.message });
-              return;
-            });
-        })
-      );
-    }
+      try {
+        const res = await fetch(this.basePath, {
+          method: "POST",
+          body: JSON.stringify({
+            model: this.model,
+            prompt: chunk,
+          }),
+        });
 
-    const { data = [], error = null } = await Promise.all(
-      embeddingRequests
-    ).then((results) => {
-      // If any errors were returned from Ollama abort the entire sequence because the embeddings
-      // will be incomplete.
+        const { embedding } = await res.json();
+        if (!Array.isArray(embedding) || embedding.length === 0)
+          throw new Error("Ollama returned an empty embedding for chunk!");
 
-      const errors = results
-        .filter((res) => !!res.error)
-        .map((res) => res.error)
-        .flat();
-      if (errors.length > 0) {
-        let uniqueErrors = new Set();
-        errors.map((error) =>
-          uniqueErrors.add(`[${error.type}]: ${error.message}`)
-        );
-
-        return {
-          data: [],
-          error: Array.from(uniqueErrors).join(", "),
-        };
+        data.push(embedding);
+      } catch (err) {
+        this.log(err.message);
+        error = err.message;
+        data = [];
+        break;
       }
-
-      return {
-        data: results.map((res) => res?.data || []),
-        error: null,
-      };
-    });
+    }
 
     if (!!error) throw new Error(`Ollama Failed to embed: ${error}`);
     return data.length > 0 ? data : null;

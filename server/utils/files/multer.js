@@ -2,8 +2,12 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { v4 } = require("uuid");
+const { normalizePath } = require(".");
 
-// Handle File uploads for auto-uploading.
+/**
+ * Handle File uploads for auto-uploading.
+ * Mostly used for internal GUI/API uploads.
+ */
 const fileUploadStorage = multer.diskStorage({
   destination: function (_, __, cb) {
     const uploadOutput =
@@ -13,9 +17,27 @@ const fileUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = Buffer.from(file.originalname, "latin1").toString(
-      "utf8"
+    file.originalname = normalizePath(
+      Buffer.from(file.originalname, "latin1").toString("utf8")
     );
+    cb(null, file.originalname);
+  },
+});
+
+/**
+ * Handle API file upload as documents - this does not manipulate the filename
+ * at all for encoding/charset reasons.
+ */
+const fileAPIUploadStorage = multer.diskStorage({
+  destination: function (_, __, cb) {
+    const uploadOutput =
+      process.env.NODE_ENV === "development"
+        ? path.resolve(__dirname, `../../../collector/hotdir`)
+        : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
+    cb(null, uploadOutput);
+  },
+  filename: function (_, file, cb) {
+    file.originalname = normalizePath(file.originalname);
     cb(null, file.originalname);
   },
 });
@@ -31,14 +53,16 @@ const assetUploadStorage = multer.diskStorage({
     return cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = Buffer.from(file.originalname, "latin1").toString(
-      "utf8"
+    file.originalname = normalizePath(
+      Buffer.from(file.originalname, "latin1").toString("utf8")
     );
     cb(null, file.originalname);
   },
 });
 
-// Asset sub-storage manager for pfp icons.
+/**
+ * Handle PFP file upload as logos
+ */
 const pfpUploadStorage = multer.diskStorage({
   destination: function (_, __, cb) {
     const uploadOutput =
@@ -49,13 +73,20 @@ const pfpUploadStorage = multer.diskStorage({
     return cb(null, uploadOutput);
   },
   filename: function (req, file, cb) {
-    const randomFileName = `${v4()}${path.extname(file.originalname)}`;
+    const randomFileName = `${v4()}${path.extname(
+      normalizePath(file.originalname)
+    )}`;
     req.randomFileName = randomFileName;
     cb(null, randomFileName);
   },
 });
 
-// Handle Generic file upload as documents
+/**
+ * Handle Generic file upload as documents from the GUI
+ * @param {Request} request
+ * @param {Response} response
+ * @param {NextFunction} next
+ */
 function handleFileUpload(request, response, next) {
   const upload = multer({ storage: fileUploadStorage }).single("file");
   upload(request, response, function (err) {
@@ -73,7 +104,33 @@ function handleFileUpload(request, response, next) {
   });
 }
 
-// Handle logo asset uploads
+/**
+ * Handle API file upload as documents - this does not manipulate the filename
+ * at all for encoding/charset reasons.
+ * @param {Request} request
+ * @param {Response} response
+ * @param {NextFunction} next
+ */
+function handleAPIFileUpload(request, response, next) {
+  const upload = multer({ storage: fileAPIUploadStorage }).single("file");
+  upload(request, response, function (err) {
+    if (err) {
+      response
+        .status(500)
+        .json({
+          success: false,
+          error: `Invalid file upload. ${err.message}`,
+        })
+        .end();
+      return;
+    }
+    next();
+  });
+}
+
+/**
+ * Handle logo asset uploads
+ */
 function handleAssetUpload(request, response, next) {
   const upload = multer({ storage: assetUploadStorage }).single("logo");
   upload(request, response, function (err) {
@@ -91,7 +148,9 @@ function handleAssetUpload(request, response, next) {
   });
 }
 
-// Handle PFP file upload as logos
+/**
+ * Handle PFP file upload as logos
+ */
 function handlePfpUpload(request, response, next) {
   const upload = multer({ storage: pfpUploadStorage }).single("file");
   upload(request, response, function (err) {
@@ -111,6 +170,7 @@ function handlePfpUpload(request, response, next) {
 
 module.exports = {
   handleFileUpload,
+  handleAPIFileUpload,
   handleAssetUpload,
   handlePfpUpload,
 };

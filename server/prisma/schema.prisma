@@ -67,6 +67,7 @@ model users {
   seen_recovery_codes         Boolean?                      @default(false)
   createdAt                   DateTime                      @default(now())
   lastUpdatedAt               DateTime                      @default(now())
+  dailyMessageLimit           Int?
   workspace_chats             workspace_chats[]
   workspace_users             workspace_users[]
   embed_configs               embed_configs[]
@@ -76,6 +77,8 @@ model users {
   password_reset_tokens       password_reset_tokens[]
   workspace_agent_invocations workspace_agent_invocations[]
   slash_command_presets       slash_command_presets[]
+  browser_extension_api_keys  browser_extension_api_keys[]
+  temporary_auth_tokens       temporary_auth_tokens[]
 }
 
 model recovery_codes {
@@ -134,6 +137,7 @@ model workspaces {
   agentProvider                String?
   agentModel                   String?
   queryRefusalResponse         String?
+  vectorSearchMode             String?                        @default("default")
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
@@ -170,17 +174,18 @@ model workspace_suggested_messages {
 }
 
 model workspace_chats {
-  id            Int      @id @default(autoincrement())
-  workspaceId   Int
-  prompt        String
-  response      String
-  include       Boolean  @default(true)
-  user_id       Int?
-  thread_id     Int? // No relation to prevent whole table migration
-  createdAt     DateTime @default(now())
-  lastUpdatedAt DateTime @default(now())
-  feedbackScore Boolean?
-  users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id             Int      @id @default(autoincrement())
+  workspaceId    Int
+  prompt         String
+  response       String
+  include        Boolean  @default(true)
+  user_id        Int?
+  thread_id      Int? // No relation to prevent whole table migration
+  api_session_id String? // String identifier for only the dev API to parition chats in any mode.
+  createdAt      DateTime @default(now())
+  lastUpdatedAt  DateTime @default(now())
+  feedbackScore  Boolean?
+  users          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model workspace_agent_invocations {
@@ -296,4 +301,27 @@ model document_sync_executions {
   result    String?
   createdAt DateTime             @default(now())
   queue     document_sync_queues @relation(fields: [queueId], references: [id], onDelete: Cascade)
+}
+
+model browser_extension_api_keys {
+  id            Int      @id @default(autoincrement())
+  key           String   @unique
+  user_id       Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @updatedAt
+  user          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model temporary_auth_tokens {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
 }

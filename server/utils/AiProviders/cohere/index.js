@@ -1,6 +1,10 @@
 const { v4 } = require("uuid");
 const { writeResponseChunk } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { MODEL_MAP } = require("../modelMap");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 class CohereLLM {
   constructor(embedder = null) {
@@ -58,23 +62,12 @@ class CohereLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    return MODEL_MAP.cohere[modelName] ?? 4_096;
+  }
+
   promptWindowLimit() {
-    switch (this.model) {
-      case "command-r":
-        return 128_000;
-      case "command-r-plus":
-        return 128_000;
-      case "command":
-        return 4_096;
-      case "command-light":
-        return 4_096;
-      case "command-nightly":
-        return 8_192;
-      case "command-light-nightly":
-        return 8_192;
-      default:
-        return 4_096;
-    }
+    return MODEL_MAP.cohere[this.model] ?? 4_096;
   }
 
   async isValidChatCompletionModel(model = "") {
@@ -111,15 +104,33 @@ class CohereLLM {
     const message = messages[messages.length - 1].content; // Get the last message
     const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
 
-    const chat = await this.cohere.chat({
-      model: this.model,
-      message: message,
-      chatHistory: cohereHistory,
-      temperature,
-    });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.cohere.chat({
+        model: this.model,
+        message: message,
+        chatHistory: cohereHistory,
+        temperature,
+      })
+    );
 
-    if (!chat.hasOwnProperty("text")) return null;
-    return chat.text;
+    if (
+      !result.output.hasOwnProperty("text") ||
+      result.output.text.length === 0
+    )
+      return null;
+
+    const promptTokens = result.output.meta?.tokens?.inputTokens || 0;
+    const completionTokens = result.output.meta?.tokens?.outputTokens || 0;
+    return {
+      textResponse: result.output.text,
+      metrics: {
+        prompt_tokens: promptTokens,
+        completion_tokens: completionTokens,
+        total_tokens: promptTokens + completionTokens,
+        outputTps: completionTokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -130,21 +141,35 @@ class CohereLLM {
 
     const message = messages[messages.length - 1].content; // Get the last message
     const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.cohere.chatStream({
+        model: this.model,
+        message: message,
+        chatHistory: cohereHistory,
+        temperature,
+      }),
+      messages,
+      false
+    );
 
-    const stream = await this.cohere.chatStream({
-      model: this.model,
-      message: message,
-      chatHistory: cohereHistory,
-      temperature,
-    });
-
-    return { type: "stream", stream: stream };
+    return measuredStreamRequest;
   }
 
+  /**
+   * Handles the stream response from the Cohere API.
+   * @param {Object} response - the response object
+   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream - the stream response from the Cohere API w/tracking
+   * @param {Object} responseProps - the response properties
+   * @returns {Promise<string>}
+   */
   async handleStream(response, stream, responseProps) {
     return new Promise(async (resolve) => {
-      let fullText = "";
       const { uuid = v4(), sources = [] } = responseProps;
+      let fullText = "";
+      let usage = {
+        prompt_tokens: 0,
+        completion_tokens: 0,
+      };
 
       const handleAbort = () => {
         writeResponseChunk(response, {
@@ -156,12 +181,19 @@ class CohereLLM {
           error: false,
         });
         response.removeListener("close", handleAbort);
+        stream.endMeasurement(usage);
         resolve(fullText);
       };
       response.on("close", handleAbort);
 
       try {
-        for await (const chat of stream.stream) {
+        for await (const chat of stream) {
+          if (chat.eventType === "stream-end") {
+            const usageMetrics = chat?.response?.meta?.tokens || {};
+            usage.prompt_tokens = usageMetrics.inputTokens || 0;
+            usage.completion_tokens = usageMetrics.outputTokens || 0;
+          }
+
           if (chat.eventType === "text-generation") {
             const text = chat.text;
             fullText += text;
@@ -186,6 +218,7 @@ class CohereLLM {
           error: false,
         });
         response.removeListener("close", handleAbort);
+        stream.endMeasurement(usage);
         resolve(fullText);
       } catch (error) {
         writeResponseChunk(response, {
@@ -197,6 +230,7 @@ class CohereLLM {
           error: error.message,
         });
         response.removeListener("close", handleAbort);
+        stream.endMeasurement(usage);
         resolve(fullText);
       }
     });

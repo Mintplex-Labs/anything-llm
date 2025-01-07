@@ -4,13 +4,13 @@ const { SystemSettings } = require("./systemSettings");
 const { Telemetry } = require("./telemetry");
 
 /**
- * @typedef {('link'|'youtube'|'confluence'|'github')} validFileType
+ * @typedef {('link'|'youtube'|'confluence'|'github'|'gitlab')} validFileType
  */
 
 const DocumentSyncQueue = {
   featureKey: "experimental_live_file_sync",
   // update the validFileTypes and .canWatch properties when adding elements here.
-  validFileTypes: ["link", "youtube", "confluence", "github"],
+  validFileTypes: ["link", "youtube", "confluence", "github", "gitlab"],
   defaultStaleAfter: 604800000,
   maxRepeatFailures: 5, // How many times a run can fail in a row before pruning.
   writable: [],
@@ -38,12 +38,20 @@ const DocumentSyncQueue = {
     return new Date(Number(new Date()) + queueRecord.staleAfterMs);
   },
 
+  /**
+   * Check if the document can be watched based on the metadata fields
+   * @param {object} metadata - metadata to check
+   * @param {string} metadata.title - title of the document
+   * @param {string} metadata.chunkSource - chunk source of the document
+   * @returns {boolean} - true if the document can be watched, false otherwise
+   */
   canWatch: function ({ title, chunkSource = null } = {}) {
     if (chunkSource.startsWith("link://") && title.endsWith(".html"))
       return true; // If is web-link material (prior to feature most chunkSources were links://)
     if (chunkSource.startsWith("youtube://")) return true; // If is a youtube link
     if (chunkSource.startsWith("confluence://")) return true; // If is a confluence document link
     if (chunkSource.startsWith("github://")) return true; // If is a Github file reference
+    if (chunkSource.startsWith("gitlab://")) return true; // If is a Gitlab file reference
     return false;
   },
 

@@ -47,7 +47,7 @@ export default function WorkspaceRow({ workspace, users }) {
         <td className="px-6 py-4 flex items-center gap-x-6">
           <button
             onClick={handleDelete}
-            className="font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
+            className="border-none font-medium px-2 py-1 rounded-lg text-theme-text-primary hover:text-red-500"
           >
             <Trash className="h-5 w-5" />
           </button>

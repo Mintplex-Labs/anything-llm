@@ -15,13 +15,14 @@ export default function TextSizeButton() {
         data-tooltip-content="Change text size"
         aria-label="Change text size"
         onClick={() => setShowTextSizeMenu(!showTextSizeMenu)}
-        className={`relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
+        className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${
           showTextSizeMenu ? "!opacity-100" : ""
         }`}
       >
         <TextT
+          color="var(--theme-sidebar-footer-icon-fill)"
           weight="fill"
-          className="w-6 h-6 pointer-events-none text-white"
+          className="w-[22px] h-[22px] pointer-events-none text-white"
         />
         <Tooltip
           id="tooltip-text-size-btn"
@@ -72,7 +73,7 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
     <div hidden={!showing}>
       <div
         ref={formRef}
-        className="absolute bottom-16 -ml-8 w-[140px] p-2 bg-zinc-800 rounded-lg shadow-md flex flex-col justify-center items-start gap-2 z-50"
+        className="absolute bottom-16 -ml-8 w-[140px] p-2 bg-theme-action-menu-bg rounded-lg shadow-md flex flex-col justify-center items-start gap-2 z-50"
       >
         <button
           onClick={(e) => {
@@ -80,12 +81,14 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
             setShowing(false);
             handleTextSizeChange("small");
           }}
-          className={`w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
-            selectedSize === "small" ? "bg-zinc-700" : "hover:bg-zinc-700"
+          className={`border-none w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
+            selectedSize === "small"
+              ? "bg-theme-action-menu-item-hover"
+              : "hover:bg-theme-action-menu-item-hover"
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-white text-xs">Small</div>
+            <div className="text-theme-text-primary text-xs">Small</div>
           </div>
         </button>
 
@@ -95,12 +98,14 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
             setShowing(false);
             handleTextSizeChange("normal");
           }}
-          className={`w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
-            selectedSize === "normal" ? "bg-zinc-700" : "hover:bg-zinc-700"
+          className={`border-none w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
+            selectedSize === "normal"
+              ? "bg-theme-action-menu-item-hover"
+              : "hover:bg-theme-action-menu-item-hover"
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-white text-sm">Normal</div>
+            <div className="text-theme-text-primary text-sm">Normal</div>
           </div>
         </button>
 
@@ -110,12 +115,14 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
             setShowing(false);
             handleTextSizeChange("large");
           }}
-          className={`w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
-            selectedSize === "large" ? "bg-zinc-700" : "hover:bg-zinc-700"
+          className={`border-none w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
+            selectedSize === "large"
+              ? "bg-theme-action-menu-item-hover"
+              : "hover:bg-theme-action-menu-item-hover"
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-white text-[16px]">Large</div>
+            <div className="text-theme-text-primary text-[16px]">Large</div>
           </div>
         </button>
       </div>

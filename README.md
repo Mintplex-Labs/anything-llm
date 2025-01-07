@@ -53,23 +53,24 @@ AnythingLLM is a full-stack application where you can use commercial off-the-she
 
 AnythingLLM divides your documents into objects called `workspaces`. A Workspace functions a lot like a thread, but with the addition of containerization of your documents. Workspaces can share documents, but they do not talk to each other so you can keep your context for each workspace clean.
 
-Some cool features of AnythingLLM
+## Cool features of AnythingLLM
 
-- **Multi-user instance support and permissioning**
-- Agents inside your workspace (browse the web, run code, etc)
-- [Custom Embeddable Chat widget for your website](./embed/README.md)
-- Multiple document type support (PDF, TXT, DOCX, etc)
-- Manage documents in your vector database from a simple UI
-- Two chat modes `conversation` and `query`. Conversation retains previous questions and amendments. Query is simple QA against your documents
-- In-chat citations
+- 🆕 [**Custom AI Agents**](https://docs.anythingllm.com/agent/custom/introduction)
+- 🖼️ **Multi-modal support (both closed and open-source LLMs!)**
+- 👤 Multi-user instance support and permissioning _Docker version only_
+- 🦾 Agents inside your workspace (browse the web, run code, etc)
+- 💬 [Custom Embeddable Chat widget for your website](./embed/README.md) _Docker version only_
+- 📖 Multiple document type support (PDF, TXT, DOCX, etc)
+- Simple chat UI with Drag-n-Drop funcitonality and clear citations.
 - 100% Cloud deployment ready.
-- "Bring your own LLM" model.
-- Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
+- Works with all popular [closed and open-source LLM providers](#supported-llms-embedder-models-speech-models-and-vector-databases).
+- Built-in cost & time-saving measures for managing very large documents compared to any other chat UI.
 - Full Developer API for custom integrations!
+- Much more...install and find out!
 
 ### Supported LLMs, Embedder Models, Speech models, and Vector Databases
 
-**Language Learning Models:**
+**Large Language Models (LLMs):**
 
 - [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
@@ -77,20 +78,26 @@ Some cool features of AnythingLLM
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [AWS Bedrock](https://aws.amazon.com/bedrock/)
 - [Anthropic](https://www.anthropic.com/)
+- [NVIDIA NIM (chat models)](https://build.nvidia.com/explore/discover)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Hugging Face (chat models)](https://huggingface.co/)
 - [Ollama (chat models)](https://ollama.ai/)
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
+- [Fireworks AI  (chat models)](https://fireworks.ai/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
+- [DeepSeek (chat models)](https://deepseek.com/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
 - [LiteLLM](https://github.com/BerriAI/litellm)
 - [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
+- [Apipie](https://apipie.ai/)
+- [xAI](https://x.ai/)
+- [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 
 **Embedder models:**
 
@@ -110,8 +117,10 @@ Some cool features of AnythingLLM
 **TTS (text-to-speech) support:**
 
 - Native Browser Built-in (default)
+- [PiperTTSLocal - runs in browser](https://github.com/rhasspy/piper)
 - [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
 - [ElevenLabs](https://elevenlabs.io/)
+- Any OpenAI Compatible TTS service.
 
 **STT (speech-to-text) support:**
 
@@ -136,18 +145,19 @@ This monorepo consists of three main sections:
 - `server`: A NodeJS express server to handle all the interactions and do all the vectorDB management and LLM interactions.
 - `collector`: NodeJS express server that process and parses documents from the UI.
 - `docker`: Docker instructions and build process + information for building from source.
-- `embed`: Code specifically for generation of the [embed widget](./embed/README.md).
+- `embed`: Submodule for generation & creation of the [web embed widget](https://github.com/Mintplex-Labs/anythingllm-embed).
+- `browser-extension`: Submodule for the [chrome browser extension](https://github.com/Mintplex-Labs/anythingllm-extension).
 
 ## 🛳 Self Hosting
 
 Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
-|----------------------------------------|----:|-----|---------------|------------|
+|----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway  |  RepoCloud |
-| --- | --- |
-| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] |
+| Railway  |  RepoCloud | Elestio |
+| --- | --- | --- |
+| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -162,6 +172,14 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 [Learn about documents](./server/storage/documents/DOCUMENTS.md)
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
+
+## External Apps & Integrations
+
+_These are apps that are not maintained by Mintplex Labs, but are compatible with AnythingLLM. A listing here is not an endorsement._
+
+- [Midori AI Subsystem Manager](https://io.midori-ai.xyz/subsystem/anythingllm/) - A streamlined and efficient way to deploy AI systems using Docker container technology.
+- [Coolify](https://coolify.io/docs/services/anythingllm/) - Deploy AnythingLLM with a single click.
+- [GPTLocalhost for Microsoft Word](https://gptlocalhost.com/demo/) - A local Word Add-in for you to use AnythingLLM in Microsoft Word.
 
 ## Telemetry & Privacy
 
@@ -182,7 +200,7 @@ Set `DISABLE_TELEMETRY` in your server or docker .env settings to "true" to opt 
 
 We will only track usage details that help us make product and roadmap decisions, specifically:
 
-- Typ of your installation (Docker or Desktop)
+- Type of your installation (Docker or Desktop)
 - When a document is added or removed. No information _about_ the document. Just that the event occurred. This gives us an idea of use.
 - Type of vector database in use. Let's us know which vector database provider is the most used to prioritize changes when updates arrive for that provider.
 - Type of LLM in use. Let's us know the most popular choice and prioritize changes when updates arrive for that provider.
@@ -220,7 +238,7 @@ You can verify these claims by finding all locations `Telemetry.sendTelemetry` i
 
 ---
 
-Copyright © 2024 [Mintplex Labs][profile-link]. <br />
+Copyright © 2025 [Mintplex Labs][profile-link]. <br />
 This project is [MIT](./LICENSE) licensed.
 
 <!-- LINK GROUP -->
@@ -245,3 +263,5 @@ This project is [MIT](./LICENSE) licensed.
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
 [repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
 [repocloud-deploy]: https://repocloud.io/details/?app_id=276
+[elestio-btn]: https://elest.io/images/logos/deploy-to-elestio-btn.png
+[elestio-deploy]: https://elest.io/open-source/anythingllm

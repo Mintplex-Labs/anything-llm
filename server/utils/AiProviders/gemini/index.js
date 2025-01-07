@@ -1,8 +1,13 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const { MODEL_MAP } = require("../modelMap");
+const { defaultGeminiModels, v1BetaModels } = require("./defaultModals");
 
 class GeminiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -17,10 +22,15 @@ class GeminiLLM {
     this.gemini = genAI.getGenerativeModel(
       { model: this.model },
       {
-        // Gemini-1.5-pro and Gemini-1.5-flash are only available on the v1beta API.
         apiVersion:
-          this.model === "gemini-1.5-pro-latest" ||
-          this.model === "gemini-1.5-flash-latest"
+          /**
+           * There are some models that are only available in the v1beta API
+           * and some models that are only available in the v1 API
+           * generally, v1beta models have `exp` in the name, but not always
+           * so we check for both against a static list as well.
+           * @see {v1BetaModels}
+           */
+          this.model.includes("exp") || v1BetaModels.includes(this.model)
             ? "v1beta"
             : "v1",
       }
@@ -34,6 +44,11 @@ class GeminiLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7; // not used for Gemini
     this.safetyThreshold = this.#fetchSafetyThreshold();
+    this.#log(`Initialized with model: ${this.model}`);
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[GeminiLLM]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -87,29 +102,91 @@ class GeminiLLM {
     return "streamGetChatCompletion" in this;
   }
 
-  promptWindowLimit() {
-    switch (this.model) {
-      case "gemini-pro":
-        return 30_720;
-      case "gemini-1.0-pro":
-        return 30_720;
-      case "gemini-1.5-flash-latest":
-        return 1_048_576;
-      case "gemini-1.5-pro-latest":
-        return 1_048_576;
-      default:
-        return 30_720; // assume a gemini-pro model
-    }
+  static promptWindowLimit(modelName) {
+    return MODEL_MAP.gemini[modelName] ?? 30_720;
   }
 
-  isValidChatCompletionModel(modelName = "") {
-    const validModels = [
-      "gemini-pro",
-      "gemini-1.0-pro",
-      "gemini-1.5-pro-latest",
-      "gemini-1.5-flash-latest",
-    ];
-    return validModels.includes(modelName);
+  promptWindowLimit() {
+    return MODEL_MAP.gemini[this.model] ?? 30_720;
+  }
+
+  /**
+   * Fetches Gemini models from the Google Generative AI API
+   * @param {string} apiKey - The API key to use for the request
+   * @param {number} limit - The maximum number of models to fetch
+   * @param {string} pageToken - The page token to use for pagination
+   * @returns {Promise<[{id: string, name: string, contextWindow: number, experimental: boolean}]>} A promise that resolves to an array of Gemini models
+   */
+  static async fetchModels(apiKey, limit = 1_000, pageToken = null) {
+    const url = new URL(
+      "https://generativelanguage.googleapis.com/v1beta/models"
+    );
+    url.searchParams.set("pageSize", limit);
+    url.searchParams.set("key", apiKey);
+    if (pageToken) url.searchParams.set("pageToken", pageToken);
+
+    return fetch(url.toString(), {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) throw new Error(data.error.message);
+        return data.models ?? [];
+      })
+      .then((models) =>
+        models
+          .filter(
+            (model) => !model.displayName.toLowerCase().includes("tuning")
+          )
+          .filter((model) =>
+            model.supportedGenerationMethods.includes("generateContent")
+          ) //  Only generateContent is supported
+          .map((model) => {
+            return {
+              id: model.name.split("/").pop(),
+              name: model.displayName,
+              contextWindow: model.inputTokenLimit,
+              experimental: model.name.includes("exp"),
+            };
+          })
+      )
+      .catch((e) => {
+        console.error(`Gemini:getGeminiModels`, e.message);
+        return defaultGeminiModels;
+      });
+  }
+
+  /**
+   * Checks if a model is valid for chat completion (unused)
+   * @deprecated
+   * @param {string} modelName - The name of the model to check
+   * @returns {Promise<boolean>} A promise that resolves to a boolean indicating if the model is valid
+   */
+  async isValidChatCompletionModel(modelName = "") {
+    const models = await this.fetchModels(true);
+    return models.some((model) => model.id === modelName);
+  }
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        inlineData: {
+          data: attachment.contentString.split("base64,")[1],
+          mimeType: attachment.mime,
+        },
+      });
+    }
+    return content.flat();
   }
 
   constructPrompt({
@@ -117,6 +194,7 @@ class GeminiLLM {
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
@@ -126,7 +204,10 @@ class GeminiLLM {
       prompt,
       { role: "assistant", content: "Okay." },
       ...chatHistory,
-      { role: "USER_PROMPT", content: userPrompt },
+      {
+        role: "USER_PROMPT",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
     ];
   }
 
@@ -176,11 +257,6 @@ class GeminiLLM {
   }
 
   async getChatCompletion(messages = [], _opts = {}) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
-      );
-
     const prompt = messages.find(
       (chat) => chat.role === "USER_PROMPT"
     )?.content;
@@ -188,21 +264,32 @@ class GeminiLLM {
       history: this.formatMessages(messages),
       safetySettings: this.#safetySettings(),
     });
-    const result = await chatThread.sendMessage(prompt);
-    const response = result.response;
-    const responseText = response.text();
 
+    const { output: result, duration } =
+      await LLMPerformanceMonitor.measureAsyncFunction(
+        chatThread.sendMessage(prompt)
+      );
+    const responseText = result.response.text();
     if (!responseText) throw new Error("Gemini: No response could be parsed.");
 
-    return responseText;
+    const promptTokens = LLMPerformanceMonitor.countTokens(messages);
+    const completionTokens = LLMPerformanceMonitor.countTokens([
+      { content: responseText },
+    ]);
+
+    return {
+      textResponse: responseText,
+      metrics: {
+        prompt_tokens: promptTokens,
+        completion_tokens: completionTokens,
+        total_tokens: promptTokens + completionTokens,
+        outputTps: (promptTokens + completionTokens) / duration,
+        duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = [], _opts = {}) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
-      );
-
     const prompt = messages.find(
       (chat) => chat.role === "USER_PROMPT"
     )?.content;
@@ -210,11 +297,14 @@ class GeminiLLM {
       history: this.formatMessages(messages),
       safetySettings: this.#safetySettings(),
     });
-    const responseStream = await chatThread.sendMessageStream(prompt);
-    if (!responseStream.stream)
-      throw new Error("Could not stream response stream from Gemini.");
+    const responseStream = await LLMPerformanceMonitor.measureStream(
+      (await chatThread.sendMessageStream(prompt)).stream,
+      messages
+    );
 
-    return responseStream.stream;
+    if (!responseStream)
+      throw new Error("Could not stream response stream from Gemini.");
+    return responseStream;
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
@@ -225,6 +315,10 @@ class GeminiLLM {
 
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
+    // Usage is not available for Gemini streams
+    // so we need to calculate the completion tokens manually
+    // because 1 chunk != 1 token in gemini responses and it buffers
+    // many tokens before sending them to the client as a "chunk"
 
     return new Promise(async (resolve) => {
       let fullText = "";
@@ -233,7 +327,14 @@ class GeminiLLM {
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement({
+          completion_tokens: LLMPerformanceMonitor.countTokens([
+            { content: fullText },
+          ]),
+        });
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       for await (const chunk of stream) {
@@ -253,6 +354,7 @@ class GeminiLLM {
             close: true,
             error: e.message,
           });
+          stream?.endMeasurement({ completion_tokens: 0 });
           resolve(e.message);
           return;
         }
@@ -277,6 +379,11 @@ class GeminiLLM {
         error: false,
       });
       response.removeListener("close", handleAbort);
+      stream?.endMeasurement({
+        completion_tokens: LLMPerformanceMonitor.countTokens([
+          { content: fullText },
+        ]),
+      });
       resolve(fullText);
     });
   }

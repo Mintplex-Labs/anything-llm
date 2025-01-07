@@ -62,14 +62,14 @@ export default function InviteRow({ invite }) {
               <button
                 onClick={copyInviteLink}
                 disabled={copied}
-                className="font-medium text-blue-300 rounded-lg hover:text-white hover:text-opacity-60 hover:underline"
+                className="border-none font-medium text-blue-300 rounded-lg hover:text-blue-400 hover:underline"
               >
                 {copied ? "Copied" : "Copy Invite Link"}
               </button>
               <td className="px-6 py-4 flex items-center gap-x-6">
                 <button
                   onClick={handleDelete}
-                  className="font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
+                  className="border-none font-medium text-theme-text-primary hover:text-red-500 px-2 py-1 rounded-lg"
                 >
                   <Trash className="h-5 w-5" />
                 </button>

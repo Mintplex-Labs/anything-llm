@@ -5,6 +5,9 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 // Docs: https://js.langchain.com/docs/integrations/chat/llama_cpp
 const ChatLlamaCpp = (...args) =>
@@ -96,6 +99,13 @@ class NativeLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(_modelName) {
+    const limit = process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No NativeAI token context limit was set.");
+    return Number(limit);
+  }
+
   // Ensure the user set a value for the token limit
   promptWindowLimit() {
     const limit = process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT || 4096;
@@ -119,16 +129,44 @@ class NativeLLM {
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const model = await this.#llamaClient({ temperature });
-    const response = await model.call(messages);
-    return response.content;
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      model.call(messages)
+    );
+
+    if (!result.output?.content) return null;
+
+    const promptTokens = LLMPerformanceMonitor.countTokens(messages);
+    const completionTokens = LLMPerformanceMonitor.countTokens(
+      result.output.content
+    );
+    return {
+      textResponse: result.output.content,
+      metrics: {
+        prompt_tokens: promptTokens,
+        completion_tokens: completionTokens,
+        total_tokens: promptTokens + completionTokens,
+        outputTps: completionTokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     const model = await this.#llamaClient({ temperature });
-    const responseStream = await model.stream(messages);
-    return responseStream;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      model.stream(messages),
+      messages
+    );
+    return measuredStreamRequest;
   }
 
+  /**
+   * Handles the default stream response for a chat.
+   * @param {import("express").Response} response
+   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream
+   * @param {Object} responseProps
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
@@ -139,7 +177,12 @@ class NativeLLM {
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement({
+          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+        });
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       for await (const chunk of stream) {
@@ -169,6 +212,9 @@ class NativeLLM {
         error: false,
       });
       response.removeListener("close", handleAbort);
+      stream?.endMeasurement({
+        completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+      });
       resolve(fullText);
     });
   }

@@ -1,8 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { reqBody, userFromSession, multiUserMode, reqMetadata } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { WorkspaceChats } = require("../models/workspaceChats");
-const { SystemSettings } = require("../models/systemSettings");
 const { Telemetry } = require("../models/telemetry");
 const { streamChatWithWorkspace } = require("../utils/chats/stream");
 const {
@@ -16,6 +14,7 @@ const {
 } = require("../utils/middleware/validWorkspace");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
 const { WorkspaceThread } = require("../models/workspaceThread");
+const { User } = require("../models/user");
 const truncate = require("truncate");
 
 function chatEndpoints(app) {
@@ -27,8 +26,8 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { message } = reqBody(request);
         const metadata = reqMetadata(request);
+        const { message, attachments = [] } = reqBody(request);
         const workspace = response.locals.workspace;
 
         if (!message?.length) {
@@ -49,39 +48,16 @@ function chatEndpoints(app) {
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
 
-        if (multiUserMode(response) && user.role !== ROLES.admin) {
-          const limitMessagesSetting = await SystemSettings.get({
-            label: "limit_user_messages",
+        if (multiUserMode(response) && !(await User.canSendChat(user))) {
+          writeResponseChunk(response, {
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
           });
-          const limitMessages = limitMessagesSetting?.value === "true";
-
-          if (limitMessages) {
-            const messageLimitSetting = await SystemSettings.get({
-              label: "message_limit",
-            });
-            const systemLimit = Number(messageLimitSetting?.value);
-
-            if (!!systemLimit) {
-              const currentChatCount = await WorkspaceChats.count({
-                user_id: user.id,
-                createdAt: {
-                  gte: new Date(new Date() - 24 * 60 * 60 * 1000),
-                },
-              });
-
-              if (currentChatCount >= systemLimit) {
-                writeResponseChunk(response, {
-                  id: uuidv4(),
-                  type: "abort",
-                  textResponse: null,
-                  sources: [],
-                  close: true,
-                  error: `You have met your maximum 24 hour chat quota of ${systemLimit} chats set by the instance administrators. Try again later.`,
-                });
-                return;
-              }
-            }
-          }
+          return;
         }
 
         await streamChatWithWorkspace(
@@ -90,13 +66,17 @@ function chatEndpoints(app) {
           message,
           metadata,
           workspace?.chatMode,
-          user
+          user,
+          null,
+          attachments
         );
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          multiModal: Array.isArray(attachments) && attachments?.length !== 0,
+          TTSSelection: process.env.TTS_PROVIDER || "native",
         });
 
         await EventLogs.logEvent(
@@ -135,8 +115,8 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { message } = reqBody(request);
         const metadata = reqMetadata(request);
+        const { message, attachments = [] } = reqBody(request);
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
 
@@ -158,41 +138,16 @@ function chatEndpoints(app) {
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
 
-        if (multiUserMode(response) && user.role !== ROLES.admin) {
-          const limitMessagesSetting = await SystemSettings.get({
-            label: "limit_user_messages",
+        if (multiUserMode(response) && !(await User.canSendChat(user))) {
+          writeResponseChunk(response, {
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
           });
-          const limitMessages = limitMessagesSetting?.value === "true";
-
-          if (limitMessages) {
-            const messageLimitSetting = await SystemSettings.get({
-              label: "message_limit",
-            });
-            const systemLimit = Number(messageLimitSetting?.value);
-
-            if (!!systemLimit) {
-              // Chat qty includes all threads because any user can freely
-              // create threads and would bypass this rule.
-              const currentChatCount = await WorkspaceChats.count({
-                user_id: user.id,
-                createdAt: {
-                  gte: new Date(new Date() - 24 * 60 * 60 * 1000),
-                },
-              });
-
-              if (currentChatCount >= systemLimit) {
-                writeResponseChunk(response, {
-                  id: uuidv4(),
-                  type: "abort",
-                  textResponse: null,
-                  sources: [],
-                  close: true,
-                  error: `You have met your maximum 24 hour chat quota of ${systemLimit} chats set by the instance administrators. Try again later.`,
-                });
-                return;
-              }
-            }
-          }
+          return;
         }
 
         await streamChatWithWorkspace(
@@ -202,7 +157,8 @@ function chatEndpoints(app) {
           metadata,
           workspace?.chatMode,
           user,
-          thread
+          thread,
+          attachments
         );
 
         // If thread was renamed emit event to frontend via special `action` response.
@@ -227,6 +183,8 @@ function chatEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          multiModal: Array.isArray(attachments) && attachments?.length !== 0,
+          TTSSelection: process.env.TTS_PROVIDER || "native",
         });
 
         await EventLogs.logEvent(

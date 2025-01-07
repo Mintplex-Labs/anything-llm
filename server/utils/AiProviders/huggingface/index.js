@@ -1,5 +1,8 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 
@@ -45,6 +48,13 @@ class HuggingFaceLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(_modelName) {
+    const limit = process.env.HUGGING_FACE_LLM_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No HuggingFace token context limit was set.");
+    return Number(limit);
+  }
+
   promptWindowLimit() {
     const limit = process.env.HUGGING_FACE_LLM_TOKEN_LIMIT || 4096;
     if (!limit || isNaN(Number(limit)))
@@ -80,25 +90,48 @@ class HuggingFaceLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const result = await this.openai.createChatCompletion({
-      model: this.model,
-      messages,
-      temperature,
-    });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature,
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage?.prompt_tokens || 0,
+        completion_tokens: result.output.usage?.completion_tokens || 0,
+        total_tokens: result.output.usage?.total_tokens || 0,
+        outputTps:
+          (result.output.usage?.completion_tokens || 0) / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      temperature,
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+      }),
+      messages
+    );
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {

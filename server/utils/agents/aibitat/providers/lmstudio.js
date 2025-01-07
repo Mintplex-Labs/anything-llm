@@ -2,6 +2,9 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const {
+  parseLMStudioBasePath,
+} = require("../../../AiProviders/lmStudio/index.js");
 
 /**
  * The agent provider for the LMStudio.
@@ -9,11 +12,16 @@ const UnTooled = require("./helpers/untooled.js");
 class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  /**
+   *
+   * @param {{model?: string}} config
+   */
+  constructor(config = {}) {
     super();
-    const model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
+    const model =
+      config?.model || process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
     const client = new OpenAI({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
+      baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH),
       apiKey: null,
       maxRetries: 3,
     });

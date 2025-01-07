@@ -156,11 +156,33 @@ const Admin = {
   },
 
   // System Preferences
+  // TODO: remove this in favor of systemPreferencesByFields
+  // DEPRECATED: use systemPreferencesByFields instead
   systemPreferences: async () => {
     return await fetch(`${API_BASE}/admin/system-preferences`, {
       method: "GET",
       headers: baseHeaders(),
     })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return null;
+      });
+  },
+
+  /**
+   * Fetches system preferences by fields
+   * @param {string[]} labels - Array of labels for settings
+   * @returns {Promise<{settings: Object, error: string}>} - System preferences object
+   */
+  systemPreferencesByFields: async (labels = []) => {
+    return await fetch(
+      `${API_BASE}/admin/system-preferences-for?labels=${labels.join(",")}`,
+      {
+        method: "GET",
+        headers: baseHeaders(),
+      }
+    )
       .then((res) => res.json())
       .catch((e) => {
         console.error(e);

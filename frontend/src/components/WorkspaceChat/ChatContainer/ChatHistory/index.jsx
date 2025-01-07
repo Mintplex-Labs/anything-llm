@@ -1,6 +1,6 @@
+import React, { useEffect, useRef, useState } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
-import { useEffect, useRef, useState } from "react";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -10,6 +10,8 @@ import Chartable from "./Chartable";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
+import Appearance from "@/models/appearance";
+import useTextSize from "@/hooks/useTextSize";
 
 export default function ChatHistory({
   history = [],
@@ -17,73 +19,58 @@ export default function ChatHistory({
   sendCommand,
   updateHistory,
   regenerateAssistantMessage,
+  hasAttachments = false,
 }) {
+  const lastScrollTopRef = useRef(0);
   const { user } = useUser();
   const { threadSlug = null } = useParams();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
-  const [textSize, setTextSize] = useState("normal");
-
-  const getTextSizeClass = (size) => {
-    switch (size) {
-      case "small":
-        return "text-[12px]";
-      case "large":
-        return "text-[18px]";
-      default:
-        return "text-[14px]";
-    }
-  };
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const isStreaming = history[history.length - 1]?.animate;
+  const { showScrollbar } = Appearance.getSettings();
+  const { textSizeClass } = useTextSize();
 
   useEffect(() => {
-    const storedTextSize = window.localStorage.getItem("anythingllm_text_size");
-    if (storedTextSize) {
-      setTextSize(getTextSizeClass(storedTextSize));
+    if (!isUserScrolling && (isAtBottom || isStreaming)) {
+      scrollToBottom(false); // Use instant scroll for auto-scrolling
+    }
+  }, [history, isAtBottom, isStreaming, isUserScrolling]);
+
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const isBottom = scrollHeight - scrollTop === clientHeight;
+
+    // Detect if this is a user-initiated scroll
+    if (Math.abs(scrollTop - lastScrollTopRef.current) > 10) {
+      setIsUserScrolling(!isBottom);
     }
 
-    const handleTextSizeChange = (event) => {
-      const size = event.detail;
-      setTextSize(getTextSizeClass(size));
-    };
-
-    window.addEventListener("textSizeChange", handleTextSizeChange);
-
-    return () => {
-      window.removeEventListener("textSizeChange", handleTextSizeChange);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isAtBottom) scrollToBottom();
-  }, [history]);
-
-  const handleScroll = () => {
-    const diff =
-      chatHistoryRef.current.scrollHeight -
-      chatHistoryRef.current.scrollTop -
-      chatHistoryRef.current.clientHeight;
-    // Fuzzy margin for what qualifies as "bottom". Stronger than straight comparison since that may change over time.
-    const isBottom = diff <= 10;
     setIsAtBottom(isBottom);
+    lastScrollTopRef.current = scrollTop;
   };
 
   const debouncedScroll = debounce(handleScroll, 100);
+
   useEffect(() => {
-    function watchScrollEvent() {
-      if (!chatHistoryRef.current) return null;
-      const chatHistoryElement = chatHistoryRef.current;
-      if (!chatHistoryElement) return null;
+    const chatHistoryElement = chatHistoryRef.current;
+    if (chatHistoryElement) {
       chatHistoryElement.addEventListener("scroll", debouncedScroll);
+      return () =>
+        chatHistoryElement.removeEventListener("scroll", debouncedScroll);
     }
-    watchScrollEvent();
   }, []);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = (smooth = false) => {
     if (chatHistoryRef.current) {
       chatHistoryRef.current.scrollTo({
         top: chatHistoryRef.current.scrollHeight,
-        behavior: "smooth",
+
+        // Smooth is on when user clicks the button but disabled during auto scroll
+        // We must disable this during auto scroll because it causes issues with
+        // detecting when we are at the bottom of the chat.
+        ...(smooth ? { behavior: "smooth" } : {}),
       });
     }
   };
@@ -92,7 +79,12 @@ export default function ChatHistory({
     sendCommand(`${heading} ${message}`, true);
   };
 
-  const saveEditedMessage = async ({ editedMessage, chatId, role }) => {
+  const saveEditedMessage = async ({
+    editedMessage,
+    chatId,
+    role,
+    attachments = [],
+  }) => {
     if (!editedMessage) return; // Don't save empty edits.
 
     // if the edit was a user message, we will auto-regenerate the response and delete all
@@ -109,7 +101,7 @@ export default function ChatHistory({
       updatedHistory[updatedHistory.length - 1].content = editedMessage;
       // remove all edited messages after the edited message in backend
       await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
-      sendCommand(editedMessage, true, updatedHistory);
+      sendCommand(editedMessage, true, updatedHistory, attachments);
       return;
     }
 
@@ -144,7 +136,7 @@ export default function ChatHistory({
     );
   };
 
-  if (history.length === 0) {
+  if (history.length === 0 && !hasAttachments) {
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
@@ -184,9 +176,12 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`markdown text-white/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll`}
+      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
+        showScrollbar ? "show-scrollbar" : "no-scroll"
+      }`}
       id="chat-history"
       ref={chatHistoryRef}
+      onScroll={handleScroll}
     >
       {history.map((props, index) => {
         const isLastBotReply =
@@ -227,10 +222,12 @@ export default function ChatHistory({
             feedbackScore={props.feedbackScore}
             chatId={props.chatId}
             error={props.error}
+            attachments={props.attachments}
             regenerateMessage={regenerateAssistantMessage}
             isLastMessage={isLastBotReply}
             saveEditedMessage={saveEditedMessage}
             forkThread={forkThread}
+            metrics={props.metrics}
           />
         );
       })}
@@ -240,12 +237,14 @@ export default function ChatHistory({
       {!isAtBottom && (
         <div className="fixed bottom-40 right-10 md:right-20 z-50 cursor-pointer animate-pulse">
           <div className="flex flex-col items-center">
-            <div className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white">
-              <ArrowDown
-                weight="bold"
-                className="text-white/60 w-5 h-5"
-                onClick={scrollToBottom}
-              />
+            <div
+              className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
+              onClick={() => {
+                scrollToBottom(true);
+                setIsUserScrolling(false);
+              }}
+            >
+              <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
             </div>
           </div>
         </div>
@@ -273,11 +272,11 @@ function StatusResponse({ props }) {
 function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
   if (suggestions.length === 0) return null;
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-white/60 text-xs mt-10 w-full justify-center">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-theme-text-primary text-xs mt-10 w-full justify-center">
       {suggestions.map((suggestion, index) => (
         <button
           key={index}
-          className="text-left p-2.5 border rounded-xl border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient"
+          className="text-left p-2.5 rounded-xl bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover border border-theme-border"
           onClick={() => sendSuggestion(suggestion.heading, suggestion.message)}
         >
           <p className="font-semibold">{suggestion.heading}</p>

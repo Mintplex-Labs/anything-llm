@@ -22,7 +22,6 @@ class OpenAiWhisper {
       .create({
         file: fs.createReadStream(fullFilePath),
         model: this.model,
-        response_format: "text",
         temperature: this.temperature,
       })
       .then((response) => {
@@ -33,7 +32,7 @@ class OpenAiWhisper {
           };
         }
 
-        return { content: response, error: null };
+        return { content: response.text, error: null };
       })
       .catch((error) => {
         this.#log(

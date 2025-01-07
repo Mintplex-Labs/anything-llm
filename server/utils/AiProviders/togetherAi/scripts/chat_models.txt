@@ -1,59 +1,108 @@
-| Organization | Model Name | Model String for API | Context length |
-| --- | --- | --- | --- |
-| 01.AI | 01-ai Yi Chat (34B) | zero-one-ai/Yi-34B-Chat | 4096 |
-| Allen AI | OLMo Instruct (7B) | allenai/OLMo-7B-Instruct | 2048 |
-| Allen AI | OLMo Twin-2T (7B) | allenai/OLMo-7B-Twin-2T | 2048 |
-| Allen AI | OLMo (7B) | allenai/OLMo-7B | 2048 |
-| Austism | Chronos Hermes (13B) | Austism/chronos-hermes-13b | 2048 |
-| cognitivecomputations | Dolphin 2.5 Mixtral 8x7b | cognitivecomputations/dolphin-2.5-mixtral-8x7b | 32768 |
-| databricks | DBRX Instruct | databricks/dbrx-instruct | 32768 |
-| DeepSeek | Deepseek Coder Instruct (33B) | deepseek-ai/deepseek-coder-33b-instruct | 16384 |
-| DeepSeek | DeepSeek LLM Chat (67B) | deepseek-ai/deepseek-llm-67b-chat | 4096 |
-| garage-bAInd | Platypus2 Instruct (70B) | garage-bAInd/Platypus2-70B-instruct | 4096 |
-| Google | Gemma Instruct (2B) | google/gemma-2b-it | 8192 |
-| Google | Gemma Instruct (7B) | google/gemma-7b-it | 8192 |
-| Gryphe | MythoMax-L2 (13B) | Gryphe/MythoMax-L2-13b | 4096 |
-| LM Sys | Vicuna v1.5 (13B) | lmsys/vicuna-13b-v1.5 | 4096 |
-| LM Sys | Vicuna v1.5 (7B) | lmsys/vicuna-7b-v1.5 | 4096 |
-| Meta | Code Llama Instruct (13B) | codellama/CodeLlama-13b-Instruct-hf | 16384 |
-| Meta | Code Llama Instruct (34B) | codellama/CodeLlama-34b-Instruct-hf | 16384 |
-| Meta | Code Llama Instruct (70B) | codellama/CodeLlama-70b-Instruct-hf | 4096 |
-| Meta | Code Llama Instruct (7B) | codellama/CodeLlama-7b-Instruct-hf | 16384 |
-| Meta | LLaMA-2 Chat (70B) | meta-llama/Llama-2-70b-chat-hf | 4096 |
-| Meta | LLaMA-2 Chat (13B) | meta-llama/Llama-2-13b-chat-hf | 4096 |
-| Meta | LLaMA-2 Chat (7B) | meta-llama/Llama-2-7b-chat-hf | 4096 |
-| Meta | LLaMA-3 Chat (8B) | meta-llama/Llama-3-8b-chat-hf | 8000 |
-| Meta | LLaMA-3 Chat (70B) | meta-llama/Llama-3-70b-chat-hf | 8000 |
-| Microsoft | WizardLM-2 (8x22B) | microsoft/WizardLM-2-8x22B | 65536 |
-| mistralai | Mistral (7B) Instruct | mistralai/Mistral-7B-Instruct-v0.1 | 8192 |
-| mistralai | Mistral (7B) Instruct v0.2 | mistralai/Mistral-7B-Instruct-v0.2 | 32768 |
-| mistralai | Mixtral-8x7B Instruct (46.7B) | mistralai/Mixtral-8x7B-Instruct-v0.1 | 32768 |
-| mistralai | Mixtral-8x22B Instruct (141B) | mistralai/Mixtral-8x22B-Instruct-v0.1 | 65536 |
-| NousResearch | Nous Capybara v1.9 (7B) | NousResearch/Nous-Capybara-7B-V1p9 | 8192 |
-| NousResearch | Nous Hermes 2 - Mistral DPO (7B) | NousResearch/Nous-Hermes-2-Mistral-7B-DPO | 32768 |
-| NousResearch | Nous Hermes 2 - Mixtral 8x7B-DPO (46.7B) | NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO | 32768 |
-| NousResearch | Nous Hermes 2 - Mixtral 8x7B-SFT (46.7B) | NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT | 32768 |
-| NousResearch | Nous Hermes LLaMA-2 (7B) | NousResearch/Nous-Hermes-llama-2-7b | 4096 |
-| NousResearch | Nous Hermes Llama-2 (13B) | NousResearch/Nous-Hermes-Llama2-13b | 4096 |
-| NousResearch | Nous Hermes-2 Yi (34B) | NousResearch/Nous-Hermes-2-Yi-34B | 4096 |
-| OpenChat | OpenChat 3.5 (7B) | openchat/openchat-3.5-1210 | 8192 |
-| OpenOrca | OpenOrca Mistral (7B) 8K | Open-Orca/Mistral-7B-OpenOrca | 8192 |
-| Qwen | Qwen 1.5 Chat (0.5B) | Qwen/Qwen1.5-0.5B-Chat | 32768 |
-| Qwen | Qwen 1.5 Chat (1.8B) | Qwen/Qwen1.5-1.8B-Chat | 32768 |
-| Qwen | Qwen 1.5 Chat (4B) | Qwen/Qwen1.5-4B-Chat | 32768 |
-| Qwen | Qwen 1.5 Chat (7B) | Qwen/Qwen1.5-7B-Chat | 32768 |
-| Qwen | Qwen 1.5 Chat (14B) | Qwen/Qwen1.5-14B-Chat | 32768 |
-| Qwen | Qwen 1.5 Chat (32B) | Qwen/Qwen1.5-32B-Chat | 32768 |
-| Qwen | Qwen 1.5 Chat (72B) | Qwen/Qwen1.5-72B-Chat | 32768 |
-| Snorkel AI | Snorkel Mistral PairRM DPO (7B) | snorkelai/Snorkel-Mistral-PairRM-DPO | 32768 |
-| Stanford | Alpaca (7B) | togethercomputer/alpaca-7b | 2048 |
-| Teknium | OpenHermes-2-Mistral (7B) | teknium/OpenHermes-2-Mistral-7B | 8192 |
-| Teknium | OpenHermes-2.5-Mistral (7B) | teknium/OpenHermes-2p5-Mistral-7B | 8192 |
-| Together | LLaMA-2-7B-32K-Instruct (7B) | togethercomputer/Llama-2-7B-32K-Instruct | 32768 |
-| Together | RedPajama-INCITE Chat (3B) | togethercomputer/RedPajama-INCITE-Chat-3B-v1 | 2048 |
-| Together | RedPajama-INCITE Chat (7B) | togethercomputer/RedPajama-INCITE-7B-Chat | 2048 |
-| Together | StripedHyena Nous (7B) | togethercomputer/StripedHyena-Nous-7B | 32768 |
-| Undi95 | ReMM SLERP L2 (13B) | Undi95/ReMM-SLERP-L2-13B | 4096 |
-| Undi95 | Toppy M (7B) | Undi95/Toppy-M-7B | 4096 |
-| WizardLM | WizardLM v1.2 (13B) | WizardLM/WizardLM-13B-V1.2 | 4096 |
-| upstage | Upstage SOLAR Instruct v1 (11B) | upstage/SOLAR-10.7B-Instruct-v1.0 | 4096 |
+| Organization          | Model Name                               | API Model String                                 | Context length | Quantization |
+| :-------------------- | :--------------------------------------- | :----------------------------------------------- | :------------- | :----------- |
+| 01.AI                 | 01-ai Yi Chat (34B)                      | zero-one-ai/Yi-34B-Chat                          | 4096           | FP16         |
+| AllenAI               | OLMo Instruct (7B)                       | allenai/OLMo-7B-Instruct                         | 2048           | FP16         |
+| Austism               | Chronos Hermes (13B)                     | Austism/chronos-hermes-13b                       | 2048           | FP16         |
+| carson                | carson ml318br                           | carson/ml318br                                   | 8192           | FP16         |
+| cognitivecomputations | Dolphin 2.5 Mixtral 8x7b                 | cognitivecomputations/dolphin-2.5-mixtral-8x7b   | 32768          | FP16         |
+| Databricks            | DBRX Instruct                            | databricks/dbrx-instruct                         | 32768          | FP16         |
+| DeepSeek              | DeepSeek LLM Chat (67B)                  | deepseek-ai/deepseek-llm-67b-chat                | 4096           | FP16         |
+| DeepSeek              | Deepseek Coder Instruct (33B)            | deepseek-ai/deepseek-coder-33b-instruct          | 16384          | FP16         |
+| garage-bAInd          | Platypus2 Instruct (70B)                 | garage-bAInd/Platypus2-70B-instruct              | 4096           | FP16         |
+| google                | Gemma-2 Instruct (9B)                    | google/gemma-2-9b-it                             | 8192           | FP16         |
+| Google                | Gemma Instruct (2B)                      | google/gemma-2b-it                               | 8192           | FP16         |
+| Google                | Gemma-2 Instruct (27B)                   | google/gemma-2-27b-it                            | 8192           | FP16         |
+| Google                | Gemma Instruct (7B)                      | google/gemma-7b-it                               | 8192           | FP16         |
+| gradientai            | Llama-3 70B Instruct Gradient 1048K      | gradientai/Llama-3-70B-Instruct-Gradient-1048k   | 1048576        | FP16         |
+| Gryphe                | MythoMax-L2 (13B)                        | Gryphe/MythoMax-L2-13b                           | 4096           | FP16         |
+| Gryphe                | Gryphe MythoMax L2 Lite (13B)            | Gryphe/MythoMax-L2-13b-Lite                      | 4096           | FP16         |
+| Haotian Liu           | LLaVa-Next (Mistral-7B)                  | llava-hf/llava-v1.6-mistral-7b-hf                | 4096           | FP16         |
+| HuggingFace           | Zephyr-7B-ß                              | HuggingFaceH4/zephyr-7b-beta                     | 32768          | FP16         |
+| LM Sys                | Koala (7B)                               | togethercomputer/Koala-7B                        | 2048           | FP16         |
+| LM Sys                | Vicuna v1.3 (7B)                         | lmsys/vicuna-7b-v1.3                             | 2048           | FP16         |
+| LM Sys                | Vicuna v1.5 16K (13B)                    | lmsys/vicuna-13b-v1.5-16k                        | 16384          | FP16         |
+| LM Sys                | Vicuna v1.5 (13B)                        | lmsys/vicuna-13b-v1.5                            | 4096           | FP16         |
+| LM Sys                | Vicuna v1.3 (13B)                        | lmsys/vicuna-13b-v1.3                            | 2048           | FP16         |
+| LM Sys                | Koala (13B)                              | togethercomputer/Koala-13B                       | 2048           | FP16         |
+| LM Sys                | Vicuna v1.5 (7B)                         | lmsys/vicuna-7b-v1.5                             | 4096           | FP16         |
+| Meta                  | Code Llama Instruct (34B)                | codellama/CodeLlama-34b-Instruct-hf              | 16384          | FP16         |
+| Meta                  | Llama3 8B Chat HF INT4                   | togethercomputer/Llama-3-8b-chat-hf-int4         | 8192           | FP16         |
+| Meta                  | Meta Llama 3.2 90B Vision Instruct Turbo | meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo   | 131072         | FP16         |
+| Meta                  | Meta Llama 3.2 11B Vision Instruct Turbo | meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo   | 131072         | FP16         |
+| Meta                  | Meta Llama 3.2 3B Instruct Turbo         | meta-llama/Llama-3.2-3B-Instruct-Turbo           | 131072         | FP16         |
+| Meta                  | Togethercomputer Llama3 8B Instruct Int8 | togethercomputer/Llama-3-8b-chat-hf-int8         | 8192           | FP16         |
+| Meta                  | Meta Llama 3.1 70B Instruct Turbo        | meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo     | 32768          | FP8          |
+| Meta                  | LLaMA-2 Chat (13B)                       | meta-llama/Llama-2-13b-chat-hf                   | 4096           | FP16         |
+| Meta                  | Meta Llama 3 70B Instruct Lite           | meta-llama/Meta-Llama-3-70B-Instruct-Lite        | 8192           | INT4         |
+| Meta                  | Meta Llama 3 8B Instruct Reference       | meta-llama/Llama-3-8b-chat-hf                    | 8192           | FP16         |
+| Meta                  | Meta Llama 3 70B Instruct Reference      | meta-llama/Llama-3-70b-chat-hf                   | 8192           | FP16         |
+| Meta                  | Meta Llama 3 8B Instruct Turbo           | meta-llama/Meta-Llama-3-8B-Instruct-Turbo        | 8192           | FP8          |
+| Meta                  | Meta Llama 3 8B Instruct Lite            | meta-llama/Meta-Llama-3-8B-Instruct-Lite         | 8192           | INT4         |
+| Meta                  | Meta Llama 3.1 405B Instruct Turbo       | meta-llama/Meta-Llama-3.1-405B-Instruct-Lite-Pro | 4096           | FP16         |
+| Meta                  | LLaMA-2 Chat (7B)                        | meta-llama/Llama-2-7b-chat-hf                    | 4096           | FP16         |
+| Meta                  | Meta Llama 3.1 405B Instruct Turbo       | meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo    | 130815         | FP8          |
+| Meta                  | Meta Llama Vision Free                   | meta-llama/Llama-Vision-Free                     | 131072         | FP16         |
+| Meta                  | Meta Llama 3 70B Instruct Turbo          | meta-llama/Meta-Llama-3-70B-Instruct-Turbo       | 8192           | FP8          |
+| Meta                  | Meta Llama 3.1 8B Instruct Turbo         | meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo      | 32768          | FP8          |
+| Meta                  | Code Llama Instruct (7B)                 | togethercomputer/CodeLlama-7b-Instruct           | 16384          | FP16         |
+| Meta                  | Code Llama Instruct (34B)                | togethercomputer/CodeLlama-34b-Instruct          | 16384          | FP16         |
+| Meta                  | Code Llama Instruct (13B)                | codellama/CodeLlama-13b-Instruct-hf              | 16384          | FP16         |
+| Meta                  | Code Llama Instruct (13B)                | togethercomputer/CodeLlama-13b-Instruct          | 16384          | FP16         |
+| Meta                  | LLaMA-2 Chat (13B)                       | togethercomputer/llama-2-13b-chat                | 4096           | FP16         |
+| Meta                  | LLaMA-2 Chat (7B)                        | togethercomputer/llama-2-7b-chat                 | 4096           | FP16         |
+| Meta                  | Meta Llama 3 8B Instruct                 | meta-llama/Meta-Llama-3-8B-Instruct              | 8192           | FP16         |
+| Meta                  | Meta Llama 3 70B Instruct                | meta-llama/Meta-Llama-3-70B-Instruct             | 8192           | FP16         |
+| Meta                  | Code Llama Instruct (70B)                | codellama/CodeLlama-70b-Instruct-hf              | 4096           | FP16         |
+| Meta                  | LLaMA-2 Chat (70B)                       | togethercomputer/llama-2-70b-chat                | 4096           | FP16         |
+| Meta                  | Code Llama Instruct (7B)                 | codellama/CodeLlama-7b-Instruct-hf               | 16384          | FP16         |
+| Meta                  | LLaMA-2 Chat (70B)                       | meta-llama/Llama-2-70b-chat-hf                   | 4096           | FP16         |
+| Meta                  | Meta Llama 3.1 8B Instruct               | meta-llama/Meta-Llama-3.1-8B-Instruct-Reference  | 16384          | FP16         |
+| Meta                  | Meta Llama 3.1 70B Instruct Turbo        | albert/meta-llama-3-1-70b-instruct-turbo         | 131072         | FP16         |
+| Meta                  | Meta Llama 3.1 70B Instruct              | meta-llama/Meta-Llama-3.1-70B-Instruct-Reference | 8192           | FP16         |
+| Meta                  | (Free) Llama 3.2 11B Vision Instruct Turbo | meta-llama/Llama-Vision-Free                   | 131072         | FP16         |
+| Meta                  | Llama 3.2 11B Vision Instruct Turbo       | meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo | 131072         | FP16         |
+| Meta                  | Llama 3.2 90B Vision Instruct Turbo       | meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo | 131072         | FP16         |
+| microsoft             | WizardLM-2 (8x22B)                       | microsoft/WizardLM-2-8x22B                       | 65536          | FP16         |
+| mistralai             | Mistral (7B) Instruct                    | mistralai/Mistral-7B-Instruct-v0.1               | 4096           | FP16         |
+| mistralai             | Mistral (7B) Instruct v0.2               | mistralai/Mistral-7B-Instruct-v0.2               | 32768          | FP16         |
+| mistralai             | Mistral (7B) Instruct v0.3               | mistralai/Mistral-7B-Instruct-v0.3               | 32768          | FP16         |
+| mistralai             | Mixtral-8x7B Instruct v0.1               | mistralai/Mixtral-8x7B-Instruct-v0.1             | 32768          | FP16         |
+| mistralai             | Mixtral-8x22B Instruct v0.1              | mistralai/Mixtral-8x22B-Instruct-v0.1            | 65536          | FP16         |
+| NousResearch          | Nous Hermes 2 - Mixtral 8x7B-DPO         | NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO      | 32768          | FP16         |
+| NousResearch          | Nous Hermes LLaMA-2 (70B)                | NousResearch/Nous-Hermes-Llama2-70b              | 4096           | FP16         |
+| NousResearch          | Nous Hermes 2 - Mixtral 8x7B-SFT         | NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT      | 32768          | FP16         |
+| NousResearch          | Nous Hermes Llama-2 (13B)                | NousResearch/Nous-Hermes-Llama2-13b              | 4096           | FP16         |
+| NousResearch          | Nous Hermes 2 - Mistral DPO (7B)         | NousResearch/Nous-Hermes-2-Mistral-7B-DPO        | 32768          | FP16         |
+| NousResearch          | Nous Hermes LLaMA-2 (7B)                 | NousResearch/Nous-Hermes-llama-2-7b              | 4096           | FP16         |
+| NousResearch          | Nous Capybara v1.9 (7B)                  | NousResearch/Nous-Capybara-7B-V1p9               | 8192           | FP16         |
+| NousResearch          | Hermes 2 Theta Llama-3 70B               | NousResearch/Hermes-2-Theta-Llama-3-70B          | 8192           | FP16         |
+| OpenChat              | OpenChat 3.5                             | openchat/openchat-3.5-1210                       | 8192           | FP16         |
+| OpenOrca              | OpenOrca Mistral (7B) 8K                 | Open-Orca/Mistral-7B-OpenOrca                    | 8192           | FP16         |
+| Qwen                  | Qwen 2 Instruct (72B)                    | Qwen/Qwen2-72B-Instruct                          | 32768          | FP16         |
+| Qwen                  | Qwen2.5 72B Instruct Turbo               | Qwen/Qwen2.5-72B-Instruct-Turbo                  | 32768          | FP8          |
+| Qwen                  | Qwen2.5 7B Instruct Turbo                | Qwen/Qwen2.5-7B-Instruct-Turbo                   | 32768          | FP8          |
+| Qwen                  | Qwen 1.5 Chat (110B)                     | Qwen/Qwen1.5-110B-Chat                           | 32768          | FP16         |
+| Qwen                  | Qwen 1.5 Chat (72B)                      | Qwen/Qwen1.5-72B-Chat                            | 32768          | FP16         |
+| Qwen                  | Qwen 2 Instruct (1.5B)                   | Qwen/Qwen2-1.5B-Instruct                         | 32768          | FP16         |
+| Qwen                  | Qwen 2 Instruct (7B)                     | Qwen/Qwen2-7B-Instruct                           | 32768          | FP16         |
+| Qwen                  | Qwen 1.5 Chat (14B)                      | Qwen/Qwen1.5-14B-Chat                            | 32768          | FP16         |
+| Qwen                  | Qwen 1.5 Chat (1.8B)                     | Qwen/Qwen1.5-1.8B-Chat                           | 32768          | FP16         |
+| Qwen                  | Qwen 1.5 Chat (32B)                      | Qwen/Qwen1.5-32B-Chat                            | 32768          | FP16         |
+| Qwen                  | Qwen 1.5 Chat (7B)                       | Qwen/Qwen1.5-7B-Chat                             | 32768          | FP16         |
+| Qwen                  | Qwen 1.5 Chat (0.5B)                     | Qwen/Qwen1.5-0.5B-Chat                           | 32768          | FP16         |
+| Qwen                  | Qwen 1.5 Chat (4B)                       | Qwen/Qwen1.5-4B-Chat                             | 32768          | FP16         |
+| Snorkel AI            | Snorkel Mistral PairRM DPO (7B)          | snorkelai/Snorkel-Mistral-PairRM-DPO             | 32768          | FP16         |
+| Snowflake             | Snowflake Arctic Instruct                | Snowflake/snowflake-arctic-instruct              | 4096           | FP16         |
+| Stanford              | Alpaca (7B)                              | togethercomputer/alpaca-7b                       | 2048           | FP16         |
+| teknium               | OpenHermes-2-Mistral (7B)                | teknium/OpenHermes-2-Mistral-7B                  | 8192           | FP16         |
+| teknium               | OpenHermes-2.5-Mistral (7B)              | teknium/OpenHermes-2p5-Mistral-7B                | 8192           | FP16         |
+| test                  | Test 11                                  | test/test11                                      | 4096           | FP16         |
+| Tim Dettmers          | Guanaco (65B)                            | togethercomputer/guanaco-65b                     | 2048           | FP16         |
+| Tim Dettmers          | Guanaco (13B)                            | togethercomputer/guanaco-13b                     | 2048           | FP16         |
+| Tim Dettmers          | Guanaco (33B)                            | togethercomputer/guanaco-33b                     | 2048           | FP16         |
+| Tim Dettmers          | Guanaco (7B)                             | togethercomputer/guanaco-7b                      | 2048           | FP16         |
+| Undi95                | ReMM SLERP L2 (13B)                      | Undi95/ReMM-SLERP-L2-13B                         | 4096           | FP16         |
+| Undi95                | Toppy M (7B)                             | Undi95/Toppy-M-7B                                | 4096           | FP16         |
+| upstage               | Upstage SOLAR Instruct v1 (11B)          | upstage/SOLAR-10.7B-Instruct-v1.0                | 4096           | FP16         |
+| upstage               | Upstage SOLAR Instruct v1 (11B)-Int4     | togethercomputer/SOLAR-10.7B-Instruct-v1.0-int4  | 4096           | FP16         |
+| WizardLM              | WizardLM v1.2 (13B)                      | WizardLM/WizardLM-13B-V1.2                       | 4096           | FP16         |

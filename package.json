@@ -10,7 +10,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "lint": "cd server && yarn lint && cd ../frontend && yarn lint && cd ../embed && yarn lint && cd ../collector && yarn lint",
+    "lint": "cd server && yarn lint && cd ../frontend && yarn lint && cd ../collector && yarn lint",
     "setup": "cd server && yarn && cd ../collector && yarn && cd ../frontend && yarn && cd .. && yarn setup:envs && yarn prisma:setup && echo \"Please run yarn dev:server, yarn dev:collector, and yarn dev:frontend in separate terminal tabs.\"",
     "setup:envs": "cp -n ./frontend/.env.example ./frontend/.env && cp -n ./server/.env.example ./server/.env.development && cp -n ./collector/.env.example ./collector/.env && cp -n ./docker/.env.example ./docker/.env && echo \"All ENV files copied!\n\"",
     "dev:server": "cd server && yarn dev",

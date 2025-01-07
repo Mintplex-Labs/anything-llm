@@ -59,6 +59,7 @@ async function resyncConfluence({ chunkSource }, response) {
     const { success, reason, content } = await fetchConfluencePage({
       pageUrl: `https:${source.pathname}`, // need to add back the real protocol
       baseUrl: source.searchParams.get('baseUrl'),
+      spaceKey: source.searchParams.get('spaceKey'),
       accessToken: source.searchParams.get('token'),
       username: source.searchParams.get('username'),
     });

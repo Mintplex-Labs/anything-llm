@@ -108,14 +108,14 @@ const Chroma = {
     const namespace = await this.namespace(client, this.normalize(_namespace));
     return namespace?.vectorCount || 0;
   },
-  similarityResponse: async function (
+  similarityResponse: async function ({
     client,
     namespace,
     queryVector,
     similarityThreshold = 0.25,
     topN = 4,
-    filterIdentifiers = []
-  ) {
+    filterIdentifiers = [],
+  }) {
     const collection = await client.getCollection({
       name: this.normalize(namespace),
     });
@@ -251,10 +251,7 @@ const Chroma = {
           { label: "text_splitter_chunk_overlap" },
           20
         ),
-        chunkHeaderMeta: {
-          sourceDocument: metadata?.title,
-          published: metadata?.published || "unknown",
-        },
+        chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
@@ -359,14 +356,14 @@ const Chroma = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+    const { contextTexts, sourceDocuments } = await this.similarityResponse({
       client,
       namespace,
       queryVector,
       similarityThreshold,
       topN,
-      filterIdentifiers
-    );
+      filterIdentifiers,
+    });
 
     const sources = sourceDocuments.map((metadata, i) => {
       return { metadata: { ...metadata, text: contextTexts[i] } };
