@@ -62,6 +62,7 @@
     "mssql": "^10.0.2",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.9.8",
+    "natural": "^8.0.1",
     "node-llama-cpp": "^2.8.0",
     "ollama": "^0.5.0",
     "openai": "4.38.5",

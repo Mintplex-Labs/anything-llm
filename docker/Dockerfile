@@ -134,6 +134,7 @@ WORKDIR /app
 # Also pull and build collector deps (chromium issues prevent bad bindings)
 FROM build AS backend-build
 COPY ./server /app/server/
+USER root
 WORKDIR /app/server
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 WORKDIR /app
