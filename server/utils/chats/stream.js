@@ -59,9 +59,9 @@ async function streamChatWithWorkspace(
   const VectorDb = getVectorDbClass();
 
   const messageLimit = workspace?.openAiHistory || 20; 
-  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace);
+  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   // const hasVectorizedSpace = await VectorDb.hasNamespaces(workspaces);
-  const embeddingsCount = await VectorDb.namespaceCount(workspace);
+  const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
   // const embeddingsCount = await VectorDb.namespaceCountMultiple(workspaces);
 
   // User is trying to query-mode chat a workspace that has no data in it - so
