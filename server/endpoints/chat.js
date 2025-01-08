@@ -24,21 +24,15 @@ function chatEndpoints(app) {
 
   app.post(
     "/workspace/:slug/stream-chat",
-    // [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
-    [validatedRequest, flexUserRoleValid([ROLES.all]), includeRbacWorkSpaces],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    // [validatedRequest, flexUserRoleValid([ROLES.all]), includeRbacWorkSpaces],
     async (request, response) => {
       try {
-        console.log(`chat initiated in the server backend`)
+        // console.log(`chat initiated in the server backend`)
         const user = await userFromSession(request, response);
         const { message, attachments = [] } = reqBody(request);
-        const workspaces = response.locals.workspaces;
-        // const workspace = response.locals.workspace;
-        
-        // console.log(`--------------------------------------------------------------------------------------`)
-        // console.log(`--------------------------------------------------------------------------------------`)
-        // // console.dir(workspaces, { depth: null });
-        // console.log(`--------------------------------------------------------------------------------------`)
-        // console.log(`--------------------------------------------------------------------------------------`)
+        // const workspaces = response.locals.workspaces;
+        const workspace = response.locals.workspace;
 
         if (!message?.length) {
           response.status(400).json({
@@ -72,9 +66,9 @@ function chatEndpoints(app) {
 
         await streamChatWithWorkspace(
           response,
-          workspaces,
+          workspace,
           message,
-          workspaces[0]?.chatMode, // this is fine since all workspaces will have same value for this attribute
+          workspace?.chatMode,
           user,
           null,
           attachments
@@ -91,8 +85,8 @@ function chatEndpoints(app) {
         await EventLogs.logEvent(
           "sent_chat",
           {
-            workspaceName: workspaces.map(workspace => workspace.name).join(", "),
-            chatModel: workspaces[0]?.chatModel || "System Default", // this is fine since all workspaces will have same value for this attribute
+            workspaceName: workspace.name,
+            chatModel: workspace?.chatModel || "System Default", 
           },
           user?.id
         );
@@ -114,22 +108,22 @@ function chatEndpoints(app) {
 
   app.post(
     "/workspace/:slug/thread/:threadSlug/stream-chat",
-    // [
-    //   validatedRequest,
-    //   flexUserRoleValid([ROLES.all]),
-    //   validWorkspaceAndThreadSlug,
-    // ],
     [
       validatedRequest,
       flexUserRoleValid([ROLES.all]),
-      includeRbacWorkSpacesAndThreadSlug,
+      validWorkspaceAndThreadSlug,
     ],
+    // [
+    //   validatedRequest,
+    //   flexUserRoleValid([ROLES.all]),
+    //   includeRbacWorkSpacesAndThreadSlug,
+    // ],
     async (request, response) => {
       try {
-        // console.log(`hello moto2 /workspace/:slug/thread/:threadSlug/stream-chat`)
         const user = await userFromSession(request, response);
         const { message, attachments = [] } = reqBody(request);
-        const workspaces = response.locals.workspaces;
+        const workspace = response.locals.workspace;
+        // const workspaces = response.locals.workspaces;
         const thread = response.locals.thread;
 
         if (!message?.length) {
@@ -164,9 +158,9 @@ function chatEndpoints(app) {
 
         await streamChatWithWorkspace(
           response,
-          workspaces,
+          workspace,
           message,
-          workspaces[0]?.chatMode,
+          workspace?.chatMode,
           user,
           thread,
           attachments
@@ -175,7 +169,7 @@ function chatEndpoints(app) {
         // If thread was renamed emit event to frontend via special `action` response.
         await WorkspaceThread.autoRenameThread({
           thread,
-          workspaces,
+          workspace,
           user,
           newName: truncate(message, 22),
           onRename: (thread) => {
@@ -201,10 +195,10 @@ function chatEndpoints(app) {
         await EventLogs.logEvent(
           "sent_chat",
           {
-            // workspaceName: workspace.name,
-            workspaceName: workspaces.map(workspace => workspace.name).join(", "),
+            workspaceName: workspace.name,
+            // workspaceName: workspaces.map(workspace => workspace.name).join(", "),
             thread: thread.name,
-            chatModel: workspaces[0]?.chatModel || "System Default",
+            chatModel: workspace?.chatModel || "System Default",
           },
           user?.id
         );

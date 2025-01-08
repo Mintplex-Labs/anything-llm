@@ -50,7 +50,7 @@ async function validWorkspaceAndThreadSlug(request, response, next) {
     return;
   }
 
-  console.log(`'threadSlug value : ${threadSlug}`)
+  // console.log(`'threadSlug value : ${threadSlug}`)
 
   const thread = await WorkspaceThread.get({
     slug: threadSlug,
@@ -81,7 +81,7 @@ async function includeRbacWorkSpacesAndThreadSlug(request, response, next) {
       return;
     }
 
-  console.log(`'threadSlug value : ${threadSlug}`)
+  // console.log(`'threadSlug value : ${threadSlug}`)
 
   const thread = await WorkspaceThread.get({
     slug: threadSlug,

@@ -1940,6 +1940,7 @@
               "example": {
                 "message": "What is AnythingLLM?",
                 "mode": "query | chat",
+                "userId": 1,
                 "sessionId": "identifier-to-partition-chats-by-external-id",
                 "attachments": [
                   {
@@ -2042,6 +2043,7 @@
               "example": {
                 "message": "What is AnythingLLM?",
                 "mode": "query | chat",
+                "userId": 1,
                 "sessionId": "identifier-to-partition-chats-by-external-id",
                 "attachments": [
                   {

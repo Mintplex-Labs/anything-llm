@@ -155,7 +155,7 @@ async function chatSync({
   let embeddingsCount;
   let workspaces;
 
-  if (process.env.ENABLE_MULTI_WORKSPACE_QUERY == 'true') {
+  if (process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true') {
     const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null })
     workspaces = userWorkspaces.map(item => item.workspaceSlug);
     // console.log('Workspace Users:', workspaceSlugs);
@@ -239,7 +239,7 @@ async function chatSync({
 
   let vectorSearchResults;
 
-  if (process.env.ENABLE_MULTI_WORKSPACE_QUERY === 'true') {
+  if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
     // Perform multi workspace searches if the environment variable is 'true'
     vectorSearchResults = embeddingsCount !== 0
       ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
@@ -277,7 +277,7 @@ async function chatSync({
     };
   }
 
-  if (process.env.RERANKER == 'true') {
+  if (process.env.RERANKER_ENABLED == 'true') {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -382,6 +382,7 @@ async function chatSync({
     threadId: thread?.id || null,
     apiSessionId: sessionId,
     user,
+    multiple_workspaces: workspaces ? workspaces.join(",") : null,
   });
 
   return {
@@ -484,7 +485,7 @@ async function streamChat({
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   let embeddingsCount;
   let workspaces;
-  if (process.env.ENABLE_MULTI_WORKSPACE_QUERY == 'true') {
+  if (process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true') {
     const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null })
     workspaces = userWorkspaces.map(item => item.workspaceSlug);
     // console.log('Workspace Users:', workspaceSlugs);
@@ -589,7 +590,7 @@ async function streamChat({
 
   let vectorSearchResults;
 
-  if (process.env.ENABLE_MULTI_WORKSPACE_QUERY === 'true') {
+  if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
     // Perform multi workspace searches if the environment variable is 'true'
     vectorSearchResults = embeddingsCount !== 0
       ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
@@ -629,7 +630,7 @@ async function streamChat({
   }
 
 
-  if (process.env.RERANKER == 'true') {
+  if (process.env.RERANKER_ENABLED == 'true') {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -749,6 +750,7 @@ async function streamChat({
       threadId: thread?.id || null,
       apiSessionId: sessionId,
       user,
+      multiple_workspaces: workspaces ? workspaces.join(",") : null,
     });
 
     writeResponseChunk(response, {
