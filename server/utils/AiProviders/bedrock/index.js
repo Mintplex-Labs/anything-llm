@@ -25,22 +25,40 @@ class AWSBedrockLLM {
   ];
 
   constructor(embedder = null, modelPreference = null) {
-    if (!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID)
-      throw new Error("No AWS Bedrock LLM profile id was set.");
+    const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
 
-    if (!process.env.AWS_BEDROCK_LLM_ACCESS_KEY)
-      throw new Error("No AWS Bedrock LLM access key was set.");
-
-    if (!process.env.AWS_BEDROCK_LLM_REGION)
+    if (!process.env.AWS_BEDROCK_LLM_REGION) {
       throw new Error("No AWS Bedrock LLM region was set.");
+    }
 
-    if (
-      process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD === "sessionToken" &&
-      !process.env.AWS_BEDROCK_LLM_SESSION_TOKEN
-    )
-      throw new Error(
-        "No AWS Bedrock LLM session token was set while using session token as the authentication method."
-      );
+    if (method === "profile") {
+      if (!process.env.AWS_BEDROCK_LLM_PROFILE_NAME) {
+        throw new Error(
+          "No AWS Bedrock LLM profile name was set for profile authentication method."
+        );
+      }
+    } else {
+      if (!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID) {
+        throw new Error(
+          "No AWS Bedrock LLM access key ID was set for iam authentication method."
+        );
+      }
+      if (!process.env.AWS_BEDROCK_LLM_ACCESS_KEY) {
+        throw new Error(
+          "No AWS Bedrock LLM access key was set for iam authentication method."
+        );
+      }
+
+      // Additional validation for sessionToken method
+      if (
+        method === "sessionToken" &&
+        !process.env.AWS_BEDROCK_LLM_SESSION_TOKEN
+      ) {
+        throw new Error(
+          "No AWS Bedrock LLM session token was set while using session token as the authentication method."
+        );
+      }
+    }
 
     this.model =
       modelPreference || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
@@ -59,12 +77,12 @@ class AWSBedrockLLM {
 
   /**
    * Get the authentication method for the AWS Bedrock LLM.
-   * There are only two valid values for this setting - anything else will default to "iam".
-   * @returns {"iam"|"sessionToken"}
+   * There are only three valid values for this setting - anything else will default to "iam".
+   * @returns {"iam"|"sessionToken"|"profile"}
    */
   get authMethod() {
     const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
-    if (!["iam", "sessionToken"].includes(method)) return "iam";
+    if (!["iam", "sessionToken", "profile"].includes(method)) return "iam";
     return method;
   }
 
@@ -73,13 +91,19 @@ class AWSBedrockLLM {
     return new ChatBedrockConverse({
       model: this.model,
       region: process.env.AWS_BEDROCK_LLM_REGION,
-      credentials: {
-        accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-        ...(this.authMethod === "sessionToken"
-          ? { sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN }
-          : {}),
-      },
+      ...(this.authMethod === "profile"
+        ? {
+            profile: process.env.AWS_BEDROCK_LLM_PROFILE_NAME,
+          }
+        : {
+            credentials: {
+              accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+              secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+              ...(this.authMethod === "sessionToken" && {
+                sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
+              }),
+            },
+          }),
       temperature,
     });
   }

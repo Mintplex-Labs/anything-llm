@@ -19,15 +19,19 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     const model = process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
     const client = new ChatBedrockConverse({
       region: process.env.AWS_BEDROCK_LLM_REGION,
-      credentials: {
-        accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-        // If we're using a session token, we need to pass it in as a credential
-        // otherwise we must omit it so it does not conflict if using IAM auth
-        ...(this.authMethod === "sessionToken"
-          ? { sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN }
-          : {}),
-      },
+      ...(this.authMethod === "profile"
+        ? {
+            profile: process.env.AWS_BEDROCK_LLM_PROFILE_NAME,
+          }
+        : {
+            credentials: {
+              accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+              secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+              ...(this.authMethod === "sessionToken" && {
+                sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
+              }),
+            },
+          }),
       model,
     });
 
@@ -38,12 +42,12 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Get the authentication method for the AWS Bedrock LLM.
-   * There are only two valid values for this setting - anything else will default to "iam".
-   * @returns {"iam"|"sessionToken"}
+   * There are only three valid values for this setting - anything else will default to "iam".
+   * @returns {"iam"|"sessionToken"|"profile"}
    */
   get authMethod() {
     const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
-    if (!["iam", "sessionToken"].includes(method)) return "iam";
+    if (!["iam", "sessionToken", "profile"].includes(method)) return "iam";
     return method;
   }
 
