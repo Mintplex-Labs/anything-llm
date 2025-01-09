@@ -62,7 +62,7 @@ const PromptReply = ({
         <div className="flex gap-x-5">
           <WorkspaceProfileImage workspace={workspace} />
           <span
-            className="overflow-x-scroll break-words"
+            className="break-words"
             dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
           />
         </div>
