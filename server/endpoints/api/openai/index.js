@@ -13,48 +13,20 @@ const {
   OpenAICompatibleChat,
 } = require("../../../utils/chats/openaiCompatible");
 
+/**
+ * OpenAI 호환 API 엔드포인트를 정의하며,
+ * 모델 관리, 채팅 완료, 임베딩, 벡터 저장소 관련 기능을 제공합니다.
+ * @param {object} app - Express 애플리케이션 인스턴스.
+ */
 function apiOpenAICompatibleEndpoints(app) {
   if (!app) return;
 
+  /**
+   * GET /v1/openai/models
+   * 사용 가능한 모든 모델(워크스페이스)을 가져옵니다.
+   * 요청 및 응답 데이터를 로깅합니다.
+   */
   app.get("/v1/openai/models", [validApiKey], async (request, response) => {
-    /*
-    #swagger.tags = ['OpenAI Compatible Endpoints']
-    #swagger.description = 'Get all available "models" which are workspaces you can use for chatting.'
-    #swagger.responses[200] = {
-      content: {
-        "application/json": {
-          "schema": {
-            "type": "object",
-            "example": {
-              "models": [
-                {
-                  "name": "Sample workspace",
-                  "model": "sample-workspace",
-                  "llm": {
-                    "provider": "ollama",
-                    "model": "llama3:8b"
-                  }
-                },
-                {
-                  "name": "Second workspace",
-                  "model": "workspace-2",
-                  "llm": {
-                    "provider": "openai",
-                    "model": "gpt-3.5-turbo"
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    }
-    #swagger.responses[403] = {
-      schema: {
-        "$ref": "#/definitions/InvalidAPIKey"
-      }
-    }
-    */
     try {
       const data = [];
       const workspaces = await Workspace.where();
@@ -73,45 +45,33 @@ function apiOpenAICompatibleEndpoints(app) {
           },
         });
       }
+
+      await EventLogs.logEvent("api_get_models", {
+        request: {},
+        response: { data },
+      });
+
       return response.status(200).json({ data });
     } catch (e) {
       console.error(e.message, e);
+      await EventLogs.logEvent("api_get_models_error", {
+        request: {},
+        error: e.message,
+      });
       response.sendStatus(500).end();
     }
   });
 
+  /**
+   * POST /v1/openai/chat/completions
+   * 지정된 워크스페이스와 채팅을 수행합니다.
+   * 스트리밍 및 비스트리밍 모드를 지원합니다.
+   * 요청 및 응답 데이터를 로깅합니다.
+   */
   app.post(
     "/v1/openai/chat/completions",
     [validApiKey],
     async (request, response) => {
-      /*
-      #swagger.tags = ['OpenAI Compatible Endpoints']
-      #swagger.description = 'Execute a chat with a workspace with OpenAI compatibility. Supports streaming as well. Model must be a workspace slug from /models.'
-      #swagger.requestBody = {
-          description: 'Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.',
-          required: true,
-          content: {
-            "application/json": {
-              example: {
-                messages: [
-                {"role":"system", content: "You are a helpful assistant"},
-                {"role":"user", content: "What is AnythingLLM?"},
-                {"role":"assistant", content: "AnythingLLM is...."},
-                {"role":"user", content: "Follow up question..."}
-                ],
-                model: "sample-workspace",
-                stream: true,
-                temperature: 0.7
-              }
-            }
-          }
-        }
-      #swagger.responses[403] = {
-        schema: {
-          "$ref": "#/definitions/InvalidAPIKey"
-        }
-      }
-      */
       try {
         const {
           model,
@@ -119,12 +79,18 @@ function apiOpenAICompatibleEndpoints(app) {
           temperature,
           stream = false,
         } = reqBody(request);
+
         const workspace = await Workspace.get({ slug: String(model) });
-        if (!workspace) return response.status(401).end();
+        if (!workspace) {
+          await EventLogs.logEvent("api_chat_invalid_workspace", {
+            request: { model, messages, temperature, stream },
+          });
+          return response.status(401).end();
+        }
 
         const userMessage = messages.pop();
         if (userMessage.role !== "user") {
-          return response.status(400).json({
+          const errorResponse = {
             id: uuidv4(),
             type: "abort",
             textResponse: null,
@@ -132,7 +98,12 @@ function apiOpenAICompatibleEndpoints(app) {
             close: true,
             error:
               "No user prompt found. Must be last element in message array with 'user' role.",
+          };
+          await EventLogs.logEvent("api_chat_invalid_message", {
+            request: { model, messages, temperature, stream },
+            response: errorResponse,
           });
+          return response.status(400).json(errorResponse);
         }
 
         const systemPrompt =
@@ -148,17 +119,11 @@ function apiOpenAICompatibleEndpoints(app) {
             temperature: Number(temperature),
           });
 
-          await Telemetry.sendTelemetry("sent_chat", {
-            LLMSelection:
-              workspace.chatProvider ?? process.env.LLM_PROVIDER ?? "openai",
-            Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-            VectorDbSelection: process.env.VECTOR_DB || "lancedb",
-            TTSSelection: process.env.TTS_PROVIDER || "native",
+          await EventLogs.logEvent("api_chat_completion", {
+            request: { model, messages, temperature, stream },
+            response: chatResult,
           });
-          await EventLogs.logEvent("api_sent_chat", {
-            workspaceName: workspace?.name,
-            chatModel: workspace?.chatModel || "System Default",
-          });
+
           return response.status(200).json(chatResult);
         }
 
@@ -176,52 +141,31 @@ function apiOpenAICompatibleEndpoints(app) {
           temperature: Number(temperature),
           response,
         });
-        await Telemetry.sendTelemetry("sent_chat", {
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
-          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
-          TTSSelection: process.env.TTS_PROVIDER || "native",
-        });
-        await EventLogs.logEvent("api_sent_chat", {
-          workspaceName: workspace?.name,
-          chatModel: workspace?.chatModel || "System Default",
+
+        await EventLogs.logEvent("api_chat_stream_completion", {
+          request: { model, messages, temperature, stream },
         });
         response.end();
       } catch (e) {
         console.error(e.message, e);
+        await EventLogs.logEvent("api_chat_error", {
+          request: reqBody(request),
+          error: e.message,
+        });
         response.status(500).end();
       }
     }
   );
 
+  /**
+   * POST /v1/openai/embeddings
+   * 주어진 텍스트 입력에 대한 임베딩을 생성합니다.
+   * 요청 및 응답 데이터를 로깅합니다.
+   */
   app.post(
     "/v1/openai/embeddings",
     [validApiKey],
     async (request, response) => {
-      /*
-      #swagger.tags = ['OpenAI Compatible Endpoints']
-      #swagger.description = 'Get the embeddings of any arbitrary text string. This will use the embedder provider set in the system. Please ensure the token length of each string fits within the context of your embedder model.'
-      #swagger.requestBody = {
-          description: 'The input string(s) to be embedded. If the text is too long for the embedder model context, it will fail to embed. The vector and associated chunk metadata will be returned in the array order provided',
-          required: true,
-          content: {
-            "application/json": {
-              example: {
-                inputs: [
-                "This is my first string to embed",
-                "This is my second string to embed",
-                ],
-                model: null,
-              }
-            }
-          }
-        }
-      #swagger.responses[403] = {
-        schema: {
-          "$ref": "#/definitions/InvalidAPIKey"
-        }
-      }
-      */
       try {
         const { inputs = [] } = reqBody(request);
         const validArray = inputs.every((input) => typeof input === "string");
@@ -239,6 +183,11 @@ function apiOpenAICompatibleEndpoints(app) {
           });
         });
 
+        await EventLogs.logEvent("api_embeddings", {
+          request: { inputs },
+          response: { data, model: Embedder.model },
+        });
+
         return response.status(200).json({
           object: "list",
           data,
@@ -246,55 +195,32 @@ function apiOpenAICompatibleEndpoints(app) {
         });
       } catch (e) {
         console.error(e.message, e);
+        await EventLogs.logEvent("api_embeddings_error", {
+          request: reqBody(request),
+          error: e.message,
+        });
         response.status(500).end();
       }
     }
   );
 
+  /**
+   * GET /v1/openai/vector_stores
+   * 모든 벡터 데이터베이스 컬렉션(워크스페이스)을 나열합니다.
+   * 요청 및 응답 데이터를 로깅합니다.
+   */
   app.get(
     "/v1/openai/vector_stores",
     [validApiKey],
     async (request, response) => {
-      /*
-      #swagger.tags = ['OpenAI Compatible Endpoints']
-      #swagger.description = 'List all the vector database collections connected to AnythingLLM. These are essentially workspaces but return their unique vector db identifier - this is the same as the workspace slug.'
-      #swagger.responses[200] = {
-        content: {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "example": {
-                "data": [
-                  {
-                    "id": "slug-here",
-                    "object": "vector_store",
-                    "name": "My workspace",
-                    "file_counts": {
-                      "total": 3
-                    },
-                    "provider": "LanceDB"
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-      #swagger.responses[403] = {
-        schema: {
-          "$ref": "#/definitions/InvalidAPIKey"
-        }
-      }
-      */
       try {
-        // We dump all in the first response and despite saying there is
-        // not more data the library still checks with a query param so if
-        // we detect one - respond with nothing.
         if (Object.keys(request?.query ?? {}).length !== 0) {
-          return response.status(200).json({
-            data: [],
-            has_more: false,
+          const emptyResponse = { data: [], has_more: false };
+          await EventLogs.logEvent("api_vector_stores_query", {
+            request: request.query,
+            response: emptyResponse,
           });
+          return response.status(200).json(emptyResponse);
         }
 
         const data = [];
@@ -314,14 +240,26 @@ function apiOpenAICompatibleEndpoints(app) {
             provider: VectorDBProvider,
           });
         }
-        return response.status(200).json({
+
+        const responsePayload = {
           first_id: [...data].splice(0)?.[0]?.id,
           last_id: [...data].splice(-1)?.[0]?.id ?? data.splice(1)?.[0]?.id,
           data,
           has_more: false,
+        };
+
+        await EventLogs.logEvent("api_vector_stores", {
+          request: {},
+          response: responsePayload,
         });
+
+        return response.status(200).json(responsePayload);
       } catch (e) {
         console.error(e.message, e);
+        await EventLogs.logEvent("api_vector_stores_error", {
+          request: {},
+          error: e.message,
+        });
         response.status(500).end();
       }
     }

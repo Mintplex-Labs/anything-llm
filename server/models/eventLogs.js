@@ -1,4 +1,5 @@
-const prisma = require("../utils/prisma");
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const EventLogs = {
   logEvent: async function (event, metadata = {}, userId = null) {
@@ -11,7 +12,7 @@ const EventLogs = {
           occurredAt: new Date(),
         },
       });
-      console.log(`\x1b[32m[Event Logged]\x1b[0m - ${event}`);
+      console.log(`\x1b[32m[Event Logged]\x1b[0m - ${event}`, metadata);
       return { eventLog, message: null };
     } catch (error) {
       console.error(
@@ -21,7 +22,6 @@ const EventLogs = {
       return { eventLog: null, message: error.message };
     }
   },
-
   getByEvent: async function (event, limit = null, orderBy = null) {
     try {
       const logs = await prisma.event_logs.findMany({

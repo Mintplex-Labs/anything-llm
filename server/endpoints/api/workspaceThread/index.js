@@ -21,53 +21,6 @@ function apiWorkspaceThreadEndpoints(app) {
     "/v1/workspace/:slug/thread/new",
     [validApiKey],
     async (request, response) => {
-      /*
-      #swagger.tags = ['Workspace Threads']
-      #swagger.description = 'Create a new workspace thread'
-      #swagger.parameters['slug'] = {
-          in: 'path',
-          description: 'Unique slug of workspace',
-          required: true,
-          type: 'string'
-      }
-      #swagger.requestBody = {
-        description: 'Optional userId associated with the thread, thread slug and thread name',
-        required: false,
-        content: {
-          "application/json": {
-            example: {
-              userId: 1,
-              name: 'Name',
-              slug: 'thread-slug'
-            }
-          }
-        }
-      }
-      #swagger.responses[200] = {
-        content: {
-          "application/json": {
-            schema: {
-              type: 'object',
-              example: {
-                thread: {
-                  "id": 1,
-                  "name": "Thread",
-                  "slug": "thread-uuid",
-                  "user_id": 1,
-                  "workspace_id": 1
-                },
-                message: null
-              }
-            }
-          }
-        }
-      }
-      #swagger.responses[403] = {
-        schema: {
-          "$ref": "#/definitions/InvalidAPIKey"
-        }
-      }
-      */
       try {
         const wslug = request.params.slug;
         let { userId = null, name = null, slug = null } = reqBody(request);
@@ -78,9 +31,6 @@ function apiWorkspaceThreadEndpoints(app) {
           return;
         }
 
-        // If the system is not multi-user and you pass in a userId
-        // it needs to be nullified as no users exist. This can still fail validation
-        // as we don't check if the userID is valid.
         if (!response.locals.multiUserMode && !!userId) userId = null;
 
         const { thread, message } = await WorkspaceThread.new(
@@ -96,9 +46,14 @@ function apiWorkspaceThreadEndpoints(app) {
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           TTSSelection: process.env.TTS_PROVIDER || "native",
         });
+
+        // EventLogs.logEvent 호출 시 입력과 출력 데이터를 포함하도록 수정
         await EventLogs.logEvent("api_workspace_thread_created", {
           workspaceName: workspace?.name || "Unknown Workspace",
+          input: { userId, name, slug }, // 입력 데이터 기록
+          output: { thread, message }, // 출력 데이터 기록
         });
+
         response.status(200).json({ thread, message });
       } catch (e) {
         console.error(e.message, e);
@@ -111,57 +66,6 @@ function apiWorkspaceThreadEndpoints(app) {
     "/v1/workspace/:slug/thread/:threadSlug/update",
     [validApiKey],
     async (request, response) => {
-      /*
-      #swagger.tags = ['Workspace Threads']
-      #swagger.description = 'Update thread name by its unique slug.'
-      #swagger.parameters['slug'] = {
-          in: 'path',
-          description: 'Unique slug of workspace',
-          required: true,
-          type: 'string'
-      }
-      #swagger.parameters['threadSlug'] = {
-          in: 'path',
-          description: 'Unique slug of thread',
-          required: true,
-          type: 'string'
-      }
-      #swagger.requestBody = {
-        description: 'JSON object containing new name to update the thread.',
-        required: true,
-        content: {
-          "application/json": {
-            example: {
-              "name": 'Updated Thread Name'
-            }
-          }
-        }
-      }
-      #swagger.responses[200] = {
-        content: {
-          "application/json": {
-            schema: {
-              type: 'object',
-              example: {
-                thread: {
-                  "id": 1,
-                  "name": "Updated Thread Name",
-                  "slug": "thread-uuid",
-                  "user_id": 1,
-                  "workspace_id": 1
-                },
-                message: null,
-              }
-            }
-          }
-        }
-      }
-      #swagger.responses[403] = {
-        schema: {
-          "$ref": "#/definitions/InvalidAPIKey"
-        }
-      }
-      */
       try {
         const { slug, threadSlug } = request.params;
         const { name } = reqBody(request);
@@ -180,6 +84,14 @@ function apiWorkspaceThreadEndpoints(app) {
           thread,
           { name }
         );
+
+        // EventLogs.logEvent 호출 시 입력과 출력 데이터를 포함하도록 수정
+        await EventLogs.logEvent("api_workspace_thread_updated", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+          input: { threadSlug, name }, // 입력 데이터 기록
+          output: { updatedThread, message }, // 출력 데이터 기록
+        });
+
         response.status(200).json({ thread: updatedThread, message });
       } catch (e) {
         console.error(e.message, e);
@@ -192,30 +104,6 @@ function apiWorkspaceThreadEndpoints(app) {
     "/v1/workspace/:slug/thread/:threadSlug",
     [validApiKey],
     async (request, response) => {
-      /*
-    #swagger.tags = ['Workspace Threads']
-    #swagger.description = 'Delete a workspace thread'
-    #swagger.parameters['slug'] = {
-        in: 'path',
-        description: 'Unique slug of workspace',
-        required: true,
-        type: 'string'
-    }
-    #swagger.parameters['threadSlug'] = {
-        in: 'path',
-        description: 'Unique slug of thread',
-        required: true,
-        type: 'string'
-    }
-    #swagger.responses[200] = {
-      description: 'Thread deleted successfully'
-    }
-    #swagger.responses[403] = {
-      schema: {
-        "$ref": "#/definitions/InvalidAPIKey"
-      }
-    }
-    */
       try {
         const { slug, threadSlug } = request.params;
         const workspace = await Workspace.get({ slug });
@@ -229,6 +117,13 @@ function apiWorkspaceThreadEndpoints(app) {
           slug: threadSlug,
           workspace_id: workspace.id,
         });
+
+        // EventLogs.logEvent 호출 시 입력 데이터를 포함하도록 수정
+        await EventLogs.logEvent("api_workspace_thread_deleted", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+          input: { threadSlug }, // 입력 데이터 기록
+        });
+
         response.sendStatus(200).end();
       } catch (e) {
         console.error(e.message, e);
@@ -241,50 +136,6 @@ function apiWorkspaceThreadEndpoints(app) {
     "/v1/workspace/:slug/thread/:threadSlug/chats",
     [validApiKey],
     async (request, response) => {
-      /*
-      #swagger.tags = ['Workspace Threads']
-      #swagger.description = 'Get chats for a workspace thread'
-      #swagger.parameters['slug'] = {
-          in: 'path',
-          description: 'Unique slug of workspace',
-          required: true,
-          type: 'string'
-      }
-      #swagger.parameters['threadSlug'] = {
-          in: 'path',
-          description: 'Unique slug of thread',
-          required: true,
-          type: 'string'
-      }
-      #swagger.responses[200] = {
-        content: {
-          "application/json": {
-            schema: {
-              type: 'object',
-              example: {
-                history: [
-                  {
-                    "role": "user",
-                    "content": "What is AnythingLLM?",
-                    "sentAt": 1692851630
-                  },
-                  {
-                    "role": "assistant",
-                    "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
-                    "sources": [{"source": "object about source document and snippets used"}]
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-      #swagger.responses[403] = {
-        schema: {
-          "$ref": "#/definitions/InvalidAPIKey"
-        }
-      }
-      */
       try {
         const { slug, threadSlug } = request.params;
         const workspace = await Workspace.get({ slug });
@@ -302,12 +153,19 @@ function apiWorkspaceThreadEndpoints(app) {
           {
             workspaceId: workspace.id,
             thread_id: thread.id,
-            api_session_id: null, // Do not include API session chats.
+            api_session_id: null, // API 세션 채팅 제외
             include: true,
           },
           null,
           { id: "asc" }
         );
+
+        // EventLogs.logEvent 호출 시 입력과 출력 데이터를 포함하도록 수정
+        await EventLogs.logEvent("api_workspace_thread_chats_retrieved", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+          input: { threadSlug }, // 입력 데이터 기록
+          output: { history: convertToChatHistory(history) }, // 출력 데이터 기록
+        });
 
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
@@ -321,64 +179,6 @@ function apiWorkspaceThreadEndpoints(app) {
     "/v1/workspace/:slug/thread/:threadSlug/chat",
     [validApiKey],
     async (request, response) => {
-      /*
-      #swagger.tags = ['Workspace Threads']
-      #swagger.description = 'Chat with a workspace thread'
-      #swagger.parameters['slug'] = {
-          in: 'path',
-          description: 'Unique slug of workspace',
-          required: true,
-          type: 'string'
-      }
-      #swagger.parameters['threadSlug'] = {
-          in: 'path',
-          description: 'Unique slug of thread',
-          required: true,
-          type: 'string'
-      }
-      #swagger.requestBody = {
-        description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
-        required: true,
-        content: {
-          "application/json": {
-            example: {
-              message: "What is AnythingLLM?",
-              mode: "query | chat",
-              userId: 1,
-              attachments: [
-               {
-                 name: "image.png",
-                 mime: "image/png",
-                 contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-               }
-              ]
-            }
-          }
-        }
-      }
-      #swagger.responses[200] = {
-        content: {
-          "application/json": {
-            schema: {
-              type: 'object',
-              example: {
-                id: 'chat-uuid',
-                type: "abort | textResponse",
-                textResponse: "Response to your query",
-                sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM."}],
-                close: true,
-                error: "null | text string of the failure mode."
-              }
-            }
-          }
-        }
-      }
-      #swagger.responses[403] = {
-        schema: {
-          "$ref": "#/definitions/InvalidAPIKey"
-        }
-      }
-      */
       try {
         const { slug, threadSlug } = request.params;
         const {
@@ -428,18 +228,24 @@ function apiWorkspaceThreadEndpoints(app) {
           thread,
           attachments,
         });
+
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           TTSSelection: process.env.TTS_PROVIDER || "native",
         });
+
+        // EventLogs.logEvent 호출 시 입력과 출력 데이터를 포함하도록 수정
         await EventLogs.logEvent("api_sent_chat", {
           workspaceName: workspace?.name,
           chatModel: workspace?.chatModel || "System Default",
           threadName: thread?.name,
           userId: user?.id,
+          input: { message, mode, userId, attachments }, // 입력 데이터 기록
+          output: result, // 출력 데이터 기록
         });
+
         response.status(200).json({ ...result });
       } catch (e) {
         console.error(e.message, e);
@@ -459,85 +265,6 @@ function apiWorkspaceThreadEndpoints(app) {
     "/v1/workspace/:slug/thread/:threadSlug/stream-chat",
     [validApiKey],
     async (request, response) => {
-      /*
-      #swagger.tags = ['Workspace Threads']
-      #swagger.description = 'Stream chat with a workspace thread'
-      #swagger.parameters['slug'] = {
-          in: 'path',
-          description: 'Unique slug of workspace',
-          required: true,
-          type: 'string'
-      }
-      #swagger.parameters['threadSlug'] = {
-          in: 'path',
-          description: 'Unique slug of thread',
-          required: true,
-          type: 'string'
-      }
-      #swagger.requestBody = {
-        description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
-        required: true,
-        content: {
-          "application/json": {
-            example: {
-              message: "What is AnythingLLM?",
-              mode: "query | chat",
-              userId: 1,
-              attachments: [
-               {
-                 name: "image.png",
-                 mime: "image/png",
-                 contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-               }
-              ]
-            }
-          }
-        }
-      }
-      #swagger.responses[200] = {
-        content: {
-          "text/event-stream": {
-            schema: {
-              type: 'array',
-              items: {
-                  type: 'string',
-              },
-              example: [
-                {
-                  id: 'uuid-123',
-                  type: "abort | textResponseChunk",
-                  textResponse: "First chunk",
-                  sources: [],
-                  close: false,
-                  error: "null | text string of the failure mode."
-                },
-                {
-                  id: 'uuid-123',
-                  type: "abort | textResponseChunk",
-                  textResponse: "chunk two",
-                  sources: [],
-                  close: false,
-                  error: "null | text string of the failure mode."
-                },
-                {
-                  id: 'uuid-123',
-                  type: "abort | textResponseChunk",
-                  textResponse: "final chunk of LLM output!",
-                  sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."}],
-                  close: true,
-                  error: "null | text string of the failure mode."
-                }
-              ]
-            }
-          }
-        }
-      }
-      #swagger.responses[403] = {
-        schema: {
-          "$ref": "#/definitions/InvalidAPIKey"
-        }
-      }
-      */
       try {
         const { slug, threadSlug } = request.params;
         const {
@@ -595,18 +322,24 @@ function apiWorkspaceThreadEndpoints(app) {
           thread,
           attachments,
         });
+
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           TTSSelection: process.env.TTS_PROVIDER || "native",
         });
-        await EventLogs.logEvent("api_sent_chat", {
+
+        // EventLogs.logEvent 호출 시 입력과 출력 데이터를 포함하도록 수정
+        await EventLogs.logEvent("api_sent_chat_stream", {
           workspaceName: workspace?.name,
           chatModel: workspace?.chatModel || "System Default",
           threadName: thread?.name,
           userId: user?.id,
+          input: { message, mode, userId, attachments }, // 입력 데이터 기록
+          output: "Stream started successfully", // 출력 데이터 기록
         });
+
         response.end();
       } catch (e) {
         console.error(e.message, e);

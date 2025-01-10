@@ -68,7 +68,7 @@ function chatEndpoints(app) {
           null,
           attachments
         );
-        await Telemetry.sendTelemetry("sent_chat", {
+        await Telemetry.sendTelemetry("sent_chat_chatjs1", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
@@ -77,11 +77,14 @@ function chatEndpoints(app) {
           TTSSelection: process.env.TTS_PROVIDER || "native",
         });
 
+        // 로그에 입력과 출력 기록 추가
         await EventLogs.logEvent(
-          "sent_chat",
+          "sent_chat_chatjs2",
           {
             workspaceName: workspace?.name,
             chatModel: workspace?.chatModel || "System Default",
+            input: { message, attachments }, // 입력 기록 추가
+            output: "Chat sent successfully." // 출력 기록 추가
           },
           user?.id
         );
@@ -96,6 +99,16 @@ function chatEndpoints(app) {
           close: true,
           error: e.message,
         });
+
+        // 에러 발생 시에도 로그에 입력과 에러 메시지 기록
+        await EventLogs.logEvent(
+          "error",
+          {
+            errorMessage: e.message, // 에러 메시지 기록
+            input: reqBody(request), // 요청 입력 기록
+          },
+          null
+        );
         response.end();
       }
     }
@@ -155,7 +168,7 @@ function chatEndpoints(app) {
           attachments
         );
 
-        // If thread was renamed emit event to frontend via special `action` response.
+        // 스레드 이름 변경 처리 및 로그에 기록
         await WorkspaceThread.autoRenameThread({
           thread,
           workspace,
@@ -172,7 +185,7 @@ function chatEndpoints(app) {
           },
         });
 
-        await Telemetry.sendTelemetry("sent_chat", {
+        await Telemetry.sendTelemetry("sent_chat_chatjs3", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
@@ -181,12 +194,15 @@ function chatEndpoints(app) {
           TTSSelection: process.env.TTS_PROVIDER || "native",
         });
 
+        // 로그에 입력과 출력 기록 추가
         await EventLogs.logEvent(
-          "sent_chat",
+          "sent_chat_chatjs4",
           {
             workspaceName: workspace.name,
             thread: thread.name,
             chatModel: workspace?.chatModel || "System Default",
+            input: { message, attachments }, // 입력 기록 추가
+            output: "Chat sent successfully." // 출력 기록 추가
           },
           user?.id
         );
@@ -201,6 +217,16 @@ function chatEndpoints(app) {
           close: true,
           error: e.message,
         });
+
+        // 에러 발생 시에도 로그에 입력과 에러 메시지 기록
+        await EventLogs.logEvent(
+          "error",
+          {
+            errorMessage: e.message, // 에러 메시지 기록
+            input: reqBody(request), // 요청 입력 기록
+          },
+          null
+        );
         response.end();
       }
     }
