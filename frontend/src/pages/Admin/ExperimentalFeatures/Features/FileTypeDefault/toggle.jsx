@@ -1,9 +1,6 @@
 import System from "@/models/system";
-import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-import { ArrowSquareOut } from "@phosphor-icons/react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 
 export default function FileTypeDefaultToggle({ enabled = false, onToggle }) {
   const [status, setStatus] = useState(enabled);
@@ -56,20 +53,6 @@ export default function FileTypeDefaultToggle({ enabled = false, onToggle }) {
             This feature only applies when importing file-based content.
           </p>
         </div>
-      </div>
-      <div className="mt-8">
-        <ul className="space-y-2">
-          <li>
-            <a
-              href="https://docs.anythingllm.com/beta-preview/active-features/file-type-default"
-              target="_blank"
-              className="text-sm text-blue-400 light:text-blue-500 hover:underline flex items-center gap-x-1"
-            >
-              <ArrowSquareOut size={14} />
-              <span>UNF: create Feature Documentation and Warnings</span>
-            </a>
-          </li>
-        </ul>
       </div>
     </div>
   );
