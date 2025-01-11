@@ -67,6 +67,9 @@ const ExperimentalFeatures = lazy(
 const LiveDocumentSyncManage = lazy(
   () => import("@/pages/Admin/ExperimentalFeatures/Features/LiveSync/manage")
 );
+const FileTypeDefaultManage = lazy(
+  () => import("@/pages/Admin/ExperimentalFeatures/Features/FileTypeDefault/manage")
+);
 
 const CommunityHubTrending = lazy(
   () => import("@/pages/GeneralSettings/CommunityHub/Trending")
@@ -210,6 +213,11 @@ export default function App() {
                   <Route
                     path="/settings/beta-features/live-document-sync/manage"
                     element={<AdminRoute Component={LiveDocumentSyncManage} />}
+                  />
+                  {/* File Type Default feature */}
+                  <Route
+                    path="/settings/beta-features/file-type-default/manage"
+                    element={<AdminRoute Component={FileTypeDefaultManage} />}
                   />
 
                   <Route

@@ -175,5 +175,8 @@ export default {
     liveDocumentSync: {
       manage: () => `/settings/beta-features/live-document-sync/manage`,
     },
+    fileTypeDefault: {
+      manage: () => `/settings/beta-features/file-type-default/manage`,
+    },
   },
 };

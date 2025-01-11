@@ -1,4 +1,5 @@
 const { liveSyncEndpoints } = require("./liveSync");
+const { fileTypeDefaultEndpoints } = require("./fileTypeDefault");
 const { importedAgentPluginEndpoints } = require("./imported-agent-plugins");
 
 // All endpoints here are not stable and can move around - have breaking changes
@@ -6,6 +7,7 @@ const { importedAgentPluginEndpoints } = require("./imported-agent-plugins");
 // When a feature is promoted it should be removed from here and added to the appropriate scope.
 function experimentalEndpoints(router) {
   liveSyncEndpoints(router);
+  fileTypeDefaultEndpoints(router);
   importedAgentPluginEndpoints(router);
 }
 
