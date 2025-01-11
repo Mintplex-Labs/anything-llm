@@ -1,4 +1,5 @@
 const { EncryptionManager } = require("../EncryptionManager");
+const { FileTypeDefault } = require("../../models/fileTypeDefault");
 
 // When running locally will occupy the 0.0.0.0 hostname space but when deployed inside
 // of docker this endpoint is not exposed so it is only on the Docker instances internal network
@@ -45,9 +46,12 @@ class CollectorApi {
   async processDocument(filename = "") {
     if (!filename) return false;
 
+    let augmentedOptions = this.#attachOptions();
+    augmentedOptions['fileTypeDefault'] = await FileTypeDefault.enabled();
+
     const data = JSON.stringify({
       filename,
-      options: this.#attachOptions(),
+      options: augmentedOptions,
     });
 
     return await fetch(`${this.endpoint}/process`, {
