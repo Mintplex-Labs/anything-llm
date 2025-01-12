@@ -47,7 +47,8 @@ class CollectorApi {
     if (!filename) return false;
 
     let augmentedOptions = this.#attachOptions();
-    augmentedOptions[FileTypeDefault.featureKey] = await FileTypeDefault.enabled();
+    augmentedOptions[FileTypeDefault.featureKey] =
+      await FileTypeDefault.enabled();
 
     const data = JSON.stringify({
       filename,

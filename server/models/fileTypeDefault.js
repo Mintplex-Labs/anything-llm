@@ -4,7 +4,7 @@ const FileTypeDefault = {
   featureKey: "experimental_file_type_default",
 
   /** Check if the fileTypeDefault feature is enabled. */
-  enabled: async function() {
+  enabled: async function () {
     return (
       (await SystemSettings.get({ label: this.featureKey }))?.value ===
       "enabled"

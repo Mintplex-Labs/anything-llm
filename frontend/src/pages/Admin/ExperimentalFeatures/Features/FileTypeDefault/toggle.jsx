@@ -17,9 +17,7 @@ export default function FileTypeDefaultToggle({ enabled = false, onToggle }) {
 
     setStatus(!status);
     showToast(
-      `File type default has been ${
-        !status ? "enabled" : "disabled"
-      }.`,
+      `File type default has been ${!status ? "enabled" : "disabled"}.`,
       "success",
       { clear: true }
     );
@@ -45,9 +43,9 @@ export default function FileTypeDefaultToggle({ enabled = false, onToggle }) {
         </div>
         <div className="flex flex-col space-y-4">
           <p className="text-theme-text-secondary text-sm">
-            If the type of an imported file cannot be determined, this
-            setting changes the default behavior to process the file as
-            text instead of displaying an error message.
+            If the type of an imported file cannot be determined, this setting
+            changes the default behavior to process the file as text instead of
+            displaying an error message.
           </p>
           <p className="text-theme-text-secondary text-xs italic">
             This feature only applies when importing file-based content.

@@ -18,10 +18,15 @@ function fileTypeDefaultEndpoints(app) {
       try {
         const { updatedStatus = false } = reqBody(request);
         const newStatus =
-          SystemSettings.validations.experimental_file_type_default(updatedStatus);
+          SystemSettings.validations.experimental_file_type_default(
+            updatedStatus
+          );
         const currentStatus =
-          (await SystemSettings.get({ label: "experimental_file_type_default" }))
-            ?.value || "disabled";
+          (
+            await SystemSettings.get({
+              label: "experimental_file_type_default",
+            })
+          )?.value || "disabled";
         if (currentStatus === newStatus)
           return response
             .status(200)
@@ -40,7 +45,9 @@ function fileTypeDefaultEndpoints(app) {
           });
         }
 
-        response.status(200).json({ fileTypeDefaultEnabled: newStatus === "enabled" });
+        response
+          .status(200)
+          .json({ fileTypeDefaultEnabled: newStatus === "enabled" });
       } catch (e) {
         console.error(e);
         response.status(500).end();
