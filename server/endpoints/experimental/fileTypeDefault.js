@@ -1,17 +1,11 @@
-const { FileTypeDefault } = require("../../models/fileTypeDefault");
-const { Document } = require("../../models/documents");
 const { EventLogs } = require("../../models/eventLogs");
 const { SystemSettings } = require("../../models/systemSettings");
 const { Telemetry } = require("../../models/telemetry");
 const { reqBody } = require("../../utils/http");
 const {
-  featureFlagEnabled,
-} = require("../../utils/middleware/featureFlagEnabled");
-const {
   flexUserRoleValid,
   ROLES,
 } = require("../../utils/middleware/multiUserProtected");
-const { validWorkspaceSlug } = require("../../utils/middleware/validWorkspace");
 const { validatedRequest } = require("../../utils/middleware/validatedRequest");
 
 function fileTypeDefaultEndpoints(app) {

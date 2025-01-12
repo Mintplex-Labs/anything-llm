@@ -47,7 +47,7 @@ async function processSingleFile(targetFilename, options = {}) {
   }
 
   let processFileAs = fileExtension;
-  const fileTypeDefault = options["fileTypeDefault"];
+  const fileTypeDefault = options["experimental_file_type_default"];
   if (!SUPPORTED_FILETYPE_CONVERTERS.hasOwnProperty(fileExtension)) {
     if (isTextType(fullFilePath) || fileTypeDefault) {
       console.log(
