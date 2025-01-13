@@ -1,34 +1,90 @@
-version: '3.3'
-
 services:
   postgres:
     image: postgres:latest
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: midhun
     ports:
-      - "35432:5432"
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-      - ./initdb:/docker-entrypoint-initdb.d
+      - "45432:5432"
+    environment:
+      POSTGRES_USER: anything_llm
+      POSTGRES_PASSWORD: anything_llm
+      POSTGRES_DB: anything_llm
 
-  anything-llm-server:
-    container_name: anything-llm-server
-    build:
-      context: ./server
-      dockerfile: dev.Dockerfile
-    depends_on:
-      - postgres
     volumes:
-      - "./docker/.env:/app/server/config/.env"
-      - "./server/storage:/app/server/storage"
-      - "./server/:/app"
-      - anything-llm-server-volume:/app/node_modules
+      - anything_llm_postgres_data:/var/lib/postgresql/data
+  frontend:
+    build:
+      context: ./
+      dockerfile: dev.Dockerfile
+      target: frontend-build
+    environment:
+      NODE_ENV: development
+    command: make start_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app/frontend
+      - anything_llm_frontend_node_modules:/app/frontend/node_modules
+      - ./Makefile:/app/Makefile
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./
+      dockerfile: dev.Dockerfile
+      target: backend-build
+    environment:
+      SERVER_PORT: "3001"
+      NODE_ENV: development
+      DATABASE_URL: "postgresql://anything_llm:anything_llm@postgres/anything_llm"
+      ANYTHING_LLM_RUNTIME: docker
+      LLM_PROVIDER: "openai"
+      OPEN_AI_KEY:
+      OPEN_MODEL_PREF: "gpt-4o"
+      EMBEDDING_ENGINE: "inherit"
+      VECTOR_DB: "milvus"
+      MILVUS_ADDRESS: "http://192.168.171.130:30986"
+      STORAGE_DIR: ""
+      PRISM_OCR_PARSER: "false"
+      PRISM_OCR_ENDPOINT: "http://192.168.140.58:5000/docparser/api/v1/extract/"
+      EXTRACT_API: "mupdf"
+      OUTPUT_FORMAT: "markdown"
+      USE_OCR: "false"
+      RERANKER_URL: https://reranker.saal.ai/rerank
+      PRISM_PARSER_BEARER_TOKEN:
+      JWT_SECRET: "my_jwt_secret"
+      RERANK_MILVUS_RESULTS: "true"
+      ENABLE_MULTI_WORKSPACE_QUERY: "true"
+      LLM_GUARD_BASE_URL: "http://192.168.140.51:3456"
+      LLM_GUARD_AUTH_TOKEN:
+    command: make start_server
     ports:
       - "3001:3001"
-    env_file:
-      - ./docker/.env
+    volumes:
+      - ./server:/app/server
+      - anything_llm_server_node_modules:/app/server/node_modules
+      - ./Makefile:/app/Makefile
+    depends_on:
+      - collector
+
+  collector:
+    build:
+      context: ./
+      dockerfile: dev.Dockerfile
+      target: collector-build
+    environment:
+      NODE_ENV: development
+    working_dir: /app
+    command: make start_collector
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./collector:/app/collector
+      - ./collector/node_modules:/app/collector/node_modules
+      - ./Makefile:/app/Makefile
 
 volumes:
-  anything-llm-server-volume:
+  anything_llm_postgres_data:
+  anything_llm_server_node_modules:
+  anything_llm_collector_node_modules:
+  anything_llm_frontend_node_modules:
+  llm-guard-model-volume:
