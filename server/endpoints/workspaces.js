@@ -34,6 +34,9 @@ const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
+const {
+  validatePagination,
+} = require("../utils/middleware/validatePaginationReq");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -780,12 +783,12 @@ function workspaceEndpoints(app) {
         // Get threadId we are branching from if that request body is sent
         // and is a valid thread slug.
         const threadId = !!threadSlug
-          ? (
+          ? ((
               await WorkspaceThread.get({
                 slug: String(threadSlug),
                 workspace_id: workspace.id,
               })
-            )?.id ?? null
+            )?.id ?? null)
           : null;
         const chatsToFork = await WorkspaceChats.where(
           {
@@ -968,6 +971,37 @@ function workspaceEndpoints(app) {
         // Will delete the document from the entire system + wil unembed it.
         await purgeDocument(body.documentLocation);
         response.status(200).end();
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+  app.get(
+    "/workspace/:slug/documents",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validatePagination],
+    async (request, response) => {
+      try {
+        const { slug } = request.params;
+        const { offset = 0, limit = 10 } = request.query;
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug }, false)
+          : await Workspace.get({ slug }, false);
+
+        if (!workspace) {
+          response.status(404).json({ error: "Workspace not found" });
+          return;
+        }
+        const documents = await Document.getWithPagination(
+          {
+            workspaceId: workspace.id,
+          },
+          offset,
+          limit,
+          { lastUpdatedAt: "desc" }
+        );
+        response.json(documents);
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

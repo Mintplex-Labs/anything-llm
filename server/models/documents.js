@@ -57,6 +57,33 @@ const Document = {
     }
   },
 
+  getWithPagination: async function (
+    clause = {},
+    offset = 0,
+    limit = 10,
+    orderBy = null,
+    include = null,
+    select = null
+  ) {
+    try {
+      const results = await prisma.workspace_documents.findMany({
+        where: clause,
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
+        ...(include !== null ? { include } : {}),
+        ...(select !== null ? { select } : {}),
+      });
+
+      const totalCount = await prisma.workspace_documents.count({
+        where: clause,
+      });
+      return { data: results, offset, limit, totalCount };
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
   where: async function (
     clause = {},
     limit = null,
