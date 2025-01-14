@@ -51,16 +51,18 @@ services:
       USE_OCR: "false"
       RERANKER_URL: https://reranker.saal.ai/rerank
       PRISM_PARSER_BEARER_TOKEN:
-      JWT_SECRET: "my_jwt_secret"
       RERANK_MILVUS_RESULTS: "true"
       ENABLE_MULTI_WORKSPACE_QUERY: "true"
       LLM_GUARD_BASE_URL: "http://192.168.140.51:3456"
       LLM_GUARD_AUTH_TOKEN:
+      COLLECTOR_BASE_URL: "http://collector:8888"
     command: make start_server
     ports:
       - "3001:3001"
     volumes:
       - ./server:/app/server
+      - ./collector/hotdir/:/app/collector/hotdir
+      - ./collector/outputs/:/app/collector/outputs
       - anything_llm_server_node_modules:/app/server/node_modules
       - ./Makefile:/app/Makefile
     depends_on:
@@ -78,6 +80,7 @@ services:
     ports:
       - "8888:8888"
     volumes:
+      - ./server/storage:/app/server/storage
       - ./collector:/app/collector
       - ./collector/node_modules:/app/collector/node_modules
       - ./Makefile:/app/Makefile

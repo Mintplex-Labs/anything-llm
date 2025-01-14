@@ -1,5 +1,10 @@
 const { Document } = require("../models/documents");
-const { normalizePath, documentsPath, isWithin } = require("../utils/files");
+const {
+  normalizePath,
+  documentsPath,
+  isWithin,
+  fileData,
+} = require("../utils/files");
 const { reqBody } = require("../utils/http");
 const {
   flexUserRoleValid,
@@ -103,6 +108,28 @@ function documentEndpoints(app) {
         response
           .status(500)
           .json({ success: false, message: "Failed to move files." });
+      }
+    }
+  );
+
+  app.get(
+    "/document/:docId/content",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { docId } = request.params;
+        const document = await Document.get({ docId });
+        if (!document) {
+          response.status(404).json({ error: "Document not found" });
+          return;
+        }
+        const content = await fileData(document?.docpath);
+        response.send(content?.pageContent || "");
+      } catch (e) {
+        console.error(e);
+        response.status(500).json({
+          error: "Failed to get contents of a document.",
+        });
       }
     }
   );
