@@ -325,16 +325,16 @@ export default function GeneralEmbeddingPreference() {
                   >
                     <div className="flex gap-x-4 items-center">
                       <img
-                        src={selectedEmbedderObject.logo}
-                        alt={`${selectedEmbedderObject.name} logo`}
+                        src={selectedEmbedderObject?.logo}
+                        alt={`${selectedEmbedderObject?.name} logo`}
                         className="w-10 h-10 rounded-md"
                       />
                       <div className="flex flex-col text-left">
                         <div className="text-sm font-semibold text-white">
-                          {selectedEmbedderObject.name}
+                          {selectedEmbedderObject?.name}
                         </div>
                         <div className="mt-1 text-xs text-description">
-                          {selectedEmbedderObject.description}
+                          {selectedEmbedderObject?.description}
                         </div>
                       </div>
                     </div>
