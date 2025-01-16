@@ -27,12 +27,12 @@ export default function PrivacyHandling({ setSettings, setStep }) {
           <div className="flex flex-col gap-y-2 text-theme-text-secondary text-xs font-semibold rounded-lg p-4 h-[60vh] overflow-y-auto bg-theme-bg-container mt-2">
             <div className="text-xs">
               <h1 className="text-theme-text-secondary">Privacy Policy</h1>
-              <p>Mintplex Labs Inc.</p>
+              <p>Saal.ai </p>
               <p>Effective Date: July 15, 2024</p>
             </div>
             <h2 className="text-theme-text-primary mt-4">1. Introduction</h2>
             <p className="text-theme-text-secondary">
-              Welcome to Mintplex Labs Inc. ("we", "our", "us"). We are
+              Welcome to Saal.ai  ("we", "our", "us"). We are
               committed to protecting your privacy and ensuring the security of
               your personal information. This Privacy Policy describes how we
               collect, use, and protect your information when you use our

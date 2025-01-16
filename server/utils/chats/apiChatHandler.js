@@ -4,7 +4,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
-const { rerankTexts } = require("../custom/reranker.js")
+const { rerankTexts } = require("../custom/reranker.js");
 const { WorkspaceUser } = require("../../models/workspaceUsers");
 
 const {
@@ -12,6 +12,7 @@ const {
   EphemeralEventListener,
 } = require("../agents/ephemeral");
 const { Telemetry } = require("../../models/telemetry");
+const { systemPrompt } = require("../agents/aibitat/providers/ai-provider");
 
 /**
  * @typedef ResponseObject
@@ -39,9 +40,7 @@ const { Telemetry } = require("../../models/telemetry");
 
 
 async function performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount,) {
-  // const users = WorkspaceUser.where({ user_id: someUserId })
-  // console.log(`hello moto`)
-  // console.log("workspaces:", workspaces);
+
   const VectorDb = getVectorDbClass();
   // Use Promise.all to handle all searches concurrently
   const searchPromises = workspaces.map(namespace => {
@@ -77,8 +76,6 @@ async function performSimilaritySearches(workspace, workspaces, message, LLMConn
   return combinedResults;
 }
 
-
-
 async function chatSync({
   workspace,
   message = null,
@@ -91,6 +88,7 @@ async function chatSync({
 
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+  let effectiveQuestion = message; 
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
@@ -208,6 +206,27 @@ async function chatSync({
     apiSessionId: sessionId,
   });
 
+  if (process.env.QUERY_REWRITER_ENABLED == 'true') {
+    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop().content;
+    const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
+    const rewriteRequest = LLMConnector.constructPrompt({
+      systemPrompt: process.env.QUERY_REWRITER_PROMPT,
+      contextTexts: [],
+      chatHistory: [],
+      userPrompt: userPrompt,
+    });
+    // console.dir(rewriteRequest, { depth: null, colors: true });
+
+    effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+    });
+
+    console.log("rewritten question: ", effectiveQuestion)
+    
+  }
+
+
+
   await new DocumentManager({
     workspace,
     maxTokens: LLMConnector.promptWindowLimit(),
@@ -242,7 +261,7 @@ async function chatSync({
   if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
     // Perform multi workspace searches if the environment variable is 'true'
     vectorSearchResults = embeddingsCount !== 0
-      ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
+      ? await performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
       : {
         contextTexts: [],
         sources: [],
@@ -253,7 +272,7 @@ async function chatSync({
     vectorSearchResults = embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
         namespace: workspace.slug,
-        input: message,
+        input: effectiveQuestion,
         LLMConnector,
         similarityThreshold: workspace?.similarityThreshold,
         topN: workspace?.topN,
@@ -277,7 +296,7 @@ async function chatSync({
     };
   }
 
-  if (process.env.RERANKER_ENABLED == 'true') {
+  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_INVOCATION_THRESHOLD) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -285,7 +304,7 @@ async function chatSync({
 
     if (texts.length !== 0) {
       // Call re-ranker to get top results
-      const rerankedResults = await rerankTexts(texts, message);
+      const rerankedResults = await rerankTexts(texts, effectiveQuestion);
       // Extract only the text values from reranked results for comparison
       const rerankedTexts = rerankedResults.map(result => result.text);
 
@@ -334,6 +353,8 @@ async function chatSync({
       include: false,
       apiSessionId: sessionId,
       user,
+      multiple_workspaces: workspaces ? workspaces.join(",") : null,
+      rewrite_question: effectiveQuestion,
     });
 
     return {
@@ -383,6 +404,7 @@ async function chatSync({
     apiSessionId: sessionId,
     user,
     multiple_workspaces: workspaces ? workspaces.join(",") : null,
+    rewrite_question: effectiveQuestion,
   });
 
   return {
@@ -422,6 +444,7 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+  let effectiveQuestion = message; 
 
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
@@ -544,6 +567,26 @@ async function streamChat({
     apiSessionId: sessionId,
   });
 
+  if (process.env.QUERY_REWRITER_ENABLED == 'true') {
+    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop().content;
+    const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
+    const rewriteRequest = LLMConnector.constructPrompt({
+      systemPrompt: process.env.QUERY_REWRITER_PROMPT,
+      contextTexts: [],
+      chatHistory: [],
+      userPrompt: userPrompt,
+    });
+    // console.dir(rewriteRequest, { depth: null, colors: true });
+
+    effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+    });
+
+    console.log("rewritten question: ", effectiveQuestion)
+    
+  }
+
+
   // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
   // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
   // However we limit the maximum of appended context to 80% of its overall size, mostly because if it expands beyond this
@@ -593,7 +636,7 @@ async function streamChat({
   if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
     // Perform multi workspace searches if the environment variable is 'true'
     vectorSearchResults = embeddingsCount !== 0
-      ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
+      ? await performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
       : {
         contextTexts: [],
         sources: [],
@@ -604,7 +647,7 @@ async function streamChat({
     vectorSearchResults = embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
         namespace: workspace.slug,
-        input: message,
+        input: effectiveQuestion,
         LLMConnector,
         similarityThreshold: workspace?.similarityThreshold,
         topN: workspace?.topN,
@@ -630,7 +673,7 @@ async function streamChat({
   }
 
 
-  if (process.env.RERANKER_ENABLED == 'true') {
+  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_INVOCATION_THRESHOLD) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -638,7 +681,7 @@ async function streamChat({
 
     if (texts.length !== 0) {
       // Call re-ranker to get top results
-      const rerankedResults = await rerankTexts(texts, message);
+      const rerankedResults = await rerankTexts(texts, effectiveQuestion);
       // Extract only the text values from reranked results for comparison
       const rerankedTexts = rerankedResults.map(result => result.text);
 
@@ -698,6 +741,8 @@ async function streamChat({
       apiSessionId: sessionId,
       include: false,
       user,
+      multiple_workspaces: workspaces ? workspaces.join(",") : null,
+      rewrite_question: effectiveQuestion,
     });
     return;
   }
@@ -751,6 +796,7 @@ async function streamChat({
       apiSessionId: sessionId,
       user,
       multiple_workspaces: workspaces ? workspaces.join(",") : null,
+      rewrite_question: effectiveQuestion,
     });
 
     writeResponseChunk(response, {

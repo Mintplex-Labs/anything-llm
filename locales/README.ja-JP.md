@@ -139,7 +139,7 @@ AnythingLLMのいくつかのクールな機能
 
 ## 🛳 セルフホスティング
 
-Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実行できる多数のデプロイメント方法、スクリプト、テンプレートを維持しています。以下の表を参照して、お好みの環境でのデプロイ方法を読むか、自動デプロイを行ってください。
+Saal.aiおよびコミュニティは、AnythingLLMをローカルで実行できる多数のデプロイメント方法、スクリプト、テンプレートを維持しています。以下の表を参照して、お好みの環境でのデプロイ方法を読むか、自動デプロイを行ってください。
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----:|-----|---------------|------------|
 | [![Docker上でデプロイ][docker-btn]][docker-deploy] | [![AWS上でデプロイ][aws-btn]][aws-deploy] | [![GCP上でデプロイ][gcp-btn]][gcp-deploy] | [![DigitalOcean上でデプロイ][do-btn]][do-deploy] | [![Render.com上でデプロイ][render-btn]][render-deploy] |
@@ -170,7 +170,7 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 
 ## テレメトリーとプライバシー
 
-Mintplex Labs Inc.によって開発されたAnythingLLMには、匿名の使用情報を収集するテレメトリー機能が含まれています。
+Saal.ai によって開発されたAnythingLLMには、匿名の使用情報を収集するテレメトリー機能が含まれています。
 
 <details>
 <summary><kbd>AnythingLLMのテレメトリーとプライバシーについての詳細</kbd></summary>
@@ -212,7 +212,7 @@ Mintplex Labs Inc.によって開発されたAnythingLLMには、匿名の使用
 
 ---
 
-Copyright © 2024 [Mintplex Labs][profile-link]。<br />
+Copyright © 2024 [Saal.ai][profile-link]。<br />
 このプロジェクトは[MIT](./LICENSE)ライセンスの下でライセンスされています。
 
 <!-- LINK GROUP -->

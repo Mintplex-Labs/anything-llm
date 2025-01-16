@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "description": "Document collector server endpoints",
   "main": "index.js",
-  "author": "Timothy Carambat (Mintplex Labs)",
+  "author": "(Saal.ai)",
   "license": "MIT",
   "private": false,
   "engines": {

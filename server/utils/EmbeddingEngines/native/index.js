@@ -4,9 +4,9 @@ const { toChunks } = require("../../helpers");
 const { v4 } = require("uuid");
 
 class NativeEmbedder {
-  // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
+  // This is a folder that Saal.ai hosts for those who cannot capture the HF model download
   // endpoint for various reasons. This endpoint is not guaranteed to be active or maintained
-  // and may go offline at any time at Mintplex Labs's discretion.
+  // and may go offline at any time at Saal.ai's discretion.
   #fallbackHost =
     "https://s3.us-west-1.amazonaws.com/public.useanything.com/support/models/";
 

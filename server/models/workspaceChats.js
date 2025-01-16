@@ -10,6 +10,7 @@ const WorkspaceChats = {
     include = true,
     apiSessionId = null,
     multiple_workspaces = null,
+    rewrite_question = null,
   }) {
     try {
       const chat = await prisma.workspace_chats.create({
@@ -21,6 +22,7 @@ const WorkspaceChats = {
           thread_id: threadId,
           api_session_id: apiSessionId,
           multi_workspaces: multiple_workspaces,
+          rewrite_question: rewrite_question,
           include,
         },
       });

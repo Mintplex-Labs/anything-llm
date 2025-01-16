@@ -68,11 +68,11 @@ const TRANSLATIONS = {
 
   welcomeMessage: {
     part1:
-      "Welkom bij AnythingLLM, AnythingLLM is een open-source AI-tool van Mintplex Labs die alles omzet in een getrainde chatbot waarmee je kunt vragen en chatten. AnythingLLM is een BYOK (bring-your-own-keys) software, dus er is geen abonnement, vergoeding of kosten voor deze software buiten de diensten die je ermee wilt gebruiken.",
+      "Welkom bij Prism, Prism is een AI-tool van Saal.ai die alles omzet in een getrainde chatbot waarmee je kunt vragen en chatten. Prism is een BYOK (bring-your-own-keys) software, dus er is geen abonnement, vergoeding of kosten voor deze software buiten de diensten die je ermee wilt gebruiken.",
     part2:
-      "AnythingLLM is de eenvoudigste manier om krachtige AI-producten zoals OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB en andere diensten samen te voegen in een net pakket zonder gedoe om je productiviteit met 100x te verhogen.",
+      "Prism is de eenvoudigste manier om krachtige AI-producten zoals OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB en andere diensten samen te voegen in een net pakket zonder gedoe om je productiviteit met 100x te verhogen.",
     part3:
-      "AnythingLLM kan volledig lokaal op je machine draaien met weinig overhead, je merkt niet eens dat het er is! Geen GPU nodig. Cloud en on-premises installatie is ook beschikbaar.\nHet AI-tooling ecosysteem wordt elke dag krachtiger. AnythingLLM maakt het gemakkelijk te gebruiken.",
+      "Prism kan volledig lokaal op je machine draaien met weinig overhead, je merkt niet eens dat het er is! Geen GPU nodig. Cloud en on-premises installatie is ook beschikbaar.\nHet AI-tooling ecosysteem wordt elke dag krachtiger. Prism maakt het gemakkelijk te gebruiken.",
     githubIssue: "Maak een probleem aan op Github",
     user1: "Hoe kan ik beginnen?",
     part4:
@@ -81,11 +81,11 @@ const TRANSLATIONS = {
     user2:
       "Is dit als een AI-dropbox of zoiets? Hoe zit het met chatten? Het is toch een chatbot?",
     part5:
-      "AnythingLLM is meer dan een slimmere Dropbox.\n\nAnythingLLM biedt twee manieren om met je gegevens te praten:\n\n<i>Query:</i> Je chats zullen gegevens of inferenties retourneren die zijn gevonden met de documenten in je werkruimte waar het toegang toe heeft. Meer documenten toevoegen aan de Werkruimte maakt het slimmer! \n\n<i>Conversational:</i> Je documenten + je lopende chatgeschiedenis dragen beide tegelijkertijd bij aan de LLM-kennis. Geweldig voor het toevoegen van realtime tekstgebaseerde informatie of correcties en misverstanden die de LLM kan hebben. \n\nJe kunt tijdens het chatten tussen beide modi schakelen \n<i>in het midden van de chat!</i>",
+      "Prism is meer dan een slimmere Dropbox.\n\nPrism biedt twee manieren om met je gegevens te praten:\n\n<i>Query:</i> Je chats zullen gegevens of inferenties retourneren die zijn gevonden met de documenten in je werkruimte waar het toegang toe heeft. Meer documenten toevoegen aan de Werkruimte maakt het slimmer! \n\n<i>Conversational:</i> Je documenten + je lopende chatgeschiedenis dragen beide tegelijkertijd bij aan de LLM-kennis. Geweldig voor het toevoegen van realtime tekstgebaseerde informatie of correcties en misverstanden die de LLM kan hebben. \n\nJe kunt tijdens het chatten tussen beide modi schakelen \n<i>in het midden van de chat!</i>",
     user3: "Wauw, dit klinkt geweldig, laat me het al proberen!",
     part6: "Veel Plezier!",
     starOnGithub: "Ster op GitHub",
-    contact: "Contact Mintplex Labs",
+    contact: "Contact Saal.ai",
   },
 
   "new-workspace": {
@@ -118,7 +118,7 @@ const TRANSLATIONS = {
       add: "Nieuw bericht toevoegen",
       save: "Berichten opslaan",
       heading: "Leg me uit",
-      body: "de voordelen van AnythingLLM",
+      body: "de voordelen van Prism",
     },
     pfp: {
       title: "Assistent Profielfoto",
@@ -322,7 +322,7 @@ const TRANSLATIONS = {
       system: "systeem",
       user: "gebruiker",
       message: "bericht",
-      assistant: "AnythingLLM Chat Assistent",
+      assistant: "Prism Chat Assistent",
       "double-click": "Dubbelklik om te bewerken...",
       save: "Berichten Opslaan",
     },
@@ -339,7 +339,7 @@ const TRANSLATIONS = {
   api: {
     title: "API-sleutels",
     description:
-      "API-sleutels stellen de houder in staat om deze AnythingLLM-instantie programmatisch te openen en beheren.",
+      "API-sleutels stellen de houder in staat om deze Prism-instantie programmatisch te openen en beheren.",
     link: "Lees de API-documentatie",
     generate: "Genereer Nieuwe API-sleutel",
     table: {
@@ -352,7 +352,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM Voorkeur",
     description:
-      "Dit zijn de inloggegevens en instellingen voor je voorkeurs LLM-chat & inbeddingprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders zal AnythingLLM niet goed werken.",
+      "Dit zijn de inloggegevens en instellingen voor je voorkeurs LLM-chat & inbeddingprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders zal Prism niet goed werken.",
     provider: "LLM Provider",
   },
 
@@ -362,7 +362,7 @@ const TRANSLATIONS = {
       "Dit zijn de inloggegevens en instellingen voor je voorkeurs transcriptiemodelprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders worden media en audio niet getranscribeerd.",
     provider: "Transcriptieprovider",
     "warn-start":
-      "Het gebruik van het lokale fluistermodel op machines met beperkte RAM of CPU kan AnythingLLM vertragen bij het verwerken van mediabestanden.",
+      "Het gebruik van het lokale fluistermodel op machines met beperkte RAM of CPU kan Prism vertragen bij het verwerken van mediabestanden.",
     "warn-recommend":
       "We raden minstens 2GB RAM aan en upload bestanden <10Mb.",
     "warn-end":
@@ -374,11 +374,11 @@ const TRANSLATIONS = {
     "desc-start":
       "Bij het gebruik van een LLM die geen ingebouwde ondersteuning voor een inbeddingengine heeft, moet je mogelijk aanvullende inloggegevens opgeven voor het inbedden van tekst.",
     "desc-end":
-      "Inbedding is het proces van het omzetten van tekst in vectoren. Deze inloggegevens zijn vereist om je bestanden en prompts om te zetten naar een formaat dat AnythingLLM kan gebruiken om te verwerken.",
+      "Inbedding is het proces van het omzetten van tekst in vectoren. Deze inloggegevens zijn vereist om je bestanden en prompts om te zetten naar een formaat dat Prism kan gebruiken om te verwerken.",
     provider: {
       title: "Inbedding Provider",
       description:
-        "Er is geen instelling vereist bij gebruik van de ingebouwde inbeddingengine van AnythingLLM.",
+        "Er is geen instelling vereist bij gebruik van de ingebouwde inbeddingengine van Prism.",
     },
   },
 
@@ -409,7 +409,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Vector Database",
     description:
-      "Dit zijn de inloggegevens en instellingen voor hoe je AnythingLLM-instantie zal functioneren. Het is belangrijk dat deze sleutels actueel en correct zijn.",
+      "Dit zijn de inloggegevens en instellingen voor hoe je Prism-instantie zal functioneren. Het is belangrijk dat deze sleutels actueel en correct zijn.",
     provider: {
       title: "Vector Database Provider",
       description: "Er is geen configuratie nodig voor LanceDB.",
@@ -458,7 +458,7 @@ const TRANSLATIONS = {
     password: {
       title: "Wachtwoordbeveiliging",
       description:
-        "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
+        "Bescherm je Prism-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
     },
     instance: {
       title: "Instantie Wachtwoord Beveiligen",
@@ -485,7 +485,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Privacy & Gegevensverwerking",
     description:
-      "Dit is je configuratie voor hoe verbonden derden en AnythingLLM je gegevens verwerken.",
+      "Dit is je configuratie voor hoe verbonden derden en Prism je gegevens verwerken.",
     llm: "LLM Selectie",
     embedding: "Inbedding Voorkeur",
     vector: "Vector Database",

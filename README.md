@@ -150,7 +150,7 @@ This monorepo consists of three main sections:
 
 ## 🛳 Self Hosting
 
-Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
+Saal.ai & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
@@ -175,7 +175,7 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 
 ## External Apps & Integrations
 
-_These are apps that are not maintained by Mintplex Labs, but are compatible with AnythingLLM. A listing here is not an endorsement._
+_These are apps that are not maintained by Saal.ai, but are compatible with AnythingLLM. A listing here is not an endorsement._
 
 - [Midori AI Subsystem Manager](https://io.midori-ai.xyz/subsystem/anythingllm/) - A streamlined and efficient way to deploy AI systems using Docker container technology.
 - [Coolify](https://coolify.io/docs/services/anythingllm/) - Deploy AnythingLLM with a single click.
@@ -183,7 +183,7 @@ _These are apps that are not maintained by Mintplex Labs, but are compatible wit
 
 ## Telemetry & Privacy
 
-AnythingLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
+AnythingLLM by Saal.ai Inc contains a telemetry feature that collects anonymous usage information.
 
 <details>
 <summary><kbd>More about Telemetry & Privacy for AnythingLLM</kbd></summary>
@@ -238,7 +238,7 @@ You can verify these claims by finding all locations `Telemetry.sendTelemetry` i
 
 ---
 
-Copyright © 2024 [Mintplex Labs][profile-link]. <br />
+Copyright © 2024 [Saal.ai][profile-link]. <br />
 This project is [MIT](./LICENSE) licensed.
 
 <!-- LINK GROUP -->

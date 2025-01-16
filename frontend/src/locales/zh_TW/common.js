@@ -67,7 +67,7 @@ const TRANSLATIONS = {
 
   welcomeMessage: {
     part1:
-      "歡迎使用 AnythingLLM，AnythingLLM 是由 Mintplex Labs 開發的開源 AI 工具，它能將任何內容轉換成可供查詢和對話的訓練模型對話機器人。AnythingLLM 採用 BYOK（自備金鑰）軟體模式，除了您想使用的服務之外，本軟體不收取任何訂閱費、費用或其他費用。",
+      "歡迎使用 AnythingLLM，AnythingLLM 是由 Saal.ai 開發的開源 AI 工具，它能將任何內容轉換成可供查詢和對話的訓練模型對話機器人。AnythingLLM 採用 BYOK（自備金鑰）軟體模式，除了您想使用的服務之外，本軟體不收取任何訂閱費、費用或其他費用。",
     part2:
       "AnythingLLM 是將 OpenAI、GPT-4、LangChain、PineconeDB、ChromaDB 和其他強大 AI 產品整合在一起的最簡單方法，它能透過簡潔的套件，輕鬆地將您的生產力提高 100 倍。",
     part3:
@@ -83,7 +83,7 @@ const TRANSLATIONS = {
     user3: "哇，這聽起來很棒，讓我馬上試試看！",
     part6: "祝您使用愉快！",
     starOnGithub: "在 GitHub 上給我們星星",
-    contact: "聯絡 Mintplex Labs",
+    contact: "聯絡 Saal.ai",
   },
 
   "new-workspace": {

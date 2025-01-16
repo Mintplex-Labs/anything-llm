@@ -23,14 +23,14 @@ export default function TermsAndConditions({ setSettings, setStep }) {
           <div className="flex flex-col gap-y-2 text-theme-text-secondary text-xs font-semibold rounded-lg p-4 h-[60vh] overflow-y-auto bg-theme-bg-container mt-2">
             <div className="text-xs">
               <h1 className="text-theme-text-primary">
-                Mintplex Labs Inc. Fine-Tuning Terms of Service
+                Saal.ai  Fine-Tuning Terms of Service
               </h1>
               <p className="text-theme-text-secondary">
                 Last Updated: July 15, 2024
               </p>
             </div>
             <p className="text-theme-text-secondary">
-              This Agreement is between Mintplex Labs Inc. ("Company") and the
+              This Agreement is between Saal.ai  ("Company") and the
               customer ("Customer") accessing or using the services provided by
               the Company. By signing up, accessing, or using the services,
               Customer indicates its acceptance of this Agreement and agrees to
@@ -41,7 +41,7 @@ export default function TermsAndConditions({ setSettings, setStep }) {
               1. Services Provided
             </h2>
             <p className="text-theme-text-secondary">
-              Mintplex Labs Inc. provides model fine-tuning services for
+              Saal.ai  provides model fine-tuning services for
               customers. The deliverable for these services is a download link
               to the output ".GGUF" file that can be used by the Customer for
               Large-Language text inferencing.
@@ -157,7 +157,7 @@ export default function TermsAndConditions({ setSettings, setStep }) {
             <h2 className="text-theme-text-primary mt-4">10. Indemnity</h2>
             <p className="text-theme-text-secondary">
               The Customer agrees to indemnify, defend, and hold harmless
-              Mintplex Labs Inc., its affiliates, and their respective officers,
+              Saal.ai , its affiliates, and their respective officers,
               directors, employees, agents, and representatives from and against
               any and all claims, liabilities, damages, losses, costs, expenses,
               fees (including reasonable attorneys' fees and court costs) that

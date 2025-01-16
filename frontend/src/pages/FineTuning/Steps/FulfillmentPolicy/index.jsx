@@ -30,7 +30,7 @@ export default function Fulfillment({ setSettings, setStep }) {
             </div>
             <p className="text-theme-text-secondary">
               These fulfillment terms outline the agreement between Mintplex
-              Labs Inc. ("Company," "we," "us," or "our") and the customer
+              Labs  ("Company," "we," "us," or "our") and the customer
               regarding the creation and delivery of fine-tuned models.
             </p>
 
@@ -65,7 +65,7 @@ export default function Fulfillment({ setSettings, setStep }) {
               Cancellation and Refunds
             </h2>
             <p className="text-theme-text-secondary">
-              Mintplex Labs Inc. reserves the right to cancel any fine-tuning
+              Saal.ai  reserves the right to cancel any fine-tuning
               job at our discretion. In the event of a cancellation, a refund
               may be issued. Additionally, we reserve the right to deny a
               payment from the Customer or issue refunds for any reason without
@@ -74,7 +74,7 @@ export default function Fulfillment({ setSettings, setStep }) {
 
             <h2 className="text-theme-text-primary mt-4">No Guarantees</h2>
             <p className="text-theme-text-secondary">
-              Mintplex Labs Inc. makes <strong>NO GUARANTEES</strong> regarding
+              Saal.ai  makes <strong>NO GUARANTEES</strong> regarding
               the resulting model's output, functionality, speed, or
               compatibility with your tools, infrastructure and devices. Refund
               requests of this nature are not eligible for refunds.
@@ -99,7 +99,7 @@ export default function Fulfillment({ setSettings, setStep }) {
               Denial of Service for Payment Reasons
             </h2>
             <p className="text-theme-text-secondary">
-              Mintplex Labs Inc. reserves the right to deny service to any
+              Saal.ai  reserves the right to deny service to any
               customer with an outstanding balance or invalid payment
               information. If any discrepancies arise regarding payment or
               usage, we may suspend services until the matter is resolved.

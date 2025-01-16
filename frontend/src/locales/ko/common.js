@@ -81,7 +81,7 @@ const TRANSLATIONS = {
 
   welcomeMessage: {
     part1:
-      "AnythingLLM에 오신 것을 환영합니다. AnythingLLM은 Mintplex Labs에서 개발한 오픈 소스 AI 도구로, 어떤 것이든 훈련된 챗봇으로 변환하여 쿼리하고 대화할 수 있습니다. AnythingLLM은 BYOK(Bring Your Own Key) 소프트웨어이므로 사용하려는 서비스 외에는 구독료나 기타 비용이 없습니다.",
+      "AnythingLLM에 오신 것을 환영합니다. AnythingLLM은 Saal.ai에서 개발한 오픈 소스 AI 도구로, 어떤 것이든 훈련된 챗봇으로 변환하여 쿼리하고 대화할 수 있습니다. AnythingLLM은 BYOK(Bring Your Own Key) 소프트웨어이므로 사용하려는 서비스 외에는 구독료나 기타 비용이 없습니다.",
     part2:
       "AnythingLLM은 OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB 등 강력한 AI 제품을 번거로움 없이 깔끔하게 패키지로 묶어 생산성을 100배 향상시키는 가장 쉬운 방법입니다.",
     part3:
@@ -98,7 +98,7 @@ const TRANSLATIONS = {
     user3: "와, 이거 정말 놀랍네요, 당장 사용해보고 싶어요!",
     part6: "즐기세요!",
     starOnGithub: "GitHub에 별표 달기",
-    contact: "Mintplex Labs에 연락하기",
+    contact: "Saal.ai에 연락하기",
   },
 
   // General Appearance
