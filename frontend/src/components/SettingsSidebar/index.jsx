@@ -22,6 +22,7 @@ import showToast from "@/utils/toast";
 import System from "@/models/system";
 import Option from "./MenuOption";
 import { CanViewChatHistoryProvider } from "../CanViewChatHistory";
+import { SSO_ENABLED } from "@/utils/constants";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -277,11 +278,15 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin", "manager"],
             },
-            {
-              btnText: t("settings.invites"),
-              href: paths.settings.invites(),
-              roles: ["admin", "manager"],
-            },
+            ...(SSO_ENABLED
+              ? []
+              : [
+                  {
+                    btnText: t("settings.invites"),
+                    href: paths.settings.invites(),
+                    roles: ["admin", "manager"],
+                  },
+                ]),
           ]}
         />
         <Option

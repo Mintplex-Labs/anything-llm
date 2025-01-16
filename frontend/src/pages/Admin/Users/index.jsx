@@ -11,6 +11,7 @@ import NewUserModal from "./NewUserModal";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
+import { SSO_ENABLED } from "@/utils/constants";
 
 export default function AdminUsers() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -35,14 +36,16 @@ export default function AdminUsers() {
               instance.
             </p>
           </div>
-          <div className="w-full justify-end flex">
-            <CTAButton
-              onClick={openModal}
-              className="mt-3 mr-0 mb-4 md:-mb-6 z-10"
-            >
-              <UserPlus className="h-4 w-4" weight="bold" /> Add user
-            </CTAButton>
-          </div>
+          {!SSO_ENABLED && (
+            <div className="w-full justify-end flex">
+              <CTAButton
+                onClick={openModal}
+                className="mt-3 mr-0 mb-4 md:-mb-6 z-10"
+              >
+                <UserPlus className="h-4 w-4" weight="bold" /> Add user
+              </CTAButton>
+            </div>
+          )}
           <div className="overflow-x-auto">
             <UsersContainer />
           </div>

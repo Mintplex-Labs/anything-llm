@@ -17,6 +17,7 @@ services:
       target: frontend-build
     environment:
       NODE_ENV: development
+      VITE_ENABLE_SSO: true
     command: make start_frontend
     ports:
       - "3000:3000"

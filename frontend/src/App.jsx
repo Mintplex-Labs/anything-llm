@@ -17,9 +17,11 @@ import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 import { FullScreenLoader } from "./components/Preloader";
 import { ThemeProvider } from "./ThemeContext";
+import { SSO_ENABLED } from "./utils/constants";
 
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
+const SuspendedUser = lazy(() => import("@/pages/SuspendedUser"));
 const WorkspaceChat = lazy(() => import("@/pages/WorkspaceChat"));
 const AdminUsers = lazy(() => import("@/pages/Admin/Users"));
 const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
@@ -90,6 +92,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<PrivateRoute Component={Main} />} />
                   <Route path="/login" element={<Login />} />
+                  <Route path="/suspended-user" element={<SuspendedUser />} />
                   <Route
                     path="/sso/simple"
                     element={<SimpleSSOPassthrough />}
@@ -187,10 +190,12 @@ export default function App() {
                     path="/settings/workspace-chats"
                     element={<ManagerRoute Component={GeneralChats} />}
                   />
-                  <Route
-                    path="/settings/invites"
-                    element={<ManagerRoute Component={AdminInvites} />}
-                  />
+                  {!SSO_ENABLED && (
+                    <Route
+                      path="/settings/invites"
+                      element={<ManagerRoute Component={AdminInvites} />}
+                    />
+                  )}
                   <Route
                     path="/settings/users"
                     element={<ManagerRoute Component={AdminUsers} />}

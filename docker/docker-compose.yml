@@ -1,31 +1,30 @@
-version: '3.3'
+version: "3.3"
 networks:
   anything-llm:
     driver: bridge
 
 services:
   postgres:
-      image: postgres:latest
-      environment:
-        POSTGRES_USER: user
-        POSTGRES_PASSWORD: password
-        POSTGRES_DB: midhun
-      ports:
-        - 5432:5432
-      volumes:
-        - ./postgres-data:/var/lib/postgresql/data
-        - ./initdb:/docker-entrypoint-initdb.d
-      networks:
-        - anything-llm
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: anything_llm
+      POSTGRES_PASSWORD: anything_llm
+      POSTGRES_DB: anything_llm
+    ports:
+      - 15432:5432
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+      - prod-anythingllm-volume:/var/lib/postgresql/data
+    networks:
+      - anything-llm
   anything-llm:
     container_name: anything-llm
-    image: doc-analyzer-llm:latest
-    # build:
-      # context: ../.
-      # dockerfile: ./docker/Dockerfile
-      # args:
-      #   ARG_UID: ${UID:-1000}
-      #   ARG_GID: ${GID:-1000}
+    build:
+      context: ../.
+      dockerfile: ./docker/Dockerfile
+      args:
+        ARG_UID: ${UID:-1000}
+        ARG_GID: ${GID:-1000}
     cap_add:
       - SYS_ADMIN
     depends_on:
@@ -46,3 +45,6 @@ services:
       - anything-llm
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+volumes:
+  prod-anythingllm-volume:

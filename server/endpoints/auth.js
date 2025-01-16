@@ -91,18 +91,15 @@ function authEndpoints(app) {
         }
       }
 
+      const redirectUrl = process.env.FRONTEND_BASE_URL || "/";
       if (existingUser.suspended) {
-        res.status(200).json({
-          user: null,
-          valid: false,
-          token: null,
-          message: "[004] Account suspended by admin.",
-        });
+        await KeycloakHelper.logoutUser(existingUser?.uid);
+        res.redirect(`${redirectUrl}suspended-user`);
         return;
       }
       setCookies(res, existingUser);
       // redirecting to frontend app
-      res.redirect(process.env.FRONTEND_BASE_URL || "/");
+      res.redirect(redirectUrl);
     } catch (error) {
       console.log(error);
       res.status(500).send("Error while exchanging code for token");

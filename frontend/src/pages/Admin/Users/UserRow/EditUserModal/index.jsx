@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import { MessageLimitInput, RoleHintDisplay } from "../..";
+import { SSO_ENABLED } from "@/utils/constants";
 
 export default function EditUserModal({ currentUser, user, closeModal }) {
   const [role, setRole] = useState(user.role);
@@ -56,42 +57,52 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   htmlFor="username"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Username
+                  Username {SSO_ENABLED && "(can't be edited)"}
                 </label>
-                <input
-                  name="username"
-                  type="text"
-                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder="User's username"
-                  defaultValue={user.username}
-                  minLength={2}
-                  required={true}
-                  autoComplete="off"
-                />
-                <p className="mt-2 text-xs text-white/60">
-                  Username must only contain lowercase letters, numbers,
-                  underscores, and hyphens with no spaces
-                </p>
+                {SSO_ENABLED ? (
+                  <div className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5">
+                    {user.username}
+                  </div>
+                ) : (
+                  <>
+                    <input
+                      name="username"
+                      type="text"
+                      className="border-none bg-theme-settings-input-bgtext-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      placeholder="User's username"
+                      defaultValue={user.username}
+                      minLength={2}
+                      required={true}
+                      autoComplete="off"
+                    />
+                    <p className="mt-2 text-xs text-white/60">
+                      Username must only contain lowercase letters, numbers,
+                      underscores, and hyphens with no spaces
+                    </p>
+                  </>
+                )}
               </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-white"
-                >
-                  New Password
-                </label>
-                <input
-                  name="password"
-                  type="text"
-                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder={`${user.username}'s new password`}
-                  autoComplete="off"
-                  minLength={8}
-                />
-                <p className="mt-2 text-xs text-white/60">
-                  Password must be at least 8 characters long
-                </p>
-              </div>
+              {!SSO_ENABLED && (
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block mb-2 text-sm font-medium text-white"
+                  >
+                    New Password
+                  </label>
+                  <input
+                    name="password"
+                    type="text"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    placeholder={`${user.username}'s new password`}
+                    autoComplete="off"
+                    minLength={8}
+                  />
+                  <p className="mt-2 text-xs text-white/60">
+                    Password must be at least 8 characters long
+                  </p>
+                </div>
+              )}
               <div>
                 <label
                   htmlFor="role"
@@ -104,7 +115,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   required={true}
                   defaultValue={user.role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5"
                 >
                   <option value="default">Default</option>
                   <option value="manager">Manager</option>
