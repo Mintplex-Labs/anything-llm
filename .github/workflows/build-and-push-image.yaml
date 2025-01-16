@@ -1,9 +1,6 @@
 # This Github action is for publishing of the primary image for AnythingLLM
 # It will publish a linux/amd64 and linux/arm64 image at the same time
 # This file should ONLY BY USED FOR `master` BRANCH. 
-# TODO: Update `runs-on` for arm64 when GitHub finally supports
-# native arm environments as QEMU takes around 1 hour to build
-# ref: https://github.com/actions/runner-images/issues/5631 :(
 name: Publish AnythingLLM Primary Docker image (amd64/arm64)
 
 concurrency:
@@ -48,9 +45,6 @@ jobs:
             echo "enabled=true" >> $GITHUB_OUTPUT
           fi
         id: dockerhub
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
