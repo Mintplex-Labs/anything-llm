@@ -28,7 +28,7 @@ on:
 jobs:
   push_multi_platform_to_registries:
     name: Push Docker multi-platform image to multiple registries
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     permissions:
       packages: write
       contents: read
