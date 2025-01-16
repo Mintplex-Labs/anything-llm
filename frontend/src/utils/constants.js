@@ -1,5 +1,7 @@
 export const API_BASE = import.meta.env.VITE_API_BASE || "/api";
-export const SSO_ENABLED = import.meta.env.VITE_ENABLE_SSO === "true";
+export const SSO_ENABLED = import.meta.env.VITE_ENABLE_SSO
+  ? import.meta.env.VITE_ENABLE_SSO === "true"
+  : true;
 
 export const ONBOARDING_SURVEY_URL = "https://onboarding.anythingllm.com";
 
