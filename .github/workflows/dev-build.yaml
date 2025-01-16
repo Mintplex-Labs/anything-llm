@@ -1,4 +1,4 @@
-name: AnythingLLM Development Docker image (amd64)
+name: AnythingLLM Development Docker image (amd64/arm64)
 
 concurrency:
   group: build-${{ github.ref }}
@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['docker-scout-patch'] # put your current branch to create a build. Core team only.
+    branches: ['arm-runner-test'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
@@ -20,7 +20,7 @@ on:
 jobs:
   push_multi_platform_to_registries:
     name: Push Docker multi-platform image to multiple registries
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     permissions:
       packages: write
       contents: read
@@ -69,7 +69,7 @@ jobs:
           push: true
           sbom: true
           provenance: mode=max
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
