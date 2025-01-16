@@ -18,7 +18,9 @@ const WorkspaceChats = {
           workspaceId,
           prompt,
           response: JSON.stringify(response),
-          user_id: user?.id || null,
+          users: {
+            connect: { id: user?.id },
+          },
           thread_id: threadId,
           api_session_id: apiSessionId,
           multi_workspaces: multiple_workspaces,
