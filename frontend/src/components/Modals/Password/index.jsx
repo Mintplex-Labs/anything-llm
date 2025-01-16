@@ -46,7 +46,7 @@ export default function PasswordModal({ mode = "single" }) {
       </div>
     </div>
   );
-
+}
 export function usePasswordModal(notry = false) {
   const [auth, setAuth] = useState({
     loading: true,
