@@ -1,18 +1,17 @@
 import React from "react";
 import DefaultChatContainer from "@/components/DefaultChat";
 import Sidebar from "@/components/Sidebar";
-import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
+import { usePasswordModal } from "@/components/Modals/Password";
 import { isMobile } from "react-device-detect";
 import { FullScreenLoader } from "@/components/Preloader";
 import UserMenu from "@/components/UserMenu";
+import paths from "@/utils/paths";
 
 export default function Main() {
   const { loading, requiresAuth, mode } = usePasswordModal();
 
   if (loading) return <FullScreenLoader />;
-  if (requiresAuth !== false) {
-    return <>{requiresAuth !== null && <PasswordModal mode={mode} />}</>;
-  }
+  if (requiresAuth) return window.location.replace(paths.login());
 
   return (
     <>

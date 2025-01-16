@@ -61,6 +61,7 @@ model system_settings {
 model users {
   id                          Int                           @id @default(autoincrement())
   username                    String?                       @unique
+  uid                         String?                       
   password                    String
   pfpFilename                 String?
   role                        String                        @default("default")
@@ -187,7 +188,7 @@ model workspace_chats {
   feedbackScore  Boolean?
   users          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   multi_workspaces  String?
-
+  rewrite_question  String?
 }
 
 model workspace_agent_invocations {

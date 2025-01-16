@@ -1,7 +1,13 @@
 run_dev_build:
 	docker compose up --build -d
+
 run_dev:
 	docker compose up -d
+
+stop_dev:
+	docker compose down
+
+restart_dev: stop_dev run_dev
 
 start_frontend:
 	cd /app/frontend && yarn run dev

@@ -1,7 +1,7 @@
 import { useLanguageOptions } from "@/hooks/useLanguageOptions";
 import usePfp from "@/hooks/usePfp";
 import System from "@/models/system";
-import { AUTH_USER } from "@/utils/constants";
+import { AUTH_USER, SSO_ENABLED } from "@/utils/constants";
 import showToast from "@/utils/toast";
 import { Plus, X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -129,61 +129,73 @@ export default function AccountModal({ user, hideModal }) {
                   htmlFor="username"
                   className="block mb-2 text-sm font-medium text-theme-text-primary"
                 >
-                  Username
+                  Username {SSO_ENABLED && "(can't be edited)"}
                 </label>
-                <input
-                  name="username"
-                  type="text"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder="User's username"
-                  minLength={2}
-                  defaultValue={user.username}
-                  required
-                  autoComplete="off"
-                />
-                <p className="mt-2 text-xs text-white/60">
-                  Username must be only contain lowercase letters, numbers,
-                  underscores, and hyphens with no spaces
-                </p>
+                {SSO_ENABLED ? (
+                  <div className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg outline-none block w-full p-2.5">
+                    {user.username}
+                  </div>
+                ) : (
+                  <>
+                    <input
+                      name="username"
+                      type="text"
+                      className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      placeholder="User's username"
+                      minLength={2}
+                      defaultValue={user.username}
+                      required
+                      autoComplete="off"
+                    />
+                    <p className="mt-2 text-xs text-white/60">
+                      Username must be only contain lowercase letters, numbers,
+                      underscores, and hyphens with no spaces
+                    </p>
+                  </>
+                )}
               </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-white"
-                >
-                  New Password
-                </label>
-                <input
-                  name="password"
-                  type="text"
-                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder={`${user.username}'s new password`}
-                  minLength={8}
-                />
-                <p className="mt-2 text-xs text-white/60">
-                  Password must be at least 8 characters long
-                </p>
-              </div>
-              <div className="flex flex-row gap-x-8">
+              {!SSO_ENABLED && (
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block mb-2 text-sm font-medium text-white"
+                  >
+                    New Password
+                  </label>
+                  <input
+                    name="password"
+                    type="text"
+                    className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    placeholder={`${user.username}'s new password`}
+                    minLength={8}
+                  />
+                  <p className="mt-2 text-xs text-white/60">
+                    Password must be at least 8 characters long
+                  </p>
+                </div>
+              )}
+              <div className="flex flex-row gap-x-8 py-6">
                 <ThemePreference />
-                <LanguagePreference />
+                {/* <LanguagePreference /> */}
               </div>
             </div>
-            <div className="flex justify-between items-center border-t border-theme-modal-border pt-4 p-6">
-              <button
-                onClick={hideModal}
-                type="button"
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
-              >
-                Update Account
-              </button>
-            </div>
+            {!SSO_ENABLED && (
+              <div className="flex justify-between items-center border-t border-theme-modal-border pt-4 p-6">
+                <button
+                  onClick={hideModal}
+                  type="button"
+                  className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                >
+                  Update Account
+                </button>
+              </div>
+            )}
           </form>
         </div>
       </div>

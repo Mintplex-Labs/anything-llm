@@ -51,7 +51,15 @@ export default function UserButton() {
     };
     fetchSupportEmail();
   }, []);
-
+  const handleSignout = async () => {
+    const result = await System.oauthSignout();
+    if (result) {
+      window.localStorage.removeItem(AUTH_USER);
+      window.localStorage.removeItem(AUTH_TOKEN);
+      window.localStorage.removeItem(AUTH_TIMESTAMP);
+      window.location.replace(paths.login());
+    }
+  };
   if (mode === null) return null;
   return (
     <div className="absolute top-3 right-4 md:top-9 md:right-10 w-fit h-fit z-40">
@@ -85,12 +93,7 @@ export default function UserButton() {
               Support
             </a>
             <button
-              onClick={() => {
-                window.localStorage.removeItem(AUTH_USER);
-                window.localStorage.removeItem(AUTH_TOKEN);
-                window.localStorage.removeItem(AUTH_TIMESTAMP);
-                window.location.replace(paths.home());
-              }}
+              onClick={handleSignout}
               type="button"
               className="text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
             >
