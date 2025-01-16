@@ -713,6 +713,13 @@ const System = {
     return { viewable: isViewable, error: null };
   },
 
+  oauthSignout: async () => {
+    console.log("base headers", baseHeaders());
+    return await fetch(`${API_BASE}/auth/signout`, {
+      method: "GET",
+      headers: baseHeaders(),
+    });
+  },
   /**
    * Validates a temporary auth token and logs in the user if the token is valid.
    * @param {string} publicToken - the token to validate against

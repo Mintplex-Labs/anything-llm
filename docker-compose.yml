@@ -56,6 +56,13 @@ services:
       LLM_GUARD_BASE_URL: "http://192.168.140.51:3456"
       LLM_GUARD_AUTH_TOKEN:
       COLLECTOR_BASE_URL: "http://collector:8888"
+      KC_REDIRECT_URL: "http://localhost:3001/api/auth/callback"
+      KC_BASE_URL: "https://dev2.digixt.ae/auth"
+      KC_REALM: "Datalake"
+      KC_CLIENT_ID: "dataprism"
+      KC_CLIENT_SECRET: "Ipsth2PKgDD0exwie9967p4RJZBJYa0l"
+      KC_ADMIN_CLIENT_SECRET: "Mt3zL4nQsnZKlsW68QuD3bhUztcPM365"
+      FRONTEND_BASE_URL: http://localhost:3000/
     command: make start_server
     ports:
       - "3001:3001"

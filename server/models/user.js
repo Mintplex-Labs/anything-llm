@@ -20,6 +20,7 @@ const User = {
     "password",
     "pfpFilename",
     "role",
+    "uid",
     "suspended",
     "dailyMessageLimit",
   ],
@@ -77,6 +78,7 @@ const User = {
     password,
     role = "default",
     dailyMessageLimit = null,
+    uid = null,
   }) {
     const passwordCheck = this.checkPasswordComplexity(password);
     if (!passwordCheck.checkedOK) {
@@ -97,6 +99,7 @@ const User = {
           username: this.validations.username(username),
           password: hashedPassword,
           role: this.validations.role(role),
+          uid,
           dailyMessageLimit:
             this.validations.dailyMessageLimit(dailyMessageLimit),
         },

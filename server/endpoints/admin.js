@@ -58,7 +58,12 @@ function adminEndpoints(app) {
             .json({ user: null, error: roleValidation.error });
           return;
         }
-
+        const existingUser = await User.get({
+          username: newUserParams?.username,
+        });
+        if (existingUser) {
+          response.status(409).json({ error: "User already exist" });
+        }
         const { user: newUser, error } = await User.create(newUserParams);
         if (!!newUser) {
           await EventLogs.logEvent(

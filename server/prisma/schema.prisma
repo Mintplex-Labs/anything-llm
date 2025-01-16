@@ -61,6 +61,7 @@ model system_settings {
 model users {
   id                          Int                           @id @default(autoincrement())
   username                    String?                       @unique
+  uid                         String?                       
   password                    String
   pfpFilename                 String?
   role                        String                        @default("default")
