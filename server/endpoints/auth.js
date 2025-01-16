@@ -10,14 +10,52 @@ const crypto = require("crypto");
 const { Workspace } = require("../models/workspace");
 const { KeycloakHelper } = require("../utils/keycloak");
 
+const setCookies = (res, userDetails) => {
+  const fullAuthResponse = {
+    valid: true,
+    user: User.filterFields(userDetails),
+    token: makeJWT(
+      {
+        id: userDetails.id,
+        username: userDetails.username,
+        uid: userDetails?.uid,
+      },
+      "30d"
+    ),
+    message: null,
+  };
+  const cookieConfig = {
+    maxAge: 900000,
+    httpOnly: false,
+    secure: false,
+  };
+  res.cookie("token", fullAuthResponse.token, cookieConfig);
+  res.cookie(
+    "user",
+    JSON.stringify(User.filterFields(userDetails)),
+    cookieConfig
+  );
+  res.cookie("valid", true, cookieConfig);
+};
+
 function authEndpoints(app) {
   if (!app) return;
 
+  // this route will handle the login request and redirect it to keycloak for authentication
   app.get("/auth", async (req, res) => {
     const authUrl = KeycloakHelper.getAuthRedirectUrl();
     res.redirect(authUrl);
   });
 
+  /**
+   * After keycloak finishes the authentication it will redirect to this route
+   * The redirection request will have Authorization code
+   * This route will call keycloak to get token and user Info by Authorization code
+   * After getting the userInfo. the following checks will be performed
+   * 1. user already exists?. if not a new user will be created and be assigned to the default workspace
+   * 2. if user exists but don't have uid stored or there is a mismatch with uid recieved from keycloak,
+   *    the user details will be updated
+   */
   app.get("/auth/callback", async (req, res) => {
     const code = req.query.code;
     if (!code) {
@@ -29,47 +67,30 @@ function authEndpoints(app) {
         username: String(userInfo?.user?.username),
       });
 
-      if (!existingUser || !existingUser?.uid) {
-        if (!existingUser) {
-          await User.create({
-            username: userInfo?.user?.username,
-            password: crypto.randomUUID(),
-            role: ROLES.default,
+      if (!existingUser) {
+        existingUser = await User.create({
+          username: userInfo?.user?.username,
+          password: crypto.randomUUID(),
+          role: ROLES.default,
+          uid: userInfo?.sub,
+        });
+        await Workspace.addToDefaultWorkspace(existingUser?.id);
+      } else {
+        // check if the user belongs to default workspace
+        const isUserInDefaultWS = await Workspace.isUserInDefaultWS(
+          existingUser?.id
+        );
+        if (!isUserInDefaultWS) {
+          await Workspace.addToDefaultWorkspace(existingUser?.id);
+        }
+        // checking if the uid exists and is synced with the one in IDP
+        if (!existingUser?.uid || existingUser?.uid !== userInfo?.sub) {
+          existingUser = await User.update(existingUser?.id, {
             uid: userInfo?.sub,
           });
-        } else {
-          await User.update(existingUser?.id, { uid: userInfo?.sub });
         }
-        existingUser = await User._get({
-          username: String(userInfo.user.username),
-        });
-        Workspace.new(userInfo.user.username + "-workspace", existingUser.id);
       }
-      const fullAuthResponse = {
-        valid: true,
-        user: User.filterFields(existingUser),
-        token: makeJWT(
-          {
-            id: existingUser.id,
-            username: existingUser.username,
-            uid: userInfo?.sub,
-          },
-          "30d"
-        ),
-        message: null,
-      };
-      const cookieConfig = {
-        maxAge: 900000,
-        httpOnly: false,
-        secure: false,
-      };
-      res.cookie("token", fullAuthResponse.token, cookieConfig);
-      res.cookie(
-        "user",
-        JSON.stringify(User.filterFields(existingUser)),
-        cookieConfig
-      );
-      res.cookie("valid", true, cookieConfig);
+
       if (existingUser.suspended) {
         res.status(200).json({
           user: null,
@@ -79,6 +100,7 @@ function authEndpoints(app) {
         });
         return;
       }
+      setCookies(res, existingUser);
       // redirecting to frontend app
       res.redirect(process.env.FRONTEND_BASE_URL || "/");
     } catch (error) {
