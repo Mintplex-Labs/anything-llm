@@ -11,6 +11,7 @@
  * @property {number} wordCount - Number of words in the document
  * @property {string} pageContent - The raw text content of the document
  * @property {number} token_count_estimate - Number of tokens in the document
+ * 
  */
 
 function isNullOrNaN(value) {
@@ -158,11 +159,12 @@ class TextSplitter {
 class RecursiveSplitter {
   constructor({ chunkSize, chunkOverlap, chunkHeader = null }) {
     const {
-      RecursiveCharacterTextSplitter,
+      RecursiveCharacterTextSplitter, 
+      MarkdownTextSplitter
     } = require("@langchain/textsplitters");
     this.log(`Will split with`, { chunkSize, chunkOverlap });
     this.chunkHeader = chunkHeader;
-    this.engine = new RecursiveCharacterTextSplitter({
+    this.engine = new MarkdownTextSplitter({
       chunkSize,
       chunkOverlap,
     });

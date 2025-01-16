@@ -66,7 +66,7 @@ const TRANSLATIONS = {
 
   welcomeMessage: {
     part1:
-      "Bienvenido a AnythingLLM, una herramienta de inteligencia artificial de código abierto creada por Mintplex Labs que convierte cualquier cosa en un chatbot entrenado con el que puedes consultar y conversar. AnythingLLM es un software BYOK (bring-your-own-keys), por lo que no hay suscripciones, tarifas ni cargos por este software, salvo por los servicios que deseas utilizar.",
+      "Bienvenido a AnythingLLM, una herramienta de inteligencia artificial de código abierto creada por Saal.ai que convierte cualquier cosa en un chatbot entrenado con el que puedes consultar y conversar. AnythingLLM es un software BYOK (bring-your-own-keys), por lo que no hay suscripciones, tarifas ni cargos por este software, salvo por los servicios que deseas utilizar.",
     part2:
       "AnythingLLM es la forma más sencilla de integrar productos de inteligencia artificial potentes como OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB y otros servicios en un paquete ordenado, sin complicaciones, para aumentar tu productividad en un 100x.",
     part3:
@@ -83,7 +83,7 @@ const TRANSLATIONS = {
     user3: "¡Vaya, esto suena increíble, déjame probarlo ya!",
     part6: "¡Diviértete!",
     starOnGithub: "Estrella en GitHub",
-    contact: "Contactar a Mintplex Labs",
+    contact: "Contactar a Saal.ai",
   },
 
   "new-workspace": {

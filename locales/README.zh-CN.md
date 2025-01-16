@@ -124,7 +124,7 @@ AnythingLLM的一些酷炫特性
 
 ## 🛳 自托管
 
-Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以使用它们在本地运行AnythingLLM。请参阅下面的表格，了解如何在您喜欢的环境上部署，或自动部署。
+Saal.ai和社区维护了许多部署方法、脚本和模板，您可以使用它们在本地运行AnythingLLM。请参阅下面的表格，了解如何在您喜欢的环境上部署，或自动部署。
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----:|-----|---------------|------------|
 | [![在 Docker 上部署][docker-btn]][docker-deploy] | [![在 AWS 上部署][aws-btn]][aws-deploy] | [![在 GCP 上部署][gcp-btn]][gcp-deploy] | [![在DigitalOcean上部署][do-btn]][do-deploy] | [![在 Render.com 上部署][render-btn]][render-deploy] |
@@ -155,7 +155,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ## 远程信息收集与隐私保护
 
-由 Mintplex Labs Inc 开发的 AnythingLLM 包含一个收集匿名使用信息的 Telemetry 功能。
+由 Saal.ai Inc 开发的 AnythingLLM 包含一个收集匿名使用信息的 Telemetry 功能。
 
 <details>
 <summary><kbd>有关 AnythingLLM 的远程信息收集与隐私保护更多信息</kbd></summary>
@@ -200,7 +200,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ---
 
-版权所有 © 2024 [Mintplex Labs][profile-link]。<br />
+版权所有 © 2024 [Saal.ai][profile-link]。<br />
 本项目采用[MIT](./LICENSE)许可证。
 
 <!-- LINK GROUP -->

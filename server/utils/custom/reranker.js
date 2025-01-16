@@ -61,20 +61,3 @@ async function rerankTexts(texts, query) {
 module.exports = {
     rerankTexts,
   };
-
-// // Example Usage
-// (async () => {
-//     const texts = [
-//         "Unsupervised learning is a type of machine learning where the model learns from data without labeled outputs.",
-//         "The model attempts to find hidden patterns and structure in the data.",
-//         "Clustering and dimensionality reduction are common techniques in unsupervised learning."
-//     ];
-//     const query = "What is unsupervised learning?";
-
-//     try {
-//         const top5Results = await rerankTexts(texts, query);
-//         console.log('Final Top 5 Results:', JSON.stringify(top5Results, null, 2));
-//     } catch (err) {
-//         console.error('Failed to rerank texts:', err.message);
-//     }
-// })();

@@ -3,15 +3,17 @@ const {
   MetricType,
   IndexType,
   MilvusClient,
+  RRFRanker,
+  WeightedRanker
 } = require("@zilliz/milvus2-sdk-node");
+// const rerank = WeightedRanker(0.8, 0.3);
 const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
-const natural = require('natural');
-const TfIdfClass = natural.TfIdf;
+const { getSparseEmbedding } = require("../../custom/sparse_embedder.js")
 
 const Milvus = {
   name: "Milvus",
@@ -77,7 +79,7 @@ const Milvus = {
   normalize: function (inputString) {
     let normalized = inputString.replace(/[^a-zA-Z0-9_]/g, "_");
     if (new RegExp(/^[a-zA-Z_]/).test(normalized.slice(0, 1)))
-      normalized = `anythingllm_${normalized}`;
+      normalized = `prism_${normalized}`;
     return normalized;
   },
   connect: async function () {
@@ -209,7 +211,7 @@ const Milvus = {
   // providers do.
   getOrCreateCollection: async function (client, namespace, dimensions = null) {
     const isExists = await this.namespaceExists(client, namespace);
-    console.log(`namespace ${namespace} exists in milvus : ${isExists}`)
+    // console.log(`namespace ${namespace} exists in milvus : ${isExists}`)
     if (!isExists) {
       if (!dimensions)
         throw new Error(
@@ -232,11 +234,11 @@ const Milvus = {
             data_type: DataType.FloatVector,
             dim: dimensions,
           },
-          // {
-          //   name: "sparse_vector",
-          //   description: "sparse_vector",
-          //   data_type: DataType.SparseFloatVector,
-          // },
+          {
+            name: "sparse_vector",
+            description: "sparse_vector",
+            data_type: DataType.SparseFloatVector,
+          },
           {
             name: "metadata",
             decription: "metadata",
@@ -244,19 +246,23 @@ const Milvus = {
           },
         ],
       });
+
       await client.createIndex({
         collection_name: this.normalize(namespace),
-        field_name: "vector",
-        index_type: IndexType.AUTOINDEX,
+        field_name: 'vector',
+        index_type: IndexType.HNSW,
         metric_type: MetricType.COSINE,
+        extra_params: {
+        "params": "{\"M\":16,\"efConstruction\":150}"
+      },
       });
 
-      // await client.createIndex({
-      //   collection_name: this.normalize(namespace),
-      //   field_name: "sparse_vector",
-      //   index_type: IndexType.SPARSE_INVERTED_INDEX,
-      //   metric_type: MetricType.IP,
-      // });
+      await client.createIndex({
+        collection_name: this.normalize(namespace),
+        field_name: "sparse_vector",
+        index_type: IndexType.SPARSE_INVERTED_INDEX,
+        metric_type: MetricType.IP,
+      });
 
       await client.loadCollectionSync({
         collection_name: this.normalize(namespace),
@@ -335,13 +341,9 @@ const Milvus = {
         chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
       });
       const textChunks = await textSplitter.splitText(pageContent);
-
-      console.log("Chunks created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
-    //  const sparseVectors = this.generateSparseVectors(textChunks);
-      // console.log('Final Sparse Vectors:', JSON.stringify(sparseVectors, null, 2));
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
@@ -366,17 +368,22 @@ const Milvus = {
       if (vectors.length > 0) {
         const chunks = [];
         const { client } = await this.connect();
-        console.log(`add/get collection from milvus`)
         await this.getOrCreateCollection(client, namespace, vectorDimension);
 
         console.log("Inserting vectorized chunks into Milvus.");
         for (const chunk of toChunks(vectors, 100)) {
-          chunks.push(chunk);
-          const data = chunk.map((item) => ({
-            id: item.id,
-            vector: item.values,
-            metadata: item.metadata, // Correcting the metadata reference
-          }));
+          const data = await Promise.all(
+            chunk.map(async (item) => {
+              // console.log(`getting sparse vector for text with size : ${item.metadata?.text.length}`)
+              let sparseVector = await getSparseEmbedding(item.metadata?.text);
+              return {
+                id: item.id,
+                vector: item.values,
+                sparse_vector: sparseVector,
+                metadata: item.metadata,
+              };
+            })
+          );
           let insertResult;
           // Validate that `data` is a valid JSON
           try {
@@ -389,8 +396,9 @@ const Milvus = {
             });
 
             if (insertResult?.status.error_code !== "Success") {
+              
               throw new Error(
-                `Error embedding into Milvus! Reason: ${insertResult?.status.reason}`
+                `Error embedding into Milvus! Reason::::: ${insertResult?.status.reason}`
               );
             }
           } catch (error) {
@@ -462,13 +470,19 @@ const Milvus = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
+
+    const sparseVector = process.env.HYBRID_SEARCH_ENABLED === 'true'
+      ? await getSparseEmbedding(input)
+      : null;
+
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
       queryVector,
       similarityThreshold,
       topN,
-      filterIdentifiers
+      filterIdentifiers,
+      sparseVector
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
@@ -499,11 +513,11 @@ const Milvus = {
     };
 
     for (const namespace of namespaces) {
-      console.log(`workspace name : ${namespace.slug}`)
+      // console.log(`workspace name : ${namespace.slug}`)
       if (!(await this.namespaceExists(client, namespace.slug))) {
         continue; // Skip this namespace if it doesn't exist
       }
-      console.log(`workspace : ${namespace.slug} exists in milvus`)
+      // console.log(`workspace : ${namespace.slug} exists in milvus`)
 
       const queryVector = await LLMConnector.embedTextInput(input);
 
@@ -515,16 +529,6 @@ const Milvus = {
         topN,
         filterIdentifiers
       );
-      // console.log(`###############################################################################################`)
-      // console.log(`###############################################################################################`)
-
-      // console.log(`Response from similarity search for workspace ${namespace.slug}:`, {
-      //   contextTexts,
-      //   sourceDocuments,
-      // });
-      // console.log(`###############################################################################################`)
-      // console.log(`###############################################################################################`)
-
 
       const sources = sourceDocuments.map((metadata, i) => {
         return { ...metadata, text: contextTexts[i], namespace };
@@ -533,10 +537,6 @@ const Milvus = {
       results.contextTexts.push(...contextTexts);
       results.sources.push(...this.curateSources(sources));
     }
-
-    // if (results.sources.length === 0) {
-    //   results.message = "Invalid query - no documents found for the provided workspaces!";
-    // }
     return results;
   },
   similarityResponse: async function (
@@ -545,18 +545,53 @@ const Milvus = {
     queryVector,
     similarityThreshold = 0.25,
     topN = 4,
-    filterIdentifiers = []
+    filterIdentifiers = [],
+    sparseVector = null
   ) {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
       scores: [],
     };
-    const response = await client.search({
-      collection_name: this.normalize(namespace),
-      vectors: queryVector,
-      limit: topN,
-    });
+    let response;
+   
+
+    if (process.env.HYBRID_SEARCH_ENABLED === 'true') {
+      const search_param_1 = {
+        "data": queryVector,
+        "anns_field": "vector",
+        "param": {
+          "metric_type": "COSINE",
+          "params": { "nprobe": 10}  
+        },
+        "limit": topN
+      }
+
+      const search_param_2 = {
+        "data": sparseVector,
+        "anns_field": "sparse_vector",
+        "param": {
+          "metric_type": "IP",
+          "params": { "drop_ratio_build": 0.2 } 
+        },
+        "limit": topN
+      }
+
+      response = await client.search({
+        collection_name: this.normalize(namespace),
+        data: [search_param_1,search_param_2],
+        weights: [1.0,1.0],
+        rerank: WeightedRanker([Number(process.env.HYBRID_SEARCH_DENSE_VECTOR_WEIGHT), Number(process.env.HYBRID_SEARCH_SPARSE_VECTOR_WEIGHT)]),
+        limit: topN
+      });
+
+    } else {
+      response = await client.search({
+        collection_name: this.normalize(namespace),
+        vectors: queryVector,
+        limit: topN,
+      });
+    }
 
     const seen = new Set(); // Track unique context texts to remove duplicates
 
@@ -570,11 +605,7 @@ const Milvus = {
         return;
       }
       const contextText = match.metadata.text;
-      
 
-      // result.contextTexts.push(match.metadata.text);
-      // result.sourceDocuments.push(match);
-      // result.scores.push(match.score);
       if (!seen.has(contextText)) {
         seen.add(contextText); // Add to the set to track uniqueness
         result.contextTexts.push(contextText);
@@ -582,8 +613,7 @@ const Milvus = {
         result.scores.push(match.score);
       }
     });
-    // console.dir(result, { depth: null });
-    
+
     return result;
   },
   "namespace-stats": async function (reqBody = {}) {

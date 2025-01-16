@@ -67,7 +67,7 @@ const TRANSLATIONS = {
 
   welcomeMessage: {
     part1:
-      "ברוכים הבאים ל-AnythingLLM, AnythingLLM היא כלי AI קוד פתוח מאת Mintplex Labs שהופך כל דבר לצ'אטבוט מאומן שאפשר לשאול אותו ולקיים איתו שיחה. AnythingLLM הוא תוכנה מסוג BYOK (הביא את המפתחות שלך) כך שאין מנוי, עמלה או חיובים עבור התוכנה הזו מלבד השירותים שאתה רוצה להשתמש בהם.",
+      "ברוכים הבאים ל-AnythingLLM, AnythingLLM היא כלי AI קוד פתוח מאת Saal.ai שהופך כל דבר לצ'אטבוט מאומן שאפשר לשאול אותו ולקיים איתו שיחה. AnythingLLM הוא תוכנה מסוג BYOK (הביא את המפתחות שלך) כך שאין מנוי, עמלה או חיובים עבור התוכנה הזו מלבד השירותים שאתה רוצה להשתמש בהם.",
     part2:
       "AnythingLLM היא הדרך הקלה ביותר לשלב מוצרים חזקים של AI כמו OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB ושירותים אחרים בחבילה אחת ללא מאמץ כדי להגדיל את הפרודוקטיביות שלך פי 100.",
     part3:
@@ -83,7 +83,7 @@ const TRANSLATIONS = {
     user3: "וואו, זה נשמע מדהים, תן לי לנסות את זה כבר!",
     part6: "תהנה!",
     starOnGithub: "שים כוכב ב-GitHub",
-    contact: "צור קשר עם Mintplex Labs",
+    contact: "צור קשר עם Saal.ai",
   },
 
   "new-workspace": {

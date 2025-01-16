@@ -24,7 +24,7 @@ async function streamChatWithWorkspace(
   thread = null,
   attachments = []
 ) {
-  let rerankedTexts = null
+  let effectiveQuestion = message; 
   // console.log(`message: ${message}`)
   const uuid = uuidv4();
   const updatedMessage = await grepCommand(message, user);
@@ -109,6 +109,25 @@ async function streamChatWithWorkspace(
     messageLimit,
   });
 
+  if (process.env.QUERY_REWRITER_ENABLED == 'true') {
+    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop().content;
+    const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
+    const rewriteRequest = LLMConnector.constructPrompt({
+      systemPrompt: process.env.QUERY_REWRITER_PROMPT,
+      contextTexts: [],
+      chatHistory: [],
+      userPrompt: userPrompt,
+    });
+    // console.dir(rewriteRequest, { depth: null, colors: true });
+
+    effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+    });
+
+    console.log("rewritten question: ", effectiveQuestion)
+    
+  }
+
   // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
   // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
   // However we limit the maximum of appended context to 80% of its overall size, mostly because if it expands beyond this
@@ -146,7 +165,7 @@ async function streamChatWithWorkspace(
       //   })
       ? await VectorDb.performSimilaritySearch({
         namespace: workspace.slug,
-        input: message,
+        input: effectiveQuestion,
         LLMConnector,
         similarityThreshold: workspace?.similarityThreshold, 
         topN: workspace?.topN,
@@ -171,7 +190,7 @@ async function streamChatWithWorkspace(
     return;
   }
 
-  if (process.env.RERANKER_ENABLED == 'true') {
+  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_INVOCATION_THRESHOLD) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -179,7 +198,7 @@ async function streamChatWithWorkspace(
 
     if (texts.length !== 0) {
       // Call re-ranker to get top results
-      const rerankedResults = await rerankTexts(texts, message);
+      const rerankedResults = await rerankTexts(texts, effectiveQuestion);
       // Extract only the text values from reranked results for comparison
       const rerankedTexts = rerankedResults.map(result => result.text);
 
@@ -237,7 +256,8 @@ async function streamChatWithWorkspace(
       },
       threadId: thread?.id || null,
       include: false,
-      user,
+      rewrite_question: effectiveQuestion,
+      user: user,
     });
     return;
   }
@@ -288,7 +308,8 @@ async function streamChatWithWorkspace(
       prompt: message,
       response: { text: completeText, sources, type: chatMode, attachments },
       threadId: thread?.id || null,
-      user,
+      rewrite_question: effectiveQuestion,
+      user: user,
     });
 
     writeResponseChunk(response, {

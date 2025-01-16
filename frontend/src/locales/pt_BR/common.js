@@ -68,7 +68,7 @@ const TRANSLATIONS = {
 
   welcomeMessage: {
     part1:
-      "Bem-vindo ao AnythingLLM, AnythingLLM é uma ferramenta de IA de código aberto da Mintplex Labs que transforma qualquer coisa em um chatbot treinado que você pode consultar e conversar. AnythingLLM é um software BYOK (bring-your-own-keys | traga suas próprias chaves), portanto, não há assinatura, taxa ou cobranças para este software fora dos serviços que você deseja usar com ele.",
+      "Bem-vindo ao AnythingLLM, AnythingLLM é uma ferramenta de IA de código aberto da Saal.ai que transforma qualquer coisa em um chatbot treinado que você pode consultar e conversar. AnythingLLM é um software BYOK (bring-your-own-keys | traga suas próprias chaves), portanto, não há assinatura, taxa ou cobranças para este software fora dos serviços que você deseja usar com ele.",
     part2:
       "AnythingLLM é a maneira mais fácil de reunir produtos de IA poderosos como OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB e outros serviços em um pacote organizado sem complicações para aumentar sua produtividade em 100x.",
     part3:
@@ -85,7 +85,7 @@ const TRANSLATIONS = {
     user3: "Uau, isso soa incrível, deixe-me experimentar já!",
     part6: "Divirta-se!",
     starOnGithub: "Dar estrela no GitHub",
-    contact: "Contato Mintplex Labs",
+    contact: "Contato Saal.ai",
   },
 
   "new-workspace": {

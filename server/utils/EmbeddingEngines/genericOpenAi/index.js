@@ -101,6 +101,7 @@ class GenericOpenAiEmbedder {
       ? data.map((embd) => embd.embedding)
       : null;
   }
+
 }
 
 module.exports = {

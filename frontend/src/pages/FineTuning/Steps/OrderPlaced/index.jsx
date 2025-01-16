@@ -42,7 +42,7 @@ export default function OrderPlaced({ settings }) {
               </p>
               <p className="text-xs text-theme-text-secondary">
                 Check the email above for order confirmation, status updates,
-                and more. Mintplex Labs will only contact you about your order
+                and more. Saal.ai will only contact you about your order
                 via email.
               </p>
             </div>
