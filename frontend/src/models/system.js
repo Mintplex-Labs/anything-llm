@@ -2,6 +2,7 @@ import { API_BASE, AUTH_TIMESTAMP, fullApiUrl } from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import LiveDocumentSync from "./experimental/liveSync";
+import FileTypeDefault from "./experimental/fileTypeDefault";
 import AgentPlugins from "./experimental/agentPlugins";
 
 const System = {
@@ -738,6 +739,7 @@ const System = {
 
   experimentalFeatures: {
     liveSync: LiveDocumentSync,
+    fileTypeDefault: FileTypeDefault,
     agentPlugins: AgentPlugins,
   },
 };
