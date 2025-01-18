@@ -46,7 +46,8 @@ const { DocumentSyncRun } = require('../models/documentSyncRun.js');
         newContent = response?.content;
       }
 
-      if (type === 'confluence' || type === 'github' || type === 'gitlab') {
+
+      if (type === 'confluence' || type === 'github' || type === 'gitlab' | type === 'drupalwiki' ) {
         const response = await collector.forwardExtensionRequest({
           endpoint: "/ext/resync-source-document",
           method: "POST",
