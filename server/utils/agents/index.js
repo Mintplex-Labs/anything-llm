@@ -140,14 +140,26 @@ class AgentHandler {
           );
         break;
       case "bedrock":
-        if (
-          !process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID ||
-          !process.env.AWS_BEDROCK_LLM_ACCESS_KEY ||
-          !process.env.AWS_BEDROCK_LLM_REGION
-        )
-          throw new Error(
-            "AWS Bedrock Access Keys and region must be provided to use agents."
-          );
+        if (process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD === "profile") {
+          if (
+            !process.env.AWS_BEDROCK_LLM_PROFILE_NAME ||
+            !process.env.AWS_BEDROCK_LLM_REGION
+          ) {
+            throw new Error(
+              "AWS Bedrock requires a profile name and region to use agents for the profile authentication method."
+            );
+          }
+        } else {
+          if (
+            !process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID ||
+            !process.env.AWS_BEDROCK_LLM_ACCESS_KEY ||
+            !process.env.AWS_BEDROCK_LLM_REGION
+          ) {
+            throw new Error(
+              "AWS Bedrock requires valid access keys and a region to use agents for the iam authentication method."
+            );
+          }
+        }
         break;
       case "fireworksai":
         if (!process.env.FIREWORKS_AI_LLM_API_KEY)

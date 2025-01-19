@@ -253,12 +253,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     logo: AWSBedrockLogo,
     options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
     description: "Run powerful foundation models privately with AWS Bedrock.",
-    requiredConfig: [
-      "AwsBedrockLLMAccessKeyId",
-      "AwsBedrockLLMAccessKey",
-      "AwsBedrockLLMRegion",
-      "AwsBedrockLLMModel",
-    ],
+    requiredConfig: ["AwsBedrockLLMRegion", "AwsBedrockLLMModel"],
   },
   {
     name: "APIpie",

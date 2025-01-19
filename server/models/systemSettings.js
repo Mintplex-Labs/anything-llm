@@ -527,6 +527,7 @@ const SystemSettings = {
       AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
       AwsBedrockLLMAccessKey: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
       AwsBedrockLLMSessionToken: !!process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
+      AwsBedrockLLMProfileName: process.env.AWS_BEDROCK_LLM_PROFILE_NAME,
       AwsBedrockLLMRegion: process.env.AWS_BEDROCK_LLM_REGION,
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
       AwsBedrockLLMTokenLimit: process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT,

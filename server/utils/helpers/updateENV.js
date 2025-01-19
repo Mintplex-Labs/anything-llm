@@ -219,7 +219,9 @@ const KEY_MAPPING = {
     envKey: "AWS_BEDROCK_LLM_CONNECTION_METHOD",
     checks: [
       (input) =>
-        ["iam", "sessionToken"].includes(input) ? null : "Invalid value",
+        ["iam", "sessionToken", "profile"].includes(input)
+          ? null
+          : "Invalid value",
     ],
   },
   AwsBedrockLLMAccessKeyId: {
@@ -233,6 +235,10 @@ const KEY_MAPPING = {
   AwsBedrockLLMSessionToken: {
     envKey: "AWS_BEDROCK_LLM_SESSION_TOKEN",
     checks: [],
+  },
+  AwsBedrockLLMProfileName: {
+    envKey: "AWS_BEDROCK_LLM_PROFILE_NAME",
+    checks: [isNotEmpty],
   },
   AwsBedrockLLMRegion: {
     envKey: "AWS_BEDROCK_LLM_REGION",
