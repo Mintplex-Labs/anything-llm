@@ -130,6 +130,7 @@ const User = {
         data: {
           username,
           use_azure_login_provider: true,
+          role: "manager",
         },
       });
       return { user, error: null };
