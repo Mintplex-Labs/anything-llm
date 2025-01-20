@@ -54,6 +54,7 @@ model system_settings {
   id            Int      @id @default(autoincrement())
   label         String   @unique
   value         String?
+  config        Json?
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
 }

@@ -7,14 +7,24 @@ const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
 const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
+const setLogger = require("../utils/logger");
+const {
+  ALLOWED_SYSTEM_CONFIG_KEYS,
+  updateENV,
+} = require("../utils/helpers/updateENV");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
   return isNaN(value);
 }
+const logger = setLogger();
 
 const SystemSettings = {
-  protectedFields: ["multi_user_mode", "hub_api_key"],
+  protectedFields: [
+    "multi_user_mode",
+    "hub_api_key",
+    ...Object.keys(ALLOWED_SYSTEM_CONFIG_KEYS),
+  ],
   publicFields: [
     "footer_data",
     "support_email",
@@ -173,6 +183,29 @@ const SystemSettings = {
       return String(apiKey);
     },
   },
+  init: async function () {
+    try {
+      logger.info("Intializing system config. updating env vars....");
+      const envSystemSettings = await this.where({
+        label: {
+          in: Object.keys(ALLOWED_SYSTEM_CONFIG_KEYS),
+        },
+      });
+      const envConfigs = envSystemSettings?.reduce((acc, curr) => {
+        return { ...acc, ...curr?.config };
+      }, {});
+      logger.info("Updating env var of the process...");
+      const { error } = await updateENV(envConfigs);
+      if (error) {
+        logger.error("Something went wrong while updating env in process");
+        return false;
+      }
+      return true;
+    } catch (e) {
+      logger.error("Something went wrong while intializing system config.", e);
+      return false;
+    }
+  },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
     const llmProvider = process.env.LLM_PROVIDER;
@@ -200,6 +233,10 @@ const SystemSettings = {
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
+      SparseGenericOpenAiEmbeddingApiKey:
+        !!process.env.SPARSE_GENERIC_OPEN_AI_EMBEDDING_API_KEY,
+      SparseEmbeddingModelPref: process.env.SPARSE_EMBEDDING_MODEL_PREF,
+      SparseEmbeddingBasePath: process.env.SPARSE_EMBEDDING_BASE_PATH,
       GenericOpenAiEmbeddingMaxConcurrentChunks:
         process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
 
@@ -313,7 +350,66 @@ const SystemSettings = {
 
     return this._updateSettings(updates);
   },
-
+  updateSystemConfig: async function (values) {
+    try {
+      logger.info("Updating system Env variables");
+      const existingConfig = await prisma.system_settings.findFirst({
+        where: { label: "system" },
+      });
+      const updatedConfig = { ...(existingConfig?.config || {}), ...values };
+      const newValues = await prisma.system_settings.upsert({
+        where: { label: "system" },
+        create: { label: "system", config: updatedConfig },
+        update: { config: updatedConfig },
+      });
+      return {
+        status: true,
+        message: "System config updated successfully!",
+        newValues,
+      };
+    } catch (e) {
+      const errorMessage = "Something went wrong while updating system config";
+      logger.error(errorMessage, e);
+      return {
+        status: false,
+        message: errorMessage,
+      };
+    }
+  },
+  updateConfig: async function (key, config) {
+    try {
+      logger.info(`Updating system setting config for - ${key}`);
+      if (!(key in ALLOWED_SYSTEM_CONFIG_KEYS)) {
+        return {
+          status: false,
+          error: "Provided key is not a valid config key!",
+        };
+      }
+      if (key === "system") {
+        return this.updateSystemConfig(config);
+      }
+      // update / create a system config setting
+      const response = await prisma.system_settings.upsert({
+        where: {
+          label: key,
+        },
+        update: { config },
+        create: { label: key, config },
+      });
+      return {
+        status: true,
+        message: "Config updated successfully!",
+        newValues: response?.config,
+      };
+    } catch (e) {
+      const errorMessage = "Something went wrong while updating system config";
+      logger.error(errorMessage, e);
+      return {
+        status: false,
+        message: errorMessage,
+      };
+    }
+  },
   // Explicit update of settings + key validations.
   // Only use this method when directly setting a key value
   // that takes no user input for the keys being modified.

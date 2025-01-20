@@ -53,4 +53,12 @@ export function fullApiUrl() {
   return `${window.location.origin}/api`;
 }
 
+export const ALLOWED_SYSTEM_CONFIG_KEYS = {
+  embedding: "embedding",
+  llm: "llm",
+  transcription: "transcription",
+  "vector-db": "vector-db",
+  "voice-speech": "voice-speech",
+};
+
 export const POPUP_BROWSER_EXTENSION_EVENT = "NEW_BROWSER_EXTENSION_CONNECTION";

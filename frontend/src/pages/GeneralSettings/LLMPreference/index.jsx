@@ -62,6 +62,7 @@ import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import { ALLOWED_SYSTEM_CONFIG_KEYS } from "@/utils/constants";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   {
@@ -322,7 +323,10 @@ export default function GeneralLLMPreference() {
     const formData = new FormData(form);
 
     for (var [key, value] of formData.entries()) data[key] = value;
-    const { error } = await System.updateSystem(data);
+    const { error } = await System.updateSystem(
+      data,
+      ALLOWED_SYSTEM_CONFIG_KEYS.llm
+    );
     setSaving(true);
 
     if (error) {

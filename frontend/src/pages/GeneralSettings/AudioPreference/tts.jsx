@@ -15,6 +15,7 @@ import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
 import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
 import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
 import OpenAiGenericTTSOptions from "@/components/TextToSpeech/OpenAiGenericOptions";
+import { ALLOWED_SYSTEM_CONFIG_KEYS } from "@/utils/constants";
 
 const PROVIDERS = [
   {
@@ -73,7 +74,10 @@ export default function TextToSpeechProvider({ settings }) {
     const formData = new FormData(form);
 
     for (var [key, value] of formData.entries()) data[key] = value;
-    const { error } = await System.updateSystem(data);
+    const { error } = await System.updateSystem(
+      data,
+      ALLOWED_SYSTEM_CONFIG_KEYS["voice-speech"]
+    );
     setSaving(true);
 
     if (error) {

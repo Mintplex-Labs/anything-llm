@@ -133,8 +133,8 @@ const System = {
       .then((res) => res?.types)
       .catch(() => null);
   },
-  updateSystem: async (data) => {
-    return await fetch(`${API_BASE}/system/update-env`, {
+  updateSystem: async (data, key = "system") => {
+    return await fetch(`${API_BASE}/system/update-env/${key}`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
