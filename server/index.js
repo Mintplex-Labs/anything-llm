@@ -27,6 +27,7 @@ const { experimentalEndpoints } = require("./endpoints/experimental");
 const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { authEndpoints } = require("./endpoints/auth");
+const { SystemSettings } = require("./models/systemSettings");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -47,88 +48,100 @@ if (!!process.env.ENABLE_HTTPS) {
   require("@mintplex-labs/express-ws").default(app); // load WebSockets in non-SSL mode.
 }
 
-app.use("/api", apiRouter);
-systemEndpoints(apiRouter);
-authEndpoints(apiRouter);
-extensionEndpoints(apiRouter);
-workspaceEndpoints(apiRouter);
-workspaceThreadEndpoints(apiRouter);
-chatEndpoints(apiRouter);
-adminEndpoints(apiRouter);
-inviteEndpoints(apiRouter);
-embedManagementEndpoints(apiRouter);
-utilEndpoints(apiRouter);
-documentEndpoints(apiRouter);
-agentWebsocket(apiRouter);
-experimentalEndpoints(apiRouter);
-developerEndpoints(app, apiRouter);
-communityHubEndpoints(apiRouter);
+const startApp = () => {
+  app.use("/api", apiRouter);
+  systemEndpoints(apiRouter);
+  authEndpoints(apiRouter);
+  extensionEndpoints(apiRouter);
+  workspaceEndpoints(apiRouter);
+  workspaceThreadEndpoints(apiRouter);
+  chatEndpoints(apiRouter);
+  adminEndpoints(apiRouter);
+  inviteEndpoints(apiRouter);
+  embedManagementEndpoints(apiRouter);
+  utilEndpoints(apiRouter);
+  documentEndpoints(apiRouter);
+  agentWebsocket(apiRouter);
+  experimentalEndpoints(apiRouter);
+  developerEndpoints(app, apiRouter);
+  communityHubEndpoints(apiRouter);
 
-// Externally facing embedder endpoints
-embeddedEndpoints(apiRouter);
+  // Externally facing embedder endpoints
+  embeddedEndpoints(apiRouter);
 
-// Externally facing browser extension endpoints
-browserExtensionEndpoints(apiRouter);
+  // Externally facing browser extension endpoints
+  browserExtensionEndpoints(apiRouter);
 
-if (process.env.NODE_ENV !== "development") {
-  const { MetaGenerator } = require("./utils/boot/MetaGenerator");
-  const IndexPage = new MetaGenerator();
+  if (process.env.NODE_ENV !== "development") {
+    const { MetaGenerator } = require("./utils/boot/MetaGenerator");
+    const IndexPage = new MetaGenerator();
 
-  app.use(
-    express.static(path.resolve(__dirname, "public"), {
-      extensions: ["js"],
-      setHeaders: (res) => {
-        // Disable I-framing of entire site UI
-        res.removeHeader("X-Powered-By");
-        res.setHeader("X-Frame-Options", "DENY");
-      },
-    })
-  );
+    app.use(
+      express.static(path.resolve(__dirname, "public"), {
+        extensions: ["js"],
+        setHeaders: (res) => {
+          // Disable I-framing of entire site UI
+          res.removeHeader("X-Powered-By");
+          res.setHeader("X-Frame-Options", "DENY");
+        },
+      })
+    );
 
-  app.use("/", function (_, response) {
-    IndexPage.generate(response);
-    return;
-  });
-
-  app.get("/robots.txt", function (_, response) {
-    response.type("text/plain");
-    response.send("User-agent: *\nDisallow: /").end();
-  });
-} else {
-  // Debug route for development connections to vectorDBs
-  apiRouter.post("/v/:command", async (request, response) => {
-    try {
-      const VectorDb = getVectorDbClass();
-      const { command } = request.params;
-      if (!Object.getOwnPropertyNames(VectorDb).includes(command)) {
-        response.status(500).json({
-          message: "invalid interface command",
-          commands: Object.getOwnPropertyNames(VectorDb),
-        });
-        return;
-      }
-
-      try {
-        const body = reqBody(request);
-        const resBody = await VectorDb[command](body);
-        response.status(200).json({ ...resBody });
-      } catch (e) {
-        // console.error(e)
-        console.error(JSON.stringify(e));
-        response.status(500).json({ error: e.message });
-      }
+    app.use("/", function (_, response) {
+      IndexPage.generate(response);
       return;
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
-    }
+    });
+
+    app.get("/robots.txt", function (_, response) {
+      response.type("text/plain");
+      response.send("User-agent: *\nDisallow: /").end();
+    });
+  } else {
+    // Debug route for development connections to vectorDBs
+    apiRouter.post("/v/:command", async (request, response) => {
+      try {
+        const VectorDb = getVectorDbClass();
+        const { command } = request.params;
+        if (!Object.getOwnPropertyNames(VectorDb).includes(command)) {
+          response.status(500).json({
+            message: "invalid interface command",
+            commands: Object.getOwnPropertyNames(VectorDb),
+          });
+          return;
+        }
+
+        try {
+          const body = reqBody(request);
+          const resBody = await VectorDb[command](body);
+          response.status(200).json({ ...resBody });
+        } catch (e) {
+          // console.error(e)
+          console.error(JSON.stringify(e));
+          response.status(500).json({ error: e.message });
+        }
+        return;
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    });
+  }
+
+  app.all("*", function (_, response) {
+    response.sendStatus(404);
   });
-}
 
-app.all("*", function (_, response) {
-  response.sendStatus(404);
-});
+  // In non-https mode we need to boot at the end since the server has not yet
+  // started and is `.listen`ing.
+  if (!process.env.ENABLE_HTTPS) bootHTTP(app, process.env.SERVER_PORT || 3001);
+};
 
-// In non-https mode we need to boot at the end since the server has not yet
-// started and is `.listen`ing.
-if (!process.env.ENABLE_HTTPS) bootHTTP(app, process.env.SERVER_PORT || 3001);
+(async () => {
+  const isSystemReady = await SystemSettings.init();
+  if (!isSystemReady) {
+    console.error(
+      "Something went wrong while initializing env variables. System not ready!"
+    );
+  }
+  startApp();
+})();

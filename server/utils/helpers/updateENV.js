@@ -1,4 +1,4 @@
-const KEY_MAPPING = {
+const LLM_CONFIG_KEY_MAPPINGS = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
@@ -44,6 +44,7 @@ const KEY_MAPPING = {
     checks: [isNotEmpty, validAnthropicModel],
   },
 
+  // Gemini settings
   GeminiLLMApiKey: {
     envKey: "GEMINI_API_KEY",
     checks: [isNotEmpty],
@@ -89,6 +90,7 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Ollama Settings
   OllamaLLMBasePath: {
     envKey: "OLLAMA_BASE_PATH",
     checks: [isNotEmpty, validOllamaLLMBasePath, validDockerizedUrl],
@@ -158,7 +160,7 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
-  // Text Generation Web UI Settings
+  // Text Generation Web UI Settings (Obabooga)
   TextGenWebUIBasePath: {
     envKey: "TEXT_GEN_WEB_UI_BASE_PATH",
     checks: [isValidURL],
@@ -244,117 +246,6 @@ const KEY_MAPPING = {
     envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
-
-  EmbeddingEngine: {
-    envKey: "EMBEDDING_ENGINE",
-    checks: [supportedEmbeddingModel],
-  },
-  EmbeddingBasePath: {
-    envKey: "EMBEDDING_BASE_PATH",
-    checks: [isNotEmpty, validDockerizedUrl],
-  },
-  EmbeddingModelPref: {
-    envKey: "EMBEDDING_MODEL_PREF",
-    checks: [isNotEmpty],
-  },
-  EmbeddingModelMaxChunkLength: {
-    envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
-    checks: [nonZero],
-  },
-
-  // Generic OpenAI Embedding Settings
-  GenericOpenAiEmbeddingApiKey: {
-    envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",
-    checks: [],
-  },
-  GenericOpenAiEmbeddingMaxConcurrentChunks: {
-    envKey: "GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS",
-    checks: [nonZero],
-  },
-
-  // Vector Database Selection Settings
-  VectorDB: {
-    envKey: "VECTOR_DB",
-    checks: [isNotEmpty, supportedVectorDB],
-  },
-
-  // Chroma Options
-  ChromaEndpoint: {
-    envKey: "CHROMA_ENDPOINT",
-    checks: [isValidURL, validChromaURL, validDockerizedUrl],
-  },
-  ChromaApiHeader: {
-    envKey: "CHROMA_API_HEADER",
-    checks: [],
-  },
-  ChromaApiKey: {
-    envKey: "CHROMA_API_KEY",
-    checks: [],
-  },
-
-  // Weaviate Options
-  WeaviateEndpoint: {
-    envKey: "WEAVIATE_ENDPOINT",
-    checks: [isValidURL, validDockerizedUrl],
-  },
-  WeaviateApiKey: {
-    envKey: "WEAVIATE_API_KEY",
-    checks: [],
-  },
-
-  // QDrant Options
-  QdrantEndpoint: {
-    envKey: "QDRANT_ENDPOINT",
-    checks: [isValidURL, validDockerizedUrl],
-  },
-  QdrantApiKey: {
-    envKey: "QDRANT_API_KEY",
-    checks: [],
-  },
-  PineConeKey: {
-    envKey: "PINECONE_API_KEY",
-    checks: [],
-  },
-  PineConeIndex: {
-    envKey: "PINECONE_INDEX",
-    checks: [],
-  },
-
-  // Milvus Options
-  MilvusAddress: {
-    envKey: "MILVUS_ADDRESS",
-    checks: [isValidURL, validDockerizedUrl],
-  },
-  MilvusUsername: {
-    envKey: "MILVUS_USERNAME",
-    checks: [isNotEmpty],
-  },
-  MilvusPassword: {
-    envKey: "MILVUS_PASSWORD",
-    checks: [isNotEmpty],
-  },
-
-  // Zilliz Cloud Options
-  ZillizEndpoint: {
-    envKey: "ZILLIZ_ENDPOINT",
-    checks: [isValidURL],
-  },
-  ZillizApiToken: {
-    envKey: "ZILLIZ_API_TOKEN",
-    checks: [isNotEmpty],
-  },
-
-  // Astra DB Options
-
-  AstraDBApplicationToken: {
-    envKey: "ASTRA_DB_APPLICATION_TOKEN",
-    checks: [isNotEmpty],
-  },
-  AstraDBEndpoint: {
-    envKey: "ASTRA_DB_ENDPOINT",
-    checks: [isNotEmpty],
-  },
-
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -384,7 +275,6 @@ const KEY_MAPPING = {
     envKey: "PERPLEXITY_MODEL_PREF",
     checks: [isNotEmpty],
   },
-
   // OpenRouter Options
   OpenRouterApiKey: {
     envKey: "OPENROUTER_API_KEY",
@@ -433,12 +323,195 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // DeepSeek Options
+  DeepSeekApiKey: {
+    envKey: "DEEPSEEK_API_KEY",
+    checks: [isNotEmpty],
+  },
+  DeepSeekModelPref: {
+    envKey: "DEEPSEEK_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // APIPie Options
+  ApipieLLMApiKey: {
+    envKey: "APIPIE_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ApipieLLMModelPref: {
+    envKey: "APIPIE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // xAI Options
+  XAIApiKey: {
+    envKey: "XAI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  XAIModelPref: {
+    envKey: "XAI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  // Nvidia NIM Options
+  NvidiaNimLLMBasePath: {
+    envKey: "NVIDIA_NIM_LLM_BASE_PATH",
+    checks: [isValidURL],
+    postUpdate: [
+      (_, __, nextValue) => {
+        const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
+        process.env.NVIDIA_NIM_LLM_BASE_PATH =
+          parseNvidiaNimBasePath(nextValue);
+      },
+    ],
+  },
+  NvidiaNimLLMModelPref: {
+    envKey: "NVIDIA_NIM_LLM_MODEL_PREF",
+    checks: [],
+    postUpdate: [
+      async (_, __, nextValue) => {
+        const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
+        await NvidiaNimLLM.setModelTokenLimit(nextValue);
+      },
+    ],
+  },
+};
+
+const VECTOR_DB_KEY_MAPPINGS = {
+  // Vector Database Selection Settings
+  VectorDB: {
+    envKey: "VECTOR_DB",
+    checks: [isNotEmpty, supportedVectorDB],
+  },
+
+  // Chroma Options
+  ChromaEndpoint: {
+    envKey: "CHROMA_ENDPOINT",
+    checks: [isValidURL, validChromaURL, validDockerizedUrl],
+  },
+  ChromaApiHeader: {
+    envKey: "CHROMA_API_HEADER",
+    checks: [],
+  },
+  ChromaApiKey: {
+    envKey: "CHROMA_API_KEY",
+    checks: [],
+  },
+
+  // Weaviate Options
+  WeaviateEndpoint: {
+    envKey: "WEAVIATE_ENDPOINT",
+    checks: [isValidURL, validDockerizedUrl],
+  },
+  WeaviateApiKey: {
+    envKey: "WEAVIATE_API_KEY",
+    checks: [],
+  },
+
+  // QDrant Options
+  QdrantEndpoint: {
+    envKey: "QDRANT_ENDPOINT",
+    checks: [isValidURL, validDockerizedUrl],
+  },
+  QdrantApiKey: {
+    envKey: "QDRANT_API_KEY",
+    checks: [],
+  },
+
+  // Pinecone configs
+  PineConeKey: {
+    envKey: "PINECONE_API_KEY",
+    checks: [],
+  },
+  PineConeIndex: {
+    envKey: "PINECONE_INDEX",
+    checks: [],
+  },
+
+  // Milvus Options
+  MilvusAddress: {
+    envKey: "MILVUS_ADDRESS",
+    checks: [isValidURL, validDockerizedUrl],
+  },
+  MilvusUsername: {
+    envKey: "MILVUS_USERNAME",
+    checks: [],
+  },
+  MilvusPassword: {
+    envKey: "MILVUS_PASSWORD",
+    checks: [],
+  },
+
+  // Zilliz Cloud Options
+  ZillizEndpoint: {
+    envKey: "ZILLIZ_ENDPOINT",
+    checks: [isValidURL],
+  },
+  ZillizApiToken: {
+    envKey: "ZILLIZ_API_TOKEN",
+    checks: [isNotEmpty],
+  },
+
+  // Astra DB Options
+
+  AstraDBApplicationToken: {
+    envKey: "ASTRA_DB_APPLICATION_TOKEN",
+    checks: [isNotEmpty],
+  },
+  AstraDBEndpoint: {
+    envKey: "ASTRA_DB_ENDPOINT",
+    checks: [isNotEmpty],
+  },
+};
+
+const EMBEDDING_CONFIG_KEY_MAPPINGS = {
+  EmbeddingEngine: {
+    envKey: "EMBEDDING_ENGINE",
+    checks: [supportedEmbeddingModel],
+  },
+  EmbeddingBasePath: {
+    envKey: "EMBEDDING_BASE_PATH",
+    checks: [isNotEmpty, validDockerizedUrl],
+  },
+  EmbeddingModelPref: {
+    envKey: "EMBEDDING_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  EmbeddingModelMaxChunkLength: {
+    envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
+    checks: [nonZero],
+  },
+
+  // Sparse Embedder
+  SparseEmbeddingBasePath: {
+    envKey: "SPARSE_EMBEDDING_BASE_PATH",
+    checks: [isNotEmpty, validDockerizedUrl],
+  },
+  SparseEmbeddingModelPref: {
+    envKey: "SPARSE_EMBEDDING_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  // Generic OpenAI Embedding Settings
+  GenericOpenAiEmbeddingApiKey: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",
+    checks: [],
+  },
+  SparseGenericOpenAiEmbeddingApiKey: {
+    envKey: "SPARSE_GENERIC_OPEN_AI_EMBEDDING_API_KEY",
+    checks: [],
+  },
+  GenericOpenAiEmbeddingMaxConcurrentChunks: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS",
+    checks: [nonZero],
+  },
+
   // VoyageAi Options
   VoyageAiApiKey: {
     envKey: "VOYAGEAI_API_KEY",
     checks: [isNotEmpty],
   },
+};
 
+const TRANSCRIPTION_CONFIG_KEY_MAPPINGS = {
   // Whisper (transcription) providers
   WhisperProvider: {
     envKey: "WHISPER_PROVIDER",
@@ -450,7 +523,56 @@ const KEY_MAPPING = {
     checks: [validLocalWhisper],
     postUpdate: [],
   },
+};
 
+const VOICE_AND_SPEECH_CONFIG_KEY_MAPPINGS = {
+  // TTS/STT Integration ENVS
+  TextToSpeechProvider: {
+    envKey: "TTS_PROVIDER",
+    checks: [supportedTTSProvider],
+  },
+  // TTS OpenAI
+  TTSOpenAIKey: {
+    envKey: "TTS_OPEN_AI_KEY",
+    checks: [validOpenAIKey],
+  },
+  TTSOpenAIVoiceModel: {
+    envKey: "TTS_OPEN_AI_VOICE_MODEL",
+    checks: [],
+  },
+
+  // OpenAI Generic TTS
+  TTSOpenAICompatibleKey: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_KEY",
+    checks: [],
+  },
+  TTSOpenAICompatibleVoiceModel: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL",
+    checks: [isNotEmpty],
+  },
+  TTSOpenAICompatibleEndpoint: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_ENDPOINT",
+    checks: [isValidURL],
+  },
+
+  // TTS ElevenLabs
+  TTSElevenLabsKey: {
+    envKey: "TTS_ELEVEN_LABS_KEY",
+    checks: [isNotEmpty],
+  },
+  TTSElevenLabsVoiceModel: {
+    envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
+    checks: [],
+  },
+
+  // PiperTTS Local
+  TTSPiperTTSVoiceModel: {
+    envKey: "TTS_PIPER_VOICE_MODEL",
+    checks: [],
+  },
+};
+
+const SYSTEM_CONFIG_KEY_MAPPINGS = {
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
@@ -502,105 +624,14 @@ const KEY_MAPPING = {
     envKey: "AGENT_TAVILY_API_KEY",
     checks: [],
   },
-
-  // TTS/STT Integration ENVS
-  TextToSpeechProvider: {
-    envKey: "TTS_PROVIDER",
-    checks: [supportedTTSProvider],
-  },
-
-  // TTS OpenAI
-  TTSOpenAIKey: {
-    envKey: "TTS_OPEN_AI_KEY",
-    checks: [validOpenAIKey],
-  },
-  TTSOpenAIVoiceModel: {
-    envKey: "TTS_OPEN_AI_VOICE_MODEL",
-    checks: [],
-  },
-
-  // TTS ElevenLabs
-  TTSElevenLabsKey: {
-    envKey: "TTS_ELEVEN_LABS_KEY",
-    checks: [isNotEmpty],
-  },
-  TTSElevenLabsVoiceModel: {
-    envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
-    checks: [],
-  },
-
-  // PiperTTS Local
-  TTSPiperTTSVoiceModel: {
-    envKey: "TTS_PIPER_VOICE_MODEL",
-    checks: [],
-  },
-
-  // OpenAI Generic TTS
-  TTSOpenAICompatibleKey: {
-    envKey: "TTS_OPEN_AI_COMPATIBLE_KEY",
-    checks: [],
-  },
-  TTSOpenAICompatibleVoiceModel: {
-    envKey: "TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL",
-    checks: [isNotEmpty],
-  },
-  TTSOpenAICompatibleEndpoint: {
-    envKey: "TTS_OPEN_AI_COMPATIBLE_ENDPOINT",
-    checks: [isValidURL],
-  },
-
-  // DeepSeek Options
-  DeepSeekApiKey: {
-    envKey: "DEEPSEEK_API_KEY",
-    checks: [isNotEmpty],
-  },
-  DeepSeekModelPref: {
-    envKey: "DEEPSEEK_MODEL_PREF",
-    checks: [isNotEmpty],
-  },
-
-  // APIPie Options
-  ApipieLLMApiKey: {
-    envKey: "APIPIE_LLM_API_KEY",
-    checks: [isNotEmpty],
-  },
-  ApipieLLMModelPref: {
-    envKey: "APIPIE_LLM_MODEL_PREF",
-    checks: [isNotEmpty],
-  },
-
-  // xAI Options
-  XAIApiKey: {
-    envKey: "XAI_LLM_API_KEY",
-    checks: [isNotEmpty],
-  },
-  XAIModelPref: {
-    envKey: "XAI_LLM_MODEL_PREF",
-    checks: [isNotEmpty],
-  },
-
-  // Nvidia NIM Options
-  NvidiaNimLLMBasePath: {
-    envKey: "NVIDIA_NIM_LLM_BASE_PATH",
-    checks: [isValidURL],
-    postUpdate: [
-      (_, __, nextValue) => {
-        const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
-        process.env.NVIDIA_NIM_LLM_BASE_PATH =
-          parseNvidiaNimBasePath(nextValue);
-      },
-    ],
-  },
-  NvidiaNimLLMModelPref: {
-    envKey: "NVIDIA_NIM_LLM_MODEL_PREF",
-    checks: [],
-    postUpdate: [
-      async (_, __, nextValue) => {
-        const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
-        await NvidiaNimLLM.setModelTokenLimit(nextValue);
-      },
-    ],
-  },
+};
+const KEY_MAPPING = {
+  ...LLM_CONFIG_KEY_MAPPINGS,
+  ...EMBEDDING_CONFIG_KEY_MAPPINGS,
+  ...VECTOR_DB_KEY_MAPPINGS,
+  ...TRANSCRIPTION_CONFIG_KEY_MAPPINGS,
+  ...VOICE_AND_SPEECH_CONFIG_KEY_MAPPINGS,
+  ...SYSTEM_CONFIG_KEY_MAPPINGS,
 };
 
 function isNotEmpty(input = "") {
@@ -909,7 +940,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   }
 
   await logChangesToEventLog(newValues, userId);
-  if (process.env.NODE_ENV === "production") dumpENV();
+  // if (process.env.NODE_ENV === "production") dumpENV();
   return { newValues, error: error?.length > 0 ? error : false };
 }
 
@@ -998,7 +1029,26 @@ function dumpENV() {
   return true;
 }
 
+function getEnvVarsByKeys(keys) {
+  return keys?.reduce((acc, curr) => {
+    const envVarName = KEY_MAPPING[curr]?.envKey;
+    acc[curr] = process.env?.[envVarName];
+    return acc;
+  }, {});
+}
+
+const ALLOWED_SYSTEM_CONFIG_KEYS = {
+  embedding: EMBEDDING_CONFIG_KEY_MAPPINGS,
+  llm: LLM_CONFIG_KEY_MAPPINGS,
+  transcription: TRANSCRIPTION_CONFIG_KEY_MAPPINGS,
+  "vector-db": VECTOR_DB_KEY_MAPPINGS,
+  "voice-speech": VOICE_AND_SPEECH_CONFIG_KEY_MAPPINGS,
+  system: SYSTEM_CONFIG_KEY_MAPPINGS,
+};
+
 module.exports = {
   dumpENV,
   updateENV,
+  getEnvVarsByKeys,
+  ALLOWED_SYSTEM_CONFIG_KEYS,
 };

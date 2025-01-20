@@ -4,7 +4,11 @@ process.env.NODE_ENV === "development"
 const { viewLocalFiles, normalizePath, isWithin } = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
-const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
+const {
+  updateENV,
+  dumpENV,
+  getEnvVarsByKeys,
+} = require("../utils/helpers/updateENV");
 const {
   reqBody,
   makeJWT,
@@ -457,17 +461,32 @@ function systemEndpoints(app) {
   );
 
   app.post(
-    "/system/update-env",
+    "/system/update-env/:key?",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
+        const { key = "system" } = request.params;
         const body = reqBody(request);
-        const { newValues, error } = await updateENV(
+        let { newValues: values, error } = await updateENV(
           body,
           false,
           response?.locals?.user?.id
         );
-        response.status(200).json({ newValues, error });
+        if (error) {
+          response.status(400).json({ error });
+          return;
+        }
+
+        if (Object?.keys(values)?.length !== Object?.keys(body)) {
+          values = getEnvVarsByKeys(Object.keys(body));
+        }
+        const { status, message, newValues } =
+          await SystemSettings.updateConfig(key, values);
+        if (!status) {
+          response.status(400).json({ message });
+          return;
+        }
+        response.status(200).json({ status, message, newValues });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
