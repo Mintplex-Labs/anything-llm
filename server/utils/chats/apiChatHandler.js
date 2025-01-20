@@ -354,7 +354,13 @@ async function chatSync({
       apiSessionId: sessionId,
       user,
       multiple_workspaces: workspaces ? workspaces.join(",") : null,
-      rewrite_question: effectiveQuestion,
+      rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
+
+
+
+
+
+
     });
 
     return {
@@ -404,7 +410,13 @@ async function chatSync({
     apiSessionId: sessionId,
     user,
     multiple_workspaces: workspaces ? workspaces.join(",") : null,
-    rewrite_question: effectiveQuestion,
+    rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
+
+
+
+
+
+
   });
 
   return {
@@ -742,7 +754,13 @@ async function streamChat({
       include: false,
       user,
       multiple_workspaces: workspaces ? workspaces.join(",") : null,
-      rewrite_question: effectiveQuestion,
+      rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
+
+
+
+
+
+
     });
     return;
   }
@@ -796,7 +814,13 @@ async function streamChat({
       apiSessionId: sessionId,
       user,
       multiple_workspaces: workspaces ? workspaces.join(",") : null,
-      rewrite_question: effectiveQuestion,
+      rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
+
+
+
+
+
+
     });
 
     writeResponseChunk(response, {

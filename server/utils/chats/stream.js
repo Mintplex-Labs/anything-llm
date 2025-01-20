@@ -256,7 +256,13 @@ async function streamChatWithWorkspace(
       },
       threadId: thread?.id || null,
       include: false,
-      rewrite_question: effectiveQuestion,
+      rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
+
+
+
+
+
+
       user: user,
     });
     return;
@@ -308,7 +314,13 @@ async function streamChatWithWorkspace(
       prompt: message,
       response: { text: completeText, sources, type: chatMode, attachments },
       threadId: thread?.id || null,
-      rewrite_question: effectiveQuestion,
+      rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
+
+
+
+
+
+
       user: user,
     });
 
