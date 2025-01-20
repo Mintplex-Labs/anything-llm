@@ -1,163 +1,35 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
-import OpenAiLogo from "@/media/llmprovider/openai.png";
-import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
-import LocalAiLogo from "@/media/llmprovider/localai.png";
-import OllamaLogo from "@/media/llmprovider/ollama.png";
-import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
-import CohereLogo from "@/media/llmprovider/cohere.png";
-import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
-import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
-import MistralAiLogo from "@/media/llmprovider/mistral.jpeg";
 
 import PreLoader from "@/components/Preloader";
-import ChangeWarningModal from "@/components/ChangeWarning";
-import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
-import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
-import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
-import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
-import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
-import LMStudioEmbeddingOptions from "@/components/EmbeddingSelection/LMStudioOptions";
-import CohereEmbeddingOptions from "@/components/EmbeddingSelection/CohereOptions";
-import VoyageAiOptions from "@/components/EmbeddingSelection/VoyageAiOptions";
-import LiteLLMOptions from "@/components/EmbeddingSelection/LiteLLMOptions";
 import GenericOpenAiEmbeddingOptions from "@/components/EmbeddingSelection/GenericOpenAiOptions";
-
-import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
-import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
-import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
-import MistralAiOptions from "@/components/EmbeddingSelection/MistralAiOptions";
+import { ALLOWED_SYSTEM_CONFIG_KEYS } from "@/utils/constants";
 
-const EMBEDDERS = [
-  {
-    name: "AnythingLLM Embedder",
-    value: "native",
-    logo: AnythingLLMIcon,
-    options: (settings) => <NativeEmbeddingOptions settings={settings} />,
-    description:
-      "Use the built-in embedding provider for AnythingLLM. Zero setup!",
-  },
-  {
-    name: "OpenAI",
-    value: "openai",
-    logo: OpenAiLogo,
-    options: (settings) => <OpenAiOptions settings={settings} />,
-    description: "The standard option for most non-commercial use.",
-  },
-  {
-    name: "Azure OpenAI",
-    value: "azure",
-    logo: AzureOpenAiLogo,
-    options: (settings) => <AzureAiOptions settings={settings} />,
-    description: "The enterprise option of OpenAI hosted on Azure services.",
-  },
-  {
-    name: "Local AI",
-    value: "localai",
-    logo: LocalAiLogo,
-    options: (settings) => <LocalAiOptions settings={settings} />,
-    description: "Run embedding models locally on your own machine.",
-  },
-  {
-    name: "Ollama",
-    value: "ollama",
-    logo: OllamaLogo,
-    options: (settings) => <OllamaEmbeddingOptions settings={settings} />,
-    description: "Run embedding models locally on your own machine.",
-  },
-  {
-    name: "LM Studio",
-    value: "lmstudio",
-    logo: LMStudioLogo,
-    options: (settings) => <LMStudioEmbeddingOptions settings={settings} />,
-    description:
-      "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
-  },
-  {
-    name: "Cohere",
-    value: "cohere",
-    logo: CohereLogo,
-    options: (settings) => <CohereEmbeddingOptions settings={settings} />,
-    description: "Run powerful embedding models from Cohere.",
-  },
-  {
-    name: "Voyage AI",
-    value: "voyageai",
-    logo: VoyageAiLogo,
-    options: (settings) => <VoyageAiOptions settings={settings} />,
-    description: "Run powerful embedding models from Voyage AI.",
-  },
-  {
-    name: "LiteLLM",
-    value: "litellm",
-    logo: LiteLLMLogo,
-    options: (settings) => <LiteLLMOptions settings={settings} />,
-    description: "Run powerful embedding models from LiteLLM.",
-  },
-  {
-    name: "Mistral AI",
-    value: "mistral",
-    logo: MistralAiLogo,
-    options: (settings) => <MistralAiOptions settings={settings} />,
-    description: "Run powerful embedding models from Mistral AI.",
-  },
-  {
-    name: "Generic OpenAI",
-    value: "generic-openai",
-    logo: GenericOpenAiLogo,
-    options: (settings) => (
-      <GenericOpenAiEmbeddingOptions settings={settings} />
-    ),
-    description: "Run embedding models from any OpenAI compatible API service.",
-  },
-];
+const SELECTED_EMBEDDER = {
+  name: "Generic OpenAI",
+  value: "generic-openai",
+  logo: GenericOpenAiLogo,
+  options: (settings) => <GenericOpenAiEmbeddingOptions settings={settings} />,
+  description: "Run embedding models from any OpenAI compatible API service.",
+};
 
 export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [hasEmbeddings, setHasEmbeddings] = useState(false);
-  const [hasCachedEmbeddings, setHasCachedEmbeddings] = useState(false);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredEmbedders, setFilteredEmbedders] = useState([]);
-  const [selectedEmbedder, setSelectedEmbedder] = useState(null);
-  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchInputRef = useRef(null);
-  const { isOpen, openModal, closeModal } = useModal();
-  const { t } = useTranslation();
 
-  function embedderModelChanged(formEl) {
-    try {
-      const newModel = new FormData(formEl).get("EmbeddingModelPref") ?? null;
-      if (newModel === null) return false;
-      return settings?.EmbeddingModelPref !== newModel;
-    } catch (error) {
-      console.error(error);
-    }
-    return false;
-  }
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      (selectedEmbedder !== settings?.EmbeddingEngine ||
-        embedderModelChanged(e.target)) &&
-      hasChanges &&
-      (hasEmbeddings || hasCachedEmbeddings)
-    ) {
-      openModal();
-    } else {
-      await handleSaveSettings();
-    }
+    await handleSaveSettings();
   };
 
   const handleSaveSettings = async () => {
@@ -165,10 +37,13 @@ export default function GeneralEmbeddingPreference() {
     const form = document.getElementById("embedding-form");
     const settingsData = {};
     const formData = new FormData(form);
-    settingsData.EmbeddingEngine = selectedEmbedder;
+    settingsData.EmbeddingEngine = SELECTED_EMBEDDER.value;
     for (var [key, value] of formData.entries()) settingsData[key] = value;
 
-    const { error } = await System.updateSystem(settingsData);
+    const { error } = await System.updateSystem(
+      settingsData,
+      ALLOWED_SYSTEM_CONFIG_KEYS.embedding
+    );
     if (error) {
       showToast(`Failed to save embedding settings: ${error}`, "error");
       setHasChanges(true);
@@ -177,47 +52,16 @@ export default function GeneralEmbeddingPreference() {
       setHasChanges(false);
     }
     setSaving(false);
-    closeModal();
-  };
-
-  const updateChoice = (selection) => {
-    setSearchQuery("");
-    setSelectedEmbedder(selection);
-    setSearchMenuOpen(false);
-    setHasChanges(true);
-  };
-
-  const handleXButton = () => {
-    if (searchQuery.length > 0) {
-      setSearchQuery("");
-      if (searchInputRef.current) searchInputRef.current.value = "";
-    } else {
-      setSearchMenuOpen(!searchMenuOpen);
-    }
   };
 
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
-      setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
-      setHasCachedEmbeddings(_settings?.HasCachedEmbeddings || false);
       setLoading(false);
     }
     fetchKeys();
   }, []);
-
-  useEffect(() => {
-    const filtered = EMBEDDERS.filter((embedder) =>
-      embedder.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredEmbedders(filtered);
-  }, [searchQuery, selectedEmbedder]);
-
-  const selectedEmbedderObject = EMBEDDERS.find(
-    (embedder) => embedder.value === selectedEmbedder
-  );
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
@@ -268,104 +112,34 @@ export default function GeneralEmbeddingPreference() {
                 {t("embedding.provider.title")}
               </div>
               <div className="relative">
-                {searchMenuOpen && (
-                  <div
-                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
-                    onClick={() => setSearchMenuOpen(false)}
-                  />
-                )}
-                {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
-                    <div className="w-full flex flex-col gap-y-1">
-                      <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
-                        <MagnifyingGlass
-                          size={20}
-                          weight="bold"
-                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
-                        />
-                        <input
-                          type="text"
-                          name="embedder-search"
-                          autoComplete="off"
-                          placeholder="Search all embedding providers"
-                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          ref={searchInputRef}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") e.preventDefault();
-                          }}
-                        />
-                        <X
-                          size={20}
-                          weight="bold"
-                          className="cursor-pointer text-white hover:text-x-button"
-                          onClick={handleXButton}
-                        />
+                <div className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300">
+                  <div className="flex gap-x-4 items-center">
+                    <img
+                      src={SELECTED_EMBEDDER?.logo}
+                      alt={`${SELECTED_EMBEDDER?.name} logo`}
+                      className="w-10 h-10 rounded-md"
+                    />
+                    <div className="flex flex-col text-left">
+                      <div className="text-sm font-semibold text-white">
+                        {SELECTED_EMBEDDER?.name}
                       </div>
-                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
-                        {filteredEmbedders.map((embedder) => (
-                          <EmbedderItem
-                            key={embedder.name}
-                            name={embedder.name}
-                            value={embedder.value}
-                            image={embedder.logo}
-                            description={embedder.description}
-                            checked={selectedEmbedder === embedder.value}
-                            onClick={() => updateChoice(embedder.value)}
-                          />
-                        ))}
+                      <div className="mt-1 text-xs text-description">
+                        {SELECTED_EMBEDDER?.description}
                       </div>
                     </div>
                   </div>
-                ) : (
-                  <button
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
-                    type="button"
-                    onClick={() => setSearchMenuOpen(true)}
-                  >
-                    <div className="flex gap-x-4 items-center">
-                      <img
-                        src={selectedEmbedderObject?.logo}
-                        alt={`${selectedEmbedderObject?.name} logo`}
-                        className="w-10 h-10 rounded-md"
-                      />
-                      <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-white">
-                          {selectedEmbedderObject?.name}
-                        </div>
-                        <div className="mt-1 text-xs text-description">
-                          {selectedEmbedderObject?.description}
-                        </div>
-                      </div>
-                    </div>
-                    <CaretUpDown
-                      size={24}
-                      weight="bold"
-                      className="text-white"
-                    />
-                  </button>
-                )}
+                </div>
               </div>
               <div
                 onChange={() => setHasChanges(true)}
                 className="mt-4 flex flex-col gap-y-1"
               >
-                {selectedEmbedder &&
-                  EMBEDDERS.find(
-                    (embedder) => embedder.value === selectedEmbedder
-                  )?.options(settings)}
+                {SELECTED_EMBEDDER?.options(settings)}
               </div>
             </div>
           </form>
         </div>
       )}
-      <ModalWrapper isOpen={isOpen}>
-        <ChangeWarningModal
-          warningText="Switching the embedding model will break previously embedded documents from working during chat. They will need to un-embed from every workspace and fully removed and re-uploaded so they can be embed by the new embedding model."
-          onClose={closeModal}
-          onConfirm={handleSaveSettings}
-        />
-      </ModalWrapper>
     </div>
   );
 }

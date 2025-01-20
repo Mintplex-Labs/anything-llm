@@ -12,6 +12,7 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import { ALLOWED_SYSTEM_CONFIG_KEYS } from "@/utils/constants";
 
 const PROVIDERS = [
   {
@@ -49,7 +50,10 @@ export default function TranscriptionModelPreference() {
     const formData = new FormData(form);
 
     for (var [key, value] of formData.entries()) data[key] = value;
-    const { error } = await System.updateSystem(data);
+    const { error } = await System.updateSystem(
+      data,
+      ALLOWED_SYSTEM_CONFIG_KEYS.transcription
+    );
     setSaving(true);
 
     if (error) {

@@ -58,6 +58,7 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+import { ALLOWED_SYSTEM_CONFIG_KEYS } from "@/utils/constants";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -301,7 +302,10 @@ export default function LLMPreference({
     data.VectorDB = "lancedb";
     for (var [key, value] of formData.entries()) data[key] = value;
 
-    const { error } = await System.updateSystem(data);
+    const { error } = await System.updateSystem(
+      data,
+      ALLOWED_SYSTEM_CONFIG_KEYS.llm
+    );
     if (error) {
       showToast(`Failed to save LLM settings: ${error}`, "error");
       return;

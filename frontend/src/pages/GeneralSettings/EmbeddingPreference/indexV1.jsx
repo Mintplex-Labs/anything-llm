@@ -1,51 +1,160 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import ChromaLogo from "@/media/vectordbs/chroma.png";
-import PineconeLogo from "@/media/vectordbs/pinecone.png";
-import LanceDbLogo from "@/media/vectordbs/lancedb.png";
-import WeaviateLogo from "@/media/vectordbs/weaviate.png";
-import QDrantLogo from "@/media/vectordbs/qdrant.png";
-import MilvusLogo from "@/media/vectordbs/milvus.png";
-import ZillizLogo from "@/media/vectordbs/zilliz.png";
-import AstraDBLogo from "@/media/vectordbs/astraDB.png";
+import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import OpenAiLogo from "@/media/llmprovider/openai.png";
+import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
+import LocalAiLogo from "@/media/llmprovider/localai.png";
+import OllamaLogo from "@/media/llmprovider/ollama.png";
+import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
+import CohereLogo from "@/media/llmprovider/cohere.png";
+import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
+import LiteLLMLogo from "@/media/llmprovider/litellm.png";
+import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
+import MistralAiLogo from "@/media/llmprovider/mistral.jpeg";
+
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
+import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
+import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
+import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
+import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
+import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
+import LMStudioEmbeddingOptions from "@/components/EmbeddingSelection/LMStudioOptions";
+import CohereEmbeddingOptions from "@/components/EmbeddingSelection/CohereOptions";
+import VoyageAiOptions from "@/components/EmbeddingSelection/VoyageAiOptions";
+import LiteLLMOptions from "@/components/EmbeddingSelection/LiteLLMOptions";
+import GenericOpenAiEmbeddingOptions from "@/components/EmbeddingSelection/GenericOpenAiOptions";
+
+import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
-import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
-import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
-import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
-import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
-import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions";
-import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
-import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
-import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
-import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import MistralAiOptions from "@/components/EmbeddingSelection/MistralAiOptions";
 import { ALLOWED_SYSTEM_CONFIG_KEYS } from "@/utils/constants";
 
-export default function GeneralVectorDatabase() {
+const EMBEDDERS = [
+  {
+    name: "AnythingLLM Embedder",
+    value: "native",
+    logo: AnythingLLMIcon,
+    options: (settings) => <NativeEmbeddingOptions settings={settings} />,
+    description:
+      "Use the built-in embedding provider for AnythingLLM. Zero setup!",
+  },
+  {
+    name: "OpenAI",
+    value: "openai",
+    logo: OpenAiLogo,
+    options: (settings) => <OpenAiOptions settings={settings} />,
+    description: "The standard option for most non-commercial use.",
+  },
+  {
+    name: "Azure OpenAI",
+    value: "azure",
+    logo: AzureOpenAiLogo,
+    options: (settings) => <AzureAiOptions settings={settings} />,
+    description: "The enterprise option of OpenAI hosted on Azure services.",
+  },
+  {
+    name: "Local AI",
+    value: "localai",
+    logo: LocalAiLogo,
+    options: (settings) => <LocalAiOptions settings={settings} />,
+    description: "Run embedding models locally on your own machine.",
+  },
+  {
+    name: "Ollama",
+    value: "ollama",
+    logo: OllamaLogo,
+    options: (settings) => <OllamaEmbeddingOptions settings={settings} />,
+    description: "Run embedding models locally on your own machine.",
+  },
+  {
+    name: "LM Studio",
+    value: "lmstudio",
+    logo: LMStudioLogo,
+    options: (settings) => <LMStudioEmbeddingOptions settings={settings} />,
+    description:
+      "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+  },
+  {
+    name: "Cohere",
+    value: "cohere",
+    logo: CohereLogo,
+    options: (settings) => <CohereEmbeddingOptions settings={settings} />,
+    description: "Run powerful embedding models from Cohere.",
+  },
+  {
+    name: "Voyage AI",
+    value: "voyageai",
+    logo: VoyageAiLogo,
+    options: (settings) => <VoyageAiOptions settings={settings} />,
+    description: "Run powerful embedding models from Voyage AI.",
+  },
+  {
+    name: "LiteLLM",
+    value: "litellm",
+    logo: LiteLLMLogo,
+    options: (settings) => <LiteLLMOptions settings={settings} />,
+    description: "Run powerful embedding models from LiteLLM.",
+  },
+  {
+    name: "Mistral AI",
+    value: "mistral",
+    logo: MistralAiLogo,
+    options: (settings) => <MistralAiOptions settings={settings} />,
+    description: "Run powerful embedding models from Mistral AI.",
+  },
+  {
+    name: "Generic OpenAI",
+    value: "generic-openai",
+    logo: GenericOpenAiLogo,
+    options: (settings) => (
+      <GenericOpenAiEmbeddingOptions settings={settings} />
+    ),
+    description: "Run embedding models from any OpenAI compatible API service.",
+  },
+];
+
+export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [hasEmbeddings, setHasEmbeddings] = useState(false);
-  const [settings, setSettings] = useState({});
+  const [hasCachedEmbeddings, setHasCachedEmbeddings] = useState(false);
+  const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredVDBs, setFilteredVDBs] = useState([]);
-  const [selectedVDB, setSelectedVDB] = useState(null);
+  const [filteredEmbedders, setFilteredEmbedders] = useState([]);
+  const [selectedEmbedder, setSelectedEmbedder] = useState(null);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
 
+  function embedderModelChanged(formEl) {
+    try {
+      const newModel = new FormData(formEl).get("EmbeddingModelPref") ?? null;
+      if (newModel === null) return false;
+      return settings?.EmbeddingModelPref !== newModel;
+    } catch (error) {
+      console.error(error);
+    }
+    return false;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (selectedVDB !== settings?.VectorDB && hasChanges && hasEmbeddings) {
+    if (
+      (selectedEmbedder !== settings?.EmbeddingEngine ||
+        embedderModelChanged(e.target)) &&
+      hasChanges &&
+      (hasEmbeddings || hasCachedEmbeddings)
+    ) {
       openModal();
     } else {
       await handleSaveSettings();
@@ -54,30 +163,30 @@ export default function GeneralVectorDatabase() {
 
   const handleSaveSettings = async () => {
     setSaving(true);
-    const form = document.getElementById("vectordb-form");
+    const form = document.getElementById("embedding-form");
     const settingsData = {};
     const formData = new FormData(form);
-    settingsData.VectorDB = selectedVDB;
+    settingsData.EmbeddingEngine = selectedEmbedder;
     for (var [key, value] of formData.entries()) settingsData[key] = value;
 
-    const { error } = await System.updateSystem(
-      settingsData,
-      ALLOWED_SYSTEM_CONFIG_KEYS["vector-db"]
+    const { error } = await System.updateSystemConfigByKey(
+      ALLOWED_SYSTEM_CONFIG_KEYS.embedding,
+      settingsData
     );
     if (error) {
-      showToast(`Failed to save vector database settings: ${error}`, "error");
+      showToast(`Failed to save embedding settings: ${error}`, "error");
       setHasChanges(true);
     } else {
-      showToast("Vector database preferences saved successfully.", "success");
+      showToast("Embedding preferences saved successfully.", "success");
       setHasChanges(false);
     }
     setSaving(false);
     closeModal();
   };
 
-  const updateVectorChoice = (selection) => {
+  const updateChoice = (selection) => {
     setSearchQuery("");
-    setSelectedVDB(selection);
+    setSelectedEmbedder(selection);
     setSearchMenuOpen(false);
     setHasChanges(true);
   };
@@ -95,84 +204,24 @@ export default function GeneralVectorDatabase() {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setSelectedVDB(_settings?.VectorDB || "lancedb");
+      setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
       setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
+      setHasCachedEmbeddings(_settings?.HasCachedEmbeddings || false);
       setLoading(false);
     }
     fetchKeys();
   }, []);
 
   useEffect(() => {
-    const filtered = VECTOR_DBS.filter((vdb) =>
-      vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const filtered = EMBEDDERS.filter((embedder) =>
+      embedder.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredVDBs(filtered);
-  }, [searchQuery, selectedVDB]);
+    setFilteredEmbedders(filtered);
+  }, [searchQuery, selectedEmbedder]);
 
-  const VECTOR_DBS = [
-    {
-      name: "LanceDB",
-      value: "lancedb",
-      logo: LanceDbLogo,
-      options: <LanceDBOptions />,
-      description:
-        "100% local vector DB that runs on the same instance as AnythingLLM.",
-    },
-    {
-      name: "Chroma",
-      value: "chroma",
-      logo: ChromaLogo,
-      options: <ChromaDBOptions settings={settings} />,
-      description:
-        "Open source vector database you can host yourself or on the cloud.",
-    },
-    {
-      name: "Pinecone",
-      value: "pinecone",
-      logo: PineconeLogo,
-      options: <PineconeDBOptions settings={settings} />,
-      description: "100% cloud-based vector database for enterprise use cases.",
-    },
-    {
-      name: "Zilliz Cloud",
-      value: "zilliz",
-      logo: ZillizLogo,
-      options: <ZillizCloudOptions settings={settings} />,
-      description:
-        "Cloud hosted vector database built for enterprise with SOC 2 compliance.",
-    },
-    {
-      name: "QDrant",
-      value: "qdrant",
-      logo: QDrantLogo,
-      options: <QDrantDBOptions settings={settings} />,
-      description: "Open source local and distributed cloud vector database.",
-    },
-    {
-      name: "Weaviate",
-      value: "weaviate",
-      logo: WeaviateLogo,
-      options: <WeaviateDBOptions settings={settings} />,
-      description:
-        "Open source local and cloud hosted multi-modal vector database.",
-    },
-    {
-      name: "Milvus",
-      value: "milvus",
-      logo: MilvusLogo,
-      options: <MilvusDBOptions settings={settings} />,
-      description: "Open-source, highly scalable, and blazing fast.",
-    },
-    {
-      name: "AstraDB",
-      value: "astra",
-      logo: AstraDBLogo,
-      options: <AstraDBOptions settings={settings} />,
-      description: "Vector Search for Real-world GenAI.",
-    },
-  ];
-
-  const selectedVDBObject = VECTOR_DBS.find((vdb) => vdb.value === selectedVDB);
+  const selectedEmbedderObject = EMBEDDERS.find(
+    (embedder) => embedder.value === selectedEmbedder
+  );
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
@@ -192,7 +241,7 @@ export default function GeneralVectorDatabase() {
           className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <form
-            id="vectordb-form"
+            id="embedding-form"
             onSubmit={handleSubmit}
             className="flex w-full"
           >
@@ -200,11 +249,13 @@ export default function GeneralVectorDatabase() {
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white">
-                    {t("vector.title")}
+                    {t("embedding.title")}
                   </p>
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-                  {t("vector.description")}
+                  {t("embedding.desc-start")}
+                  <br />
+                  {t("embedding.desc-end")}
                 </p>
               </div>
               <div className="w-full justify-end flex">
@@ -218,7 +269,7 @@ export default function GeneralVectorDatabase() {
                 )}
               </div>
               <div className="text-base font-bold text-white mt-6 mb-4">
-                {t("vector.provider.title")}
+                {t("embedding.provider.title")}
               </div>
               <div className="relative">
                 {searchMenuOpen && (
@@ -238,9 +289,9 @@ export default function GeneralVectorDatabase() {
                         />
                         <input
                           type="text"
-                          name="vdb-search"
+                          name="embedder-search"
                           autoComplete="off"
-                          placeholder="Search all vector database providers"
+                          placeholder="Search all embedding providers"
                           className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
@@ -256,15 +307,15 @@ export default function GeneralVectorDatabase() {
                         />
                       </div>
                       <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
-                        {filteredVDBs.map((vdb) => (
-                          <VectorDBItem
-                            key={vdb.name}
-                            name={vdb.name}
-                            value={vdb.value}
-                            image={vdb.logo}
-                            description={vdb.description}
-                            checked={selectedVDB === vdb.value}
-                            onClick={() => updateVectorChoice(vdb.value)}
+                        {filteredEmbedders.map((embedder) => (
+                          <EmbedderItem
+                            key={embedder.name}
+                            name={embedder.name}
+                            value={embedder.value}
+                            image={embedder.logo}
+                            description={embedder.description}
+                            checked={selectedEmbedder === embedder.value}
+                            onClick={() => updateChoice(embedder.value)}
                           />
                         ))}
                       </div>
@@ -278,16 +329,16 @@ export default function GeneralVectorDatabase() {
                   >
                     <div className="flex gap-x-4 items-center">
                       <img
-                        src={selectedVDBObject.logo}
-                        alt={`${selectedVDBObject.name} logo`}
+                        src={selectedEmbedderObject?.logo}
+                        alt={`${selectedEmbedderObject?.name} logo`}
                         className="w-10 h-10 rounded-md"
                       />
                       <div className="flex flex-col text-left">
                         <div className="text-sm font-semibold text-white">
-                          {selectedVDBObject.name}
+                          {selectedEmbedderObject?.name}
                         </div>
                         <div className="mt-1 text-xs text-description">
-                          {selectedVDBObject.description}
+                          {selectedEmbedderObject?.description}
                         </div>
                       </div>
                     </div>
@@ -303,8 +354,10 @@ export default function GeneralVectorDatabase() {
                 onChange={() => setHasChanges(true)}
                 className="mt-4 flex flex-col gap-y-1"
               >
-                {selectedVDB &&
-                  VECTOR_DBS.find((vdb) => vdb.value === selectedVDB)?.options}
+                {selectedEmbedder &&
+                  EMBEDDERS.find(
+                    (embedder) => embedder.value === selectedEmbedder
+                  )?.options(settings)}
               </div>
             </div>
           </form>
@@ -312,7 +365,7 @@ export default function GeneralVectorDatabase() {
       )}
       <ModalWrapper isOpen={isOpen}>
         <ChangeWarningModal
-          warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
+          warningText="Switching the embedding model will break previously embedded documents from working during chat. They will need to un-embed from every workspace and fully removed and re-uploaded so they can be embed by the new embedding model."
           onClose={closeModal}
           onConfirm={handleSaveSettings}
         />

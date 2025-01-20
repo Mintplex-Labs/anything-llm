@@ -6,6 +6,7 @@ import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import BrowserNative from "@/components/SpeechToText/BrowserNative";
+import { ALLOWED_SYSTEM_CONFIG_KEYS } from "@/utils/constants";
 
 const PROVIDERS = [
   {
@@ -35,7 +36,10 @@ export default function SpeechToTextProvider({ settings }) {
     const formData = new FormData(form);
 
     for (var [key, value] of formData.entries()) data[key] = value;
-    const { error } = await System.updateSystem(data);
+    const { error } = await System.updateSystem(
+      data,
+      ALLOWED_SYSTEM_CONFIG_KEYS["voice-speech"]
+    );
     setSaving(true);
 
     if (error) {
@@ -86,8 +90,8 @@ export default function SpeechToTextProvider({ settings }) {
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
             Here you can specify what kind of text-to-speech and speech-to-text
             providers you would want to use in your AnythingLLM experience. By
-            default, we use the browser's built in support for these services,
-            but you may want to use others.
+            default, we use the browser&apos;s built in support for these
+            services, but you may want to use others.
           </p>
         </div>
         <div className="w-full justify-end flex">
