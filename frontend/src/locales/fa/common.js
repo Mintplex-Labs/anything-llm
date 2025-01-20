@@ -137,146 +137,122 @@ const TRANSLATIONS = {
   // Chat Settings
   chat: {
     llm: {
-      title: "Workspace LLM Provider",
-      description:
-        "The specific LLM provider & model that will be used for this workspace. By default, it uses the system LLM provider and settings.",
-      search: "Search all LLM providers",
+      title: "ارائه‌دهنده LLM فضای کاری",
+      description: "ارائه‌دهنده و مدل LLM خاصی که برای این فضای کاری استفاده خواهد شد. به طور پیش‌فرض، از ارائه‌دهنده و تنظیمات LLM سیستم استفاده می‌کند.",
+      search: "جستجوی تمام ارائه‌دهندگان LLM",
     },
     model: {
-      title: "Workspace Chat model",
-      description:
-        "The specific chat model that will be used for this workspace. If empty, will use the system LLM preference.",
-      wait: "-- waiting for models --",
+      title: "مدل گفتگوی فضای کاری",
+      description: "مدل گفتگوی خاصی که برای این فضای کاری استفاده خواهد شد. اگر خالی باشد، از ترجیحات LLM سیستم استفاده خواهد کرد.",
+      wait: "-- در انتظار مدل‌ها --",
     },
     mode: {
-      title: "Chat mode",
+      title: "حالت گفتگو",
       chat: {
-        title: "Chat",
-        "desc-start": "will provide answers with the LLM's general knowledge",
-        and: "and",
-        "desc-end": "document context that is found.",
+        title: "گفتگو",
+        "desc-start": "پاسخ‌ها را با دانش عمومی LLM",
+        and: "و",
+        "desc-end": "محتوای اسناد یافت شده ارائه می‌دهد.",
       },
       query: {
-        title: "Query",
-        "desc-start": "will provide answers",
-        only: "only",
-        "desc-end": "if document context is found.",
+        title: "پرس‌وجو",
+        "desc-start": "پاسخ‌ها را",
+        only: "فقط",
+        "desc-end": "در صورت یافتن محتوای اسناد ارائه می‌دهد.",
       },
     },
     history: {
-      title: "Chat History",
-      "desc-start":
-        "The number of previous chats that will be included in the response's short-term memory.",
-      recommend: "Recommend 20. ",
-      "desc-end":
-        "Anything more than 45 is likely to lead to continuous chat failures depending on message size.",
+      title: "تاریخچه گفتگو",
+      "desc-start": "تعداد گفتگوهای قبلی که در حافظه کوتاه‌مدت پاسخ گنجانده خواهد شد.",
+      recommend: "پیشنهاد: ۲۰. ",
+      "desc-end": "بیش از ۴۵ احتمالاً منجر به شکست مداوم گفتگو می‌شود که به اندازه پیام‌ها بستگی دارد.",
     },
     prompt: {
-      title: "Prompt",
-      description:
-        "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+      title: "پیش‌متن",
+      description: "پیش‌متنی که در این فضای کاری استفاده خواهد شد. زمینه و دستورالعمل‌ها را برای تولید پاسخ توسط هوش مصنوعی تعریف کنید. باید یک پیش‌متن دقیق ارائه دهید تا هوش مصنوعی بتواند پاسخی مرتبط و دقیق تولید کند.",
     },
     refusal: {
-      title: "Query mode refusal response",
-      "desc-start": "When in",
-      query: "query",
-      "desc-end":
-        "mode, you may want to return a custom refusal response when no context is found.",
+      title: "پاسخ رد در حالت پرس‌وجو",
+      "desc-start": "در حالت",
+      query: "پرس‌وجو",
+      "desc-end": "ممکن است بخواهید هنگامی که هیچ محتوایی یافت نمی‌شود، یک پاسخ رد سفارشی برگردانید.",
     },
     temperature: {
-      title: "LLM Temperature",
-      "desc-start":
-        'This setting controls how "creative" your LLM responses will be.',
-      "desc-end":
-        "The higher the number the more creative. For some models this can lead to incoherent responses when set too high.",
-      hint: "Most LLMs have various acceptable ranges of valid values. Consult your LLM provider for that information.",
+      title: "دمای LLM",
+      "desc-start": 'این تنظیم میزان "خلاقیت" پاسخ‌های LLM شما را کنترل می‌کند.',
+      "desc-end": "هر چه عدد بالاتر باشد، خلاقیت بیشتر است. برای برخی مدل‌ها، تنظیم بسیار بالا می‌تواند منجر به پاسخ‌های نامفهوم شود.",
+      hint: "اکثر LLMها محدوده‌های مختلفی از مقادیر معتبر را دارند. برای این اطلاعات به ارائه‌دهنده LLM خود مراجعه کنید.",
     },
   },
 
   // Vector Database
   "vector-workspace": {
-    identifier: "Vector database identifier",
+    identifier: "شناسه پایگاه داده برداری",
     snippets: {
-      title: "Max Context Snippets",
-      description:
-        "This setting controls the maximum amount of context snippets the will be sent to the LLM for per chat or query.",
-      recommend: "Recommended: 4",
+      title: "حداکثر قطعات متنی",
+      description: "این تنظیم حداکثر تعداد قطعات متنی که برای هر گفتگو یا پرس‌وجو به LLM ارسال می‌شود را کنترل می‌کند.",
+      recommend: "پیشنهادی: 4",
     },
     doc: {
-      title: "Document similarity threshold",
-      description:
-        "The minimum similarity score required for a source to be considered related to the chat. The higher the number, the more similar the source must be to the chat.",
-      zero: "No restriction",
-      low: "Low (similarity score ≥ .25)",
-      medium: "Medium (similarity score ≥ .50)",
-      high: "High (similarity score ≥ .75)",
+      title: "آستانه شباهت سند",
+      description: "حداقل امتیاز شباهت مورد نیاز برای اینکه یک منبع مرتبط با گفتگو در نظر گرفته شود. هر چه عدد بالاتر باشد، منبع باید شباهت بیشتری با گفتگو داشته باشد.",
+      zero: "بدون محدودیت",
+      low: "پایین (امتیاز شباهت ≥ .25)",
+      medium: "متوسط (امتیاز شباهت ≥ .50)",
+      high: "بالا (امتیاز شباهت ≥ .75)",
     },
     reset: {
-      reset: "Reset Vector Database",
-      resetting: "Clearing vectors...",
-      confirm:
-        "You are about to reset this workspace's vector database. This will remove all vector embeddings currently embedded.\n\nThe original source files will remain untouched. This action is irreversible.",
-      error: "Workspace vector database could not be reset!",
-      success: "Workspace vector database was reset!",
+      reset: "بازنشانی پایگاه داده برداری",
+      resetting: "در حال پاک کردن بردارها...",
+      confirm: "شما در حال بازنشانی پایگاه داده برداری این فضای کاری هستید. این کار تمام جاسازی‌های برداری فعلی را حذف خواهد کرد.\n\nفایل‌های اصلی منبع دست نخورده باقی خواهند ماند. این عمل برگشت‌ناپذیر است.",
+      error: "بازنشانی پایگاه داده برداری فضای کاری امکان‌پذیر نبود!",
+      success: "پایگاه داده برداری فضای کاری بازنشانی شد!",
     },
   },
 
   // Agent Configuration
   agent: {
-    "performance-warning":
-      "Performance of LLMs that do not explicitly support tool-calling is highly dependent on the model's capabilities and accuracy. Some abilities may be limited or non-functional.",
+    "performance-warning": "عملکرد LLMهایی که به طور صریح از فراخوانی ابزار پشتیبانی نمی‌کنند، به شدت به قابلیت‌ها و دقت مدل وابسته است. برخی توانایی‌ها ممکن است محدود یا غیرفعال باشند.",
     provider: {
-      title: "Workspace Agent LLM Provider",
-      description:
-        "The specific LLM provider & model that will be used for this workspace's @agent agent.",
+      title: "ارائه‌دهنده LLM عامل فضای کاری",
+      description: "ارائه‌دهنده و مدل LLM خاصی که برای عامل @agent این فضای کاری استفاده خواهد شد.",
     },
     mode: {
       chat: {
-        title: "Workspace Agent Chat model",
-        description:
-          "The specific chat model that will be used for this workspace's @agent agent.",
+        title: "مدل گفتگوی عامل فضای کاری",
+        description: "مدل گفتگوی خاصی که برای عامل @agent این فضای کاری استفاده خواهد شد.",
       },
-      title: "Workspace Agent model",
-      description:
-        "The specific LLM model that will be used for this workspace's @agent agent.",
-      wait: "-- waiting for models --",
+      title: "مدل عامل فضای کاری",
+      description: "مدل LLM خاصی که برای عامل @agent این فضای کاری استفاده خواهد شد.",
+      wait: "-- در انتظار مدل‌ها --",
     },
-
     skill: {
-      title: "Default agent skills",
-      description:
-        "Improve the natural abilities of the default agent with these pre-built skills. This set up applies to all workspaces.",
+      title: "مهارت‌های پیش‌فرض عامل",
+      description: "توانایی‌های طبیعی عامل پیش‌فرض را با این مهارت‌های از پیش ساخته شده بهبود دهید. این تنظیمات برای تمام فضاهای کاری اعمال می‌شود.",
       rag: {
-        title: "RAG & long-term memory",
-        description:
-          'Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.',
+        title: "RAG و حافظه بلندمدت",
+        description: 'به عامل اجازه دهید از اسناد محلی شما برای پاسخ به پرس‌وجو استفاده کند یا از عامل بخواهید قطعات محتوا را برای بازیابی حافظه بلندمدت "به خاطر بسپارد".',
       },
       view: {
-        title: "View & summarize documents",
-        description:
-          "Allow the agent to list and summarize the content of workspace files currently embedded.",
+        title: "مشاهده و خلاصه‌سازی اسناد",
+        description: "به عامل اجازه دهید محتوای فایل‌های جاسازی شده فعلی فضای کاری را فهرست و خلاصه کند.",
       },
       scrape: {
-        title: "Scrape websites",
-        description:
-          "Allow the agent to visit and scrape the content of websites.",
+        title: "استخراج از وب‌سایت‌ها",
+        description: "به عامل اجازه دهید محتوای وب‌سایت‌ها را بازدید و استخراج کند.",
       },
       generate: {
-        title: "Generate charts",
-        description:
-          "Enable the default agent to generate various types of charts from data provided or given in chat.",
+        title: "تولید نمودارها",
+        description: "به عامل پیش‌فرض امکان تولید انواع مختلف نمودار از داده‌های ارائه شده یا داده شده در گفتگو را بدهید.",
       },
       save: {
-        title: "Generate & save files to browser",
-        description:
-          "Enable the default agent to generate and write to files that save and can be downloaded in your browser.",
+        title: "تولید و ذخیره فایل‌ها در مرورگر",
+        description: "به عامل پیش‌فرض امکان تولید و نوشتن در فایل‌هایی که ذخیره می‌شوند و می‌توانند در مرورگر شما دانلود شوند را بدهید.",
       },
       web: {
-        title: "Live web search and browsing",
-        "desc-start":
-          "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider.",
-        "desc-end":
-          "Web search during agent sessions will not work until this is set up.",
+        title: "جستجو و مرور زنده وب",
+        "desc-start": "با اتصال به یک ارائه‌دهنده جستجوی وب (SERP)، به عامل خود امکان جستجو در وب برای پاسخ به سؤالات خود را بدهید.",
+        "desc-end": "جستجوی وب در طول جلسات عامل تا زمانی که این تنظیم نشود، کار نخواهد کرد.",
       },
     },
   },
