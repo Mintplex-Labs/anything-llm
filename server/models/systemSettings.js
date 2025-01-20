@@ -233,6 +233,10 @@ const SystemSettings = {
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
+      SparseGenericOpenAiEmbeddingApiKey:
+        !!process.env.SPARSE_GENERIC_OPEN_AI_EMBEDDING_API_KEY,
+      SparseEmbeddingModelPref: process.env.SPARSE_EMBEDDING_MODEL_PREF,
+      SparseEmbeddingBasePath: process.env.SPARSE_EMBEDDING_BASE_PATH,
       GenericOpenAiEmbeddingMaxConcurrentChunks:
         process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
 

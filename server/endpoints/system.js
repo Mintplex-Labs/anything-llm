@@ -467,7 +467,7 @@ function systemEndpoints(app) {
       try {
         const { key = "system" } = request.params;
         const body = reqBody(request);
-        let { newValues: values, error } = await updateENV(
+        let { newValues: envValues, error } = await updateENV(
           body,
           false,
           response?.locals?.user?.id
@@ -476,17 +476,19 @@ function systemEndpoints(app) {
           response.status(400).json({ error });
           return;
         }
-
+        let values = envValues;
         if (Object?.keys(values)?.length !== Object?.keys(body)) {
           values = getEnvVarsByKeys(Object.keys(body));
         }
-        const { status, message, newValues } =
-          await SystemSettings.updateConfig(key, values);
+        const { status, message } = await SystemSettings.updateConfig(
+          key,
+          values
+        );
         if (!status) {
           response.status(400).json({ message });
           return;
         }
-        response.status(200).json({ status, message, newValues });
+        response.status(200).json({ status, message, newValues: envValues });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
