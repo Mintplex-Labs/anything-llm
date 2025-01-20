@@ -3,7 +3,7 @@ import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
-import { ArrowDown } from "@phosphor-icons/react";
+import { ArrowDown, CircleNotch, CaretDown, Check } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import useUser from "@/hooks/useUser";
 import Chartable from "./Chartable";
@@ -31,6 +31,8 @@ export default function ChatHistory({
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
+  const [statusResponses, setStatusResponses] = useState([]);
+  const [isStatusActive, setIsStatusActive] = useState(false);
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -136,6 +138,17 @@ export default function ChatHistory({
     );
   };
 
+  // Update status responses when history changes
+  useEffect(() => {
+    const latestStatus = history.filter(msg => msg?.type === "statusResponse" && !!msg.content);
+    if (latestStatus.length > 0) {
+      setStatusResponses(prev => [...new Set([...prev, ...latestStatus.map(s => s.content)])]);
+      setIsStatusActive(true);
+    } else {
+      setIsStatusActive(false);
+    }
+  }, [history]);
+
   if (history.length === 0 && !hasAttachments) {
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
@@ -187,18 +200,15 @@ export default function ChatHistory({
         const isLastBotReply =
           index === history.length - 1 && props.role === "assistant";
 
-        if (props?.type === "statusResponse" && !!props.content) {
-          return <StatusResponse key={props.uuid} props={props} />;
-        }
+        // Create an array of elements to render for this iteration
+        const elements = [];
 
         if (props.type === "rechartVisualize" && !!props.content) {
-          return (
+          elements.push(
             <Chartable key={props.uuid} workspace={workspace} props={props} />
           );
-        }
-
-        if (isLastBotReply && props.animate) {
-          return (
+        } else if (isLastBotReply && props.animate) {
+          elements.push(
             <PromptReply
               key={props.uuid}
               uuid={props.uuid}
@@ -210,27 +220,47 @@ export default function ChatHistory({
               closed={props.closed}
             />
           );
+        } else if (props?.type !== "statusResponse") {
+          elements.push(
+            <HistoricalMessage
+              key={index}
+              message={props.content}
+              role={props.role}
+              workspace={workspace}
+              sources={props.sources}
+              feedbackScore={props.feedbackScore}
+              chatId={props.chatId}
+              error={props.error}
+              attachments={props.attachments}
+              regenerateMessage={regenerateAssistantMessage}
+              isLastMessage={isLastBotReply}
+              saveEditedMessage={saveEditedMessage}
+              forkThread={forkThread}
+              metrics={props.metrics}
+            />
+          );
         }
 
-        return (
-          <HistoricalMessage
-            key={index}
-            message={props.content}
-            role={props.role}
-            workspace={workspace}
-            sources={props.sources}
-            feedbackScore={props.feedbackScore}
-            chatId={props.chatId}
-            error={props.error}
-            attachments={props.attachments}
-            regenerateMessage={regenerateAssistantMessage}
-            isLastMessage={isLastBotReply}
-            saveEditedMessage={saveEditedMessage}
-            forkThread={forkThread}
-            metrics={props.metrics}
-          />
-        );
+        // If this message triggered the agent and it's active, add the StatusResponse
+        if (props.role === "user" &&
+            history[index + 1]?.type === "statusResponse" &&
+            isStatusActive) {
+          elements.push(
+            <StatusResponse
+              key={`status-${index}`}
+              props={{
+                content: statusResponses[statusResponses.length - 1],
+                pending: history[history.length - 1]?.type === "statusResponse",
+                isLastMessage: true,
+                previousThoughts: statusResponses.slice(0, -1)
+              }}
+            />
+          );
+        }
+
+        return elements;
       })}
+
       {showing && (
         <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
       )}
@@ -254,16 +284,82 @@ export default function ChatHistory({
 }
 
 function StatusResponse({ props }) {
+  const [isThinking, setIsThinking] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showCheckmark, setShowCheckmark] = useState(false);
+
+  useEffect(() => {
+    setIsThinking(!!props.pending);
+
+    if (!props.pending && props.isLastMessage) {
+      setShowCheckmark(true);
+      setTimeout(() => setShowCheckmark(false), 2000);
+    }
+  }, [props.content, props.pending, props.isLastMessage]);
+
   return (
     <div className="flex justify-center items-end w-full">
-      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-        <div className="flex gap-x-5">
-          <span
-            className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line`}
-          >
-            {props.content}
-          </span>
+      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col relative">
+        {/* Single thought bar that updates */}
+        <div className="bg-theme-bg-chat-input hover:bg-theme-sidebar-item-hover rounded-full py-2 px-4 flex items-center gap-x-3 transition-all duration-200 border border-theme-sidebar-border">
+          <span className="animate-bounce-subtle">💭</span>
+          <div className="flex-1 overflow-hidden">
+            <span
+              key={props.content}
+              className="text-xs text-theme-text-secondary font-mono inline-block w-full animate-thoughtTransition"
+            >
+              {props.content}
+            </span>
+          </div>
+          <div className="flex items-center gap-x-2">
+            {isThinking ? (
+              <CircleNotch
+                className="w-4 h-4 text-theme-text-secondary animate-spin"
+                aria-label="Agent is thinking..."
+              />
+            ) : showCheckmark ? (
+              <Check
+                className="w-4 h-4 text-green-400 transition-all duration-300"
+                aria-label="Thought complete"
+              />
+            ) : null}
+            {props.previousThoughts?.length > 0 && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-theme-text-secondary hover:text-theme-text-primary transition-colors p-1 rounded-full hover:bg-theme-sidebar-item-hover"
+                aria-label={isExpanded ? "Hide previous thoughts" : "Show previous thoughts"}
+              >
+                <CaretDown
+                  className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                />
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Previous thoughts dropdown */}
+        {props.previousThoughts?.length > 0 && (
+          <div
+            className={`mt-2 bg-theme-bg-chat-input backdrop-blur-sm rounded-lg overflow-hidden transition-all duration-300 border border-theme-sidebar-border ${
+              isExpanded ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+            }`}
+          >
+            <div className="p-2 space-y-2">
+              {props.previousThoughts.map((thought, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-x-3 p-2 rounded-lg bg-theme-sidebar-item-default animate-fadeUpIn"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <span>💭</span>
+                  <span className="text-xs text-theme-text-secondary font-mono">
+                    {thought}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
