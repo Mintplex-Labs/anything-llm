@@ -104,37 +104,33 @@ const TRANSLATIONS = {
   // General Appearance
   general: {
     vector: {
-      title: "Vector Count",
-      description: "Total number of vectors in your vector database.",
+      title: "تعداد بردارها",
+      description: "تعداد کل بردارها در پایگاه داده برداری شما.",
     },
     names: {
-      description: "This will only change the display name of your workspace.",
+      description: "این فقط نام نمایشی فضای کاری شما را تغییر خواهد داد.",
     },
     message: {
-      title: "Suggested Chat Messages",
-      description:
-        "Customize the messages that will be suggested to your workspace users.",
-      add: "Add new message",
-      save: "Save Messages",
-      heading: "Explain to me",
-      body: "the benefits of AnythingLLM",
+      title: "پیام‌های گفتگوی پیشنهادی",
+      description: "پیام‌هایی که به کاربران فضای کاری پیشنهاد می‌شود را شخصی‌سازی کنید.",
+      add: "افزودن پیام جدید",
+      save: "ذخیره پیام‌ها",
+      heading: "برایم توضیح بده",
+      body: "مزایای AnythingLLM را",
     },
     pfp: {
-      title: "Assistant Profile Image",
-      description:
-        "Customize the profile image of the assistant for this workspace.",
-      image: "Workspace Image",
-      remove: "Remove Workspace Image",
+      title: "تصویر پروفایل دستیار",
+      description: "تصویر پروفایل دستیار را برای این فضای کاری شخصی‌سازی کنید.",
+      image: "تصویر فضای کاری",
+      remove: "حذف تصویر فضای کاری",
     },
     delete: {
-      title: "Delete Workspace",
-      description:
-        "Delete this workspace and all of its data. This will delete the workspace for all users.",
-      delete: "Delete Workspace",
-      deleting: "Deleting Workspace...",
-      "confirm-start": "You are about to delete your entire",
-      "confirm-end":
-        "workspace. This will remove all vector embeddings in your vector database.\n\nThe original source files will remain untouched. This action is irreversible.",
+      title: "حذف فضای کاری",
+      description: "این فضای کاری و تمام داده‌های آن را حذف کنید. این کار فضای کاری را برای همه کاربران حذف خواهد کرد.",
+      delete: "حذف فضای کاری",
+      deleting: "در حال حذف فضای کاری...",
+      "confirm-start": "شما در حال حذف کامل",
+      "confirm-end": "فضای کاری هستید. این کار تمام جاسازی‌های برداری را از پایگاه داده برداری شما حذف خواهد کرد.\n\nفایل‌های اصلی منبع دست نخورده باقی خواهند ماند. این عمل برگشت‌ناپذیر است.",
     },
   },
 
@@ -287,130 +283,115 @@ const TRANSLATIONS = {
 
   // Workspace Chats
   recorded: {
-    title: "Workspace Chats",
+    title: "گفتگوهای فضای کاری",
     description:
-      "These are all the recorded chats and messages that have been sent by users ordered by their creation date.",
-    export: "Export",
+      "این‌ها تمام گفتگوها و پیام‌های ثبت شده هستند که توسط کاربران ارسال شده‌اند و بر اساس تاریخ ایجاد مرتب شده‌اند.",
+    export: "خروجی‌گیری",
     table: {
-      id: "Id",
-      by: "Sent By",
-      workspace: "Workspace",
-      prompt: "Prompt",
-      response: "Response",
-      at: "Sent At",
+      id: "شناسه",
+      by: "ارسال شده توسط",
+      workspace: "فضای کاری",
+      prompt: "درخواست",
+      response: "پاسخ",
+      at: "زمان ارسال",
     },
   },
 
   // Appearance
   appearance: {
-    title: "Appearance",
-    description: "Customize the appearance settings of your platform.",
+    title: "ظاهر",
+    description: "تنظیمات ظاهری پلتفرم خود را شخصی‌سازی کنید.",
     logo: {
-      title: "Customize Logo",
-      description: "Upload your custom logo to make your chatbot yours.",
-      add: "Add a custom logo",
-      recommended: "Recommended size: 800 x 200",
-      remove: "Remove",
-      replace: "Replace",
+      title: "شخصی‌سازی لوگو",
+      description: "لوگوی سفارشی خود را برای شخصی‌سازی ربات گفتگو آپلود کنید.",
+      add: "افزودن لوگوی سفارشی",
+      recommended: "اندازه پیشنهادی: 800 x 200",
+      remove: "حذف",
+      replace: "جایگزینی",
     },
     message: {
-      title: "Customize Messages",
-      description: "Customize the automatic messages displayed to your users.",
-      new: "New",
-      system: "system",
-      user: "user",
-      message: "message",
-      assistant: "AnythingLLM Chat Assistant",
-      "double-click": "Double click to edit...",
-      save: "Save Messages",
+      title: "شخصی‌سازی پیام‌ها",
+      description: "پیام‌های خودکار نمایش داده شده به کاربران را شخصی‌سازی کنید.",
+      new: "جدید",
+      system: "سیستم",
+      user: "کاربر",
+      message: "پیام",
+      assistant: "دستیار گفتگوی AnythingLLM",
+      "double-click": "برای ویرایش دوبار کلیک کنید...",
+      save: "ذخیره پیام‌ها",
     },
     icons: {
-      title: "Custom Footer Icons",
-      description:
-        "Customize the footer icons displayed on the bottom of the sidebar.",
-      icon: "Icon",
-      link: "Link",
+      title: "آیکون‌های سفارشی پاورقی",
+      description: "آیکون‌های نمایش داده شده در پایین نوار کناری را شخصی‌سازی کنید.",
+      icon: "آیکون",
+      link: "لینک",
     },
   },
 
   // API Keys
   api: {
-    title: "API Keys",
+    title: "کلیدهای API",
     description:
-      "API keys allow the holder to programmatically access and manage this AnythingLLM instance.",
-    link: "Read the API documentation",
-    generate: "Generate New API Key",
+      "کلیدهای API به دارنده آن‌ها اجازه می‌دهند به صورت برنامه‌نویسی به این نمونه AnythingLLM دسترسی داشته و آن را مدیریت کنند.",
+    link: "مطالعه مستندات API",
+    generate: "ایجاد کلید API جدید",
     table: {
-      key: "API Key",
-      by: "Created By",
-      created: "Created",
+      key: "کلید API",
+      by: "ایجاد شده توسط",
+      created: "تاریخ ایجاد",
     },
   },
 
   llm: {
-    title: "LLM Preference",
-    description:
-      "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else AnythingLLM will not function properly.",
-    provider: "LLM Provider",
+    title: "ترجیحات مدل زبانی",
+    description: "این‌ها اعتبارنامه‌ها و تنظیمات ارائه‌دهنده مدل زبانی و جاسازی انتخابی شما هستند. مهم است که این کلیدها به‌روز و صحیح باشند در غیر این صورت AnythingLLM به درستی کار نخواهد کرد.",
+    provider: "ارائه‌دهنده مدل زبانی",
   },
 
   transcription: {
-    title: "Transcription Model Preference",
-    description:
-      "These are the credentials and settings for your preferred transcription model provider. Its important these keys are current and correct or else media files and audio will not transcribe.",
-    provider: "Transcription Provider",
-    "warn-start":
-      "Using the local whisper model on machines with limited RAM or CPU can stall AnythingLLM when processing media files.",
-    "warn-recommend":
-      "We recommend at least 2GB of RAM and upload files <10Mb.",
-    "warn-end":
-      "The built-in model will automatically download on the first use.",
+    title: "ترجیحات مدل رونویسی",
+    description: "این‌ها اعتبارنامه‌ها و تنظیمات ارائه‌دهنده مدل رونویسی انتخابی شما هستند. مهم است که این کلیدها به‌روز و صحیح باشند در غیر این صورت فایل‌های رسانه و صوتی رونویسی نخواهند شد.",
+    provider: "ارائه‌دهنده رونویسی",
+    "warn-start": "استفاده از مدل محلی Whisper روی دستگاه‌هایی با RAM یا CPU محدود می‌تواند هنگام پردازش فایل‌های رسانه‌ای باعث توقف AnythingLLM شود.",
+    "warn-recommend": "ما حداقل ۲ گیگابایت RAM و آپلود فایل‌های کمتر از ۱۰ مگابایت را توصیه می‌کنیم.",
+    "warn-end": "مدل داخلی در اولین استفاده به صورت خودکار دانلود خواهد شد.",
   },
 
   embedding: {
-    title: "Embedding Preference",
-    "desc-start":
-      "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials to for embedding text.",
-    "desc-end":
-      "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
+    title: "ترجیحات جاسازی",
+    "desc-start": "هنگام استفاده از یک LLM که به طور پیش‌فرض از موتور جاسازی پشتیبانی نمی‌کند - ممکن است نیاز به تعیین اعتبارنامه‌های اضافی برای جاسازی متن داشته باشید.",
+    "desc-end": "جاسازی فرآیند تبدیل متن به بردارها است. این اعتبارنامه‌ها برای تبدیل فایل‌ها و درخواست‌های شما به فرمتی که AnythingLLM بتواند پردازش کند، ضروری هستند.",
     provider: {
-      title: "Embedding Provider",
-      description:
-        "There is no set up required when using AnythingLLM's native embedding engine.",
+      title: "ارائه‌دهنده جاسازی",
+      description: "هنگام استفاده از موتور جاسازی داخلی AnythingLLM نیازی به تنظیمات نیست.",
     },
   },
 
   text: {
-    title: "Text splitting & Chunking Preferences",
-    "desc-start":
-      "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
-    "desc-end":
-      "You should only modify this setting if you understand how text splitting works and it's side effects.",
-    "warn-start": "Changes here will only apply to",
-    "warn-center": "newly embedded documents",
-    "warn-end": ", not existing documents.",
+    title: "تقسیم متن و تکه‌بندی",
+    "desc-start": "تقسیم متن به شما امکان می‌دهد اسناد بزرگ را به بخش‌های کوچک‌تر تقسیم کنید که برای جاسازی و پردازش مناسب‌تر هستند.",
+    "desc-end": "سعی کنید تعادلی بین اندازه بخش و همپوشانی ایجاد کنید تا از دست رفتن اطلاعات را به حداقل برسانید.",
+    "warn-start": "تغییر این مقادیر نیاز به",
+    "warn-center": "پردازش مجدد تمام اسناد",
+    "warn-end": "خواهد داشت.",
     size: {
-      title: "Text Chunk Size",
-      description:
-        "This is the maximum length of characters that can be present in a single vector.",
-      recommend: "Embed model maximum length is",
+      title: "حداکثر اندازه بخش",
+      description: "این حداکثر تعداد کاراکترهایی است که می‌تواند در یک بردار وجود داشته باشد.",
+      recommend: "حداکثر طول مدل جاسازی",
     },
-
     overlap: {
-      title: "Text Chunk Overlap",
-      description:
-        "This is the maximum overlap of characters that occurs during chunking between two adjacent text chunks.",
+      title: "همپوشانی بخش‌های متن",
+      description: "این حداکثر همپوشانی کاراکترها است که در هنگام تکه‌بندی بین دو بخش متن مجاور رخ می‌دهد.",
     },
   },
 
   // Vector Database
   vector: {
-    title: "Vector Database",
-    description:
-      "These are the credentials and settings for how your AnythingLLM instance will function. It's important these keys are current and correct.",
+    title: "پایگاه داده برداری",
+    description: "این‌ها اعتبارنامه‌ها و تنظیمات نحوه عملکرد نمونه AnythingLLM شما هستند. مهم است که این کلیدها به‌روز و صحیح باشند.",
     provider: {
-      title: "Vector Database Provider",
-      description: "There is no configuration needed for LanceDB.",
+      title: "ارائه‌دهنده پایگاه داده برداری",
+      description: "برای LanceDB نیازی به پیکربندی نیست.",
     },
   },
 
