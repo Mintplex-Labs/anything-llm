@@ -1,6 +1,17 @@
 const TRANSLATIONS = {
   common: {
-    
+    "workspaces-name": "Workspaces Name",
+    error: "error",
+    success: "success",
+    user: "User",
+    selection: "Model Selection",
+    saving: "Saving...",
+    save: "Save changes",
+    previous: "Previous Page",
+    next: "Next Page",
+  },
+
+  connectors: {
     manage: {
       documents: "Documents",
       "data-connectors": "Data Connectors",
@@ -32,18 +43,6 @@ const TRANSLATIONS = {
       "fetch-website": "Fetch website",
       "privacy-notice": "These files will be uploaded to the document processor running on this AnythingLLM instance. These files are not sent or shared with a third party.",
     },
-    "workspaces-name": "Workspaces Name",
-    error: "error",
-    success: "success",
-    user: "User",
-    selection: "Model Selection",
-    saving: "Saving...",
-    save: "Save changes",
-    previous: "Previous Page",
-    next: "Next Page",
-  },
-
-  connectors: {
     "search-placeholder": "Search data connectors",
     "no-connectors": "No data connectors found.",
     github: {
