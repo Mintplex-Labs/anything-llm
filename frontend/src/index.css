@@ -626,7 +626,8 @@ dialog::backdrop {
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1068,7 +1069,8 @@ does not extend the close button beyond the viewport. */
 }
 
 @keyframes bounce-subtle {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {

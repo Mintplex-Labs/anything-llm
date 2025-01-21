@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
+import StatusResponse from "./StatusResponse";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
-import { ArrowDown, CircleNotch, CaretDown, Check } from "@phosphor-icons/react";
+import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import useUser from "@/hooks/useUser";
 import Chartable from "./Chartable";
@@ -12,6 +13,7 @@ import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
+import { v4 } from "uuid";
 
 export default function ChatHistory({
   history = [],
@@ -31,8 +33,6 @@ export default function ChatHistory({
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
-  const [statusResponses, setStatusResponses] = useState([]);
-  const [isStatusActive, setIsStatusActive] = useState(false);
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -138,17 +138,6 @@ export default function ChatHistory({
     );
   };
 
-  // Update status responses when history changes
-  useEffect(() => {
-    const latestStatus = history.filter(msg => msg?.type === "statusResponse" && !!msg.content);
-    if (latestStatus.length > 0) {
-      setStatusResponses(prev => [...new Set([...prev, ...latestStatus.map(s => s.content)])]);
-      setIsStatusActive(true);
-    } else {
-      setIsStatusActive(false);
-    }
-  }, [history]);
-
   if (history.length === 0 && !hasAttachments) {
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
@@ -187,80 +176,40 @@ export default function ChatHistory({
     );
   }
 
+  const hhistory = buildMessages({
+    workspace,
+    history,
+    regenerateAssistantMessage,
+    saveEditedMessage,
+    forkThread,
+  });
+
   return (
     <div
-      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
-        showScrollbar ? "show-scrollbar" : "no-scroll"
-      }`}
+      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
       id="chat-history"
       ref={chatHistoryRef}
       onScroll={handleScroll}
     >
-      {history.map((props, index) => {
-        const isLastBotReply =
-          index === history.length - 1 && props.role === "assistant";
-
-        // Create an array of elements to render for this iteration
-        const elements = [];
-
-        if (props.type === "rechartVisualize" && !!props.content) {
-          elements.push(
-            <Chartable key={props.uuid} workspace={workspace} props={props} />
-          );
-        } else if (isLastBotReply && props.animate) {
-          elements.push(
-            <PromptReply
-              key={props.uuid}
-              uuid={props.uuid}
-              reply={props.content}
-              pending={props.pending}
-              sources={props.sources}
-              error={props.error}
-              workspace={workspace}
-              closed={props.closed}
-            />
-          );
-        } else if (props?.type !== "statusResponse") {
-          elements.push(
-            <HistoricalMessage
-              key={index}
-              message={props.content}
-              role={props.role}
-              workspace={workspace}
-              sources={props.sources}
-              feedbackScore={props.feedbackScore}
-              chatId={props.chatId}
-              error={props.error}
-              attachments={props.attachments}
-              regenerateMessage={regenerateAssistantMessage}
-              isLastMessage={isLastBotReply}
-              saveEditedMessage={saveEditedMessage}
-              forkThread={forkThread}
-              metrics={props.metrics}
-            />
-          );
-        }
-
-        // If this message triggered the agent and it's active, add the StatusResponse
-        if (props.role === "user" &&
-            history[index + 1]?.type === "statusResponse" &&
-            isStatusActive) {
-          elements.push(
+      {hhistory.map((item, index) => {
+        if (Array.isArray(item)) {
+          const lastMessage = history?.[history.length - 1] || {};
+          const hasSubsequentMessages = index < hhistory.length - 1;
+          return (
             <StatusResponse
-              key={`status-${index}`}
-              props={{
-                content: statusResponses[statusResponses.length - 1],
-                pending: history[history.length - 1]?.type === "statusResponse",
-                isLastMessage: true,
-                previousThoughts: statusResponses.slice(0, -1)
-              }}
+              key={`status-group-${index}`}
+              messages={item}
+              isThinking={!hasSubsequentMessages && lastMessage?.animate}
+              showCheckmark={
+                hasSubsequentMessages ||
+                (!lastMessage?.animate &&
+                  lastMessage?.type !== "statusResponse")
+              }
             />
           );
         }
-
-        return elements;
+        return item;
       })}
-
       {showing && (
         <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
       )}
@@ -283,88 +232,6 @@ export default function ChatHistory({
   );
 }
 
-function StatusResponse({ props }) {
-  const [isThinking, setIsThinking] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [showCheckmark, setShowCheckmark] = useState(false);
-
-  useEffect(() => {
-    setIsThinking(!!props.pending);
-
-    if (!props.pending && props.isLastMessage) {
-      setShowCheckmark(true);
-      setTimeout(() => setShowCheckmark(false), 2000);
-    }
-  }, [props.content, props.pending, props.isLastMessage]);
-
-  return (
-    <div className="flex justify-center items-end w-full">
-      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col relative">
-        {/* Single thought bar that updates */}
-        <div className="bg-theme-bg-chat-input hover:bg-theme-sidebar-item-hover rounded-full py-2 px-4 flex items-center gap-x-3 transition-all duration-200 border border-theme-sidebar-border">
-          <span className="animate-bounce-subtle">💭</span>
-          <div className="flex-1 overflow-hidden">
-            <span
-              key={props.content}
-              className="text-xs text-theme-text-secondary font-mono inline-block w-full animate-thoughtTransition"
-            >
-              {props.content}
-            </span>
-          </div>
-          <div className="flex items-center gap-x-2">
-            {isThinking ? (
-              <CircleNotch
-                className="w-4 h-4 text-theme-text-secondary animate-spin"
-                aria-label="Agent is thinking..."
-              />
-            ) : showCheckmark ? (
-              <Check
-                className="w-4 h-4 text-green-400 transition-all duration-300"
-                aria-label="Thought complete"
-              />
-            ) : null}
-            {props.previousThoughts?.length > 0 && (
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="text-theme-text-secondary hover:text-theme-text-primary transition-colors p-1 rounded-full hover:bg-theme-sidebar-item-hover"
-                aria-label={isExpanded ? "Hide previous thoughts" : "Show previous thoughts"}
-              >
-                <CaretDown
-                  className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
-                />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Previous thoughts dropdown */}
-        {props.previousThoughts?.length > 0 && (
-          <div
-            className={`mt-2 bg-theme-bg-chat-input backdrop-blur-sm rounded-lg overflow-hidden transition-all duration-300 border border-theme-sidebar-border ${
-              isExpanded ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
-            }`}
-          >
-            <div className="p-2 space-y-2">
-              {props.previousThoughts.map((thought, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-x-3 p-2 rounded-lg bg-theme-sidebar-item-default animate-fadeUpIn"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <span>💭</span>
-                  <span className="text-xs text-theme-text-secondary font-mono">
-                    {thought}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
   if (suggestions.length === 0) return null;
   return (
@@ -381,4 +248,65 @@ function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
       ))}
     </div>
   );
+}
+
+function buildMessages({
+  history,
+  workspace,
+  regenerateAssistantMessage,
+  saveEditedMessage,
+  forkThread,
+}) {
+  return history.reduce((acc, props, index) => {
+    const isLastBotReply =
+      index === history.length - 1 && props.role === "assistant";
+
+    if (props?.type === "statusResponse" && !!props.content) {
+      if (acc.length > 0 && Array.isArray(acc[acc.length - 1])) {
+        acc[acc.length - 1].push(props);
+      } else {
+        acc.push([props]);
+      }
+      return acc;
+    }
+
+    if (props.type === "rechartVisualize" && !!props.content) {
+      acc.push(
+        <Chartable key={props.uuid} workspace={workspace} props={props} />
+      );
+    } else if (isLastBotReply && props.animate) {
+      acc.push(
+        <PromptReply
+          key={props.uuid || v4()}
+          uuid={props.uuid}
+          reply={props.content}
+          pending={props.pending}
+          sources={props.sources}
+          error={props.error}
+          workspace={workspace}
+          closed={props.closed}
+        />
+      );
+    } else {
+      acc.push(
+        <HistoricalMessage
+          key={index}
+          message={props.content}
+          role={props.role}
+          workspace={workspace}
+          sources={props.sources}
+          feedbackScore={props.feedbackScore}
+          chatId={props.chatId}
+          error={props.error}
+          attachments={props.attachments}
+          regenerateMessage={regenerateAssistantMessage}
+          isLastMessage={isLastBotReply}
+          saveEditedMessage={saveEditedMessage}
+          forkThread={forkThread}
+          metrics={props.metrics}
+        />
+      );
+    }
+    return acc;
+  }, []);
 }
