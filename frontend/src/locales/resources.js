@@ -29,7 +29,6 @@ import Vietnamese from "./vn/common.js";
 import TraditionalChinese from "./zh_TW/common.js";
 import Farsi from "./fa/common.js";
 
-
 export const defaultNS = "common";
 export const resources = {
   en: {
