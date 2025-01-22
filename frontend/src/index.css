@@ -583,22 +583,6 @@ dialog::backdrop {
   animation: slideDown 0.3s ease-out forwards;
 }
 
-@keyframes slideUp {
-  from {
-    max-height: 400px;
-    opacity: 1;
-  }
-
-  to {
-    max-height: 0;
-    opacity: 0;
-  }
-}
-
-.slide-up {
-  animation: slideUp 0.3s ease-out forwards;
-}
-
 .input-label {
   @apply text-[14px] font-bold text-white;
 }
@@ -945,4 +929,52 @@ does not extend the close button beyond the viewport. */
 
 .rti--container {
   @apply !bg-theme-settings-input-bg !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
+}
+
+@keyframes fadeUpIn {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeUpIn {
+  animation: fadeUpIn 0.3s ease-out forwards;
+}
+
+@keyframes bounce-subtle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes thoughtTransition {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-thoughtTransition {
+  animation: thoughtTransition 0.5s ease-out forwards;
 }
