@@ -3,6 +3,12 @@ import { Warning } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
 import renderMarkdown from "@/utils/chat/markdown";
 import Citations from "../Citation";
+import {
+  THOUGHT_REGEX_CLOSE,
+  THOUGHT_REGEX_COMPLETE,
+  THOUGHT_REGEX_OPEN,
+  ThoughtChainComponent,
+} from "../ThoughtContainer";
 
 const PromptReply = ({
   uuid,
@@ -61,10 +67,7 @@ const PromptReply = ({
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <WorkspaceProfileImage workspace={workspace} />
-          <span
-            className="break-words"
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
-          />
+          <RenderAssistantChatContent message={reply} />
         </div>
         <Citations sources={sources} />
       </div>
@@ -86,6 +89,27 @@ export function WorkspaceProfileImage({ workspace }) {
   }
 
   return <UserIcon user={{ uid: workspace.slug }} role="assistant" />;
+}
+
+function RenderAssistantChatContent({ message }) {
+  const thinking =
+    message.match(THOUGHT_REGEX_OPEN) && !message.match(THOUGHT_REGEX_CLOSE);
+  if (thinking)
+    return <ThoughtChainComponent content={message} expanded={true} />;
+
+  const completeThoughtChain = message.match(THOUGHT_REGEX_COMPLETE)?.[0];
+  const msgToRender = message.replace(THOUGHT_REGEX_COMPLETE, "");
+  return (
+    <div className="flex flex-col gap-y-1">
+      {completeThoughtChain && (
+        <ThoughtChainComponent content={completeThoughtChain} expanded={true} />
+      )}
+      <span
+        className="break-words"
+        dangerouslySetInnerHTML={{ __html: renderMarkdown(msgToRender) }}
+      />
+    </div>
+  );
 }
 
 export default memo(PromptReply);
