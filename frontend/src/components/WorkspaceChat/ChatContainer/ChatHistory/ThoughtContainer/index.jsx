@@ -57,7 +57,7 @@ export const ThoughtChainComponent = forwardRef(
 
     return (
       <div className="flex justify-start items-end transition-all duration-200 w-full md:max-w-[800px]">
-        <div className="py-2 w-full flex gap-x-5 flex-col relative">
+        <div className="pb-2 w-full flex gap-x-5 flex-col relative">
           <div
             style={{
               transition: "all 0.1s ease-in-out",
