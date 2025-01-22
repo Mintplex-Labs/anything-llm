@@ -3,6 +3,7 @@ import renderMarkdown from "@/utils/chat/markdown";
 import { Brain, CaretDown } from "@phosphor-icons/react";
 import DOMPurify from "dompurify";
 import truncate from "truncate";
+import { isMobile } from "react-device-detect";
 
 const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
 const CLOSING_TAGS = [...THOUGHT_KEYWORDS, "response", "answer"];
@@ -18,7 +19,7 @@ export const THOUGHT_REGEX_COMPLETE = new RegExp(
       `<${keyword}\\s*(?:[^>]*?)?\\s*>[\\s\\S]*?<\\/${keyword}\\s*(?:[^>]*?)?>`
   ).join("|")
 );
-const THOUGHT_PREVIEW_LENGTH = 50;
+const THOUGHT_PREVIEW_LENGTH = isMobile ? 25 : 50;
 
 /**
  * Component to render a thought chain.
@@ -55,10 +56,14 @@ export const ThoughtChainComponent = forwardRef(
     }
 
     return (
-      <div className="flex justify-start items-end max-w-[800px]">
-        <div className="py-2 px-4 w-full flex gap-x-5 flex-col relative ">
+      <div className="flex justify-start items-end transition-all duration-200 w-full md:max-w-[800px]">
+        <div className="py-2 w-full flex gap-x-5 flex-col relative">
           <div
-            className={`${isExpanded || autoExpand ? "rounded-md" : `${canExpand ? "hover:bg-theme-sidebar-item-hover transition-all duration-200" : ""}`} items-start bg-theme-bg-chat-input rounded-full py-2 px-4 flex gap-x-2 border border-theme-sidebar-border`}
+            style={{
+              transition: "all 0.1s ease-in-out",
+              borderRadius: isExpanded || autoExpand ? "6px" : "24px",
+            }}
+            className={`${isExpanded || autoExpand ? "" : `${canExpand ? "hover:bg-theme-sidebar-item-hover" : ""}`} items-start bg-theme-bg-chat-input py-2 px-4 flex gap-x-2 border border-theme-sidebar-border`}
           >
             {isThinking || isComplete ? (
               <Brain
