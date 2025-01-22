@@ -10,6 +10,12 @@ import createDOMPurify from "dompurify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
 import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
 import TTSMessage from "./Actions/TTSButton";
+import {
+  THOUGHT_REGEX_CLOSE,
+  THOUGHT_REGEX_COMPLETE,
+  THOUGHT_REGEX_OPEN,
+  ThoughtChainComponent,
+} from "../ThoughtContainer";
 
 const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = ({
@@ -97,11 +103,10 @@ const HistoricalMessage = ({
             />
           ) : (
             <div className="break-words">
-              <span
-                className="flex flex-col gap-y-1"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(renderMarkdown(message)),
-                }}
+              <RenderChatContent
+                role={role}
+                message={message}
+                expanded={isLastMessage}
               />
               <ChatAttachments attachments={attachments} />
             </div>
@@ -179,3 +184,62 @@ function ChatAttachments({ attachments = [] }) {
     </div>
   );
 }
+
+const RenderChatContent = memo(
+  ({ role, message, expanded = false }) => {
+    // If the message is not from the assistant, we can render it directly
+    // as normal since the user cannot think (lol)
+    if (role !== "assistant")
+      return (
+        <span
+          className="flex flex-col gap-y-1"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(renderMarkdown(message)),
+          }}
+        />
+      );
+    let thoughtChain = null;
+    let msgToRender = message;
+
+    // If the message is a perfect thought chain, we can render it directly
+    // Complete == open and close tags match perfectly.
+    if (message.match(THOUGHT_REGEX_COMPLETE)) {
+      thoughtChain = message.match(THOUGHT_REGEX_COMPLETE)?.[0];
+      msgToRender = message.replace(THOUGHT_REGEX_COMPLETE, "");
+    }
+
+    // If the message is a thought chain but not a complete thought chain (matching opening tags but not closing tags),
+    // we can render it as a thought chain if we can at least find a closing tag
+    // This can occur when the assistant starts with <thinking> and then <response>'s later.
+    if (
+      message.match(THOUGHT_REGEX_OPEN) &&
+      message.match(THOUGHT_REGEX_CLOSE)
+    ) {
+      const closingTag = message.match(THOUGHT_REGEX_CLOSE)?.[0];
+      const splitMessage = message.split(closingTag);
+      thoughtChain = splitMessage[0] + closingTag;
+      msgToRender = splitMessage[1];
+    }
+
+    return (
+      <>
+        {thoughtChain && (
+          <ThoughtChainComponent content={thoughtChain} expanded={expanded} />
+        )}
+        <span
+          className="flex flex-col gap-y-1"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
+          }}
+        />
+      </>
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.role === nextProps.role &&
+      prevProps.message === nextProps.message &&
+      prevProps.expanded === nextProps.expanded
+    );
+  }
+);
