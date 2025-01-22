@@ -68,7 +68,11 @@ const websocket = {
         aibitat.introspect = (messageText) => {
           if (!introspection) return; // Dump thoughts when not wanted.
           socket.send(
-            JSON.stringify({ type: "statusResponse", content: messageText })
+            JSON.stringify({
+              type: "statusResponse",
+              content: messageText,
+              animate: true,
+            })
           );
         };
 
