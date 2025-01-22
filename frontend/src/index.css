@@ -931,16 +931,6 @@ does not extend the close button beyond the viewport. */
   @apply !bg-theme-settings-input-bg !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
 }
 
-@keyframes typewriter {
-  from {
-    width: 0;
-  }
-
-  to {
-    width: 100%;
-  }
-}
-
 @keyframes fadeUpIn {
   0% {
     opacity: 0;

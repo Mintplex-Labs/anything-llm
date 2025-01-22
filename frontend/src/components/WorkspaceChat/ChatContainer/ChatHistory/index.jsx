@@ -192,8 +192,7 @@ export default function ChatHistory({
     >
       {compiledHistory.map((item, index) => {
         if (Array.isArray(item)) {
-          const lastMessage =
-            compiledHistory?.[compiledHistory.length - 1] || {};
+          const lastMessage = history?.[history.length - 1] || {};
           const hasSubsequentMessages = index < compiledHistory.length - 1;
           return (
             <StatusResponse
