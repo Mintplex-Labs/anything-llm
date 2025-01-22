@@ -17,7 +17,7 @@ async function getSparseEmbedding(inputText) {
         };
 
         // Call the Sparse Embedder API
-        const response = await fetch(process.env.SPARSE_EMBEDDER_URL, {
+        const response = await fetch(process.env.SPARSE_EMBEDDING_BASE_PATH, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

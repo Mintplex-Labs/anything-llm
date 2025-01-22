@@ -88,7 +88,7 @@ async function chatSync({
 
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
-  let effectiveQuestion = message; 
+  let effectiveQuestion = message;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
@@ -207,22 +207,28 @@ async function chatSync({
   });
 
   if (process.env.QUERY_REWRITER_ENABLED == 'true') {
-    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop().content;
-    const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
-    const rewriteRequest = LLMConnector.constructPrompt({
-      systemPrompt: process.env.QUERY_REWRITER_PROMPT,
-      contextTexts: [],
-      chatHistory: [],
-      userPrompt: userPrompt,
-    });
-    // console.dir(rewriteRequest, { depth: null, colors: true });
+    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop()?.content || message;
 
-    effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    if (lastQuestion.toLowerCase() === message.toLowerCase()) {
+      console.log("Last question is the same as the current message. Skipping query rewriting.");
 
-    console.log("rewritten question: ", effectiveQuestion)
-    
+    } else {
+      const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
+      const rewriteRequest = LLMConnector.constructPrompt({
+        systemPrompt: process.env.QUERY_REWRITER_PROMPT,
+        contextTexts: [],
+        chatHistory: [],
+        userPrompt: userPrompt,
+      });
+      // console.dir(rewriteRequest, { depth: null, colors: true });
+
+      effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
+        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      });
+
+      console.log("rewritten question: ", effectiveQuestion)
+    }
+
   }
 
 
@@ -456,7 +462,7 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
-  let effectiveQuestion = message; 
+  let effectiveQuestion = message;
 
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
@@ -580,22 +586,28 @@ async function streamChat({
   });
 
   if (process.env.QUERY_REWRITER_ENABLED == 'true') {
-    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop().content;
-    const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
-    const rewriteRequest = LLMConnector.constructPrompt({
-      systemPrompt: process.env.QUERY_REWRITER_PROMPT,
-      contextTexts: [],
-      chatHistory: [],
-      userPrompt: userPrompt,
-    });
-    // console.dir(rewriteRequest, { depth: null, colors: true });
+    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop()?.content || message;
 
-    effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    if (lastQuestion.toLowerCase() === message.toLowerCase()) {
+      console.log("Last question is the same as the current message. Skipping query rewriting.");
 
-    console.log("rewritten question: ", effectiveQuestion)
-    
+    } else {
+      const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
+      const rewriteRequest = LLMConnector.constructPrompt({
+        systemPrompt: process.env.QUERY_REWRITER_PROMPT,
+        contextTexts: [],
+        chatHistory: [],
+        userPrompt: userPrompt,
+      });
+      // console.dir(rewriteRequest, { depth: null, colors: true });
+
+      effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
+        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      });
+
+      console.log("rewritten question: ", effectiveQuestion)
+    }
+
   }
 
 
