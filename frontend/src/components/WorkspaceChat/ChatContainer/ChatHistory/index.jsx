@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import StatusResponse from "./StatusResponse";
@@ -176,13 +176,42 @@ export default function ChatHistory({
     );
   }
 
-  const compiledHistory = buildMessages({
-    workspace,
-    history,
-    regenerateAssistantMessage,
-    saveEditedMessage,
-    forkThread,
-  });
+  const compiledHistory = useMemo(
+    () =>
+      buildMessages({
+        workspace,
+        history,
+        regenerateAssistantMessage,
+        saveEditedMessage,
+        forkThread,
+      }),
+    [
+      workspace,
+      history,
+      regenerateAssistantMessage,
+      saveEditedMessage,
+      forkThread,
+    ]
+  );
+  const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
+  const renderStatusResponse = useCallback(
+    (item, index) => {
+      const hasSubsequentMessages = index < compiledHistory.length - 1;
+      return (
+        <StatusResponse
+          key={`status-group-${index}`}
+          messages={item}
+          isThinking={!hasSubsequentMessages && lastMessageInfo.isAnimating}
+          showCheckmark={
+            hasSubsequentMessages ||
+            (!lastMessageInfo.isAnimating && !lastMessageInfo.isStatusResponse)
+          }
+        />
+      );
+    },
+    [compiledHistory.length, lastMessageInfo]
+  );
+
   return (
     <div
       className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
@@ -190,25 +219,9 @@ export default function ChatHistory({
       ref={chatHistoryRef}
       onScroll={handleScroll}
     >
-      {compiledHistory.map((item, index) => {
-        if (Array.isArray(item)) {
-          const lastMessage = history?.[history.length - 1] || {};
-          const hasSubsequentMessages = index < compiledHistory.length - 1;
-          return (
-            <StatusResponse
-              key={`status-group-${index}`}
-              messages={item}
-              isThinking={!hasSubsequentMessages && lastMessage?.animate}
-              showCheckmark={
-                hasSubsequentMessages ||
-                (!lastMessage?.animate &&
-                  lastMessage?.type !== "statusResponse")
-              }
-            />
-          );
-        }
-        return item;
-      })}
+      {compiledHistory.map((item, index) =>
+        Array.isArray(item) ? renderStatusResponse(item, index) : item
+      )}
       {showing && (
         <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
       )}
@@ -230,6 +243,14 @@ export default function ChatHistory({
     </div>
   );
 }
+
+const getLastMessageInfo = (history) => {
+  const lastMessage = history?.[history.length - 1] || {};
+  return {
+    isAnimating: lastMessage?.animate,
+    isStatusResponse: lastMessage?.type === "statusResponse",
+  };
+};
 
 function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
   if (suggestions.length === 0) return null;
