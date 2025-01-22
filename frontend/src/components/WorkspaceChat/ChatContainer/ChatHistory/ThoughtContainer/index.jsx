@@ -58,7 +58,7 @@ export const ThoughtChainComponent = forwardRef(
       <div className="flex justify-start items-end max-w-[800px]">
         <div className="py-2 px-4 w-full flex gap-x-5 flex-col relative ">
           <div
-            className={`${isExpanded || autoExpand ? "" : `${canExpand ? "hover:bg-theme-sidebar-item-hover transition-all duration-200" : ""}`} items-start bg-theme-bg-chat-input rounded-md py-2 px-4 flex gap-x-2 border border-theme-sidebar-border`}
+            className={`${isExpanded || autoExpand ? "rounded-md" : `${canExpand ? "hover:bg-theme-sidebar-item-hover transition-all duration-200" : ""}`} items-start bg-theme-bg-chat-input rounded-full py-2 px-4 flex gap-x-2 border border-theme-sidebar-border`}
           >
             {isThinking || isComplete ? (
               <Brain
