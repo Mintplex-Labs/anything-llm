@@ -1,12 +1,7 @@
+import { useState, forwardRef, useImperativeHandle } from "react";
 import renderMarkdown from "@/utils/chat/markdown";
-import {
-  Brain,
-  CaretDown,
-  CheckCircle,
-  CircleNotch,
-} from "@phosphor-icons/react";
+import { Brain, CaretDown } from "@phosphor-icons/react";
 import DOMPurify from "dompurify";
-import { useState } from "react";
 import truncate from "truncate";
 
 const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
@@ -31,93 +26,99 @@ const THOUGHT_PREVIEW_LENGTH = 50;
  * @param {boolean} expanded - Whether the thought chain is expanded.
  * @returns {JSX.Element}
  */
-export function ThoughtChainComponent({ content, expanded = false }) {
-  const [isExpanded, setIsExpanded] = useState(expanded);
-  if (!content || !content.length) return null;
+export const ThoughtChainComponent = forwardRef(
+  ({ content: initialContent, expanded }, ref) => {
+    const [content, setContent] = useState(initialContent);
+    const [isExpanded, setIsExpanded] = useState(expanded);
+    useImperativeHandle(ref, () => ({
+      updateContent: (newContent) => {
+        setContent(newContent);
+      },
+    }));
 
-  const isThinking =
-    content.match(THOUGHT_REGEX_OPEN) && !content.match(THOUGHT_REGEX_CLOSE);
-  const isComplete =
-    content.match(THOUGHT_REGEX_COMPLETE) || content.match(THOUGHT_REGEX_CLOSE);
+    const isThinking =
+      content.match(THOUGHT_REGEX_OPEN) && !content.match(THOUGHT_REGEX_CLOSE);
+    const isComplete =
+      content.match(THOUGHT_REGEX_COMPLETE) ||
+      content.match(THOUGHT_REGEX_CLOSE);
+    const tagStrippedContent = content
+      .replace(THOUGHT_REGEX_OPEN, "")
+      .replace(THOUGHT_REGEX_CLOSE, "");
+    const autoExpand =
+      isThinking && tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
+    const canExpand = tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
+    if (!content || !content.length) return null;
 
-  const tagStrippedContent = content
-    .replace(THOUGHT_REGEX_OPEN, "")
-    .replace(THOUGHT_REGEX_CLOSE, "");
-  if (
-    !tagStrippedContent ||
-    // If the content is just whitespace, don't render it
-    tagStrippedContent.replace(/\s/g, "").length === 0
-  )
-    return null;
+    function handleExpandClick() {
+      if (!canExpand) return;
+      setIsExpanded(!isExpanded);
+    }
 
-  const autoExpand =
-    isThinking && tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
-  const canExpand = tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
-
-  function handleExpandClick() {
-    if (!canExpand) return;
-    setIsExpanded(!isExpanded);
-  }
-
-  return (
-    <div className="flex justify-start items-end max-w-[800px]">
-      <div className="py-2 px-4 w-full flex gap-x-5 flex-col relative ">
-        <div
-          className={`${isExpanded || autoExpand ? "" : `${canExpand ? "hover:bg-theme-sidebar-item-hover transition-all duration-200" : ""}`} items-start bg-theme-bg-chat-input rounded-md py-2 px-4 flex gap-x-2 border border-theme-sidebar-border`}
-        >
-          {isThinking ? (
-            <Brain
-              className="w-4 h-4 mt-1 text-blue-500 transition-all duration-300 animate-pulse"
-              aria-label="Model is thinking..."
-            />
-          ) : isComplete ? (
-            <Brain
-              className="w-4 h-4 mt-1 text-green-400 transition-all duration-300"
-              aria-label="Done thinking"
-            />
-          ) : null}
-          <div className="flex-1 overflow-hidden">
-            {!isExpanded && !autoExpand ? (
-              <span
-                className="text-xs text-theme-text-secondary font-mono inline-block w-full"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(
-                    truncate(tagStrippedContent, THOUGHT_PREVIEW_LENGTH)
-                  ),
-                }}
-              />
-            ) : (
-              <span
-                className="text-xs text-theme-text-secondary font-mono inline-block w-full"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(
-                    renderMarkdown(tagStrippedContent)
-                  ),
-                }}
-              />
-            )}
-          </div>
-          <div className="flex items-center gap-x-2">
-            {!autoExpand && canExpand ? (
-              <button
-                onClick={handleExpandClick}
-                data-tooltip-id="expand-cot"
+    return (
+      <div className="flex justify-start items-end max-w-[800px]">
+        <div className="py-2 px-4 w-full flex gap-x-5 flex-col relative ">
+          <div
+            className={`${isExpanded || autoExpand ? "" : `${canExpand ? "hover:bg-theme-sidebar-item-hover transition-all duration-200" : ""}`} items-start bg-theme-bg-chat-input rounded-md py-2 px-4 flex gap-x-2 border border-theme-sidebar-border`}
+          >
+            {isThinking || isComplete ? (
+              <Brain
+                data-tooltip-id="cot-thinking"
                 data-tooltip-content={
-                  isExpanded ? "Hide thought chain" : "Show thought chain"
+                  isThinking
+                    ? "Model is thinking..."
+                    : "Model has finished thinking"
                 }
-                className="border-none text-theme-text-secondary hover:text-theme-text-primary transition-colors p-1 rounded-full hover:bg-theme-sidebar-item-hover"
+                className={`w-4 h-4 mt-1 ${isThinking ? "text-blue-500 animate-pulse" : "text-green-400"}`}
                 aria-label={
-                  isExpanded ? "Hide thought chain" : "Show thought chain"
+                  isThinking
+                    ? "Model is thinking..."
+                    : "Model has finished thinking"
                 }
-              >
-                <CaretDown
-                  className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-                />
-              </button>
+              />
             ) : null}
+            <div className="flex-1 overflow-hidden">
+              {!isExpanded && !autoExpand ? (
+                <span
+                  className="text-xs text-theme-text-secondary font-mono inline-block w-full"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      truncate(tagStrippedContent, THOUGHT_PREVIEW_LENGTH)
+                    ),
+                  }}
+                />
+              ) : (
+                <span
+                  className="text-xs text-theme-text-secondary font-mono inline-block w-full"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      renderMarkdown(tagStrippedContent)
+                    ),
+                  }}
+                />
+              )}
+            </div>
+            <div className="flex items-center gap-x-2">
+              {!autoExpand && canExpand ? (
+                <button
+                  onClick={handleExpandClick}
+                  data-tooltip-id="expand-cot"
+                  data-tooltip-content={
+                    isExpanded ? "Hide thought chain" : "Show thought chain"
+                  }
+                  className="border-none text-theme-text-secondary hover:text-theme-text-primary transition-colors p-1 rounded-full hover:bg-theme-sidebar-item-hover"
+                  aria-label={
+                    isExpanded ? "Hide thought chain" : "Show thought chain"
+                  }
+                >
+                  <CaretDown
+                    className={`w-4 h-4 transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                  />
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+);

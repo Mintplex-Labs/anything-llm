@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useRef, useEffect } from "react";
 import { Warning } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
 import renderMarkdown from "@/utils/chat/markdown";
@@ -67,7 +67,10 @@ const PromptReply = ({
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <WorkspaceProfileImage workspace={workspace} />
-          <RenderAssistantChatContent message={reply} />
+          <RenderAssistantChatContent
+            key={`${uuid}-prompt-reply-content`}
+            message={reply}
+          />
         </div>
         <Citations sources={sources} />
       </div>
@@ -92,21 +95,47 @@ export function WorkspaceProfileImage({ workspace }) {
 }
 
 function RenderAssistantChatContent({ message }) {
+  const contentRef = useRef("");
+  const thoughtChainRef = useRef(null);
+
+  useEffect(() => {
+    const thinking =
+      message.match(THOUGHT_REGEX_OPEN) && !message.match(THOUGHT_REGEX_CLOSE);
+
+    if (thinking && thoughtChainRef.current) {
+      thoughtChainRef.current.updateContent(message);
+      return;
+    }
+
+    const completeThoughtChain = message.match(THOUGHT_REGEX_COMPLETE)?.[0];
+    const msgToRender = message.replace(THOUGHT_REGEX_COMPLETE, "");
+
+    if (completeThoughtChain && thoughtChainRef.current) {
+      thoughtChainRef.current.updateContent(completeThoughtChain);
+    }
+
+    contentRef.current = msgToRender;
+  }, [message]);
+
   const thinking =
     message.match(THOUGHT_REGEX_OPEN) && !message.match(THOUGHT_REGEX_CLOSE);
   if (thinking)
-    return <ThoughtChainComponent content={message} expanded={true} />;
+    return (
+      <ThoughtChainComponent ref={thoughtChainRef} content="" expanded={true} />
+    );
 
-  const completeThoughtChain = message.match(THOUGHT_REGEX_COMPLETE)?.[0];
-  const msgToRender = message.replace(THOUGHT_REGEX_COMPLETE, "");
   return (
     <div className="flex flex-col gap-y-1">
-      {completeThoughtChain && (
-        <ThoughtChainComponent content={completeThoughtChain} expanded={true} />
+      {message.match(THOUGHT_REGEX_COMPLETE) && (
+        <ThoughtChainComponent
+          ref={thoughtChainRef}
+          content=""
+          expanded={true}
+        />
       )}
       <span
         className="break-words"
-        dangerouslySetInnerHTML={{ __html: renderMarkdown(msgToRender) }}
+        dangerouslySetInnerHTML={{ __html: renderMarkdown(contentRef.current) }}
       />
     </div>
   );

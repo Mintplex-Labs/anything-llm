@@ -73,6 +73,12 @@ export function ChatTooltips() {
         delayShow={300}
         className="tooltip !text-xs"
       />
+      <Tooltip
+        id="cot-thinking"
+        place="bottom"
+        delayShow={500}
+        className="tooltip !text-xs"
+      />
     </>
   );
 }
