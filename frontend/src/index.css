@@ -583,58 +583,6 @@ dialog::backdrop {
   animation: slideDown 0.3s ease-out forwards;
 }
 
-@keyframes slideUp {
-  0% {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideUpOut {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-}
-
-.animate-slide-up {
-  animation: slideUp 0.3s ease-out forwards;
-}
-
-.animate-slide-up-out {
-  animation: slideUpOut 0.3s ease-out forwards;
-}
-
-.animate-fill-forwards {
-  animation-fill-mode: forwards;
-}
-
-.animate-delay-100 {
-  animation-delay: 100ms;
-}
-
-.animate-bounce-subtle {
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
-}
-
 .input-label {
   @apply text-[14px] font-bold text-white;
 }
@@ -987,6 +935,7 @@ does not extend the close button beyond the viewport. */
   from {
     width: 0;
   }
+
   to {
     width: 100%;
   }
@@ -997,71 +946,11 @@ does not extend the close button beyond the viewport. */
     opacity: 0;
     transform: translateY(5px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes fadeUpOut {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-}
-
-.thought-bar {
-  position: relative;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.thought-bar:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.thought-content {
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.thought-content.typing {
-  animation: typewriter 0.5s steps(40, end) forwards;
-}
-
-.thought-history {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  margin-bottom: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.thought-history.expanded {
-  padding: 8px;
-  margin-bottom: 12px;
-}
-
-.previous-thought {
-  animation: fadeUpIn 0.3s ease forwards;
-  opacity: 0;
-}
-
-.thought-exit {
-  animation: fadeUpOut 0.3s ease forwards;
 }
 
 .animate-fadeUpIn {
@@ -1073,13 +962,10 @@ does not extend the close button beyond the viewport. */
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-2px);
   }
-}
-
-.animate-bounce-subtle {
-  animation: bounce-subtle 2s ease-in-out infinite;
 }
 
 @keyframes thoughtTransition {
@@ -1087,10 +973,12 @@ does not extend the close button beyond the viewport. */
     opacity: 0;
     transform: translateY(10px);
   }
+
   30% {
     opacity: 1;
     transform: translateY(0);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);

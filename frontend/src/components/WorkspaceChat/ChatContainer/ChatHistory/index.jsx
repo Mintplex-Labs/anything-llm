@@ -176,14 +176,13 @@ export default function ChatHistory({
     );
   }
 
-  const hhistory = buildMessages({
+  const compiledHistory = buildMessages({
     workspace,
     history,
     regenerateAssistantMessage,
     saveEditedMessage,
     forkThread,
   });
-
   return (
     <div
       className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
@@ -191,10 +190,11 @@ export default function ChatHistory({
       ref={chatHistoryRef}
       onScroll={handleScroll}
     >
-      {hhistory.map((item, index) => {
+      {compiledHistory.map((item, index) => {
         if (Array.isArray(item)) {
-          const lastMessage = history?.[history.length - 1] || {};
-          const hasSubsequentMessages = index < hhistory.length - 1;
+          const lastMessage =
+            compiledHistory?.[compiledHistory.length - 1] || {};
+          const hasSubsequentMessages = index < compiledHistory.length - 1;
           return (
             <StatusResponse
               key={`status-group-${index}`}
@@ -250,6 +250,20 @@ function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
   );
 }
 
+/**
+ * Builds the history of messages for the chat.
+ * This is mostly useful for rendering the history in a way that is easy to understand.
+ * as well as compensating for agent thinking and other messages that are not part of the history, but
+ * are still part of the chat.
+ *
+ * @param {Object} param0 - The parameters for building the messages.
+ * @param {Array} param0.history - The history of messages.
+ * @param {Object} param0.workspace - The workspace object.
+ * @param {Function} param0.regenerateAssistantMessage - The function to regenerate the assistant message.
+ * @param {Function} param0.saveEditedMessage - The function to save the edited message.
+ * @param {Function} param0.forkThread - The function to fork the thread.
+ * @returns {Array} The compiled history of messages.
+ */
 function buildMessages({
   history,
   workspace,
