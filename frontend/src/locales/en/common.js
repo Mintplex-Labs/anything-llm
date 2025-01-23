@@ -380,6 +380,7 @@ const TRANSLATIONS = {
     "warning-end":
       "Confirming will clear all embeddings from your vector database and remove all documents from your workspaces. Your uploaded documents will not be deleted, they will be available for re-embedding.",
     provider: {
+      sparseTitle: "Sparse Embedding Provider",
       title: "Dense Embedding Provider",
       description:
         "There is no set up required when using Prism's native embedding engine.",

@@ -136,6 +136,9 @@ const HybridSearchPreference = ({ settings, onChange, weightError }) => {
       <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
         {t("embedding.hybrid-search.desc")}
       </p>
+      <div className="text-base font-bold text-white">
+        {t("embedding.provider.sparseTitle")}
+      </div>
       {isHybridSearchEnabled && (
         <div className="flex flex-col gap-[24px]">
           {renderInputFields([

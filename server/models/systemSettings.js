@@ -229,10 +229,25 @@ const SystemSettings = {
       // --------------------------------------------------------
       HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
       HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
-      ...(embeddingSettings?.config || {}),
+      EmbeddingEngine: process.env.EMBEDDING_ENGINE,
+      EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
+      EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+      EmbeddingModelMaxChunkLength:
+        process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      GenericOpenAiEmbeddingApiKey:
+        !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
+      SparseGenericOpenAiEmbeddingApiKey:
+        !!process.env.SPARSE_GENERIC_OPEN_AI_EMBEDDING_API_KEY,
+      SparseEmbeddingModelPref: process.env.SPARSE_EMBEDDING_MODEL_PREF,
+      SparseEmbeddingBasePath: process.env.SPARSE_EMBEDDING_BASE_PATH,
+      HybridSearchEnabled: process.env.HYBRID_SEARCH_ENABLED,
+      HybridSearchDenseVectorWeight:
+        process.env.HYBRID_SEARCH_DENSE_VECTOR_WEIGHT,
+      HybridSearchSparseVectorWeight:
+        process.env.HYBRID_SEARCH_SPARSE_VECTOR_WEIGHT,
       GenericOpenAiEmbeddingMaxConcurrentChunks:
-        embeddingSettings?.config?.GenericOpenAiEmbeddingMaxConcurrentChunks ||
-        100,
+        process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 100,
+      ...(embeddingSettings?.config || {}),
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
