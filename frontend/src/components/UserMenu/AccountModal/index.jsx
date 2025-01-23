@@ -6,6 +6,7 @@ import showToast from "@/utils/toast";
 import { Plus, X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useTheme } from "@/hooks/useTheme";
+import { useTranslation } from "react-i18next";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
@@ -28,6 +29,7 @@ export default function AccountModal({ user, hideModal }) {
   };
 
   const handleRemovePfp = async () => {
+
     const { success, error } = await System.removePfp();
     if (!success) {
       showToast(`Failed to remove profile picture: ${error}`, "error");
@@ -39,7 +41,7 @@ export default function AccountModal({ user, hideModal }) {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-
+    
     const data = {};
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) {
@@ -61,14 +63,14 @@ export default function AccountModal({ user, hideModal }) {
       showToast(`Failed to update user: ${error}`, "error");
     }
   };
-
+  const { t } = useTranslation();
   return (
     <ModalWrapper isOpen={true}>
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              Edit Account
+            {t('profile_settings.edit_account')}
             </h3>
           </div>
           <button
@@ -104,7 +106,7 @@ export default function AccountModal({ user, hideModal }) {
                     <div className="flex flex-col items-center justify-center p-3">
                       <Plus className="w-8 h-8 text-theme-text-secondary m-2" />
                       <span className="text-theme-text-secondary text-opacity-80 text-sm font-semibold">
-                        Profile Picture
+                      {t('profile_settings.profile_picture')}
                       </span>
                       <span className="text-theme-text-secondary text-opacity-60 text-xs">
                         800 x 800
@@ -118,7 +120,7 @@ export default function AccountModal({ user, hideModal }) {
                     onClick={handleRemovePfp}
                     className="mt-3 text-theme-text-secondary text-opacity-60 text-sm font-medium hover:underline"
                   >
-                    Remove Profile Picture
+                     {t('profile_settings.remove_profile_picture')}
                   </button>
                 )}
               </div>
@@ -129,7 +131,7 @@ export default function AccountModal({ user, hideModal }) {
                   htmlFor="username"
                   className="block mb-2 text-sm font-medium text-theme-text-primary"
                 >
-                  Username
+                   {t('profile_settings.username')}
                 </label>
                 <input
                   name="username"
@@ -142,8 +144,7 @@ export default function AccountModal({ user, hideModal }) {
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Username must be only contain lowercase letters, numbers,
-                  underscores, and hyphens with no spaces
+                {t('profile_settings.username_description')}
                 </p>
               </div>
               <div>
@@ -151,7 +152,7 @@ export default function AccountModal({ user, hideModal }) {
                   htmlFor="password"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  New Password
+                  {t('profile_settings.new_password')}
                 </label>
                 <input
                   name="password"
@@ -161,7 +162,7 @@ export default function AccountModal({ user, hideModal }) {
                   minLength={8}
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Password must be at least 8 characters long
+                {t('profile_settings.passwort_description')}
                 </p>
               </div>
               <div className="flex flex-row gap-x-8">
@@ -175,13 +176,13 @@ export default function AccountModal({ user, hideModal }) {
                 type="button"
                 className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
               >
-                Cancel
+                 {t('profile_settings.cancel')}
               </button>
               <button
                 type="submit"
                 className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
-                Update Account
+                 {t('profile_settings.update_account')}
               </button>
             </div>
           </form>
@@ -198,14 +199,14 @@ function LanguagePreference() {
     getLanguageName,
     changeLanguage,
   } = useLanguageOptions();
-
+  const { t } = useTranslation();
   return (
     <div>
       <label
         htmlFor="userLang"
         className="block mb-2 text-sm font-medium text-white"
       >
-        Preferred language
+        {t('profile_settings.language')}
       </label>
       <select
         name="userLang"
@@ -227,14 +228,14 @@ function LanguagePreference() {
 
 function ThemePreference() {
   const { theme, setTheme, availableThemes } = useTheme();
-
+  const { t } = useTranslation();
   return (
     <div>
       <label
         htmlFor="theme"
         className="block mb-2 text-sm font-medium text-white"
       >
-        Theme Preference
+        {t('profile_settings.theme')}
       </label>
       <select
         name="theme"

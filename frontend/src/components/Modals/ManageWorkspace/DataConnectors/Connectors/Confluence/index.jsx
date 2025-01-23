@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { Warning } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
 export default function ConfluenceOptions() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -59,12 +61,11 @@ export default function ConfluenceOptions() {
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold flex gap-x-2 items-center">
                     <p className="font-bold text-theme-text-primary">
-                      Confluence deployment type
+                      {t("connectors.confluence.deployment_type")}
                     </p>
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    Determine if your Confluence instance is hosted on Atlassian
-                    cloud or self-hosted.
+                    {t("connectors.confluence.deployment_type_explained")}
                   </p>
                 </div>
                 <select
@@ -83,10 +84,10 @@ export default function ConfluenceOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                    <p className="font-bold text-white">Confluence base URL</p>
+                    <p className="font-bold text-white">{t("connectors.confluence.base_url")}</p>
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    This is the base URL of your Confluence space.
+                    {t("connectors.confluence.base_url_explained")}
                   </p>
                 </div>
                 <input
@@ -102,11 +103,10 @@ export default function ConfluenceOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                    Confluence space key
+                    {t("connectors.confluence.space_key")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    This is the spaces key of your confluence instance that will
-                    be used. Usually begins with ~
+                    {t("connectors.confluence.space_key_explained")}
                   </p>
                 </div>
                 <input
@@ -122,10 +122,10 @@ export default function ConfluenceOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                    Confluence Username
+                    {t("connectors.confluence.username")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    Your Confluence username.
+                    {t("connectors.confluence.username_explained")}
                   </p>
                 </div>
                 <input
@@ -142,7 +142,7 @@ export default function ConfluenceOptions() {
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold flex gap-x-2 items-center">
                     <p className="font-bold text-white">
-                      Confluence Access Token
+                      {t("connectors.confluence.token")}
                     </p>
                     <Warning
                       size={14}
@@ -157,8 +157,17 @@ export default function ConfluenceOptions() {
                       clickable={true}
                     >
                       <p className="text-sm">
-                        You need to provide an access token for authentication.
-                        You can generate an access token{" "}
+                        {t("connectors.confluence.token_explained_start")}
+                        <a
+                          href="https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {t("connectors.confluence.token_explained_link1")}
+                        </a>
+                        {t("connectors.confluence.token_explained_middle")}
                         <a
                           href="https://id.atlassian.com/manage-profile/security/api-tokens"
                           target="_blank"
@@ -166,14 +175,14 @@ export default function ConfluenceOptions() {
                           className="underline"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          here
+                          {t("connectors.confluence.token_explained_link2")}
                         </a>
-                        .
+                        {t("connectors.confluence.token_explained_end")}
                       </p>
                     </Tooltip>
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    Access token for authentication.
+                    {t("connectors.confluence.token_desc")}
                   </p>
                 </div>
                 <input
@@ -199,8 +208,7 @@ export default function ConfluenceOptions() {
             </button>
             {loading && (
               <p className="text-xs text-theme-text-secondary">
-                Once complete, all pages will be available for embedding into
-                workspaces.
+                {t("connectors.confluence.task_explained")}
               </p>
             )}
           </div>
