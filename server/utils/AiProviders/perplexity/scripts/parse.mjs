@@ -11,9 +11,9 @@
 // Last Collected: Jan 23, 2025
 
 // UPDATE: Jan 23, 2025
-// The table is no longer available on the website, but Perplxity has deprecated the
+// The table is no longer available on the website, but Perplexity has deprecated the
 // old models so now we can just update the chat_models.txt file with the new models
-// and then run this script to get the new models.
+// manually and then run this script to get the new models.
 
 import fs from "fs";
 
