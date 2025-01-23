@@ -37,6 +37,9 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const {
   validatePagination,
 } = require("../utils/middleware/validatePaginationReq");
+const setLogger = require("../utils/logger");
+
+const logger = setLogger();
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -246,7 +249,57 @@ function workspaceEndpoints(app) {
       }
     }
   );
+  app.delete(
+    "/workspaces/embeddings",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const allWorkspaces = await Workspace.where();
 
+        logger.warn("Deleting all Document vectors");
+        await DocumentVectors.delete();
+
+        logger.warn("Deleting all Embedded workspace documents");
+        await Document.delete();
+
+        await EventLogs.logEvent(
+          "workspace_vectors_reset",
+          {
+            workspaceName: "All workspaces",
+          },
+          response.locals?.user?.id
+        );
+
+        logger.warn("Deleting all workspace embeddings from vector DB....");
+        const slugs = allWorkspaces?.map((workspace) => workspace.slug);
+        const vectorDb = getVectorDbClass();
+        const responses = await Promise.all(
+          slugs?.map(async (slug) => {
+            try {
+              logger.info(
+                `Deleting collection for workspace ${slug} from Vector db`
+              );
+              await vectorDb["delete-namespace"]({ namespace: slug });
+              return true;
+            } catch (e) {
+              logger.error(
+                `Something went wrong while deleting collection for ${slug}`,
+                e?.message || e
+              );
+              return false;
+            }
+          })
+        );
+        response.json({
+          error: responses?.every((res) => res),
+          message: "Deleting embeddings finished",
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
   app.delete(
     "/workspace/:slug",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],

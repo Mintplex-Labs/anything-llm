@@ -484,11 +484,23 @@ const EMBEDDING_CONFIG_KEY_MAPPINGS = {
   // Sparse Embedder
   SparseEmbeddingBasePath: {
     envKey: "SPARSE_EMBEDDING_BASE_PATH",
-    checks: [isNotEmpty, validDockerizedUrl],
+    checks: [validDockerizedUrl],
   },
   SparseEmbeddingModelPref: {
     envKey: "SPARSE_EMBEDDING_MODEL_PREF",
-    checks: [isNotEmpty],
+    checks: [],
+  },
+  HybridSearchEnabled: {
+    envKey: "HYBRID_SEARCH_ENABLED",
+    checks: [],
+  },
+  HybridSearchDenseVectorWeight: {
+    envKey: "HYBRID_SEARCH_DENSE_VECTOR_WEIGHT",
+    checks: [isPositiveFloat],
+  },
+  HybridSearchSparseVectorWeight: {
+    envKey: "HYBRID_SEARCH_SPARSE_VECTOR_WEIGHT",
+    checks: [isPositiveFloat],
   },
   // Generic OpenAI Embedding Settings
   GenericOpenAiEmbeddingApiKey: {
@@ -646,6 +658,15 @@ function nonZero(input = "") {
 function isInteger(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
   return Number(input);
+}
+
+function isPositiveFloat(input = "") {
+  if (!input) return input;
+  const number = parseFloat(input);
+  if (isNaN(number) || number <= 0) {
+    return "Value must be a positive float";
+  }
+  return number;
 }
 
 function isValidURL(input = "") {
@@ -917,7 +938,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   let error = "";
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
-    (key) => validKeys.includes(key) && !newENVs[key].includes("******") // strip out answers where the value is all asterisks
+    (key) => validKeys.includes(key) && !newENVs[key]?.includes("******") // strip out answers where the value is all asterisks
   );
   const newValues = {};
 

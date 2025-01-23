@@ -210,6 +210,9 @@ const SystemSettings = {
     const { hasVectorCachedFiles } = require("../utils/files");
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
+    const embeddingSettings = await prisma.system_settings.findFirst({
+      where: { label: "embedding" },
+    });
     return {
       // --------------------------------------------------------
       // General Settings
@@ -224,21 +227,12 @@ const SystemSettings = {
       // --------------------------------------------------------
       // Embedder Provider Selection Settings & Configs
       // --------------------------------------------------------
-      EmbeddingEngine: process.env.EMBEDDING_ENGINE,
       HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
       HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
-      EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
-      EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-      EmbeddingModelMaxChunkLength:
-        process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
-      GenericOpenAiEmbeddingApiKey:
-        !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
-      SparseGenericOpenAiEmbeddingApiKey:
-        !!process.env.SPARSE_GENERIC_OPEN_AI_EMBEDDING_API_KEY,
-      SparseEmbeddingModelPref: process.env.SPARSE_EMBEDDING_MODEL_PREF,
-      SparseEmbeddingBasePath: process.env.SPARSE_EMBEDDING_BASE_PATH,
+      ...(embeddingSettings?.config || {}),
       GenericOpenAiEmbeddingMaxConcurrentChunks:
-        process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
+        embeddingSettings?.config?.GenericOpenAiEmbeddingMaxConcurrentChunks ||
+        100,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
