@@ -62,12 +62,18 @@ const INPUT_CONFIGS = {
     },
   },
   apiKey: {
-    label: "API Key",
+    label: (
+      <div className="flex flex-col gap-y-1 mb-4">
+        <label className="text-white text-sm font-semibold flex items-center gap-x-2">
+          API Key <p className="!text-xs !italic !font-thin">optional</p>
+        </label>
+      </div>
+    ),
     hideValue: true,
     inputProps: {
       type: "password",
       name: "SparseGenericOpenAiEmbeddingApiKey",
-      required: true,
+      required: false,
       className:
         "border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5",
       placeholder: "sk-mysecretkey",
@@ -93,7 +99,7 @@ const HybridSearchPreference = ({ settings, onChange, weightError }) => {
           >
             {typeof config?.label === "string" ? (
               <label className="text-white text-sm font-semibold block mb-3">
-                {`${config.label} *`}
+                {config.label}
               </label>
             ) : (
               config.label

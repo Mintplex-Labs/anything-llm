@@ -205,7 +205,7 @@ export default function GeneralEmbeddingPreference() {
   };
   const handleDeletingEmbeddings = async () => {
     setSaving(true);
-    const status = await Workspace.deleteEmbeddings();
+    await Workspace.deleteEmbeddings();
     setSaving(false);
     return;
   };
@@ -321,6 +321,7 @@ export default function GeneralEmbeddingPreference() {
                     buttonProps={{
                       // onClick: (e) => handleSubmit(e),
                       type: "submit",
+                      disabled: saving,
                     }}
                     className="mt-3 mr-0 -mb-14 z-10"
                   >

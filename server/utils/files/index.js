@@ -115,6 +115,31 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
   return { exists: true, chunks: JSON.parse(rawData) };
 }
 
+/**
+ * Deletes all files with the .json extension from a vector-cache directory.
+ */
+function removeAllVectorCache() {
+  fs.readdir(vectorCachePath, (err, files) => {
+    if (err) {
+      console.error("Error reading vector cache directory:", err);
+      return;
+    }
+
+    files.forEach((file) => {
+      const filePath = path.join(vectorCachePath, file);
+      if (path.extname(file) === ".json") {
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.error("Error deleting file:", err);
+          } else {
+            console.log(`Deleted file: ${filePath}`);
+          }
+        });
+      }
+    });
+  });
+}
+
 // vectorData: pre-chunked vectorized data for a given file that includes the proper metadata and chunk-size limit so it can be iterated and dumped into Pinecone, etc
 // filename is the fullpath to the doc so we can compare by filename to find cached matches.
 async function storeVectorResult(vectorData = [], filename = null) {
@@ -293,4 +318,5 @@ module.exports = {
   isWithin,
   documentsPath,
   hasVectorCachedFiles,
+  removeAllVectorCache,
 };

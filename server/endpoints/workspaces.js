@@ -6,7 +6,11 @@ const {
   userFromSession,
   safeJsonParse,
 } = require("../utils/http");
-const { normalizePath, isWithin } = require("../utils/files");
+const {
+  normalizePath,
+  isWithin,
+  removeAllVectorCache,
+} = require("../utils/files");
 const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
@@ -256,24 +260,10 @@ function workspaceEndpoints(app) {
       try {
         const allWorkspaces = await Workspace.where();
 
-        logger.warn("Deleting all Document vectors");
-        await DocumentVectors.delete();
-
-        logger.warn("Deleting all Embedded workspace documents");
-        await Document.delete();
-
-        await EventLogs.logEvent(
-          "workspace_vectors_reset",
-          {
-            workspaceName: "All workspaces",
-          },
-          response.locals?.user?.id
-        );
-
         logger.warn("Deleting all workspace embeddings from vector DB....");
         const slugs = allWorkspaces?.map((workspace) => workspace.slug);
         const vectorDb = getVectorDbClass();
-        const responses = await Promise.all(
+        await Promise.all(
           slugs?.map(async (slug) => {
             try {
               logger.info(
@@ -290,8 +280,24 @@ function workspaceEndpoints(app) {
             }
           })
         );
+        logger.warn("Deleting all Document vectors");
+        await DocumentVectors.delete();
+
+        logger.warn("Deleting all Embedded workspace documents");
+        await Document.delete();
+
+        await EventLogs.logEvent(
+          "workspace_vectors_reset",
+          {
+            workspaceName: "All workspaces",
+          },
+          response.locals?.user?.id
+        );
+
+        logger.warn("Deleting all .json files from vector-cache director");
+        removeAllVectorCache();
+
         response.json({
-          error: responses?.every((res) => res),
           message: "Deleting embeddings finished",
         });
       } catch (e) {
