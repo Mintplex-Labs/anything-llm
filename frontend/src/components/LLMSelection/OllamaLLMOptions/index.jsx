@@ -158,7 +158,6 @@ export default function OllamaLLMOptions({ settings }) {
               </p>
             </Tooltip>
           </div>
-
           <div className="flex flex-col w-60">
             <label className="text-white text-sm font-semibold block mb-2">
               Ollama Keep Alive
@@ -188,15 +187,14 @@ export default function OllamaLLMOptions({ settings }) {
               </a>
             </p>
           </div>
-
           <div className="flex flex-col w-60">
-            <label className="text-white text-sm font-semibold block mb-3">
+            <label className="text-white text-sm font-semibold">
               Auth Token
             </label>
             <input
               type="password"
               name="OllamaAuthToken"
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5"
               placeholder="Ollama Auth Token"
               defaultValue={settings?.OllamaAuthToken ? "*".repeat(20) : ""}
               required={false}
@@ -213,7 +211,7 @@ export default function OllamaLLMOptions({ settings }) {
 function OllamaLLMModelSelection({ settings, basePath = null }) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     async function findCustomModels() {
       if (!basePath) {
