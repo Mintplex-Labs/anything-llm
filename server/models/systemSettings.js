@@ -200,6 +200,10 @@ const SystemSettings = {
         logger.error("Something went wrong while updating env in process");
         return false;
       }
+
+      const { Workspace } = require("./workspace");
+      await Workspace.createInternalWorkspace()
+
       return true;
     } catch (e) {
       logger.error("Something went wrong while intializing system config.", e);

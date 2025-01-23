@@ -70,7 +70,11 @@ function browserExtensionEndpoints(app) {
           ? await Workspace.whereWithUser(user)
           : await Workspace.where();
 
-        response.status(200).json({ workspaces });
+          const filteredWorkspaces = workspaces.filter(
+            (workspace) => workspace.slug !== process.env.INTERNAL_WORKSPACE_NAME 
+          );
+          // console.dir(filteredWorkspaces, {depth: null})
+          response.status(200).json({ workspaces: filteredWorkspaces });
       } catch (error) {
         console.error(error);
         response.status(500).json({ error: "Failed to fetch workspaces" });
