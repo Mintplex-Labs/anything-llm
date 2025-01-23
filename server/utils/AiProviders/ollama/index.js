@@ -27,7 +27,7 @@ class OllamaAILLM {
       user: this.promptWindowLimit() * 0.7,
     };
     const headers = process.env.OLLAMA_AUTH_TOKEN ? { Authorization: `Bearer ${process.env.OLLAMA_API_KEY}` } : {};
-    this.client = new Ollama({ host: this.basePath,headers: {"Authorization":f`Bearer ${token}`}}); //constructing the Auth header
+    this.client = new Ollama({ host: this.basePath,headers: headers); //constructing the Auth header
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.#log(
