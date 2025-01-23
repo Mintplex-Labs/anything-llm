@@ -472,6 +472,18 @@ const Workspace = {
     return response.ok;
   },
   threads: WorkspaceThread,
+
+  deleteEmbeddings: async () => {
+    return await fetch(`${API_BASE}/workspaces/embeddings`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default Workspace;

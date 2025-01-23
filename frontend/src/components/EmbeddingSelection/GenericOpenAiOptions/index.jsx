@@ -94,12 +94,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
   return (
     <div className="w-full flex flex-col gap-y-7">
       <div className="space-y-[24px]">
-        <EmbeddingType settings={settings} title={"Dense Embedder"} />
-        <EmbeddingType
-          settings={settings}
-          title={"Sparse Embedder"}
-          type="sparse"
-        />
+        <EmbeddingType settings={settings} />
       </div>
       <div className="flex justify-start mt-4">
         <button

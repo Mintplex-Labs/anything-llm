@@ -375,10 +375,20 @@ const TRANSLATIONS = {
       "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials to for embedding text.",
     "desc-end":
       "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which Prism can use to process.",
+    "warning-start":
+      "Switching the embedding model will reset all previously embedded documents in all workspaces.",
+    "warning-end":
+      "Confirming will clear all embeddings from your vector database and remove all documents from your workspaces. Your uploaded documents will not be deleted, they will be available for re-embedding.",
     provider: {
-      title: "Embedding Provider",
+      title: "Dense Embedding Provider",
       description:
         "There is no set up required when using Prism's native embedding engine.",
+    },
+    "hybrid-search": {
+      title: "Hybrid Search",
+      desc: "If enabled Hybrid Search blends dense embeddings for semantic understanding and sparse embeddings for exact keyword matching, leveraging weighted contributions from both to deliver precise and context-aware search results.",
+      weightInfo:
+        "The combined weights of Dense Vector Weight and Sparse Vector Weight must be 1",
     },
   },
 
