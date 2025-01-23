@@ -109,7 +109,7 @@ export default function OllamaLLMOptions({ settings }) {
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
               Enter the URL where Ollama is running.
             </p>
-          </div>          
+          </div>
           <div className="flex flex-col w-60">
             <label className="text-white text-sm font-semibold mb-2 flex items-center">
               Performance Mode
@@ -158,7 +158,6 @@ export default function OllamaLLMOptions({ settings }) {
             </Tooltip>
           </div>
 
-
           <div className="flex flex-col w-60">
             <label className="text-white text-sm font-semibold block mb-2">
               Ollama Keep Alive
@@ -188,23 +187,22 @@ export default function OllamaLLMOptions({ settings }) {
               </a>
             </p>
           </div>
-          
+
           <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            Auth Token
-          </label>
-          <input
-            type="password"
-            name="OllamaAuthToken"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Ollama Auth Token"
-            defaultValue={settings?.OllamaAuthToken ? "*".repeat(20) : ""}
-            required={false}
-            autoComplete="off"
-            spellCheck={false}
-          />
+            <label className="text-white text-sm font-semibold block mb-3">
+              Auth Token
+            </label>
+            <input
+              type="password"
+              name="OllamaAuthToken"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Ollama Auth Token"
+              defaultValue={settings?.OllamaAuthToken ? "*".repeat(20) : ""}
+              required={false}
+              autoComplete="off"
+              spellCheck={false}
+            />
           </div>
-          
         </div>
       </div>
     </div>
