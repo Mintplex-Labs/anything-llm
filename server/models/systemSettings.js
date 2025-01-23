@@ -214,6 +214,9 @@ const SystemSettings = {
     const { hasVectorCachedFiles } = require("../utils/files");
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
+    const embeddingSettings = await prisma.system_settings.findFirst({
+      where: { label: "embedding" },
+    });
     return {
       // --------------------------------------------------------
       // General Settings
@@ -228,9 +231,9 @@ const SystemSettings = {
       // --------------------------------------------------------
       // Embedder Provider Selection Settings & Configs
       // --------------------------------------------------------
-      EmbeddingEngine: process.env.EMBEDDING_ENGINE,
       HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
       HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
+      EmbeddingEngine: process.env.EMBEDDING_ENGINE,
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
@@ -241,8 +244,14 @@ const SystemSettings = {
         !!process.env.SPARSE_GENERIC_OPEN_AI_EMBEDDING_API_KEY,
       SparseEmbeddingModelPref: process.env.SPARSE_EMBEDDING_MODEL_PREF,
       SparseEmbeddingBasePath: process.env.SPARSE_EMBEDDING_BASE_PATH,
+      HybridSearchEnabled: process.env.HYBRID_SEARCH_ENABLED,
+      HybridSearchDenseVectorWeight:
+        process.env.HYBRID_SEARCH_DENSE_VECTOR_WEIGHT,
+      HybridSearchSparseVectorWeight:
+        process.env.HYBRID_SEARCH_SPARSE_VECTOR_WEIGHT,
       GenericOpenAiEmbeddingMaxConcurrentChunks:
-        process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
+        process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 100,
+      ...(embeddingSettings?.config || {}),
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs

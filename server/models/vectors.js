@@ -39,6 +39,15 @@ const DocumentVectors = {
       return false;
     }
   },
+  delete: async function (clause = {}) {
+    try {
+      await prisma.document_vectors.deleteMany({ where: clause });
+      return true;
+    } catch (error) {
+      console.error("Deleting document vectors", error);
+      return false;
+    }
+  },
 
   where: async function (clause = {}, limit) {
     try {
