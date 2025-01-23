@@ -62,13 +62,7 @@ const INPUT_CONFIGS = {
     },
   },
   apiKey: {
-    label: (
-      <div className="flex flex-col gap-y-1 mb-4">
-        <label className="text-white text-sm font-semibold flex items-center gap-x-2">
-          API Key <p className="!text-xs !italic !font-thin">optional</p>
-        </label>
-      </div>
-    ),
+    label: "API Key",
     hideValue: true,
     inputProps: {
       type: "password",
@@ -99,7 +93,7 @@ const HybridSearchPreference = ({ settings, onChange, weightError }) => {
           >
             {typeof config?.label === "string" ? (
               <label className="text-white text-sm font-semibold block mb-3">
-                {config.label}
+                {`${config.label} *`}
               </label>
             ) : (
               config.label
