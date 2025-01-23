@@ -60,9 +60,7 @@ async function streamChatWithWorkspace(
 
   const messageLimit = workspace?.openAiHistory || 20; 
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
-  // const hasVectorizedSpace = await VectorDb.hasNamespaces(workspaces);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-  // const embeddingsCount = await VectorDb.namespaceCountMultiple(workspaces);
 
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
@@ -129,7 +127,7 @@ async function streamChatWithWorkspace(
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
 
-      console.log("rewritten question: ", effectiveQuestion)
+      console.log("Rewritten question: ", effectiveQuestion)
     }
 
   }
@@ -196,7 +194,7 @@ async function streamChatWithWorkspace(
     return;
   }
 
-  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_INVOCATION_THRESHOLD) {
+  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -205,15 +203,15 @@ async function streamChatWithWorkspace(
     if (texts.length !== 0) {
       // Call re-ranker to get top results
       const rerankedResults = await rerankTexts(texts, effectiveQuestion);
-      // Extract only the text values from reranked results for comparison
-      const rerankedTexts = rerankedResults.map(result => result.text);
 
-      // Filter the sources and update `sources` directly
-      vectorSearchResults.sources = vectorSearchResults.sources.filter(source =>
-        rerankedTexts.includes(source.text)
+      // Extract indices of top-ranked results
+      const topIndices = rerankedResults.map((result) => result.index);
+      // Filter the sources and update `sources` directly using the indices
+      vectorSearchResults.sources = vectorSearchResults.sources.filter((_, index) =>
+      topIndices.includes(index)
       );
-      // throw new Error('No valid texts found in vectorSearchResults.sources');
     }
+    console.log(`vectorSearchResults.sources.length: ${vectorSearchResults.sources.length}`)
   }
 
 

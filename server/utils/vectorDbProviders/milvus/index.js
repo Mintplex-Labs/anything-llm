@@ -3,7 +3,6 @@ const {
   MetricType,
   IndexType,
   MilvusClient,
-  RRFRanker,
   WeightedRanker
 } = require("@zilliz/milvus2-sdk-node");
 // const rerank = WeightedRanker(0.8, 0.3);
@@ -624,7 +623,6 @@ const Milvus = {
     };
     let response;
 
-
     if (process.env.HYBRID_SEARCH_ENABLED === 'true') {
       const search_param_1 = {
         "data": queryVector,
@@ -665,7 +663,8 @@ const Milvus = {
     const seen = new Set(); // Track unique context texts to remove duplicates
 
     response.results.forEach((match) => {
-      // console.log(`match score is ${match.score}`)
+      // console.log("#########################################################################")
+      // console.log(`match score is ${match.score} : chunk: ${match.metadata.text}`)
       if (match.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
         console.log(

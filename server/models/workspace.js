@@ -450,6 +450,30 @@ const Workspace = {
       return false;
     }
   },
+  createInternalWorkspace: async function () {
+    try {
+      const slug = process.env.INTERNAL_WORKSPACE_NAME;
+      const internal_workspace = await this.get({ slug });
+      if (!internal_workspace) {
+        const workspace = await prisma.workspaces.create({
+          data: {
+            name: process.env.INTERNAL_WORKSPACE_NAME,
+            slug: process.env.INTERNAL_WORKSPACE_NAME,
+            openAiTemp: Number(process.env.INTERNAL_WORKSPACE_OPENAI_TEMP),
+            openAiHistory: Number(process.env.INTERNAL_WORKSPACE_OPENAI_HISTORY),
+            openAiPrompt: process.env.INTERNAL_WORKSPACE_OPENAI_PROMPT,
+            similarityThreshold: parseFloat(process.env.INTERNAL_WORKSPACE_SIMILARITY_THRESHOLD),
+            topN: Number(process.env.INTERNAL_WORKSPACE_TOP_N),
+            queryRefusalResponse: process.env.INTERNAL_WORKSPACE_QUERY_REFUSAL_RESPONSE,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Something went wrong while creating internal workspace",
+        error)
+      return false
+    }
+  },
 };
 
 module.exports = { Workspace };

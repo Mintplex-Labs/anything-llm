@@ -225,7 +225,11 @@ function adminEndpoints(app) {
     async (_request, response) => {
       try {
         const workspaces = await Workspace.whereWithUsers();
-        response.status(200).json({ workspaces });
+        const filteredWorkspaces = workspaces.filter(
+          (workspace) => workspace.slug !== process.env.INTERNAL_WORKSPACE_NAME 
+        );
+        // console.dir(filteredWorkspaces, {depth: null})
+        response.status(200).json({ workspaces: filteredWorkspaces });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

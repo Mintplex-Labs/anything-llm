@@ -302,7 +302,7 @@ async function chatSync({
     };
   }
 
-  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_INVOCATION_THRESHOLD) {
+  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -311,14 +311,13 @@ async function chatSync({
     if (texts.length !== 0) {
       // Call re-ranker to get top results
       const rerankedResults = await rerankTexts(texts, effectiveQuestion);
-      // Extract only the text values from reranked results for comparison
-      const rerankedTexts = rerankedResults.map(result => result.text);
 
-      // Filter the sources and update `sources` directly
-      vectorSearchResults.sources = vectorSearchResults.sources.filter(source =>
-        rerankedTexts.includes(source.text)
+      // Extract indices of top-ranked results
+      const topIndices = rerankedResults.map((result) => result.index);
+      // Filter the sources and update `sources` directly using the indices
+      vectorSearchResults.sources = vectorSearchResults.sources.filter((_, index) =>
+      topIndices.includes(index)
       );
-      // throw new Error('No valid texts found in vectorSearchResults.sources');
     }
   }
 
@@ -697,7 +696,7 @@ async function streamChat({
   }
 
 
-  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_INVOCATION_THRESHOLD) {
+  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -706,14 +705,13 @@ async function streamChat({
     if (texts.length !== 0) {
       // Call re-ranker to get top results
       const rerankedResults = await rerankTexts(texts, effectiveQuestion);
-      // Extract only the text values from reranked results for comparison
-      const rerankedTexts = rerankedResults.map(result => result.text);
 
-      // Filter the sources and update `sources` directly
-      vectorSearchResults.sources = vectorSearchResults.sources.filter(source =>
-        rerankedTexts.includes(source.text)
+      // Extract indices of top-ranked results
+      const topIndices = rerankedResults.map((result) => result.index);
+      // Filter the sources and update `sources` directly using the indices
+      vectorSearchResults.sources = vectorSearchResults.sources.filter((_, index) =>
+      topIndices.includes(index)
       );
-      // throw new Error('No valid texts found in vectorSearchResults.sources');
     }
   }
 
