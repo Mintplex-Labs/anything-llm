@@ -1,9 +1,9 @@
 class GeminiEmbedder {
   constructor() {
-    if (!process.env.GEMINI_API_KEY)
+    if (!process.env.GEMINI_EMBEDDING_API_KEY)
       throw new Error("No Gemini API key was set.");
     const { GoogleGenerativeAI } = require("@google/generative-ai");
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_EMBEDDING_API_KEY);
     this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-004";
     this.gemini = genAI.getGenerativeModel({ model: this.model });
 

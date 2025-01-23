@@ -412,6 +412,7 @@ class EphemeralEventListener extends EventEmitter {
           attachments: [],
           close: false,
           error: null,
+          animate: true,
         });
       }
 
@@ -423,6 +424,7 @@ class EphemeralEventListener extends EventEmitter {
         attachments: [],
         close: true,
         error: null,
+        animate: false,
       });
     };
     this.on("chunk", onChunkHandler);

@@ -1,6 +1,7 @@
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
@@ -120,7 +121,7 @@ class OllamaAILLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent, "spread"),
       {
         role: "user",
         ...this.#generateContent({ userPrompt, attachments }),

@@ -29,7 +29,7 @@ const LanceDb = {
   distanceToSimilarity: function (distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
     if (distance >= 1.0) return 1;
-    if (distance <= 0) return 0;
+    if (distance < 0) return 1 - Math.abs(distance);
     return 1 - distance;
   },
   heartbeat: async function () {
