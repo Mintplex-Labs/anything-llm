@@ -1,4 +1,5 @@
 const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
+const { isStringObject } = require("util/types");
 
 const KEY_MAPPING = {
   LLMProvider: {
@@ -110,6 +111,10 @@ const KEY_MAPPING = {
   OllamaLLMKeepAliveSeconds: {
     envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
     checks: [isInteger],
+  },
+  OllamaAuthToken: {
+    envKey: "OLLAMA_AUTH_TOKEN",
+    checks: [isStringObject],
   },
 
   // Mistral AI API Settings
