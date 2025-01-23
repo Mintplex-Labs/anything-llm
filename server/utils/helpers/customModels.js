@@ -42,7 +42,7 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "localai":
       return await localAIModels(basePath, apiKey);
     case "ollama":
-      return await ollamaAIModels(basePath);
+      return await ollamaAIModels(basePath,apiKey);
     case "togetherai":
       return await getTogetherAiModels();
     case "fireworksai":
@@ -306,8 +306,8 @@ async function ollamaAIModels(basePath = null) {
   } catch {
     return { models: [], error: "Not a valid URL." };
   }
-
-  const models = await fetch(`${url}/api/tags`)
+  const headers = process.env.OLLAMA_AUTH_TOKEN? { Authorization: `Bearer ${process.env.OLLAMA_AUTH_TOKEN}` }: {};
+  const models = await fetch(`${url}/api/tags`,{headers:headers})
     .then((res) => {
       if (!res.ok)
         throw new Error(`Could not reach Ollama server! ${res.status}`);

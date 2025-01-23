@@ -17,6 +17,7 @@ export default function OllamaLLMOptions({ settings }) {
   } = useProviderEndpointAutoDiscovery({
     provider: "ollama",
     initialBasePath: settings?.OllamaLLMBasePath,
+    OllamaAuthToken: settings?.OllamaAuthToken,
     ENDPOINTS: OLLAMA_COMMON_URLS,
   });
   const [performanceMode, setPerformanceMode] = useState(
@@ -212,7 +213,7 @@ export default function OllamaLLMOptions({ settings }) {
 function OllamaLLMModelSelection({ settings, basePath = null }) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     async function findCustomModels() {
       if (!basePath) {
@@ -222,7 +223,7 @@ function OllamaLLMModelSelection({ settings, basePath = null }) {
       }
       setLoading(true);
       try {
-        const { models } = await System.customModels("ollama", null, basePath);
+        const { models } = await System.customModels("ollama", settings.OllamaAuthToken, basePath);
         setCustomModels(models || []);
       } catch (error) {
         console.error("Failed to fetch custom models:", error);
