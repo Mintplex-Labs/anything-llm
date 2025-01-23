@@ -8,7 +8,7 @@
 // copy outputs into the export in ../models.js
 
 // Update the date below if you run this again because Perplexity added new models.
-// Last Collected: Jan 23, 2024
+// Last Collected: Jan 23, 2025
 
 // UPDATE: Jan 23, 2025
 // The table is no longer available on the website, but Perplxity has deprecated the
