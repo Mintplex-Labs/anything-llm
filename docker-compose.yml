@@ -52,7 +52,6 @@ services:
       USE_OCR: "false"
       RERANKER_URL: https://reranker.saal.ai/rerank
       PRISM_PARSER_BEARER_TOKEN:
-      RERANK_MILVUS_RESULTS: "true"
       ENABLE_MULTI_WORKSPACE_QUERY: "true"
       LLM_GUARD_BASE_URL: "http://192.168.140.51:3456"
       LLM_GUARD_AUTH_TOKEN:
