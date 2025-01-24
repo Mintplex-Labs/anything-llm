@@ -44,7 +44,7 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "ollama":
       return await ollamaAIModels(basePath);
     case "togetherai":
-      return await getTogetherAiModels();
+      return await getTogetherAiModels(apiKey);
     case "fireworksai":
       return await getFireworksAiModels(apiKey);
     case "mistral":
@@ -327,19 +327,21 @@ async function ollamaAIModels(basePath = null) {
   return { models, error: null };
 }
 
-async function getTogetherAiModels() {
-  const knownModels = togetherAiModels();
-  if (!Object.keys(knownModels).length === 0)
-    return { models: [], error: null };
-
-  const models = Object.values(knownModels).map((model) => {
-    return {
-      id: model.id,
-      organization: model.organization,
-      name: model.name,
-    };
-  });
-  return { models, error: null };
+async function getTogetherAiModels(apiKey = null) {
+  const _apiKey =
+    apiKey === true
+      ? process.env.TOGETHER_AI_API_KEY
+      : apiKey || process.env.TOGETHER_AI_API_KEY || null;
+  try {
+    const { togetherAiModels } = require("../AiProviders/togetherAi");
+    const models = await togetherAiModels(_apiKey);
+    if (models.length > 0 && !!_apiKey)
+      process.env.TOGETHER_AI_API_KEY = _apiKey;
+    return { models, error: null };
+  } catch (error) {
+    console.error("Error in getTogetherAiModels:", error);
+    return { models: [], error: "Failed to fetch Together AI models" };
+  }
 }
 
 async function getFireworksAiModels() {

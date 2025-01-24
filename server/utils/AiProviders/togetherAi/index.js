@@ -6,9 +6,33 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 
-function togetherAiModels() {
-  const { MODELS } = require("./models.js");
-  return MODELS || {};
+async function togetherAiModels(apiKey = null) {
+  try {
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: "https://api.together.xyz/v1",
+      apiKey: apiKey || process.env.TOGETHER_AI_API_KEY || null,
+    });
+
+    const response = await openai.models.list();
+
+    // Filter and transform models into the expected format
+    // Only include chat models
+    const validModels = response.body
+      .filter((model) => ["chat"].includes(model.type))
+      .map((model) => ({
+        id: model.id,
+        name: model.display_name || model.id,
+        organization: model.organization || "Unknown",
+        type: model.type,
+        maxLength: model.context_length || 4096,
+      }));
+
+    return validModels;
+  } catch (error) {
+    console.error("Error fetching Together AI models:", error);
+    return [];
+  }
 }
 
 class TogetherAiLLM {
@@ -60,29 +84,34 @@ class TogetherAiLLM {
     return content.flat();
   }
 
-  allModelInformation() {
-    return togetherAiModels();
+  async allModelInformation() {
+    const models = await togetherAiModels();
+    return models.reduce((acc, model) => {
+      acc[model.id] = model;
+      return acc;
+    }, {});
   }
 
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(modelName) {
-    const availableModels = togetherAiModels();
-    return availableModels[modelName]?.maxLength || 4096;
+  static async promptWindowLimit(modelName) {
+    const models = await togetherAiModels();
+    const model = models.find((m) => m.id === modelName);
+    return model?.maxLength || 4096;
   }
 
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
-  promptWindowLimit() {
-    const availableModels = this.allModelInformation();
-    return availableModels[this.model]?.maxLength || 4096;
+  async promptWindowLimit() {
+    const models = await togetherAiModels();
+    const model = models.find((m) => m.id === this.model);
+    return model?.maxLength || 4096;
   }
 
   async isValidChatCompletionModel(model = "") {
-    const availableModels = this.allModelInformation();
-    return availableModels.hasOwnProperty(model);
+    const models = await togetherAiModels();
+    const foundModel = models.find((m) => m.id === model);
+    return foundModel && foundModel.type === "chat";
   }
 
   constructPrompt({
@@ -125,7 +154,7 @@ class TogetherAiLLM {
     );
 
     if (
-      !result.output.hasOwnProperty("choices") ||
+      !Object.prototype.hasOwnProperty.call(result.output, "choices") ||
       result.output.choices.length === 0
     )
       return null;
