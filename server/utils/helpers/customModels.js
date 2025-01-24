@@ -13,7 +13,6 @@ const SUPPORT_CUSTOM_MODELS = [
   "openai",
   "localai",
   "ollama",
-  "native-llm",
   "togetherai",
   "fireworksai",
   "nvidia-nim",
@@ -49,8 +48,6 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getFireworksAiModels(apiKey);
     case "mistral":
       return await getMistralModels(apiKey);
-    case "native-llm":
-      return nativeLLMModels();
     case "perplexity":
       return await getPerplexityModels();
     case "openrouter":
@@ -444,26 +441,6 @@ async function getMistralModels(apiKey = null) {
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.MISTRAL_API_KEY = apiKey;
   return { models, error: null };
-}
-
-function nativeLLMModels() {
-  const fs = require("fs");
-  const path = require("path");
-  const storageDir = path.resolve(
-    process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`)
-  );
-  if (!fs.existsSync(storageDir))
-    return { models: [], error: "No model/downloaded storage folder found." };
-
-  const files = fs
-    .readdirSync(storageDir)
-    .filter((file) => file.toLowerCase().includes(".gguf"))
-    .map((file) => {
-      return { id: file, name: file };
-    });
-  return { models: files, error: null };
 }
 
 async function getElevenLabsModels(apiKey = null) {

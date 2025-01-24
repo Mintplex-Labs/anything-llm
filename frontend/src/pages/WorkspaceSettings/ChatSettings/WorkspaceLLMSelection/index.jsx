@@ -18,7 +18,7 @@ const FREE_FORM_LLM_SELECTION = ["bedrock", "azure", "generic-openai"];
 const NO_MODEL_SELECTION = ["default", "huggingface"];
 
 // Some providers we just fully disable for ease of use.
-const DISABLED_PROVIDERS = ["native"];
+const DISABLED_PROVIDERS = [];
 
 const LLM_DEFAULT = {
   name: "System default",
