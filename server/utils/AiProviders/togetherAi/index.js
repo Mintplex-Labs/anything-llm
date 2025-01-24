@@ -5,8 +5,29 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const fs = require("fs");
+const path = require("path");
+const { safeJsonParse } = require("../../http");
+
+const cacheFolder = path.resolve(
+  process.env.STORAGE_DIR
+    ? path.resolve(process.env.STORAGE_DIR, "models", "togetherAi")
+    : path.resolve(__dirname, `../../../storage/models/togetherAi`)
+);
 
 async function togetherAiModels(apiKey = null) {
+  const cacheModelPath = path.resolve(cacheFolder, "models.json");
+  const cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
+  // If cache exists and is less than 1 week old, use it
+  if (fs.existsSync(cacheModelPath) && fs.existsSync(cacheAtPath)) {
+    const now = Number(new Date());
+    const timestampMs = Number(fs.readFileSync(cacheAtPath));
+    if (now - timestampMs <= 6.048e8) { // 1 Week in MS
+      return safeJsonParse(fs.readFileSync(cacheModelPath, { encoding: "utf-8" }), []);
+    }
+  }
+
   try {
     const { OpenAI: OpenAIApi } = require("openai");
     const openai = new OpenAIApi({
@@ -28,9 +49,18 @@ async function togetherAiModels(apiKey = null) {
         maxLength: model.context_length || 4096,
       }));
 
+    // Cache the results
+    if (!fs.existsSync(cacheFolder)) fs.mkdirSync(cacheFolder, { recursive: true });
+    fs.writeFileSync(cacheModelPath, JSON.stringify(validModels), { encoding: "utf-8" });
+    fs.writeFileSync(cacheAtPath, String(Number(new Date())), { encoding: "utf-8" });
+
     return validModels;
   } catch (error) {
     console.error("Error fetching Together AI models:", error);
+    // If cache exists but is stale, still use it as fallback
+    if (fs.existsSync(cacheModelPath)) {
+      return safeJsonParse(fs.readFileSync(cacheModelPath, { encoding: "utf-8" }), []);
+    }
     return [];
   }
 }
