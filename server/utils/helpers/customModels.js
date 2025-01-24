@@ -42,7 +42,7 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "localai":
       return await localAIModels(basePath, apiKey);
     case "ollama":
-      return await ollamaAIModels(basePath,apiKey);
+      return await ollamaAIModels(basePath, apiKey);
     case "togetherai":
       return await getTogetherAiModels();
     case "fireworksai":
@@ -295,7 +295,7 @@ async function getKoboldCPPModels(basePath = null) {
   }
 }
 
-async function ollamaAIModels(basePath = null) {
+async function ollamaAIModels(basePath = null, _authToken = null) {
   let url;
   try {
     let urlPath = basePath ?? process.env.OLLAMA_BASE_PATH;
@@ -306,8 +306,10 @@ async function ollamaAIModels(basePath = null) {
   } catch {
     return { models: [], error: "Not a valid URL." };
   }
-  const headers = process.env.OLLAMA_AUTH_TOKEN? { Authorization: `Bearer ${process.env.OLLAMA_AUTH_TOKEN}` }: {};
-  const models = await fetch(`${url}/api/tags`,{headers:headers})
+
+  const authToken = _authToken || process.env.OLLAMA_AUTH_TOKEN || null;
+  const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+  const models = await fetch(`${url}/api/tags`, { headers: headers })
     .then((res) => {
       if (!res.ok)
         throw new Error(`Could not reach Ollama server! ${res.status}`);
@@ -324,6 +326,9 @@ async function ollamaAIModels(basePath = null) {
       return [];
     });
 
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!authToken)
+    process.env.OLLAMA_AUTH_TOKEN = authToken;
   return { models, error: null };
 }
 
