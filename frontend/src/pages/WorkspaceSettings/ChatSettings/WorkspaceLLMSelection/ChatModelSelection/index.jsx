@@ -16,7 +16,7 @@ export default function ChatModelSelection({
   if (loading) {
     return (
       <div>
-        <div className="flex flex-col">
+        <div className="flex flex-col mt-6">
           <label htmlFor="name" className="block input-label">
             {t("chat.model.title")}
           </label>
@@ -40,7 +40,7 @@ export default function ChatModelSelection({
 
   return (
     <div>
-      <div className="flex flex-col">
+      <div className="flex flex-col mt-6">
         <label htmlFor="name" className="block input-label">
           {t("chat.model.title")}
         </label>
