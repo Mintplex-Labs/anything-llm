@@ -196,7 +196,7 @@ class TogetherAiLLM {
     );
 
     if (
-      !Object.prototype.hasOwnProperty.call(result.output, "choices") ||
+      !result.output.hasOwnProperty("choices") ||
       result.output.choices.length === 0
     )
       return null;
