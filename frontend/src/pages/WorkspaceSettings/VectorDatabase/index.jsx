@@ -7,6 +7,7 @@ import MaxContextSnippets from "./MaxContextSnippets";
 import DocumentSimilarityThreshold from "./DocumentSimilarityThreshold";
 import ResetDatabase from "./ResetDatabase";
 import VectorCount from "./VectorCount";
+import VectorSearchMode from "./VectorSearchMode";
 
 export default function VectorDatabase({ workspace }) {
   const [hasChanges, setHasChanges] = useState(false);
@@ -43,6 +44,7 @@ export default function VectorDatabase({ workspace }) {
         <VectorDBIdentifier workspace={workspace} />
         <VectorCount reload={true} workspace={workspace} />
       </div>
+      <VectorSearchMode workspace={workspace} setHasChanges={setHasChanges} />
       <MaxContextSnippets workspace={workspace} setHasChanges={setHasChanges} />
       <DocumentSimilarityThreshold
         workspace={workspace}

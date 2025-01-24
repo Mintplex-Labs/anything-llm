@@ -687,6 +687,12 @@ dialog::backdrop {
   }
 }
 
+[data-theme="light"] .markdown table,
+[data-theme="light"] .markdown table th,
+[data-theme="light"] .markdown table td {
+  color: #000;
+}
+
 /* List Styles */
 .markdown ol {
   list-style: decimal-leading-zero;

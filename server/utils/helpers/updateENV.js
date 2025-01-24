@@ -52,7 +52,7 @@ const KEY_MAPPING = {
   },
   GeminiLLMModelPref: {
     envKey: "GEMINI_LLM_MODEL_PREF",
-    checks: [isNotEmpty, validGeminiModel],
+    checks: [isNotEmpty],
   },
   GeminiSafetySetting: {
     envKey: "GEMINI_SAFETY_SETTING",
@@ -264,6 +264,12 @@ const KEY_MAPPING = {
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
+  },
+
+  // Gemini Embedding Settings
+  GeminiEmbeddingApiKey: {
+    envKey: "GEMINI_EMBEDDING_API_KEY",
+    checks: [isNotEmpty],
   },
 
   // Generic OpenAI Embedding Settings
@@ -724,27 +730,6 @@ function supportedTranscriptionProvider(input = "") {
     : `${input} is not a valid transcription model provider.`;
 }
 
-function validGeminiModel(input = "") {
-  const validModels = [
-    "gemini-pro",
-    "gemini-1.0-pro",
-    "gemini-1.5-pro-latest",
-    "gemini-1.5-flash-latest",
-    "gemini-1.5-pro-exp-0801",
-    "gemini-1.5-pro-exp-0827",
-    "gemini-1.5-flash-exp-0827",
-    "gemini-1.5-flash-8b-exp-0827",
-    "gemini-exp-1114",
-    "gemini-exp-1121",
-    "gemini-exp-1206",
-    "learnlm-1.5-pro-experimental",
-    "gemini-2.0-flash-exp",
-  ];
-  return validModels.includes(input)
-    ? null
-    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
-}
-
 function validGeminiSafetySetting(input = "") {
   const validModes = [
     "BLOCK_NONE",
@@ -780,6 +765,7 @@ function supportedEmbeddingModel(input = "") {
   const supported = [
     "openai",
     "azure",
+    "gemini",
     "localai",
     "native",
     "ollama",

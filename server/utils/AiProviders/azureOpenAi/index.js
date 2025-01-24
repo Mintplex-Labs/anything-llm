@@ -5,6 +5,7 @@ const {
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 
 class AzureOpenAiLLM {
@@ -15,9 +16,13 @@ class AzureOpenAiLLM {
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
+    this.apiVersion = "2024-12-01-preview";
     this.openai = new OpenAIClient(
       process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
+      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY),
+      {
+        apiVersion: this.apiVersion,
+      }
     );
     this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
     this.limits = {
@@ -28,6 +33,13 @@ class AzureOpenAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.#log(
+      `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens. API-Version: ${this.apiVersion}`
+    );
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[AzureOpenAi]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -103,7 +115,7 @@ class AzureOpenAiLLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),

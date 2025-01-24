@@ -1,6 +1,7 @@
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
@@ -29,6 +30,13 @@ class OllamaAILLM {
     this.client = new Ollama({ host: this.basePath });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.#log(
+      `OllamaAILLM initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}\nn_ctx: ${this.promptWindowLimit()}`
+    );
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[Ollama]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -113,7 +121,7 @@ class OllamaAILLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent, "spread"),
       {
         role: "user",
         ...this.#generateContent({ userPrompt, attachments }),
@@ -131,11 +139,11 @@ class OllamaAILLM {
           keep_alive: this.keepAlive,
           options: {
             temperature,
-            useMLock: true,
+            use_mlock: true,
             // There are currently only two performance settings so if its not "base" - its max context.
             ...(this.performanceMode === "base"
               ? {}
-              : { numCtx: this.promptWindowLimit() }),
+              : { num_ctx: this.promptWindowLimit() }),
           },
         })
         .then((res) => {
@@ -179,11 +187,11 @@ class OllamaAILLM {
         keep_alive: this.keepAlive,
         options: {
           temperature,
-          useMLock: true,
+          use_mlock: true,
           // There are currently only two performance settings so if its not "base" - its max context.
           ...(this.performanceMode === "base"
             ? {}
-            : { numCtx: this.promptWindowLimit() }),
+            : { num_ctx: this.promptWindowLimit() }),
         },
       }),
       messages,

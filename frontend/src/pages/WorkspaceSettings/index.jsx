@@ -23,6 +23,7 @@ import Members from "./Members";
 import WorkspaceAgentConfiguration from "./AgentConfig";
 import useUser from "@/hooks/useUser";
 import { useTranslation } from "react-i18next";
+import System from "@/models/system";
 
 const TABS = {
   "general-appearance": GeneralAppearance,
@@ -59,9 +60,11 @@ function ShowWorkspaceChat() {
         return;
       }
 
+      const _settings = await System.keys();
       const suggestedMessages = await Workspace.getSuggestedMessages(slug);
       setWorkspace({
         ..._workspace,
+        vectorDB: _settings?.VectorDB,
         suggestedMessages,
       });
       setLoading(false);

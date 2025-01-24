@@ -7,6 +7,7 @@ const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const { fetchNovitaModels } = require("../AiProviders/novita");
 const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
+const { GeminiLLM } = require("../AiProviders/gemini");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -28,6 +29,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "apipie",
   "novita",
   "xai",
+  "gemini",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -42,7 +44,7 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "ollama":
       return await ollamaAIModels(basePath);
     case "togetherai":
-      return await getTogetherAiModels();
+      return await getTogetherAiModels(apiKey);
     case "fireworksai":
       return await getFireworksAiModels(apiKey);
     case "mistral":
@@ -73,6 +75,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getXAIModels(apiKey);
     case "nvidia-nim":
       return await getNvidiaNimModels(basePath);
+    case "gemini":
+      return await getGeminiModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -323,19 +327,21 @@ async function ollamaAIModels(basePath = null) {
   return { models, error: null };
 }
 
-async function getTogetherAiModels() {
-  const knownModels = togetherAiModels();
-  if (!Object.keys(knownModels).length === 0)
-    return { models: [], error: null };
-
-  const models = Object.values(knownModels).map((model) => {
-    return {
-      id: model.id,
-      organization: model.organization,
-      name: model.name,
-    };
-  });
-  return { models, error: null };
+async function getTogetherAiModels(apiKey = null) {
+  const _apiKey =
+    apiKey === true
+      ? process.env.TOGETHER_AI_API_KEY
+      : apiKey || process.env.TOGETHER_AI_API_KEY || null;
+  try {
+    const { togetherAiModels } = require("../AiProviders/togetherAi");
+    const models = await togetherAiModels(_apiKey);
+    if (models.length > 0 && !!_apiKey)
+      process.env.TOGETHER_AI_API_KEY = _apiKey;
+    return { models, error: null };
+  } catch (error) {
+    console.error("Error in getTogetherAiModels:", error);
+    return { models: [], error: "Failed to fetch Together AI models" };
+  }
 }
 
 async function getFireworksAiModels() {
@@ -570,6 +576,17 @@ async function getNvidiaNimModels(basePath = null) {
     console.error(`Nvidia NIM:getNvidiaNimModels`, e.message);
     return { models: [], error: "Could not fetch Nvidia NIM Models" };
   }
+}
+
+async function getGeminiModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.GEMINI_API_KEY
+      : _apiKey || process.env.GEMINI_API_KEY || null;
+  const models = await GeminiLLM.fetchModels(apiKey);
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.GEMINI_API_KEY = apiKey;
+  return { models, error: null };
 }
 
 module.exports = {

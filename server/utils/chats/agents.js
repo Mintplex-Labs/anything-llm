@@ -33,6 +33,7 @@ async function grepAgents({
         )} could not be called. Chat will be handled as default chat.`,
         sources: [],
         close: true,
+        animate: false,
         error: null,
       });
       return;
@@ -61,6 +62,7 @@ async function grepAgents({
       sources: [],
       close: true,
       error: null,
+      animate: true,
     });
     return true;
   }

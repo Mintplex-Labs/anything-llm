@@ -198,10 +198,12 @@ const SystemSettings = {
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
       GenericOpenAiEmbeddingMaxConcurrentChunks:
         process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
+      GeminiEmbeddingApiKey: !!process.env.GEMINI_EMBEDDING_API_KEY,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
@@ -532,9 +534,6 @@ const SystemSettings = {
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,
       CohereModelPref: process.env.COHERE_MODEL_PREF,
-
-      // VoyageAi API Keys
-      VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
 
       // DeepSeek API Keys
       DeepSeekApiKey: !!process.env.DEEPSEEK_API_KEY,

@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   LLMPerformanceMonitor,
@@ -5,8 +7,16 @@ const {
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
+const { safeJsonParse } = require("../../http");
+const cacheFolder = path.resolve(
+  process.env.STORAGE_DIR
+    ? path.resolve(process.env.STORAGE_DIR, "models", "gemini")
+    : path.resolve(__dirname, `../../../storage/models/gemini`)
+);
 
 class GeminiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -21,22 +31,17 @@ class GeminiLLM {
     this.gemini = genAI.getGenerativeModel(
       { model: this.model },
       {
-        // Gemini-1.5-pro-* and Gemini-1.5-flash are only available on the v1beta API.
-        apiVersion: [
-          "gemini-1.5-pro-latest",
-          "gemini-1.5-flash-latest",
-          "gemini-1.5-pro-exp-0801",
-          "gemini-1.5-pro-exp-0827",
-          "gemini-1.5-flash-exp-0827",
-          "gemini-1.5-flash-8b-exp-0827",
-          "gemini-exp-1114",
-          "gemini-exp-1121",
-          "gemini-exp-1206",
-          "learnlm-1.5-pro-experimental",
-          "gemini-2.0-flash-exp",
-        ].includes(this.model)
-          ? "v1beta"
-          : "v1",
+        apiVersion:
+          /**
+           * There are some models that are only available in the v1beta API
+           * and some models that are only available in the v1 API
+           * generally, v1beta models have `exp` in the name, but not always
+           * so we check for both against a static list as well.
+           * @see {v1BetaModels}
+           */
+          this.model.includes("exp") || v1BetaModels.includes(this.model)
+            ? "v1beta"
+            : "v1",
       }
     );
     this.limits = {
@@ -48,6 +53,31 @@ class GeminiLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7; // not used for Gemini
     this.safetyThreshold = this.#fetchSafetyThreshold();
+
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+    this.#log(
+      `Initialized with model: ${this.model} (${this.promptWindowLimit()})`
+    );
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[GeminiLLM]\x1b[0m ${text}`, ...args);
+  }
+
+  // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
+  // from the current date. If it is, then we will refetch the API so that all the models are up
+  // to date.
+  static cacheIsStale() {
+    const MAX_STALE = 6.048e8; // 1 Week in MS
+    if (!fs.existsSync(path.resolve(cacheFolder, ".cached_at"))) return true;
+    const now = Number(new Date());
+    const timestampMs = Number(
+      fs.readFileSync(path.resolve(cacheFolder, ".cached_at"))
+    );
+    return now - timestampMs > MAX_STALE;
   }
 
   #appendContext(contextTexts = []) {
@@ -102,30 +132,128 @@ class GeminiLLM {
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.gemini[modelName] ?? 30_720;
+    try {
+      const cacheModelPath = path.resolve(cacheFolder, "models.json");
+      if (!fs.existsSync(cacheModelPath))
+        return MODEL_MAP.gemini[modelName] ?? 30_720;
+
+      const models = safeJsonParse(fs.readFileSync(cacheModelPath));
+      const model = models.find((model) => model.id === modelName);
+      if (!model)
+        throw new Error(
+          "Model not found in cache - falling back to default model."
+        );
+      return model.contextWindow;
+    } catch (e) {
+      console.error(`GeminiLLM:promptWindowLimit`, e.message);
+      return MODEL_MAP.gemini[modelName] ?? 30_720;
+    }
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.gemini[this.model] ?? 30_720;
+    try {
+      if (!fs.existsSync(this.cacheModelPath))
+        return MODEL_MAP.gemini[this.model] ?? 30_720;
+
+      const models = safeJsonParse(fs.readFileSync(this.cacheModelPath));
+      const model = models.find((model) => model.id === this.model);
+      if (!model)
+        throw new Error(
+          "Model not found in cache - falling back to default model."
+        );
+      return model.contextWindow;
+    } catch (e) {
+      console.error(`GeminiLLM:promptWindowLimit`, e.message);
+      return MODEL_MAP.gemini[this.model] ?? 30_720;
+    }
   }
 
-  isValidChatCompletionModel(modelName = "") {
-    const validModels = [
-      "gemini-pro",
-      "gemini-1.0-pro",
-      "gemini-1.5-pro-latest",
-      "gemini-1.5-flash-latest",
-      "gemini-1.5-pro-exp-0801",
-      "gemini-1.5-pro-exp-0827",
-      "gemini-1.5-flash-exp-0827",
-      "gemini-1.5-flash-8b-exp-0827",
-      "gemini-exp-1114",
-      "gemini-exp-1121",
-      "gemini-exp-1206",
-      "learnlm-1.5-pro-experimental",
-      "gemini-2.0-flash-exp",
-    ];
-    return validModels.includes(modelName);
+  /**
+   * Fetches Gemini models from the Google Generative AI API
+   * @param {string} apiKey - The API key to use for the request
+   * @param {number} limit - The maximum number of models to fetch
+   * @param {string} pageToken - The page token to use for pagination
+   * @returns {Promise<[{id: string, name: string, contextWindow: number, experimental: boolean}]>} A promise that resolves to an array of Gemini models
+   */
+  static async fetchModels(apiKey, limit = 1_000, pageToken = null) {
+    if (!apiKey) return [];
+    if (fs.existsSync(cacheFolder) && !this.cacheIsStale()) {
+      console.log(
+        `\x1b[32m[GeminiLLM]\x1b[0m Using cached models API response.`
+      );
+      return safeJsonParse(
+        fs.readFileSync(path.resolve(cacheFolder, "models.json"))
+      );
+    }
+
+    const url = new URL(
+      "https://generativelanguage.googleapis.com/v1beta/models"
+    );
+    url.searchParams.set("pageSize", limit);
+    url.searchParams.set("key", apiKey);
+    if (pageToken) url.searchParams.set("pageToken", pageToken);
+    let success = false;
+
+    const models = await fetch(url.toString(), {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) throw new Error(data.error.message);
+        return data.models ?? [];
+      })
+      .then((models) => {
+        success = true;
+        return models
+          .filter(
+            (model) => !model.displayName.toLowerCase().includes("tuning")
+          )
+          .filter((model) =>
+            model.supportedGenerationMethods.includes("generateContent")
+          ) //  Only generateContent is supported
+          .map((model) => {
+            return {
+              id: model.name.split("/").pop(),
+              name: model.displayName,
+              contextWindow: model.inputTokenLimit,
+              experimental: model.name.includes("exp"),
+            };
+          });
+      })
+      .catch((e) => {
+        console.error(`Gemini:getGeminiModels`, e.message);
+        success = false;
+        return defaultGeminiModels;
+      });
+
+    if (success) {
+      console.log(
+        `\x1b[32m[GeminiLLM]\x1b[0m Writing cached models API response to disk.`
+      );
+      if (!fs.existsSync(cacheFolder))
+        fs.mkdirSync(cacheFolder, { recursive: true });
+      fs.writeFileSync(
+        path.resolve(cacheFolder, "models.json"),
+        JSON.stringify(models)
+      );
+      fs.writeFileSync(
+        path.resolve(cacheFolder, ".cached_at"),
+        new Date().getTime().toString()
+      );
+    }
+    return models;
+  }
+
+  /**
+   * Checks if a model is valid for chat completion (unused)
+   * @deprecated
+   * @param {string} modelName - The name of the model to check
+   * @returns {Promise<boolean>} A promise that resolves to a boolean indicating if the model is valid
+   */
+  async isValidChatCompletionModel(modelName = "") {
+    const models = await this.fetchModels(process.env.GEMINI_API_KEY);
+    return models.some((model) => model.id === modelName);
   }
 
   /**
@@ -164,7 +292,7 @@ class GeminiLLM {
     return [
       prompt,
       { role: "assistant", content: "Okay." },
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "USER_PROMPT",
         content: this.#generateContent({ userPrompt, attachments }),
@@ -180,8 +308,17 @@ class GeminiLLM {
       .map((message) => {
         if (message.role === "system")
           return { role: "user", parts: [{ text: message.content }] };
-        if (message.role === "user")
+
+        if (message.role === "user") {
+          // If the content is an array - then we have already formatted the context so return it directly.
+          if (Array.isArray(message.content))
+            return { role: "user", parts: message.content };
+
+          // Otherwise, this was a regular user message with no attachments
+          // so we need to format it for Gemini
           return { role: "user", parts: [{ text: message.content }] };
+        }
+
         if (message.role === "assistant")
           return { role: "model", parts: [{ text: message.content }] };
         return null;
@@ -218,11 +355,6 @@ class GeminiLLM {
   }
 
   async getChatCompletion(messages = [], _opts = {}) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
-      );
-
     const prompt = messages.find(
       (chat) => chat.role === "USER_PROMPT"
     )?.content;
@@ -256,11 +388,6 @@ class GeminiLLM {
   }
 
   async streamGetChatCompletion(messages = [], _opts = {}) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
-      );
-
     const prompt = messages.find(
       (chat) => chat.role === "USER_PROMPT"
     )?.content;
