@@ -23,8 +23,12 @@ async function togetherAiModels(apiKey = null) {
   if (fs.existsSync(cacheModelPath) && fs.existsSync(cacheAtPath)) {
     const now = Number(new Date());
     const timestampMs = Number(fs.readFileSync(cacheAtPath));
-    if (now - timestampMs <= 6.048e8) { // 1 Week in MS
-      return safeJsonParse(fs.readFileSync(cacheModelPath, { encoding: "utf-8" }), []);
+    if (now - timestampMs <= 6.048e8) {
+      // 1 Week in MS
+      return safeJsonParse(
+        fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+        []
+      );
     }
   }
 
@@ -50,16 +54,24 @@ async function togetherAiModels(apiKey = null) {
       }));
 
     // Cache the results
-    if (!fs.existsSync(cacheFolder)) fs.mkdirSync(cacheFolder, { recursive: true });
-    fs.writeFileSync(cacheModelPath, JSON.stringify(validModels), { encoding: "utf-8" });
-    fs.writeFileSync(cacheAtPath, String(Number(new Date())), { encoding: "utf-8" });
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    fs.writeFileSync(cacheModelPath, JSON.stringify(validModels), {
+      encoding: "utf-8",
+    });
+    fs.writeFileSync(cacheAtPath, String(Number(new Date())), {
+      encoding: "utf-8",
+    });
 
     return validModels;
   } catch (error) {
     console.error("Error fetching Together AI models:", error);
     // If cache exists but is stale, still use it as fallback
     if (fs.existsSync(cacheModelPath)) {
-      return safeJsonParse(fs.readFileSync(cacheModelPath, { encoding: "utf-8" }), []);
+      return safeJsonParse(
+        fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+        []
+      );
     }
     return [];
   }
