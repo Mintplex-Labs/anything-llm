@@ -72,7 +72,8 @@ function apiWorkspaceThreadEndpoints(app) {
         const wslug = request.params.slug;
         // console.log(`wslug: ${wslug}`)
         let { userId = null, name = null, slug = null } = reqBody(request);
-        const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : wslug });
+        const workspace = await Workspace.get({ slug: String(wslug) });
+        // const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : wslug });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -166,7 +167,8 @@ function apiWorkspaceThreadEndpoints(app) {
       try {
         const { slug, threadSlug } = request.params;
         const { name } = reqBody(request);
-        const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
+        // const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
           workspace_id: workspace.id,
@@ -219,7 +221,8 @@ function apiWorkspaceThreadEndpoints(app) {
     */
       try {
         const { slug, threadSlug } = request.params;
-        const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
+        // const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -289,7 +292,8 @@ function apiWorkspaceThreadEndpoints(app) {
       try {
         // console.log('thread chats history service called')
         const { slug, threadSlug } = request.params;
-        const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
+        // const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
           workspace_id: workspace.id,
@@ -377,9 +381,9 @@ function apiWorkspaceThreadEndpoints(app) {
       try {
         const { slug, threadSlug } = request.params;
         const { message, mode = "query", userId } = reqBody(request);
-        
-        // const workspace = await Workspace.get({ slug: process.env.INTERNAL_WORKSPACE_NAME });
-        const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
+
+        const workspace = await Workspace.get({ slug: String(slug) });
+        // const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
           workspace_id: workspace.id,
@@ -524,8 +528,9 @@ function apiWorkspaceThreadEndpoints(app) {
       */
       try {
         const { slug, threadSlug } = request.params;
-        const { message, mode = "query", userId, workspaces} = reqBody(request);
-        const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
+        const { message, mode = "query", userId, workspaces } = reqBody(request);
+        const workspace = await Workspace.get({ slug: String(slug) });
+        // const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
           workspace_id: workspace.id,
