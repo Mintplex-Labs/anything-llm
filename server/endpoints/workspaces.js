@@ -416,6 +416,38 @@ function workspaceEndpoints(app) {
   );
 
   app.get(
+    "/workspaces/include-internal",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        // console.log('workspaces endpoint called')
+        const user = await userFromSession(request, response);
+        const workspaces = multiUserMode(response)
+          ? await Workspace.whereWithUser(user)
+          : await Workspace.where();
+
+        
+        
+        // const filteredWorkspaces = workspaces.filter(
+        //   (workspace) => workspace.slug !== process.env.INTERNAL_WORKSPACE_NAME
+        // );
+        // response.status(200).json({ workspaces: filteredWorkspaces });
+        // // response.status(200).json({ workspaces });
+
+        const sortedWorkspaces = workspaces.sort((a, b) => {
+          if (a.slug === process.env.INTERNAL_WORKSPACE_NAME) return -1; 
+          if (b.slug === process.env.INTERNAL_WORKSPACE_NAME) return 1;  
+          return 0;
+        });
+        response.status(200).json({ workspaces });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
     "/workspace/:slug",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
