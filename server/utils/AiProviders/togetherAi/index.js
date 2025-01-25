@@ -5,10 +5,76 @@ const {
 const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
+const fs = require("fs");
+const path = require("path");
+const { safeJsonParse } = require("../../http");
 
-function togetherAiModels() {
-  const { MODELS } = require("./models.js");
-  return MODELS || {};
+const cacheFolder = path.resolve(
+  process.env.STORAGE_DIR
+    ? path.resolve(process.env.STORAGE_DIR, "models", "togetherAi")
+    : path.resolve(__dirname, `../../../storage/models/togetherAi`)
+);
+
+async function togetherAiModels(apiKey = null) {
+  const cacheModelPath = path.resolve(cacheFolder, "models.json");
+  const cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+
+  // If cache exists and is less than 1 week old, use it
+  if (fs.existsSync(cacheModelPath) && fs.existsSync(cacheAtPath)) {
+    const now = Number(new Date());
+    const timestampMs = Number(fs.readFileSync(cacheAtPath));
+    if (now - timestampMs <= 6.048e8) {
+      // 1 Week in MS
+      return safeJsonParse(
+        fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+        []
+      );
+    }
+  }
+
+  try {
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: "https://api.together.xyz/v1",
+      apiKey: apiKey || process.env.TOGETHER_AI_API_KEY || null,
+    });
+
+    const response = await openai.models.list();
+
+    // Filter and transform models into the expected format
+    // Only include chat models
+    const validModels = response.body
+      .filter((model) => ["chat"].includes(model.type))
+      .map((model) => ({
+        id: model.id,
+        name: model.display_name || model.id,
+        organization: model.organization || "Unknown",
+        type: model.type,
+        maxLength: model.context_length || 4096,
+      }));
+
+    // Cache the results
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    fs.writeFileSync(cacheModelPath, JSON.stringify(validModels), {
+      encoding: "utf-8",
+    });
+    fs.writeFileSync(cacheAtPath, String(Number(new Date())), {
+      encoding: "utf-8",
+    });
+
+    return validModels;
+  } catch (error) {
+    console.error("Error fetching Together AI models:", error);
+    // If cache exists but is stale, still use it as fallback
+    if (fs.existsSync(cacheModelPath)) {
+      return safeJsonParse(
+        fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+        []
+      );
+    }
+    return [];
+  }
 }
 
 class TogetherAiLLM {
@@ -60,29 +126,34 @@ class TogetherAiLLM {
     return content.flat();
   }
 
-  allModelInformation() {
-    return togetherAiModels();
+  async allModelInformation() {
+    const models = await togetherAiModels();
+    return models.reduce((acc, model) => {
+      acc[model.id] = model;
+      return acc;
+    }, {});
   }
 
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
 
-  static promptWindowLimit(modelName) {
-    const availableModels = togetherAiModels();
-    return availableModels[modelName]?.maxLength || 4096;
+  static async promptWindowLimit(modelName) {
+    const models = await togetherAiModels();
+    const model = models.find((m) => m.id === modelName);
+    return model?.maxLength || 4096;
   }
 
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
-  promptWindowLimit() {
-    const availableModels = this.allModelInformation();
-    return availableModels[this.model]?.maxLength || 4096;
+  async promptWindowLimit() {
+    const models = await togetherAiModels();
+    const model = models.find((m) => m.id === this.model);
+    return model?.maxLength || 4096;
   }
 
   async isValidChatCompletionModel(model = "") {
-    const availableModels = this.allModelInformation();
-    return availableModels.hasOwnProperty(model);
+    const models = await togetherAiModels();
+    const foundModel = models.find((m) => m.id === model);
+    return foundModel && foundModel.type === "chat";
   }
 
   constructPrompt({
