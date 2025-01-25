@@ -254,6 +254,12 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin"],
             },
+            {
+              btnText: t("settings.reranker-rewriter"),
+              href: paths.settings.rerankerRewriter(),
+              flex: true,
+              roles: ["admin"],
+            },
           ]}
         />
         <Option

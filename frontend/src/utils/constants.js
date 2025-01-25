@@ -59,6 +59,10 @@ export const ALLOWED_SYSTEM_CONFIG_KEYS = {
   transcription: "transcription",
   "vector-db": "vector-db",
   "voice-speech": "voice-speech",
+  "reranker-rewriter": "reranker-rewriter",
 };
 
 export const POPUP_BROWSER_EXTENSION_EVENT = "NEW_BROWSER_EXTENSION_CONNECTION";
+
+export const DEFAULT_REWRITER_PROMPT =
+  "Your goal is to combine a sequence of questions into a singular question if they are related. If the second question does not relate to the first question and is fully self-contained, return the second question. Return just the new combined question or second question with no additional explanations. If both questions are asked in different languages, return the second question.";

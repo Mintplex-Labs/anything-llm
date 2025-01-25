@@ -39,6 +39,7 @@ const TRANSLATIONS = {
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
+    "reranker-rewriter": "Re-Ranker & Re-Writer",
   },
 
   // Page Definitions
@@ -393,6 +394,25 @@ const TRANSLATIONS = {
     },
   },
 
+  "reranker-rewriter": {
+    title: "Re-Ranker & Re-Writer Preferences",
+    "desc-start":
+      "Re-ranking prioritizes responses based on relevance, while rewriting refines outputs to match specific styles or improve clarity.",
+    "desc-end":
+      "These configurations help Prism optimize results to better suit your needs.",
+    reranker: {
+      title: "Re-Ranker",
+      desc: "If enabled, Re-Ranker refines search results by prioritizing and reordering them based on relevance, ensuring the most contextually appropriate and meaningful results.",
+      provider: {
+        title: "Re-Ranker Provider",
+      },
+    },
+    rewriter: {
+      title: "Re-Writer",
+      desc: "If enabled, Re-Writer refines responses by modifying them to better align with your preferred style, tone, or clarity.",
+      "prompt-label": "Prism Query Re-Writer Prompt",
+    },
+  },
   text: {
     title: "Text splitting & Chunking Preferences",
     "desc-start":
