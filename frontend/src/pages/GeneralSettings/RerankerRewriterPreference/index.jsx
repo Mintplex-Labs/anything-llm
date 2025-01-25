@@ -48,14 +48,13 @@ export default function RerankerRewriter() {
       const oldValue = settings?.[key];
       const newValue = formData?.[key];
 
-      data.push({ key, newValue, oldValue, isEqual: oldValue === newValue });
       if (!isRerankerEnabled && RE_RANKER_KEYS.includes(key) && !newValue)
         continue;
       if (!isRewriterEnabled && RE_WRITER_KEYS.includes(key) && !newValue)
         continue;
       if (key === "RerankerApiKey" && !newValue?.replace(/\*/g, "")?.length)
         continue;
-      if (newValue !== settings?.[key]) {
+      if (newValue !== oldValue) {
         return true;
       }
     }
