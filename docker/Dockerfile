@@ -142,8 +142,6 @@ WORKDIR /app/collector
 ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 
-USER root
-WORKDIR /app/server
 WORKDIR /app
 USER anythingllm
 
