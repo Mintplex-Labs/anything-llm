@@ -138,6 +138,42 @@ export default function ChatHistory({
     );
   };
 
+  const compiledHistory = useMemo(
+    () =>
+      buildMessages({
+        workspace,
+        history,
+        regenerateAssistantMessage,
+        saveEditedMessage,
+        forkThread,
+      }),
+    [
+      workspace,
+      history,
+      regenerateAssistantMessage,
+      saveEditedMessage,
+      forkThread,
+    ]
+  );
+  const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
+  const renderStatusResponse = useCallback(
+    (item, index) => {
+      const hasSubsequentMessages = index < compiledHistory.length - 1;
+      return (
+        <StatusResponse
+          key={`status-group-${index}`}
+          messages={item}
+          isThinking={!hasSubsequentMessages && lastMessageInfo.isAnimating}
+          showCheckmark={
+            hasSubsequentMessages ||
+            (!lastMessageInfo.isAnimating && !lastMessageInfo.isStatusResponse)
+          }
+        />
+      );
+    },
+    [compiledHistory.length, lastMessageInfo]
+  );
+
   if (history.length === 0 && !hasAttachments) {
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
@@ -175,42 +211,6 @@ export default function ChatHistory({
       </div>
     );
   }
-
-  const compiledHistory = useMemo(
-    () =>
-      buildMessages({
-        workspace,
-        history,
-        regenerateAssistantMessage,
-        saveEditedMessage,
-        forkThread,
-      }),
-    [
-      workspace,
-      history,
-      regenerateAssistantMessage,
-      saveEditedMessage,
-      forkThread,
-    ]
-  );
-  const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
-  const renderStatusResponse = useCallback(
-    (item, index) => {
-      const hasSubsequentMessages = index < compiledHistory.length - 1;
-      return (
-        <StatusResponse
-          key={`status-group-${index}`}
-          messages={item}
-          isThinking={!hasSubsequentMessages && lastMessageInfo.isAnimating}
-          showCheckmark={
-            hasSubsequentMessages ||
-            (!lastMessageInfo.isAnimating && !lastMessageInfo.isStatusResponse)
-          }
-        />
-      );
-    },
-    [compiledHistory.length, lastMessageInfo]
-  );
 
   return (
     <div
