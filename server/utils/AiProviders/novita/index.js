@@ -35,7 +35,7 @@ class NovitaLLM {
     this.model =
       modelPreference ||
       process.env.NOVITA_LLM_MODEL_PREF ||
-      "gryphe/mythomax-l2-13b";
+      "deepseek/deepseek-r1";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
