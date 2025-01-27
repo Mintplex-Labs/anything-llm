@@ -26,7 +26,7 @@ export default function PrismRerankerOptions({ settings }) {
             name="RerankerApiKey"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Prism API Key"
-            defaultValue={settings?.RerankerApiKey}
+            defaultValue={settings?.RerankerApiKey || "*".repeat(20)}
             required={true}
             autoComplete="off"
             spellCheck={false}

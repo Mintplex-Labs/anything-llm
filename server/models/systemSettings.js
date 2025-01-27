@@ -221,6 +221,10 @@ const SystemSettings = {
     const rerankerRewriterSettings =
       allSettings?.find((setting) => setting.label === "reranker-rewriter")
         ?.config || {};
+    delete rerankerRewriterSettings.RerankerApiKey;
+    delete embeddingSettings.GenericOpenAiEmbeddingApiKey;
+    delete embeddingSettings.SparseGenericOpenAiEmbeddingApiKey;
+    delete embeddingSettings.VoyageAiApiKey;
 
     return {
       // --------------------------------------------------------

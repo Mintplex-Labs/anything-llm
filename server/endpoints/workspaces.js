@@ -400,7 +400,7 @@ function workspaceEndpoints(app) {
         const workspaces = multiUserMode(response)
           ? await Workspace.whereWithUser(user)
           : await Workspace.where();
-        
+
         const filteredWorkspaces = workspaces.filter(
           (workspace) => workspace.slug !== process.env.INTERNAL_WORKSPACE_NAME
         );
@@ -1048,6 +1048,7 @@ function workspaceEndpoints(app) {
       try {
         const { slug } = request.params;
         const { offset = 0, limit = 10 } = request.query;
+
         const user = await userFromSession(request, response);
         const workspace = multiUserMode(response)
           ? await Workspace.getWithUser(user, { slug }, false)
@@ -1061,8 +1062,8 @@ function workspaceEndpoints(app) {
           {
             workspaceId: workspace.id,
           },
-          offset,
-          limit,
+          parseInt(offset),
+          parseInt(limit),
           { lastUpdatedAt: "desc" }
         );
         response.json(documents);
