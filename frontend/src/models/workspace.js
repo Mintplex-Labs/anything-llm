@@ -213,6 +213,17 @@ const Workspace = {
 
     return workspaces;
   },
+  allAdmin: async function () {
+    const workspaces = await fetch(`${API_BASE}/admin/workspaces`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res.workspaces || [])
+      .catch(() => []);
+
+    return workspaces;
+  },
   bySlug: async function (slug = "") {
     const workspace = await fetch(`${API_BASE}/workspace/${slug}`, {
       headers: baseHeaders(),

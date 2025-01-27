@@ -404,8 +404,8 @@ function workspaceEndpoints(app) {
         const filteredWorkspaces = workspaces.filter(
           (workspace) => workspace.slug !== process.env.INTERNAL_WORKSPACE_NAME
         );
-        // console.dir(filteredWorkspaces, {depth: null})
         response.status(200).json({ workspaces: filteredWorkspaces });
+        // response.status(200).json({ workspaces });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
