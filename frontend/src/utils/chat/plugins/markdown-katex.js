@@ -12,17 +12,18 @@ function isValidDelim(state, pos) {
   prevChar = pos > 0 ? state.src.charCodeAt(pos - 1) : -1;
   nextChar = pos + 1 <= max ? state.src.charCodeAt(pos + 1) : -1;
 
-  // Check non-whitespace conditions for opening and closing, and
-  // check that closing delimeter isn't followed by a number
-  if (
-    prevChar === 0x20 /* " " */ ||
-    prevChar === 0x09 /* \t */ ||
-    (nextChar >= 0x30 /* "0" */ && nextChar <= 0x39) /* "9" */
-  ) {
-    can_close = false;
-  }
-  if (nextChar === 0x20 /* " " */ || nextChar === 0x09 /* \t */) {
-    can_open = false;
+  // Only apply whitespace rules if we're dealing with $ delimiter
+  if (state.src[pos] === "$") {
+    if (
+      prevChar === 0x20 /* " " */ ||
+      prevChar === 0x09 /* \t */ ||
+      (nextChar >= 0x30 /* "0" */ && nextChar <= 0x39) /* "9" */
+    ) {
+      can_close = false;
+    }
+    if (nextChar === 0x20 /* " " */ || nextChar === 0x09 /* \t */) {
+      can_open = false;
+    }
   }
 
   return {
@@ -34,10 +35,9 @@ function isValidDelim(state, pos) {
 function math_inline(state, silent) {
   var start, match, token, res, pos, esc_count;
 
-  // Check for $, [, and \( as opening delimiters
+  // Only process $ and \( delimiters for inline math
   if (
     state.src[state.pos] !== "$" &&
-    state.src[state.pos] !== "[" &&
     (state.src[state.pos] !== "\\" || state.src[state.pos + 1] !== "(")
   ) {
     return false;
@@ -160,17 +160,10 @@ function math_block(state, start, end, silent) {
   }
 
   let openDelim = state.src.slice(pos, pos + 2);
-  let isSingleDollar = openDelim === "$";
   let isDoubleDollar = openDelim === "$$";
   let isLatexBracket = openDelim === "\\[";
-  let isSingleBracket = state.src[pos] === "[";
 
-  if (
-    !isDoubleDollar &&
-    !isLatexBracket &&
-    !isSingleDollar &&
-    !isSingleBracket
-  ) {
+  if (!isDoubleDollar && !isLatexBracket) {
     return false;
   }
 
@@ -182,14 +175,6 @@ function math_block(state, start, end, silent) {
   } else if (isLatexBracket) {
     delimiter = "\\]";
     posAdjust = 2;
-  } else if (isSingleBracket) {
-    delimiter = "]";
-    posAdjust = 1;
-  } else if (isSingleDollar) {
-    delimiter = "$";
-    posAdjust = 1;
-  } else {
-    return false;
   }
 
   pos += posAdjust;
