@@ -143,6 +143,9 @@ export default function RerankerRewriter() {
               id={FORM_ID}
               onSubmit={handleSaveSettings}
               className="overflow-y-auto space-y-[32px] h-full py-6 px-1 md:px-6"
+              onChange={() => {
+                if (!hasChanges) setHasChanges(true);
+              }}
             >
               <div className="justify-end flex">
                 {hasChanges && (
@@ -158,26 +161,19 @@ export default function RerankerRewriter() {
                 )}
               </div>
 
-              <div
-                className="flex-1"
-                onChange={() => {
-                  setHasChanges(true);
-                }}
-              >
+              <div className="flex-1">
                 <RerankerPreferences
                   settings={settings}
                   isRerankerEnabled={isRerankerEnabled}
                   setIsRerankerEnabled={setIsRerankerEnabled}
                   selectedReranker={selectedReranker}
-                  setSelectedReranker={setSelectedReranker}
+                  setSelectedReranker={(choice) => {
+                    if (!hasChanges) setHasChanges(true);
+                    setSelectedReranker(choice);
+                  }}
                 />
               </div>
-              <div
-                className="flex-1"
-                onChange={() => {
-                  setHasChanges(true);
-                }}
-              >
+              <div className="flex-1">
                 <RewriterPreferences
                   settings={settings}
                   fetchKeys={fetchKeys}
