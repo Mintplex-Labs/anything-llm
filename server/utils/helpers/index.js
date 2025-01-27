@@ -330,7 +330,7 @@ function getLLMProviderClass({ provider = null } = {}) {
  * @returns { BaseRerankerProvider}
  */
 function getRerankerProvider() {
-  const rerankerSelection = process.env.RERANKER_PROVIDER || "none";
+  const rerankerSelection = process.env?.RERANKER_PROVIDER || "none";
   switch (rerankerSelection) {
     case "prism":
       const Prism = require("../rerankerProviders/prism");

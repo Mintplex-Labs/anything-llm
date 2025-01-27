@@ -42,7 +42,6 @@ const { systemPrompt } = require("../agents/aibitat/providers/ai-provider");
 async function performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount,) {
 
   const VectorDb = getVectorDbClass();
-  const Reranker = getRerankerProvider();
   // Use Promise.all to handle all searches concurrently
   const searchPromises = workspaces.map(namespace => {
     return embeddingsCount !== 0
@@ -310,6 +309,7 @@ async function chatSync({
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
       .map(source => source.text);
+    const Reranker = getRerankerProvider();
 
     if (texts.length !== 0) {
       // Call re-ranker to get top results
@@ -707,6 +707,7 @@ async function streamChat({
       .filter(source => source.text) // Ensure source.text exists
       .map(source => source.text);
 
+    const Reranker = getRerankerProvider();
     if (texts.length !== 0) {
       // Call re-ranker to get top results
       const rerankedResults = await Reranker.rerankTexts(texts, effectiveQuestion);

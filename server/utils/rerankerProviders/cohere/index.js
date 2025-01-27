@@ -9,6 +9,8 @@ const cohere = new CohereClient({ token: process.env.RERANKER_API_KEY });
  */
 async function rerankTexts(texts, query) {
     try {
+        console.log('cohere reranker called')
+
         // Validate inputs
         if (!Array.isArray(texts) || texts.length === 0) {
             throw new Error('The texts parameter must be a non-empty array.');
@@ -25,8 +27,12 @@ async function rerankTexts(texts, query) {
             model: process.env.RERANKER_MODEL,
         });
 
-        console.log('Rerank Results:', rerank);
-        return rerank; // Return the result to the caller
+        const formattedResults = rerank.results.map((item) => ({
+            index: item.index,
+            score: item.relevanceScore,
+        }));
+        // console.log(formattedResults)
+        return formattedResults;
     } catch (error) {
         console.error('Error in rerankTexts:', error.message);
         throw error; // Rethrow the error for the caller to handle

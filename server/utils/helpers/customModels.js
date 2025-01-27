@@ -73,6 +73,10 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getXAIModels(apiKey);
     case "nvidia-nim":
       return await getNvidiaNimModels(basePath);
+    case "cohere-rerank":
+      return await getCohereRerankModels(apiKey);
+    case "jina-rerank":
+      return await getJinaRerankModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -566,6 +570,42 @@ async function getNvidiaNimModels(basePath = null) {
     });
 
     return { models, error: null };
+  } catch (e) {
+    console.error(`Nvidia NIM:getNvidiaNimModels`, e.message);
+    return { models: [], error: "Could not fetch Nvidia NIM Models" };
+  }
+}
+
+async function getCohereRerankModels(apiKey = null) {
+  try {
+    const { CohereClient } = require('cohere-ai');
+    const cohere = new CohereClient({ token: apiKey });
+
+    const rerankModels = await client.models.list(
+      {
+        endpoint: "rerank"
+      }
+    )
+    const modelNames = response.models.map((model) => model.name);
+    return { modelNames, error: null };
+  } catch (e) {
+    console.error(`Cohere RERANK:getCohereRerankModels`, e.message);
+    return { models: [], error: "Could not fetch Cohere Rerank Models" };
+  }
+}
+
+async function getJinaRerankModels(apiKey = null) {
+  try {
+    const jinaModels = [
+      "jina-colbert-v2",
+      "jina-reranker-v2-base-multilingual",
+      "jina-reranker-v1-tiny-en",
+      "jina-reranker-v1-turbo-en",
+      "jina-reranker-v1-base-en",
+      "jina-colbert-v1-en",
+    ];
+
+    return { jinaModels, error: null };
   } catch (e) {
     console.error(`Nvidia NIM:getNvidiaNimModels`, e.message);
     return { models: [], error: "Could not fetch Nvidia NIM Models" };

@@ -8,6 +8,8 @@ const fetch = require('node-fetch');
  */
 async function rerankTexts(texts, query) {
     try {
+      console.log('prism reranker called')
+
       if (!Array.isArray(texts) || texts.length === 0) {
         throw new Error('The texts parameter must be a non-empty array.');
       }

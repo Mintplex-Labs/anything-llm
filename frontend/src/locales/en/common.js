@@ -387,7 +387,7 @@ const TRANSLATIONS = {
         "There is no set up required when using Prism's native embedding engine.",
     },
     "hybrid-search": {
-      title: "Hybrid Search",
+      title: "Hybrid Search (Applicable to Milvus DB)",
       desc: "If enabled Hybrid Search blends dense embeddings for semantic understanding and sparse embeddings for exact keyword matching, leveraging weighted contributions from both to deliver precise and context-aware search results.",
       weightInfo:
         "The combined weights of Dense Vector Weight and Sparse Vector Weight must be 1",
