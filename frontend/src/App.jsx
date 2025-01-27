@@ -96,7 +96,7 @@ export default function App() {
 
                   <Route
                     path="/workspace/:slug/settings/:tab"
-                    element={<ManagerRoute Component={WorkspaceSettings} />}
+                    element={<AdminRoute Component={WorkspaceSettings} />}
                   />
                   <Route
                     path="/workspace/:slug"
@@ -158,7 +158,7 @@ export default function App() {
                   {/* Manager */}
                   <Route
                     path="/settings/security"
-                    element={<ManagerRoute Component={GeneralSecurity} />}
+                    element={<AdminRoute Component={GeneralSecurity} />}
                   />
                   <Route
                     path="/settings/privacy"
@@ -166,7 +166,7 @@ export default function App() {
                   />
                   <Route
                     path="/settings/appearance"
-                    element={<ManagerRoute Component={GeneralAppearance} />}
+                    element={<AdminRoute Component={GeneralAppearance} />}
                   />
                   <Route
                     path="/settings/beta-features"
@@ -196,7 +196,7 @@ export default function App() {
                   />
                   <Route
                     path="/settings/workspaces"
-                    element={<ManagerRoute Component={AdminWorkspaces} />}
+                    element={<AdminRoute Component={AdminWorkspaces} />}
                   />
                   {/* Onboarding Flow */}
                   <Route path="/onboarding" element={<OnboardingFlow />} />
