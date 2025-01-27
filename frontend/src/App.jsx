@@ -45,6 +45,9 @@ const GeneralAudioPreference = lazy(
 const GeneralEmbeddingPreference = lazy(
   () => import("@/pages/GeneralSettings/EmbeddingPreference")
 );
+const RerankerRewriter = lazy(
+  () => import("@/pages/GeneralSettings/RerankerRewriterPreference")
+);
 const EmbeddingTextSplitterPreference = lazy(
   () => import("@/pages/GeneralSettings/EmbeddingTextSplitterPreference")
 );
@@ -138,6 +141,10 @@ export default function App() {
                     element={
                       <AdminRoute Component={EmbeddingTextSplitterPreference} />
                     }
+                  />
+                  <Route
+                    path="/settings/reranker-rewriter-preference"
+                    element={<AdminRoute Component={RerankerRewriter} />}
                   />
                   <Route
                     path="/settings/vector-database"

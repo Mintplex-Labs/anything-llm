@@ -637,6 +637,41 @@ const SYSTEM_CONFIG_KEY_MAPPINGS = {
     checks: [],
   },
 };
+
+const RERANKER_REWRITER_CONFIG_KEY_MAPPINGS = {
+  // Rewriter config
+  QueryRewriterEnabled: {
+    envKey: "QUERY_REWRITER_ENABLED",
+    checks: [],
+  },
+  QueryRewriterPrompt: {
+    envKey: "QUERY_REWRITER_PROMPT",
+    checks: [],
+  },
+
+  // Reranker Config
+  RerankerProvider: {
+    envKey: "RERANKER_PROVIDER",
+    checks: [supportedRerankerModel],
+  },
+  RerankerModel: {
+    envKey: "RERANKER_MODEL",
+    checks: [],
+  },
+  RerankerApiKey: {
+    envKey: "RERANKER_API_KEY",
+    checks: [],
+  },
+  RerankerUrl: {
+    envKey: "RERANKER_URL",
+    checks: [isValidURL, validDockerizedUrl],
+  },
+  RerankTopNResults: {
+    envKey: "RERANK_TOP_N_RESULTS",
+    checks: [nonZero],
+  },
+};
+
 const KEY_MAPPING = {
   ...LLM_CONFIG_KEY_MAPPINGS,
   ...EMBEDDING_CONFIG_KEY_MAPPINGS,
@@ -644,6 +679,7 @@ const KEY_MAPPING = {
   ...TRANSCRIPTION_CONFIG_KEY_MAPPINGS,
   ...VOICE_AND_SPEECH_CONFIG_KEY_MAPPINGS,
   ...SYSTEM_CONFIG_KEY_MAPPINGS,
+  ...RERANKER_REWRITER_CONFIG_KEY_MAPPINGS,
 };
 
 function isNotEmpty(input = "") {
@@ -840,6 +876,12 @@ function supportedEmbeddingModel(input = "") {
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;
+}
+function supportedRerankerModel(input = "") {
+  const supported = ["none", "prism", "jina", "cohere"];
+  return supported.includes(input)
+    ? null
+    : `Invalid Reranker model type. Must be one of ${supported.join(", ")}.`;
 }
 
 function supportedVectorDB(input = "") {
@@ -1065,6 +1107,7 @@ const ALLOWED_SYSTEM_CONFIG_KEYS = {
   "vector-db": VECTOR_DB_KEY_MAPPINGS,
   "voice-speech": VOICE_AND_SPEECH_CONFIG_KEY_MAPPINGS,
   system: SYSTEM_CONFIG_KEY_MAPPINGS,
+  "reranker-rewriter": RERANKER_REWRITER_CONFIG_KEY_MAPPINGS,
 };
 
 module.exports = {
