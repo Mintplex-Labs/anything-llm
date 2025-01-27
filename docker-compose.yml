@@ -18,6 +18,7 @@ services:
     environment:
       NODE_ENV: development
       VITE_ENABLE_SSO: true
+      APPLICATION_FALLBACK_NAME: "Prism"
     command: make start_frontend
     ports:
       - "3000:3000"

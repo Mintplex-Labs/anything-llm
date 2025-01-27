@@ -47,7 +47,7 @@ export default function AgentSkill({ item, settings, setStep }) {
             </h1>
           </div>
           <p className="text-sm">
-            Agent skills can execute code on your AnythingLLM instance, so only
+            Agent skills can execute code on your {process.env.APPLICATION_FALLBACK_NAME} instance, so only
             import agent skills from sources you trust. You should also review
             the code before importing. If you are unsure about what a skill does
             - don't import it!
@@ -92,7 +92,7 @@ export default function AgentSkill({ item, settings, setStep }) {
       </div>
       <div className="flex flex-col gap-y-[25px] text-white/80 light:text-theme-text-secondary text-sm custom-text-secondary">
         <p>
-          Agent skills unlock new capabilities for your AnythingLLM workspace
+          Agent skills unlock new capabilities for your {process.env.APPLICATION_FALLBACK_NAME} workspace
           via{" "}
           <code className="font-mono bg-zinc-900 light:bg-slate-200 px-1 py-0.5 rounded-md text-sm custom-theme-bg-tertiary custom-text-secondary custom-border-secondary">
             @agent

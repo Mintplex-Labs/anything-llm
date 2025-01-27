@@ -298,7 +298,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     logo: AnythingLLMIcon,
     options: (settings) => <NativeLLMOptions settings={settings} />,
     description:
-      "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
+      `Use a downloaded custom Llama model for chatting on this ${process.env.APPLICATION_FALLBACK_NAME} instance.`,
     requiredConfig: [],
   },
 ];

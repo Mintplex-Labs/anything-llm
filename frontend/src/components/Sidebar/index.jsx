@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import { useSidebarToggle, ToggleSidebarButton } from "./SidebarToggle";
+import System from "@/models/system";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -24,6 +25,20 @@ export default function Sidebar() {
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
   const { t } = useTranslation();
+  const [_isCustomLogo, _setIsCustomLogo] = useState(false);
+
+  const checkIfCustomLogo = async () => {
+    try {
+      const { isCustomLogo } = await System.fetchLogo();
+      _setIsCustomLogo(isCustomLogo);
+    } catch (e) {
+      _setIsCustomLogo(false);
+    }
+  };
+
+  useEffect(() => {
+    checkIfCustomLogo();
+  }, []);
 
   return (
     <>
@@ -37,11 +52,15 @@ export default function Sidebar() {
         <div className="flex shrink-0 w-full justify-center my-[18px]">
           <div className="flex justify-between w-[250px] min-w-[250px]">
             <Link to={paths.home()} aria-label="Home">
-              <img
-                src={logo}
-                alt="Logo"
-                className={`rounded max-h-[24px] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
-              />
+              {!_isCustomLogo ? (
+                <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || ''}</div>
+              ) : (
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className={`rounded max-h-[24px] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
+                />
+              )}
             </Link>
             {canToggleSidebar && (
               <ToggleSidebarButton
@@ -99,6 +118,7 @@ export function SidebarMobileHeader() {
   } = useNewWorkspaceModal();
   const { user } = useUser();
   const { t } = useTranslation();
+  const [_isCustomLogo, _setIsCustomLogo] = useState(false);
 
   useEffect(() => {
     // Darkens the rest of the screen
@@ -115,6 +135,20 @@ export function SidebarMobileHeader() {
     handleBg();
   }, [showSidebar]);
 
+
+  const checkIfCustomLogo = async () => {
+    try {
+      const { isCustomLogo } = await System.fetchLogo();
+      _setIsCustomLogo(isCustomLogo);
+    } catch (e) {
+      _setIsCustomLogo(false);
+    }
+  };
+
+  useEffect(() => {
+    checkIfCustomLogo();
+  }, []);
+
   return (
     <>
       <div
@@ -128,12 +162,16 @@ export function SidebarMobileHeader() {
           <List className="h-6 w-6" />
         </button>
         <div className="flex items-center justify-center flex-grow">
-          <img
-            src={logo}
-            alt="Logo"
-            className="block mx-auto h-6 w-auto"
-            style={{ maxHeight: "40px", objectFit: "contain" }}
-          />
+          {!_isCustomLogo ? (
+            <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || ''}</div>
+          ) : (
+            <img
+              src={logo}
+              alt="Logo"
+              className="block mx-auto h-6 w-auto"
+              style={{ maxHeight: "40px", objectFit: "contain" }}
+            />
+          )}
         </div>
         <div className="w-12"></div>
       </div>
@@ -159,12 +197,16 @@ export function SidebarMobileHeader() {
             {/* Header Information */}
             <div className="flex w-full items-center justify-between gap-x-4">
               <div className="flex shrink-1 w-fit items-center justify-start">
-                <img
-                  src={logo}
-                  alt="Logo"
-                  className="rounded w-full max-h-[40px]"
-                  style={{ objectFit: "contain" }}
-                />
+                {!_isCustomLogo ? (
+                  <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || ''}</div>
+                ) : (
+                  <img
+                    src={logo}
+                    alt="Logo"
+                    className="rounded w-full max-h-[40px]"
+                    style={{ objectFit: "contain" }}
+                  />
+                )}
               </div>
               {(!user || user?.role !== "default") && (
                 <div className="flex gap-x-2 items-center text-slate-500 shink-0">
@@ -193,7 +235,10 @@ export function SidebarMobileHeader() {
                   <ActiveWorkspaces />
                 </div>
               </div>
-              <div className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md" style={{ backgroundColor: 'transparent' }}>
+              <div
+                className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md"
+                style={{ backgroundColor: "transparent" }}
+              >
                 <Footer />
               </div>
             </div>

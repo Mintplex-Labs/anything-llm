@@ -12,7 +12,7 @@ export default function Completed({ settings, setSettings, setStep }) {
           <div className="flex flex-col gap-y-[25px] text-theme-text-secondary text-sm custom-text-secondary">
             <p>
               The "{settings.item.name}" {settings.item.itemType} has been
-              imported successfully! It is now available in your AnythingLLM
+              imported successfully! It is now available in your {process.env.APPLICATION_FALLBACK_NAME}
               instance.
             </p>
             <p>
