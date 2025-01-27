@@ -28,6 +28,8 @@ const SUPPORT_CUSTOM_MODELS = [
   "apipie",
   "novita",
   "xai",
+  "cohere-rerank",
+  "jina-rerank",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -578,16 +580,14 @@ async function getNvidiaNimModels(basePath = null) {
 
 async function getCohereRerankModels(apiKey = null) {
   try {
-    const { CohereClient } = require('cohere-ai');
+    const { CohereClient } = require("cohere-ai");
     const cohere = new CohereClient({ token: apiKey });
 
-    const rerankModels = await client.models.list(
-      {
-        endpoint: "rerank"
-      }
-    )
-    const modelNames = response.models.map((model) => model.name);
-    return { modelNames, error: null };
+    const rerankModels = await cohere.models.list({
+      endpoint: "rerank",
+    });
+    const modelNames = rerankModels.models.map((model) => model.name);
+    return { models: modelNames, error: null };
   } catch (e) {
     console.error(`Cohere RERANK:getCohereRerankModels`, e.message);
     return { models: [], error: "Could not fetch Cohere Rerank Models" };
@@ -605,7 +605,7 @@ async function getJinaRerankModels(apiKey = null) {
       "jina-colbert-v1-en",
     ];
 
-    return { jinaModels, error: null };
+    return { models: jinaModels, error: null };
   } catch (e) {
     console.error(`Nvidia NIM:getNvidiaNimModels`, e.message);
     return { models: [], error: "Could not fetch Nvidia NIM Models" };
