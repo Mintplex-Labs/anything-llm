@@ -1,4 +1,43 @@
+import { useEffect, useState } from "react";
+import System from "@/models/system";
+
 export default function JinaRerankerOptions({ settings }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        setIsLoading(true);
+        const { models = [] } = await System.customModels("jina-rerank");
+        setOptions(models);
+      } catch {
+        setOptions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchModels();
+  }, []);
+  const LoadingOption = (
+    <option disabled={true} selected={true}>
+      -- loading available models --
+    </option>
+  );
+  const ModelOptions = options?.length ? (
+    options.map((model) => {
+      return (
+        <option
+          key={model}
+          value={model}
+          selected={model === settings?.RerankerModel}
+        >
+          {model}
+        </option>
+      );
+    })
+  ) : (
+    <option selected={true}>{settings?.RerankerModel}</option>
+  );
   return (
     <div className="w-full flex flex-col">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
@@ -23,21 +62,11 @@ export default function JinaRerankerOptions({ settings }) {
           </label>
           <select
             name="RerankerModel"
-            defaultValue={settings?.RerankerModel || "command-r"}
+            defaultValue={settings?.RerankerModel}
             required={true}
             className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
-            {[
-              "jina-reranker-v2-base-multilingual",
-              "jina-reranker-v1-turbo",
-              "jina-reranker-v1-tiny",
-            ].map((model) => {
-              return (
-                <option key={model} value={model}>
-                  {model}
-                </option>
-              );
-            })}
+            {isLoading ? LoadingOption : ModelOptions}
           </select>
         </div>
         <div className="flex flex-col w-60">
