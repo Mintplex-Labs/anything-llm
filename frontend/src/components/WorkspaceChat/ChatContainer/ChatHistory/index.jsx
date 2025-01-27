@@ -140,11 +140,11 @@ export default function ChatHistory({
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
-          <p className="text-white/60 text-lg font-base py-4">
+          <p className="text-white/60 text-lg font-base py-4 custom-text-secondary">
             Welcome to your new workspace.
           </p>
           {!user || user.role !== "default" ? (
-            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1 custom-text-secondary">
               To get started either{" "}
               <span
                 className="underline font-medium cursor-pointer"
@@ -178,7 +178,7 @@ export default function ChatHistory({
     <div
       className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
         showScrollbar ? "show-scrollbar" : "no-scroll"
-      }`}
+      } custom-text-secondary`}
       id="chat-history"
       ref={chatHistoryRef}
       onScroll={handleScroll}
@@ -275,7 +275,7 @@ function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
       {suggestions.map((suggestion, index) => (
         <button
           key={index}
-          className="text-left p-2.5 rounded-xl bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover border border-theme-border"
+          className="text-left p-2.5 rounded-xl bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover border border-theme-border custom-button-secondary"
           onClick={() => sendSuggestion(suggestion.heading, suggestion.message)}
         >
           <p className="font-semibold">{suggestion.heading}</p>

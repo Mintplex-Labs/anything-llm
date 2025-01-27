@@ -32,15 +32,15 @@ export default function DBConnection({ connection, onRemove, setHasChanges }) {
       />
       <div className="flex w-full items-center justify-between">
         <div className="flex flex-col">
-          <div className="text-sm font-semibold text-white">{database_id}</div>
-          <div className="mt-1 text-xs text-description">{engine}</div>
+          <div className="text-sm font-semibold text-white custom-text-secondary">{database_id}</div>
+          <div className="mt-1 text-xs text-description custom-text-secondary">{engine}</div>
         </div>
         <button
           type="button"
           onClick={removeConfirmation}
-          className="border-none text-white/40 hover:text-red-500"
+          className="border-none text-white/40 custom-text-secondary hover:text-red-500"
         >
-          <X size={24} />
+          <X size={24} className="custom-text-secondary" />
         </button>
       </div>
     </div>

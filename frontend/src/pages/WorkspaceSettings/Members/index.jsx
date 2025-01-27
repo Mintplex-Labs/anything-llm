@@ -36,8 +36,8 @@ export default function Members({ workspace }) {
       <Skeleton.default
         height="80vh"
         width="100%"
-        highlightColor="var(--theme-bg-primary)"
-        baseColor="var(--theme-bg-secondary)"
+        // highlightColor="var(--theme-bg-primary)"
+        // baseColor="var(--theme-bg-secondary)"
         count={1}
         className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex w-full"
@@ -47,7 +47,7 @@ export default function Members({ workspace }) {
 
   return (
     <div className="flex justify-between -mt-3">
-      <table className="w-full max-w-[700px] text-sm text-left rounded-lg">
+      <table className="w-full max-w-[700px] text-sm text-left rounded-lg custom-primary-table">
         <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white/10 border-b border-opacity-60">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">

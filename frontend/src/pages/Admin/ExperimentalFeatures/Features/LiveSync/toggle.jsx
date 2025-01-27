@@ -33,7 +33,7 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
     <div className="p-4">
       <div className="flex flex-col gap-y-6 max-w-[500px]">
         <div className="flex items-center justify-between">
-          <h2 className="text-theme-text-primary text-md font-bold">
+          <h2 className="text-theme-text-primary text-md font-bold custom-text-secondary">
             Automatic Document Content Sync
           </h2>
           <label className="relative inline-flex cursor-pointer items-center">
@@ -47,16 +47,16 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
           </label>
         </div>
         <div className="flex flex-col space-y-4">
-          <p className="text-theme-text-secondary text-sm">
+          <p className="text-theme-text-secondary text-sm custom-text-secondary">
             Enable the ability to specify a document to be "watched". Watched
             document's content will be regularly fetched and updated in
             AnythingLLM.
           </p>
-          <p className="text-theme-text-secondary text-sm">
+          <p className="text-theme-text-secondary text-sm custom-text-secondary">
             Watched documents will automatically update in all workspaces they
             are referenced in at the same time of update.
           </p>
-          <p className="text-theme-text-secondary text-xs italic">
+          <p className="text-theme-text-secondary text-xs italic custom-text-secondary">
             This feature only applies to web-based content, such as websites,
             Confluence, YouTube, and GitHub files.
           </p>

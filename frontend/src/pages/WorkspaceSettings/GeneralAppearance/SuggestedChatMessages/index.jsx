@@ -106,10 +106,10 @@ export default function SuggestedChatMessages({ slug }) {
   return (
     <div className="w-screen mt-6">
       <div className="flex flex-col">
-        <label className="block input-label">
+        <label className="block input-label custom-text-secondary">
           {t("general.message.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
           {t("general.message.description")}
         </p>
       </div>
@@ -118,21 +118,21 @@ export default function SuggestedChatMessages({ slug }) {
         {suggestedMessages.map((suggestion, index) => (
           <div key={index} className="relative w-full">
             <button
-              className="transition-all duration-300 absolute z-10 text-neutral-700 bg-white rounded-full hover:bg-zinc-600 hover:border-zinc-600 hover:text-white border-transparent border shadow-lg ml-2"
+              className="transition-all duration-300 absolute z-10 text-neutral-700 bg-white rounded-full border-transparent border shadow-lg ml-2 custom-border-secondary custom-theme-bg-secondary"
               style={{
                 top: -8,
                 left: 265,
               }}
               onClick={() => handleRemoveMessage(index)}
             >
-              <X className="m-[1px]" size={20} />
+              <X className="m-[1px] custom-text-secondary" size={20} />
             </button>
             <button
               key={index}
               onClick={(e) => startEditing(e, index)}
               className={`text-left p-2.5 border rounded-xl w-full border-white/20 bg-theme-settings-input-bg hover:bg-theme-sidebar-item-selected-gradient ${
                 editingIndex === index ? "border-sky-400" : ""
-              }`}
+              } custom-button-secondary`}
             >
               <p className="font-semibold">{suggestion.heading}</p>
               <p>{suggestion.message}</p>
@@ -143,24 +143,24 @@ export default function SuggestedChatMessages({ slug }) {
       {editingIndex >= 0 && (
         <div className="flex flex-col gap-y-4 mr-2 mt-8">
           <div className="w-1/2">
-            <label className="text-white text-sm font-semibold block mb-2">
+            <label className="text-white text-sm font-semibold block mb-2 custom-text-secondary">
               Heading
             </label>
             <input
               placeholder="Message heading"
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
               value={newMessage.heading}
               name="heading"
               onChange={onEditChange}
             />
           </div>
           <div className="w-1/2">
-            <label className="text-white text-sm font-semibold block mb-2">
+            <label className="text-white text-sm font-semibold block mb-2 custom-text-secondary">
               Message
             </label>
             <input
               placeholder="Message"
-              className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full"
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block p-2.5 w-full custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
               value={newMessage.message}
               name="message"
               onChange={onEditChange}
@@ -172,7 +172,7 @@ export default function SuggestedChatMessages({ slug }) {
         <button
           type="button"
           onClick={addMessage}
-          className="flex gap-x-2 items-center justify-center mt-6 text-white text-sm hover:text-sky-400 transition-all duration-300"
+          className="flex gap-x-2 items-center justify-center mt-6 text-white text-sm hover:text-sky-400 transition-all duration-300 custom-text-secondary"
         >
           {t("general.message.add")}{" "}
           <Plus className="" size={24} weight="fill" />
@@ -183,7 +183,7 @@ export default function SuggestedChatMessages({ slug }) {
         <div className="flex justify-start py-6">
           <button
             type="button"
-            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 custom-button-secondary"
             onClick={handleSaveSuggestedMessages}
           >
             {t("general.message.save")}

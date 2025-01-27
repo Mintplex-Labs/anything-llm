@@ -33,7 +33,7 @@ export default function AvailableAgentsButton({ showing, setShowAgents }) {
 
 function AbilityTag({ text }) {
   return (
-    <div className="px-2 bg-theme-action-menu-item-hover text-theme-text-secondary text-xs w-fit rounded-sm">
+    <div className="px-2 bg-theme-action-menu-item-hover text-theme-text-secondary text-xs w-fit rounded-sm custom-text-secondary">
       <p>{text}</p>
     </div>
   );
@@ -69,7 +69,7 @@ export function AvailableAgents({
         <div className="w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4">
           <div
             ref={formRef}
-            className="w-[600px] p-2 bg-theme-action-menu-bg rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"
+            className="w-[600px] p-2 bg-theme-action-menu-bg rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex custom-theme-bg-tertiary"
           >
             <button
               onClick={() => {
@@ -77,10 +77,10 @@ export function AvailableAgents({
                 sendCommand("@agent ", false);
                 promptRef?.current?.focus();
               }}
-              className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start group"
+              className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start group custom-text-secondary"
             >
               <div className="w-full flex-col text-left flex pointer-events-none">
-                <div className="text-theme-text-primary text-sm">
+                <div className="text-theme-text-primary text-sm custom-text-secondary">
                   <b>@agent</b> - the default agent for this workspace.
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -100,7 +100,7 @@ export function AvailableAgents({
               className="w-full rounded-xl flex flex-col justify-start group"
             >
               <div className="w-full flex-col text-center flex pointer-events-none">
-                <div className="text-theme-text-secondary text-xs italic">
+                <div className="text-theme-text-secondary text-xs italic custom-text-secondary">
                   custom agents are coming soon!
                 </div>
               </div>

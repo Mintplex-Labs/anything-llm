@@ -34,22 +34,22 @@ export default function OrderDetails({ setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6 custom-theme-bg-secondary">
         <div className="w-full flex flex-col gap-y-3 max-w-[700px]">
-          <h2 className="text-base text-theme-text-primary font-semibold">
+          <h2 className="text-base text-theme-text-primary font-semibold custom-text-secondary">
             Time to create your fine tune!
           </h2>
-          <p className="text-theme-text-secondary text-sm">
+          <p className="text-theme-text-secondary text-sm custom-text-secondary">
             Creating a model is quite simple. Currently we have a limited base
             model selection, however in the future we plan to expand support to
             many more foundational models.
           </p>
           <form onSubmit={handleSubmit} className="flex flex-col gap-y-6 mt-4">
             <div className="flex flex-col">
-              <label className="text-theme-text-primary text-sm font-semibold block mb-3">
+              <label className="text-theme-text-primary text-sm font-semibold block mb-3 custom-text-secondary">
                 Account e-mail
               </label>
-              <p className="text-xs font-normal text-theme-text-secondary mb-2">
+              <p className="text-xs font-normal text-theme-text-secondary mb-2 custom-text-secondary">
                 This e-mail is where you will receive all order information and
                 updates. This e-mail <b>must be accurate</b> or else we won't be
                 able to contact you with your fine-tuned model!
@@ -57,7 +57,7 @@ export default function OrderDetails({ setSettings, setStep }) {
               <input
                 type="email"
                 name="email"
-                className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                 placeholder="jdoe@example.com"
                 required={true}
                 autoComplete="off"
@@ -66,10 +66,10 @@ export default function OrderDetails({ setSettings, setStep }) {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-theme-text-primary text-sm font-semibold block mb-3">
+              <label className="text-theme-text-primary text-sm font-semibold block mb-3 custom-text-secondary">
                 Preferred Base Model
               </label>
-              <p className="text-xs font-normal text-theme-text-secondary mb-2">
+              <p className="text-xs font-normal text-theme-text-secondary mb-2 custom-text-secondary">
                 This is the foundational model your fine-tune will be based on.
                 We recommend Llama 3 8B.
               </p>
@@ -77,7 +77,7 @@ export default function OrderDetails({ setSettings, setStep }) {
                 <select
                   name="baseModel"
                   required={true}
-                  className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                 >
                   <option disabled value="">
                     -- select a base model --
@@ -91,18 +91,18 @@ export default function OrderDetails({ setSettings, setStep }) {
                   </optgroup>
                 </select>
               ) : (
-                <div className="flex items-center gap-x-2 text-theme-text-secondary text-sm">
-                  <CircleNotch className="animate-spin" size={12} />
+                <div className="flex items-center gap-x-2 text-theme-text-secondary text-sm custom-text-secondary">
+                  <CircleNotch className="animate-spin custom-text-secondary" size={12} />
                   <p>fetching available models...</p>
                 </div>
               )}
             </div>
 
             <div className="flex flex-col">
-              <label className="text-theme-text-primary text-sm font-semibold block mb-3">
+              <label className="text-theme-text-primary text-sm font-semibold block mb-3 custom-text-secondary">
                 Model name
               </label>
-              <p className="text-xs font-normal text-theme-text-secondary mb-2">
+              <p className="text-xs font-normal text-theme-text-secondary mb-2 custom-text-secondary">
                 What would you like to call your model? This has no impact on
                 its output or training and is only used for how we communicate
                 with you about the model.
@@ -110,7 +110,7 @@ export default function OrderDetails({ setSettings, setStep }) {
               <input
                 type="text"
                 name="modelName"
-                className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="border-none bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                 placeholder="My really cool model!"
                 required={true}
                 autoComplete="off"
@@ -120,7 +120,7 @@ export default function OrderDetails({ setSettings, setStep }) {
 
             <CTAButton
               type="submit"
-              className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
+              className="text-dark-text w-full mt-[18px] h-[34px] custom-theme-bg-quad custom-theme-color-quad"
             >
               Proceed to data selection &rarr;
             </CTAButton>

@@ -26,20 +26,20 @@ export default function PrivacyAndDataHandling() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex custom-theme-bg-container">
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] light:border light:border-theme-sidebar-border bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] light:border light:border-theme-sidebar-border bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0 custom-theme-bg-secondary"
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
+          <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2 custom-border-secondary" style={{ borderTop: 0, borderRight: 0, borderLeft: 0 }}>
             <div className="items-center flex gap-x-4">
-              <p className="text-lg leading-6 font-bold text-theme-text-primary">
+              <p className="text-lg leading-6 font-bold text-theme-text-primary custom-text-secondary">
                 {t("privacy.title")}
               </p>
             </div>
-            <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
+            <p className="text-xs leading-[18px] font-base text-theme-text-secondary custom-text-secondary">
               {t("privacy.description")}
             </p>
           </div>
@@ -71,7 +71,7 @@ function ThirdParty({ settings }) {
     <div className="py-8 w-full flex items-start justify-center flex-col gap-y-6 border-b-2 border-theme-sidebar-border">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
+          <div className="text-theme-text-primary text-base font-bold custom-text-secondary">
             {t("privacy.llm")}
           </div>
           <div className="flex items-center gap-2.5">
@@ -80,18 +80,18 @@ function ThirdParty({ settings }) {
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-theme-text-primary text-sm font-bold">
+            <p className="text-theme-text-primary text-sm font-bold custom-text-secondary">
               {LLM_SELECTION_PRIVACY[llmChoice].name}
             </p>
           </div>
-          <ul className="flex flex-col list-disc ml-4">
+          <ul className="flex flex-col list-disc ml-4 custom-text-secondary">
             {LLM_SELECTION_PRIVACY[llmChoice].description.map((desc) => (
-              <li className="text-theme-text-secondary text-sm">{desc}</li>
+              <li className="text-theme-text-secondary text-sm custom-text-secondary">{desc}</li>
             ))}
           </ul>
         </div>
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
+          <div className="text-theme-text-primary text-base font-bold custom-text-secondary">
             {t("privacy.embedding")}
           </div>
           <div className="flex items-center gap-2.5">
@@ -100,21 +100,21 @@ function ThirdParty({ settings }) {
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-theme-text-primary text-sm font-bold">
+            <p className="text-theme-text-primary text-sm font-bold custom-text-secondary">
               {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].name}
             </p>
           </div>
-          <ul className="flex flex-col list-disc ml-4">
+          <ul className="flex flex-col list-disc ml-4 custom-text-secondary">
             {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].description.map(
               (desc) => (
-                <li className="text-theme-text-secondary text-sm">{desc}</li>
+                <li className="text-theme-text-secondary text-sm custom-text-secondary">{desc}</li>
               )
             )}
           </ul>
         </div>
 
         <div className="flex flex-col gap-y-2 pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
+          <div className="text-theme-text-primary text-base font-bold custom-text-secondary">
             {t("privacy.vector")}
           </div>
           <div className="flex items-center gap-2.5">
@@ -123,13 +123,13 @@ function ThirdParty({ settings }) {
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-theme-text-primary text-sm font-bold">
+            <p className="text-theme-text-primary text-sm font-bold custom-text-secondary">
               {VECTOR_DB_PRIVACY[vectorDb].name}
             </p>
           </div>
-          <ul className="flex flex-col list-disc ml-4">
+          <ul className="flex flex-col list-disc ml-4 custom-text-secondary">
             {VECTOR_DB_PRIVACY[vectorDb].description.map((desc) => (
-              <li className="text-theme-text-secondary text-sm">{desc}</li>
+              <li className="text-theme-text-secondary text-sm custom-text-secondary">{desc}</li>
             ))}
           </ul>
         </div>
@@ -162,7 +162,7 @@ function TelemetryLogs({ settings }) {
         <div className="space-y-6 flex h-full w-full">
           <div className="w-full flex flex-col gap-y-4">
             <div className="">
-              <label className="mb-2.5 block font-medium text-theme-text-primary">
+              <label className="mb-2.5 block font-medium text-theme-text-primary custom-text-secondary">
                 {t("privacy.anonymous")}
               </label>
               <label className="relative inline-flex cursor-pointer items-center">
@@ -178,7 +178,7 @@ function TelemetryLogs({ settings }) {
           </div>
         </div>
         <div className="flex flex-col items-left space-y-2">
-          <p className="text-theme-text-secondary text-xs rounded-lg w-96">
+          <p className="text-theme-text-secondary text-xs rounded-lg w-96 custom-text-secondary">
             All events do not record IP-address and contain{" "}
             <b>no identifying</b> content, settings, chats, or other non-usage
             based information. To see the list of event tags collected you can
@@ -192,7 +192,7 @@ function TelemetryLogs({ settings }) {
             </a>
             .
           </p>
-          <p className="text-theme-text-secondary text-xs rounded-lg w-96">
+          <p className="text-theme-text-secondary text-xs rounded-lg w-96 custom-text-secondary">
             As an open-source project we respect your right to privacy. We are
             dedicated to building the best solution for integrating AI and
             documents privately and securely. If you do decide to turn off

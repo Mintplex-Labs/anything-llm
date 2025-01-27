@@ -38,19 +38,19 @@ export default function NewEmbedModal({ closeModal }) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border border-none custom-theme-bg-tertiary">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap custom-text-secondary">
               Create new embed for workspace
             </h3>
           </div>
           <button
             onClick={closeModal}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-white custom-text-secondary" />
           </button>
         </div>
         <div className="px-7 py-6">
@@ -86,7 +86,7 @@ export default function NewEmbedModal({ closeModal }) {
               />
 
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
-              <p className="text-white text-opacity-60 text-xs md:text-sm">
+              <p className="text-white text-opacity-60 text-xs md:text-sm custom-text-secondary">
                 After creating an embed you will be provided a link that you can
                 publish on your website with a simple
                 <code className="light:bg-stone-300 bg-stone-900 text-white mx-1 px-1 rounded-sm">
@@ -99,13 +99,13 @@ export default function NewEmbedModal({ closeModal }) {
               <button
                 onClick={closeModal}
                 type="button"
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 text-white px-4 py-2 rounded-lg text-sm custom-text-secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm border custom-button-secondary"
               >
                 Create embed
               </button>
@@ -132,11 +132,11 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
       <div className="flex flex-col mb-2">
         <label
           htmlFor="workspace_id"
-          className="block  text-sm font-medium text-white"
+          className="block  text-sm font-medium text-white custom-text-secondary"
         >
           Workspace
         </label>
-        <p className="text-theme-text-secondary text-xs">
+        <p className="text-theme-text-secondary text-xs custom-text-secondary">
           This is the workspace your chat window will be based on. All defaults
           will be inherited from the workspace unless overridden by this config.
         </p>
@@ -145,7 +145,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
         name="workspace_id"
         required={true}
         defaultValue={defaultValue}
-        className="min-w-[15rem] rounded-lg bg-theme-settings-input-bg px-4 py-2 text-sm text-white focus:ring-blue-500 focus:border-blue-500"
+        className="min-w-[15rem] rounded-lg bg-theme-settings-input-bg px-4 py-2 text-sm text-white focus:ring-blue-500 focus:border-blue-500 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
       >
         {workspaces.map((workspace) => {
           return (
@@ -169,12 +169,12 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
     <div>
       <div className="flex flex-col mb-2">
         <label
-          className="block text-sm font-medium text-white"
+          className="block text-sm font-medium text-white custom-text-secondary"
           htmlFor="chat_mode"
         >
           Allowed chat method
         </label>
-        <p className="text-theme-text-secondary text-xs">
+        <p className="text-theme-text-secondary text-xs custom-text-secondary">
           Set how your chatbot should operate. Query means it will only respond
           if a document helps answer the query.
           <br />
@@ -186,8 +186,8 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
         <label
           className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
             chatMode === "chat"
-              ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-              : "border-theme-sidebar-border hover:border-theme-sidebar-border hover:bg-theme-bg-secondary"
+              ? "border-theme-sidebar-item-workspace-active custom-border-secondary"
+              : "border-theme-sidebar-border hover:border-theme-sidebar-border hover:bg-theme-bg-secondary custom-border-secondary"
           } `}
         >
           <input
@@ -199,21 +199,21 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
             className="hidden"
           />
           <div
-            className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+            className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 custom-border-secondary ${
               chatMode === "chat"
-                ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                ? "bg-[var(--theme-sidebar-item-workspace-active)] custom-theme-bg-quad border-none"
                 : ""
             }`}
           ></div>
-          <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+          <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight custom-text-secondary">
             Chat: Respond to all questions regardless of context
           </div>
         </label>
         <label
           className={`transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
             chatMode === "query"
-              ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-              : "border-theme-sidebar-border hover:border-theme-sidebar-border hover:bg-theme-bg-secondary"
+              ? "border-theme-sidebar-item-workspace-active custom-border-secondary border-none"
+              : "border-theme-sidebar-border hover:border-theme-sidebar-border hover:bg-theme-bg-secondary custom-border-secondary"
           } `}
         >
           <input
@@ -225,13 +225,13 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
             className="hidden"
           />
           <div
-            className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+            className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 custom-border-secondary ${
               chatMode === "query"
-                ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                ? "bg-[var(--theme-sidebar-item-workspace-active)] custom-theme-bg-quad border-none"
                 : ""
             }`}
           ></div>
-          <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+          <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight custom-text-secondary">
             Query: Only respond to chats related to documents in workspace
           </div>
         </label>
@@ -279,15 +279,15 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
   };
 
   return (
-    <div>
+    <div className="custom-react-tag-input-component">
       <div className="flex flex-col mb-2">
         <label
           htmlFor="allowlist_domains"
-          className="block text-sm font-medium text-white"
+          className="block text-sm font-medium text-white custom-text-secondary"
         >
           Restrict requests from domains
         </label>
-        <p className="text-theme-text-secondary text-xs">
+        <p className="text-theme-text-secondary text-xs custom-text-secondary">
           This filter will block any requests that come from a domain other than
           the list below.
           <br />
@@ -314,15 +314,15 @@ export const NumberInput = ({ name, title, hint, defaultValue = 0 }) => {
   return (
     <div>
       <div className="flex flex-col mb-2">
-        <label htmlFor={name} className="block text-sm font-medium text-white">
+        <label htmlFor={name} className="block text-sm font-medium text-white custom-text-secondary">
           {title}
         </label>
-        <p className="text-theme-text-secondary text-xs">{hint}</p>
+        <p className="text-theme-text-secondary text-xs custom-text-secondary">{hint}</p>
       </div>
       <input
         type="number"
         name={name}
-        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[15rem] p-2.5"
+        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[15rem] p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
         min={0}
         defaultValue={defaultValue}
         onScroll={(e) => e.target.blur()}
@@ -337,10 +337,10 @@ export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
   return (
     <div>
       <div className="flex flex-col mb-2">
-        <label htmlFor={name} className="block text-sm font-medium text-white">
+        <label htmlFor={name} className="block text-sm font-medium text-white custom-text-secondary">
           {title}
         </label>
-        <p className="text-theme-text-secondary text-xs">{hint}</p>
+        <p className="text-theme-text-secondary text-xs custom-text-secondary">{hint}</p>
       </div>
       <label className="relative inline-flex cursor-pointer items-center">
         <input

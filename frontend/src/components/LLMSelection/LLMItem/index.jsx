@@ -28,8 +28,8 @@ export default function LLMItem({
           className="w-10 h-10 rounded-md"
         />
         <div className="flex flex-col">
-          <div className="text-sm font-semibold text-white">{name}</div>
-          <div className="mt-1 text-xs text-description">{description}</div>
+          <div className="text-sm font-semibold text-white custom-text-secondary">{name}</div>
+          <div className="mt-1 text-xs text-description custom-text-secondary">{description}</div>
         </div>
       </div>
     </div>

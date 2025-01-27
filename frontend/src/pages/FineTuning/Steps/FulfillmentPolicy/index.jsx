@@ -11,12 +11,12 @@ export default function Fulfillment({ setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6 custom-theme-bg-secondary">
         <div className="w-full flex flex-col gap-y-3 max-w-[700px]">
-          <h2 className="text-base text-theme-text-primary font-semibold">
+          <h2 className="text-base text-theme-text-primary font-semibold custom-text-secondary">
             Fulfillment Policy
           </h2>
-          <p className="text-theme-text-secondary text-sm">
+          <p className="text-theme-text-secondary text-sm custom-text-secondary">
             Fulfillment of a fine-tune model is straight-forward. We do not host
             your model. We provide you a download link to run the model in a
             standard format where ever you run local LLMs
@@ -119,7 +119,7 @@ export default function Fulfillment({ setSettings, setStep }) {
             </p>
           </div>
           <CTAButton
-            className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
+            className="text-dark-text w-full mt-[18px] h-[34px] custom-theme-bg-quad custom-theme-color-quad"
             onClick={handleAccept}
           >
             Agree and continue &rarr;

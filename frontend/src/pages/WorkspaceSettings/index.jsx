@@ -73,16 +73,16 @@ function ShowWorkspaceChat() {
 
   const TabContent = TABS[tab];
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex custom-theme-bg-container">
       {!isMobile && <Sidebar />}
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll"
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll custom-theme-bg-secondary"
       >
-        <div className="flex gap-x-10 pt-6 pb-4 ml-16 mr-8 border-b-2 border-white border-opacity-10">
+        <div className="flex gap-x-10 pt-6 pb-4 ml-16 mr-8 border-b-2 border-white border-opacity-10 custom-border-secondary" style={{ borderLeft: '0', borderRight: '0', borderTop: '0' }}>
           <Link
             to={paths.workspace.chat(slug)}
-            className="absolute top-2 left-2 md:top-4 md:left-4 transition-all duration-300 p-2 rounded-full text-white bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover z-10"
+            className="absolute top-2 left-2 md:top-4 md:left-4 transition-all duration-300 p-2 rounded-full text-white bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover z-10 custom-text-secondary"
           >
             <ArrowUUpLeft className="h-5 w-5" weight="fill" />
           </Link>
@@ -130,7 +130,7 @@ function TabItem({ title, icon, to, visible = true }) {
         `${
           isActive
             ? "text-sky-400 pb-4 border-b-[4px] -mb-[19px] border-sky-400"
-            : "text-white/60 hover:text-sky-400"
+            : "text-white/60 hover:text-sky-400 custom-text-secondary"
         } ` + " flex gap-x-2 items-center font-medium"
       }
     >

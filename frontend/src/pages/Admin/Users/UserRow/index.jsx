@@ -69,7 +69,7 @@ export default function UserRow({ currUser, user }) {
           {canModify && (
             <button
               onClick={openModal}
-              className="text-sm font-medium text-white/80 light:text-black/80 rounded-lg hover:text-white hover:light:text-gray-500 px-2 py-1 hover:bg-white hover:bg-opacity-10"
+              className="text-sm font-medium text-white/80 light:text-black/80 rounded-lg px-2 py-1 hover:bg-opacity-10"
             >
               Edit
             </button>

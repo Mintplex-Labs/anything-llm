@@ -10,7 +10,7 @@ export default function FileRow({ item, selected, toggleSelection }) {
   return (
     <tr
       onClick={() => toggleSelection(item)}
-      className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
+      className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row custom-theme-bg-tertiary ${
         selected ? "selected light:text-white" : ""
       }`}
     >
@@ -24,26 +24,26 @@ export default function FileRow({ item, selected, toggleSelection }) {
         })}
       >
         <div
-          className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white ${
+          className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white custom-border-secondary ${
             selected ? "text-white" : "text-theme-text-primary light:invert"
           } flex justify-center items-center cursor-pointer`}
           role="checkbox"
           aria-checked={selected}
           tabIndex={0}
         >
-          {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+          {selected && <div className="w-2 h-2 bg-white rounded-[2px] custom-theme-bg-quad" />}
         </div>
         <File
-          className="shrink-0 text-base font-bold w-4 h-4 mr-[3px]"
+          className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] custom-text-secondary"
           weight="fill"
         />
-        <p className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px] custom-text-secondary">
           {middleTruncate(item.title, 55)}
         </p>
       </div>
       <div className="col-span-2 flex justify-end items-center">
         {item?.cached && (
-          <div className="bg-theme-settings-input-active rounded-3xl">
+          <div className="bg-theme-settings-input-active rounded-3xl custom-text-secondary">
             <p className="text-xs px-2 py-0.5">Cached</p>
           </div>
         )}

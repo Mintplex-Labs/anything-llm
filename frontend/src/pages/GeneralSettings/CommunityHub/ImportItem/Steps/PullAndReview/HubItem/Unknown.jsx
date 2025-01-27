@@ -11,7 +11,7 @@ export default function UnknownItem({ item, setSettings, setStep }) {
           Unsupported item
         </h2>
       </div>
-      <div className="flex flex-col gap-y-[25px] text-white/80 text-sm">
+      <div className="flex flex-col gap-y-[25px] text-white/80 text-sm custom-text-secondary">
         <p>
           We found an item in the community hub, but we don't know what it is or
           it is not yet supported for import into AnythingLLM.
@@ -26,7 +26,7 @@ export default function UnknownItem({ item, setSettings, setStep }) {
         </p>
       </div>
       <CTAButton
-        className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
+        className="text-dark-text w-full mt-[18px] h-[34px] custom-theme-bg-quad custom-theme-color-quad"
         onClick={() => {
           setSettings({ itemId: null, item: null });
           setStep(CommunityHubImportItemSteps.itemId.key);

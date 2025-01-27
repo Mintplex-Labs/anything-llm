@@ -47,12 +47,12 @@ export default function DataUpload({ setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6 custom-theme-bg-secondary">
         <div className="w-full flex flex-col gap-y-3 max-w-[700px]">
-          <h2 className="text-base text-theme-text-primary font-semibold">
+          <h2 className="text-base text-theme-text-primary font-semibold custom-text-secondary">
             Select your training dataset
           </h2>
-          <p className="text-theme-text-secondary text-sm">
+          <p className="text-theme-text-secondary text-sm custom-text-secondary">
             This is the data your model will be trained and tuned on. This is a
             critical step and you should always train on the exact information
             you want the model to inherit. By default, AnythingLLM will use all
@@ -63,10 +63,10 @@ export default function DataUpload({ setSettings, setStep }) {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-y-6 mt-4">
             <div className="flex flex-col">
-              <label className="text-theme-text-primary text-sm font-semibold block mb-3">
+              <label className="text-theme-text-primary text-sm font-semibold block mb-3 custom-text-secondary">
                 Only use positive responses
               </label>
-              <p className="text-xs font-normal text-theme-text-secondary mb-2">
+              <p className="text-xs font-normal text-theme-text-secondary mb-2 custom-text-secondary">
                 Enabling this toggle will filter your dataset to only use
                 "positive" responses that were marked during chatting.
               </p>
@@ -86,10 +86,10 @@ export default function DataUpload({ setSettings, setStep }) {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-theme-text-primary text-sm font-semibold block mb-3">
+              <label className="text-theme-text-primary text-sm font-semibold block mb-3 custom-text-secondary">
                 Selected Workspaces
               </label>
-              <p className="text-xs font-normal text-theme-text-secondary mb-2">
+              <p className="text-xs font-normal text-theme-text-secondary mb-2 custom-text-secondary">
                 Your training data will be limited to these workspaces.
               </p>
               <WorkspaceSelector
@@ -106,7 +106,7 @@ export default function DataUpload({ setSettings, setStep }) {
 
             <CTAButton
               type="submit"
-              className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
+              className="text-dark-text w-full mt-[18px] h-[34px] custom-theme-bg-quad custom-theme-color-quad"
             >
               Proceed to Confirmation &rarr;
             </CTAButton>
@@ -157,7 +157,7 @@ function WorkspaceSelector({
   return (
     <div className="flex flex-col gap-y-2">
       <div className="min-w-[150px] max-w-[300px] h-[32px] p-[10px] rounded-lg flex items-center bg-theme-settings-input-bg mt-1">
-        <MagnifyingGlass size={16} className="text-theme-text-primary" />
+        <MagnifyingGlass size={16} className="text-theme-text-primary custom-text-secondary" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -168,7 +168,7 @@ function WorkspaceSelector({
             }, 500)
           }
           placeholder="Enter a workspace name"
-          className="border-none bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-theme-text-primary text-xs placeholder:text-theme-text-secondary/50"
+          className="border-none bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-theme-text-primary text-xs placeholder:text-theme-text-secondary/50 custom-theme-bg-tertiary custom-text-secondary"
         />
       </div>
       <div className="flex flex-col items-center -ml-2">

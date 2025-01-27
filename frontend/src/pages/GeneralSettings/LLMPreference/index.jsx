@@ -375,12 +375,12 @@ export default function GeneralLLMPreference() {
     (llm) => llm.value === selectedLLM
   );
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex custom-theme-bg-container">
       <Sidebar />
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0 custom-theme-bg-secondary"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -389,17 +389,17 @@ export default function GeneralLLMPreference() {
       ) : (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0 custom-theme-bg-secondary"
         >
           <form onSubmit={handleSubmit} className="flex w-full">
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-              <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
+              <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10 custom-border-secondary" style={{ borderTop: 0, borderRight: 0, borderLeft: 0 }}>
                 <div className="flex gap-x-4 items-center">
-                  <p className="text-lg leading-6 font-bold text-white">
+                  <p className="text-lg leading-6 font-bold text-white custom-text-secondary">
                     {t("llm.title")}
                   </p>
                 </div>
-                <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+                <p className="text-xs leading-[18px] font-base text-white text-opacity-60 custom-text-secondary">
                   {t("llm.description")}
                 </p>
               </div>
@@ -407,13 +407,13 @@ export default function GeneralLLMPreference() {
                 {hasChanges && (
                   <CTAButton
                     onClick={() => handleSubmit()}
-                    className="mt-3 mr-0 -mb-14 z-10"
+                    className="mt-3 mr-0 -mb-14 z-10 custom-theme-bg-quad custom-theme-color-quad"
                   >
                     {saving ? "Saving..." : "Save changes"}
                   </CTAButton>
                 )}
               </div>
-              <div className="text-base font-bold text-white mt-6 mb-4">
+              <div className="text-base font-bold text-white mt-6 mb-4 custom-text-secondary">
                 {t("llm.provider")}
               </div>
               <div className="relative">
@@ -430,14 +430,14 @@ export default function GeneralLLMPreference() {
                         <MagnifyingGlass
                           size={20}
                           weight="bold"
-                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
+                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2 custom-text-secondary"
                         />
                         <input
                           type="text"
                           name="llm-search"
                           autoComplete="off"
                           placeholder="Search all LLM providers"
-                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
+                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:font-medium custom-theme-bg-tertiary custom-text-secondary"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
                           onKeyDown={(e) => {
@@ -447,7 +447,7 @@ export default function GeneralLLMPreference() {
                         <X
                           size={20}
                           weight="bold"
-                          className="cursor-pointer text-white hover:text-x-button"
+                          className="cursor-pointer text-white hover:text-x-button custom-text-secondary"
                           onClick={handleXButton}
                         />
                       </div>
@@ -482,10 +482,10 @@ export default function GeneralLLMPreference() {
                         className="w-10 h-10 rounded-md"
                       />
                       <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-white">
+                        <div className="text-sm font-semibold text-white custom-text-secondary">
                           {selectedLLMObject?.name || "None selected"}
                         </div>
-                        <div className="mt-1 text-xs text-description">
+                        <div className="mt-1 text-xs text-description custom-text-secondary">
                           {selectedLLMObject?.description ||
                             "You need to select an LLM"}
                         </div>
@@ -494,14 +494,14 @@ export default function GeneralLLMPreference() {
                     <CaretUpDown
                       size={24}
                       weight="bold"
-                      className="text-white"
+                      className="text-white custom-text-secondary"
                     />
                   </button>
                 )}
               </div>
               <div
                 onChange={() => setHasChanges(true)}
-                className="mt-4 flex flex-col gap-y-1"
+                className="mt-4 flex flex-col gap-y-1 custom-llm-provider-modal"
               >
                 {selectedLLM &&
                   AVAILABLE_LLM_PROVIDERS.find(

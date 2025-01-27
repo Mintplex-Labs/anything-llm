@@ -202,7 +202,7 @@ export default function AdminAgents() {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4">
+                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 custom-theme-bg-secondary">
                     {SelectedSkillComponent ? (
                       <>
                         {selectedSkill.imported ? (
@@ -294,7 +294,7 @@ export default function AdminAgents() {
 
         {/* Selected agent skill setting panel */}
         <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
+          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 custom-theme-bg-secondary">
             {SelectedSkillComponent ? (
               <>
                 {selectedSkill.imported ? (
@@ -318,9 +318,9 @@ export default function AdminAgents() {
                 )}
               </>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
-                <Robot size={40} />
-                <p className="font-medium">Select an agent skill</p>
+              <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary custom-theme-bg-secondary">
+                <Robot size={40} className="custom-text-secondary"/>
+                <p className="font-medium custom-text-secondary">Select an agent skill</p>
               </div>
             )}
           </div>
@@ -334,7 +334,7 @@ function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
   return (
     <div
       id="workspace-agent-settings-container"
-      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
+      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex custom-theme-bg-container md:mt-0 mt-6"
     >
       <Sidebar />
       <div
@@ -364,7 +364,7 @@ function SkillList({
   return (
     <>
       <div
-        className={`bg-theme-bg-secondary text-white rounded-xl ${
+        className={`bg-theme-bg-secondary text-white rounded-xl custom-theme-bg-secondary custom-text-secondary ${
           isMobile ? "w-full" : "min-w-[360px] w-fit"
         }`}
       >
@@ -377,7 +377,7 @@ function SkillList({
               index === Object.keys(skills).length - 1
                 ? "rounded-b-xl"
                 : "border-b border-white/10"
-            } cursor-pointer transition-all duration-300  hover:bg-theme-bg-primary ${
+            } cursor-pointer transition-all duration-300 hover:bg-[#ccc] ${
               selectedSkill === skill
                 ? "bg-white/10 light:bg-theme-bg-sidebar"
                 : ""
@@ -389,14 +389,14 @@ function SkillList({
               {isDefault ? (
                 <DefaultBadge title={skill} />
               ) : (
-                <div className="text-sm text-theme-text-secondary font-medium">
+                <div className="text-sm text-theme-text-secondary font-medium custom-text-secondary">
                   {activeSkills.includes(skill) ? "On" : "Off"}
                 </div>
               )}
               <CaretRight
                 size={14}
                 weight="bold"
-                className="text-theme-text-secondary"
+                className="text-theme-text-secondary custom-text-secondary"
               />
             </div>
           </div>

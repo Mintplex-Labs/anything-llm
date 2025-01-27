@@ -194,17 +194,17 @@ function Directory({
       <div className="px-8 pb-8" onContextMenu={handleContextMenu}>
         <div className="flex flex-col gap-y-6">
           <div className="flex items-center justify-between w-[560px] px-5 relative">
-            <h3 className="text-white text-base font-bold">My Documents</h3>
+            <h3 className="text-white text-base font-bold custom-text-secondary">My Documents</h3>
             <div className="relative">
               <input
                 type="search"
                 placeholder="Search for document"
                 onChange={handleSearch}
-                className="border-none search-input bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px] light:border-theme-modal-border light:border"
+                className="border-none search-input bg-theme-settings-input-bg text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px] light:border-theme-modal-border light:border custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
               />
               <MagnifyingGlass
                 size={14}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white custom-text-secondary"
                 weight="bold"
               />
             </div>
@@ -215,20 +215,20 @@ function Directory({
               <Plus
                 size={18}
                 weight="bold"
-                className="text-theme-text-primary light:text-[#0ba5ec]"
+                className="text-theme-text-primary light:text-[#0ba5ec] custom-text-secondary"
               />
-              <div className="text-theme-text-primary light:text-[#0ba5ec] text-xs font-bold leading-[18px]">
+              <div className="text-theme-text-primary light:text-[#0ba5ec] text-xs font-bold leading-[18px] custom-text-secondary">
                 New Folder
               </div>
             </button>
           </div>
 
-          <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
-            <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-md bg-theme-settings-input-bg">
-              <p className="col-span-6">Name</p>
+          <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border custom-border-secondary">
+            <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-md bg-theme-settings-input-bg custom-theme-bg-tertiary">
+              <p className="col-span-6 custom-text-secondary">Name</p>
             </div>
 
-            <div className="overflow-y-auto h-full pt-8">
+            <div className="overflow-y-auto h-full pt-8 custom-theme-bg-tertiary">
               {loading ? (
                 <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
                   <PreLoader />
@@ -256,7 +256,7 @@ function Directory({
                 )
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <p className="text-white text-opacity-40 text-sm font-medium">
+                  <p className="text-white text-opacity-40 text-sm font-medium custom-text-secondary">
                     No Documents
                   </p>
                 </div>
@@ -270,7 +270,7 @@ function Directory({
                       onClick={moveToWorkspace}
                       onMouseEnter={() => setHighlightWorkspace(true)}
                       onMouseLeave={() => setHighlightWorkspace(false)}
-                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white custom-border-secondary"
                     >
                       Move to Workspace
                     </button>
@@ -279,7 +279,7 @@ function Directory({
                         onClick={() =>
                           setShowFolderSelection(!showFolderSelection)
                         }
-                        className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center group"
+                        className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center group custom-border-secondary"
                       >
                         <MoveToFolderIcon className="text-dark-text light:text-[#026AA2] group-hover:text-white" />
                       </button>
@@ -295,7 +295,7 @@ function Directory({
                     </div>
                     <button
                       onClick={deleteFiles}
-                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center custom-border-secondary"
                     >
                       <Trash size={18} weight="bold" />
                     </button>

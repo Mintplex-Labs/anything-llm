@@ -62,7 +62,7 @@ export default function Footer() {
               <GithubLogo
                 weight="fill"
                 className="h-5 w-5"
-                color="var(--theme-sidebar-footer-icon-fill)"
+                color="var(--theme-sidebar-footer-icon-fill-secondary)"
               />
             </Link>
           </div>
@@ -79,7 +79,7 @@ export default function Footer() {
               <BookOpen
                 weight="fill"
                 className="h-5 w-5"
-                color="var(--theme-sidebar-footer-icon-fill)"
+                color="var(--theme-sidebar-footer-icon-fill-secondary)"
               />
             </Link>
           </div>
@@ -96,7 +96,7 @@ export default function Footer() {
               <DiscordLogo
                 weight="fill"
                 className="h-5 w-5"
-                color="var(--theme-sidebar-footer-icon-fill)"
+                color="var(--theme-sidebar-footer-icon-fill-secondary)"
               />
             </Link>
           </div>
@@ -128,7 +128,7 @@ export default function Footer() {
               {
                 weight: "fill",
                 className: "h-5 w-5",
-                color: "var(--theme-sidebar-footer-icon-fill)",
+                color: "var(--theme-sidebar-footer-icon-fill-secondary)",
               }
             )}
           </a>

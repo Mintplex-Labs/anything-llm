@@ -71,10 +71,10 @@ export default function CustomLogo() {
   return (
     <div className="mt-6 mb-8">
       <div className="flex flex-col gap-y-1">
-        <h2 className="text-base leading-6 font-bold text-theme-text-primary">
+        <h2 className="text-base leading-6 font-bold text-theme-text-primary custom-text-secondary">
           {t("appearance.logo.title")}
         </h2>
-        <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
+        <p className="text-xs leading-[18px] font-base text-theme-text-secondary custom-text-secondary">
           {t("appearance.logo.description")}
         </p>
       </div>
@@ -93,17 +93,17 @@ export default function CustomLogo() {
                 onChange={handleFileUpload}
               />
               <div
-                className="w-80 py-4 bg-theme-settings-input-bg rounded-2xl border-2 border-dashed border-theme-text-secondary border-opacity-60 justify-center items-center inline-flex cursor-pointer"
+                className="w-80 py-4 bg-theme-settings-input-bg rounded-2xl border-2 border-dashed border-theme-text-secondary border-opacity-60 justify-center items-center inline-flex cursor-pointer custom-border-secondary"
                 htmlFor="logo-upload"
               >
                 <div className="flex flex-col items-center justify-center">
                   <div className="rounded-full bg-white/40">
-                    <Plus className="w-6 h-6 text-black/80 m-2" />
+                    <Plus className="w-6 h-6 text-black/80 m-2 custom-text-secondary" />
                   </div>
-                  <div className="text-theme-text-primary text-opacity-80 text-sm font-semibold py-1">
+                  <div className="text-theme-text-primary text-opacity-80 text-sm font-semibold py-1 custom-text-secondary">
                     {t("appearance.logo.add")}
                   </div>
-                  <div className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1">
+                  <div className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1 custom-text-secondary">
                     {t("appearance.logo.recommended")}
                   </div>
                 </div>
@@ -113,11 +113,11 @@ export default function CustomLogo() {
         </div>
       ) : (
         <div className="flex md:flex-row flex-col items-center relative">
-          <div className="group w-80 h-[130px] mt-3 overflow-hidden">
+          <div className="group w-80 h-[130px] mt-3 overflow-hidden rounded-2xl" style={{ backgroundColor: '#0000001f' }}>
             <img
               src={logo}
               alt="Uploaded Logo"
-              className="w-full h-full object-cover border-2 border-theme-text-secondary border-opacity-60 p-1 rounded-2xl"
+              className="w-full h-full object-cover border-2 border-theme-text-secondary border-opacity-60 p-1 rounded-2xl custom-border-secondary"
             />
 
             <div className="absolute w-80 top-0 left-0 right-0 bottom-0 flex flex-col gap-y-3 justify-center items-center rounded-2xl mt-3 bg-black bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out border-2 border-transparent hover:border-white">

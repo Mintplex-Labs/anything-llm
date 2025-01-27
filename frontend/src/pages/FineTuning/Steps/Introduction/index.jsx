@@ -12,12 +12,12 @@ export default function Introduction({ setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6 custom-theme-bg-secondary">
         <div className="w-full flex flex-col gap-y-2 max-w-[700px]">
-          <h2 className="text-base text-theme-text-primary font-semibold">
+          <h2 className="text-base text-theme-text-primary font-semibold custom-text-secondary">
             What is a "Fine-Tuned" model?
           </h2>
-          <div className="flex flex-col gap-y-[25px] text-theme-text-secondary text-sm">
+          <div className="flex flex-col gap-y-[25px] text-theme-text-secondary text-sm custom-text-secondary">
             <p>
               Fine-tuned models are basically "customized"
               Language-Learning-Models (LLMs). These can be based on popular
@@ -37,18 +37,18 @@ export default function Introduction({ setSettings, setStep }) {
             </p>
           </div>
 
-          <div className="flex flex-col gap-y-2 text-theme-text-secondary text-sm mt-4">
-            <h3 className="text-base text-theme-text-primary font-semibold">
+          <div className="flex flex-col gap-y-2 text-theme-text-secondary text-sm mt-4 custom-text-secondary">
+            <h3 className="text-base text-theme-text-primary font-semibold custom-text-secondary">
               When should I get a fine-tuned model?
             </h3>
             <p>
               Fine-tuned models are perfect for when you need any of the
               following
             </p>
-            <ul className="flex flex-col gap-y-1">
+            <ul className="flex flex-col gap-y-1 custom-text-secondary">
               <li className="flex items-center gap-x-2">
                 <Check
-                  className="text-theme-text-primary"
+                  className="text-theme-text-primary custom-text-secondary"
                   size={12}
                   weight="bold"
                 />{" "}
@@ -57,7 +57,7 @@ export default function Introduction({ setSettings, setStep }) {
               </li>
               <li className="flex items-center gap-x-2">
                 <Check
-                  className="text-theme-text-primary"
+                  className="text-theme-text-primary custom-text-secondary"
                   size={12}
                   weight="bold"
                 />{" "}
@@ -65,7 +65,7 @@ export default function Introduction({ setSettings, setStep }) {
               </li>
               <li className="flex items-center gap-x-2">
                 <Check
-                  className="text-theme-text-primary"
+                  className="text-theme-text-primary custom-text-secondary"
                   size={12}
                   weight="bold"
                 />{" "}
@@ -74,7 +74,7 @@ export default function Introduction({ setSettings, setStep }) {
               </li>
               <li className="flex items-center gap-x-2">
                 <Check
-                  className="text-theme-text-primary"
+                  className="text-theme-text-primary custom-text-secondary"
                   size={12}
                   weight="bold"
                 />{" "}
@@ -83,8 +83,8 @@ export default function Introduction({ setSettings, setStep }) {
             </ul>
           </div>
 
-          <div className="flex flex-col gap-y-2 text-theme-text-secondary text-sm mt-4">
-            <h3 className="text-base text-theme-text-primary font-semibold">
+          <div className="flex flex-col gap-y-2 text-theme-text-secondary text-sm mt-4 custom-text-secondary">
+            <h3 className="text-base text-theme-text-primary font-semibold custom-text-secondary">
               What are fine-tunes bad for?
             </h3>
             <p>
@@ -92,10 +92,10 @@ export default function Introduction({ setSettings, setStep }) {
               bullet" to any issues you have with RAG currently. Some notable
               limitations are
             </p>
-            <ul>
+            <ul className="custom-text-secondary">
               <li className="flex items-center gap-x-1">
                 <X
-                  className="text-theme-text-primary"
+                  className="text-theme-text-primary custom-text-secondary"
                   size={12}
                   weight="bold"
                 />{" "}
@@ -104,7 +104,7 @@ export default function Introduction({ setSettings, setStep }) {
               </li>
               <li className="flex items-center gap-x-1">
                 <X
-                  className="text-theme-text-primary"
+                  className="text-theme-text-primary custom-text-secondary"
                   size={12}
                   weight="bold"
                 />{" "}
@@ -113,7 +113,7 @@ export default function Introduction({ setSettings, setStep }) {
             </ul>
           </div>
 
-          <div className="flex flex-col gap-y-2 text-theme-text-secondary text-sm">
+          <div className="flex flex-col gap-y-2 text-theme-text-secondary text-sm custom-text-secondary">
             <p>
               In summary, if you are getting good results with RAG currently,
               creating a fine-tune can squeeze <b>even more performance</b> out
@@ -123,7 +123,7 @@ export default function Introduction({ setSettings, setStep }) {
             </p>
           </div>
           <CTAButton
-            className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
+            className="text-dark-text w-full mt-[18px] h-[34px] custom-theme-bg-quad custom-theme-color-quad"
             onClick={handleAccept}
             text="Create fine-tune model &rarr;"
           >

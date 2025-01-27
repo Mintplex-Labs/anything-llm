@@ -5,10 +5,10 @@ export default function MaxContextSnippets({ workspace, setHasChanges }) {
   return (
     <div>
       <div className="flex flex-col">
-        <label htmlFor="name" className="block input-label">
+        <label htmlFor="name" className="block input-label custom-text-secondary">
           {t("vector-workspace.snippets.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
           {t("vector-workspace.snippets.description")}
           <br />
           <i>{t("vector-workspace.snippets.recommend")}</i>
@@ -22,7 +22,7 @@ export default function MaxContextSnippets({ workspace, setHasChanges }) {
         step={1}
         onWheel={(e) => e.target.blur()}
         defaultValue={workspace?.topN ?? 4}
-        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
+        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
         placeholder="4"
         required={true}
         autoComplete="off"

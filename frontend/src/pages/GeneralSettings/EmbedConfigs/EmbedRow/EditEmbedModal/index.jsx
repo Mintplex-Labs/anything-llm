@@ -31,19 +31,19 @@ export default function EditEmbedModal({ embed, closeModal }) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border custom-theme-bg-tertiary border-none">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap custom-text-secondary">
               Update embed #{embed.id}
             </h3>
           </div>
           <button
             onClick={closeModal}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-white custom-text-secondary" />
           </button>
         </div>
         <div className="px-7 py-6">
@@ -90,10 +90,10 @@ export default function EditEmbedModal({ embed, closeModal }) {
               />
 
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
-              <p className="text-white text-opacity-60 text-xs md:text-sm">
+              <p className="text-white text-opacity-60 text-xs md:text-sm custom-text-secondary">
                 After creating an embed you will be provided a link that you can
                 publish on your website with a simple
-                <code className="border-none bg-theme-settings-input-bg text-white mx-1 px-1 rounded-sm">
+                <code className="border-none text-white mx-1 px-1 rounded-sm bg-stone-900 text-white">
                   &lt;script&gt;
                 </code>{" "}
                 tag.
@@ -103,13 +103,13 @@ export default function EditEmbedModal({ embed, closeModal }) {
               <button
                 onClick={closeModal}
                 type="button"
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 text-white px-4 py-2 rounded-lg text-sm custom-text-secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm border custom-button-secondary"
               >
                 Update embed
               </button>

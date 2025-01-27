@@ -41,10 +41,10 @@ export default function CustomSiteSettings() {
     >
       <div className="flex flex-col border-t border-white/30 pt-4 gap-y-2">
         <div className="flex flex-col gap-y-1">
-          <h2 className="text-base leading-6 font-bold text-white">
+          <h2 className="text-base leading-6 font-bold text-white custom-text-secondary">
             Custom Site Settings
           </h2>
-          <p className="text-xs leading-[18px] font-base text-white/60">
+          <p className="text-xs leading-[18px] font-base text-white/60 custom-text-secondary">
             Change the content of the browser tab for customization and
             branding.
           </p>
@@ -52,8 +52,8 @@ export default function CustomSiteSettings() {
 
         <div className="w-fit">
           <div className="flex flex-col gap-y-1">
-            <h2 className="text-sm leading-6 text-white">Tab Title</h2>
-            <p className="text-xs leading-[18px] font-base text-white/60">
+            <h2 className="text-sm leading-6 text-white custom-text-secondary">Tab Title</h2>
+            <p className="text-xs leading-[18px] font-base text-white/60 custom-text-secondary">
               Set a custom tab title when the app is open in a browser.
             </p>
           </div>
@@ -61,7 +61,7 @@ export default function CustomSiteSettings() {
             <input
               name="meta_page_title"
               type="text"
-              className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[400px] placeholder:text-theme-settings-input-placeholder"
+              className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[400px] custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
               placeholder="AnythingLLM | Your personal LLM trained on anything"
               autoComplete="off"
               onChange={(e) => {
@@ -79,8 +79,8 @@ export default function CustomSiteSettings() {
 
         <div className="w-fit">
           <div className="flex flex-col gap-y-1">
-            <h2 className="text-sm leading-6 text-white">Tab Favicon</h2>
-            <p className="text-xs leading-[18px] font-base text-white/60">
+            <h2 className="text-sm leading-6 text-white custom-text-secondary">Tab Favicon</h2>
+            <p className="text-xs leading-[18px] font-base text-white/60 custom-text-secondary">
               Define a url to an image to use for your favicon
             </p>
           </div>
@@ -93,7 +93,7 @@ export default function CustomSiteSettings() {
             <input
               name="meta_page_favicon"
               type="url"
-              className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[400px] placeholder:text-theme-settings-input-placeholder"
+              className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[400px] custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
               placeholder="url to your image"
               onChange={(e) => {
                 setSettings((prev) => {
@@ -109,7 +109,7 @@ export default function CustomSiteSettings() {
         {hasChanges && (
           <button
             type="submit"
-            className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 focus:ring-gray-800 custom-button-secondary"
           >
             Save
           </button>

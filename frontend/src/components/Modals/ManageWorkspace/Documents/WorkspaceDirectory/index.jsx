@@ -89,21 +89,21 @@ function WorkspaceDirectory({
     return (
       <div className="px-8">
         <div className="flex items-center justify-start w-[560px]">
-          <h3 className="text-white text-base font-bold ml-5">
+          <h3 className="text-white text-base font-bold ml-5 custom-text-secondary">
             {workspace.name}
           </h3>
         </div>
-        <div className="relative w-[560px] h-[445px] bg-theme-settings-input-bg rounded-2xl mt-5 border border-theme-modal-border">
-          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-theme-settings-input-bg sticky top-0 z-10 rounded-t-2xl shadow-lg">
+        <div className="relative w-[560px] h-[445px] bg-theme-settings-input-bg rounded-2xl mt-5 border border-theme-modal-border custom-border-secondary">
+          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-theme-settings-input-bg sticky top-0 z-10 rounded-t-2xl shadow-lg custom-theme-bg-tertiary">
             <div className="col-span-10 flex items-center gap-x-[4px]">
               <div className="shrink-0 w-3 h-3" />
-              <p className="ml-[7px]">Name</p>
+              <p className="ml-[7px] custom-text-secondary">Name</p>
             </div>
             <p className="col-span-2" />
           </div>
           <div className="w-full h-[calc(100%-40px)] flex items-center justify-center flex-col gap-y-5">
             <PreLoader />
-            <p className="text-white text-sm font-semibold animate-pulse text-center w-1/3">
+            <p className="text-white text-sm font-semibold animate-pulse text-center w-1/3 custom-text-secondary">
               {loadingMessage}
             </p>
           </div>
@@ -116,7 +116,7 @@ function WorkspaceDirectory({
     <>
       <div className="px-8">
         <div className="flex items-center justify-start w-[560px]">
-          <h3 className="text-white text-base font-bold ml-5">
+          <h3 className="text-white text-base font-bold ml-5 custom-text-secondary">
             {workspace.name}
           </h3>
         </div>
@@ -126,8 +126,8 @@ function WorkspaceDirectory({
               highlightWorkspace ? "border-4 border-cyan-300/80 z-[999]" : ""
             }`}
           />
-          <div className="relative w-full h-full bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
-            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-theme-settings-input-bg sticky top-0 z-10 shadow-md">
+          <div className="relative w-full h-full bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border custom-border-secondary">
+            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-theme-settings-input-bg sticky top-0 z-10 shadow-md custom-theme-bg-tertiary">
               <div className="col-span-10 flex items-center gap-x-[4px]">
                 {!hasChanges &&
                 files.items.some((folder) => folder.items.length > 0) ? (
@@ -153,7 +153,7 @@ function WorkspaceDirectory({
                 ) : (
                   <div className="shrink-0 w-3 h-3" />
                 )}
-                <p className="ml-[7px] light:text-theme-text-primary">Name</p>
+                <p className="ml-[7px] light:text-theme-text-primary custom-text-secondary">Name</p>
               </div>
               <p className="col-span-2" />
             </div>
@@ -181,7 +181,7 @@ function WorkspaceDirectory({
                 </RenderFileRows>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <p className="text-white text-opacity-40 text-sm font-medium">
+                  <p className="text-white text-opacity-40 text-sm font-medium custom-text-secondary">
                     No Documents
                   </p>
                 </div>
@@ -194,7 +194,7 @@ function WorkspaceDirectory({
                   <div className="flex flex-row items-center gap-x-2">
                     <button
                       onClick={toggleSelectAll}
-                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white custom-border-secondary"
                     >
                       {Object.keys(selectedItems).length ===
                       files.items.reduce(
@@ -206,7 +206,7 @@ function WorkspaceDirectory({
                     </button>
                     <button
                       onClick={removeSelectedItems}
-                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
+                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white custom-border-secondary"
                     >
                       Remove Selected
                     </button>
@@ -218,7 +218,7 @@ function WorkspaceDirectory({
         </div>
         {hasChanges && (
           <div className="flex items-center justify-between py-6">
-            <div className="text-white/80">
+            <div className="text-white/80 custom-text-secondary">
               <p className="text-sm font-semibold">
                 {embeddingCosts === 0
                   ? ""
@@ -235,7 +235,7 @@ function WorkspaceDirectory({
 
             <button
               onClick={(e) => handleSaveChanges(e)}
-              className="border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              className="border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 custom-button-secondary"
             >
               Save and Embed
             </button>

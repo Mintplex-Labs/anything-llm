@@ -111,8 +111,8 @@ export default function ImportedSkillConfig({
       <div className="p-2">
         <div className="flex flex-col gap-y-[18px] max-w-[500px]">
           <div className="flex items-center gap-x-2">
-            <Plug size={24} weight="bold" className="text-white" />
-            <label htmlFor="name" className="text-white text-md font-bold">
+            <Plug size={24} weight="bold" className="text-white custom-text-secondary" />
+            <label htmlFor="name" className="text-white text-md font-bold custom-text-secondary">
               {sentenceCase(config.name)}
             </label>
             <label className="border-none relative inline-flex items-center ml-auto cursor-pointer">
@@ -130,7 +130,7 @@ export default function ImportedSkillConfig({
               setImportedSkills={setImportedSkills}
             />
           </div>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-white text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
             {config.description} by{" "}
             <a
               href={config.author_url}
@@ -146,7 +146,7 @@ export default function ImportedSkillConfig({
             <div className="flex flex-col gap-y-2">
               {Object.entries(config.setup_args).map(([key, props]) => (
                 <div key={key} className="flex flex-col gap-y-1">
-                  <label htmlFor={key} className="text-white text-sm font-bold">
+                  <label htmlFor={key} className="text-white text-sm font-bold custom-text-secondary">
                     {key}
                   </label>
                   <input
@@ -161,9 +161,9 @@ export default function ImportedSkillConfig({
                       setInputs({ ...inputs, [key]: e.target.value })
                     }
                     placeholder={props?.input?.placeholder || ""}
-                    className="border-solid bg-transparent border border-white light:border-black rounded-md p-2 text-white text-sm"
+                    className="border-solid bg-transparent border border-white light:border-black rounded-md p-2 text-white text-sm custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   />
-                  <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                  <p className="text-white text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
                     {props?.input?.hint}
                   </p>
                 </div>
@@ -172,14 +172,14 @@ export default function ImportedSkillConfig({
                 <button
                   onClick={handleSubmit}
                   type="button"
-                  className="bg-blue-500 text-white light:text-white rounded-md p-2"
+                  className="bg-blue-500 rounded-md p-2 border custom-button-secondary"
                 >
                   Save
                 </button>
               )}
             </div>
           ) : (
-            <p className="text-white text-opacity-60 text-sm font-medium py-1.5">
+            <p className="text-white text-opacity-60 text-sm font-medium py-1.5 custom-text-secondary">
               There are no options to modify for this skill.
             </p>
           )}
@@ -233,14 +233,14 @@ function ManageSkillMenu({ config, setImportedSkills }) {
         onClick={() => setOpen(!open)}
         className={`border-none transition duration-200 hover:rotate-90 outline-none ring-none ${open ? "rotate-90" : ""}`}
       >
-        <Gear size={24} weight="bold" />
+        <Gear size={24} weight="bold" className="custom-text-secondary"/>
       </button>
       {open && (
-        <div className="absolute w-[100px] -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
+        <div className="absolute w-[100px] -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-theme-action-menu-bg flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10 custom-theme-bg-tertiary">
           <button
             type="button"
             onClick={deleteSkill}
-            className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
+            className="border-none flex items-center rounded-lg gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left custom-text-secondary"
           >
             <span className="text-sm">Delete Skill</span>
           </button>

@@ -27,7 +27,7 @@ export default function ImportedSkillList({
 
   return (
     <div
-      className={`bg-theme-bg-secondary text-white rounded-xl ${
+      className={`bg-theme-bg-secondary text-white rounded-xl custom-theme-bg-secondary custom-text-secondary ${
         isMobile ? "w-full" : "min-w-[360px] w-fit"
       }`}
     >
@@ -40,20 +40,20 @@ export default function ImportedSkillList({
             index === Object.keys(skills).length - 1
               ? "rounded-b-xl"
               : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300 hover:bg-theme-bg-primary ${
+          } cursor-pointer transition-all duration-300 hover:bg-[#ccc] ${
             selectedSkill === config.hubId ? "bg-theme-bg-primary" : ""
           }`}
           onClick={() => handleClick?.({ ...config, imported: true })}
         >
           <div className="text-sm font-light">{sentenceCase(config.name)}</div>
           <div className="flex items-center gap-x-2">
-            <div className="text-sm text-theme-text-secondary font-medium">
+            <div className="text-sm text-theme-text-secondary font-medium custom-text-secondary">
               {config.active ? "On" : "Off"}
             </div>
             <CaretRight
               size={14}
               weight="bold"
-              className="text-theme-text-secondary"
+              className="text-theme-text-secondary custom-text-secondary"
             />
           </div>
         </div>

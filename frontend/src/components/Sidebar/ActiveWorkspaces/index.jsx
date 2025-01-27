@@ -101,7 +101,7 @@ export default function ActiveWorkspaces() {
                           setSelectedWs(workspace);
                           showModal();
                         }}
-                        className="border-none rounded-md flex items-center justify-center ml-auto p-[2px] hover:bg-[#646768] text-[#A7A8A9] hover:text-white"
+                        className="border-none rounded-md flex items-center justify-center ml-auto p-[2px] text-[#A7A8A9] hover:text-white custom-text-primary"
                       >
                         <UploadSimple
                           className="h-[20px] w-[20px]"
@@ -116,7 +116,7 @@ export default function ActiveWorkspaces() {
                                 workspace.slug
                               )
                         }
-                        className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto p-[2px] hover:bg-[#646768]"
+                        className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto p-[2px] custom-text-primary"
                         aria-label="General appearance settings"
                       >
                         <GearSix
