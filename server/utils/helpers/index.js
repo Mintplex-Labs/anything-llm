@@ -51,6 +51,11 @@
  */
 
 /**
+* @typedef {Object} BaseRerankerProvider - A basic reranker provider object
+* @property {Function} rerankTexts - Function to rerank the texts
+ */
+
+/**
  * Gets the systems current vector database provider.
  * @returns { BaseVectorDatabaseProvider}
  */
@@ -320,6 +325,27 @@ function getLLMProviderClass({ provider = null } = {}) {
   }
 }
 
+/**
+ * Gets the systems current reranker provider
+ * @returns { BaseRerankerProvider}
+ */
+function getRerankerProvider() {
+  const rerankerSelection = process.env.RERANKER_PROVIDER || "none";
+  switch (rerankerSelection) {
+    case "prism":
+      const Prism = require("../rerankerProviders/prism");
+      return Prism;
+    case "cohere":
+      const Cohere = require("../rerankerProviders/cohere");
+      return Cohere;
+    case "jina":
+      const Jina = require("../rerankerProviders/jina");
+      return Jina;
+    default:
+      throw new Error("ENV: No RERANKER_PROVIDER value found in environment!");
+  }
+}
+
 // Some models have lower restrictions on chars that can be encoded in a single pass
 // and by default we assume it can handle 1,000 chars, but some models use work with smaller
 // chars so here we can override that value when embedding information.
@@ -347,4 +373,5 @@ module.exports = {
   getLLMProviderClass,
   getLLMProvider,
   toChunks,
+  getRerankerProvider,
 };

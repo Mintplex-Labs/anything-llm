@@ -1,10 +1,10 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, getLLMProvider, getRerankerProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
-const { rerankTexts } = require("../custom/reranker.js");
+// const { rerankTexts } = require("../custom/reranker.js");
 const { WorkspaceUser } = require("../../models/workspaceUsers");
 
 const {
@@ -42,6 +42,7 @@ const { systemPrompt } = require("../agents/aibitat/providers/ai-provider");
 async function performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount,) {
 
   const VectorDb = getVectorDbClass();
+  const Reranker = getRerankerProvider();
   // Use Promise.all to handle all searches concurrently
   const searchPromises = workspaces.map(namespace => {
     return embeddingsCount !== 0
@@ -304,7 +305,7 @@ async function chatSync({
     };
   }
 
-  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
+  if (process.env.RERANKER_PROVIDER != 'none' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -312,7 +313,7 @@ async function chatSync({
 
     if (texts.length !== 0) {
       // Call re-ranker to get top results
-      const rerankedResults = await rerankTexts(texts, effectiveQuestion);
+      const rerankedResults = await Reranker.rerankTexts(texts, effectiveQuestion);
 
       // Extract indices of top-ranked results
       const topIndices = rerankedResults.map((result) => result.index);
@@ -700,7 +701,7 @@ async function streamChat({
   }
 
 
-  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
+  if (process.env.RERANKER_PROVIDER != 'none' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -708,7 +709,7 @@ async function streamChat({
 
     if (texts.length !== 0) {
       // Call re-ranker to get top results
-      const rerankedResults = await rerankTexts(texts, effectiveQuestion);
+      const rerankedResults = await Reranker.rerankTexts(texts, effectiveQuestion);
 
       // Extract indices of top-ranked results
       const topIndices = rerankedResults.map((result) => result.index);

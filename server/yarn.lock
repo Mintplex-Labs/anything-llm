@@ -3341,10 +3341,10 @@ cmake-js@^7.2.1:
     which "^2.0.2"
     yargs "^17.7.2"
 
-cohere-ai@^7.9.5:
-  version "7.15.0"
-  resolved "https://registry.yarnpkg.com/cohere-ai/-/cohere-ai-7.15.0.tgz#13d2697c7eef4a2dc0a2b28774f389d3ededc7c4"
-  integrity sha512-yhyoUdLXKePmGMxJVOtmvJCKt8WdVAK/fdzgk/IHQJTDOYCRyFeulGxayFY5xUv7MkRRLVsVKDU5sx2NLcG+qA==
+cohere-ai@^7.15.4:
+  version "7.15.4"
+  resolved "https://registry.yarnpkg.com/cohere-ai/-/cohere-ai-7.15.4.tgz#7500bc46c7c76885f52a3035621f8031a48ff24d"
+  integrity sha512-jLe7rVQJPAsvsxcKI/bBLynlgDkMWPEYW5a25V5yX9OWYRQ+t++OAqxfsDt4703yGdi/hok0hT3GkPO0jGKjhw==
   dependencies:
     "@aws-sdk/client-sagemaker" "^3.583.0"
     "@aws-sdk/credential-providers" "^3.583.0"

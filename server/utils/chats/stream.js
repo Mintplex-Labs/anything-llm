@@ -1,10 +1,11 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, getLLMProvider, getRerankerProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { grepAgents } = require("./agents");
-const { rerankTexts} = require("../custom/reranker.js")
+
+// const { rerankTexts} = require("../custom/reranker.js")
 const {
   grepCommand,
   VALID_COMMANDS,
@@ -14,6 +15,13 @@ const {
 } = require("./index");
 
 const VALID_CHAT_MODE = ["chat", "query"];
+const Reranker = getRerankerProvider()
+
+// console.log("Reranker Object:", Reranker);
+
+if (!Reranker || typeof Reranker.rerankTexts !== "function") {
+  throw new Error("Reranker is not properly defined or does not have a rerankTexts function.");
+}
 
 async function streamChatWithWorkspace(
   response,
@@ -61,7 +69,6 @@ async function streamChatWithWorkspace(
   const messageLimit = workspace?.openAiHistory || 20; 
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
@@ -194,7 +201,7 @@ async function streamChatWithWorkspace(
     return;
   }
 
-  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
+  if (process.env.RERANKER_PROVIDER != 'none' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
@@ -202,7 +209,7 @@ async function streamChatWithWorkspace(
 
     if (texts.length !== 0) {
       // Call re-ranker to get top results
-      const rerankedResults = await rerankTexts(texts, effectiveQuestion);
+      const rerankedResults = await Reranker.rerankTexts(texts, effectiveQuestion);
 
       // Extract indices of top-ranked results
       const topIndices = rerankedResults.map((result) => result.index);
