@@ -122,16 +122,6 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
-  // Native LLM Settings
-  NativeLLMModelPref: {
-    envKey: "NATIVE_LLM_MODEL_PREF",
-    checks: [isDownloadedModel],
-  },
-  NativeLLMTokenLimit: {
-    envKey: "NATIVE_LLM_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
-  },
-
   // Hugging Face LLM Inference Settings
   HuggingFaceLLMEndpoint: {
     envKey: "HUGGING_FACE_LLM_ENDPOINT",
@@ -700,7 +690,6 @@ function supportedLLM(input = "") {
     "lmstudio",
     "localai",
     "ollama",
-    "native",
     "togetherai",
     "fireworksai",
     "mistral",
@@ -813,22 +802,6 @@ function validOpenAiTokenLimit(input = "") {
 
 function requiresForceMode(_, forceModeEnabled = false) {
   return forceModeEnabled === true ? null : "Cannot set this setting.";
-}
-
-function isDownloadedModel(input = "") {
-  const fs = require("fs");
-  const path = require("path");
-  const storageDir = path.resolve(
-    process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`)
-  );
-  if (!fs.existsSync(storageDir)) return false;
-
-  const files = fs
-    .readdirSync(storageDir)
-    .filter((file) => file.includes(".gguf"));
-  return files.includes(input);
 }
 
 async function validDockerizedUrl(input = "") {
