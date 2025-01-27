@@ -42,12 +42,12 @@ import Workspace from "@/models/workspace";
 
 const EMBEDDERS = [
   {
-    name: "AnythingLLM Embedder",
+    name: "Native Embedder",
     value: "native",
     logo: AnythingLLMIcon,
     options: (settings) => <NativeEmbeddingOptions settings={settings} />,
     description:
-      "Use the built-in embedding provider for AnythingLLM. Zero setup!",
+      "Use the built-in embedding provider for Prism. Zero setup!",
   },
   {
     name: "OpenAI",
@@ -114,9 +114,9 @@ const EMBEDDERS = [
     description: "Run powerful embedding models from Mistral AI.",
   },
   {
-    name: "Generic OpenAI",
+    name: "Prism",
     value: "generic-openai",
-    logo: GenericOpenAiLogo,
+    logo: AnythingLLMIcon,
     options: (settings) => (
       <GenericOpenAiEmbeddingOptions settings={settings} />
     ),

@@ -14,7 +14,7 @@ import SelectorWithSearchModal from "@/components/RerankerRewriter/SelectorWithS
 
 const RE_RANKERS = [
   {
-    name: "Prism Re-Ranker",
+    name: "Prism",
     value: "prism",
     logo: AnythingLLMIcon,
     options: (settings) => <PrismRerankerOptions settings={settings} />,

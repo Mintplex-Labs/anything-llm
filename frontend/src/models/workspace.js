@@ -214,7 +214,7 @@ const Workspace = {
     return workspaces;
   },
   allAdmin: async function () {
-    const workspaces = await fetch(`${API_BASE}/admin/workspaces`, {
+    const workspaces = await fetch(`${API_BASE}/workspaces/include-internal`, {
       method: "GET",
       headers: baseHeaders(),
     })

@@ -1,10 +1,11 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, getLLMProvider, getRerankerProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { grepAgents } = require("./agents");
-const { rerankTexts} = require("../custom/reranker.js")
+
+// const { rerankTexts} = require("../custom/reranker.js")
 const {
   grepCommand,
   VALID_COMMANDS,
@@ -15,6 +16,10 @@ const {
 
 const VALID_CHAT_MODE = ["chat", "query"];
 
+
+// console.log("Reranker Object:", Reranker);
+
+
 async function streamChatWithWorkspace(
   response,
   workspace,
@@ -24,8 +29,8 @@ async function streamChatWithWorkspace(
   thread = null,
   attachments = []
 ) {
-  let effectiveQuestion = message; 
-  // console.log(`message: ${message}`)
+
+  let effectiveQuestion = message;
   const uuid = uuidv4();
   const updatedMessage = await grepCommand(message, user);
 
@@ -53,20 +58,19 @@ async function streamChatWithWorkspace(
   if (isAgentChat) return;
 
   const LLMConnector = getLLMProvider({
-    provider: workspace?.chatProvider, 
-    model: workspace?.chatModel, 
+    provider: workspace?.chatProvider,
+    model: workspace?.chatModel,
   });
   const VectorDb = getVectorDbClass();
 
-  const messageLimit = workspace?.openAiHistory || 20; 
+  const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
     const textResponse =
-      workspace?.queryRefusalResponse ?? 
+      workspace?.queryRefusalResponse ??
       "There is no relevant information in this workspace to answer your query.";
     writeResponseChunk(response, {
       id: uuid,
@@ -78,7 +82,7 @@ async function streamChatWithWorkspace(
       error: null,
     });
     await WorkspaceChats.new({
-      workspaceId: workspace.id, 
+      workspaceId: workspace.id,
       prompt: message,
       response: {
         text: textResponse,
@@ -171,15 +175,15 @@ async function streamChatWithWorkspace(
         namespace: workspace.slug,
         input: effectiveQuestion,
         LLMConnector,
-        similarityThreshold: workspace?.similarityThreshold, 
+        similarityThreshold: workspace?.similarityThreshold,
         topN: workspace?.topN,
-        filterIdentifiers: pinnedDocIdentifiers, 
+        filterIdentifiers: pinnedDocIdentifiers,
       })
       : {
-          contextTexts: [],
-          sources: [],
-          message: null,
-        };
+        contextTexts: [],
+        sources: [],
+        message: null,
+      };
 
   // Failed similarity search if it was run at all and failed.
   if (!!vectorSearchResults.message) {
@@ -194,31 +198,29 @@ async function streamChatWithWorkspace(
     return;
   }
 
-  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
+  if (process.env.RERANKER_PROVIDER != 'none' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
       .map(source => source.text);
-
+    const Reranker = getRerankerProvider()
     if (texts.length !== 0) {
       // Call re-ranker to get top results
-      const rerankedResults = await rerankTexts(texts, effectiveQuestion);
+      const rerankedResults = await Reranker.rerankTexts(texts, effectiveQuestion);
 
       // Extract indices of top-ranked results
       const topIndices = rerankedResults.map((result) => result.index);
       // Filter the sources and update `sources` directly using the indices
       vectorSearchResults.sources = vectorSearchResults.sources.filter((_, index) =>
-      topIndices.includes(index)
+        topIndices.includes(index)
       );
     }
-    console.log(`vectorSearchResults.sources.length: ${vectorSearchResults.sources.length}`)
+    // console.log(`vectorSearchResults.sources.length: ${vectorSearchResults.sources.length}`)
   }
-
-
 
   const { fillSourceWindow } = require("../helpers/chat");
   const filledSources = fillSourceWindow({
-    nDocs: workspace?.topN || 4, 
+    nDocs: workspace?.topN || 4,
     searchResults: vectorSearchResults.sources,
     history: rawHistory,
     filterIdentifiers: pinnedDocIdentifiers,
@@ -250,7 +252,7 @@ async function streamChatWithWorkspace(
     });
 
     await WorkspaceChats.new({
-      workspaceId: workspace.id, 
+      workspaceId: workspace.id,
       prompt: message,
       response: {
         text: textResponse,
@@ -261,12 +263,6 @@ async function streamChatWithWorkspace(
       threadId: thread?.id || null,
       include: false,
       rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
-
-
-
-
-
-
       user: user,
     });
     return;
@@ -292,7 +288,7 @@ async function streamChatWithWorkspace(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp, 
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
     writeResponseChunk(response, {
       uuid,
@@ -304,7 +300,7 @@ async function streamChatWithWorkspace(
     });
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp, 
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
@@ -314,17 +310,11 @@ async function streamChatWithWorkspace(
 
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
-      workspaceId: workspace.id, 
+      workspaceId: workspace.id,
       prompt: message,
       response: { text: completeText, sources, type: chatMode, attachments },
       threadId: thread?.id || null,
       rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
-
-
-
-
-
-
       user: user,
     });
 
