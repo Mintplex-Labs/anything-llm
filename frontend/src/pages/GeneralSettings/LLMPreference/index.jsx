@@ -38,7 +38,6 @@ import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
-import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
@@ -290,16 +289,6 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
     requiredConfig: ["XAIApiKey", "XAIModelPref"],
   },
-
-  {
-    name: "Native",
-    value: "native",
-    logo: AnythingLLMIcon,
-    options: (settings) => <NativeLLMOptions settings={settings} />,
-    description:
-      "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
-    requiredConfig: [],
-  },
 ];
 
 export default function GeneralLLMPreference() {
@@ -312,7 +301,6 @@ export default function GeneralLLMPreference() {
   const [selectedLLM, setSelectedLLM] = useState(null);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
-  const isHosted = window.location.hostname.includes("useanything.com");
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
@@ -449,7 +437,6 @@ export default function GeneralLLMPreference() {
                       </div>
                       <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
                         {filteredLLMs.map((llm) => {
-                          if (llm.value === "native" && isHosted) return null;
                           return (
                             <LLMItem
                               key={llm.name}

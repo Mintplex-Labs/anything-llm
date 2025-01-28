@@ -1,6 +1,6 @@
 import { encode as HTMLEncode } from "he";
 import markdownIt from "markdown-it";
-import markdownItKatex from "markdown-it-katex";
+import markdownItKatexPlugin from "./plugins/markdown-katex";
 import hljs from "highlight.js";
 import "./themes/github-dark.css";
 import "./themes/github.css";
@@ -66,7 +66,7 @@ markdown.renderer.rules.image = function (tokens, idx) {
   return `<div class="w-full max-w-[800px]"><img src="${src}" alt="${alt}" class="w-full h-auto" /></div>`;
 };
 
-markdown.use(markdownItKatex);
+markdown.use(markdownItKatexPlugin);
 
 export default function renderMarkdown(text = "") {
   return markdown.render(text);
