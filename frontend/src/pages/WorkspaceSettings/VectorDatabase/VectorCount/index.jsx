@@ -18,19 +18,19 @@ export default function VectorCount({ reload, workspace }) {
   if (totalVectors === null)
     return (
       <div>
-        <h3 className="input-label">{t("general.vector.title")}</h3>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1">
+        <h3 className="input-label custom-text-secondary">{t("general.vector.title")}</h3>
+        <p className="text-white text-opacity-60 text-xs font-medium py-1 custom-text-secondary">
           {t("general.vector.description")}
         </p>
-        <p className="text-white text-opacity-60 text-sm font-medium">
+        <p className="text-white text-opacity-60 text-sm font-medium custom-text-secondary">
           <PreLoader size="4" />
         </p>
       </div>
     );
   return (
     <div>
-      <h3 className="input-label">{t("general.vector.title")}</h3>
-      <p className="text-white text-opacity-60 text-sm font-medium">
+      <h3 className="input-label custom-text-secondary">{t("general.vector.title")}</h3>
+      <p className="text-white text-opacity-60 text-sm font-medium custom-text-secondary">
         {totalVectors}
       </p>
     </div>

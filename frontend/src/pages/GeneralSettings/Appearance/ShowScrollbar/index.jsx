@@ -29,10 +29,10 @@ export default function ShowScrollbar() {
   return (
     <div className="flex flex-col w-full gap-y-4 mt-6">
       <div className="flex flex-col gap-y-1">
-        <h2 className="text-base leading-6 font-bold text-white">
+        <h2 className="text-base leading-6 font-bold text-white custom-text-secondary">
           Show chat window scrollbar
         </h2>
-        <p className="text-xs leading-[18px] font-base text-white/60">
+        <p className="text-xs leading-[18px] font-base text-white/60 custom-text-secondary">
           Enable or disable the scrollbar in the chat window
         </p>
         <div className="mt-2">

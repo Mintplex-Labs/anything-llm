@@ -61,29 +61,29 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
 
   return (
     <div className="relative w-full max-w-[550px] max-h-full">
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden custom-theme-bg-tertiary">
         <div className="flex items-center justify-between p-6 border-b rounded-t border-theme-modal-border">
           <div className="flex items-center gap-x-4">
-            <h3 className="text-base font-semibold text-white">Users</h3>
+            <h3 className="text-base font-semibold text-white custom-text-secondary">Users</h3>
             <div className="relative">
               <input
                 onChange={handleSearch}
-                className="w-[400px] h-[34px] bg-theme-bg-primary rounded-[100px] text-white placeholder:text-theme-text-secondary text-sm px-10 pl-10"
+                className="w-[400px] h-[34px] bg-theme-bg-primary rounded-[100px] text-white text-sm px-10 pl-10 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                 placeholder="Search for a user"
               />
               <MagnifyingGlass
                 size={16}
                 weight="bold"
-                className="text-white text-lg absolute left-3 top-1/2 transform -translate-y-1/2"
+                className="text-white text-lg absolute left-3 top-1/2 transform -translate-y-1/2 custom-text-secondary"
               />
             </div>
           </div>
           <button
             onClick={closeModal}
             type="button"
-            className="border-none bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="border-none bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:border-opacity-50 border-transparent border"
           >
-            <X className="text-white text-lg" />
+            <X className="text-white text-lg custom-text-secondary" />
           </button>
         </div>
         <form onSubmit={handleUpdate}>
@@ -97,22 +97,22 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                     onClick={() => handleUserSelect(user.id)}
                   >
                     <div
-                      className="shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white light:border-black flex justify-center items-center"
+                      className="shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white light:border-black flex justify-center items-center custom-border-secondary"
                       role="checkbox"
                       aria-checked={isUserSelected(user.id)}
                       tabIndex={0}
                     >
                       {isUserSelected(user.id) && (
-                        <div className="w-2 h-2 bg-white light:bg-black rounded-[2px]" />
+                        <div className="w-2 h-2 bg-white light:bg-black rounded-[2px] custom-theme-bg-quad" />
                       )}
                     </div>
-                    <p className="text-theme-text-primary text-sm font-medium">
+                    <p className="text-theme-text-primary text-sm font-medium custom-text-secondary">
                       {user.username}
                     </p>
                   </tr>
                 ))
               ) : (
-                <p className="text-theme-text-secondary text-sm font-medium ">
+                <p className="text-theme-text-secondary text-sm font-medium custom-text-secondary">
                   No users found
                 </p>
               )}
@@ -126,16 +126,16 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                 className="flex items-center gap-x-2 ml-2"
               >
                 <div
-                  className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+                  className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer custom-border-secondary"
                   role="checkbox"
                   aria-checked={selectedUsers.length === filteredUsers.length}
                   tabIndex={0}
                 >
                   {selectedUsers.length === filteredUsers.length && (
-                    <div className="w-2 h-2 bg-white rounded-[2px]" />
+                    <div className="w-2 h-2 bg-white rounded-[2px] custom-theme-bg-quad" />
                   )}
                 </div>
-                <p className="text-white text-sm font-medium">Select All</p>
+                <p className="text-white text-sm font-medium custom-text-secondary">Select All</p>
               </button>
               {selectedUsers.length > 0 && (
                 <button
@@ -143,7 +143,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                   onClick={handleUnselect}
                   className="flex items-center gap-x-2 ml-2"
                 >
-                  <p className="text-theme-text-secondary text-sm font-medium hover:text-theme-text-primary">
+                  <p className="text-theme-text-secondary text-sm font-medium hover:text-theme-text-primary custom-text-secondary">
                     Unselect
                   </p>
                 </button>
@@ -151,7 +151,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
             </div>
             <button
               type="submit"
-              className="transition-all duration-300 text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white h-[32px] w-[68px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+              className="transition-all duration-300 text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button border-2 border-transparent h-[32px] w-[68px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)] custom-theme-bg-quad custom-theme-color-quad"
             >
               Save
             </button>

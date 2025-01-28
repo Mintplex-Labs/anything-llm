@@ -22,7 +22,7 @@ export default function FolderRow({
     <>
       <tr
         onClick={onRowClick}
-        className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
+        className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row custom-theme-bg-tertiary ${
           selected ? "selected light:text-white !text-white" : ""
         }`}
       >
@@ -32,7 +32,7 @@ export default function FolderRow({
           }`}
         >
           <div
-            className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white ${
+            className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white custom-border-secondary ${
               selected ? "text-white" : "text-theme-text-primary light:invert"
             } flex justify-center items-center cursor-pointer`}
             role="checkbox"
@@ -43,7 +43,7 @@ export default function FolderRow({
               toggleSelection(item);
             }}
           >
-            {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+            {selected && <div className="w-2 h-2 bg-white rounded-[2px] custom-theme-bg-quad" />}
           </div>
           <div
             onClick={handleExpandClick}
@@ -51,13 +51,13 @@ export default function FolderRow({
               expanded ? "rotate-360" : " rotate-270"
             }`}
           >
-            <CaretDown className="text-base font-bold w-4 h-4" />
+            <CaretDown className="text-base font-bold w-4 h-4 custom-text-secondary" />
           </div>
           <FolderNotch
-            className="shrink-0 text-base font-bold w-4 h-4 mr-[3px]"
+            className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] custom-text-secondary"
             weight="fill"
           />
-          <p className="whitespace-nowrap overflow-show max-w-[400px]">
+          <p className="whitespace-nowrap overflow-show max-w-[400px] custom-text-secondary">
             {middleTruncate(item.name, 35)}
           </p>
         </div>

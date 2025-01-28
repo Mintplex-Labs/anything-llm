@@ -28,12 +28,12 @@ export default function AgentSQLConnectorSelection({
           <div className="flex items-center gap-x-2">
             <Database
               size={24}
-              color="var(--theme-text-primary)"
+              color="#000"
               weight="bold"
             />
             <label
               htmlFor="name"
-              className="text-theme-text-primary text-md font-bold"
+              className="text-theme-text-primary text-md font-bold custom-text-secondary"
             >
               SQL Agent
             </label>
@@ -53,7 +53,7 @@ export default function AgentSQLConnectorSelection({
             alt="SQL Agent"
             className="w-full rounded-md"
           />
-          <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
             Enable your agent to be able to leverage SQL to answer you questions
             by connecting to various SQL database providers.
           </p>
@@ -71,7 +71,7 @@ export default function AgentSQLConnectorSelection({
                 )}
               />
               <div className="flex flex-col mt-2 gap-y-2">
-                <p className="text-theme-text-primary font-semibold text-sm">
+                <p className="text-theme-text-primary font-semibold text-sm custom-text-secondary">
                   Your database connections
                 </p>
                 <div className="flex flex-col gap-y-3">
@@ -103,10 +103,10 @@ export default function AgentSQLConnectorSelection({
                         <Plus
                           weight="bold"
                           size={14}
-                          className="shrink-0 text-theme-text-primary"
+                          className="shrink-0 text-theme-text-primary custom-text-secondary"
                         />
                       </div>
-                      <p className="text-left text-theme-text-primary text-sm">
+                      <p className="text-left text-theme-text-primary text-sm custom-text-secondary">
                         New SQL connection
                       </p>
                     </div>

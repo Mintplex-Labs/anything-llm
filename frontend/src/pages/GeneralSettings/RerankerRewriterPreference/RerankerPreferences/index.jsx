@@ -50,7 +50,7 @@ function RerankerPreferences({
   const TitleWithToggle = () => (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <div className="text-base font-bold text-white">
+        <div className="text-base font-bold text-white custom-text-secondary">
           {t("reranker-rewriter.reranker.title")}
         </div>
         <label className="relative inline-flex cursor-pointer items-center">
@@ -65,14 +65,14 @@ function RerankerPreferences({
           <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
         </label>
       </div>
-      <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+      <p className="text-xs leading-[18px] font-base text-white text-opacity-60 custom-text-secondary">
         {t("reranker-rewriter.reranker.desc")}
       </p>
     </div>
   );
   const ReRankerSelector = () => (
     <div className="space-y-4">
-      <div className="text-base font-bold text-white">
+      <div className="text-base font-bold text-white custom-text-secondary">
         {t("reranker-rewriter.reranker.provider.title")}
       </div>
       <SelectorWithSearchModal
@@ -83,7 +83,7 @@ function RerankerPreferences({
         selectedOptionValue={selectedReranker}
         searchInputPlaceholder="Search all Re-Ranker providers"
       />
-      <div className="space-y-1">
+      <div className="space-y-1 custom-llm-provider-modal">
         {selectedReranker &&
           RE_RANKERS.find(
             (reranker) => reranker.value === selectedReranker

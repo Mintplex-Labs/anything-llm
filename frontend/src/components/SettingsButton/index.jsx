@@ -23,7 +23,7 @@ export default function SettingsButton() {
           <ArrowUUpLeft
             className="h-5 w-5"
             weight="fill"
-            color="var(--theme-sidebar-footer-icon-fill)"
+            color="var(--theme-sidebar-footer-icon-fill-secondary)"
           />
         </Link>
       </div>
@@ -42,7 +42,7 @@ export default function SettingsButton() {
         <Wrench
           className="h-5 w-5"
           weight="fill"
-          color="var(--theme-sidebar-footer-icon-fill)"
+          color="var(--theme-sidebar-footer-icon-fill-secondary)"
         />
       </Link>
     </div>

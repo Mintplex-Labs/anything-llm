@@ -46,7 +46,7 @@ function AttachmentItem({ attachment }) {
   if (status === "in_progress") {
     return (
       <div
-        className={`h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-zinc-800 light:bg-theme-bg-sidebar border border-white/20 w-[200px]`}
+        className={`h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-zinc-800 light:bg-theme-bg-sidebar border border-white/20 w-[200px] custom-theme-bg-tertiary custom-border-secondary`}
       >
         <div
           className={`${iconBgColor} rounded-lg flex items-center justify-center flex-shrink-0 p-1`}
@@ -57,8 +57,8 @@ function AttachmentItem({ attachment }) {
           />
         </div>
         <div className="flex flex-col w-[130px]">
-          <p className="text-white text-xs font-medium truncate">{file.name}</p>
-          <p className="text-white/60 text-xs font-medium">
+          <p className="text-white text-xs font-medium truncate custom-text-secondary">{file.name}</p>
+          <p className="text-white/60 text-xs font-medium custom-text-secondary">
             {humanFileSize(file.size)}
           </p>
         </div>
@@ -89,10 +89,10 @@ function AttachmentItem({ attachment }) {
             <WarningOctagon size={30} className="text-white light:text-white" />
           </div>
           <div className="flex flex-col w-[130px]">
-            <p className="text-white light:text-red-600 text-xs font-medium truncate">
+            <p className="text-white light:text-red-600 text-xs font-medium truncate custom-text-secondary">
               {file.name}
             </p>
-            <p className="text-red-100 light:text-red-600 text-xs truncate">
+            <p className="text-red-100 light:text-red-600 text-xs truncate custom-text-secondary">
               {error ?? "this file failed to upload"}. It will not be available
               in the workspace.
             </p>
@@ -114,13 +114,13 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-success`}
           data-tooltip-content={`${file.name} will be attached to this prompt. It will not be embedded into the workspace permanently.`}
-          className={`relative h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-zinc-800 light:bg-theme-bg-sidebar border border-white/20 w-[200px] group`}
+          className={`relative h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-zinc-800 light:bg-theme-bg-sidebar border border-white/20 w-[200px] group custom-theme-bg-tertiary custom-border-secondary`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
               onClick={removeFileFromQueue}
               type="button"
-              className="bg-zinc-700 light:bg-white hover:light:text-white hover:light:bg-red-400 hover:bg-red-400 rounded-full p-1 flex items-center justify-center hover:border-transparent border border-white/40"
+              className="bg-zinc-700 light:bg-white hover:light:text-white hover:light:bg-red-400 hover:bg-red-400 rounded-full p-1 flex items-center justify-center hover:border-transparent border border-white/40 custom-border-secondary custom-theme-bg-secondary"
             >
               <X size={10} className="flex-shrink-0" />
             </button>
@@ -138,10 +138,10 @@ function AttachmentItem({ attachment }) {
             </div>
           )}
           <div className="flex flex-col w-[130px]">
-            <p className="text-white text-xs font-medium truncate">
+            <p className="text-white text-xs font-medium truncate custom-text-secondary">
               {file.name}
             </p>
-            <p className="text-white/80 light:text-black/80 text-xs font-medium">
+            <p className="text-white/80 light:text-black/80 text-xs font-medium custom-text-secondary">
               Image attached!
             </p>
           </div>
@@ -161,15 +161,15 @@ function AttachmentItem({ attachment }) {
       <div
         data-tooltip-id={`attachment-uid-${uid}-success`}
         data-tooltip-content={`${file.name} was uploaded and embedded into this workspace. It will be available for RAG chat now.`}
-        className={`relative h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-zinc-800 light:bg-theme-bg-sidebar border border-white/20 w-[200px] group`}
+        className={`relative h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-zinc-800 light:bg-theme-bg-sidebar border border-white/20 w-[200px] group custom-theme-bg-tertiary custom-border-secondary`}
       >
         <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
           <button
             onClick={removeFileFromQueue}
             type="button"
-            className="bg-zinc-700 light:bg-white hover:light:text-white hover:light:bg-red-400 hover:bg-red-400 rounded-full p-1 flex items-center justify-center hover:border-transparent border border-white/40"
+            className="bg-zinc-700 light:bg-white hover:light:text-white hover:light:bg-red-400 hover:bg-red-400 rounded-full p-1 flex items-center justify-center hover:border-transparent border border-white/40 custom-border-secondary custom-theme-bg-secondary"
           >
-            <X size={10} className="flex-shrink-0" />
+            <X size={10} className="flex-shrink-0 custom-text-secondary" />
           </button>
         </div>
         <div
@@ -178,8 +178,8 @@ function AttachmentItem({ attachment }) {
           <Icon size={30} className="text-white light:text-white" />
         </div>
         <div className="flex flex-col w-[130px]">
-          <p className="text-white text-xs font-medium truncate">{file.name}</p>
-          <p className="text-white/80 light:text-black/80 text-xs font-medium">
+          <p className="text-white text-xs font-medium truncate custom-text-secondary">{file.name}</p>
+          <p className="text-white/80 light:text-black/80 text-xs font-medium custom-text-secondary">
             File embedded!
           </p>
         </div>

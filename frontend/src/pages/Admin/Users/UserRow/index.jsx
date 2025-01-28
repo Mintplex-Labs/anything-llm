@@ -21,7 +21,7 @@ export default function UserRow({ currUser, user }) {
   const handleSuspend = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to suspend ${user.username}?\nAfter you do this they will be logged out and unable to log back into this instance of AnythingLLM until unsuspended by an admin.`
+        `Are you sure you want to suspend ${user.username}?\nAfter you do this they will be logged out and unable to log back into this instance of ${process.env.APPLICATION_FALLBACK_NAME} until unsuspended by an admin.`
       )
     )
       return false;
@@ -42,7 +42,7 @@ export default function UserRow({ currUser, user }) {
   const handleDelete = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to delete ${user.username}?\nAfter you do this they will be logged out and unable to use this instance of AnythingLLM.\n\nThis action is irreversible.`
+        `Are you sure you want to delete ${user.username}?\nAfter you do this they will be logged out and unable to use this instance of ${process.env.APPLICATION_FALLBACK_NAME}.\n\nThis action is irreversible.`
       )
     )
       return false;
@@ -69,7 +69,7 @@ export default function UserRow({ currUser, user }) {
           {canModify && (
             <button
               onClick={openModal}
-              className="text-sm font-medium text-white/80 light:text-black/80 rounded-lg hover:text-white hover:light:text-gray-500 px-2 py-1 hover:bg-white hover:bg-opacity-10"
+              className="text-sm font-medium text-white/80 light:text-black/80 rounded-lg px-2 py-1 hover:bg-opacity-10"
             >
               Edit
             </button>

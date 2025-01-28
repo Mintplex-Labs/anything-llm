@@ -56,7 +56,7 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
     <form onSubmit={handleSubmit} className="flex items-center gap-x-1.5">
       <div className="relative" ref={dropdownRef}>
         <div
-          className="h-[34px] w-[34px] bg-theme-settings-input-bg rounded-full flex items-center justify-center cursor-pointer hover:outline-primary-button hover:outline"
+          className="h-[34px] w-[34px] bg-theme-settings-input-bg rounded-full flex items-center justify-center cursor-pointer hover:outline-primary-button hover:outline custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           {React.createElement(ICON_COMPONENTS[selectedIcon] || Plus, {
@@ -66,7 +66,7 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
           })}
         </div>
         {isDropdownOpen && (
-          <div className="absolute z-10 grid grid-cols-4 bg-theme-settings-input-bg mt-2 rounded-md w-[150px] h-[78px] overflow-y-auto border border-white/20 shadow-lg">
+          <div className="absolute z-10 grid grid-cols-4 bg-theme-settings-input-bg mt-2 rounded-md w-[150px] h-[78px] overflow-y-auto border border-white/20 shadow-lg custom-border-secondary custom-theme-bg-tertiary">
             {Object.keys(ICON_COMPONENTS).map((iconName) => (
               <button
                 key={iconName}
@@ -89,7 +89,7 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
         value={selectedUrl}
         onChange={handleUrlChange}
         placeholder="https://example.com"
-        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-md p-2.5 w-[300px] h-[32px] focus:outline-primary-button active:outline-primary-button outline-none"
+        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-md p-2.5 w-[300px] h-[32px] focus:outline-primary-button active:outline-primary-button outline-none custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
         required
       />
       {selectedIcon !== "Plus" && (
@@ -105,7 +105,7 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
             <button
               type="button"
               onClick={handleRemove}
-              className="hover:text-red-500 text-white/80 px-2 py-2 rounded-md text-sm font-bold"
+              className="hover:text-red-500 text-white/80 px-2 py-2 rounded-md text-sm font-bold custom-text-secondary"
             >
               <X size={20} />
             </button>

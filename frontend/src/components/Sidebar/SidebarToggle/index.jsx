@@ -90,7 +90,7 @@ export function ToggleSidebarButton({ showSidebar, setShowSidebar }) {
         }
       >
         <SidebarSimple
-          className="text-theme-text-secondary hover:text-theme-text-primary"
+          className={`text-theme-text-secondary ${!showSidebar && 'custom-text-secondary'}`}
           size={24}
         />
       </button>

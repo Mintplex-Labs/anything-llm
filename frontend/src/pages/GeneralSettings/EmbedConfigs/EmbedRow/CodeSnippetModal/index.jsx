@@ -8,19 +8,19 @@ import "@/utils/chat/themes/github.css";
 export default function CodeSnippetModal({ embed, closeModal }) {
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border custom-theme-bg-tertiary border-none">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap custom-text-secondary">
               Copy your embed code
             </h3>
           </div>
           <button
             onClick={closeModal}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-white custom-text-secondary" />
           </button>
         </div>
         <div className="px-7 py-6">
@@ -31,7 +31,7 @@ export default function CodeSnippetModal({ embed, closeModal }) {
             <button
               onClick={closeModal}
               type="button"
-              className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+              className="transition-all duration-300 text-white px-4 py-2 rounded-lg text-sm custom-text-secondary"
             >
               Close
             </button>
@@ -82,10 +82,10 @@ const ScriptTag = ({ embed }) => {
   return (
     <div>
       <div className="flex flex-col mb-2">
-        <label className="block text-sm font-medium text-white">
+        <label className="block text-sm font-medium text-white custom-text-secondary">
           HTML Script Tag Embed Code
         </label>
-        <p className="text-theme-text-secondary text-xs">
+        <p className="text-theme-text-secondary text-xs custom-text-secondary">
           Have your workspace chat embed function like a help desk chat bottom
           in the corner of your website.
         </p>

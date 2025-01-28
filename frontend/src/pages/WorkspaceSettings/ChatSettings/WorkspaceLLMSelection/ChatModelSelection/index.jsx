@@ -17,10 +17,10 @@ export default function ChatModelSelection({
     return (
       <div>
         <div className="flex flex-col">
-          <label htmlFor="name" className="block input-label">
+          <label htmlFor="name" className="block input-label custom-text-secondary">
             {t("chat.model.title")}
           </label>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="text-white text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
             {t("chat.model.description")}
           </p>
         </div>
@@ -28,7 +28,7 @@ export default function ChatModelSelection({
           name="chatModel"
           required={true}
           disabled={true}
-          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
         >
           <option disabled={true} selected={true}>
             -- waiting for models --
@@ -41,10 +41,10 @@ export default function ChatModelSelection({
   return (
     <div>
       <div className="flex flex-col">
-        <label htmlFor="name" className="block input-label">
+        <label htmlFor="name" className="block input-label custom-text-secondary">
           {t("chat.model.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
           {t("chat.model.description")}
         </p>
       </div>
@@ -55,7 +55,7 @@ export default function ChatModelSelection({
         onChange={() => {
           setHasChanges(true);
         }}
-        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
       >
         {defaultModels.length > 0 && (
           <optgroup label="General models">

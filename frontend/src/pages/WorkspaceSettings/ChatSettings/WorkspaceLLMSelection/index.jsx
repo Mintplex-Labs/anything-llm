@@ -73,10 +73,10 @@ export default function WorkspaceLLMSelection({
   return (
     <div className="border-b border-white/40 pb-8">
       <div className="flex flex-col">
-        <label htmlFor="name" className="block input-label">
+        <label htmlFor="name" className="block input-label custom-text-secondary">
           {t("chat.llm.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
           {t("chat.llm.description")}
         </p>
       </div>
@@ -96,24 +96,27 @@ export default function WorkspaceLLMSelection({
                 <MagnifyingGlass
                   size={20}
                   weight="bold"
-                  className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
+                  className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2 custom-text-secondary"
                 />
                 <input
                   type="text"
                   name="llm-search"
                   autoComplete="off"
                   placeholder={t("chat.llm.search")}
-                  className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:outline-primary-button active:outline-primary-button outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
+                  className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:outline-primary-button active:outline-primary-button outline-none text-theme-text-primary placeholder:font-medium custom-theme-bg-tertiary custom-text-secondary"
                   onChange={(e) => setSearchQuery(e.target.value)}
                   ref={searchInputRef}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") e.preventDefault();
                   }}
+                  style={{
+                    outline: 'none'
+                  }}
                 />
                 <X
                   size={20}
                   weight="bold"
-                  className="cursor-pointer text-theme-text-primary hover:text-x-button"
+                  className="cursor-pointer text-theme-text-primary hover:text-x-button custom-text-secondary"
                   onClick={handleXButton}
                 />
               </div>
@@ -146,23 +149,25 @@ export default function WorkspaceLLMSelection({
                 className="w-10 h-10 rounded-md"
               />
               <div className="flex flex-col text-left">
-                <div className="text-sm font-semibold text-white">
+                <div className="text-sm font-semibold text-white custom-text-secondary">
                   {selectedLLMObject.name}
                 </div>
-                <div className="mt-1 text-xs text-description">
+                <div className="mt-1 text-xs text-description custom-text-secondary">
                   {selectedLLMObject.description}
                 </div>
               </div>
             </div>
-            <CaretUpDown size={24} weight="bold" className="text-white" />
+            <CaretUpDown size={24} weight="bold" className="text-white custom-text-secondary" />
           </button>
         )}
       </div>
-      <ModelSelector
-        selectedLLM={selectedLLM}
-        workspace={workspace}
-        setHasChanges={setHasChanges}
-      />
+      <div className="mt-4">
+        <ModelSelector
+          selectedLLM={selectedLLM}
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+      </div>
     </div>
   );
 }

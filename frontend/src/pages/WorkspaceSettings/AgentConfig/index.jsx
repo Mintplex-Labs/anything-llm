@@ -91,12 +91,12 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
             {!hasChanges && (
               <div className="flex flex-col gap-y-4">
                 <a
-                  className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                  className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 custom-button-secondary"
                   href={paths.settings.agentSkills()}
                 >
                   Configure Agent Skills
                 </a>
-                <p className="text-white text-opacity-60 text-xs font-medium">
+                <p className="text-white text-opacity-60 text-xs font-medium custom-text-secondary">
                   Customize and enhance the default agent's capabilities by
                   enabling or disabling specific skills. These settings will be
                   applied across all workspaces.
@@ -110,7 +110,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
           <button
             type="submit"
             form="agent-settings-form"
-            className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 custom-button-secondary"
           >
             {saving ? "Updating agent..." : "Update workspace agent"}
           </button>
@@ -128,8 +128,8 @@ function LoadingSkeleton() {
           height={100}
           width="100%"
           count={2}
-          highlightColor="var(--theme-bg-primary)"
-          baseColor="var(--theme-bg-secondary)"
+          // highlightColor="var(--theme-bg-primary)"
+          // baseColor="var(--theme-bg-secondary)"
           enableAnimation={true}
           containerClassName="flex flex-col gap-y-1"
         />
@@ -138,8 +138,8 @@ function LoadingSkeleton() {
           height={100}
           width="100%"
           count={2}
-          highlightColor="var(--theme-bg-primary)"
-          baseColor="var(--theme-bg-secondary)"
+          // highlightColor="var(--theme-bg-primary)"
+          // baseColor="var(--theme-bg-secondary)"
           enableAnimation={true}
           containerClassName="flex flex-col gap-y-1 mt-4"
         />

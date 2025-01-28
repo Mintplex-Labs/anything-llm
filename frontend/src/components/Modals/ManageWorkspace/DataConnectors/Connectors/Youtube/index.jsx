@@ -49,17 +49,17 @@ export default function YoutubeOptions() {
             <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-white text-sm font-bold custom-text-secondary">
                     YouTube Video URL
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     URL of the YouTube video you wish to transcribe.
                   </p>
                 </div>
                 <input
                   type="url"
                   name="url"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="https://youtube.com/watch?v=abc123"
                   required={true}
                   autoComplete="off"
@@ -73,12 +73,12 @@ export default function YoutubeOptions() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed"
+              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed custom-button-secondary"
             >
               {loading ? "Collecting transcript..." : "Collect transcript"}
             </button>
             {loading && (
-              <p className="text-xs text-theme-text-secondary max-w-sm">
+              <p className="text-xs text-theme-text-secondary max-w-sm custom-text-secondary">
                 Once complete, the transcription will be available for embedding
                 into workspaces in the document picker.
               </p>

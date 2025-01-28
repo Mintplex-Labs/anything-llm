@@ -31,8 +31,8 @@ function RerankerRewriterItem({
           className="w-10 h-10 rounded-md"
         />
         <div className="flex flex-col">
-          <div className="text-sm font-semibold text-white">{name}</div>
-          <div className="mt-1 text-xs text-description">{description}</div>
+          <div className="text-sm font-semibold text-white custom-text-secondary">{name}</div>
+          <div className="mt-1 text-xs text-description custom-text-secondary">{description}</div>
         </div>
       </div>
     </div>
@@ -91,13 +91,13 @@ const SelectorWithSearchModal = ({
           <MagnifyingGlass
             size={20}
             weight="bold"
-            className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
+            className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2 custom-text-secondary"
           />
           <input
             type="text"
             autoComplete="off"
             placeholder={searchInputPlaceholder}
-            className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
+            className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary custom-theme-bg-tertiary custom-text-secondary placeholder:font-medium"
             onChange={(e) => setSearchQuery(e.target.value)}
             ref={searchInputRef}
             onKeyDown={(e) => {
@@ -107,7 +107,7 @@ const SelectorWithSearchModal = ({
           <X
             size={20}
             weight="bold"
-            className="cursor-pointer text-white hover:text-x-button"
+            className="cursor-pointer text-white hover:text-x-button custom-text-secondary"
             onClick={handleXButton}
           />
         </div>
@@ -140,15 +140,15 @@ const SelectorWithSearchModal = ({
           className="w-10 h-10 rounded-md"
         />
         <div className="flex flex-col text-left">
-          <div className="text-sm font-semibold text-white">
+          <div className="text-sm font-semibold text-white custom-text-secondary">
             {selectedOption?.name}
           </div>
-          <div className="mt-1 text-xs text-description">
+          <div className="mt-1 text-xs text-description custom-text-secondary">
             {selectedOption?.description}
           </div>
         </div>
       </div>
-      <CaretUpDown size={24} weight="bold" className="text-white" />
+      <CaretUpDown size={24} weight="bold" className="text-white custom-text-secondary" />
     </button>
   );
   return (

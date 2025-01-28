@@ -8,17 +8,17 @@ export default function DocumentSimilarityThreshold({
   return (
     <div>
       <div className="flex flex-col">
-        <label htmlFor="name" className="block input-label">
+        <label htmlFor="name" className="block input-label custom-text-secondary">
           {t("vector-workspace.doc.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
           {t("vector-workspace.doc.description")}
         </p>
       </div>
       <select
         name="similarityThreshold"
         defaultValue={workspace?.similarityThreshold ?? 0.25}
-        className="border-none bg-theme-settings-input-bg text-white text-sm mt-2 rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg text-white text-sm mt-2 rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
         onChange={() => setHasChanges(true)}
         required={true}
       >

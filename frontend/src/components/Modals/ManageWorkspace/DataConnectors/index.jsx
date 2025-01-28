@@ -59,12 +59,12 @@ export default function DataConnectors() {
           <MagnifyingGlass
             size={16}
             weight="bold"
-            className="absolute left-4 z-30 text-white"
+            className="absolute left-4 z-30 text-white custom-text-secondary"
           />
           <input
             type="text"
             placeholder="Search data connectors"
-            className="border-none z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-settings-input-placeholder text-white bg-theme-settings-input-bg"
+            className="border-none z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:outline-primary-button active:outline-primary-button outline-none text-white bg-theme-settings-input-bg custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
             autoComplete="off"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -84,13 +84,13 @@ export default function DataConnectors() {
               />
             ))
           ) : (
-            <div className="text-white text-center mt-4">
+            <div className="text-white text-center mt-4 custom-text-secondary">
               No data connectors found.
             </div>
           )}
         </div>
       </div>
-      <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 w-[0.5px] bg-white/20 -translate-x-1/2"></div>
+      <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 w-[0.5px] bg-white/20 -translate-x-1/2 custom-border-secondary"></div>
       <div className="w-full p-4 top-0 text-white min-w-[500px]">
         {DATA_CONNECTORS[selectedConnector].options}
       </div>

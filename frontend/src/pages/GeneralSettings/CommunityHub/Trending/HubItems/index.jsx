@@ -39,11 +39,11 @@ export default function HubItems() {
   return (
     <div className="w-full flex flex-col gap-y-1 pb-6 pt-6">
       <div className="flex flex-col gap-y-2 mb-4">
-        <p className="text-base font-semibold text-theme-text-primary">
-          Recently Added on AnythingLLM Community Hub
+        <p className="text-base font-semibold text-theme-text-primary custom-text-secondary">
+          Recently Added on {process.env.APPLICATION_FALLBACK_NAME} Community Hub
         </p>
-        <p className="text-xs text-theme-text-secondary">
-          Explore the latest additions to the AnythingLLM Community Hub
+        <p className="text-xs text-theme-text-secondary custom-text-secondary">
+          Explore the latest additions to the {process.env.APPLICATION_FALLBACK_NAME} Community Hub
         </p>
       </div>
       <HubCategory loading={loading} exploreItems={exploreItems} />
@@ -61,7 +61,7 @@ function HubCategory({ loading, exploreItems }) {
         return (
           <div key={type} className="rounded-lg w-full">
             <div className="flex justify-between items-center">
-              <h3 className="text-theme-text-primary capitalize font-medium mb-3">
+              <h3 className="text-theme-text-primary capitalize font-medium mb-3 custom-text-secondary">
                 {readableType(type)}
               </h3>
               {exploreItems[type].hasMore && (
@@ -69,7 +69,7 @@ function HubCategory({ loading, exploreItems }) {
                   href={paths.communityHub.viewMoreOfType(path)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-button hover:text-primary-button/80 text-sm"
+                  className="text-primary-button hover:text-primary-button/80 text-sm custom-text-secondary"
                 >
                   Explore More →
                 </a>
@@ -95,16 +95,16 @@ export function HubItemCardSkeleton() {
           <Skeleton.default
             height="40px"
             width="300px"
-            highlightColor="var(--theme-settings-input-active)"
-            baseColor="var(--theme-settings-input-bg)"
+            // highlightColor="var(--theme-settings-input-active)"
+            // baseColor="var(--theme-settings-input-bg)"
             count={1}
           />
         </div>
         <Skeleton.default
           height="200px"
           width="300px"
-          highlightColor="var(--theme-settings-input-active)"
-          baseColor="var(--theme-settings-input-bg)"
+          // highlightColor="var(--theme-settings-input-active)"
+          // baseColor="var(--theme-settings-input-bg)"
           count={4}
           className="rounded-lg"
           containerClassName="flex flex-wrap gap-2 mt-1"
@@ -115,16 +115,16 @@ export function HubItemCardSkeleton() {
           <Skeleton.default
             height="40px"
             width="300px"
-            highlightColor="var(--theme-settings-input-active)"
-            baseColor="var(--theme-settings-input-bg)"
+            // highlightColor="var(--theme-settings-input-active)"
+            // baseColor="var(--theme-settings-input-bg)"
             count={1}
           />
         </div>
         <Skeleton.default
           height="200px"
           width="300px"
-          highlightColor="var(--theme-settings-input-active)"
-          baseColor="var(--theme-settings-input-bg)"
+          // highlightColor="var(--theme-settings-input-active)"
+          // baseColor="var(--theme-settings-input-bg)"
           count={4}
           className="rounded-lg"
           containerClassName="flex flex-wrap gap-2 mt-1"

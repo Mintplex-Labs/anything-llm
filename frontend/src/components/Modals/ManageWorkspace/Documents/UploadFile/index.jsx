@@ -78,7 +78,7 @@ export default function UploadFile({
   return (
     <div>
       <div
-        className={`w-[560px] border-dashed border-[2px] border-theme-modal-border light:border-[#686C6F] rounded-2xl bg-theme-bg-primary transition-colors duration-300 p-3 ${
+        className={`w-[560px] border-dashed border-[2px] border-theme-modal-border light:border-[#686C6F] rounded-2xl bg-theme-bg-primary transition-colors duration-300 p-3 custom-theme-bg-tertiary custom-border-secondary ${
           ready
             ? " light:bg-[#E0F2FE] cursor-pointer hover:bg-theme-bg-secondary light:hover:bg-transparent"
             : "cursor-not-allowed"
@@ -88,22 +88,22 @@ export default function UploadFile({
         <input {...getInputProps()} />
         {ready === false ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <CloudArrowUp className="w-8 h-8 text-white/80 light:invert" />
-            <div className="text-white text-opacity-80 text-sm font-semibold py-1">
+            <CloudArrowUp className="w-8 h-8 text-white/80 light:invert custom-text-secondary" />
+            <div className="text-white text-opacity-80 text-sm font-semibold py-1 custom-text-secondary">
               Document Processor Unavailable
             </div>
-            <div className="text-white text-opacity-60 text-xs font-medium py-1 px-20 text-center">
+            <div className="text-white text-opacity-60 text-xs font-medium py-1 px-20 text-center custom-text-secondary">
               We can't upload your files right now because the document
               processor is offline. Please try again later.
             </div>
           </div>
         ) : files.length === 0 ? (
           <div className="flex flex-col items-center justify-center">
-            <CloudArrowUp className="w-8 h-8 text-white/80 light:invert" />
-            <div className="text-white text-opacity-80 text-sm font-semibold py-1">
+            <CloudArrowUp className="w-8 h-8 text-white/80 light:invert custom-text-secondary" />
+            <div className="text-white text-opacity-80 text-sm font-semibold py-1 custom-text-secondary">
               Click to upload or drag and drop
             </div>
-            <div className="text-white text-opacity-60 text-xs font-medium py-1">
+            <div className="text-white text-opacity-60 text-xs font-medium py-1 custom-text-secondary">
               supports text files, csv's, spreadsheets, audio files, and more!
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function UploadFile({
           </div>
         )}
       </div>
-      <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
+      <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2 custom-text-secondary">
         or submit a link
       </div>
       <form onSubmit={handleSendLink} className="flex gap-x-2">
@@ -135,21 +135,21 @@ export default function UploadFile({
           disabled={fetchingUrl}
           name="link"
           type="url"
-          className="border-none disabled:bg-theme-settings-input-bg disabled:text-theme-settings-input-placeholder bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-3/4 p-2.5"
+          className="border-none disabled:bg-theme-settings-input-bg disabled:text-theme-settings-input-placeholder bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-3/4 p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
           placeholder={"https://example.com"}
           autoComplete="off"
         />
         <button
           disabled={fetchingUrl}
           type="submit"
-          className="disabled:bg-white/20 disabled:text-slate-300 disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-slate-200 hover:text-slate-800 w-auto border border-white light:border-theme-modal-border text-sm text-white p-2.5 rounded-lg"
+          className="disabled:bg-white/20 disabled:text-slate-300 disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-slate-200 hover:text-slate-800 w-auto border border-white light:border-theme-modal-border text-sm text-white p-2.5 rounded-lg custom-button-secondary"
         >
           {fetchingUrl ? "Fetching..." : "Fetch website"}
         </button>
       </form>
-      <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
+      <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px] custom-text-secondary">
         These files will be uploaded to the document processor running on this
-        AnythingLLM instance. These files are not sent or shared with a third
+        {process.env.APPLICATION_FALLBACK_NAME} instance. These files are not sent or shared with a third
         party.
       </div>
     </div>

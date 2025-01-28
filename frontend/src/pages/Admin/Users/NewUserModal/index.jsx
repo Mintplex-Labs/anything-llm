@@ -29,19 +29,19 @@ export default function NewUserModal({ closeModal }) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border custom-theme-bg-tertiary border-none">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap custom-text-secondary">
               Add user to instance
             </h3>
           </div>
           <button
             onClick={closeModal}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-white custom-text-secondary" />
           </button>
         </div>
         <div className="p-6">
@@ -50,14 +50,14 @@ export default function NewUserModal({ closeModal }) {
               <div>
                 <label
                   htmlFor="username"
-                  className="block mb-2 text-sm font-medium text-white"
+                  className="block mb-2 text-sm font-medium text-white custom-text-secondary"
                 >
                   Username
                 </label>
                 <input
                   name="username"
                   type="text"
-                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="User's username"
                   minLength={2}
                   required={true}
@@ -70,7 +70,7 @@ export default function NewUserModal({ closeModal }) {
                   }
                   onChange={(e) => e.target.setCustomValidity("")}
                 />
-                <p className="mt-2 text-xs text-white/60">
+                <p className="mt-2 text-xs text-white/60 custom-text-secondary">
                   Username must only contain lowercase letters, numbers,
                   underscores, and hyphens with no spaces
                 </p>
@@ -78,27 +78,27 @@ export default function NewUserModal({ closeModal }) {
               <div>
                 <label
                   htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-white"
+                  className="block mb-2 text-sm font-medium text-white custom-text-secondary"
                 >
                   Password
                 </label>
                 <input
                   name="password"
                   type="text"
-                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="User's initial password"
                   required={true}
                   autoComplete="off"
                   minLength={8}
                 />
-                <p className="mt-2 text-xs text-white/60">
+                <p className="mt-2 text-xs text-white/60 custom-text-secondary">
                   Password must be at least 8 characters long
                 </p>
               </div>
               <div>
                 <label
                   htmlFor="role"
-                  className="block mb-2 text-sm font-medium text-white"
+                  className="block mb-2 text-sm font-medium text-white custom-text-secondary"
                 >
                   Role
                 </label>
@@ -107,7 +107,7 @@ export default function NewUserModal({ closeModal }) {
                   required={true}
                   defaultValue={"default"}
                   onChange={(e) => setRole(e.target.value)}
-                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                 >
                   <option value="default">Default</option>
                   <option value="manager">Manager</option>
@@ -124,7 +124,7 @@ export default function NewUserModal({ closeModal }) {
                 updateState={setMessageLimit}
               />
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
-              <p className="text-white text-xs md:text-sm">
+              <p className="text-white text-xs md:text-sm  custom-text-secondary">
                 After creating a user they will need to login with their initial
                 login to get access.
               </p>
@@ -133,13 +133,13 @@ export default function NewUserModal({ closeModal }) {
               <button
                 onClick={closeModal}
                 type="button"
-                className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 text-white px-4 py-2 rounded-lg text-sm custom-text-secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm border custom-button-secondary"
               >
                 Add user
               </button>

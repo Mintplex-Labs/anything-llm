@@ -13,7 +13,7 @@ const PromptReply = ({
   sources = [],
   closed = true,
 }) => {
-  const assistantBackgroundColor = "bg-theme-bg-chat";
+  const assistantBackgroundColor = "bg-theme-bg-chat custom-theme-bg-secondary";
 
   if (!reply && sources.length === 0 && !pending && !error) return null;
 

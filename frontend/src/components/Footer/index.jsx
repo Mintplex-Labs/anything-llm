@@ -62,7 +62,7 @@ export default function Footer() {
               <GithubLogo
                 weight="fill"
                 className="h-5 w-5"
-                color="var(--theme-sidebar-footer-icon-fill)"
+                color="var(--theme-sidebar-footer-icon-fill-secondary)"
               />
             </Link>
           </div>
@@ -74,12 +74,12 @@ export default function Footer() {
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Docs"
               data-tooltip-id="footer-item"
-              data-tooltip-content="Open AnythingLLM help docs"
+              data-tooltip-content={`Open ${process.env.APPLICATION_FALLBACK_NAME} help docs`}
             >
               <BookOpen
                 weight="fill"
                 className="h-5 w-5"
-                color="var(--theme-sidebar-footer-icon-fill)"
+                color="var(--theme-sidebar-footer-icon-fill-secondary)"
               />
             </Link>
           </div>
@@ -91,12 +91,12 @@ export default function Footer() {
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Join our Discord server"
               data-tooltip-id="footer-item"
-              data-tooltip-content="Join the AnythingLLM Discord"
+              data-tooltip-content={`Join the ${process.env.APPLICATION_FALLBACK_NAME} Discord`}
             >
               <DiscordLogo
                 weight="fill"
                 className="h-5 w-5"
-                color="var(--theme-sidebar-footer-icon-fill)"
+                color="var(--theme-sidebar-footer-icon-fill-secondary)"
               />
             </Link>
           </div>
@@ -128,7 +128,7 @@ export default function Footer() {
               {
                 weight: "fill",
                 className: "h-5 w-5",
-                color: "var(--theme-sidebar-footer-icon-fill)",
+                color: "var(--theme-sidebar-footer-icon-fill-secondary)",
               }
             )}
           </a>

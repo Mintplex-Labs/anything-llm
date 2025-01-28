@@ -65,7 +65,7 @@ export default function ExperimentalFeatures() {
         {/* Selected feature setting panel */}
         <FeatureVerification>
           <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-            <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
+            <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 custom-theme-bg-secondary">
               {selectedFeature ? (
                 <SelectedFeatureComponent
                   feature={configurableFeatures[selectedFeature]}
@@ -73,7 +73,7 @@ export default function ExperimentalFeatures() {
                   refresh={refresh}
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-white/60">
+                <div className="flex flex-col items-center justify-center h-full text-white/60 custom-text-secondary">
                   <Flask size={40} />
                   <p className="font-medium">Select an experimental feature</p>
                 </div>
@@ -90,7 +90,7 @@ function FeatureLayout({ children }) {
   return (
     <div
       id="workspace-feature-settings-container"
-      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
+      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex custom-theme-bg-container md:mt-0 mt-6"
     >
       <Sidebar />
       <div
@@ -120,7 +120,7 @@ function FeatureList({
       {Object.entries(features).map(([feature, settings], index) => (
         <div
           key={feature}
-          className={`py-3 px-4 flex items-center justify-between ${
+          className={`py-3 px-4 flex items-center justify-between custom-theme-bg-secondary ${
             index === 0 ? "rounded-t-xl" : ""
           } ${
             index === Object.keys(features).length - 1
@@ -133,15 +133,15 @@ function FeatureList({
           }`}
           onClick={() => handleClick?.(feature)}
         >
-          <div className="text-sm font-light">{settings.title}</div>
+          <div className="text-sm font-light custom-text-secondary">{settings.title}</div>
           <div className="flex items-center gap-x-2">
-            <div className="text-sm text-theme-text-secondary font-medium">
+            <div className="text-sm text-theme-text-secondary font-medium custom-text-secondary">
               {activeFeatures.includes(settings.key) ? "On" : "Off"}
             </div>
             <CaretRight
               size={14}
               weight="bold"
-              className="text-theme-text-secondary"
+              className="text-theme-text-secondary custom-text-secondary"
             />
           </div>
         </div>
@@ -185,20 +185,20 @@ function FeatureVerification({ children }) {
     return (
       <>
         <ModalWrapper isOpen={true}>
-          <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+          <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden custom-theme-bg-tertiary">
             <div className="relative p-6 border-b rounded-t border-theme-modal-border">
               <div className="flex items-center gap-2">
-                <Flask size={24} className="text-theme-text-primary" />
-                <h3 className="text-xl font-semibold text-white">
+                <Flask size={24} className="text-theme-text-primary custom-text-secondary" />
+                <h3 className="text-xl font-semibold text-white custom-text-secondary">
                   Terms of use for experimental features
                 </h3>
               </div>
             </div>
             <form onSubmit={acceptTos}>
               <div className="py-7 px-9 space-y-4 flex-col">
-                <div className="w-full text-white text-md flex flex-col gap-y-4">
+                <div className="w-full text-white text-md flex flex-col gap-y-4 custom-text-secondary">
                   <p>
-                    Experimental features of AnythingLLM are features that we
+                    Experimental features of {process.env.APPLICATION_FALLBACK_NAME} are features that we
                     are piloting and are <b>opt-in</b>. We proactively will
                     condition or warn you on any potential concerns should any
                     exist prior to approval of any feature.
@@ -218,7 +218,7 @@ function FeatureVerification({ children }) {
                         Increased cost or use of any connected LLM or embedding
                         provider.
                       </li>
-                      <li>Potential bugs or issues using AnythingLLM.</li>
+                      <li>Potential bugs or issues using {process.env.APPLICATION_FALLBACK_NAME}.</li>
                     </ul>
                   </div>
 
@@ -232,7 +232,7 @@ function FeatureVerification({ children }) {
                       <li>The feature being used is not currently stable.</li>
                       <li>
                         The feature may not be available in future versions,
-                        configurations, or subscriptions of AnythingLLM.
+                        configurations, or subscriptions of {process.env.APPLICATION_FALLBACK_NAME}.
                       </li>
                       <li>
                         Your privacy settings <b>will be honored</b> with use of
@@ -264,13 +264,13 @@ function FeatureVerification({ children }) {
               <div className="flex w-full justify-between items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
                 <a
                   href={paths.home()}
-                  className="px-4 py-2 rounded-lg text-theme-text-primary hover:bg-red-500/50 light:hover:bg-red-300/50 transition-all duration-300"
+                  className="px-4 py-2 rounded-lg text-theme-text-primary hover:bg-red-500/50 light:hover:bg-red-300/50 transition-all duration-300 custom-text-secondary"
                 >
                   Reject & close
                 </a>
                 <button
                   type="submit"
-                  className="transition-all duration-300 text-theme-text-primary hover:bg-blue-300/50 light:hover:bg-blue-300 px-4 py-2 rounded-lg text-sm"
+                  className="transition-all duration-300 text-theme-text-primary hover:bg-blue-300/50 light:hover:bg-blue-300 px-4 py-2 rounded-lg text-sm custom-text-secondary"
                 >
                   I understand
                 </button>

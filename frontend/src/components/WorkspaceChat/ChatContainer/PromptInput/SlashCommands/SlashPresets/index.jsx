@@ -88,10 +88,10 @@ export default function SlashPresets({ setShowing, sendCommand }) {
           className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start"
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-theme-text-primary text-sm font-bold">
+            <div className="text-theme-text-primary text-sm font-bold custom-text-secondary">
               {preset.command}
             </div>
-            <div className="text-theme-text-secondary text-sm">
+            <div className="text-theme-text-secondary text-sm custom-text-secondary">
               {preset.description}
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
               e.stopPropagation();
               handleEditPreset(preset);
             }}
-            className="border-none text-theme-text-primary text-sm p-1 hover:cursor-pointer hover:bg-theme-action-menu-item-hover rounded-full mt-1"
+            className="border-none text-theme-text-primary text-sm p-1 hover:cursor-pointer hover:bg-theme-action-menu-item-hover rounded-full mt-1 custom-text-secondary"
           >
             <DotsThree size={24} weight="bold" />
           </button>
@@ -108,11 +108,11 @@ export default function SlashPresets({ setShowing, sendCommand }) {
       ))}
       <button
         onClick={openAddModal}
-        className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-1 rounded-xl flex flex-col justify-start"
+        className="border-none w-full hover:cursor-pointer px-2 py-1 rounded-xl flex flex-col justify-start hover:bg-slate-500/20"
       >
         <div className="w-full flex-row flex pointer-events-none items-center gap-2">
-          <Plus size={24} weight="fill" className="text-theme-text-primary" />
-          <div className="text-theme-text-primary text-sm font-medium">
+          <Plus size={24} weight="fill" className="text-theme-text-primary custom-text-secondary" />
+          <div className="text-theme-text-primary text-sm font-medium custom-text-secondary">
             Add New Preset
           </div>
         </div>
