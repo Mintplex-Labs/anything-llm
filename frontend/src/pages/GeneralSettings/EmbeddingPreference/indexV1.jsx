@@ -224,7 +224,7 @@ export default function GeneralEmbeddingPreference() {
   );
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex custom-theme-bg-container">
       <Sidebar />
       {loading ? (
         <div
