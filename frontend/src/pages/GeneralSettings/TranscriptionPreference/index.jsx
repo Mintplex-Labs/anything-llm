@@ -23,7 +23,7 @@ const PROVIDERS = [
     description: "Leverage the OpenAI Whisper-large model using your API key.",
   },
   {
-    name: `${process.env.APPLICATION_FALLBACK_NAME} Built-In`,
+    name: `${process.env.APPLICATION_FALLBACK_NAME || "Prism"} Built-In`,
     value: "local",
     logo: AnythingLLMIcon,
     options: (settings) => <NativeTranscriptionOptions settings={settings} />,

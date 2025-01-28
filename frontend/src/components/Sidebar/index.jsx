@@ -53,7 +53,7 @@ export default function Sidebar() {
           <div className="flex justify-between w-[250px] min-w-[250px]">
             <Link to={paths.home()} aria-label="Home">
               {!_isCustomLogo ? (
-                <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || ''}</div>
+                <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || "Prism" || ''}</div>
               ) : (
                 <img
                   src={logo}
@@ -163,7 +163,7 @@ export function SidebarMobileHeader() {
         </button>
         <div className="flex items-center justify-center flex-grow">
           {!_isCustomLogo ? (
-            <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || ''}</div>
+            <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || "Prism" || ''}</div>
           ) : (
             <img
               src={logo}
@@ -198,7 +198,7 @@ export function SidebarMobileHeader() {
             <div className="flex w-full items-center justify-between gap-x-4">
               <div className="flex shrink-1 w-fit items-center justify-start">
                 {!_isCustomLogo ? (
-                  <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || ''}</div>
+                  <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || "Prism" || ''}</div>
                 ) : (
                   <img
                     src={logo}

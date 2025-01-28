@@ -71,7 +71,7 @@ export default function CustomAppName() {
           name="customAppName"
           type="text"
           className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[275px] custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
-          placeholder={process.env.APPLICATION_FALLBACK_NAME}
+          placeholder={process.env.APPLICATION_FALLBACK_NAME || "Prism"}
           required={true}
           autoComplete="off"
           onChange={handleChange}

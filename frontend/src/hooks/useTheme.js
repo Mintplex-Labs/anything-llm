@@ -11,16 +11,21 @@ const availableThemes = {
  * @returns {{theme: ('default' | 'light'), setTheme: function, availableThemes: object}} The current theme, a function to set the theme, and the available themes
  */
 export function useTheme() {
+  // const [theme, _setTheme] = useState(() => {
+  //   return localStorage.getItem("theme") || "default";
+  // });
   const [theme, _setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "default";
+    return availableThemes.default;
   });
 
   useEffect(() => {
     if (localStorage.getItem("theme") !== null) return;
     if (!window.matchMedia) return;
     if (window.matchMedia("(prefers-color-scheme: light)").matches)
-      return _setTheme("light");
-    _setTheme("default");
+      return _setTheme(availableThemes.default);
+    // return _setTheme("light");
+    // _setTheme("default");
+    _setTheme(availableThemes.default);
   }, []);
 
   useEffect(() => {
@@ -49,7 +54,8 @@ export function useTheme() {
    * @param {string} newTheme The new theme to set
    */
   function setTheme(newTheme) {
-    _setTheme(newTheme);
+    _setTheme(availableThemes.default);
+    // _setTheme(newTheme);
   }
 
   return { theme, setTheme, availableThemes };

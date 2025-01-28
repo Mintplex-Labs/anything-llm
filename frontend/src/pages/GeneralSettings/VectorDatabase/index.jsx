@@ -116,7 +116,7 @@ export default function GeneralVectorDatabase() {
       logo: LanceDbLogo,
       options: <LanceDBOptions />,
       description:
-        `100% local vector DB that runs on the same instance as ${process.env.APPLICATION_FALLBACK_NAME}.`,
+        `100% local vector DB that runs on the same instance as ${process.env.APPLICATION_FALLBACK_NAME || "Prism"}.`,
     },
     {
       name: "Chroma",

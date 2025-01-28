@@ -84,11 +84,11 @@ export default function NewBrowserExtensionApiKeyModal({
                 </p>
               )}
               <p className="text-white text-opacity-60 text-xs md:text-sm custom-text-secondary">
-                After clicking "Create API Key", {process.env.APPLICATION_FALLBACK_NAME} will attempt to
+                After clicking "Create API Key", {process.env.APPLICATION_FALLBACK_NAME || "Prism"} will attempt to
                 connect to your browser extension automatically.
               </p>
               <p className="text-white text-opacity-60 text-xs md:text-sm custom-text-secondary">
-                If you see "Connected to {process.env.APPLICATION_FALLBACK_NAME}" in the extension, the
+                If you see "Connected to {process.env.APPLICATION_FALLBACK_NAME || "Prism"}" in the extension, the
                 connection was successful. If not, please copy the connection
                 string and paste it into the extension manually.
               </p>

@@ -49,7 +49,7 @@ export default function Footer() {
     return (
       <div className="flex justify-center mb-2">
         <div className="flex space-x-4">
-          <div className="flex w-fit">
+          {/* <div className="flex w-fit">
             <Link
               to={paths.github()}
               target="_blank"
@@ -65,8 +65,8 @@ export default function Footer() {
                 color="var(--theme-sidebar-footer-icon-fill-secondary)"
               />
             </Link>
-          </div>
-          <div className="flex w-fit">
+          </div> */}
+          {/* <div className="flex w-fit">
             <Link
               to={paths.docs()}
               target="_blank"
@@ -74,7 +74,7 @@ export default function Footer() {
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Docs"
               data-tooltip-id="footer-item"
-              data-tooltip-content={`Open ${process.env.APPLICATION_FALLBACK_NAME} help docs`}
+              data-tooltip-content={`Open ${process.env.APPLICATION_FALLBACK_NAME || "Prism"} help docs`}
             >
               <BookOpen
                 weight="fill"
@@ -82,8 +82,8 @@ export default function Footer() {
                 color="var(--theme-sidebar-footer-icon-fill-secondary)"
               />
             </Link>
-          </div>
-          <div className="flex w-fit">
+          </div> */}
+          {/* <div className="flex w-fit">
             <Link
               to={paths.discord()}
               target="_blank"
@@ -91,7 +91,7 @@ export default function Footer() {
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Join our Discord server"
               data-tooltip-id="footer-item"
-              data-tooltip-content={`Join the ${process.env.APPLICATION_FALLBACK_NAME} Discord`}
+              data-tooltip-content={`Join the ${process.env.APPLICATION_FALLBACK_NAME || "Prism"} Discord`}
             >
               <DiscordLogo
                 weight="fill"
@@ -99,7 +99,7 @@ export default function Footer() {
                 color="var(--theme-sidebar-footer-icon-fill-secondary)"
               />
             </Link>
-          </div>
+          </div> */}
           {!isMobile && <SettingsButton />}
         </div>
         <Tooltip

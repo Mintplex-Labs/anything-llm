@@ -78,11 +78,11 @@ export default function SingleUserAuth() {
                   {t("login.multi-user.welcome")}
                 </h3>
                 <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] light:via-[#75D6FF] to-[#FFFFFF] light:to-[#75D6FF] bg-clip-text text-transparent">
-                  {customAppName || process.env.APPLICATION_FALLBACK_NAME || ""}
+                  {customAppName || process.env.APPLICATION_FALLBACK_NAME || "Prism" || ""}
                 </p>
               </div>
               <p className="text-sm text-theme-text-secondary text-center">
-                {t("login.sign-in.start")} {customAppName || process.env.APPLICATION_FALLBACK_NAME || ""}{" "}
+                {t("login.sign-in.start")} {customAppName || process.env.APPLICATION_FALLBACK_NAME || "Prism" || ""}{" "}
                 {t("login.sign-in.end")}
               </p>
             </div>

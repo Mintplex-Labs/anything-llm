@@ -149,7 +149,7 @@ function DemoVoiceSample({ voiceId }) {
         setLoading(true);
         const client = new PiperTTSClient({ voiceId });
         const blobUrl = await client.getAudioBlobForText(
-          `Hello, welcome to ${process.env.APPLICATION_FALLBACK_NAME}!`
+          `Hello, welcome to ${process.env.APPLICATION_FALLBACK_NAME || "Prism"}!`
         );
         setAudioSrc(blobUrl);
         setLoading(false);
