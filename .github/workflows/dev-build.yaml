@@ -1,4 +1,4 @@
-name: AnythingLLM Development Docker image (amd64/arm64)
+name: AnythingLLM Development Docker image (amd64)
 
 concurrency:
   group: build-${{ github.ref }}
@@ -20,7 +20,7 @@ on:
 jobs:
   push_multi_platform_to_registries:
     name: Push Docker multi-platform image to multiple registries
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
@@ -69,7 +69,7 @@ jobs:
           push: true
           sbom: true
           provenance: mode=max
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
