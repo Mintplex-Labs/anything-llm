@@ -10,7 +10,6 @@ export default function Login() {
   const { loading, requiresAuth, mode } = usePasswordModal(!!query.get("nt"));
   if (loading) return <FullScreenLoader />;
   if (requiresAuth === false) return <Navigate to={paths.home()} />;
-  else {
-    return (window.location.href = `${API_BASE}/auth`);
-  }
+  window.location.href = `${API_BASE}/auth`;
+  return null;
 }
