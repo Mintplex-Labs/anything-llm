@@ -78,9 +78,9 @@ export const LLM_SELECTION_PRIVACY = {
     logo: GeminiLogo,
   },
   "nvidia-nim": {
-    name: "Nvidia NIM",
+    name: "NVIDIA NIM",
     description: [
-      "Your model and chats are only accessible on the machine running the Nvidia NIM service",
+      "Your model and chats are only accessible on the machine running the NVIDIA NIM",
     ],
     logo: NvidiaNimLogo,
   },

@@ -5,7 +5,7 @@ import { NVIDIA_NIM_COMMON_URLS } from "@/utils/constants";
 import { useState, useEffect } from "react";
 
 /**
- * This component is used to select a remote Nvidia NIM model endpoint
+ * This component is used to select a remote NVIDIA NIM model endpoint
  * This is the default component and way to connect to NVIDIA NIM
  * as the "managed" provider can only work in the Desktop context.
  */
@@ -26,7 +26,7 @@ export default function RemoteNvidiaNimOptions({ settings }) {
       <div className="flex flex-col w-60">
         <div className="flex justify-between items-center mb-2">
           <label className="text-white text-sm font-semibold">
-            Nvidia Nim Base URL
+            NVIDIA Nim Base URL
           </label>
           {loading ? (
             <PreLoader size="6" />
@@ -56,7 +56,7 @@ export default function RemoteNvidiaNimOptions({ settings }) {
           onBlur={basePath.onBlur}
         />
         <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-          Enter the URL where Nvidia NIM is running.
+          Enter the URL where NVIDIA NIM is running.
         </p>
       </div>
       {!settings?.credentialsOnly && (
