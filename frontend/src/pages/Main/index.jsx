@@ -12,7 +12,7 @@ export default function Main() {
   const { loading, requiresAuth, mode } = usePasswordModal();
 
   if (loading) return <FullScreenLoader />;
-  if (requiresAuth) <Navigate to={paths.login()} />;
+  if (requiresAuth) return <Navigate to={paths.login()} />;
 
   return (
     <>
