@@ -347,14 +347,14 @@ export default function GeneralEmbeddingPreference() {
                         <MagnifyingGlass
                           size={20}
                           weight="bold"
-                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
+                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2 custom-text-secondary"
                         />
                         <input
                           type="text"
                           name="embedder-search"
                           autoComplete="off"
                           placeholder="Search all embedding providers"
-                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
+                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:font-medium custom-theme-bg-tertiary custom-text-secondary"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
                           onKeyDown={(e) => {
@@ -364,7 +364,7 @@ export default function GeneralEmbeddingPreference() {
                         <X
                           size={20}
                           weight="bold"
-                          className="cursor-pointer text-white hover:text-x-button"
+                          className="cursor-pointer text-white hover:text-x-button custom-text-secondary"
                           onClick={handleXButton}
                         />
                       </div>
@@ -407,7 +407,7 @@ export default function GeneralEmbeddingPreference() {
                     <CaretUpDown
                       size={24}
                       weight="bold"
-                      className="text-white"
+                      className="text-white custom-text-secondary"
                     />
                   </button>
                 )}
