@@ -67,17 +67,17 @@ export default function GithubOptions() {
             <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-white text-sm font-bold custom-text-secondary">
                     GitHub Repo URL
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     Url of the GitHub repo you wish to collect.
                   </p>
                 </div>
                 <input
                   type="url"
                   name="repo"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="https://github.com/Mintplex-Labs/anything-llm"
                   required={true}
                   autoComplete="off"
@@ -89,22 +89,22 @@ export default function GithubOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white font-bold text-sm flex gap-x-2 items-center">
-                    <p className="font-bold text-white">Github Access Token</p>{" "}
+                    <p className="font-bold text-white custom-text-secondary">Github Access Token</p>{" "}
                     <p className="text-xs font-light flex items-center">
-                      <span className="text-theme-text-secondary">
+                      <span className="text-theme-text-secondary custom-text-secondary">
                         optional
                       </span>
                       <PATTooltip accessToken={accessToken} />
                     </p>
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     Access Token to prevent rate limiting.
                   </p>
                 </div>
                 <input
                   type="text"
                   name="accessToken"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="github_pat_1234_abcdefg"
                   required={false}
                   autoComplete="off"
@@ -119,12 +119,12 @@ export default function GithubOptions() {
               />
             </div>
 
-            <div className="flex flex-col w-full py-4 pr-10">
+            <div className="flex flex-col w-full py-4 pr-10 custom-react-tag-input-component">
               <div className="flex flex-col gap-y-1 mb-4">
                 <label className="text-white text-sm flex gap-x-2 items-center">
-                  <p className="text-white text-sm font-bold">File Ignores</p>
+                  <p className="text-white text-sm font-bold custom-text-secondary">File Ignores</p>
                 </label>
-                <p className="text-xs font-normal text-theme-text-secondary">
+                <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                   List in .gitignore format to ignore specific files during
                   collection. Press enter after each entry you want to save.
                 </p>
@@ -148,7 +148,7 @@ export default function GithubOptions() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed"
+              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed custom-button-secondary"
             >
               {loading ? "Collecting files..." : "Submit"}
             </button>
@@ -192,15 +192,15 @@ function GitHubBranchSelection({ repo, accessToken }) {
     return (
       <div className="flex flex-col w-60">
         <div className="flex flex-col gap-y-1 mb-4">
-          <label className="text-white text-sm font-bold">Branch</label>
-          <p className="text-xs font-normal text-theme-text-secondary">
+          <label className="text-white text-sm font-bold custom-text-secondary ">Branch</label>
+          <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary ">
             Branch you wish to collect files from.
           </p>
         </div>
         <select
           name="branch"
           required={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
         >
           <option disabled={true} selected={true}>
             -- loading available branches --
@@ -213,15 +213,15 @@ function GitHubBranchSelection({ repo, accessToken }) {
   return (
     <div className="flex flex-col w-60">
       <div className="flex flex-col gap-y-1 mb-4">
-        <label className="text-white text-sm font-bold">Branch</label>
-        <p className="text-xs font-normal text-theme-text-secondary">
+        <label className="text-white text-sm font-bold custom-text-secondary ">Branch</label>
+        <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary ">
           Branch you wish to collect files from.
         </p>
       </div>
       <select
         name="branch"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
       >
         {allBranches.map((branch) => {
           return (

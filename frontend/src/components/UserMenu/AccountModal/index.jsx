@@ -64,19 +64,19 @@ export default function AccountModal({ user, hideModal }) {
 
   return (
     <ModalWrapper isOpen={true}>
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden border-none custom-theme-bg-tertiary">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap custom-text-secondary">
               Edit Account
             </h3>
           </div>
           <button
             onClick={hideModal}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-white custom-text-secondary" />
           </button>
         </div>
         <div
@@ -86,7 +86,7 @@ export default function AccountModal({ user, hideModal }) {
           <form onSubmit={handleUpdate} className="space-y-6">
             <div className="flex flex-col md:flex-row items-center justify-center gap-8">
               <div className="flex flex-col items-center">
-                <label className="group w-48 h-48 flex flex-col items-center justify-center bg-theme-bg-primary hover:bg-theme-bg-secondary transition-colors duration-300 rounded-full mt-8 border-2 border-dashed border-white light:border-[#686C6F] light:bg-[#E0F2FE] light:hover:bg-transparent cursor-pointer hover:opacity-60">
+                <label className="group w-48 h-48 flex flex-col items-center justify-center bg-theme-bg-primary hover:bg-theme-bg-secondary transition-colors duration-300 rounded-full mt-8 border-2 border-dashed border-white light:border-[#686C6F] light:bg-[#E0F2FE] light:hover:bg-transparent cursor-pointer hover:opacity-60 custom-button-secondary">
                   <input
                     id="logo-upload"
                     type="file"
@@ -102,11 +102,11 @@ export default function AccountModal({ user, hideModal }) {
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center p-3">
-                      <Plus className="w-8 h-8 text-theme-text-secondary m-2" />
-                      <span className="text-theme-text-secondary text-opacity-80 text-sm font-semibold">
+                      <Plus className="w-8 h-8 text-theme-text-secondary m-2 custom-text-secondary" />
+                      <span className="text-theme-text-secondary text-opacity-80 text-sm font-semibold custom-text-secondary">
                         Profile Picture
                       </span>
-                      <span className="text-theme-text-secondary text-opacity-60 text-xs">
+                      <span className="text-theme-text-secondary text-opacity-60 text-xs custom-text-secondary">
                         800 x 800
                       </span>
                     </div>
@@ -116,7 +116,7 @@ export default function AccountModal({ user, hideModal }) {
                   <button
                     type="button"
                     onClick={handleRemovePfp}
-                    className="mt-3 text-theme-text-secondary text-opacity-60 text-sm font-medium hover:underline"
+                    className="mt-3 text-theme-text-secondary text-opacity-60 text-sm font-medium hover:underline custom-text-secondary"
                   >
                     Remove Profile Picture
                   </button>
@@ -127,12 +127,12 @@ export default function AccountModal({ user, hideModal }) {
               <div>
                 <label
                   htmlFor="username"
-                  className="block mb-2 text-sm font-medium text-theme-text-primary"
+                  className="block mb-2 text-sm font-medium text-theme-text-primary custom-text-secondary"
                 >
                   Username {SSO_ENABLED && "(can't be edited)"}
                 </label>
                 {SSO_ENABLED ? (
-                  <div className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg outline-none block w-full p-2.5">
+                  <div className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg outline-none block w-full p-2.5 custom-text-secondary custom-border-secondary">
                     {user.username}
                   </div>
                 ) : (
@@ -140,14 +140,14 @@ export default function AccountModal({ user, hideModal }) {
                     <input
                       name="username"
                       type="text"
-                      className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                       placeholder="User's username"
                       minLength={2}
                       defaultValue={user.username}
                       required
                       autoComplete="off"
                     />
-                    <p className="mt-2 text-xs text-white/60">
+                    <p className="mt-2 text-xs text-white/60 custom-text-secondary">
                       Username must be only contain lowercase letters, numbers,
                       underscores, and hyphens with no spaces
                     </p>
@@ -158,24 +158,24 @@ export default function AccountModal({ user, hideModal }) {
                 <div>
                   <label
                     htmlFor="password"
-                    className="block mb-2 text-sm font-medium text-white"
+                    className="block mb-2 text-sm font-medium text-white custom-text-secondary"
                   >
                     New Password
                   </label>
                   <input
                     name="password"
                     type="text"
-                    className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                     placeholder={`${user.username}'s new password`}
                     minLength={8}
                   />
-                  <p className="mt-2 text-xs text-white/60">
+                  <p className="mt-2 text-xs text-white/60 custom-text-secondary">
                     Password must be at least 8 characters long
                   </p>
                 </div>
               )}
               <div className="flex flex-row gap-x-8 py-6">
-                <ThemePreference />
+                {/* <ThemePreference /> */}
                 {/* <LanguagePreference /> */}
               </div>
             </div>
@@ -184,13 +184,13 @@ export default function AccountModal({ user, hideModal }) {
                 <button
                   onClick={hideModal}
                   type="button"
-                  className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                  className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm custom-text-secondary"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm border custom-button-secondary"
                 >
                   Update Account
                 </button>
@@ -244,7 +244,7 @@ function ThemePreference() {
     <div>
       <label
         htmlFor="theme"
-        className="block mb-2 text-sm font-medium text-white"
+        className="block mb-2 text-sm font-medium text-white custom-text-secondary"
       >
         Theme Preference
       </label>
@@ -252,7 +252,7 @@ function ThemePreference() {
         name="theme"
         value={theme}
         onChange={(e) => setTheme(e.target.value)}
-        className="border-none bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2"
+        className="border-none bg-theme-settings-input-bg w-fit px-4 focus:outline-primary-button active:outline-primary-button outline-none text-white text-sm rounded-lg block py-2 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
       >
         {Object.entries(availableThemes).map(([key, value]) => (
           <option key={key} value={key}>

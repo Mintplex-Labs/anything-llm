@@ -81,15 +81,15 @@ export default function SpeechToTextProvider({ settings }) {
   return (
     <form onSubmit={handleSubmit} className="flex w-full">
       <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-        <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
+        <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10 custom-border-secondary" style={{ borderTop: 0, borderRight: 0, borderLeft: 0 }}>
           <div className="flex gap-x-4 items-center">
-            <p className="text-lg leading-6 font-bold text-white">
+            <p className="text-lg leading-6 font-bold text-white custom-text-secondary">
               Speech-to-text Preference
             </p>
           </div>
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 custom-text-secondary">
             Here you can specify what kind of text-to-speech and speech-to-text
-            providers you would want to use in your AnythingLLM experience. By
+            providers you would want to use in your {process.env.APPLICATION_FALLBACK_NAME} experience. By
             default, we use the browser&apos;s built in support for these
             services, but you may want to use others.
           </p>
@@ -98,13 +98,13 @@ export default function SpeechToTextProvider({ settings }) {
           {hasChanges && (
             <CTAButton
               onClick={() => handleSubmit()}
-              className="mt-3 mr-0 -mb-14 z-10"
+              className="mt-3 mr-0 -mb-14 z-10 custom-theme-bg-quad custom-theme-color-quad"
             >
               {saving ? "Saving..." : "Save changes"}
             </CTAButton>
           )}
         </div>
-        <div className="text-base font-bold text-white mt-6 mb-4">Provider</div>
+        <div className="text-base font-bold text-white mt-6 mb-4 custom-text-secondary">Provider</div>
         <div className="relative">
           {searchMenuOpen && (
             <div
@@ -119,14 +119,14 @@ export default function SpeechToTextProvider({ settings }) {
                   <MagnifyingGlass
                     size={20}
                     weight="bold"
-                    className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
+                    className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2 custom-text-secondary"
                   />
                   <input
                     type="text"
                     name="stt-provider-search"
                     autoComplete="off"
                     placeholder="Search speech to text providers"
-                    className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
+                    className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:font-medium custom-theme-bg-tertiary custom-text-secondary"
                     onChange={(e) => setSearchQuery(e.target.value)}
                     ref={searchInputRef}
                     onKeyDown={(e) => {
@@ -136,7 +136,7 @@ export default function SpeechToTextProvider({ settings }) {
                   <X
                     size={20}
                     weight="bold"
-                    className="cursor-pointer text-white hover:text-x-button"
+                    className="cursor-pointer text-white hover:text-x-button custom-text-secondary"
                     onClick={handleXButton}
                   />
                 </div>
@@ -168,21 +168,21 @@ export default function SpeechToTextProvider({ settings }) {
                   className="w-10 h-10 rounded-md"
                 />
                 <div className="flex flex-col text-left">
-                  <div className="text-sm font-semibold text-white">
+                  <div className="text-sm font-semibold text-white custom-text-secondary">
                     {selectedProviderObject.name}
                   </div>
-                  <div className="mt-1 text-xs text-description">
+                  <div className="mt-1 text-xs text-description custom-text-secondary">
                     {selectedProviderObject.description}
                   </div>
                 </div>
               </div>
-              <CaretUpDown size={24} weight="bold" className="text-white" />
+              <CaretUpDown size={24} weight="bold" className="text-white custom-text-secondary" />
             </button>
           )}
         </div>
         <div
           onChange={() => setHasChanges(true)}
-          className="mt-4 flex flex-col gap-y-1"
+          className="mt-4 flex flex-col gap-y-1 custom-llm-provider-modal"
         >
           {selectedProvider &&
             PROVIDERS.find(

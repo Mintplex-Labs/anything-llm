@@ -73,7 +73,7 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
     <div hidden={!showing}>
       <div
         ref={formRef}
-        className="absolute bottom-16 -ml-8 w-[140px] p-2 bg-theme-action-menu-bg rounded-lg shadow-md flex flex-col justify-center items-start gap-2 z-50"
+        className="absolute bottom-16 -ml-8 w-[140px] p-2 bg-theme-action-menu-bg rounded-lg shadow-md flex flex-col justify-center items-start gap-2 z-50 custom-theme-bg-tertiary"
       >
         <button
           onClick={(e) => {
@@ -83,12 +83,12 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }}
           className={`border-none w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
             selectedSize === "small"
-              ? "bg-theme-action-menu-item-hover"
-              : "hover:bg-theme-action-menu-item-hover"
+              ? "bg-slate-500/20"
+              : "hover:bg-slate-500/20"
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-theme-text-primary text-xs">Small</div>
+            <div className="text-theme-text-primary text-xs custom-text-secondary">Small</div>
           </div>
         </button>
 
@@ -100,12 +100,12 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }}
           className={`border-none w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
             selectedSize === "normal"
-              ? "bg-theme-action-menu-item-hover"
-              : "hover:bg-theme-action-menu-item-hover"
+              ? "bg-slate-500/20"
+              : "hover:bg-slate-500/20"
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-theme-text-primary text-sm">Normal</div>
+            <div className="text-theme-text-primary text-sm custom-text-secondary">Normal</div>
           </div>
         </button>
 
@@ -117,12 +117,12 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }}
           className={`border-none w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
             selectedSize === "large"
-              ? "bg-theme-action-menu-item-hover"
-              : "hover:bg-theme-action-menu-item-hover"
+              ? "bg-slate-500/20"
+              : "hover:bg-slate-500/20"
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-theme-text-primary text-[16px]">Large</div>
+            <div className="text-theme-text-primary text-[16px] custom-text-secondary">Large</div>
           </div>
         </button>
       </div>

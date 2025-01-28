@@ -39,12 +39,12 @@ import { ALLOWED_SYSTEM_CONFIG_KEYS } from "@/utils/constants";
 
 const EMBEDDERS = [
   {
-    name: "AnythingLLM Embedder",
+    name: `${process.env.APPLICATION_FALLBACK_NAME} Embedder`,
     value: "native",
     logo: AnythingLLMIcon,
     options: (settings) => <NativeEmbeddingOptions settings={settings} />,
     description:
-      "Use the built-in embedding provider for AnythingLLM. Zero setup!",
+      `Use the built-in embedding provider for ${process.env.APPLICATION_FALLBACK_NAME}. Zero setup!`,
   },
   {
     name: "OpenAI",
@@ -224,7 +224,7 @@ export default function GeneralEmbeddingPreference() {
   );
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex custom-theme-bg-container">
       <Sidebar />
       {loading ? (
         <div

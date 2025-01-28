@@ -19,6 +19,7 @@ services:
       NODE_ENV: development
       VITE_ENABLE_SSO: true
       VITE_API_BASE: http://localhost:3001/api
+      APPLICATION_FALLBACK_NAME: "Prism"
     command: make start_frontend
     ports:
       - "3000:3000"
@@ -97,7 +98,7 @@ services:
     volumes:
       - ./server/storage:/app/server/storage
       - ./collector:/app/collector
-      - ./collector/node_modules:/app/collector/node_modules
+      - anything_llm_collector_node_modules:/app/collector/node_modules
       - ./Makefile:/app/Makefile
 
 volumes:

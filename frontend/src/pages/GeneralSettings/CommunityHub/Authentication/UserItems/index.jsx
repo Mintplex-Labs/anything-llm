@@ -18,20 +18,20 @@ export default function UserItems({ connectionKey }) {
       {/* Created By Me Section */}
       <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
         <div className="flex items-center justify-between">
-          <p className="text-lg leading-6 font-bold text-white">
+          <p className="text-lg leading-6 font-bold text-white custom-text-secondary">
             Created by me
           </p>
           <a
             href={paths.communityHub.noPrivateItems()}
             target="_blank"
             rel="noreferrer"
-            className="text-primary-button hover:text-primary-button/80 text-sm"
+            className="text-primary-button hover:text-primary-button/80 text-sm custom-text-secondary"
           >
             Why can't I see my private items?
           </a>
         </div>
-        <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-          Items you have created and shared publicly on the AnythingLLM
+        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 custom-text-secondary">
+          Items you have created and shared publicly on the {process.env.APPLICATION_FALLBACK_NAME}
           Community Hub.
         </p>
         <div className="flex flex-col gap-4 mt-4">
@@ -39,7 +39,7 @@ export default function UserItems({ connectionKey }) {
             if (!createdByMe[type]?.items?.length) return null;
             return (
               <div key={type} className="rounded-lg w-full">
-                <h3 className="text-white capitalize font-medium mb-3">
+                <h3 className="text-white capitalize font-medium mb-3 custom-text-secondary">
                   {readableType(type)}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
@@ -51,7 +51,7 @@ export default function UserItems({ connectionKey }) {
             );
           })}
           {!hasItems(createdByMe) && (
-            <p className="text-white/60 text-xs text-center mt-4">
+            <p className="text-white/60 text-xs text-center mt-4 custom-text-secondary">
               You haven&apos;t created any items yet.
             </p>
           )}
@@ -61,11 +61,11 @@ export default function UserItems({ connectionKey }) {
       {/* Team Items Section */}
       <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
         <div className="items-center">
-          <p className="text-lg leading-6 font-bold text-white">
+          <p className="text-lg leading-6 font-bold text-white custom-text-secondary">
             Items by team
           </p>
         </div>
-        <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 custom-text-secondary">
           Public and private items shared with teams you belong to.
         </p>
         <div className="flex flex-col gap-4 mt-4">
@@ -78,7 +78,7 @@ export default function UserItems({ connectionKey }) {
                 if (!team.items[type]?.items?.length) return null;
                 return (
                   <div key={type} className="rounded-lg w-full">
-                    <h3 className="text-white capitalize font-medium mb-3">
+                    <h3 className="text-white capitalize font-medium mb-3 custom-text-secondary">
                       {readableType(type)}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
@@ -90,7 +90,7 @@ export default function UserItems({ connectionKey }) {
                 );
               })}
               {!hasItems(team.items) && (
-                <p className="text-white/60 text-xs text-center mt-4">
+                <p className="text-white/60 text-xs text-center mt-4 custom-text-secondary">
                   No items shared with this team yet.
                 </p>
               )}

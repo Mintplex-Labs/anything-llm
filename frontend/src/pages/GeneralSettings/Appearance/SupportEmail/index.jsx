@@ -54,10 +54,10 @@ export default function SupportEmail() {
   return (
     <form className="mb-6" onSubmit={updateSupportEmail}>
       <div className="flex flex-col gap-y-1">
-        <h2 className="text-base leading-6 font-bold text-white">
+        <h2 className="text-base leading-6 font-bold text-white custom-text-secondary">
           Support Email
         </h2>
-        <p className="text-xs leading-[18px] font-base text-white/60">
+        <p className="text-xs leading-[18px] font-base text-white/60 custom-text-secondary">
           Set the support email address that shows up in the user menu while
           logged into this instance.
         </p>
@@ -66,7 +66,7 @@ export default function SupportEmail() {
         <input
           name="supportEmail"
           type="email"
-          className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[275px] placeholder:text-theme-settings-input-placeholder"
+          className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[275px] custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
           placeholder="support@mycompany.com"
           required={true}
           autoComplete="off"
@@ -77,7 +77,7 @@ export default function SupportEmail() {
           <button
             type="button"
             onClick={(e) => updateSupportEmail(e, "")}
-            className="mt-4 text-white text-base font-medium hover:text-opacity-60"
+            className="mt-4 text-white text-base font-medium hover:text-opacity-60 custom-text-secondary"
           >
             Clear
           </button>
@@ -86,7 +86,7 @@ export default function SupportEmail() {
       {hasChanges && (
         <button
           type="submit"
-          className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+          className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 focus:ring-gray-800 custom-button-secondary"
         >
           Save
         </button>

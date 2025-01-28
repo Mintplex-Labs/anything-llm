@@ -66,10 +66,13 @@ export default function LogRow({ log }) {
 const EventMetadata = ({ metadata, expanded = false }) => {
   if (!metadata || !expanded) return null;
   return (
-    <tr className="bg-theme-bg-primary">
+    <tr className="custom-theme-bg-container">
       <td
         colSpan="2"
-        className="px-6 py-4 font-medium text-theme-text-primary rounded-l-2xl"
+        className="px-6 py-4 font-medium text-white rounded-l-2xl"
+        style={{
+          color: '#fff'
+        }}
       >
         Event Metadata
       </td>

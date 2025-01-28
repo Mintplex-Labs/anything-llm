@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import { useSidebarToggle, ToggleSidebarButton } from "./SidebarToggle";
+import System from "@/models/system";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -24,6 +25,20 @@ export default function Sidebar() {
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
   const { t } = useTranslation();
+  const [_isCustomLogo, _setIsCustomLogo] = useState(false);
+
+  const checkIfCustomLogo = async () => {
+    try {
+      const { isCustomLogo } = await System.fetchLogo();
+      _setIsCustomLogo(isCustomLogo);
+    } catch (e) {
+      _setIsCustomLogo(false);
+    }
+  };
+
+  useEffect(() => {
+    checkIfCustomLogo();
+  }, []);
 
   return (
     <>
@@ -37,11 +52,15 @@ export default function Sidebar() {
         <div className="flex shrink-0 w-full justify-center my-[18px]">
           <div className="flex justify-between w-[250px] min-w-[250px]">
             <Link to={paths.home()} aria-label="Home">
-              <img
-                src={logo}
-                alt="Logo"
-                className={`rounded max-h-[24px] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
-              />
+              {!_isCustomLogo ? (
+                <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || ''}</div>
+              ) : (
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className={`rounded max-h-[24px] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
+                />
+              )}
             </Link>
             {canToggleSidebar && (
               <ToggleSidebarButton
@@ -53,7 +72,7 @@ export default function Sidebar() {
         </div>
         <div
           ref={sidebarRef}
-          className="relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+          className="relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)] custom-theme-bg-sidebar-background custom-theme-bg-sidebar-border"
         >
           <div className="flex flex-col h-full overflow-x-hidden">
             <div className="flex-grow flex flex-col min-w-[235px]">
@@ -63,10 +82,10 @@ export default function Sidebar() {
                     {(!user || user?.role !== "default") && (
                       <button
                         onClick={showNewWsModal}
-                        className="light:bg-[#C2E7FE] light:hover:bg-[#7CD4FD] flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                        className="light:bg-[#C2E7FE] light:hover:bg-[#7CD4FD] flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300 custom-button-primary custom-text-primary"
                       >
                         <Plus size={18} weight="bold" />
-                        <p className="text-sidebar text-sm font-semibold">
+                        <p className="text-sidebar text-sm font-semibold custom-text-primary">
                           {t("new-workspace.title")}
                         </p>
                       </button>
@@ -75,7 +94,7 @@ export default function Sidebar() {
                   <ActiveWorkspaces />
                 </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-1">
+              <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-1 custom-theme-bg-container">
                 <Footer />
               </div>
             </div>
@@ -99,6 +118,7 @@ export function SidebarMobileHeader() {
   } = useNewWorkspaceModal();
   const { user } = useUser();
   const { t } = useTranslation();
+  const [_isCustomLogo, _setIsCustomLogo] = useState(false);
 
   useEffect(() => {
     // Darkens the rest of the screen
@@ -115,11 +135,25 @@ export function SidebarMobileHeader() {
     handleBg();
   }, [showSidebar]);
 
+
+  const checkIfCustomLogo = async () => {
+    try {
+      const { isCustomLogo } = await System.fetchLogo();
+      _setIsCustomLogo(isCustomLogo);
+    } catch (e) {
+      _setIsCustomLogo(false);
+    }
+  };
+
+  useEffect(() => {
+    checkIfCustomLogo();
+  }, []);
+
   return (
     <>
       <div
         aria-label="Show sidebar"
-        className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-white text-slate-200 shadow-lg h-16"
+        className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-white text-slate-200 shadow-lg h-16 custom-theme-bg-container"
       >
         <button
           onClick={() => setShowSidebar(true)}
@@ -128,12 +162,16 @@ export function SidebarMobileHeader() {
           <List className="h-6 w-6" />
         </button>
         <div className="flex items-center justify-center flex-grow">
-          <img
-            src={logo}
-            alt="Logo"
-            className="block mx-auto h-6 w-auto"
-            style={{ maxHeight: "40px", objectFit: "contain" }}
-          />
+          {!_isCustomLogo ? (
+            <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || ''}</div>
+          ) : (
+            <img
+              src={logo}
+              alt="Logo"
+              className="block mx-auto h-6 w-auto"
+              style={{ maxHeight: "40px", objectFit: "contain" }}
+            />
+          )}
         </div>
         <div className="w-12"></div>
       </div>
@@ -153,18 +191,22 @@ export function SidebarMobileHeader() {
         />
         <div
           ref={sidebarRef}
-          className="relative h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-theme-bg-sidebar w-[80%] p-[18px] "
+          className="relative h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-theme-bg-sidebar w-[80%] p-[18px] custom-theme-bg-sidebar-background"
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
             <div className="flex w-full items-center justify-between gap-x-4">
               <div className="flex shrink-1 w-fit items-center justify-start">
-                <img
-                  src={logo}
-                  alt="Logo"
-                  className="rounded w-full max-h-[40px]"
-                  style={{ objectFit: "contain" }}
-                />
+                {!_isCustomLogo ? (
+                  <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || ''}</div>
+                ) : (
+                  <img
+                    src={logo}
+                    alt="Logo"
+                    className="rounded w-full max-h-[40px]"
+                    style={{ objectFit: "contain" }}
+                  />
+                )}
               </div>
               {(!user || user?.role !== "default") && (
                 <div className="flex gap-x-2 items-center text-slate-500 shink-0">
@@ -193,7 +235,10 @@ export function SidebarMobileHeader() {
                   <ActiveWorkspaces />
                 </div>
               </div>
-              <div className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
+              <div
+                className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md"
+                style={{ backgroundColor: "transparent" }}
+              >
                 <Footer />
               </div>
             </div>

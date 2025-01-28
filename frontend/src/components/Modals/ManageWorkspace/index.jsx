@@ -38,19 +38,19 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   if (isMobile) {
     return (
       <ModalWrapper isOpen={true}>
-        <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+        <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden custom-theme-bg-tertiary border-none">
           <div className="relative p-6 border-b rounded-t border-theme-modal-border">
             <div className="w-full flex gap-x-2 items-center">
-              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap custom-text-secondary">
                 Editing "{workspace.name}"
               </h3>
             </div>
             <button
               onClick={hideModal}
               type="button"
-              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:border-opacity-50 border-transparent border"
             >
-              <X size={24} weight="bold" className="text-white" />
+              <X size={24} weight="bold" className="text-white custom-text-secondary" />
             </button>
           </div>
           <div
@@ -58,7 +58,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             style={{ maxHeight: "calc(100vh - 200px)" }}
           >
             <div className="py-7 px-9 space-y-2 flex-col">
-              <p className="text-white">
+              <p className="text-white custom-text-secondary">
                 Editing these settings are only available on a desktop device.
                 Please access this page on your desktop to continue.
               </p>
@@ -68,7 +68,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             <button
               onClick={hideModal}
               type="button"
-              className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+              className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm border custom-button-secondary"
             >
               Dismiss
             </button>
@@ -82,14 +82,14 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
     <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
       <div className="backdrop h-full w-full absolute top-0 z-10" />
       <div className="absolute max-h-full w-fit transition duration-300 z-20 md:overflow-y-auto py-10">
-        <div className="relative bg-theme-bg-secondary rounded-[12px] shadow border-2 border-theme-modal-border">
+        <div className="relative bg-theme-bg-secondary rounded-[12px] shadow border-2 border-theme-modal-border custom-theme-bg-tertiary border-none">
           <div className="flex items-start justify-between p-2 rounded-t border-theme-modal-border relative">
             <button
               onClick={hideModal}
               type="button"
-              className="z-29 text-white bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+              className="z-29 text-white bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:border-opacity-50 border-transparent border"
             >
-              <X size={20} weight="bold" className="text-white" />
+              <X size={20} weight="bold" className="text-white custom-text-secondary" />
             </button>
           </div>
 
@@ -116,23 +116,23 @@ export default memo(ManageWorkspace);
 const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
   return (
     <div className="w-full flex justify-center z-10 relative">
-      <div className="gap-x-2 flex justify-center -mt-[68px] mb-10 bg-theme-bg-secondary p-1 rounded-xl shadow border-2 border-theme-modal-border w-fit">
+      <div className="gap-x-2 flex justify-center -mt-[68px] mb-10 bg-theme-bg-secondary p-1 rounded-xl shadow border-2 border-theme-modal-border w-fit custom-border-secondary custom-theme-bg-tertiary">
         <button
           onClick={() => setSelectedTab("documents")}
-          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-theme-modal-border hover:bg-opacity-60 ${
+          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-opacity-60 ${
             selectedTab === "documents"
-              ? "bg-theme-modal-border font-bold text-white light:bg-[#E0F2FE] light:text-[#026AA2]"
-              : "text-white/20 font-medium hover:text-white light:bg-white light:text-[#535862] light:hover:bg-[#E0F2FE]"
+              ? "bg-theme-modal-border font-bold text-white light:bg-[#E0F2FE] light:text-[#026AA2] custom-theme-bg-quad custom-theme-color-quad"
+              : "text-white/20 font-medium hover:text-white light:bg-white light:text-[#535862] light:hover:bg-[#E0F2FE] custom-text-secondary"
           }`}
         >
           Documents
         </button>
         <button
           onClick={() => setSelectedTab("dataConnectors")}
-          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-theme-modal-border hover:bg-opacity-60 ${
+          className={`border-none px-4 py-2 rounded-[8px] font-semibold hover:bg-opacity-60 ${
             selectedTab === "dataConnectors"
-              ? "bg-theme-modal-border font-bold text-white light:bg-[#E0F2FE] light:text-[#026AA2]"
-              : "text-white/20 font-medium hover:text-white light:bg-white light:text-[#535862] light:hover:bg-[#E0F2FE]"
+              ? "bg-theme-modal-border font-bold text-white light:bg-[#E0F2FE] light:text-[#026AA2] custom-theme-bg-quad custom-theme-color-quad"
+              : "text-white/20 font-medium hover:text-white light:bg-white light:text-[#535862] light:hover:bg-[#E0F2FE] custom-text-secondary"
           }`}
         >
           Data Connectors

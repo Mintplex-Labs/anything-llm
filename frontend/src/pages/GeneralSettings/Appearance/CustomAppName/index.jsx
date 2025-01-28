@@ -59,10 +59,10 @@ export default function CustomAppName() {
   return (
     <form className="mb-6" onSubmit={updateCustomAppName}>
       <div className="flex flex-col gap-y-1">
-        <h2 className="text-base leading-6 font-bold text-white">
+        <h2 className="text-base leading-6 font-bold text-white custom-text-secondary">
           Custom App Name
         </h2>
-        <p className="text-xs leading-[18px] font-base text-white/60">
+        <p className="text-xs leading-[18px] font-base text-white/60 custom-text-secondary">
           Set a custom app name that is displayed on the login page.
         </p>
       </div>
@@ -70,8 +70,8 @@ export default function CustomAppName() {
         <input
           name="customAppName"
           type="text"
-          className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[275px] placeholder:text-theme-settings-input-placeholder"
-          placeholder="AnythingLLM"
+          className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[275px] custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
+          placeholder={process.env.APPLICATION_FALLBACK_NAME}
           required={true}
           autoComplete="off"
           onChange={handleChange}
@@ -81,7 +81,7 @@ export default function CustomAppName() {
           <button
             type="button"
             onClick={(e) => updateCustomAppName(e, "")}
-            className="mt-4 text-white text-base font-medium hover:text-opacity-60"
+            className="mt-4 text-white text-base font-medium hover:text-opacity-60 custom-text-secondary"
           >
             Clear
           </button>
@@ -90,7 +90,7 @@ export default function CustomAppName() {
       {hasChanges && (
         <button
           type="submit"
-          className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+          className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 focus:ring-gray-800 custom-button-secondary"
         >
           Save
         </button>

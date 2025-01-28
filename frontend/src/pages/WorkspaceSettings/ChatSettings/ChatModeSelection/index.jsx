@@ -6,7 +6,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
   return (
     <div>
       <div className="flex flex-col">
-        <label htmlFor="chatMode" className="block input-label">
+        <label htmlFor="chatMode" className="block input-label custom-text-secondary">
           {t("chat.mode.title")}
         </label>
       </div>
@@ -21,7 +21,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
               setChatMode("chat");
               setHasChanges(true);
             }}
-            className="transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md"
+            className={`transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md ${chatMode === "chat" ? '' : 'custom-text-secondary'}`}
           >
             {t("chat.mode.chat.title")}
           </button>
@@ -32,12 +32,12 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
               setChatMode("query");
               setHasChanges(true);
             }}
-            className="transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md"
+            className={`transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md ${chatMode === "query" ? '' : 'custom-text-secondary'}`}
           >
             {t("chat.mode.query.title")}
           </button>
         </div>
-        <p className="text-sm text-white/60">
+        <p className="text-sm text-white/60 custom-text-secondary">
           {chatMode === "chat" ? (
             <>
               <b>{t("chat.mode.chat.title")}</b>{" "}

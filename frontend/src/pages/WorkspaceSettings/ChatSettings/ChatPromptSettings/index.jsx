@@ -5,10 +5,10 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   return (
     <div>
       <div className="flex flex-col">
-        <label htmlFor="name" className="block input-label">
+        <label htmlFor="name" className="block input-label custom-text-secondary">
           {t("chat.prompt.title")}
         </label>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
           {t("chat.prompt.description")}
         </p>
       </div>
@@ -16,7 +16,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
         name="openAiPrompt"
         rows={5}
         defaultValue={chatPrompt(workspace)}
-        className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
+        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
         placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
         required={true}
         wrap="soft"

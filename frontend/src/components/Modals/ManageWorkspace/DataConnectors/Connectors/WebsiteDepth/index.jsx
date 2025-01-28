@@ -54,17 +54,17 @@ export default function WebsiteDepthOptions() {
             <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-white text-sm font-bold custom-text-secondary">
                     Website URL
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     URL of the website you want to scrape.
                   </p>
                 </div>
                 <input
                   type="url"
                   name="url"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="https://example.com"
                   required={true}
                   autoComplete="off"
@@ -73,8 +73,8 @@ export default function WebsiteDepthOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">Depth</label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <label className="text-white text-sm font-bold custom-text-secondary">Depth</label>
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     This is the number of child-links that the worker should
                     follow from the origin URL.
                   </p>
@@ -84,17 +84,17 @@ export default function WebsiteDepthOptions() {
                   name="depth"
                   min="1"
                   max="5"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   required={true}
                   defaultValue="1"
                 />
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-white text-sm font-bold custom-text-secondary">
                     Max Links
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     Maximum number of links to scrape.
                   </p>
                 </div>
@@ -102,7 +102,7 @@ export default function WebsiteDepthOptions() {
                   type="number"
                   name="maxLinks"
                   min="1"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   required={true}
                   defaultValue="20"
                 />
@@ -116,12 +116,12 @@ export default function WebsiteDepthOptions() {
               disabled={loading}
               className={`mt-2 w-full ${
                 loading ? "cursor-not-allowed animate-pulse" : ""
-              } justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed`}
+              } justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed custom-button-secondary`}
             >
               {loading ? "Scraping website..." : "Submit"}
             </button>
             {loading && (
-              <p className="text-xs text-theme-text-secondary">
+              <p className="text-xs text-theme-text-secondary custom-text-secondary">
                 Once complete, all scraped pages will be available for embedding
                 into workspaces in the document picker.
               </p>

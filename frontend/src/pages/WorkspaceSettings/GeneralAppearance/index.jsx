@@ -58,7 +58,7 @@ export default function GeneralInfo({ slug }) {
         {hasChanges && (
           <button
             type="submit"
-            className="transition-all w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            className="transition-all w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 custom-text-secondary custom-button-secondary"
           >
             {saving ? "Updating..." : "Update workspace"}
           </button>

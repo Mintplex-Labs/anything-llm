@@ -24,7 +24,7 @@ export default function SpeechToText({ sendCommand }) {
   function startSTTSession() {
     if (!isMicrophoneAvailable) {
       alert(
-        "AnythingLLM does not have access to microphone. Please enable for this site to use this feature."
+        `${process.env.APPLICATION_FALLBACK_NAME} does not have access to microphone. Please enable for this site to use this feature.`
       );
       return;
     }

@@ -67,17 +67,17 @@ export default function GitlabOptions() {
             <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-white text-sm font-bold custom-text-secondary">
                     GitLab Repo URL
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     URL of the GitLab repo you wish to collect.
                   </p>
                 </div>
                 <input
                   type="url"
                   name="repo"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="https://gitlab.com/gitlab-org/gitlab"
                   required={true}
                   autoComplete="off"
@@ -89,22 +89,22 @@ export default function GitlabOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white font-bold text-sm flex gap-x-2 items-center">
-                    <p className="font-bold text-white">GitLab Access Token</p>{" "}
+                    <p className="font-bold text-white custom-text-secondary">GitLab Access Token</p>{" "}
                     <p className="text-xs font-light flex items-center">
-                      <span className="text-theme-text-secondary">
+                      <span className="text-theme-text-secondary custom-text-secondary">
                         optional
                       </span>
                       <PATTooltip accessToken={accessToken} />
                     </p>
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     Access Token to prevent rate limiting.
                   </p>
                 </div>
                 <input
                   type="text"
                   name="accessToken"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="glpat-XXXXXXXXXXXXXXXXXXXX"
                   required={false}
                   autoComplete="off"
@@ -116,9 +116,9 @@ export default function GitlabOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white font-bold text-sm flex gap-x-2 items-center">
-                    <p className="font-bold text-white">Settings</p>{" "}
+                    <p className="font-bold text-white custom-text-secondary">Settings</p>{" "}
                   </label>
-                  <p className="text-xs font-normal text-white/50">
+                  <p className="text-xs font-normal text-white/50 custom-text-secondary">
                     Select additional entities to fetch from the GitLab API.
                   </p>
                 </div>
@@ -131,7 +131,7 @@ export default function GitlabOptions() {
                       className="peer sr-only"
                     />
                     <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
-                    <span className="ml-3 text-sm font-medium text-white">
+                    <span className="ml-3 text-sm font-medium text-white custom-text-secondary">
                       Fetch Issues as Documents
                     </span>
                   </label>
@@ -143,12 +143,12 @@ export default function GitlabOptions() {
               />
             </div>
 
-            <div className="flex flex-col w-full py-4 pr-10">
+            <div className="flex flex-col w-full py-4 pr-10 custom-react-tag-input-component">
               <div className="flex flex-col gap-y-1 mb-4">
                 <label className="text-white text-sm flex gap-x-2 items-center">
-                  <p className="text-white text-sm font-bold">File Ignores</p>
+                  <p className="text-white text-sm font-bold custom-text-secondary">File Ignores</p>
                 </label>
-                <p className="text-xs font-normal text-theme-text-secondary">
+                <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                   List in .gitignore format to ignore specific files during
                   collection. Press enter after each entry you want to save.
                 </p>
@@ -172,7 +172,7 @@ export default function GitlabOptions() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed"
+              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed custom-button-secondary"
             >
               {loading ? "Collecting files..." : "Submit"}
             </button>
@@ -216,15 +216,15 @@ function GitLabBranchSelection({ repo, accessToken }) {
     return (
       <div className="flex flex-col w-60">
         <div className="flex flex-col gap-y-1 mb-4">
-          <label className="text-white text-sm font-bold">Branch</label>
-          <p className="text-xs font-normal text-theme-text-secondary">
+          <label className="text-white text-sm font-bold custom-text-secondary">Branch</label>
+          <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
             Branch you wish to collect files from.
           </p>
         </div>
         <select
           name="branch"
           required={true}
-          className="border-none bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
         >
           <option disabled={true} selected={true}>
             -- loading available branches --
@@ -237,15 +237,15 @@ function GitLabBranchSelection({ repo, accessToken }) {
   return (
     <div className="flex flex-col w-60">
       <div className="flex flex-col gap-y-1 mb-4">
-        <label className="text-white text-sm font-bold">Branch</label>
-        <p className="text-xs font-normal text-theme-text-secondary">
+        <label className="text-white text-sm font-bold custom-text-secondary">Branch</label>
+        <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
           Branch you wish to collect files from.
         </p>
       </div>
       <select
         name="branch"
         required={true}
-        className="border-none bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
       >
         {allBranches.map((branch) => {
           return (

@@ -13,11 +13,11 @@ export default function ConnectorOption({
         selectedConnector === slug ? "bg-theme-file-picker-hover" : ""
       } rounded-lg cursor-pointer w-full`}
     >
-      <img src={image} alt={name} className="w-[40px] h-[40px] rounded-md" />
+      <img src={image} alt={name} className="w-[40px] h-[40px] rounded-md custom-border-secondary" />
       <div className="flex flex-col">
-        <div className="text-white font-bold text-[14px]">{name}</div>
+        <div className="text-white font-bold text-[14px] custom-text-secondary">{name}</div>
         <div>
-          <p className="text-[12px] text-white/60">{description}</p>
+          <p className="text-[12px] text-white/60 custom-text-secondary">{description}</p>
         </div>
       </div>
     </button>

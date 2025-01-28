@@ -37,19 +37,19 @@ export default function NewApiKeyModal({ closeModal }) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border custom-theme-bg-tertiary">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap custom-text-secondary">
               Create new API key
             </h3>
           </div>
           <button
             onClick={closeModal}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-white custom-text-secondary" />
           </button>
         </div>
         <div className="px-7 py-6">
@@ -61,12 +61,12 @@ export default function NewApiKeyModal({ closeModal }) {
                   type="text"
                   defaultValue={`${apiKey.secret}`}
                   disabled={true}
-                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg w-full text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                 />
               )}
-              <p className="text-white text-opacity-60 text-xs md:text-sm">
+              <p className="text-white text-opacity-60 text-xs md:text-sm custom-text-secondary">
                 Once created the API key can be used to programmatically access
-                and configure this AnythingLLM instance.
+                and configure this {process.env.APPLICATION_FALLBACK_NAME} instance.
               </p>
               <a
                 href={paths.apiDocs()}
@@ -83,13 +83,13 @@ export default function NewApiKeyModal({ closeModal }) {
                   <button
                     onClick={closeModal}
                     type="button"
-                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                    className="transition-all duration-300 text-white px-4 py-2 rounded-lg text-sm custom-text-secondary"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                    className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm border custom-button-secondary"
                   >
                     Create API key
                   </button>
@@ -99,7 +99,7 @@ export default function NewApiKeyModal({ closeModal }) {
                   onClick={copyApiKey}
                   type="button"
                   disabled={copied}
-                  className="w-full transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  className="w-full transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm border custom-button-secondary"
                 >
                   {copied ? "Copied API key" : "Copy API key"}
                 </button>

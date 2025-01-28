@@ -37,7 +37,7 @@ export default function AgentSkill({ item, settings, setStep }) {
 
   return (
     <div className="flex flex-col mt-4 gap-y-4">
-      <div className="border border-white/10 light:border-orange-500/20 my-2 flex flex-col md:flex-row md:items-center gap-x-2 text-theme-text-primary light:text-orange-600 mb-4 bg-orange-800/30 light:bg-orange-500/10 rounded-lg px-4 py-2">
+      <div className="border border-white/10 light:border-orange-500/20 my-2 flex flex-col md:flex-row md:items-center gap-x-2 text-theme-text-primary light:text-orange-600 mb-4 bg-orange-800/30 light:bg-orange-500/10 rounded-lg px-4 py-2 custom-text-secondary">
         <div className="flex flex-col gap-y-2">
           <div className="gap-x-2 flex items-center">
             <Warning size={25} />
@@ -47,7 +47,7 @@ export default function AgentSkill({ item, settings, setStep }) {
             </h1>
           </div>
           <p className="text-sm">
-            Agent skills can execute code on your AnythingLLM instance, so only
+            Agent skills can execute code on your {process.env.APPLICATION_FALLBACK_NAME} instance, so only
             import agent skills from sources you trust. You should also review
             the code before importing. If you are unsure about what a skill does
             - don't import it!
@@ -56,16 +56,16 @@ export default function AgentSkill({ item, settings, setStep }) {
       </div>
 
       <div className="flex flex-col gap-y-1">
-        <h2 className="text-base text-theme-text-primary font-semibold">
+        <h2 className="text-base text-theme-text-primary font-semibold custom-text-secondary">
           Review Agent Skill "{item.name}"
         </h2>
         {item.creatorUsername && (
-          <p className="text-white/60 light:text-theme-text-secondary text-xs font-mono">
+          <p className="text-white/60 light:text-theme-text-secondary text-xs font-mono custom-text-secondary">
             Created by{" "}
             <a
               href={paths.communityHub.profile(item.creatorUsername)}
               target="_blank"
-              className="hover:text-blue-500 hover:underline"
+              className="hover:text-blue-500 hover:underline custom-text-secondary"
               rel="noreferrer"
             >
               @{item.creatorUsername}
@@ -90,11 +90,11 @@ export default function AgentSkill({ item, settings, setStep }) {
           </a>
         </div>
       </div>
-      <div className="flex flex-col gap-y-[25px] text-white/80 light:text-theme-text-secondary text-sm">
+      <div className="flex flex-col gap-y-[25px] text-white/80 light:text-theme-text-secondary text-sm custom-text-secondary">
         <p>
-          Agent skills unlock new capabilities for your AnythingLLM workspace
+          Agent skills unlock new capabilities for your {process.env.APPLICATION_FALLBACK_NAME} workspace
           via{" "}
-          <code className="font-mono bg-zinc-900 light:bg-slate-200 px-1 py-0.5 rounded-md text-sm">
+          <code className="font-mono bg-zinc-900 light:bg-slate-200 px-1 py-0.5 rounded-md text-sm custom-theme-bg-tertiary custom-text-secondary custom-border-secondary">
             @agent
           </code>{" "}
           skills that can do specific tasks when invoked.
@@ -103,7 +103,7 @@ export default function AgentSkill({ item, settings, setStep }) {
       <FileReview item={item} />
       <CTAButton
         disabled={loading}
-        className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
+        className="text-dark-text w-full mt-[18px] h-[34px] custom-theme-bg-quad custom-theme-color-quad"
         onClick={importAgentSkill}
       >
         {loading ? <CircleNotch size={16} className="animate-spin" /> : null}
@@ -114,7 +114,7 @@ export default function AgentSkill({ item, settings, setStep }) {
 }
 
 function FileReview({ item }) {
-  const files = item.manifest.files || [];
+  const files = item?.manifest?.files || [];
   const [index, setIndex] = useState(0);
   const [file, setFile] = useState(files[index]);
   function handlePrevious() {

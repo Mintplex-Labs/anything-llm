@@ -286,9 +286,9 @@ a {
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #eeeeee;
+  background-color: #000;
   color: #5fa4fa;
-  box-shadow: 9999px 0 0 0 #eeeeee;
+  box-shadow: 9999px 0 0 0 #000;
   animation: dot-falling 1.5s infinite linear;
   animation-delay: 0.1s;
 }
@@ -305,8 +305,8 @@ a {
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #eeeeee;
-  color: #eeeeee;
+  background-color: #000;
+  color: #000;
   animation: dot-falling-before 1.5s infinite linear;
   animation-delay: 0s;
 }
@@ -315,8 +315,8 @@ a {
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #eeeeee;
-  color: #eeeeee;
+  background-color: #000;
+  color: #000;
   animation: dot-falling-after 1.5s infinite linear;
   animation-delay: 0.2s;
 }
@@ -329,7 +329,7 @@ a {
   25%,
   50%,
   75% {
-    box-shadow: 9999px 0 0 0 #eeeeee;
+    box-shadow: 9999px 0 0 0 #000;
   }
 
   100% {
@@ -345,7 +345,7 @@ a {
   25%,
   50%,
   75% {
-    box-shadow: 9984px 0 0 0 #eeeeee;
+    box-shadow: 9984px 0 0 0 #000;
   }
 
   100% {
@@ -361,7 +361,7 @@ a {
   25%,
   50%,
   75% {
-    box-shadow: 10014px 0 0 0 #eeeeee;
+    box-shadow: 10014px 0 0 0 #000;
   }
 
   100% {
@@ -940,3 +940,144 @@ does not extend the close button beyond the viewport. */
 .rti--container {
   @apply !bg-theme-settings-input-bg !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
 }
+
+/* Custom Variable */
+:root {
+  --theme-sidebar-footer-icon-fill: #000;
+  --theme-sidebar-footer-icon-fill-secondary: #fff;
+  --theme-settings-input-bg: #fff;
+  --theme-bg-secondary: #ccc;
+}
+ /* ----------- */
+
+/* Custom Css */
+.custom-bg-primary {
+  background: linear-gradient(90deg, #281BA5 52.5%, #237489 100%);
+}
+.custom-theme-bg-container {
+  background: linear-gradient(90deg, #281BA5 52.5%, #237489 100%);
+}
+.custom-button-primary {
+  background: linear-gradient(90deg, #291CA6 0%, #00A5D4 100%);
+}
+.custom-text-primary {
+  color: #fff;
+}
+.custom-theme-bg-sidebar-background {
+  background: url("../public/sidebar-bg.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.custom-theme-bg-secondary {
+  background-color: #F1F6FC;
+}
+.custom-text-secondary {
+  color: #000 !important;
+}
+.custom-border-secondary {
+  border: 1px solid #0003;
+}
+.custom-button-secondary {
+  color: #000;
+  background-color: transparent;
+  border-color: #000;
+}
+.custom-theme-bg-tertiary {
+  background-color: #fff !important;
+}
+.custom-theme-bg-sidebar-border {
+  border: 1px solid #ffffff69;
+}
+.custom-theme-bg-quad {
+  background-color: #00A5D4;
+}
+.custom-theme-color-quad {
+  color: #fff;
+}
+.custom-llm-provider-modal {
+  label {
+    /* .custom-text-secondary */
+    color: #000;
+  }
+  p {
+    /* .custom-text-secondary */
+    color: #000;
+  }
+  button {
+    /* .custom-text-secondary */
+    color: #000;
+  }
+  input {
+    /* .custom-theme-bg-tertiary */
+    background-color: #fff;
+    /* .custom-text-secondary */
+    color: #000;
+    /* .custom-border-secondary */
+    border: 1px solid #0003;
+    
+  }
+  input::placeholder {
+    color: unset;
+    opacity: 0.5;
+  }
+
+  select {
+    /* .custom-theme-bg-tertiary */
+    background-color: #fff;
+    /* .custom-text-secondary */
+    color: #000;
+    /* .custom-border-secondary */
+    border: 1px solid #0003; 
+  }
+}
+.custom-react-tag-input-component {
+  .rti--container {
+    /* .custom-theme-bg-tertiary */
+    background-color: #fff !important;
+    /* .custom-text-secondary */
+    color: #000 !important;
+    /* .custom-border-secondary */
+    border: 1px solid #0003;
+    .rti--input {
+      /* .custom-theme-bg-tertiary */
+    background-color: #fff !important;
+    /* .custom-text-secondary */
+    color: #000 !important;
+    }
+    .rti--input::placeholder {
+      color: unset;
+    }
+  }
+}
+.custom-primary-table {
+  thead {
+    /* .custom-border-secondary */
+    border: 1px solid #0003;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    tr {
+      th {
+        /* .custom-text-secondary */
+        color: #000;
+      }
+    }
+  }
+  tbody {
+    tr {
+      th, td {
+        /* .custom-text-secondary */
+        color: #000;
+      }
+    }
+    button, a, p {
+        /* .custom-text-secondary */
+        color: #000;
+    }
+  }
+}
+.markdown strong {
+  font-weight: 600;
+  color: #000;
+}
+/* --------- */

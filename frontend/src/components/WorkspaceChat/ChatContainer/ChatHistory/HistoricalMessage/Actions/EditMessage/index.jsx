@@ -98,20 +98,20 @@ export function EditMessageForm({
       <textarea
         ref={formRef}
         name="editedMessage"
-        className="text-white w-full rounded bg-theme-bg-secondary border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y"
+        className="text-white w-full rounded bg-theme-bg-secondary border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
         defaultValue={message}
         onChange={adjustTextArea}
       />
       <div className="mt-3 flex justify-center">
         <button
           type="submit"
-          className="border-none px-2 py-1 bg-gray-200 text-gray-700 font-medium rounded-md mr-2 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="px-2 py-1 bg-gray-200 text-gray-700 font-medium rounded-md mr-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 border custom-theme-bg-quad custom-theme-color-quad"
         >
           Save & Submit
         </button>
         <button
           type="button"
-          className="border-none px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 light:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          className="border-none px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 custom-text-secondary"
           onClick={cancelEdits}
         >
           Cancel

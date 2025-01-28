@@ -116,11 +116,11 @@ export default function RerankerRewriter() {
     fetchKeys();
   }, []);
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex custom-theme-bg-container">
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0 custom-theme-bg-secondary"
       >
         {loading ? (
           <div className="w-full h-full flex justify-center items-center">
@@ -128,11 +128,11 @@ export default function RerankerRewriter() {
           </div>
         ) : (
           <div className="flex flex-col w-full h-full">
-            <div className="space-y-1 px-1 md:pl-6 md:pr-[50px] py-16 md:py-6 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
-              <p className="text-lg leading-6 font-bold text-white">
+            <div className="space-y-1 px-1 md:pl-6 md:pr-[50px] py-16 md:py-6 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10 custom-border-secondary" style={{ borderLeft: 0, borderRight: 0, borderTop: 0,}}>
+              <p className="text-lg leading-6 font-bold text-white custom-text-secondary">
                 {t("reranker-rewriter.title")}
               </p>
-              <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+              <p className="text-xs leading-[18px] font-base text-white text-opacity-60 custom-text-secondary">
                 {t("reranker-rewriter.desc-start")}
                 <br />
                 {t("reranker-rewriter.desc-end")}
@@ -154,7 +154,7 @@ export default function RerankerRewriter() {
                       type: "submit",
                       disabled: saving,
                     }}
-                    className="mt-3 mr-0 -mb-14 z-10"
+                    className="mt-3 mr-0 -mb-14 z-10 custom-theme-bg-quad custom-theme-color-quad"
                   >
                     {saving ? t("common.saving") : t("common.save")}
                   </CTAButton>

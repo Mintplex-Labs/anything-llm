@@ -69,7 +69,7 @@ export default function DefaultChatContainer() {
               href={paths.github()}
               target="_blank"
               rel="noreferrer"
-              className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 custom-button-secondary"
             >
               <GitMerge className="h-4 w-4" />
               <p>{t("welcomeMessage.githubIssue")}</p>
@@ -98,7 +98,7 @@ export default function DefaultChatContainer() {
             {(!user || user?.role !== "default") && (
               <button
                 onClick={showNewWsModal}
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 custom-button-secondary"
               >
                 <Plus className="h-4 w-4" />
                 <p>{t("welcomeMessage.createWorkspace")}</p>
@@ -156,14 +156,14 @@ export default function DefaultChatContainer() {
                 href={paths.github()}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 custom-button-secondary"
               >
                 <GithubLogo className="h-4 w-4" />
                 <p>{t("welcomeMessage.starOnGithub")}</p>
               </a>
               <a
                 href={paths.mailToMintplex()}
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 custom-button-secondary"
               >
                 <EnvelopeSimple className="h-4 w-4" />
                 <p>{t("welcomeMessage.contact")}</p>
@@ -205,7 +205,7 @@ export default function DefaultChatContainer() {
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
       className={`transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary light:border-[1px] light:border-theme-sidebar-border w-full h-full overflow-y-scroll ${
         showScrollbar ? "show-scrollbar" : "no-scroll"
-      }`}
+      } custom-theme-bg-secondary`}
     >
       {isMobile && <SidebarMobileHeader />}
       {fetchedMessages.length === 0
@@ -248,7 +248,7 @@ function MessageContent({ children }) {
 
 function MessageText({ children }) {
   return (
-    <span className="text-white/80 light:text-theme-text-primary font-light text-[14px] flex flex-col gap-y-1 mt-2">
+    <span className="text-white/80 light:text-theme-text-primary font-light text-[14px] flex flex-col gap-y-1 mt-2 custom-text-secondary">
       {children}
     </span>
   );

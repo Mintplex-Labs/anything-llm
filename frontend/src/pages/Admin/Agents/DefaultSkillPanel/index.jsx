@@ -12,10 +12,11 @@ export default function DefaultSkillPanel({ title, description, image, icon }) {
                 size: 24,
                 color: "var(--theme-text-primary)",
                 weight: "bold",
+                fill: '#000',
               })}
             <label
               htmlFor="name"
-              className="text-theme-text-primary text-md font-bold"
+              className="text-theme-text-primary text-md font-bold custom-text-secondary"
             >
               {title}
             </label>
@@ -23,7 +24,7 @@ export default function DefaultSkillPanel({ title, description, image, icon }) {
           </div>
         </div>
         <img src={image} alt={title} className="w-full rounded-md" />
-        <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5 custom-text-secondary">
           {description}
         </p>
       </div>

@@ -118,23 +118,23 @@ export default function WorkspaceChats() {
 
   return (
     <CanViewChatHistory>
-      <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+      <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex custom-theme-bg-container">
         <Sidebar />
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0 custom-theme-bg-secondary"
         >
           <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-            <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
+            <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2 custom-border-secondary" style={{ borderTop: 0, borderRight: 0, borderLeft: 0 }}>
               <div className="flex flex-wrap gap-4 items-center">
-                <p className="text-lg leading-6 font-bold text-theme-text-primary">
+                <p className="text-lg leading-6 font-bold text-theme-text-primary custom-text-secondary">
                   {t("recorded.title")}
                 </p>
                 <div className="relative">
                   <button
                     ref={openMenuButton}
                     onClick={toggleMenu}
-                    className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:light:bg-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                    className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button text-xs font-semibold shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit custom-theme-bg-quad custom-theme-color-quad"
                   >
                     <Download size={18} weight="bold" />
                     {t("recorded.export")}
@@ -144,7 +144,7 @@ export default function WorkspaceChats() {
                     ref={menuRef}
                     className={`${
                       showMenu ? "slide-down" : "slide-up hidden"
-                    } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary light:bg-theme-bg-secondary mt-2 shadow-md`}
+                    } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary light:bg-theme-bg-secondary mt-2 shadow-md custom-theme-bg-tertiary`}
                   >
                     <div className="py-2">
                       {Object.entries(exportOptions).map(([key, data]) => (
@@ -154,7 +154,7 @@ export default function WorkspaceChats() {
                             handleDumpChats(key);
                             setShowMenu(false);
                           }}
-                          className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147] light:hover:bg-theme-sidebar-item-hover"
+                          className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#ccc] light:hover:bg-theme-sidebar-item-hover custom-text-secondary"
                         >
                           {data.name}
                         </button>
@@ -166,7 +166,7 @@ export default function WorkspaceChats() {
                   <>
                     <button
                       onClick={handleClearAllChats}
-                      className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent light:border-theme-sidebar-border border-white/40 text-white/40 light:text-theme-text-secondary rounded-lg bg-transparent hover:light:text-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                      className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent light:border-theme-sidebar-border border-white/40 text-white/40 light:text-theme-text-secondary rounded-lg bg-transparent hover:light:text-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit custom-button-secondary"
                     >
                       <Trash size={18} weight="bold" />
                       Clear Chats
@@ -181,7 +181,7 @@ export default function WorkspaceChats() {
                   </>
                 )}
               </div>
-              <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
+              <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2 custom-text-secondary">
                 {t("recorded.description")}
               </p>
             </div>
@@ -229,8 +229,8 @@ function ChatsContainer({
       <Skeleton.default
         height="80vh"
         width="100%"
-        highlightColor="var(--theme-bg-primary)"
-        baseColor="var(--theme-bg-secondary)"
+        // highlightColor="var(--theme-bg-primary)"
+        // baseColor="var(--theme-bg-secondary)"
         count={1}
         className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm"
         containerClassName="flex w-full"
@@ -240,7 +240,7 @@ function ChatsContainer({
 
   return (
     <>
-      <table className="w-full text-sm text-left rounded-lg min-w-[640px] border-spacing-0">
+      <table className="w-full text-sm text-left rounded-lg min-w-[640px] border-spacing-0 custom-primary-table">
         <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase light:border-theme-sidebar-border border-white/10 border-b">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
@@ -276,7 +276,7 @@ function ChatsContainer({
       <div className="flex w-full justify-between items-center mt-6">
         <button
           onClick={handlePrevious}
-          className="px-4 py-2 rounded-lg border border-theme-text-secondary text-theme-text-secondary text-sm items-center flex gap-x-2 hover:bg-theme-text-secondary hover:text-theme-bg-secondary disabled:invisible"
+          className="px-4 py-2 rounded-lg border border-theme-text-secondary text-theme-text-secondary text-sm items-center flex gap-x-2 disabled:invisible custom-button-secondary"
           disabled={offset === 0}
         >
           {" "}
@@ -284,7 +284,7 @@ function ChatsContainer({
         </button>
         <button
           onClick={handleNext}
-          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 light:text-theme-text-secondary light:border-theme-sidebar-border text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
+          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 light:text-theme-text-secondary light:border-theme-sidebar-border text-sm items-center flex gap-x-2 disabled:invisible custom-button-secondary"
           disabled={!canNext}
         >
           Next Page

@@ -58,18 +58,18 @@ export default function ConfluenceOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                    <p className="font-bold text-theme-text-primary">
+                    <p className="font-bold text-theme-text-primary custom-text-secondary">
                       Confluence deployment type
                     </p>
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     Determine if your Confluence instance is hosted on Atlassian
                     cloud or self-hosted.
                   </p>
                 </div>
                 <select
                   name="isCloud"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   required={true}
                   autoComplete="off"
                   spellCheck={false}
@@ -83,16 +83,16 @@ export default function ConfluenceOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                    <p className="font-bold text-white">Confluence base URL</p>
+                    <p className="font-bold text-white custom-text-secondary">Confluence base URL</p>
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     This is the base URL of your Confluence space.
                   </p>
                 </div>
                 <input
                   type="url"
                   name="baseUrl"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="eg: https://example.atlassian.net, http://localhost:8211, etc..."
                   required={true}
                   autoComplete="off"
@@ -101,10 +101,10 @@ export default function ConfluenceOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-white text-sm font-bold custom-text-secondary">
                     Confluence space key
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     This is the spaces key of your confluence instance that will
                     be used. Usually begins with ~
                   </p>
@@ -112,7 +112,7 @@ export default function ConfluenceOptions() {
                 <input
                   type="text"
                   name="spaceKey"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="eg: ~7120208c08555d52224113949698b933a3bb56"
                   required={true}
                   autoComplete="off"
@@ -121,17 +121,17 @@ export default function ConfluenceOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">
+                  <label className="text-white text-sm font-bold custom-text-secondary">
                     Confluence Username
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     Your Confluence username.
                   </p>
                 </div>
                 <input
                   type="text"
                   name="username"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="jdoe@example.com"
                   required={true}
                   autoComplete="off"
@@ -141,7 +141,7 @@ export default function ConfluenceOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold flex gap-x-2 items-center">
-                    <p className="font-bold text-white">
+                    <p className="font-bold text-white custom-text-secondary">
                       Confluence Access Token
                     </p>
                     <Warning
@@ -172,14 +172,14 @@ export default function ConfluenceOptions() {
                       </p>
                     </Tooltip>
                   </label>
-                  <p className="text-xs font-normal text-theme-text-secondary">
+                  <p className="text-xs font-normal text-theme-text-secondary custom-text-secondary">
                     Access token for authentication.
                   </p>
                 </div>
                 <input
                   type="password"
                   name="accessToken"
-                  className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   placeholder="abcd1234"
                   required={true}
                   autoComplete="off"
@@ -193,12 +193,12 @@ export default function ConfluenceOptions() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed"
+              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed custom-button-secondary"
             >
               {loading ? "Collecting pages..." : "Submit"}
             </button>
             {loading && (
-              <p className="text-xs text-theme-text-secondary">
+              <p className="text-xs text-theme-text-secondary custom-text-secondary">
                 Once complete, all pages will be available for embedding into
                 workspaces.
               </p>

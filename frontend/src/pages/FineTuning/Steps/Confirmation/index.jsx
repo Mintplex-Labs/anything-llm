@@ -61,12 +61,12 @@ export default function Confirmation({ settings, setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6">
+      <div className="bg-theme-bg-secondary rounded-xl flex-1 p-6 custom-theme-bg-secondary">
         <div className="w-full flex flex-col gap-y-3 max-w-[700px]">
-          <h2 className="text-base text-theme-text-primary font-semibold">
+          <h2 className="text-base text-theme-text-primary font-semibold custom-text-secondary">
             Confirm & Submit
           </h2>
-          <p className="text-theme-text-secondary text-sm">
+          <p className="text-theme-text-secondary text-sm custom-text-secondary">
             Below are your fine-tuning order details. If you have any questions
             before or after ordering your fine-tune you can checkout the{" "}
             <a
@@ -178,7 +178,7 @@ export default function Confirmation({ settings, setSettings, setStep }) {
               </p>
             </div>
           </div>
-          <p className="text-xs text-theme-text-secondary mt-4">
+          <p className="text-xs text-theme-text-secondary mt-4 custom-text-secondary">
             Once you proceed to checkout, if you do not complete this purchase
             your data will be deleted from our servers within 1 hour of
             abandonment of the creation of the checkout in accordance to our
@@ -187,7 +187,7 @@ export default function Confirmation({ settings, setSettings, setStep }) {
           <CTAButton
             disabled={loading}
             onClick={handleCheckout}
-            className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
+            className="text-dark-text w-full mt-[18px] h-[34px] custom-theme-bg-quad custom-theme-color-quad"
           >
             {loading ? "Generating order..." : "Start Training →"}
           </CTAButton>

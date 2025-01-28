@@ -57,14 +57,14 @@ export default function CustomMessages() {
   return (
     <div className="mb-8">
       <div className="flex flex-col gap-y-1">
-        <h2 className="text-base leading-6 font-bold text-white">
+        <h2 className="text-base leading-6 font-bold text-white custom-text-secondary">
           {t("appearance.message.title")}
         </h2>
-        <p className="text-xs leading-[18px] font-base text-white/60">
+        <p className="text-xs leading-[18px] font-base text-white/60 custom-text-secondary">
           {t("appearance.message.description")}
         </p>
       </div>
-      <div className="mt-3 flex flex-col gap-y-6 bg-theme-settings-input-bg rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px]">
+      <div className="mt-3 flex flex-col gap-y-6 bg-theme-settings-input-bg rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px] border custom-button-secondary">
         {messages.map((message, index) => (
           <div key={index} className="flex flex-col gap-y-2">
             {message.user && (
@@ -93,8 +93,8 @@ export default function CustomMessages() {
             onClick={() => addMessage("response")}
           >
             <div className="flex items-center justify-start text-sm font-normal -ml-2">
-              <Plus className="m-2" size={16} weight="bold" />
-              <span className="leading-5">
+              <Plus className="m-2 custom-text-secondary" size={16} weight="bold" />
+              <span className="leading-5 custom-text-secondary">
                 {t("appearance.message.new")}{" "}
                 <span className="font-bold italic mr-1">
                   {t("appearance.message.system")}
@@ -108,8 +108,8 @@ export default function CustomMessages() {
             onClick={() => addMessage("user")}
           >
             <div className="flex items-center justify-start text-sm font-normal">
-              <Plus className="m-2" size={16} weight="bold" />
-              <span className="leading-5">
+              <Plus className="m-2 custom-text-secondary" size={16} weight="bold" />
+              <span className="leading-5 custom-text-secondary">
                 {t("appearance.message.new")}{" "}
                 <span className="font-bold italic mr-1">
                   {t("appearance.message.user")}
@@ -123,7 +123,7 @@ export default function CustomMessages() {
       {hasChanges && (
         <div className="flex justify-start pt-6">
           <button
-            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 focus:ring-gray-800 custom-button-secondary"
             onClick={handleMessageSave}
           >
             {t("appearance.message.save")}

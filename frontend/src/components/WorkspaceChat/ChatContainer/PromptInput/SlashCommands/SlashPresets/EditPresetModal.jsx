@@ -47,19 +47,19 @@ export default function EditPresetModal({
 
   return (
     <ModalWrapper isOpen={isOpen}>
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
+      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden custom-theme-bg-tertiary border-none">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap custom-text-secondary">
               Edit Preset
             </h3>
           </div>
           <button
             onClick={onClose}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={24} weight="bold" className="text-white custom-text-secondary" />
           </button>
         </div>
         <div
@@ -72,12 +72,12 @@ export default function EditPresetModal({
                 <div>
                   <label
                     htmlFor="command"
-                    className="block mb-2 text-sm font-medium text-white"
+                    className="block mb-2 text-sm font-medium text-white custom-text-secondary"
                   >
                     Command
                   </label>
                   <div className="flex items-center">
-                    <span className="text-white text-sm mr-2 font-bold">/</span>
+                    <span className="text-white text-sm mr-2 font-bold custom-text-secondary">/</span>
                     <input
                       type="text"
                       name="command"
@@ -85,14 +85,14 @@ export default function EditPresetModal({
                       value={command}
                       onChange={handleCommandChange}
                       required={true}
-                      className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      className="border-none bg-theme-settings-input-bg w-full text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                     />
                   </div>
                 </div>
                 <div>
                   <label
                     htmlFor="prompt"
-                    className="block mb-2 text-sm font-medium text-white"
+                    className="block mb-2 text-sm font-medium text-white custom-text-secondary"
                   >
                     Prompt
                   </label>
@@ -101,13 +101,13 @@ export default function EditPresetModal({
                     placeholder="This is a test prompt. Please respond with a poem about LLMs."
                     defaultValue={preset.prompt}
                     required={true}
-                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   ></textarea>
                 </div>
                 <div>
                   <label
                     htmlFor="description"
-                    className="block mb-2 text-sm font-medium text-white"
+                    className="block mb-2 text-sm font-medium text-white custom-text-secondary"
                   >
                     Description
                   </label>
@@ -117,7 +117,7 @@ export default function EditPresetModal({
                     defaultValue={preset.description}
                     placeholder="Responds with a poem about LLMs."
                     required={true}
-                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    className="border-none bg-theme-settings-input-bg w-full text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                   />
                 </div>
               </div>
@@ -135,13 +135,13 @@ export default function EditPresetModal({
                 <button
                   onClick={onClose}
                   type="button"
-                  className="transition-all duration-300 bg-transparent text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  className="transition-all duration-300 bg-transparent text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm custom-text-secondary"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm border custom-button-secondary"
                 >
                   Save
                 </button>
