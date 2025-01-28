@@ -99,7 +99,7 @@ export default function handleSocketResponse(event, setChatHistory) {
         sources: [],
         closed: true,
         error: null,
-        animate: false,
+        animate: data?.animate || false,
         pending: false,
       },
     ];
