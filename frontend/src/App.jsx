@@ -67,6 +67,7 @@ const ExperimentalFeatures = lazy(
 const LiveDocumentSyncManage = lazy(
   () => import("@/pages/Admin/ExperimentalFeatures/Features/LiveSync/manage")
 );
+const AgentBuilder = lazy(() => import("@/pages/Admin/AgentBuilder"));
 
 const CommunityHubTrending = lazy(
   () => import("@/pages/GeneralSettings/CommunityHub/Trending")
@@ -142,6 +143,10 @@ export default function App() {
                   <Route
                     path="/settings/agents"
                     element={<AdminRoute Component={AdminAgents} />}
+                  />
+                  <Route
+                    path="/settings/agents/builder"
+                    element={<AdminRoute Component={AgentBuilder} />}
                   />
                   <Route
                     path="/settings/event-logs"
