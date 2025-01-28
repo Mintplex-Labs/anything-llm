@@ -34,6 +34,7 @@ async function extractTextFromApi(fullFilePath) {
         Authorization: token,
         ...formData.getHeaders(),
       },
+      timeout: 600000,
     });
 
     if (response.status === 200) {
@@ -49,6 +50,11 @@ async function extractTextFromApi(fullFilePath) {
     }
   } catch (error) {
     console.error(`Error during text extraction: ${error.message}`);
+    if (error.code === 'ECONNABORTED') {
+      console.error('Request timed out after 10 minutes');
+    } else {
+      console.error('Error during OCR processing:', error.message);
+    }
     throw error;
   }
 }

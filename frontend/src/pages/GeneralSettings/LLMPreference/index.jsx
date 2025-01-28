@@ -270,9 +270,9 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["ApipieLLMApiKey", "ApipieLLMModelPref"],
   },
   {
-    name: "Generic OpenAI",
+    name: "Prism",
     value: "generic-openai",
-    logo: GenericOpenAiLogo,
+    logo: AnythingLLMIcon,
     options: (settings) => <GenericOpenAiOptions settings={settings} />,
     description:
       "Connect to any OpenAi-compatible service via a custom configuration",
@@ -292,15 +292,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["XAIApiKey", "XAIModelPref"],
   },
 
-  {
-    name: "Native",
-    value: "native",
-    logo: AnythingLLMIcon,
-    options: (settings) => <NativeLLMOptions settings={settings} />,
-    description:
-      `Use a downloaded custom Llama model for chatting on this ${process.env.APPLICATION_FALLBACK_NAME} instance.`,
-    requiredConfig: [],
-  },
+  // {
+  //   name: "Native",
+  //   value: "native",
+  //   logo: AnythingLLMIcon,
+  //   options: (settings) => <NativeLLMOptions settings={settings} />,
+  //   description:
+  //     `Use a downloaded custom Llama model for chatting on this ${process.env.APPLICATION_FALLBACK_NAME} instance.`,
+  //   requiredConfig: [],
+  // },
 ];
 
 export default function GeneralLLMPreference() {

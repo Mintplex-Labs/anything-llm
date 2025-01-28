@@ -225,7 +225,17 @@ function adminEndpoints(app) {
     async (_request, response) => {
       try {
         const workspaces = await Workspace.whereWithUsers();
-        response.status(200).json({ workspaces });
+        const filteredWorkspaces = workspaces.filter(
+          (workspace) => workspace.slug !== process.env.INTERNAL_WORKSPACE_NAME 
+        );
+        response.status(200).json({ workspaces: filteredWorkspaces });
+
+        // const sortedWorkspaces = workspaces.sort((a, b) => {
+        //   if (a.slug === process.env.INTERNAL_WORKSPACE_NAME) return -1; 
+        //   if (b.slug === process.env.INTERNAL_WORKSPACE_NAME) return 1;  
+        //   return 0;
+        // });
+        // response.status(200).json({ workspaces });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

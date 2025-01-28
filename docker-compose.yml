@@ -18,6 +18,7 @@ services:
     environment:
       NODE_ENV: development
       VITE_ENABLE_SSO: true
+      VITE_API_BASE: http://localhost:3001/api
       APPLICATION_FALLBACK_NAME: "Prism"
     command: make start_frontend
     ports:
@@ -45,6 +46,13 @@ services:
       EMBEDDING_ENGINE: "inherit"
       VECTOR_DB: "milvus"
       MILVUS_ADDRESS: "http://192.168.171.130:30986"
+      INTERNAL_WORKSPACE_NAME: all-workspaces
+      INTERNAL_WORKSPACE_OPENAI_TEMP: 0.7
+      INTERNAL_WORKSPACE_OPENAI_HISTORY: 20
+      INTERNAL_WORKSPACE_OPENAI_PROMPT: "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+      INTERNAL_WORKSPACE_SIMILARITY_THRESHOLD: 0.25
+      INTERNAL_WORKSPACE_TOP_N: 4
+      INTERNAL_WORKSPACE_QUERY_REFUSAL_RESPONSE: "There is no relevant information in this workspace to answer your query."
       STORAGE_DIR: ""
       PRISM_OCR_PARSER: "false"
       PRISM_OCR_ENDPOINT: "http://192.168.140.58:5000/docparser/api/v1/extract/"
@@ -53,7 +61,6 @@ services:
       USE_OCR: "false"
       RERANKER_URL: https://reranker.saal.ai/rerank
       PRISM_PARSER_BEARER_TOKEN:
-      RERANK_MILVUS_RESULTS: "true"
       ENABLE_MULTI_WORKSPACE_QUERY: "true"
       LLM_GUARD_BASE_URL: "http://192.168.140.51:3456"
       LLM_GUARD_AUTH_TOKEN:

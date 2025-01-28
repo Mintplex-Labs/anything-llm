@@ -200,6 +200,10 @@ const SystemSettings = {
         logger.error("Something went wrong while updating env in process");
         return false;
       }
+
+      const { Workspace } = require("./workspace");
+      await Workspace.createInternalWorkspace();
+
       return true;
     } catch (e) {
       logger.error("Something went wrong while intializing system config.", e);
@@ -210,6 +214,18 @@ const SystemSettings = {
     const { hasVectorCachedFiles } = require("../utils/files");
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
+    const allSettings = await prisma.system_settings.findMany();
+    const embeddingSettings =
+      allSettings?.find((setting) => setting.label === "embedding")?.config ||
+      {};
+    const rerankerRewriterSettings =
+      allSettings?.find((setting) => setting.label === "reranker-rewriter")
+        ?.config || {};
+    delete rerankerRewriterSettings.RerankerApiKey;
+    delete embeddingSettings.GenericOpenAiEmbeddingApiKey;
+    delete embeddingSettings.SparseGenericOpenAiEmbeddingApiKey;
+    delete embeddingSettings.VoyageAiApiKey;
+
     return {
       // --------------------------------------------------------
       // General Settings
@@ -220,13 +236,12 @@ const SystemSettings = {
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
-
       // --------------------------------------------------------
       // Embedder Provider Selection Settings & Configs
       // --------------------------------------------------------
-      EmbeddingEngine: process.env.EMBEDDING_ENGINE,
       HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
       HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
+      EmbeddingEngine: process.env.EMBEDDING_ENGINE,
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
@@ -237,8 +252,14 @@ const SystemSettings = {
         !!process.env.SPARSE_GENERIC_OPEN_AI_EMBEDDING_API_KEY,
       SparseEmbeddingModelPref: process.env.SPARSE_EMBEDDING_MODEL_PREF,
       SparseEmbeddingBasePath: process.env.SPARSE_EMBEDDING_BASE_PATH,
+      HybridSearchEnabled: process.env.HYBRID_SEARCH_ENABLED,
+      HybridSearchDenseVectorWeight:
+        process.env.HYBRID_SEARCH_DENSE_VECTOR_WEIGHT,
+      HybridSearchSparseVectorWeight:
+        process.env.HYBRID_SEARCH_SPARSE_VECTOR_WEIGHT,
       GenericOpenAiEmbeddingMaxConcurrentChunks:
-        process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
+        process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 100,
+      ...embeddingSettings,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
@@ -300,6 +321,11 @@ const SystemSettings = {
       // Disable View Chat History for the whole instance.
       DisableViewChatHistory:
         "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
+
+      // --------------------------------------------------------
+      // Reranker and Rewriter Settings
+      // --------------------------------------------------------
+      ...rerankerRewriterSettings,
     };
   },
 
@@ -350,25 +376,26 @@ const SystemSettings = {
 
     return this._updateSettings(updates);
   },
-  updateSystemConfig: async function (values) {
+
+  patchConfigValue: async function (label, config) {
     try {
-      logger.info("Updating system Env variables");
+      logger.info(`Patching ${label} config values`);
       const existingConfig = await prisma.system_settings.findFirst({
-        where: { label: "system" },
+        where: { label },
       });
-      const updatedConfig = { ...(existingConfig?.config || {}), ...values };
+      const updatedConfig = { ...(existingConfig?.config || {}), ...config };
       const newValues = await prisma.system_settings.upsert({
-        where: { label: "system" },
-        create: { label: "system", config: updatedConfig },
+        where: { label },
+        create: { label, config: updatedConfig },
         update: { config: updatedConfig },
       });
       return {
         status: true,
-        message: "System config updated successfully!",
+        message: `${label} config patched successfully!`,
         newValues,
       };
     } catch (e) {
-      const errorMessage = "Something went wrong while updating system config";
+      const errorMessage = `Something went wrong while patching ${label} system config`;
       logger.error(errorMessage, e);
       return {
         status: false,
@@ -385,8 +412,8 @@ const SystemSettings = {
           error: "Provided key is not a valid config key!",
         };
       }
-      if (key === "system") {
-        return this.updateSystemConfig(config);
+      if (["system", "reranker-rewriter"].includes(key)) {
+        return this.patchConfigValue(key, config);
       }
       // update / create a system config setting
       const response = await prisma.system_settings.upsert({

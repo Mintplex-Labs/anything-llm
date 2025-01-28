@@ -1,10 +1,10 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { getVectorDbClass, getLLMProvider, getRerankerProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
-const { rerankTexts } = require("../custom/reranker.js");
+// const { rerankTexts } = require("../custom/reranker.js");
 const { WorkspaceUser } = require("../../models/workspaceUsers");
 
 const {
@@ -88,7 +88,7 @@ async function chatSync({
 
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
-  let effectiveQuestion = message; 
+  let effectiveQuestion = message;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
@@ -153,7 +153,8 @@ async function chatSync({
   let embeddingsCount;
   let workspaces;
 
-  if (process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true') {
+  // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true') {
+  if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null })
     workspaces = userWorkspaces.map(item => item.workspaceSlug);
     // console.log('Workspace Users:', workspaceSlugs);
@@ -207,22 +208,28 @@ async function chatSync({
   });
 
   if (process.env.QUERY_REWRITER_ENABLED == 'true') {
-    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop().content;
-    const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
-    const rewriteRequest = LLMConnector.constructPrompt({
-      systemPrompt: process.env.QUERY_REWRITER_PROMPT,
-      contextTexts: [],
-      chatHistory: [],
-      userPrompt: userPrompt,
-    });
-    // console.dir(rewriteRequest, { depth: null, colors: true });
+    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop()?.content || message;
 
-    effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    if (lastQuestion.toLowerCase() === message.toLowerCase()) {
+      console.log("Last question is the same as the current message. Skipping query rewriting.");
 
-    console.log("rewritten question: ", effectiveQuestion)
-    
+    } else {
+      const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
+      const rewriteRequest = LLMConnector.constructPrompt({
+        systemPrompt: process.env.QUERY_REWRITER_PROMPT,
+        contextTexts: [],
+        chatHistory: [],
+        userPrompt: userPrompt,
+      });
+      // console.dir(rewriteRequest, { depth: null, colors: true });
+
+      effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
+        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      });
+
+      console.log("rewritten question: ", effectiveQuestion)
+    }
+
   }
 
 
@@ -258,7 +265,8 @@ async function chatSync({
 
   let vectorSearchResults;
 
-  if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
+  // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
+  if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     // Perform multi workspace searches if the environment variable is 'true'
     vectorSearchResults = embeddingsCount !== 0
       ? await performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
@@ -296,23 +304,23 @@ async function chatSync({
     };
   }
 
-  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_INVOCATION_THRESHOLD) {
+  if (process.env.RERANKER_PROVIDER != 'none' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
       .map(source => source.text);
+    const Reranker = getRerankerProvider();
 
     if (texts.length !== 0) {
       // Call re-ranker to get top results
-      const rerankedResults = await rerankTexts(texts, effectiveQuestion);
-      // Extract only the text values from reranked results for comparison
-      const rerankedTexts = rerankedResults.map(result => result.text);
+      const rerankedResults = await Reranker.rerankTexts(texts, effectiveQuestion);
 
-      // Filter the sources and update `sources` directly
-      vectorSearchResults.sources = vectorSearchResults.sources.filter(source =>
-        rerankedTexts.includes(source.text)
+      // Extract indices of top-ranked results
+      const topIndices = rerankedResults.map((result) => result.index);
+      // Filter the sources and update `sources` directly using the indices
+      vectorSearchResults.sources = vectorSearchResults.sources.filter((_, index) =>
+        topIndices.includes(index)
       );
-      // throw new Error('No valid texts found in vectorSearchResults.sources');
     }
   }
 
@@ -354,7 +362,13 @@ async function chatSync({
       apiSessionId: sessionId,
       user,
       multiple_workspaces: workspaces ? workspaces.join(",") : null,
-      rewrite_question: effectiveQuestion,
+      rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
+
+
+
+
+
+
     });
 
     return {
@@ -404,7 +418,13 @@ async function chatSync({
     apiSessionId: sessionId,
     user,
     multiple_workspaces: workspaces ? workspaces.join(",") : null,
-    rewrite_question: effectiveQuestion,
+    rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
+
+
+
+
+
+
   });
 
   return {
@@ -444,7 +464,7 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
-  let effectiveQuestion = message; 
+  let effectiveQuestion = message;
 
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
@@ -508,7 +528,8 @@ async function streamChat({
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   let embeddingsCount;
   let workspaces;
-  if (process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true') {
+  // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true') {
+  if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null })
     workspaces = userWorkspaces.map(item => item.workspaceSlug);
     // console.log('Workspace Users:', workspaceSlugs);
@@ -568,22 +589,28 @@ async function streamChat({
   });
 
   if (process.env.QUERY_REWRITER_ENABLED == 'true') {
-    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop().content;
-    const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
-    const rewriteRequest = LLMConnector.constructPrompt({
-      systemPrompt: process.env.QUERY_REWRITER_PROMPT,
-      contextTexts: [],
-      chatHistory: [],
-      userPrompt: userPrompt,
-    });
-    // console.dir(rewriteRequest, { depth: null, colors: true });
+    const lastQuestion = chatHistory.filter(item => item.role === 'user').pop()?.content || message;
 
-    effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    if (lastQuestion.toLowerCase() === message.toLowerCase()) {
+      console.log("Last question is the same as the current message. Skipping query rewriting.");
 
-    console.log("rewritten question: ", effectiveQuestion)
-    
+    } else {
+      const userPrompt = `FIRST QUESTION: ${lastQuestion}\nSECOND QUESTION: ${message}`;
+      const rewriteRequest = LLMConnector.constructPrompt({
+        systemPrompt: process.env.QUERY_REWRITER_PROMPT,
+        contextTexts: [],
+        chatHistory: [],
+        userPrompt: userPrompt,
+      });
+      // console.dir(rewriteRequest, { depth: null, colors: true });
+
+      effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
+        temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      });
+
+      console.log("rewritten question: ", effectiveQuestion)
+    }
+
   }
 
 
@@ -633,7 +660,8 @@ async function streamChat({
 
   let vectorSearchResults;
 
-  if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
+  // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
+  if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     // Perform multi workspace searches if the environment variable is 'true'
     vectorSearchResults = embeddingsCount !== 0
       ? await performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
@@ -673,23 +701,23 @@ async function streamChat({
   }
 
 
-  if (process.env.RERANKER_ENABLED == 'true' && vectorSearchResults.sources.length > process.env.RERANK_INVOCATION_THRESHOLD) {
+  if (process.env.RERANKER_PROVIDER != 'none' && vectorSearchResults.sources.length > process.env.RERANK_TOP_N_RESULTS) {
     // re-rank the sources using re-ranker endpoint
     const texts = vectorSearchResults.sources
       .filter(source => source.text) // Ensure source.text exists
       .map(source => source.text);
 
+    const Reranker = getRerankerProvider();
     if (texts.length !== 0) {
       // Call re-ranker to get top results
-      const rerankedResults = await rerankTexts(texts, effectiveQuestion);
-      // Extract only the text values from reranked results for comparison
-      const rerankedTexts = rerankedResults.map(result => result.text);
+      const rerankedResults = await Reranker.rerankTexts(texts, effectiveQuestion);
 
-      // Filter the sources and update `sources` directly
-      vectorSearchResults.sources = vectorSearchResults.sources.filter(source =>
-        rerankedTexts.includes(source.text)
+      // Extract indices of top-ranked results
+      const topIndices = rerankedResults.map((result) => result.index);
+      // Filter the sources and update `sources` directly using the indices
+      vectorSearchResults.sources = vectorSearchResults.sources.filter((_, index) =>
+        topIndices.includes(index)
       );
-      // throw new Error('No valid texts found in vectorSearchResults.sources');
     }
   }
 
@@ -742,7 +770,13 @@ async function streamChat({
       include: false,
       user,
       multiple_workspaces: workspaces ? workspaces.join(",") : null,
-      rewrite_question: effectiveQuestion,
+      rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
+
+
+
+
+
+
     });
     return;
   }
@@ -796,7 +830,13 @@ async function streamChat({
       apiSessionId: sessionId,
       user,
       multiple_workspaces: workspaces ? workspaces.join(",") : null,
-      rewrite_question: effectiveQuestion,
+      rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
+
+
+
+
+
+
     });
 
     writeResponseChunk(response, {

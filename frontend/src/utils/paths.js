@@ -98,6 +98,9 @@ export default {
     transcriptionPreference: () => {
       return "/settings/transcription-preference";
     },
+    rerankerRewriter: () => {
+      return "/settings/reranker-rewriter-preference";
+    },
     audioPreference: () => {
       return "/settings/audio-preference";
     },

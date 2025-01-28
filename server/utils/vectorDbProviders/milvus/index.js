@@ -3,7 +3,6 @@ const {
   MetricType,
   IndexType,
   MilvusClient,
-  RRFRanker,
   WeightedRanker
 } = require("@zilliz/milvus2-sdk-node");
 // const rerank = WeightedRanker(0.8, 0.3);
@@ -26,56 +25,56 @@ const Milvus = {
  * @param {string} textChunk - The text chunk to be converted into a sparse vector.
  * @returns {Object} - The sparse vector representation of the text chunk.
  */
-  generateSparseVectors: function (textChunks) {
-    try {
-      if (!Array.isArray(textChunks) || textChunks.length === 0) {
-        throw new Error('Input must be a non-empty array of text chunks.');
-      }
+  // generateSparseVectors: function (textChunks) {
+  //   try {
+  //     if (!Array.isArray(textChunks) || textChunks.length === 0) {
+  //       throw new Error('Input must be a non-empty array of text chunks.');
+  //     }
 
-      // Initialize TF-IDF Vectorizer
-      const tfidf = new TfIdfClass();
+  //     // Initialize TF-IDF Vectorizer
+  //     const tfidf = new TfIdfClass();
 
-      // Add all text chunks to the TF-IDF model
-      textChunks.forEach(chunk => {
-        if (chunk && chunk.trim() !== '') {
-          tfidf.addDocument(chunk);
-        } else {
-          throw new Error('One or more text chunks are empty.');
-        }
-      });
+  //     // Add all text chunks to the TF-IDF model
+  //     textChunks.forEach(chunk => {
+  //       if (chunk && chunk.trim() !== '') {
+  //         tfidf.addDocument(chunk);
+  //       } else {
+  //         throw new Error('One or more text chunks are empty.');
+  //       }
+  //     });
 
-      // Create a global token-to-index map
-      const tokenIndexMap = new Map();
-      let tokenCounter = 0;
+  //     // Create a global token-to-index map
+  //     const tokenIndexMap = new Map();
+  //     let tokenCounter = 0;
 
-      // Build global token index map
-      textChunks.forEach((_, docIndex) => {
-        tfidf.listTerms(docIndex).forEach(item => {
-          if (!tokenIndexMap.has(item.term)) {
-            tokenIndexMap.set(item.term, tokenCounter++);
-          }
-        });
-      });
+  //     // Build global token index map
+  //     textChunks.forEach((_, docIndex) => {
+  //       tfidf.listTerms(docIndex).forEach(item => {
+  //         if (!tokenIndexMap.has(item.term)) {
+  //           tokenIndexMap.set(item.term, tokenCounter++);
+  //         }
+  //       });
+  //     });
 
-      // Generate sparse vectors using token indices
-      const sparseVectors = textChunks.map((_, docIndex) => {
-        const sparseVector = {};
-        tfidf.listTerms(docIndex).forEach(item => {
-          const tokenIndex = tokenIndexMap.get(item.term);
-          sparseVector[tokenIndex] = item.tfidf;
-        });
+  //     // Generate sparse vectors using token indices
+  //     const sparseVectors = textChunks.map((_, docIndex) => {
+  //       const sparseVector = {};
+  //       tfidf.listTerms(docIndex).forEach(item => {
+  //         const tokenIndex = tokenIndexMap.get(item.term);
+  //         sparseVector[tokenIndex] = item.tfidf;
+  //       });
 
-        return sparseVector;
-      });
+  //       return sparseVector;
+  //     });
 
-      // console.log('Sparse Vectors (Milvus Compatible):', sparseVectors);
-      return sparseVectors;
+  //     // console.log('Sparse Vectors (Milvus Compatible):', sparseVectors);
+  //     return sparseVectors;
 
-    } catch (error) {
-      console.error('Error generating sparse vectors:', error.message);
-      throw error;
-    }
-  },
+  //   } catch (error) {
+  //     console.error('Error generating sparse vectors:', error.message);
+  //     throw error;
+  //   }
+  // },
   normalize: function (inputString) {
     let normalized = inputString.replace(/[^a-zA-Z0-9_]/g, "_");
     if (new RegExp(/^[a-zA-Z_]/).test(normalized.slice(0, 1)))
@@ -218,33 +217,68 @@ const Milvus = {
           `Milvus:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on Github for support.`
         );
 
+      // await client.createCollection({
+      //   collection_name: this.normalize(namespace),
+      //   fields: [
+      //     {
+      //       name: "id",
+      //       description: "id",
+      //       data_type: DataType.VarChar,
+      //       max_length: 255,
+      //       is_primary_key: true,
+      //     },
+      //     {
+      //       name: "vector",
+      //       description: "dense_vector",
+      //       data_type: DataType.FloatVector,
+      //       dim: dimensions,
+      //     },
+      //     {
+      //       name: "sparse_vector",
+      //       description: "sparse_vector",
+      //       data_type: DataType.SparseFloatVector,
+      //     },
+      //     {
+      //       name: "metadata",
+      //       decription: "metadata",
+      //       data_type: DataType.JSON,
+      //     },
+      //   ],
+      // });
+
+      const fields = [
+        {
+          name: "id",
+          description: "id",
+          data_type: DataType.VarChar,
+          max_length: 255,
+          is_primary_key: true,
+        },
+        {
+          name: "vector",
+          description: "dense_vector",
+          data_type: DataType.FloatVector,
+          dim: dimensions,
+        },
+        {
+          name: "metadata",
+          description: "metadata",
+          data_type: DataType.JSON,
+        },
+      ];
+
+      // Conditionally add the sparse_vector field
+      if (process.env.HYBRID_SEARCH_ENABLED === 'true') {
+        fields.push({
+          name: "sparse_vector",
+          description: "sparse_vector",
+          data_type: DataType.SparseFloatVector,
+        });
+      }
+
       await client.createCollection({
         collection_name: this.normalize(namespace),
-        fields: [
-          {
-            name: "id",
-            description: "id",
-            data_type: DataType.VarChar,
-            max_length: 255,
-            is_primary_key: true,
-          },
-          {
-            name: "vector",
-            description: "dense_vector",
-            data_type: DataType.FloatVector,
-            dim: dimensions,
-          },
-          {
-            name: "sparse_vector",
-            description: "sparse_vector",
-            data_type: DataType.SparseFloatVector,
-          },
-          {
-            name: "metadata",
-            decription: "metadata",
-            data_type: DataType.JSON,
-          },
-        ],
+        fields,
       });
 
       await client.createIndex({
@@ -253,16 +287,20 @@ const Milvus = {
         index_type: IndexType.HNSW,
         metric_type: MetricType.COSINE,
         extra_params: {
-        "params": "{\"M\":16,\"efConstruction\":150}"
-      },
+          "params": "{\"M\":16,\"efConstruction\":150}"
+        },
       });
 
-      await client.createIndex({
-        collection_name: this.normalize(namespace),
-        field_name: "sparse_vector",
-        index_type: IndexType.SPARSE_INVERTED_INDEX,
-        metric_type: MetricType.IP,
-      });
+      if (process.env.HYBRID_SEARCH_ENABLED === 'true') {
+        await client.createIndex({
+          collection_name: this.normalize(namespace),
+          field_name: "sparse_vector",
+          index_type: IndexType.SPARSE_INVERTED_INDEX,
+          metric_type: MetricType.IP,
+        });
+      }
+
+
 
       await client.loadCollectionSync({
         collection_name: this.normalize(namespace),
@@ -298,7 +336,14 @@ const Milvus = {
               const newChunks = chunk.map((chunk) => {
                 const id = uuidv4();
                 documentVectors.push({ docId, vectorId: id });
-                return { id, vector: chunk.values, metadata: chunk.metadata };
+
+                // return { id, vector: chunk.values, sparse_vector: chunk.sparse_vector || null, metadata: chunk.metadata };
+                return {
+                  id,
+                  vector: chunk.values,
+                  ...(process.env.HYBRID_SEARCH_ENABLED === 'true' && { sparse_vector: chunk.sparse_vector || null }),
+                  metadata: chunk.metadata,
+                };
               });
               const insertResult = await client.insert({
                 collection_name: this.normalize(namespace),
@@ -345,6 +390,16 @@ const Milvus = {
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
 
+      // Generate sparse vectors for all chunks beforehand
+      let sparseVectors;
+      if (process.env.HYBRID_SEARCH_ENABLED === 'true') { 
+        sparseVectors = await Promise.all(
+          textChunks.map(async (chunkText) => {
+            return getSparseEmbedding(chunkText);
+          })
+        );
+      }
+      
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
           if (!vectorDimension) vectorDimension = vector.length;
@@ -354,6 +409,9 @@ const Milvus = {
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
             metadata: { ...metadata, text: textChunks[i] },
+            // sparse_vector: sparseVectors[i], // Add the precomputed sparse vector
+            ...(process.env.HYBRID_SEARCH_ENABLED === 'true' && { sparse_vector: sparseVectors[i] }), // Conditionally add sparse_vector
+
           };
 
           vectors.push(vectorRecord);
@@ -371,19 +429,29 @@ const Milvus = {
         await this.getOrCreateCollection(client, namespace, vectorDimension);
 
         console.log("Inserting vectorized chunks into Milvus.");
+        // for (const chunk of toChunks(vectors, 100)) {
+
+        //   const data = await Promise.all(
+        //     chunk.map(async (item) => {
+        //       // console.log(`getting sparse vector for text with size : ${item.metadata?.text.length}`)
+        //       let sparseVector = await getSparseEmbedding(item.metadata?.text);
+        //       return {
+        //         id: item.id,
+        //         vector: item.values,
+        //         sparse_vector: sparseVector,
+        //         metadata: item.metadata,
+        //       };
+        //     })
+        //   );
         for (const chunk of toChunks(vectors, 100)) {
-          const data = await Promise.all(
-            chunk.map(async (item) => {
-              // console.log(`getting sparse vector for text with size : ${item.metadata?.text.length}`)
-              let sparseVector = await getSparseEmbedding(item.metadata?.text);
-              return {
-                id: item.id,
-                vector: item.values,
-                sparse_vector: sparseVector,
-                metadata: item.metadata,
-              };
-            })
-          );
+          chunks.push(chunk);
+          const data = chunk.map((item) => ({
+            id: item.id,
+            vector: item.values,
+            // sparse_vector: item.sparse_vector, // Use precomputed sparse vector
+            ...(process.env.HYBRID_SEARCH_ENABLED === 'true' && { sparse_vector: item.sparse_vector || null }), // Conditionally add sparse_vector
+            metadata: item.metadata,
+          }));
           let insertResult;
           // Validate that `data` is a valid JSON
           try {
@@ -396,7 +464,7 @@ const Milvus = {
             });
 
             if (insertResult?.status.error_code !== "Success") {
-              
+
               throw new Error(
                 `Error embedding into Milvus! Reason::::: ${insertResult?.status.reason}`
               );
@@ -554,7 +622,6 @@ const Milvus = {
       scores: [],
     };
     let response;
-   
 
     if (process.env.HYBRID_SEARCH_ENABLED === 'true') {
       const search_param_1 = {
@@ -562,7 +629,7 @@ const Milvus = {
         "anns_field": "vector",
         "param": {
           "metric_type": "COSINE",
-          "params": { "nprobe": 10}  
+          "params": { "nprobe": 10 }
         },
         "limit": topN
       }
@@ -572,15 +639,15 @@ const Milvus = {
         "anns_field": "sparse_vector",
         "param": {
           "metric_type": "IP",
-          "params": { "drop_ratio_build": 0.2 } 
+          "params": { "drop_ratio_build": 0.2 }
         },
         "limit": topN
       }
 
       response = await client.search({
         collection_name: this.normalize(namespace),
-        data: [search_param_1,search_param_2],
-        weights: [1.0,1.0],
+        data: [search_param_1, search_param_2],
+        weights: [1.0, 1.0],
         rerank: WeightedRanker([Number(process.env.HYBRID_SEARCH_DENSE_VECTOR_WEIGHT), Number(process.env.HYBRID_SEARCH_SPARSE_VECTOR_WEIGHT)]),
         limit: topN
       });
@@ -596,6 +663,7 @@ const Milvus = {
     const seen = new Set(); // Track unique context texts to remove duplicates
 
     response.results.forEach((match) => {
+      // console.log("#########################################################################")
       // console.log(`match score is ${match.score}`)
       if (match.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {

@@ -129,7 +129,11 @@ function apiWorkspaceEndpoints(app) {
           },
         },
       });
-      response.status(200).json({ workspaces });
+      const filteredWorkspaces = workspaces.filter(
+        (workspace) => workspace.slug !== process.env.INTERNAL_WORKSPACE_NAME
+      );
+      // console.dir(filteredWorkspaces, {depth: null})
+      response.status(200).json({ workspaces: filteredWorkspaces });
     } catch (e) {
       console.error(e.message, e);
       response.sendStatus(500).end();
@@ -411,14 +415,14 @@ function apiWorkspaceEndpoints(app) {
 
         const history = apiSessionId
           ? await WorkspaceChats.forWorkspaceByApiSessionId(
-              workspace.id,
-              apiSessionId,
-              validLimit,
-              { createdAt: validOrderBy }
-            )
+            workspace.id,
+            apiSessionId,
+            validLimit,
+            { createdAt: validOrderBy }
+          )
           : await WorkspaceChats.forWorkspace(workspace.id, validLimit, {
-              createdAt: validOrderBy,
-            });
+            createdAt: validOrderBy,
+          });
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
         console.error(e.message, e);
@@ -632,11 +636,11 @@ function apiWorkspaceEndpoints(app) {
           sessionId = null,
           attachments = [],
         } = reqBody(request);
-        
-        
 
-        const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
-        // const workspace = await Workspace.get({ slug: String(slug) });
+
+
+        // const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
 
         if (!workspace) {
           response.status(400).json({
@@ -665,7 +669,7 @@ function apiWorkspaceEndpoints(app) {
         }
 
         const user = userId ? await User.get({ id: Number(userId) }) : null;
-        if(!user) {
+        if (!user) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -795,8 +799,8 @@ function apiWorkspaceEndpoints(app) {
           sessionId = null,
           attachments = [],
         } = reqBody(request);
-        // const workspace = await Workspace.get({ slug: String(slug) });
-        const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
+        const workspace = await Workspace.get({ slug: String(slug) });
+        // const workspace = await Workspace.get({ slug: process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true' ? process.env.INTERNAL_WORKSPACE_NAME : slug });
 
         if (!workspace) {
           response.status(400).json({
@@ -831,7 +835,7 @@ function apiWorkspaceEndpoints(app) {
         response.flushHeaders();
 
         const user = userId ? await User.get({ id: Number(userId) }) : null;
-        if(!user) {
+        if (!user) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",

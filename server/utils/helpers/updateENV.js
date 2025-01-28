@@ -484,11 +484,23 @@ const EMBEDDING_CONFIG_KEY_MAPPINGS = {
   // Sparse Embedder
   SparseEmbeddingBasePath: {
     envKey: "SPARSE_EMBEDDING_BASE_PATH",
-    checks: [isNotEmpty, validDockerizedUrl],
+    checks: [validDockerizedUrl],
   },
   SparseEmbeddingModelPref: {
     envKey: "SPARSE_EMBEDDING_MODEL_PREF",
-    checks: [isNotEmpty],
+    checks: [],
+  },
+  HybridSearchEnabled: {
+    envKey: "HYBRID_SEARCH_ENABLED",
+    checks: [],
+  },
+  HybridSearchDenseVectorWeight: {
+    envKey: "HYBRID_SEARCH_DENSE_VECTOR_WEIGHT",
+    checks: [isPositiveFloat],
+  },
+  HybridSearchSparseVectorWeight: {
+    envKey: "HYBRID_SEARCH_SPARSE_VECTOR_WEIGHT",
+    checks: [isPositiveFloat],
   },
   // Generic OpenAI Embedding Settings
   GenericOpenAiEmbeddingApiKey: {
@@ -625,6 +637,41 @@ const SYSTEM_CONFIG_KEY_MAPPINGS = {
     checks: [],
   },
 };
+
+const RERANKER_REWRITER_CONFIG_KEY_MAPPINGS = {
+  // Rewriter config
+  QueryRewriterEnabled: {
+    envKey: "QUERY_REWRITER_ENABLED",
+    checks: [],
+  },
+  QueryRewriterPrompt: {
+    envKey: "QUERY_REWRITER_PROMPT",
+    checks: [],
+  },
+
+  // Reranker Config
+  RerankerProvider: {
+    envKey: "RERANKER_PROVIDER",
+    checks: [supportedRerankerModel],
+  },
+  RerankerModel: {
+    envKey: "RERANKER_MODEL",
+    checks: [],
+  },
+  RerankerApiKey: {
+    envKey: "RERANKER_API_KEY",
+    checks: [],
+  },
+  RerankerUrl: {
+    envKey: "RERANKER_URL",
+    checks: [isValidURL, validDockerizedUrl],
+  },
+  RerankTopNResults: {
+    envKey: "RERANK_TOP_N_RESULTS",
+    checks: [nonZero],
+  },
+};
+
 const KEY_MAPPING = {
   ...LLM_CONFIG_KEY_MAPPINGS,
   ...EMBEDDING_CONFIG_KEY_MAPPINGS,
@@ -632,6 +679,7 @@ const KEY_MAPPING = {
   ...TRANSCRIPTION_CONFIG_KEY_MAPPINGS,
   ...VOICE_AND_SPEECH_CONFIG_KEY_MAPPINGS,
   ...SYSTEM_CONFIG_KEY_MAPPINGS,
+  ...RERANKER_REWRITER_CONFIG_KEY_MAPPINGS,
 };
 
 function isNotEmpty(input = "") {
@@ -646,6 +694,15 @@ function nonZero(input = "") {
 function isInteger(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
   return Number(input);
+}
+
+function isPositiveFloat(input = "") {
+  if (!input) return input;
+  const number = parseFloat(input);
+  if (isNaN(number) || number <= 0) {
+    return "Value must be a positive float";
+  }
+  return number;
 }
 
 function isValidURL(input = "") {
@@ -820,6 +877,12 @@ function supportedEmbeddingModel(input = "") {
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;
 }
+function supportedRerankerModel(input = "") {
+  const supported = ["none", "prism", "jina", "cohere"];
+  return supported.includes(input)
+    ? null
+    : `Invalid Reranker model type. Must be one of ${supported.join(", ")}.`;
+}
 
 function supportedVectorDB(input = "") {
   const supported = [
@@ -917,7 +980,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   let error = "";
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
-    (key) => validKeys.includes(key) && !newENVs[key].includes("******") // strip out answers where the value is all asterisks
+    (key) => validKeys.includes(key) && !newENVs[key]?.includes("******") // strip out answers where the value is all asterisks
   );
   const newValues = {};
 
@@ -1044,6 +1107,7 @@ const ALLOWED_SYSTEM_CONFIG_KEYS = {
   "vector-db": VECTOR_DB_KEY_MAPPINGS,
   "voice-speech": VOICE_AND_SPEECH_CONFIG_KEY_MAPPINGS,
   system: SYSTEM_CONFIG_KEY_MAPPINGS,
+  "reranker-rewriter": RERANKER_REWRITER_CONFIG_KEY_MAPPINGS,
 };
 
 module.exports = {

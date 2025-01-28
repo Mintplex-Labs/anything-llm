@@ -39,6 +39,7 @@ const TRANSLATIONS = {
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
+    "reranker-rewriter": "Re-Ranker & Re-Writer",
   },
 
   // Page Definitions
@@ -375,13 +376,43 @@ const TRANSLATIONS = {
       "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials to for embedding text.",
     "desc-end":
       "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which Prism can use to process.",
+    "warning-start":
+      "Switching the embedding model will reset all previously embedded documents in all workspaces.",
+    "warning-end":
+      "Confirming will clear all embeddings from your vector database and remove all documents from your workspaces. Your uploaded documents will not be deleted, they will be available for re-embedding.",
     provider: {
-      title: "Embedding Provider",
+      sparseTitle: "Sparse Embedding Provider",
+      title: "Dense Embedding Provider",
       description:
         "There is no set up required when using Prism's native embedding engine.",
     },
+    "hybrid-search": {
+      title: "Hybrid Search (Applicable to Milvus DB)",
+      desc: "If enabled Hybrid Search blends dense embeddings for semantic understanding and sparse embeddings for exact keyword matching, leveraging weighted contributions from both to deliver precise and context-aware search results.",
+      weightInfo:
+        "The combined weights of Dense Vector Weight and Sparse Vector Weight must be 1",
+    },
   },
 
+  "reranker-rewriter": {
+    title: "Re-Ranker & Re-Writer Preferences",
+    "desc-start":
+      "Re-ranking prioritizes responses based on relevance, while rewriting refines outputs to match specific styles or improve clarity.",
+    "desc-end":
+      "These configurations help Prism optimize results to better suit your needs.",
+    reranker: {
+      title: "Re-Ranker",
+      desc: "If enabled, Re-Ranker refines search results by prioritizing and reordering them based on relevance, ensuring the most contextually appropriate and meaningful results.",
+      provider: {
+        title: "Re-Ranker Provider",
+      },
+    },
+    rewriter: {
+      title: "Re-Writer",
+      desc: "If enabled, Re-Writer refines responses by modifying them to better align with your preferred style, tone, or clarity.",
+      "prompt-label": "Prism Query Re-Writer Prompt",
+    },
+  },
   text: {
     title: "Text splitting & Chunking Preferences",
     "desc-start":

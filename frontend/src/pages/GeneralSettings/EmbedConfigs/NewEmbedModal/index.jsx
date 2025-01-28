@@ -121,7 +121,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
   const [workspaces, setWorkspaces] = useState([]);
   useEffect(() => {
     async function fetchWorkspaces() {
-      const _workspaces = await Workspace.all();
+      const _workspaces = await Workspace.allAdmin();
       setWorkspaces(_workspaces);
     }
     fetchWorkspaces();

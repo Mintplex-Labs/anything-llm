@@ -213,6 +213,17 @@ const Workspace = {
 
     return workspaces;
   },
+  allAdmin: async function () {
+    const workspaces = await fetch(`${API_BASE}/workspaces/include-internal`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res.workspaces || [])
+      .catch(() => []);
+
+    return workspaces;
+  },
   bySlug: async function (slug = "") {
     const workspace = await fetch(`${API_BASE}/workspace/${slug}`, {
       headers: baseHeaders(),
@@ -472,6 +483,18 @@ const Workspace = {
     return response.ok;
   },
   threads: WorkspaceThread,
+
+  deleteEmbeddings: async () => {
+    return await fetch(`${API_BASE}/workspaces/embeddings`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default Workspace;
