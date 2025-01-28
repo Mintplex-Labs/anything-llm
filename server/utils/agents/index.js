@@ -180,7 +180,7 @@ class AgentHandler {
       case "nvidia-nim":
         if (!process.env.NVIDIA_NIM_LLM_BASE_PATH)
           throw new Error(
-            "Nvidia NIM base path must be provided to use agents."
+            "NVIDIA NIM base path must be provided to use agents."
           );
         break;
 

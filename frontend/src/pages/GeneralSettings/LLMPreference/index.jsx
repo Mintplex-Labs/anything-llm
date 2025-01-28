@@ -96,12 +96,12 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["GeminiLLMApiKey"],
   },
   {
-    name: "Nvidia NIM",
+    name: "NVIDIA NIM",
     value: "nvidia-nim",
     logo: NvidiaNimLogo,
     options: (settings) => <NvidiaNimOptions settings={settings} />,
     description:
-      "Run full parameter LLMs directly on your GPU using Nvidia's inference microservice via Docker.",
+      "Run full parameter LLMs directly on your NVIDIA RTX GPU using NVIDIA NIM.",
     requiredConfig: ["NvidiaNimLLMBasePath"],
   },
   {

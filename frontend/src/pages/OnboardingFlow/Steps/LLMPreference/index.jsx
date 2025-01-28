@@ -92,12 +92,12 @@ const LLMS = [
     description: "Google's largest and most capable AI model",
   },
   {
-    name: "Nvidia NIM",
+    name: "NVIDIA NIM",
     value: "nvidia-nim",
     logo: NvidiaNimLogo,
     options: (settings) => <NvidiaNimOptions settings={settings} />,
     description:
-      "Run full parameter LLMs directly on your GPU using Nvidia's inference microservice via Docker.",
+      "Run full parameter LLMs directly on your NVIDIA RTX GPU using NVIDIA NIM.",
   },
   {
     name: "HuggingFace",

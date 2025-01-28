@@ -550,8 +550,8 @@ async function getNvidiaNimModels(basePath = null) {
 
     return { models, error: null };
   } catch (e) {
-    console.error(`Nvidia NIM:getNvidiaNimModels`, e.message);
-    return { models: [], error: "Could not fetch Nvidia NIM Models" };
+    console.error(`NVIDIA NIM:getNvidiaNimModels`, e.message);
+    return { models: [], error: "Could not fetch NVIDIA NIM Models" };
   }
 }
 
