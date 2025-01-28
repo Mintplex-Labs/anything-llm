@@ -89,13 +89,13 @@ function MultiUserMode() {
       className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16"
     >
       <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
-        <div className="w-full flex flex-col gap-y-1 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10 pb-8">
+        <div className="w-full flex flex-col gap-y-1 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10 pb-8 custom-border-secondary" style={{ borderTop: 0, borderLeft: 0, borderRight: 0, }}>
           <div className="items-center flex gap-x-4">
-            <p className="text-lg leading-6 font-bold text-white">
+            <p className="text-lg leading-6 font-bold text-white custom-text-secondary">
               {t("multi.title")}
             </p>
           </div>
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 custom-text-secondary">
             {t("multi.description")}
           </p>
         </div>
@@ -103,7 +103,7 @@ function MultiUserMode() {
           <div className="flex justify-end">
             <CTAButton
               onClick={() => handleSubmit()}
-              className="mt-3 mr-0 -mb-20 z-10"
+              className="mt-3 mr-0 -mb-20 z-10 custom-theme-bg-quad custom-theme-color-quad"
             >
               {saving ? t("common.saving") : t("common.save")}
             </CTAButton>
@@ -115,7 +115,7 @@ function MultiUserMode() {
             <div className="space-y-6 flex h-full w-full">
               <div className="w-full flex flex-col gap-y-4">
                 <div className="">
-                  <label className="mb-2.5 block font-medium text-white">
+                  <label className="mb-2.5 block font-medium text-white custom-text-secondary">
                     {multiUserModeEnabled
                       ? t("multi.enable.is-enable")
                       : t("multi.enable.enable")}
@@ -139,14 +139,14 @@ function MultiUserMode() {
                     <div className="w-80">
                       <label
                         htmlFor="username"
-                        className="block mb-3 font-medium text-white"
+                        className="block mb-3 font-medium text-white custom-text-secondary"
                       >
                         {t("multi.enable.username")}
                       </label>
                       <input
                         name="username"
                         type="text"
-                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
+                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 focus:ring-blue-500 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                         placeholder="Your admin username"
                         minLength={2}
                         required={true}
@@ -158,14 +158,14 @@ function MultiUserMode() {
                     <div className="mt-4 w-80">
                       <label
                         htmlFor="password"
-                        className="block mb-3 font-medium text-white"
+                        className="block mb-3 font-medium text-white custom-text-secondary"
                       >
                         {t("multi.enable.password")}
                       </label>
                       <input
                         name="password"
                         type="text"
-                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
+                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 focus:ring-blue-500 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                         placeholder="Your admin password"
                         minLength={8}
                         required={true}
@@ -178,7 +178,7 @@ function MultiUserMode() {
               </div>
             </div>
             <div className="flex items-center justify-between space-x-14">
-              <p className="text-white text-opacity-80 text-xs rounded-lg w-96">
+              <p className="text-white text-opacity-80 text-xs rounded-lg w-96 custom-text-secondary">
                 {t("multi.enable.description")}
               </p>
             </div>
@@ -268,11 +268,11 @@ function PasswordProtection() {
       <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
         <div className="w-full flex flex-col gap-y-1">
           <div className="items-center flex gap-x-4">
-            <p className="text-lg leading-6 font-bold text-white">
+            <p className="text-lg leading-6 font-bold text-white custom-text-secondary">
               {t("multi.password.title")}
             </p>
           </div>
-          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 custom-text-secondary">
             {t("multi.password.description")}
           </p>
         </div>
@@ -280,7 +280,7 @@ function PasswordProtection() {
           <div className="flex justify-end">
             <CTAButton
               onClick={() => handleSubmit()}
-              className="mt-3 mr-0 -mb-20 z-10"
+              className="mt-3 mr-0 -mb-20 z-10 custom-theme-bg-quad custom-theme-color-quad"
             >
               {saving ? t("common.saving") : t("common.save")}
             </CTAButton>
@@ -292,7 +292,7 @@ function PasswordProtection() {
             <div className="space-y-6 flex h-full w-full">
               <div className="w-full flex flex-col gap-y-4">
                 <div className="">
-                  <label className="mb-2.5 block font-medium text-white">
+                  <label className="mb-2.5 block font-medium text-white custom-text-secondary">
                     {t("multi.instance.title")}
                   </label>
 
@@ -311,14 +311,14 @@ function PasswordProtection() {
                     <div className="mt-4 w-80">
                       <label
                         htmlFor="password"
-                        className="block mb-3 font-medium text-white"
+                        className="block mb-3 font-medium text-white custom-text-secondary"
                       >
                         {t("multi.instance.password")}
                       </label>
                       <input
                         name="password"
                         type="text"
-                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder"
+                        className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
                         placeholder="Your Instance Password"
                         minLength={8}
                         required={true}
@@ -331,7 +331,7 @@ function PasswordProtection() {
               </div>
             </div>
             <div className="flex items-center justify-between space-x-14">
-              <p className="text-white text-opacity-80 light:text-theme-text text-xs rounded-lg w-96">
+              <p className="text-white text-opacity-80 light:text-theme-text text-xs rounded-lg w-96 custom-text-secondary">
                 {t("multi.instance.description")}
               </p>
             </div>
