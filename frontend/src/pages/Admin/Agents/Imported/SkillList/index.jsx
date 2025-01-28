@@ -18,7 +18,7 @@ export default function ImportedSkillList({
             target="_blank"
             className="text-theme-text-secondary light:underline hover:underline"
           >
-            {process.env.APPLICATION_FALLBACK_NAME} Agent Docs
+            {process.env.APPLICATION_FALLBACK_NAME || "Prism"} Agent Docs
           </a>
           .
         </p>

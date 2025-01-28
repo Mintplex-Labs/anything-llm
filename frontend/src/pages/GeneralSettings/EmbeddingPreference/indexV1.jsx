@@ -39,12 +39,12 @@ import { ALLOWED_SYSTEM_CONFIG_KEYS } from "@/utils/constants";
 
 const EMBEDDERS = [
   {
-    name: `${process.env.APPLICATION_FALLBACK_NAME} Embedder`,
+    name: `${process.env.APPLICATION_FALLBACK_NAME || "Prism"} Embedder`,
     value: "native",
     logo: AnythingLLMIcon,
     options: (settings) => <NativeEmbeddingOptions settings={settings} />,
     description:
-      `Use the built-in embedding provider for ${process.env.APPLICATION_FALLBACK_NAME}. Zero setup!`,
+      `Use the built-in embedding provider for ${process.env.APPLICATION_FALLBACK_NAME || "Prism"}. Zero setup!`,
   },
   {
     name: "OpenAI",

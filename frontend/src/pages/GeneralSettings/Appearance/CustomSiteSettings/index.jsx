@@ -62,7 +62,7 @@ export default function CustomSiteSettings() {
               name="meta_page_title"
               type="text"
               className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[400px] custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
-              placeholder={`${process.env.APPLICATION_FALLBACK_NAME} | Your personal LLM trained on anything`}
+              placeholder={`${process.env.APPLICATION_FALLBACK_NAME || "Prism"} | Your personal LLM trained on anything`}
               autoComplete="off"
               onChange={(e) => {
                 setSettings((prev) => {
@@ -71,7 +71,7 @@ export default function CustomSiteSettings() {
               }}
               value={
                 settings.title ??
-                `${process.env.APPLICATION_FALLBACK_NAME} | Your personal LLM trained on anything`
+                `${process.env.APPLICATION_FALLBACK_NAME || "Prism"} | Your personal LLM trained on anything`
               }
             />
           </div>

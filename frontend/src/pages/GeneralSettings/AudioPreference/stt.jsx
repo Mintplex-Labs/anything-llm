@@ -89,7 +89,7 @@ export default function SpeechToTextProvider({ settings }) {
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60 custom-text-secondary">
             Here you can specify what kind of text-to-speech and speech-to-text
-            providers you would want to use in your {process.env.APPLICATION_FALLBACK_NAME} experience. By
+            providers you would want to use in your {process.env.APPLICATION_FALLBACK_NAME || "Prism"} experience. By
             default, we use the browser&apos;s built in support for these
             services, but you may want to use others.
           </p>

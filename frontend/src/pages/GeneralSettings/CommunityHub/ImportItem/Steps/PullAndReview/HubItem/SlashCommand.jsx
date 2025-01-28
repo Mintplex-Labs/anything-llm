@@ -45,7 +45,7 @@ export default function SlashCommand({ item, setStep }) {
       <div className="flex flex-col gap-y-[25px] text-white/80 light:text-theme-text-secondary text-sm custom-text-secondary">
         <p>
           Slash commands are used to prefill information into a prompt while
-          chatting with a {process.env.APPLICATION_FALLBACK_NAME} workspace.
+          chatting with a {process.env.APPLICATION_FALLBACK_NAME || "Prism"} workspace.
           <br />
           <br />
           The slash command will be available during chatting by simply invoking

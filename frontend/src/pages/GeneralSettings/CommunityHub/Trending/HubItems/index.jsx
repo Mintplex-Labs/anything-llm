@@ -40,10 +40,10 @@ export default function HubItems() {
     <div className="w-full flex flex-col gap-y-1 pb-6 pt-6">
       <div className="flex flex-col gap-y-2 mb-4">
         <p className="text-base font-semibold text-theme-text-primary custom-text-secondary">
-          Recently Added on {process.env.APPLICATION_FALLBACK_NAME} Community Hub
+          Recently Added on {process.env.APPLICATION_FALLBACK_NAME || "Prism"} Community Hub
         </p>
         <p className="text-xs text-theme-text-secondary custom-text-secondary">
-          Explore the latest additions to the {process.env.APPLICATION_FALLBACK_NAME} Community Hub
+          Explore the latest additions to the {process.env.APPLICATION_FALLBACK_NAME || "Prism"} Community Hub
         </p>
       </div>
       <HubCategory loading={loading} exploreItems={exploreItems} />

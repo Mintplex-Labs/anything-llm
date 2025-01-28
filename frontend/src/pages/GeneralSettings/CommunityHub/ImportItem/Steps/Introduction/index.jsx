@@ -25,9 +25,9 @@ export default function Introduction({ settings, setSettings, setStep }) {
               agent-skills, system prompts, slash commands, and more!
             </p>
             <p>
-              These items are created by the {process.env.APPLICATION_FALLBACK_NAME} team and community, and
-              are a great way to get started with {process.env.APPLICATION_FALLBACK_NAME} as well as extend
-              {process.env.APPLICATION_FALLBACK_NAME} in a way that is customized to your needs.
+              These items are created by the {process.env.APPLICATION_FALLBACK_NAME || "Prism"} team and community, and
+              are a great way to get started with {process.env.APPLICATION_FALLBACK_NAME || "Prism"} as well as extend
+              {process.env.APPLICATION_FALLBACK_NAME || "Prism"} in a way that is customized to your needs.
             </p>
             <p>
               There are both <b>private</b> and <b>public</b> items in the

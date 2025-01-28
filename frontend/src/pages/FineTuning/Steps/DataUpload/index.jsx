@@ -55,7 +55,7 @@ export default function DataUpload({ setSettings, setStep }) {
           <p className="text-theme-text-secondary text-sm custom-text-secondary">
             This is the data your model will be trained and tuned on. This is a
             critical step and you should always train on the exact information
-            you want the model to inherit. By default, {process.env.APPLICATION_FALLBACK_NAME} will use all
+            you want the model to inherit. By default, {process.env.APPLICATION_FALLBACK_NAME || "Prism"} will use all
             chats, but you can filter chats by workspace and even limit training
             to chats which users have left a positive feedback indication on
             (thumbs up).

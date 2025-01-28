@@ -108,7 +108,7 @@ export const LLM_SELECTION_PRIVACY = {
   native: {
     name: "Custom Llama Model",
     description: [
-      `Your model and chats are only accessible on this ${process.env.APPLICATION_FALLBACK_NAME} instance`,
+      `Your model and chats are only accessible on this ${process.env.APPLICATION_FALLBACK_NAME || "Prism"} instance`,
     ],
     logo: AnythingLLMIcon,
   },
@@ -292,7 +292,7 @@ export const VECTOR_DB_PRIVACY = {
   lancedb: {
     name: "LanceDB",
     description: [
-      `Your vectors and document text are stored privately on this instance of ${process.env.APPLICATION_FALLBACK_NAME}`,
+      `Your vectors and document text are stored privately on this instance of ${process.env.APPLICATION_FALLBACK_NAME || "Prism"}`,
     ],
     logo: LanceDbLogo,
   },
@@ -300,9 +300,9 @@ export const VECTOR_DB_PRIVACY = {
 
 export const EMBEDDING_ENGINE_PRIVACY = {
   native: {
-    name: `${process.env.APPLICATION_FALLBACK_NAME} Embedder`,
+    name: `${process.env.APPLICATION_FALLBACK_NAME || "Prism"} Embedder`,
     description: [
-      `Your document text is embedded privately on this instance of ${process.env.APPLICATION_FALLBACK_NAME}`,
+      `Your document text is embedded privately on this instance of ${process.env.APPLICATION_FALLBACK_NAME || "Prism"}`,
     ],
     logo: AnythingLLMIcon,
   },

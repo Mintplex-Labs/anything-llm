@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 const TITLE = "Create your first workspace";
 const DESCRIPTION =
-  `Create your first workspace and get started with ${process.env.APPLICATION_FALLBACK_NAME}.`;
+  `Create your first workspace and get started with ${process.env.APPLICATION_FALLBACK_NAME || "Prism"}.`;
 
 export default function CreateWorkspace({
   setHeader,
