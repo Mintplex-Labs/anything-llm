@@ -68,12 +68,14 @@ function authEndpoints(app) {
       });
 
       if (!existingUser) {
-        existingUser = await User.create({
-          username: userInfo?.user?.username,
-          password: crypto.randomUUID(),
-          role: ROLES.default,
-          uid: userInfo?.sub,
-        });
+        existingUser = (
+          await User.create({
+            username: userInfo?.user?.username,
+            password: crypto.randomUUID(),
+            role: ROLES.default,
+            uid: userInfo?.sub,
+          })
+        )?.user;
         await Workspace.addToDefaultWorkspace(existingUser?.id);
       } else {
         // check if the user belongs to default workspace
