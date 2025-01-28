@@ -97,7 +97,7 @@ services:
     volumes:
       - ./server/storage:/app/server/storage
       - ./collector:/app/collector
-      - ./collector/node_modules:/app/collector/node_modules
+      - anything_llm_collector_node_modules:/app/collector/node_modules
       - ./Makefile:/app/Makefile
 
 volumes:
