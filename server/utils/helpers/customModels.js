@@ -590,7 +590,16 @@ async function getCohereRerankModels(apiKey = null) {
     return { models: modelNames, error: null };
   } catch (e) {
     console.error(`Cohere RERANK:getCohereRerankModels`, e.message);
-    return { models: [], error: "Could not fetch Cohere Rerank Models" };
+    return {
+      models: [
+        "rerank-v3.5",
+        "rerank-english-v3.0",
+        "rerank-multilingual-v2.0",
+        "rerank-english-v2.0",
+        "rerank-multilingual-v3.0",
+      ],
+      error: "Could not fetch Cohere Rerank Models. Returning default",
+    };
   }
 }
 

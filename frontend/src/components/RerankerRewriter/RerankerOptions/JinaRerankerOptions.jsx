@@ -50,7 +50,9 @@ export default function JinaRerankerOptions({ settings }) {
             name="RerankerApiKey"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Jina API Key"
-            defaultValue={settings?.RerankerApiKey || "*".repeat(20)}
+            defaultValue={
+              settings?.RerankerProvider === "jina" ? "*".repeat(20) : null
+            }
             required={true}
             autoComplete="off"
             spellCheck={false}
