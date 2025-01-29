@@ -40,8 +40,10 @@ const BLOCK_INFO = {
     defaultConfig: {
       url: "",
       method: "GET",
-      headers: {},
+      headers: [],
+      bodyType: "json",
       body: "",
+      formData: [],
       responseVariable: "",
     },
     getSummary: (config) =>
