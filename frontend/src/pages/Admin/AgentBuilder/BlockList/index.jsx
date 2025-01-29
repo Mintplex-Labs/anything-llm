@@ -93,12 +93,14 @@ export default function BlockList({
   removeBlock,
   toggleBlockExpansion,
   renderVariableSelect,
+  onDeleteVariable,
 }) {
   const renderBlockConfig = (block) => {
     const props = {
       config: block.config,
       onConfigChange: (config) => updateBlockConfig(block.id, config),
       renderVariableSelect,
+      onDeleteVariable,
     };
 
     switch (block.type) {

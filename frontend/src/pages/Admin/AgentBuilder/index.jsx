@@ -95,6 +95,30 @@ export default function AgentBuilder() {
     </select>
   );
 
+  const deleteVariable = (variableName) => {
+    // Clean up references in other blocks
+    blocks.forEach(block => {
+      if (block.type === BLOCK_TYPES.START) return;
+
+      let configUpdated = false;
+      const newConfig = { ...block.config };
+
+      // Check and clean responseVariable/resultVariable
+      if (newConfig.responseVariable === variableName) {
+        newConfig.responseVariable = "";
+        configUpdated = true;
+      }
+      if (newConfig.resultVariable === variableName) {
+        newConfig.resultVariable = "";
+        configUpdated = true;
+      }
+
+      if (configUpdated) {
+        updateBlockConfig(block.id, newConfig);
+      }
+    });
+  };
+
   return (
     <div className="w-full h-screen flex bg-theme-bg-primary">
       <AgentSidebar
@@ -113,6 +137,7 @@ export default function AgentBuilder() {
             removeBlock={removeBlock}
             toggleBlockExpansion={toggleBlockExpansion}
             renderVariableSelect={renderVariableSelect}
+            onDeleteVariable={deleteVariable}
           />
 
           <AddBlockMenu
