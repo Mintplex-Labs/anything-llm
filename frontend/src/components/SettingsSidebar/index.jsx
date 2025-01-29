@@ -71,7 +71,12 @@ export default function SettingsSidebar() {
           </button>
           <div className="flex items-center justify-center flex-grow">
             {!_isCustomLogo ? (
-              <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || "Prism" || ''}</div>
+              <img
+                src={"/prism-logo.png"}
+                alt="Default Logo"
+                className="block mx-auto h-6 w-auto"
+                style={{ maxHeight: "40px", objectFit: "contain" }}
+              />
             ) : (
               <img
                 src={logo}
@@ -106,7 +111,12 @@ export default function SettingsSidebar() {
               <div className="flex w-full items-center justify-between gap-x-4">
                 <div className="flex shrink-1 w-fit items-center justify-start">
                   {!_isCustomLogo ? (
-                    <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || "Prism" || ''}</div>
+                    <img
+                      src={"/prism-logo.png"}
+                      alt="Default Logo"
+                      className="rounded w-full max-h-[40px]"
+                      style={{ objectFit: "contain" }}
+                    />
                   ) : (
                     <img
                       src={logo}
@@ -166,7 +176,12 @@ export default function SettingsSidebar() {
           className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
         >
           {!_isCustomLogo ? (
-            <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || "Prism" || ''}</div>
+            <img
+              src={"/prism-logo.png"}
+              alt="Default Logo"
+              className="rounded max-h-[24px]"
+              style={{ objectFit: "contain" }}
+            />
           ) : (
             <img
               src={logo}

@@ -53,7 +53,11 @@ export default function Sidebar() {
           <div className="flex justify-between w-[250px] min-w-[250px]">
             <Link to={paths.home()} aria-label="Home">
               {!_isCustomLogo ? (
-                <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || "Prism" || ''}</div>
+                <img
+                  src={"/prism-logo.png"}
+                  alt="Default Logo"
+                  className={`rounded max-h-[24px] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
+                />
               ) : (
                 <img
                   src={logo}
@@ -135,7 +139,6 @@ export function SidebarMobileHeader() {
     handleBg();
   }, [showSidebar]);
 
-
   const checkIfCustomLogo = async () => {
     try {
       const { isCustomLogo } = await System.fetchLogo();
@@ -163,7 +166,12 @@ export function SidebarMobileHeader() {
         </button>
         <div className="flex items-center justify-center flex-grow">
           {!_isCustomLogo ? (
-            <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || "Prism" || ''}</div>
+            <img
+              src={"/prism-logo.png"}
+              alt="Default Logo"
+              className="block mx-auto h-6 w-auto"
+              style={{ maxHeight: "40px", objectFit: "contain" }}
+            />
           ) : (
             <img
               src={logo}
@@ -198,13 +206,18 @@ export function SidebarMobileHeader() {
             <div className="flex w-full items-center justify-between gap-x-4">
               <div className="flex shrink-1 w-fit items-center justify-start">
                 {!_isCustomLogo ? (
-                  <div className="leading-6 text-white font-bold">{process.env.APPLICATION_FALLBACK_NAME || "Prism" || ''}</div>
+                  <img
+                    src={"/prism-logo.png"}
+                    alt="Default Logo"
+                    className="block mx-auto h-6 w-auto"
+                    style={{ maxHeight: "40px", objectFit: "contain" }}
+                  />
                 ) : (
                   <img
                     src={logo}
                     alt="Logo"
-                    className="rounded w-full max-h-[40px]"
-                    style={{ objectFit: "contain" }}
+                    className="block mx-auto h-6 w-auto"
+                    style={{ maxHeight: "40px", objectFit: "contain" }}
                   />
                 )}
               </div>
