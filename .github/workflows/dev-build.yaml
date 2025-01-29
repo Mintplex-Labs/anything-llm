@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['disable-default-agent-skills'] # put your current branch to create a build. Core team only.
+    branches: ['agent-ui-animations'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
