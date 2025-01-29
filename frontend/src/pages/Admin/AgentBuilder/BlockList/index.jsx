@@ -1,81 +1,99 @@
-import React from 'react';
-import { X, CaretUp, CaretDown, Plus, Globe, Browser, File, Code } from "@phosphor-icons/react";
-import StartNode from '../nodes/StartNode';
-import ApiCallNode from '../nodes/ApiCallNode';
-import WebsiteNode from '../nodes/WebsiteNode';
-import FileNode from '../nodes/FileNode';
-import CodeNode from '../nodes/CodeNode';
+import React from "react";
+import {
+  X,
+  CaretUp,
+  CaretDown,
+  Plus,
+  Globe,
+  Browser,
+  File,
+  Code,
+} from "@phosphor-icons/react";
+import StartNode from "../nodes/StartNode";
+import ApiCallNode from "../nodes/ApiCallNode";
+import WebsiteNode from "../nodes/WebsiteNode";
+import FileNode from "../nodes/FileNode";
+import CodeNode from "../nodes/CodeNode";
 
 const BLOCK_TYPES = {
-  START: 'start',
-  API_CALL: 'apiCall',
-  WEBSITE: 'website',
-  FILE: 'file',
-  CODE: 'code',
+  START: "start",
+  API_CALL: "apiCall",
+  WEBSITE: "website",
+  FILE: "file",
+  CODE: "code",
 };
 
 const BLOCK_INFO = {
   [BLOCK_TYPES.START]: {
-    label: 'Agent Start',
+    label: "Agent Start",
     icon: <Plus className="w-5 h-5 text-theme-text-primary" />,
-    description: 'Configure agent variables and settings',
+    description: "Configure agent variables and settings",
     getSummary: (config) => {
-      const varCount = config.variables?.filter(v => v.name)?.length || 0;
-      return `${varCount} variable${varCount !== 1 ? 's' : ''} defined`;
-    }
+      const varCount = config.variables?.filter((v) => v.name)?.length || 0;
+      return `${varCount} variable${varCount !== 1 ? "s" : ""} defined`;
+    },
   },
   [BLOCK_TYPES.API_CALL]: {
-    label: 'API Call',
+    label: "API Call",
     icon: <Globe className="w-5 h-5 text-theme-text-primary" />,
-    description: 'Make an HTTP request',
+    description: "Make an HTTP request",
     defaultConfig: {
-      url: '',
-      method: 'GET',
+      url: "",
+      method: "GET",
       headers: {},
-      body: '',
-      responseVariable: '',
+      body: "",
+      responseVariable: "",
     },
-    getSummary: (config) => `${config.method || 'GET'} ${config.url || '(no URL)'}`
+    getSummary: (config) =>
+      `${config.method || "GET"} ${config.url || "(no URL)"}`,
   },
   [BLOCK_TYPES.WEBSITE]: {
-    label: 'Open Website',
+    label: "Open Website",
     icon: <Browser className="w-5 h-5 text-theme-text-primary" />,
-    description: 'Navigate to a URL',
+    description: "Navigate to a URL",
     defaultConfig: {
-      url: '',
-      selector: '',
-      action: 'read',
-      value: '',
-      resultVariable: '',
+      url: "",
+      selector: "",
+      action: "read",
+      value: "",
+      resultVariable: "",
     },
-    getSummary: (config) => `${config.action || 'read'} from ${config.url || '(no URL)'}`
+    getSummary: (config) =>
+      `${config.action || "read"} from ${config.url || "(no URL)"}`,
   },
   [BLOCK_TYPES.FILE]: {
-    label: 'Open File',
+    label: "Open File",
     icon: <File className="w-5 h-5 text-theme-text-primary" />,
-    description: 'Read or write to a file',
+    description: "Read or write to a file",
     defaultConfig: {
-      path: '',
-      operation: 'read',
-      content: '',
-      resultVariable: '',
+      path: "",
+      operation: "read",
+      content: "",
+      resultVariable: "",
     },
-    getSummary: (config) => `${config.operation || 'read'} ${config.path || '(no path)'}`
+    getSummary: (config) =>
+      `${config.operation || "read"} ${config.path || "(no path)"}`,
   },
   [BLOCK_TYPES.CODE]: {
-    label: 'Code Execution',
+    label: "Code Execution",
     icon: <Code className="w-5 h-5 text-theme-text-primary" />,
-    description: 'Execute code snippets',
+    description: "Execute code snippets",
     defaultConfig: {
-      language: 'javascript',
-      code: '',
-      resultVariable: '',
+      language: "javascript",
+      code: "",
+      resultVariable: "",
     },
-    getSummary: (config) => `Run ${config.language || 'javascript'} code`
+    getSummary: (config) => `Run ${config.language || "javascript"} code`,
   },
 };
 
-export default function BlockList({ blocks, updateBlockConfig, removeBlock, toggleBlockExpansion, renderVariableSelect }) {
+export default function BlockList({
+  blocks,
+  updateBlockConfig,
+  removeBlock,
+  toggleBlockExpansion,
+  renderVariableSelect,
+}) {
   const renderBlockConfig = (block) => {
     const props = {
       config: block.config,
@@ -105,7 +123,7 @@ export default function BlockList({ blocks, updateBlockConfig, removeBlock, togg
         <div key={block.id} className="flex flex-col">
           <div
             className={`bg-theme-bg-secondary border border-theme-sidebar-border rounded-lg overflow-hidden transition-all duration-200 ${
-              block.isExpanded ? 'w-full' : 'w-[280px] mx-auto'
+              block.isExpanded ? "w-full" : "w-[280px] mx-auto"
             }`}
           >
             <button
@@ -128,7 +146,7 @@ export default function BlockList({ blocks, updateBlockConfig, removeBlock, togg
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {block.id !== 'start' && (
+                {block.id !== "start" && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -150,7 +168,9 @@ export default function BlockList({ blocks, updateBlockConfig, removeBlock, togg
             </button>
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                block.isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                block.isExpanded
+                  ? "max-h-[1000px] opacity-100"
+                  : "max-h-0 opacity-0"
               }`}
             >
               <div className="border-t border-theme-sidebar-border p-4 bg-theme-bg-primary">
@@ -160,8 +180,21 @@ export default function BlockList({ blocks, updateBlockConfig, removeBlock, togg
           </div>
           {index < blocks.length - 1 && (
             <div className="flex justify-center my-1">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-theme-text-secondary">
-                <path d="M12 4L12 20M12 20L6 14M12 20L18 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="text-theme-text-secondary"
+              >
+                <path
+                  d="M12 4L12 20M12 20L6 14M12 20L18 14"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
           )}

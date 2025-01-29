@@ -1,6 +1,10 @@
-import React from 'react';
+import React from "react";
 
-export default function FileNode({ config, onConfigChange, renderVariableSelect }) {
+export default function FileNode({
+  config,
+  onConfigChange,
+  renderVariableSelect,
+}) {
   return (
     <div className="space-y-4">
       <div>
@@ -25,7 +29,7 @@ export default function FileNode({ config, onConfigChange, renderVariableSelect 
           className="w-full p-2 rounded bg-theme-bg-primary border border-theme-sidebar-border text-theme-text-primary"
         />
       </div>
-      {config.operation !== 'read' && (
+      {config.operation !== "read" && (
         <div>
           <label className="text-sm text-theme-text-secondary">Content</label>
           <textarea
@@ -38,7 +42,9 @@ export default function FileNode({ config, onConfigChange, renderVariableSelect 
         </div>
       )}
       <div>
-        <label className="text-sm text-theme-text-secondary">Store Result In</label>
+        <label className="text-sm text-theme-text-secondary">
+          Store Result In
+        </label>
         {renderVariableSelect(
           config.resultVariable,
           (value) => onConfigChange({ resultVariable: value }),

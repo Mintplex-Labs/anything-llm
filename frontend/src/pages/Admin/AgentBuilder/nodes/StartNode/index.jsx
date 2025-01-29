@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { Plus } from "@phosphor-icons/react";
 
 export default function StartNode({ config, onConfigChange }) {
@@ -32,7 +32,7 @@ export default function StartNode({ config, onConfigChange }) {
           {index === config.variables.length - 1 && (
             <button
               onClick={() => {
-                const newVars = [...config.variables, { name: '', value: '' }];
+                const newVars = [...config.variables, { name: "", value: "" }];
                 onConfigChange({ variables: newVars });
               }}
               className="p-2 rounded bg-theme-bg-primary border border-theme-sidebar-border text-theme-text-primary hover:bg-theme-bg-hover"

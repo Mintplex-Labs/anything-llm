@@ -1,12 +1,20 @@
-import React from 'react';
+import React from "react";
 import { ArrowsClockwise } from "@phosphor-icons/react";
 
-export default function AgentSidebar({ agentName, setAgentName, agentDescription, setAgentDescription, generateJson }) {
+export default function AgentSidebar({
+  agentName,
+  setAgentName,
+  agentDescription,
+  setAgentDescription,
+  generateJson,
+}) {
   return (
     <div className="w-80 border-r border-theme-sidebar-border bg-theme-bg-secondary p-6 overflow-y-auto">
       <div className="space-y-6">
         <div>
-          <h1 className="text-xl font-medium  text-theme-text-primary mb-6">Agent Builder</h1>
+          <h1 className="text-xl font-medium  text-theme-text-primary mb-6">
+            Agent Builder
+          </h1>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-white mb-3">

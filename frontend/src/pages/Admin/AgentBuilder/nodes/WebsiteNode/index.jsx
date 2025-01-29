@@ -1,6 +1,10 @@
-import React from 'react';
+import React from "react";
 
-export default function WebsiteNode({ config, onConfigChange, renderVariableSelect }) {
+export default function WebsiteNode({
+  config,
+  onConfigChange,
+  renderVariableSelect,
+}) {
   return (
     <div className="space-y-4">
       <div>
@@ -26,7 +30,9 @@ export default function WebsiteNode({ config, onConfigChange, renderVariableSele
         </select>
       </div>
       <div>
-        <label className="text-sm text-theme-text-secondary">CSS Selector</label>
+        <label className="text-sm text-theme-text-secondary">
+          CSS Selector
+        </label>
         <input
           type="text"
           placeholder="#element-id or .class-name"
@@ -36,7 +42,9 @@ export default function WebsiteNode({ config, onConfigChange, renderVariableSele
         />
       </div>
       <div>
-        <label className="text-sm text-theme-text-secondary">Store Result In</label>
+        <label className="text-sm text-theme-text-secondary">
+          Store Result In
+        </label>
         {renderVariableSelect(
           config.resultVariable,
           (value) => onConfigChange({ resultVariable: value }),

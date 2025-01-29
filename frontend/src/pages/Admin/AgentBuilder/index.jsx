@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import AgentSidebar from './AgentSidebar';
-import BlockList, { BLOCK_TYPES, BLOCK_INFO } from './BlockList';
-import AddBlockMenu from './AddBlockMenu';
+import React, { useState } from "react";
+import AgentSidebar from "./AgentSidebar";
+import BlockList, { BLOCK_TYPES, BLOCK_INFO } from "./BlockList";
+import AddBlockMenu from "./AddBlockMenu";
 
 export default function AgentBuilder() {
-  const [agentName, setAgentName] = useState('');
-  const [agentDescription, setAgentDescription] = useState('');
+  const [agentName, setAgentName] = useState("");
+  const [agentDescription, setAgentDescription] = useState("");
   const [blocks, setBlocks] = useState([
     {
-      id: 'start',
+      id: "start",
       type: BLOCK_TYPES.START,
       config: {
-        variables: [{ name: '', value: '' }],
+        variables: [{ name: "", value: "" }],
       },
       isExpanded: true,
     },
   ]);
-  const [selectedBlock, setSelectedBlock] = useState('start');
+  const [selectedBlock, setSelectedBlock] = useState("start");
   const [showBlockMenu, setShowBlockMenu] = useState(false);
 
   const addBlock = (type) => {
@@ -31,16 +31,20 @@ export default function AgentBuilder() {
   };
 
   const updateBlockConfig = (blockId, config) => {
-    setBlocks(blocks.map(block =>
-      block.id === blockId ? { ...block, config: { ...block.config, ...config } } : block
-    ));
+    setBlocks(
+      blocks.map((block) =>
+        block.id === blockId
+          ? { ...block, config: { ...block.config, ...config } }
+          : block
+      )
+    );
   };
 
   const removeBlock = (blockId) => {
-    if (blockId === 'start') return;
-    setBlocks(blocks.filter(block => block.id !== blockId));
+    if (blockId === "start") return;
+    setBlocks(blocks.filter((block) => block.id !== blockId));
     if (selectedBlock === blockId) {
-      setSelectedBlock('start');
+      setSelectedBlock("start");
     }
   };
 
@@ -48,7 +52,7 @@ export default function AgentBuilder() {
     const json = {
       name: agentName,
       description: agentDescription,
-      steps: blocks.map(block => ({
+      steps: blocks.map((block) => ({
         type: block.type,
         config: block.config,
       })),
@@ -57,26 +61,36 @@ export default function AgentBuilder() {
   };
 
   const toggleBlockExpansion = (blockId) => {
-    setBlocks(blocks.map(block =>
-      block.id === blockId ? { ...block, isExpanded: !block.isExpanded } : block
-    ));
+    setBlocks(
+      blocks.map((block) =>
+        block.id === blockId
+          ? { ...block, isExpanded: !block.isExpanded }
+          : block
+      )
+    );
   };
 
   // Get all available variables from the start block
   const getAvailableVariables = () => {
-    const startBlock = blocks.find(b => b.type === BLOCK_TYPES.START);
-    return startBlock?.config?.variables?.filter(v => v.name) || [];
+    const startBlock = blocks.find((b) => b.type === BLOCK_TYPES.START);
+    return startBlock?.config?.variables?.filter((v) => v.name) || [];
   };
 
-  const renderVariableSelect = (value, onChange, placeholder = "Select variable") => (
+  const renderVariableSelect = (
+    value,
+    onChange,
+    placeholder = "Select variable"
+  ) => (
     <select
       value={value || ""}
       onChange={(e) => onChange(e.target.value)}
       className="w-full p-2 rounded bg-theme-bg-primary border border-theme-sidebar-border text-theme-text-primary"
     >
       <option value="">{placeholder}</option>
-      {getAvailableVariables().map(v => (
-        <option key={v.name} value={v.name}>{v.name}</option>
+      {getAvailableVariables().map((v) => (
+        <option key={v.name} value={v.name}>
+          {v.name}
+        </option>
       ))}
     </select>
   );

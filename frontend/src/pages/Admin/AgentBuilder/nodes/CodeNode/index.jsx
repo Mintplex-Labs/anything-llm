@@ -1,6 +1,10 @@
-import React from 'react';
+import React from "react";
 
-export default function CodeNode({ config, onConfigChange, renderVariableSelect }) {
+export default function CodeNode({
+  config,
+  onConfigChange,
+  renderVariableSelect,
+}) {
   return (
     <div className="space-y-4">
       <div>
@@ -26,7 +30,9 @@ export default function CodeNode({ config, onConfigChange, renderVariableSelect 
         />
       </div>
       <div>
-        <label className="text-sm text-theme-text-secondary">Store Result In</label>
+        <label className="text-sm text-theme-text-secondary">
+          Store Result In
+        </label>
         {renderVariableSelect(
           config.resultVariable,
           (value) => onConfigChange({ resultVariable: value }),
