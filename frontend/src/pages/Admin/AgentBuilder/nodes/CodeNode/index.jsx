@@ -8,19 +8,29 @@ export default function CodeNode({
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-white mb-2">Language</label>
+        <label className="block text-sm font-medium text-white mb-2">
+          Language
+        </label>
         <select
           value={config.language}
           onChange={(e) => onConfigChange({ language: e.target.value })}
           className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
         >
-          <option value="javascript" className="bg-theme-bg-primary">JavaScript</option>
-          <option value="python" className="bg-theme-bg-primary">Python</option>
-          <option value="shell" className="bg-theme-bg-primary">Shell</option>
+          <option value="javascript" className="bg-theme-bg-primary">
+            JavaScript
+          </option>
+          <option value="python" className="bg-theme-bg-primary">
+            Python
+          </option>
+          <option value="shell" className="bg-theme-bg-primary">
+            Shell
+          </option>
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-white mb-2">Code</label>
+        <label className="block text-sm font-medium text-white mb-2">
+          Code
+        </label>
         <textarea
           placeholder="Enter code..."
           value={config.code}

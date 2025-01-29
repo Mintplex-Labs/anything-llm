@@ -1,7 +1,11 @@
 import React from "react";
 import { Plus, X } from "@phosphor-icons/react";
 
-export default function StartNode({ config, onConfigChange, onDeleteVariable }) {
+export default function StartNode({
+  config,
+  onConfigChange,
+  onDeleteVariable,
+}) {
   const handleDeleteVariable = (index, variableName) => {
     // First clean up references, then delete the variable
     onDeleteVariable(variableName);

@@ -20,15 +20,23 @@ export default function WebsiteNode({
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-white mb-2">Action</label>
+        <label className="block text-sm font-medium text-white mb-2">
+          Action
+        </label>
         <select
           value={config.action}
           onChange={(e) => onConfigChange({ action: e.target.value })}
           className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
         >
-          <option value="read" className="bg-theme-bg-primary">Read Content</option>
-          <option value="click" className="bg-theme-bg-primary">Click Element</option>
-          <option value="type" className="bg-theme-bg-primary">Type Text</option>
+          <option value="read" className="bg-theme-bg-primary">
+            Read Content
+          </option>
+          <option value="click" className="bg-theme-bg-primary">
+            Click Element
+          </option>
+          <option value="type" className="bg-theme-bg-primary">
+            Type Text
+          </option>
         </select>
       </div>
       <div>

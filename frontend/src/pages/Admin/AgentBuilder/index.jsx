@@ -86,7 +86,9 @@ export default function AgentBuilder() {
       onChange={(e) => onChange(e.target.value)}
       className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
     >
-      <option value="" className="bg-theme-bg-primary">{placeholder}</option>
+      <option value="" className="bg-theme-bg-primary">
+        {placeholder}
+      </option>
       {getAvailableVariables().map((v) => (
         <option key={v.name} value={v.name} className="bg-theme-bg-primary">
           {v.name}
@@ -97,7 +99,7 @@ export default function AgentBuilder() {
 
   const deleteVariable = (variableName) => {
     // Clean up references in other blocks
-    blocks.forEach(block => {
+    blocks.forEach((block) => {
       if (block.type === BLOCK_TYPES.START) return;
 
       let configUpdated = false;

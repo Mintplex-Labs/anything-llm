@@ -137,7 +137,7 @@ export default function BlockList({
               <div className="flex items-center gap-3">
                 <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center">
                   {React.cloneElement(BLOCK_INFO[block.type].icon, {
-                    className: "w-4 h-4 text-white"
+                    className: "w-4 h-4 text-white",
                   })}
                 </div>
                 <div className="flex-1 text-left min-w-0">

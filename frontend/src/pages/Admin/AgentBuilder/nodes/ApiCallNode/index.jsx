@@ -18,7 +18,9 @@ export default function ApiCallNode({
   };
 
   const removeHeader = (index) => {
-    const newHeaders = [...(config.headers || [])].filter((_, i) => i !== index);
+    const newHeaders = [...(config.headers || [])].filter(
+      (_, i) => i !== index
+    );
     onConfigChange({ headers: newHeaders });
   };
 
@@ -38,7 +40,9 @@ export default function ApiCallNode({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-2">Method</label>
+        <label className="block text-sm font-medium text-white mb-2">
+          Method
+        </label>
         <select
           value={config.method}
           onChange={(e) => onConfigChange({ method: e.target.value })}
@@ -70,7 +74,9 @@ export default function ApiCallNode({
                 type="text"
                 placeholder="Header name"
                 value={header.key}
-                onChange={(e) => handleHeaderChange(index, "key", e.target.value)}
+                onChange={(e) =>
+                  handleHeaderChange(index, "key", e.target.value)
+                }
                 className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
                 autoComplete="off"
                 spellCheck={false}
@@ -79,7 +85,9 @@ export default function ApiCallNode({
                 type="text"
                 placeholder="Value"
                 value={header.value}
-                onChange={(e) => handleHeaderChange(index, "value", e.target.value)}
+                onChange={(e) =>
+                  handleHeaderChange(index, "value", e.target.value)
+                }
                 className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
                 autoComplete="off"
                 spellCheck={false}
@@ -98,16 +106,24 @@ export default function ApiCallNode({
 
       {["POST", "PUT", "PATCH"].includes(config.method) && (
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Request Body</label>
+          <label className="block text-sm font-medium text-white mb-2">
+            Request Body
+          </label>
           <div className="space-y-2">
             <select
               value={config.bodyType || "json"}
               onChange={(e) => onConfigChange({ bodyType: e.target.value })}
               className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
             >
-              <option value="json" className="bg-theme-bg-primary">JSON</option>
-              <option value="text" className="bg-theme-bg-primary">Raw Text</option>
-              <option value="form" className="bg-theme-bg-primary">Form Data</option>
+              <option value="json" className="bg-theme-bg-primary">
+                JSON
+              </option>
+              <option value="text" className="bg-theme-bg-primary">
+                Raw Text
+              </option>
+              <option value="form" className="bg-theme-bg-primary">
+                Form Data
+              </option>
             </select>
             {config.bodyType === "json" ? (
               <textarea
@@ -151,7 +167,9 @@ export default function ApiCallNode({
                     />
                     <button
                       onClick={() => {
-                        const newFormData = [...(config.formData || [])].filter((_, i) => i !== index);
+                        const newFormData = [...(config.formData || [])].filter(
+                          (_, i) => i !== index
+                        );
                         onConfigChange({ formData: newFormData });
                       }}
                       className="p-2.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:text-red-500 hover:border-red-500/20 hover:bg-red-500/10 transition-colors duration-300"
@@ -163,7 +181,10 @@ export default function ApiCallNode({
                 ))}
                 <button
                   onClick={() => {
-                    const newFormData = [...(config.formData || []), { key: "", value: "" }];
+                    const newFormData = [
+                      ...(config.formData || []),
+                      { key: "", value: "" },
+                    ];
                     onConfigChange({ formData: newFormData });
                   }}
                   className="w-full p-2.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300 text-sm"
