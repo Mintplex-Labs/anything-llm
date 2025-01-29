@@ -122,24 +122,26 @@ export default function BlockList({
       {blocks.map((block, index) => (
         <div key={block.id} className="flex flex-col">
           <div
-            className={`bg-theme-bg-secondary border border-theme-sidebar-border rounded-lg overflow-hidden transition-all duration-200 ${
+            className={`bg-theme-action-menu-bg border border-white/10 rounded-lg overflow-hidden transition-all duration-300 ${
               block.isExpanded ? "w-full" : "w-[280px] mx-auto"
             }`}
           >
             <button
               onClick={() => toggleBlockExpansion(block.id)}
-              className="w-full p-4 flex items-center justify-between hover:bg-theme-bg-hover transition-colors duration-200 group"
+              className="w-full p-4 flex items-center justify-between hover:bg-theme-action-menu-item-hover transition-colors duration-300 group"
             >
-              <div className="flex items-center gap-3 min-h-[32px]">
-                <div className="w-8 h-8 rounded-lg bg-theme-bg-primary flex items-center justify-center border border-theme-sidebar-border">
-                  {BLOCK_INFO[block.type].icon}
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center">
+                  {React.cloneElement(BLOCK_INFO[block.type].icon, {
+                    className: "w-4 h-4 text-white"
+                  })}
                 </div>
-                <div>
-                  <span className="font-medium text-theme-text-primary block">
+                <div className="flex-1 text-left min-w-0">
+                  <span className="text-sm font-medium text-white block">
                     {BLOCK_INFO[block.type].label}
                   </span>
                   {!block.isExpanded && (
-                    <p className="text-sm text-theme-text-secondary">
+                    <p className="text-xs text-white/60 truncate">
                       {BLOCK_INFO[block.type].getSummary(block.config)}
                     </p>
                   )}
@@ -152,16 +154,16 @@ export default function BlockList({
                       e.stopPropagation();
                       removeBlock(block.id);
                     }}
-                    className="p-1 text-theme-text-secondary opacity-0 group-hover:opacity-100 hover:text-red-500 rounded transition-opacity duration-200"
+                    className="p-1 text-white/60 opacity-0 group-hover:opacity-100 hover:text-red-500 rounded transition-all duration-300"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 )}
                 <div className="w-4 flex items-center justify-center">
                   {block.isExpanded ? (
-                    <CaretUp className="w-4 h-4 text-theme-text-secondary" />
+                    <CaretUp className="w-3.5 h-3.5 text-white/60" />
                   ) : (
-                    <CaretDown className="w-4 h-4 text-theme-text-secondary" />
+                    <CaretDown className="w-3.5 h-3.5 text-white/60" />
                   )}
                 </div>
               </div>
@@ -173,7 +175,7 @@ export default function BlockList({
                   : "max-h-0 opacity-0"
               }`}
             >
-              <div className="border-t border-theme-sidebar-border p-4 bg-theme-bg-primary">
+              <div className="border-t border-white/10 p-4 bg-theme-bg-secondary">
                 {renderBlockConfig(block)}
               </div>
             </div>
@@ -181,12 +183,12 @@ export default function BlockList({
           {index < blocks.length - 1 && (
             <div className="flex justify-center my-1">
               <svg
-                width="24"
-                height="24"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-theme-text-secondary"
+                className="text-white/40"
               >
                 <path
                   d="M12 4L12 20M12 20L6 14M12 20L18 14"

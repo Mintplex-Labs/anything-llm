@@ -8,31 +8,33 @@ export default function ApiCallNode({
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-sm text-theme-text-secondary">URL</label>
+        <label className="block text-sm font-medium text-white mb-2">URL</label>
         <input
           type="text"
           placeholder="https://api.example.com/endpoint"
           value={config.url}
           onChange={(e) => onConfigChange({ url: e.target.value })}
-          className="w-full p-2 rounded bg-theme-bg-primary border border-theme-sidebar-border text-theme-text-primary"
+          className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+          autoComplete="off"
+          spellCheck={false}
         />
       </div>
       <div>
-        <label className="text-sm text-theme-text-secondary">Method</label>
+        <label className="block text-sm font-medium text-white mb-2">Method</label>
         <select
           value={config.method}
           onChange={(e) => onConfigChange({ method: e.target.value })}
-          className="w-full p-2 rounded bg-theme-bg-primary border border-theme-sidebar-border text-theme-text-primary"
+          className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
         >
           {["GET", "POST", "PUT", "DELETE"].map((method) => (
-            <option key={method} value={method}>
+            <option key={method} value={method} className="bg-theme-bg-primary">
               {method}
             </option>
           ))}
         </select>
       </div>
       <div>
-        <label className="text-sm text-theme-text-secondary">
+        <label className="block text-sm font-medium text-white mb-2">
           Store Response In
         </label>
         {renderVariableSelect(
