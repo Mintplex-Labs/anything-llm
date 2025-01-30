@@ -16,9 +16,9 @@ export default function AddBlockMenu({
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [setShowBlockMenu]);
 
@@ -39,24 +39,24 @@ export default function AddBlockMenu({
           {Object.entries(BLOCK_INFO).map(
             ([type, info]) =>
               type !== BLOCK_TYPES.START && (
-            <button
+                <button
                   key={type}
                   onClick={() => {
                     addBlock(type);
                     setShowBlockMenu(false);
                   }}
                   className="w-full p-2.5 flex items-center gap-3 hover:bg-theme-action-menu-item-hover text-white transition-colors duration-300 group"
-            >
+                >
                   <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center">
                     <div className="w-fit h-fit text-white">{info.icon}</div>
-              </div>
+                  </div>
                   <div className="text-left flex-1">
                     <div className="text-sm font-medium">{info.label}</div>
                     <div className="text-xs text-white/60">
                       {info.description}
                     </div>
-              </div>
-            </button>
+                  </div>
+                </button>
               )
           )}
         </div>

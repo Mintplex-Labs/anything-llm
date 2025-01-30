@@ -7,7 +7,7 @@ const { chatHistory } = require("./chat-history.js");
 const { memory } = require("./memory.js");
 const { rechart } = require("./rechart.js");
 const { sqlAgent } = require("./sql-agent/index.js");
-const { taskExecutor } = require('./agent-task-executor');
+const { taskExecutor } = require("./agent-task-executor");
 
 module.exports = {
   webScraping,

@@ -1,16 +1,16 @@
-const fs = require('fs').promises;
-const path = require('path');
+const fs = require("fs").promises;
+const path = require("path");
 
 const TASKS_DIR = process.env.STORAGE_DIR
-  ? path.join(process.env.STORAGE_DIR, 'plugins', 'agent-tasks')
-  : path.join(process.cwd(), 'storage', 'plugins', 'agent-tasks');
+  ? path.join(process.env.STORAGE_DIR, "plugins", "agent-tasks")
+  : path.join(process.cwd(), "storage", "plugins", "agent-tasks");
 
 // Ensure tasks directory exists
 async function ensureTasksDir() {
   try {
     await fs.mkdir(TASKS_DIR, { recursive: true });
   } catch (error) {
-    console.error('Failed to create tasks directory:', error);
+    console.error("Failed to create tasks directory:", error);
   }
 }
 
@@ -34,7 +34,7 @@ async function saveTask(name, config) {
     await fs.writeFile(filename, JSON.stringify(config, null, 2));
     return true;
   } catch (error) {
-    console.error('Failed to save task:', error);
+    console.error("Failed to save task:", error);
     return false;
   }
 }
@@ -43,12 +43,12 @@ async function saveTask(name, config) {
 async function loadTask(name) {
   try {
     const filename = path.join(TASKS_DIR, `${name}.json`);
-    const content = await fs.readFile(filename, 'utf8');
+    const content = await fs.readFile(filename, "utf8");
     const config = JSON.parse(content);
     config.originalName = name; // Track original name for renames
     return config;
   } catch (error) {
-    console.error('Failed to load task:', error);
+    console.error("Failed to load task:", error);
     return null;
   }
 }
@@ -59,10 +59,10 @@ async function listTasks() {
     await ensureTasksDir();
     const files = await fs.readdir(TASKS_DIR);
     return files
-      .filter(f => f.endsWith('.json'))
-      .map(f => f.replace('.json', ''));
+      .filter((f) => f.endsWith(".json"))
+      .map((f) => f.replace(".json", ""));
   } catch (error) {
-    console.error('Failed to list tasks:', error);
+    console.error("Failed to list tasks:", error);
     return [];
   }
 }
@@ -88,13 +88,13 @@ const taskExecutor = {
         parameters: {
           type: {
             type: "string",
-            description: "Type of task to execute"
+            description: "Type of task to execute",
           },
           config: {
             type: "object",
             description: "Configuration for the task",
-            additionalProperties: true
-          }
+            additionalProperties: true,
+          },
         },
         async handler(params, context) {
           const { type, config } = params;
@@ -111,7 +111,7 @@ const taskExecutor = {
             default:
               throw new Error(`Unknown task type: ${type}`);
           }
-        }
+        },
       });
 
       aibitat.function("executeAgentTask", {
@@ -119,13 +119,13 @@ const taskExecutor = {
         parameters: {
           taskName: {
             type: "string",
-            description: "Name of the agent task to execute"
+            description: "Name of the agent task to execute",
           },
           variables: {
             type: "object",
             description: "Variables to use in the task",
-            additionalProperties: true
-          }
+            additionalProperties: true,
+          },
         },
         async handler(params, context) {
           const { taskName, variables = {} } = params;
@@ -136,20 +136,21 @@ const taskExecutor = {
           for (const step of taskConfig.steps) {
             const result = await aibitat.executeFunction("executeTask", {
               type: step.type,
-              config: replaceVariables(step.config, variables)
+              config: replaceVariables(step.config, variables),
             });
 
-            const varName = step.config.resultVariable || step.config.responseVariable;
+            const varName =
+              step.config.resultVariable || step.config.responseVariable;
             if (varName) {
               results[varName] = result;
               variables[varName] = result; // Make available for next steps
             }
           }
           return JSON.stringify(results);
-        }
+        },
       });
-    }
-  })
+    },
+  }),
 };
 
 async function executeApiCall(config) {
@@ -157,18 +158,19 @@ async function executeApiCall(config) {
 
   const requestConfig = {
     method,
-    headers: headers.reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {})
+    headers: headers.reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {}),
   };
 
-  if (['POST', 'PUT', 'PATCH'].includes(method)) {
-    if (bodyType === 'form') {
+  if (["POST", "PUT", "PATCH"].includes(method)) {
+    if (bodyType === "form") {
       const formDataObj = new URLSearchParams();
       formData.forEach(({ key, value }) => formDataObj.append(key, value));
       requestConfig.body = formDataObj.toString();
-      requestConfig.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-    } else if (bodyType === 'json') {
+      requestConfig.headers["Content-Type"] =
+        "application/x-www-form-urlencoded";
+    } else if (bodyType === "json") {
       requestConfig.body = body;
-      requestConfig.headers['Content-Type'] = 'application/json';
+      requestConfig.headers["Content-Type"] = "application/json";
     } else {
       requestConfig.body = body;
     }
@@ -197,14 +199,14 @@ async function executeWebsiteAction(config) {
   const { url, action, selector } = config;
   let content;
 
-  switch(action) {
-    case 'read':
+  switch (action) {
+    case "read":
       content = await webBrowsing.readContent(url, selector);
       return content;
-    case 'click':
+    case "click":
       // For now, just return the selector that would be clicked
       return `Would click: ${selector} on ${url}`;
-    case 'type':
+    case "type":
       // For now, just return the typing action that would occur
       return `Would type at: ${selector} on ${url}`;
     default:
@@ -215,13 +217,13 @@ async function executeWebsiteAction(config) {
 async function executeFileOperation(config) {
   const { path, operation, content } = config;
 
-  switch(operation) {
-    case 'read':
-      return await fs.readFile(path, 'utf8');
-    case 'write':
+  switch (operation) {
+    case "read":
+      return await fs.readFile(path, "utf8");
+    case "write":
       await fs.writeFile(path, content);
       return `File written to ${path}`;
-    case 'append':
+    case "append":
       await fs.appendFile(path, content);
       return `Content appended to ${path}`;
     default:
@@ -240,5 +242,5 @@ module.exports = {
   taskExecutor,
   saveTask,
   loadTask,
-  listTasks
+  listTasks,
 };

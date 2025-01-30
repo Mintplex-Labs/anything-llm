@@ -41,14 +41,17 @@ export default function AgentTasks() {
   const runTask = async (taskName) => {
     try {
       const task = taskDetails[taskName];
-      const startBlock = task.steps.find(step => step.type === "START");
+      const startBlock = task.steps.find((step) => step.type === "START");
       const variables = {};
 
       // If there are variables defined in the start block, prompt for their values
       if (startBlock?.config?.variables) {
         for (const variable of startBlock.config.variables) {
           if (!variable.name) continue;
-          const value = prompt(`Enter value for ${variable.name}:`, variable.value || "");
+          const value = prompt(
+            `Enter value for ${variable.name}:`,
+            variable.value || ""
+          );
           if (value === null) return; // User cancelled
           variables[variable.name] = value;
         }
@@ -102,7 +105,11 @@ export default function AgentTasks() {
                   <h3 className="text-white font-medium">{taskName}</h3>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setSelectedTask(selectedTask === taskName ? null : taskName)}
+                      onClick={() =>
+                        setSelectedTask(
+                          selectedTask === taskName ? null : taskName
+                        )
+                      }
                       className="p-2 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                       title="Toggle details"
                     >

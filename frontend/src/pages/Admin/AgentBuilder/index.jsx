@@ -123,7 +123,10 @@ export default function AgentBuilder() {
     const taskName = agentName.toLowerCase().replace(/[^a-z0-9-]/g, "-");
 
     try {
-      const { success, error } = await AgentTasks.saveTask(taskName, taskConfig);
+      const { success, error } = await AgentTasks.saveTask(
+        taskName,
+        taskConfig
+      );
       if (!success) throw new Error(error);
       showToast("Agent task saved successfully!", "success");
       await loadAvailableTasks();
@@ -197,20 +200,26 @@ export default function AgentBuilder() {
   const runTask = async (taskName) => {
     try {
       const task = taskDetails[taskName];
-      const startBlock = task.steps.find(step => step.type === "START");
+      const startBlock = task.steps.find((step) => step.type === "START");
       const variables = {};
 
       // If there are variables defined in the start block, prompt for their values
       if (startBlock?.config?.variables) {
         for (const variable of startBlock.config.variables) {
           if (!variable.name) continue;
-          const value = prompt(`Enter value for ${variable.name}:`, variable.value || "");
+          const value = prompt(
+            `Enter value for ${variable.name}:`,
+            variable.value || ""
+          );
           if (value === null) return; // User cancelled
           variables[variable.name] = value;
         }
       }
 
-      const { success, error, results } = await AgentTasks.runTask(taskName, variables);
+      const { success, error, results } = await AgentTasks.runTask(
+        taskName,
+        variables
+      );
       if (!success) throw new Error(error);
 
       showToast("Task executed successfully!", "success");

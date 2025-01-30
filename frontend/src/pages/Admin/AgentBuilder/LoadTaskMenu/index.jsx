@@ -41,7 +41,11 @@ export default function LoadTaskMenu({
                   <span className="text-white">{taskName}</span>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setSelectedTaskForDetails(selectedTaskForDetails === taskName ? null : taskName)}
+                      onClick={() =>
+                        setSelectedTaskForDetails(
+                          selectedTaskForDetails === taskName ? null : taskName
+                        )
+                      }
                       className="p-1.5 rounded-lg bg-theme-action-menu-bg border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                       title="Toggle details"
                     >
@@ -63,25 +67,26 @@ export default function LoadTaskMenu({
                     </button>
                   </div>
                 </div>
-                {selectedTaskForDetails === taskName && taskDetails[taskName] && (
-                  <div className="p-3 border-t border-white/5 bg-theme-action-menu-bg">
-                    <p className="text-white/80 text-sm mb-2">
-                      {taskDetails[taskName].description || "No description"}
-                    </p>
-                    <div className="text-sm text-white/60">
-                      <div className="font-medium mb-1">Steps:</div>
-                      <ul className="list-disc list-inside">
-                        {taskDetails[taskName].steps.map((step, index) => (
-                          <li key={index}>
-                            {step.type}
-                            {step.config.responseVariable &&
-                              ` → ${step.config.responseVariable}`}
-                          </li>
-                        ))}
-                      </ul>
+                {selectedTaskForDetails === taskName &&
+                  taskDetails[taskName] && (
+                    <div className="p-3 border-t border-white/5 bg-theme-action-menu-bg">
+                      <p className="text-white/80 text-sm mb-2">
+                        {taskDetails[taskName].description || "No description"}
+                      </p>
+                      <div className="text-sm text-white/60">
+                        <div className="font-medium mb-1">Steps:</div>
+                        <ul className="list-disc list-inside">
+                          {taskDetails[taskName].steps.map((step, index) => (
+                            <li key={index}>
+                              {step.type}
+                              {step.config.responseVariable &&
+                                ` → ${step.config.responseVariable}`}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             ))
           )}
