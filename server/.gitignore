@@ -9,6 +9,7 @@ storage/vector-cache/*.json
 storage/exports
 storage/imports
 storage/plugins/agent-skills/*
+storage/plugins/agent-tasks/*
 !storage/documents/DOCUMENTS.md
 logs/server.log
 *.db

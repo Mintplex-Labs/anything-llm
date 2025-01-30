@@ -130,9 +130,9 @@ export default function BlockList({
               block.isExpanded ? "w-full" : "w-[280px] mx-auto"
             }`}
           >
-            <button
+            <div
               onClick={() => toggleBlockExpansion(block.id)}
-              className="w-full p-4 flex items-center justify-between hover:bg-theme-action-menu-item-hover transition-colors duration-300 group"
+              className="w-full p-4 flex items-center justify-between hover:bg-theme-action-menu-item-hover transition-colors duration-300 group cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center">
@@ -171,7 +171,7 @@ export default function BlockList({
                   )}
                 </div>
               </div>
-            </button>
+            </div>
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
                 block.isExpanded

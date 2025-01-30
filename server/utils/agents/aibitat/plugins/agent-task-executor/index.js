@@ -1,7 +1,9 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const TASKS_DIR = path.join(__dirname, 'tasks');
+const TASKS_DIR = process.env.STORAGE_DIR
+  ? path.join(process.env.STORAGE_DIR, 'plugins', 'agent-tasks')
+  : path.join(process.cwd(), 'storage', 'plugins', 'agent-tasks');
 
 // Ensure tasks directory exists
 async function ensureTasksDir() {
@@ -17,6 +19,18 @@ async function saveTask(name, config) {
   try {
     await ensureTasksDir();
     const filename = path.join(TASKS_DIR, `${name}.json`);
+
+    // If this is a rename of an existing task, delete the old file
+    if (config.originalName && config.originalName !== name) {
+      const oldFilename = path.join(TASKS_DIR, `${config.originalName}.json`);
+      try {
+        await fs.unlink(oldFilename);
+      } catch (error) {
+        // Ignore if old file doesn't exist
+      }
+      delete config.originalName;
+    }
+
     await fs.writeFile(filename, JSON.stringify(config, null, 2));
     return true;
   } catch (error) {
@@ -30,7 +44,9 @@ async function loadTask(name) {
   try {
     const filename = path.join(TASKS_DIR, `${name}.json`);
     const content = await fs.readFile(filename, 'utf8');
-    return JSON.parse(content);
+    const config = JSON.parse(content);
+    config.originalName = name; // Track original name for renames
+    return config;
   } catch (error) {
     console.error('Failed to load task:', error);
     return null;

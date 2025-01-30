@@ -3,9 +3,9 @@ import React, { useState, useEffect } from "react";
 import BlockList, { BLOCK_TYPES, BLOCK_INFO } from "./BlockList";
 import AddBlockMenu from "./AddBlockMenu";
 import showToast from "@/utils/toast";
-import { AgentTasks } from "@/models/agent-tasks";
-import { FolderOpen, Play, Info } from "@phosphor-icons/react";
+import AgentTasks from "@/models/agent-tasks";
 import AgentSidebar from "./AgentSidebar";
+import LoadTaskMenu from "./LoadTaskMenu";
 
 export default function AgentBuilder() {
   const [agentName, setAgentName] = useState("");
@@ -33,55 +33,46 @@ export default function AgentBuilder() {
 
   const loadAvailableTasks = async () => {
     try {
-      const tasks = await AgentTasks.list();
+      const { success, error, tasks } = await AgentTasks.listTasks();
+      if (!success) throw new Error(error);
       setAvailableTasks(tasks);
 
       // Load details for each task
       const details = {};
       for (const taskName of tasks) {
-        const task = await AgentTasks.load(taskName);
+        const { success, error, task } = await AgentTasks.getTask(taskName);
+        if (!success) throw new Error(error);
         details[taskName] = task.config;
       }
       setTaskDetails(details);
     } catch (error) {
       console.error(error);
-      showToast({
-        type: "error",
-        title: "Error",
-        description: "Failed to load available tasks",
-      });
+      showToast("Failed to load available tasks", "error");
     }
   };
 
   const loadTask = async (taskName) => {
     try {
-      const { config } = await AgentTasks.load(taskName);
+      const { success, error, task } = await AgentTasks.getTask(taskName);
+      if (!success) throw new Error(error);
 
       // Convert steps to blocks with IDs
-      const newBlocks = config.steps.map((step, index) => ({
+      const newBlocks = task.config.steps.map((step, index) => ({
         id: index === 0 ? "start" : `block_${index}`,
         type: step.type,
         config: step.config,
         isExpanded: true,
       }));
 
-      setAgentName(config.name);
-      setAgentDescription(config.description);
+      setAgentName(task.config.name);
+      setAgentDescription(task.config.description);
       setBlocks(newBlocks);
       setShowLoadMenu(false);
 
-      showToast({
-        type: "success",
-        title: "Success",
-        description: "Task loaded successfully!",
-      });
+      showToast("Task loaded successfully!", "success");
     } catch (error) {
       console.error(error);
-      showToast({
-        type: "error",
-        title: "Error",
-        description: "Failed to load task",
-      });
+      showToast("Failed to load task", "error");
     }
   };
 
@@ -114,17 +105,13 @@ export default function AgentBuilder() {
     }
   };
 
-  const generateJson = async () => {
+  const saveTask = async () => {
     if (!agentName.trim()) {
-      showToast({
-        type: "error",
-        title: "Error",
-        description: "Please provide a name for your agent task",
-      });
+      showToast("Please provide a name for your agent task", "error");
       return;
     }
 
-    const json = {
+    const taskConfig = {
       name: agentName,
       description: agentDescription,
       steps: blocks.map((block) => ({
@@ -133,41 +120,16 @@ export default function AgentBuilder() {
       })),
     };
 
+    const taskName = agentName.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+
     try {
-      await AgentTasks.save(
-        agentName.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
-        json
-      );
-
-      showToast({
-        type: "success",
-        title: "Success",
-        description: "Agent task saved successfully!",
-      });
-
-      // Refresh available tasks
+      const { success, error } = await AgentTasks.saveTask(taskName, taskConfig);
+      if (!success) throw new Error(error);
+      showToast("Agent task saved successfully!", "success");
       await loadAvailableTasks();
-
-      // Reset form
-      setAgentName("");
-      setAgentDescription("");
-      setBlocks([
-        {
-          id: "start",
-          type: BLOCK_TYPES.START,
-          config: {
-            variables: [{ name: "", value: "" }],
-          },
-          isExpanded: true,
-        },
-      ]);
     } catch (error) {
-      console.error(error);
-      showToast({
-        type: "error",
-        title: "Error",
-        description: "Failed to save agent task",
-      });
+      console.error("Save error details:", error);
+      showToast("Failed to save agent task", "error");
     }
   };
 
@@ -248,23 +210,14 @@ export default function AgentBuilder() {
         }
       }
 
-      const results = await AgentTasks.run(taskName, variables);
+      const { success, error, results } = await AgentTasks.runTask(taskName, variables);
+      if (!success) throw new Error(error);
 
-      showToast({
-        type: "success",
-        title: "Task Complete",
-        description: "Task executed successfully!",
-      });
-
-      // Show results in a more readable format
+      showToast("Task executed successfully!", "success");
       console.log("Task Results:", results);
     } catch (error) {
       console.error(error);
-      showToast({
-        type: "error",
-        title: "Error",
-        description: "Failed to run agent task",
-      });
+      showToast("Failed to run agent task", "error");
     }
   };
 
@@ -275,7 +228,7 @@ export default function AgentBuilder() {
         setAgentName={setAgentName}
         agentDescription={agentDescription}
         setAgentDescription={setAgentDescription}
-        generateJson={generateJson}
+        onSave={saveTask}
         onLoadClick={() => setShowLoadMenu(true)}
       />
 
@@ -296,83 +249,16 @@ export default function AgentBuilder() {
             addBlock={addBlock}
           />
 
-          {/* Load Task Menu */}
-          {showLoadMenu && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-theme-action-menu-bg rounded-lg p-6 max-w-md w-full mx-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-white">Load Task</h2>
-                  <button
-                    onClick={() => {
-                      setShowLoadMenu(false);
-                      setSelectedTaskForDetails(null);
-                    }}
-                    className="text-white/60 hover:text-white"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div className="grid gap-2">
-                  {availableTasks.length === 0 ? (
-                    <div className="text-white/60">No tasks available</div>
-                  ) : (
-                    availableTasks.map((taskName) => (
-                      <div
-                        key={taskName}
-                        className="bg-theme-bg-primary border border-white/5 rounded-lg overflow-hidden"
-                      >
-                        <div className="p-3 flex items-center justify-between">
-                          <span className="text-white">{taskName}</span>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => setSelectedTaskForDetails(selectedTaskForDetails === taskName ? null : taskName)}
-                              className="p-1.5 rounded-lg bg-theme-action-menu-bg border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
-                              title="Toggle details"
-                            >
-                              <Info className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => runTask(taskName)}
-                              className="p-1.5 rounded-lg bg-theme-action-menu-bg border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
-                              title="Run task"
-                            >
-                              <Play className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => loadTask(taskName)}
-                              className="p-1.5 rounded-lg bg-theme-action-menu-bg border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
-                              title="Load task for editing"
-                            >
-                              <FolderOpen className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                        {selectedTaskForDetails === taskName && taskDetails[taskName] && (
-                          <div className="p-3 border-t border-white/5 bg-theme-action-menu-bg">
-                            <p className="text-white/80 text-sm mb-2">
-                              {taskDetails[taskName].description || "No description"}
-                            </p>
-                            <div className="text-sm text-white/60">
-                              <div className="font-medium mb-1">Steps:</div>
-                              <ul className="list-disc list-inside">
-                                {taskDetails[taskName].steps.map((step, index) => (
-                                  <li key={index}>
-                                    {step.type}
-                                    {step.config.responseVariable &&
-                                      ` → ${step.config.responseVariable}`}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+          <LoadTaskMenu
+            showLoadMenu={showLoadMenu}
+            setShowLoadMenu={setShowLoadMenu}
+            availableTasks={availableTasks}
+            taskDetails={taskDetails}
+            selectedTaskForDetails={selectedTaskForDetails}
+            setSelectedTaskForDetails={setSelectedTaskForDetails}
+            onLoadTask={loadTask}
+            onRunTask={runTask}
+          />
         </div>
       </div>
     </div>
