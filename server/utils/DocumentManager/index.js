@@ -41,8 +41,9 @@ class DocumentManager {
         );
 
         if (
-          !data.hasOwnProperty("pageContent") ||
-          !data.hasOwnProperty("token_count_estimate")
+          process.env.EMBEDDING_ENGINE === "openai" &&
+          (!data.hasOwnProperty("pageContent") ||
+            !data.hasOwnProperty("token_count_estimate"))
         ) {
           this.log(
             `Skipping document - Could not find page content or token_count_estimate in pinned source.`

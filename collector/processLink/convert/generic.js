@@ -41,7 +41,10 @@ async function scrapeGenericUrl(link, textOnly = false) {
     published: new Date().toLocaleString(),
     wordCount: content.split(" ").length,
     pageContent: content,
-    token_count_estimate: tokenizeString(content).length,
+    token_count_estimate:
+      process.env.EMBEDDING_ENGINE === "openai"
+        ? tokenizeString(content).length
+        : undefined,
   };
 
   const document = writeToServerDocuments(

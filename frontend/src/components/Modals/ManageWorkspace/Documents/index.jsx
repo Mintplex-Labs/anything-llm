@@ -136,7 +136,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
 
     let totalTokenCount = 0;
     newMovedItems.forEach((item) => {
-      const { cached, token_count_estimate } = item;
+      const { cached, token_count_estimate = 0 } = item;
       if (!cached) {
         totalTokenCount += token_count_estimate;
       }

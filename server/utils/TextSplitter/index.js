@@ -10,7 +10,7 @@
  * @property {string} published - ISO 8601 date string
  * @property {number} wordCount - Number of words in the document
  * @property {string} pageContent - The raw text content of the document
- * @property {number} token_count_estimate - Number of tokens in the document
+ * @property {number} [token_count_estimate] - Number of tokens in the document
  */
 
 function isNullOrNaN(value) {

@@ -3,11 +3,11 @@ const { writeToServerDocuments } = require("../utils/files");
 const { tokenizeString } = require("../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
-// Will remove the last .extension from the input 
+// Will remove the last .extension from the input
 // and stringify the input + move to lowercase.
 function stripAndSlug(input) {
-  if (!input.includes('.')) return slugify(input, { lower: true });
-  return slugify(input.split('.').slice(0, -1).join('-'), { lower: true })
+  if (!input.includes(".")) return slugify(input, { lower: true });
+  return slugify(input.split(".").slice(0, -1).join("-"), { lower: true });
 }
 
 const METADATA_KEYS = {
@@ -17,22 +17,34 @@ const METADATA_KEYS = {
       try {
         const u = new URL(url);
         validUrl = ["https:", "http:"].includes(u.protocol);
-      } catch { }
+      } catch {}
 
       if (validUrl) return `web://${url.toLowerCase()}.website`;
       return `file://${stripAndSlug(title)}.txt`;
     },
     title: ({ title }) => `${stripAndSlug(title)}.txt`,
-    docAuthor: ({ docAuthor }) => { return typeof docAuthor === 'string' ? docAuthor : 'no author specified' },
-    description: ({ description }) => { return typeof description === 'string' ? description : 'no description found' },
-    docSource: ({ docSource }) => { return typeof docSource === 'string' ? docSource : 'no source set' },
-    chunkSource: ({ chunkSource, title }) => { return typeof chunkSource === 'string' ? chunkSource : `${stripAndSlug(title)}.txt` },
+    docAuthor: ({ docAuthor }) => {
+      return typeof docAuthor === "string" ? docAuthor : "no author specified";
+    },
+    description: ({ description }) => {
+      return typeof description === "string"
+        ? description
+        : "no description found";
+    },
+    docSource: ({ docSource }) => {
+      return typeof docSource === "string" ? docSource : "no source set";
+    },
+    chunkSource: ({ chunkSource, title }) => {
+      return typeof chunkSource === "string"
+        ? chunkSource
+        : `${stripAndSlug(title)}.txt`;
+    },
     published: ({ published }) => {
       if (isNaN(Number(published))) return new Date().toLocaleString();
-      return new Date(Number(published)).toLocaleString()
+      return new Date(Number(published)).toLocaleString();
     },
-  }
-}
+  },
+};
 
 async function processRawText(textContent, metadata) {
   console.log(`-- Working Raw Text doc ${metadata.title} --`);
@@ -55,15 +67,20 @@ async function processRawText(textContent, metadata) {
     published: METADATA_KEYS.possible.published(metadata),
     wordCount: textContent.split(" ").length,
     pageContent: textContent,
-    token_count_estimate: tokenizeString(textContent).length,
+    token_count_estimate:
+      process.env.EMBEDDING_ENGINE === "openai"
+        ? tokenizeString(textContent).length
+        : undefined,
   };
 
   const document = writeToServerDocuments(
     data,
     `raw-${stripAndSlug(metadata.title)}-${data.id}`
   );
-  console.log(`[SUCCESS]: Raw text and metadata saved & ready for embedding.\n`);
+  console.log(
+    `[SUCCESS]: Raw text and metadata saved & ready for embedding.\n`
+  );
   return { success: true, reason: null, documents: [document] };
 }
 
-module.exports = { processRawText }
+module.exports = { processRawText };

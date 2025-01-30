@@ -82,7 +82,10 @@ async function loadGitlabRepo(args, response) {
     }
 
     data.wordCount = pageContent.split(" ").length;
-    data.token_count_estimate = tokenizeString(pageContent).length;
+    data.token_count_estimate =
+      process.env.EMBEDDING_ENGINE === "openai"
+        ? tokenizeString(pageContent).length
+        : undefined;
     data.pageContent = pageContent;
 
     console.log(

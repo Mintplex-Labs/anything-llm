@@ -42,7 +42,10 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
-    token_count_estimate: tokenizeString(content).length,
+    token_count_estimate:
+      process.env.EMBEDDING_ENGINE === "openai"
+        ? tokenizeString(content).length
+        : undefined,
   };
 
   const document = writeToServerDocuments(
