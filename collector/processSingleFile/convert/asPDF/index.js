@@ -11,11 +11,12 @@ const {
 const { tokenizeString } = require("../../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 const PDFLoader = require("./PDFLoader");
-
+const setLogger = require("../../../utils/logger");
+const logger = setLogger();
 
 async function extractTextFromApi(fullFilePath) {
   const endpoint = `${process.env.PRISM_OCR_ENDPOINT}${process.env.EXTRACT_API}`;
-  console.log(endpoint);
+  logger.info(endpoint);
   const token = `Bearer ${process.env.PRISM_PARSER_BEARER_TOKEN}`;
   const params = new URLSearchParams({
     output_format: process.env.OUTPUT_FORMAT,
@@ -38,10 +39,10 @@ async function extractTextFromApi(fullFilePath) {
     });
 
     if (response.status === 200) {
-      console.log(`Text extraction successful for file: ${fullFilePath}`);
+      logger.info(`Text extraction successful for file: ${fullFilePath}`);
       return response.data; // Assuming the response contains the extracted text
     } else {
-      console.error(
+      logger.error(
         `Failed to extract text. Status: ${response.status}, Data: ${response.data}`
       );
       throw new Error(
@@ -49,11 +50,11 @@ async function extractTextFromApi(fullFilePath) {
       );
     }
   } catch (error) {
-    console.error(`Error during text extraction: ${error.message}`);
+    logger.error(`Error during text extraction: ${error.message}`);
     if (error.code === 'ECONNABORTED') {
-      console.error('Request timed out after 10 minutes');
+      logger.error('Request timed out after 10 minutes');
     } else {
-      console.error('Error during OCR processing:', error.message);
+      logger.error('Error during OCR processing:', error.message);
     }
     throw error;
   }
@@ -94,18 +95,14 @@ async function extractTextNative(fullFilePath) {
 }
 
 async function asPdf({ fullFilePath = "", filename = "" }) {
-  const pdfLoader = new PDFLoader(fullFilePath, {
-    splitPages: true,
-  });
-
-  console.log(`-- Working ${filename} --`);
   let content;
   let data;
   try {
     // Extract text using the external API
     if (process.env.PRISM_OCR_PARSER == 'true') {
-      console.log(`using prism doc parser - external `);
-      content = await extractTextFromApi(fullFilePath);
+      logger.info(`using prism doc parser - external `);
+      const result = await extractTextFromApi(fullFilePath);
+      content = result.map((page) => page.text).join("");
       data = {
         id: v4(),
         url: "file://" + fullFilePath,
@@ -118,11 +115,12 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
         wordCount: content.split(" ").length,
         pageContent: content,
         token_count_estimate: tokenizeString(content).length,
+        contentWithPages: result, // Return the content with pages eg; [{page: 1, text: "page 1 text"}, ...]
       };
     } else {
-      result = await extractTextNative(fullFilePath);
+      const result = await extractTextNative(fullFilePath);
       content = result.text
-      docs = result.docs
+      const docs = result.docs
       data = {
         id: v4(),
         url: "file://" + fullFilePath,
@@ -139,7 +137,7 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
     }
     
   } catch (error) {
-    console.error(`Failed to extract text for ${filename}: ${error.message}`);
+    logger.error(`Failed to extract text for ${filename}: ${error.message}`);
     trashFile(fullFilePath);
     return {
       success: false,
@@ -149,7 +147,7 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
   }
 
   if (!content) {
-    console.error(`Resulting text content was empty for ${filename}.`);
+    logger.error(`Resulting text content was empty for ${filename}.`);
     trashFile(fullFilePath);
     return {
       success: false,
@@ -157,7 +155,6 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
       documents: [],
     };
   }
-  // const content = pageContent.join("");
 
 
   const document = writeToServerDocuments(
@@ -165,7 +162,7 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
     `${slugify(filename)}-${data.id}`
   );
   trashFile(fullFilePath);
-  console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
+  logger.info(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
   return { success: true, reason: null, documents: [document] };
 }
 
