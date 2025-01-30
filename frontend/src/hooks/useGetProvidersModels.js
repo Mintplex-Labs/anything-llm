@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 // Providers which cannot use this feature for workspace<>model selection
 export const DISABLED_PROVIDERS = [
   "azure",
-  "native",
   "textgenwebui",
   "generic-openai",
   "bedrock",
@@ -22,7 +21,9 @@ const PROVIDER_DEFAULT_MODELS = {
     "gemini-1.5-flash-8b-exp-0827",
     "gemini-exp-1114",
     "gemini-exp-1121",
+    "gemini-exp-1206",
     "learnlm-1.5-pro-experimental",
+    "gemini-2.0-flash-exp",
   ],
   anthropic: [
     "claude-instant-1.2",
@@ -45,7 +46,6 @@ const PROVIDER_DEFAULT_MODELS = {
   fireworksai: [],
   "nvidia-nim": [],
   groq: [],
-  native: [],
   cohere: [
     "command-r",
     "command-r-plus",

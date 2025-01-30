@@ -37,9 +37,9 @@ class NvidiaNimProvider extends InheritMultiple([Provider, UnTooled]) {
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("Nvidia NIM chat: No results!");
+          throw new Error("NVIDIA NIM chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("Nvidia NIM chat: No results length!");
+          throw new Error("NVIDIA NIM chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {

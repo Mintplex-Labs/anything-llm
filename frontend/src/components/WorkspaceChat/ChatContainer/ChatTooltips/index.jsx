@@ -61,6 +61,24 @@ export function ChatTooltips() {
         // as the citation modal is z-indexed above the chat history
         className="tooltip !text-xs z-[100]"
       />
+      <Tooltip
+        id="metrics-visibility"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+      <Tooltip
+        id="expand-cot"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+      <Tooltip
+        id="cot-thinking"
+        place="bottom"
+        delayShow={500}
+        className="tooltip !text-xs"
+      />
     </>
   );
 }

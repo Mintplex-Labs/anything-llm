@@ -25,7 +25,7 @@ export default function ThreadItem({
   hasNext,
   ctrlPressed = false,
 }) {
-  const { slug } = useParams();
+  const { slug, threadSlug = null } = useParams();
   const optionsContainer = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
   const { t } = useTranslation();
@@ -43,8 +43,8 @@ export default function ThreadItem({
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
         className={`${
           isActive
-            ? "border-l-2 border-b-2 border-white light:border-theme-sidebar-border z-30"
-            : "border-l border-b border-[#6F6F71] light:border-theme-sidebar-border z-10"
+            ? "border-l-2 border-b-2 border-white light:border-theme-sidebar-border z-[2]"
+            : "border-l border-b border-[#6F6F71] light:border-theme-sidebar-border z-[1]"
         } h-[50%] absolute top-0 left-2 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
@@ -53,8 +53,8 @@ export default function ThreadItem({
           style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
           className={`${
             idx <= activeIdx && !isActive
-              ? "border-l-2 border-white light:border-theme-sidebar-border z-20"
-              : "border-l border-[#6F6F71] light:border-theme-sidebar-border z-10"
+              ? "border-l-2 border-white light:border-theme-sidebar-border z-[2]"
+              : "border-l border-[#6F6F71] light:border-theme-sidebar-border z-[1]"
           } h-[100%] absolute top-0 left-2`}
         ></div>
       )}
@@ -144,6 +144,7 @@ export default function ThreadItem({
                 thread={thread}
                 onRemove={onRemove}
                 close={() => setShowOptions(false)}
+                currentThreadSlug={threadSlug}
               />
             )}
           </div>
@@ -153,7 +154,14 @@ export default function ThreadItem({
   );
 }
 
-function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
+function OptionsMenu({
+  containerRef,
+  workspace,
+  thread,
+  onRemove,
+  close,
+  currentThreadSlug,
+}) {
   const menuRef = useRef(null);
   const { t } = useTranslation();
 
@@ -225,6 +233,10 @@ function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
     if (success) {
       showToast(t("threads.delete.success"), "success", { clear: true });
       onRemove(thread.id);
+      // Redirect if deleting the active thread
+      if (currentThreadSlug === thread.slug) {
+        window.location.href = paths.workspace.chat(workspace.slug);
+      }
       return;
     }
   };

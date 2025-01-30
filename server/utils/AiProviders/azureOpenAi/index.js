@@ -1,7 +1,11 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 
 class AzureOpenAiLLM {
@@ -12,9 +16,13 @@ class AzureOpenAiLLM {
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
+    this.apiVersion = "2024-12-01-preview";
     this.openai = new OpenAIClient(
       process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
+      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY),
+      {
+        apiVersion: this.apiVersion,
+      }
     );
     this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
     this.limits = {
@@ -25,6 +33,13 @@ class AzureOpenAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.#log(
+      `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens. API-Version: ${this.apiVersion}`
+    );
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[AzureOpenAi]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -100,7 +115,7 @@ class AzureOpenAiLLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),
@@ -114,11 +129,28 @@ class AzureOpenAiLLM {
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
-    const data = await this.openai.getChatCompletions(this.model, messages, {
-      temperature,
-    });
-    if (!data.hasOwnProperty("choices")) return null;
-    return data.choices[0].message.content;
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.getChatCompletions(this.model, messages, {
+        temperature,
+      })
+    );
+
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
+      return null;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage.promptTokens || 0,
+        completion_tokens: result.output.usage.completionTokens || 0,
+        total_tokens: result.output.usage.totalTokens || 0,
+        outputTps: result.output.usage.completionTokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = [], { temperature = 0.7 }) {
@@ -127,28 +159,43 @@ class AzureOpenAiLLM {
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
-    const stream = await this.openai.streamChatCompletions(
-      this.model,
-      messages,
-      {
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      await this.openai.streamChatCompletions(this.model, messages, {
         temperature,
         n: 1,
-      }
+      }),
+      messages
     );
-    return stream;
+
+    return measuredStreamRequest;
   }
 
+  /**
+   * Handles the stream response from the AzureOpenAI API.
+   * Azure does not return the usage metrics in the stream response, but 1msg = 1token
+   * so we can estimate the completion tokens by counting the number of messages.
+   * @param {Object} response - the response object
+   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream - the stream response from the AzureOpenAI API w/tracking
+   * @param {Object} responseProps - the response properties
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      let usage = {
+        completion_tokens: 0,
+      };
 
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement(usage);
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       for await (const event of stream) {
@@ -156,6 +203,8 @@ class AzureOpenAiLLM {
           const delta = choice.delta?.content;
           if (!delta) continue;
           fullText += delta;
+          usage.completion_tokens++;
+
           writeResponseChunk(response, {
             uuid,
             sources: [],
@@ -176,6 +225,7 @@ class AzureOpenAiLLM {
         error: false,
       });
       response.removeListener("close", handleAbort);
+      stream?.endMeasurement(usage);
       resolve(fullText);
     });
   }

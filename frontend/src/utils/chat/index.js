@@ -17,8 +17,10 @@ export default function handleChat(
     sources = [],
     error,
     close,
+    animate = false,
     chatId = null,
     action = null,
+    metrics = {},
   } = chatResult;
 
   if (type === "abort" || type === "statusResponse") {
@@ -33,8 +35,9 @@ export default function handleChat(
         sources,
         closed: true,
         error,
-        animate: false,
+        animate,
         pending: false,
+        metrics,
       },
     ]);
     _chatHistory.push({
@@ -45,8 +48,9 @@ export default function handleChat(
       sources,
       closed: true,
       error,
-      animate: false,
+      animate,
       pending: false,
+      metrics,
     });
   } else if (type === "textResponse") {
     setLoadingResponse(false);
@@ -62,6 +66,7 @@ export default function handleChat(
         animate: !close,
         pending: false,
         chatId,
+        metrics,
       },
     ]);
     _chatHistory.push({
@@ -74,21 +79,42 @@ export default function handleChat(
       animate: !close,
       pending: false,
       chatId,
+      metrics,
     });
-  } else if (type === "textResponseChunk") {
+  } else if (
+    type === "textResponseChunk" ||
+    type === "finalizeResponseStream"
+  ) {
     const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
     if (chatIdx !== -1) {
       const existingHistory = { ..._chatHistory[chatIdx] };
-      const updatedHistory = {
-        ...existingHistory,
-        content: existingHistory.content + textResponse,
-        sources,
-        error,
-        closed: close,
-        animate: !close,
-        pending: false,
-        chatId,
-      };
+      let updatedHistory;
+
+      // If the response is finalized, we can set the loading state to false.
+      // and append the metrics to the history.
+      if (type === "finalizeResponseStream") {
+        updatedHistory = {
+          ...existingHistory,
+          closed: close,
+          animate: !close,
+          pending: false,
+          chatId,
+          metrics,
+        };
+        setLoadingResponse(false);
+      } else {
+        updatedHistory = {
+          ...existingHistory,
+          content: existingHistory.content + textResponse,
+          sources,
+          error,
+          closed: close,
+          animate: !close,
+          pending: false,
+          chatId,
+          metrics,
+        };
+      }
       _chatHistory[chatIdx] = updatedHistory;
     } else {
       _chatHistory.push({
@@ -101,6 +127,7 @@ export default function handleChat(
         animate: !close,
         pending: false,
         chatId,
+        metrics,
       });
     }
     setChatHistory([..._chatHistory]);
@@ -125,6 +152,7 @@ export default function handleChat(
       error: null,
       animate: false,
       pending: false,
+      metrics,
     };
     _chatHistory[chatIdx] = updatedHistory;
 

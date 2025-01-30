@@ -1,5 +1,8 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
@@ -86,6 +89,8 @@ class GroqLLM {
    * Since we can only explicitly support the current models, this is a temporary solution.
    * If the attachments are empty or the model is not a vision model, we will return the default prompt structure which will work for all models.
    * If the attachments are present and the model is a vision model - we only return the user prompt with attachments - see comment at end of function for more.
+   *
+   * Historical attachments are also omitted from prompt chat history for the reasons above. (TDC: Dec 30, 2024)
    */
   #conditionalPromptStruct({
     systemPrompt = "",
@@ -170,19 +175,36 @@ class GroqLLM {
         `GroqAI:chatCompletion: ${this.model} is not valid for chat completion!`
       );
 
-    const result = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        temperature,
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature,
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage.prompt_tokens || 0,
+        completion_tokens: result.output.usage.completion_tokens || 0,
+        total_tokens: result.output.usage.total_tokens || 0,
+        outputTps:
+          result.output.usage.completion_tokens /
+          result.output.usage.completion_time,
+        duration: result.output.usage.total_time,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -191,13 +213,18 @@ class GroqLLM {
         `GroqAI:streamChatCompletion: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+      }),
       messages,
-      temperature,
-    });
-    return streamRequest;
+      false
+    );
+
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {

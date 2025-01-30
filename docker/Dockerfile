@@ -128,7 +128,7 @@ RUN yarn build && \
     rm -rf /tmp/frontend-build
 WORKDIR /app
 
-# Install server layer & build node-llama-cpp
+# Install server layer
 # Also pull and build collector deps (chromium issues prevent bad bindings)
 FROM build AS backend-build
 COPY ./server /app/server/
@@ -139,14 +139,9 @@ WORKDIR /app
 # Install collector dependencies
 COPY ./collector/ ./collector/
 WORKDIR /app/collector
-ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public 
+ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 
-# Compile Llama.cpp bindings for node-llama-cpp for this operating system.
-# Creates appropriate bindings for the OS
-USER root
-WORKDIR /app/server
-RUN npx --no node-llama-cpp download
 WORKDIR /app
 USER anythingllm
 

@@ -371,7 +371,7 @@ function cannonball({
  *
  * @param {Object} config - params to call
  * @param {object} config.nDocs = fill size of the window
- * @param {object} config.searchResults = vector similarityResponse results for .sources
+ * @param {object} config.searchResults = vector `similarityResponse` results for .sources
  * @param {object[]} config.history - rawHistory of chat containing sources
  * @param {string[]} config.filterIdentifiers - Pinned document identifiers to prevent duplicate context
  * @returns {{
