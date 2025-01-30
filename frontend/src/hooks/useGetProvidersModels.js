@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 // Providers which cannot use this feature for workspace<>model selection
 export const DISABLED_PROVIDERS = [
   "azure",
-  "native",
   "textgenwebui",
   "generic-openai",
   "bedrock",
@@ -47,7 +46,6 @@ const PROVIDER_DEFAULT_MODELS = {
   fireworksai: [],
   "nvidia-nim": [],
   groq: [],
-  native: [],
   cohere: [
     "command-r",
     "command-r-plus",

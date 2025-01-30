@@ -78,9 +78,9 @@ export const LLM_SELECTION_PRIVACY = {
     logo: GeminiLogo,
   },
   "nvidia-nim": {
-    name: "Nvidia NIM",
+    name: "NVIDIA NIM",
     description: [
-      "Your model and chats are only accessible on the machine running the Nvidia NIM service",
+      "Your model and chats are only accessible on the machine running the NVIDIA NIM",
     ],
     logo: NvidiaNimLogo,
   },
@@ -104,13 +104,6 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on the machine running Ollama models",
     ],
     logo: OllamaLogo,
-  },
-  native: {
-    name: "Custom Llama Model",
-    description: [
-      "Your model and chats are only accessible on this AnythingLLM instance",
-    ],
-    logo: AnythingLLMIcon,
   },
   togetherai: {
     name: "TogetherAI",
@@ -388,6 +381,30 @@ export const EMBEDDING_ENGINE_PRIVACY = {
   },
 };
 
+export const FALLBACKS = {
+  LLM: (provider) => ({
+    name: "Unknown",
+    description: [
+      `"${provider}" has no known data handling policy defined in AnythingLLM`,
+    ],
+    logo: AnythingLLMIcon,
+  }),
+  EMBEDDING: (provider) => ({
+    name: "Unknown",
+    description: [
+      `"${provider}" has no known data handling policy defined in AnythingLLM`,
+    ],
+    logo: AnythingLLMIcon,
+  }),
+  VECTOR: (provider) => ({
+    name: "Unknown",
+    description: [
+      `"${provider}" has no known data handling policy defined in AnythingLLM`,
+    ],
+    logo: AnythingLLMIcon,
+  }),
+};
+
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   const [llmChoice, setLLMChoice] = useState("openai");
   const [loading, setLoading] = useState(true);
@@ -425,6 +442,13 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
       </div>
     );
 
+  const LLMSelection =
+    LLM_SELECTION_PRIVACY?.[llmChoice] || FALLBACKS.LLM(llmChoice);
+  const EmbeddingEngine =
+    EMBEDDING_ENGINE_PRIVACY?.[embeddingEngine] ||
+    FALLBACKS.EMBEDDING(embeddingEngine);
+  const VectorDb = VECTOR_DB_PRIVACY?.[vectorDb] || FALLBACKS.VECTOR(vectorDb);
+
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <div className="p-8 flex flex-col gap-8">
@@ -434,16 +458,16 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
           </div>
           <div className="flex items-center gap-2.5">
             <img
-              src={LLM_SELECTION_PRIVACY[llmChoice].logo}
+              src={LLMSelection.logo}
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
             <p className="text-theme-text-primary text-sm font-bold">
-              {LLM_SELECTION_PRIVACY[llmChoice].name}
+              {LLMSelection.name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {LLM_SELECTION_PRIVACY[llmChoice].description.map((desc) => (
+            {LLMSelection.description.map((desc) => (
               <li className="text-theme-text-primary text-sm">{desc}</li>
             ))}
           </ul>
@@ -454,20 +478,18 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
           </div>
           <div className="flex items-center gap-2.5">
             <img
-              src={EMBEDDING_ENGINE_PRIVACY[embeddingEngine].logo}
+              src={EmbeddingEngine.logo}
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
             <p className="text-theme-text-primary text-sm font-bold">
-              {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].name}
+              {EmbeddingEngine.name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].description.map(
-              (desc) => (
-                <li className="text-theme-text-primary text-sm">{desc}</li>
-              )
-            )}
+            {EmbeddingEngine.description.map((desc) => (
+              <li className="text-theme-text-primary text-sm">{desc}</li>
+            ))}
           </ul>
         </div>
 
@@ -477,16 +499,16 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
           </div>
           <div className="flex items-center gap-2.5">
             <img
-              src={VECTOR_DB_PRIVACY[vectorDb].logo}
+              src={VectorDb.logo}
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
             <p className="text-theme-text-primary text-sm font-bold">
-              {VECTOR_DB_PRIVACY[vectorDb].name}
+              {VectorDb.name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {VECTOR_DB_PRIVACY[vectorDb].description.map((desc) => (
+            {VectorDb.description.map((desc) => (
               <li className="text-theme-text-primary text-sm">{desc}</li>
             ))}
           </ul>

@@ -2,6 +2,9 @@ import System from "@/models/system";
 import { useState, useEffect } from "react";
 
 export default function TogetherAiOptions({ settings }) {
+  const [inputValue, setInputValue] = useState(settings?.TogetherAiApiKey);
+  const [apiKey, setApiKey] = useState(settings?.TogetherAiApiKey);
+
   return (
     <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
@@ -17,37 +20,49 @@ export default function TogetherAiOptions({ settings }) {
           required={true}
           autoComplete="off"
           spellCheck={false}
+          onChange={(e) => setInputValue(e.target.value)}
+          onBlur={() => setApiKey(inputValue)}
         />
       </div>
       {!settings?.credentialsOnly && (
-        <TogetherAiModelSelection settings={settings} />
+        <TogetherAiModelSelection settings={settings} apiKey={apiKey} />
       )}
     </div>
   );
 }
-function TogetherAiModelSelection({ settings }) {
+
+function TogetherAiModelSelection({ settings, apiKey }) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function findCustomModels() {
       setLoading(true);
-      const { models } = await System.customModels("togetherai");
-
-      if (models?.length > 0) {
-        const modelsByOrganization = models.reduce((acc, model) => {
-          acc[model.organization] = acc[model.organization] || [];
-          acc[model.organization].push(model);
-          return acc;
-        }, {});
-
-        setGroupedModels(modelsByOrganization);
+      try {
+        const key = apiKey === "*".repeat(20) ? null : apiKey;
+        const { models } = await System.customModels("togetherai", key);
+        if (models?.length > 0) {
+          const modelsByOrganization = models.reduce((acc, model) => {
+            if (model.type !== "chat") return acc; // Only show chat models in dropdown
+            const org = model.organization || "Unknown";
+            acc[org] = acc[org] || [];
+            acc[org].push({
+              id: model.id,
+              name: model.name || model.id,
+              organization: org,
+              maxLength: model.maxLength,
+            });
+            return acc;
+          }, {});
+          setGroupedModels(modelsByOrganization);
+        }
+      } catch (error) {
+        console.error("Error fetching Together AI models:", error);
       }
-
       setLoading(false);
     }
     findCustomModels();
-  }, []);
+  }, [apiKey]);
 
   if (loading || Object.keys(groupedModels).length === 0) {
     return (

@@ -29,6 +29,7 @@ const SystemSettings = {
     "agent_search_provider",
     "agent_sql_connections",
     "default_agent_skills",
+    "disabled_agent_skills",
     "imported_agent_skills",
     "custom_app_name",
     "feature_flags",
@@ -45,6 +46,7 @@ const SystemSettings = {
     "text_splitter_chunk_overlap",
     "agent_search_provider",
     "default_agent_skills",
+    "disabled_agent_skills",
     "agent_sql_connections",
     "custom_app_name",
 
@@ -127,6 +129,15 @@ const SystemSettings = {
         return JSON.stringify(skills);
       } catch (e) {
         console.error(`Could not validate agent skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    disabled_agent_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch (e) {
+        console.error(`Could not validate disabled agent skills.`);
         return JSON.stringify([]);
       }
     },
@@ -495,10 +506,6 @@ const SystemSettings = {
       GroqApiKey: !!process.env.GROQ_API_KEY,
       GroqModelPref: process.env.GROQ_MODEL_PREF,
 
-      // Native LLM Keys
-      NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
-      NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
-
       // HuggingFace Dedicated Inference
       HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
       HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
@@ -552,7 +559,7 @@ const SystemSettings = {
       XAIApiKey: !!process.env.XAI_LLM_API_KEY,
       XAIModelPref: process.env.XAI_LLM_MODEL_PREF,
 
-      // Nvidia NIM Keys
+      // NVIDIA NIM Keys
       NvidiaNimLLMBasePath: process.env.NVIDIA_NIM_LLM_BASE_PATH,
       NvidiaNimLLMModelPref: process.env.NVIDIA_NIM_LLM_MODEL_PREF,
       NvidiaNimLLMTokenLimit: process.env.NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT,

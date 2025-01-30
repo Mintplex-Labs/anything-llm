@@ -5,7 +5,7 @@
 > You are fully responsible for securing your deployment and data in this mode.
 > **Any issues** experienced from bare-metal or non-containerized deployments will be **not** answered or supported.
 
-Here you can find the scripts and known working process to run AnythingLLM outside of a Docker container. This method of deployment is preferable for those using local LLMs and want native performance on their devices.
+Here you can find the scripts and known working process to run AnythingLLM outside of a Docker container.
 
 ### Minimum Requirements
 > [!TIP]
@@ -47,9 +47,6 @@ AnythingLLM is comprised of three main sections. The `frontend`, `server`, and `
 2. Copy `frontend/dist` to `server/public` - `cp -R frontend/dist server/public`.
 This should create a folder in `server` named `public` which contains a top level `index.html` file and various other files/folders.
 
-_(optional)_ Build native LLM support if using `native` as your LLM.
-`cd server && npx --no node-llama-cpp download`
-
 3. Migrate and prepare your database file.
 ```
 cd server && npx prisma generate --schema=./prisma/schema.prisma
@@ -57,10 +54,10 @@ cd server && npx prisma migrate deploy --schema=./prisma/schema.prisma
 ```
 
 4. Boot the server in production
-`cd server && NODE_ENV=production node index.js &` 
+`cd server && NODE_ENV=production node index.js &`
 
 5. Boot the collection in another process
-`cd collector && NODE_ENV=production node index.js &` 
+`cd collector && NODE_ENV=production node index.js &`
 
 AnythingLLM should now be running on `http://localhost:3001`!
 

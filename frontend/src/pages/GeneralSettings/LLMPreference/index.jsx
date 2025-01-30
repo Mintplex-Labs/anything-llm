@@ -95,12 +95,12 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["GeminiLLMApiKey"],
   },
   {
-    name: "Nvidia NIM",
+    name: "NVIDIA NIM",
     value: "nvidia-nim",
     logo: NvidiaNimLogo,
     options: (settings) => <NvidiaNimOptions settings={settings} />,
     description:
-      "Run full parameter LLMs directly on your GPU using Nvidia's inference microservice via Docker.",
+      "Run full parameter LLMs directly on your NVIDIA RTX GPU using NVIDIA NIM.",
     requiredConfig: ["NvidiaNimLLMBasePath"],
   },
   {
@@ -309,7 +309,6 @@ export default function GeneralLLMPreference() {
   const [selectedLLM, setSelectedLLM] = useState(null);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
-  const isHosted = window.location.hostname.includes("useanything.com");
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
@@ -446,7 +445,6 @@ export default function GeneralLLMPreference() {
                       </div>
                       <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
                         {filteredLLMs.map((llm) => {
-                          if (llm.value === "native" && isHosted) return null;
                           return (
                             <LLMItem
                               key={llm.name}
