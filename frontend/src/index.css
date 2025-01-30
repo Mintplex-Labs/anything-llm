@@ -1076,6 +1076,16 @@ does not extend the close button beyond the viewport. */
     }
   }
 }
+.custom-file-row {
+  color: #000;
+  background-color: #F1F6FC !important;
+  .custom-file-row-checkbox {
+    border-color: #000;
+    .custom-file-row-checkbox-selected {
+      background-color: #000;
+    }
+  }
+}
 .markdown strong {
   font-weight: 600;
   color: #000;
