@@ -4,7 +4,10 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const { v4: uuidv4 } = require("uuid");
 const { MODEL_MAP } = require("../modelMap");
-const { writeResponseChunk, clientAbortedHandler } = require("../../helpers/chat/responses");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 
 class DeepSeekLLM {
   constructor(embedder = null, modelPreference = null) {
