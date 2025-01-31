@@ -3,12 +3,6 @@ const {
   loadTask,
   listTasks,
 } = require("../utils/agents/aibitat/plugins/agent-task-executor");
-const { AgentHandler } = require("../utils/agents");
-const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const {
-  strictMultiUserRoleValid,
-  ROLES,
-} = require("../utils/middleware/multiUserProtected");
 
 function agentTaskEndpoints(app) {
   if (!app) return;
@@ -102,25 +96,23 @@ function agentTaskEndpoints(app) {
 
   // Run a specific task
   app.post(
-    "/agent-task/:name/run",
+    "/agent-task/:uuid/run",
     // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
         const { variables = {} } = request.body;
 
-        const agentHandler = new AgentHandler();
-        const results = await agentHandler.aibitat.executeFunction(
-          "executeAgentTask",
-          {
-            taskUuid: uuid,
-            variables,
-          }
-        );
+        // TODO: Implement task execution
+        console.log("Running task with UUID:", uuid);
 
         return response.status(200).json({
           success: true,
-          results: JSON.parse(results),
+          results: {
+            success: true,
+            results: "test",
+            variables: variables,
+          },
         });
       } catch (error) {
         console.error(error);

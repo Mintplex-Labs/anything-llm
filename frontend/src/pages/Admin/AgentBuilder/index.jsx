@@ -34,7 +34,6 @@ export default function AgentBuilder() {
   const loadAvailableTasks = async () => {
     try {
       const { success, error, tasks } = await AgentTasks.listTasks();
-      console.log("tasks", tasks);
       if (!success) throw new Error(error);
       setAvailableTasks(tasks);
     } catch (error) {
@@ -193,7 +192,6 @@ export default function AgentBuilder() {
       if (!success) throw new Error(error);
 
       showToast("Task executed successfully!", "success");
-      console.log("Task Results:", results);
     } catch (error) {
       console.error(error);
       showToast("Failed to run agent task", "error");
