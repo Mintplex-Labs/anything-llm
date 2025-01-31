@@ -1,10 +1,27 @@
 const { getEncodingNameForModel, getEncoding } = require("js-tiktoken");
 
 class TokenManager {
+  static instance = null;
+  static currentModel = null;
+
   constructor(model = "gpt-3.5-turbo") {
+    if (TokenManager.instance && TokenManager.currentModel === model) {
+      this.log("Returning existing instance for model:", model);
+      return TokenManager.instance;
+    }
+
     this.model = model;
     this.encoderName = this.#getEncodingFromModel(model);
     this.encoder = getEncoding(this.encoderName);
+
+    TokenManager.instance = this;
+    TokenManager.currentModel = model;
+    this.log("Initialized new TokenManager instance for model:", model);
+    return this;
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[35m[TokenManager]\x1b[0m ${text}`, ...args);
   }
 
   #getEncodingFromModel(model) {
