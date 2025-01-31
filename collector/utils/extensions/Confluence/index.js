@@ -104,7 +104,7 @@ async function loadConfluence(
       published: new Date().toLocaleString(),
       wordCount: doc.pageContent.split(" ").length,
       pageContent: doc.pageContent,
-      token_count_estimate: tokenizeString(doc.pageContent).length,
+      token_count_estimate: tokenizeString(doc.pageContent),
     };
 
     console.log(
