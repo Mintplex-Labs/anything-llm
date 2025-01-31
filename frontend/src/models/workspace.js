@@ -495,6 +495,29 @@ const Workspace = {
         return { success: false, error: e.message };
       });
   },
+  getFiles: async function (slug, params) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/documents${params}`,
+      {
+        method: "GET",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => res || [])
+      .catch(() => []);
+    return response;
+  },
+  getFileContent: async function (docId) {
+    const response = await fetch(`${API_BASE}/document/${docId}/content`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res || [])
+      .catch(() => []);
+    return response;
+  },
 };
 
 export default Workspace;
