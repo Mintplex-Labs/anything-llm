@@ -38,7 +38,7 @@ export default function AgentBuilder() {
       setAvailableTasks(tasks);
     } catch (error) {
       console.error(error);
-      showToast("Failed to load available tasks", "error");
+      showToast("Failed to load available tasks", "error", { clear: true });
     }
   };
 
@@ -61,10 +61,10 @@ export default function AgentBuilder() {
       setBlocks(newBlocks);
       setShowLoadMenu(false);
 
-      showToast("Task loaded successfully!", "success");
+      showToast("Task loaded successfully!", "success", { clear: true });
     } catch (error) {
       console.error(error);
-      showToast("Failed to load task", "error");
+      showToast("Failed to load task", "error", { clear: true });
     }
   };
 
@@ -99,7 +99,9 @@ export default function AgentBuilder() {
 
   const saveTask = async () => {
     if (!agentName.trim()) {
-      showToast("Please provide a name for your agent task", "error");
+      showToast("Please provide a name for your agent task", "error", {
+        clear: true,
+      });
       return;
     }
 
@@ -113,15 +115,19 @@ export default function AgentBuilder() {
     };
 
     try {
-      const { success, error, task } = await AgentTasks.saveTask(agentName, taskConfig, currentTaskUuid);
+      const { success, error, task } = await AgentTasks.saveTask(
+        agentName,
+        taskConfig,
+        currentTaskUuid
+      );
       if (!success) throw new Error(error);
 
       setCurrentTaskUuid(task.uuid);
-      showToast("Agent task saved successfully!", "success");
+      showToast("Agent task saved successfully!", "success", { clear: true });
       await loadAvailableTasks();
     } catch (error) {
       console.error("Save error details:", error);
-      showToast("Failed to save agent task", "error");
+      showToast("Failed to save agent task", "error", { clear: true });
     }
   };
 
@@ -191,11 +197,27 @@ export default function AgentBuilder() {
       const { success, error, results } = await AgentTasks.runTask(uuid);
       if (!success) throw new Error(error);
 
-      showToast("Task executed successfully!", "success");
+      showToast("Task executed successfully!", "success", { clear: true });
     } catch (error) {
       console.error(error);
-      showToast("Failed to run agent task", "error");
+      showToast("Failed to run agent task", "error", { clear: true });
     }
+  };
+
+  const clearTask = () => {
+    setAgentName("");
+    setAgentDescription("");
+    setCurrentTaskUuid(null);
+    setBlocks([
+      {
+        id: "start",
+        type: BLOCK_TYPES.START,
+        config: {
+          variables: [{ name: "", value: "" }],
+        },
+        isExpanded: true,
+      },
+    ]);
   };
 
   return (
@@ -207,6 +229,7 @@ export default function AgentBuilder() {
         setAgentDescription={setAgentDescription}
         onSave={saveTask}
         onLoadClick={() => setShowLoadMenu(true)}
+        onNewClick={clearTask}
       />
 
       <div className="flex-1 p-6 overflow-y-auto">

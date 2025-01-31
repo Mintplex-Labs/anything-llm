@@ -1,8 +1,4 @@
-const {
-  saveTask,
-  loadTask,
-  listTasks,
-} = require("../utils/agents/aibitat/plugins/agent-task-executor");
+const { saveTask, loadTask, listTasks } = require("../utils/agent-tasks");
 
 function agentTaskEndpoints(app) {
   if (!app) return;

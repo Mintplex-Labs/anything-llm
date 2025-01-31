@@ -20,7 +20,11 @@ export default function LoadTaskMenu({
     }
 
     try {
-      const { success, error, task: taskDetails } = await AgentTasks.getTask(task.uuid);
+      const {
+        success,
+        error,
+        task: taskDetails,
+      } = await AgentTasks.getTask(task.uuid);
       if (!success) throw new Error(error);
       setSelectedTaskDetails(taskDetails);
     } catch (error) {
@@ -81,7 +85,8 @@ export default function LoadTaskMenu({
                 {selectedTaskDetails?.uuid === task.uuid && (
                   <div className="p-3 border-t border-white/5 bg-theme-action-menu-bg">
                     <p className="text-white/80 text-sm mb-2">
-                      {selectedTaskDetails.config.description || "No description"}
+                      {selectedTaskDetails.config.description ||
+                        "No description"}
                     </p>
                     <div className="text-sm text-white/60">
                       <div className="font-medium mb-1">Steps:</div>
