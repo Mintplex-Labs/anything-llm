@@ -17,11 +17,17 @@ export default function AgentSidebar({
     <div className="w-80">
       <div className="relative m-[16px] rounded-[16px] bg-theme-bg-secondary border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[5px] h-[calc(100%-35px)]">
         <div className="p-[10px]">
-        <div className="flex justify-between w-[250px] min-w-[250px]">
-          <img src={logo} alt="Logo" className="rounded max-h-[24px] object-contain mb-1" />
-        </div>
+          <div className="flex justify-between w-[250px] min-w-[250px]">
+            <img
+              src={logo}
+              alt="Logo"
+              className="rounded max-h-[24px] object-contain mb-1"
+            />
+          </div>
           <div className="flex flex-col mb-6">
-            <span className="text-xs font-light text-theme-text-primary">Agent Task Builder</span>
+            <span className="text-xs font-light text-theme-text-primary">
+              Agent Task Builder
+            </span>
           </div>
           <div className="space-y-6">
             <div>
