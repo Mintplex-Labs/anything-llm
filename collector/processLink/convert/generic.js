@@ -41,7 +41,7 @@ async function scrapeGenericUrl(link, textOnly = false) {
     published: new Date().toLocaleString(),
     wordCount: content.split(" ").length,
     pageContent: content,
-    token_count_estimate: tokenizeString(content).length,
+    token_count_estimate: tokenizeString(content),
   };
 
   const document = writeToServerDocuments(

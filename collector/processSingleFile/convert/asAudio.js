@@ -56,7 +56,7 @@ async function asAudio({ fullFilePath = "", filename = "", options = {} }) {
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
-    token_count_estimate: tokenizeString(content).length,
+    token_count_estimate: tokenizeString(content),
   };
 
   const document = writeToServerDocuments(

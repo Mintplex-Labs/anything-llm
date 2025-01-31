@@ -40,9 +40,11 @@ export default function UploadFile({
     setFetchingUrl(false);
   };
 
-  // Don't spam fetchKeys, wait 1s between calls at least.
-  const handleUploadSuccess = debounce(() => fetchKeys(true), 1000);
-  const handleUploadError = (_msg) => null; // stubbed.
+  // Queue all fetchKeys calls through the same debouncer to prevent spamming the server.
+  // either a success or error will trigger a fetchKeys call so the UI is not stuck loading.
+  const debouncedFetchKeys = debounce(() => fetchKeys(true), 1000);
+  const handleUploadSuccess = () => debouncedFetchKeys();
+  const handleUploadError = () => debouncedFetchKeys();
 
   const onDrop = async (acceptedFiles, rejections) => {
     const newAccepted = acceptedFiles.map((file) => {
