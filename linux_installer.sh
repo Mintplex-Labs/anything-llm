@@ -33,7 +33,7 @@ rm -rf $APPIMAGE_FILE
 mv squashfs-root $EXTRACTED_DIR
 ln -sf $EXTRACTED_DIR/AppRun start
 
-status "AnythingLLMDesktop is ready to run with .$OUTDIR/start."
+status "AnythingLLMDesktop is ready to run with $OUTDIR/start."
 status "\e[36mHeads up!\e[0mYou can rerun this installer anytime to get the latest version of AnythingLLM without effecting your existing data."
 status "Documentation: https://docs.useanything.com"
 status "Issues: https://github.com/Mintplex-Labs/anything-llm"
