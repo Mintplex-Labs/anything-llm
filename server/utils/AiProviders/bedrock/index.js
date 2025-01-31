@@ -2,6 +2,7 @@ const { StringOutputParser } = require("@langchain/core/output_parsers");
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
@@ -199,7 +200,7 @@ class AWSBedrockLLM {
     // AWS Mistral models do not support system prompts
     if (this.model.startsWith("mistral"))
       return [
-        ...chatHistory,
+        ...formatChatHistory(chatHistory, this.#generateContent, "spread"),
         {
           role: "user",
           ...this.#generateContent({ userPrompt, attachments }),
@@ -212,7 +213,7 @@ class AWSBedrockLLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent, "spread"),
       {
         role: "user",
         ...this.#generateContent({ userPrompt, attachments }),

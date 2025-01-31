@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const fs = require("fs");
 const path = require("path");
@@ -34,7 +35,7 @@ class NovitaLLM {
     this.model =
       modelPreference ||
       process.env.NOVITA_LLM_MODEL_PREF ||
-      "gryphe/mythomax-l2-13b";
+      "deepseek/deepseek-r1";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -177,7 +178,7 @@ class NovitaLLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),

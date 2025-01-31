@@ -82,7 +82,7 @@ async function loadGitlabRepo(args, response) {
     }
 
     data.wordCount = pageContent.split(" ").length;
-    data.token_count_estimate = tokenizeString(pageContent).length;
+    data.token_count_estimate = tokenizeString(pageContent);
     data.pageContent = pageContent;
 
     console.log(

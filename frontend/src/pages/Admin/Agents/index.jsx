@@ -15,14 +15,16 @@ import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
 import { Tooltip } from "react-tooltip";
 
 export default function AdminAgents() {
+  const formEl = useRef(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState({});
   const [selectedSkill, setSelectedSkill] = useState("");
-  const [agentSkills, setAgentSkills] = useState([]);
-  const [importedSkills, setImportedSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSkillModal, setShowSkillModal] = useState(false);
-  const formEl = useRef(null);
+
+  const [agentSkills, setAgentSkills] = useState([]);
+  const [importedSkills, setImportedSkills] = useState([]);
+  const [disabledAgentSkills, setDisabledAgentSkills] = useState([]);
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {
@@ -42,16 +44,30 @@ export default function AdminAgents() {
     async function fetchSettings() {
       const _settings = await System.keys();
       const _preferences = await Admin.systemPreferencesByFields([
+        "disabled_agent_skills",
         "default_agent_skills",
         "imported_agent_skills",
       ]);
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
+      setDisabledAgentSkills(
+        _preferences.settings?.disabled_agent_skills ?? []
+      );
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
       setLoading(false);
     }
     fetchSettings();
   }, []);
+
+  const toggleDefaultSkill = (skillName) => {
+    setDisabledAgentSkills((prev) => {
+      const updatedSkills = prev.includes(skillName)
+        ? prev.filter((name) => name !== skillName)
+        : [...prev, skillName];
+      setHasChanges(true);
+      return updatedSkills;
+    });
+  };
 
   const toggleAgentSkill = (skillName) => {
     setAgentSkills((prev) => {
@@ -93,11 +109,15 @@ export default function AdminAgents() {
     if (success) {
       const _settings = await System.keys();
       const _preferences = await Admin.systemPreferencesByFields([
+        "disabled_agent_skills",
         "default_agent_skills",
         "imported_agent_skills",
       ]);
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
+      setDisabledAgentSkills(
+        _preferences.settings?.disabled_agent_skills ?? []
+      );
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
       showToast(`Agent preferences saved successfully.`, "success", {
         clear: true,
@@ -143,6 +163,11 @@ export default function AdminAgents() {
             type="hidden"
             value={agentSkills.join(",")}
           />
+          <input
+            name="system::disabled_agent_skills"
+            type="hidden"
+            value={disabledAgentSkills.join(",")}
+          />
 
           {/* Skill settings nav */}
           <div hidden={showSkillModal} className="flex flex-col gap-y-[18px]">
@@ -152,13 +177,15 @@ export default function AdminAgents() {
             </div>
             {/* Default skills */}
             <SkillList
-              isDefault={true}
               skills={defaultSkills}
               selectedSkill={selectedSkill}
               handleClick={(skill) => {
                 setSelectedSkill(skill);
                 setShowSkillModal(true);
               }}
+              activeSkills={Object.keys(defaultSkills).filter(
+                (skill) => !disabledAgentSkills.includes(skill)
+              )}
             />
             {/* Configurable skills */}
             <SkillList
@@ -212,17 +239,35 @@ export default function AdminAgents() {
                             setImportedSkills={setImportedSkills}
                           />
                         ) : (
-                          <SelectedSkillComponent
-                            skill={configurableSkills[selectedSkill]?.skill}
-                            settings={settings}
-                            toggleSkill={toggleAgentSkill}
-                            enabled={agentSkills.includes(
-                              configurableSkills[selectedSkill]?.skill
+                          <>
+                            {defaultSkills?.[selectedSkill] ? (
+                              // The selected skill is a default skill - show the default skill panel
+                              <SelectedSkillComponent
+                                skill={defaultSkills[selectedSkill]?.skill}
+                                settings={settings}
+                                toggleSkill={toggleDefaultSkill}
+                                enabled={
+                                  !disabledAgentSkills.includes(
+                                    defaultSkills[selectedSkill]?.skill
+                                  )
+                                }
+                                setHasChanges={setHasChanges}
+                                {...defaultSkills[selectedSkill]}
+                              />
+                            ) : (
+                              // The selected skill is a configurable skill - show the configurable skill panel
+                              <SelectedSkillComponent
+                                skill={configurableSkills[selectedSkill]?.skill}
+                                settings={settings}
+                                toggleSkill={toggleAgentSkill}
+                                enabled={agentSkills.includes(
+                                  configurableSkills[selectedSkill]?.skill
+                                )}
+                                setHasChanges={setHasChanges}
+                                {...configurableSkills[selectedSkill]}
+                              />
                             )}
-                            setHasChanges={setHasChanges}
-                            {...(configurableSkills[selectedSkill] ||
-                              defaultSkills[selectedSkill])}
-                          />
+                          </>
                         )}
                       </>
                     ) : (
@@ -258,6 +303,11 @@ export default function AdminAgents() {
           type="hidden"
           value={agentSkills.join(",")}
         />
+        <input
+          name="system::disabled_agent_skills"
+          type="hidden"
+          value={disabledAgentSkills.join(",")}
+        />
 
         {/* Skill settings nav */}
         <div className="flex flex-col gap-y-[18px]">
@@ -268,10 +318,12 @@ export default function AdminAgents() {
 
           {/* Default skills list */}
           <SkillList
-            isDefault={true}
             skills={defaultSkills}
             selectedSkill={selectedSkill}
             handleClick={setSelectedSkill}
+            activeSkills={Object.keys(defaultSkills).filter(
+              (skill) => !disabledAgentSkills.includes(skill)
+            )}
           />
           {/* Configurable skills */}
           <SkillList
@@ -304,17 +356,35 @@ export default function AdminAgents() {
                     setImportedSkills={setImportedSkills}
                   />
                 ) : (
-                  <SelectedSkillComponent
-                    skill={configurableSkills[selectedSkill]?.skill}
-                    settings={settings}
-                    toggleSkill={toggleAgentSkill}
-                    enabled={agentSkills.includes(
-                      configurableSkills[selectedSkill]?.skill
+                  <>
+                    {defaultSkills?.[selectedSkill] ? (
+                      // The selected skill is a default skill - show the default skill panel
+                      <SelectedSkillComponent
+                        skill={defaultSkills[selectedSkill]?.skill}
+                        settings={settings}
+                        toggleSkill={toggleDefaultSkill}
+                        enabled={
+                          !disabledAgentSkills.includes(
+                            defaultSkills[selectedSkill]?.skill
+                          )
+                        }
+                        setHasChanges={setHasChanges}
+                        {...defaultSkills[selectedSkill]}
+                      />
+                    ) : (
+                      // The selected skill is a configurable skill - show the configurable skill panel
+                      <SelectedSkillComponent
+                        skill={configurableSkills[selectedSkill]?.skill}
+                        settings={settings}
+                        toggleSkill={toggleAgentSkill}
+                        enabled={agentSkills.includes(
+                          configurableSkills[selectedSkill]?.skill
+                        )}
+                        setHasChanges={setHasChanges}
+                        {...configurableSkills[selectedSkill]}
+                      />
                     )}
-                    setHasChanges={setHasChanges}
-                    {...(configurableSkills[selectedSkill] ||
-                      defaultSkills[selectedSkill])}
-                  />
+                  </>
                 )}
               </>
             ) : (

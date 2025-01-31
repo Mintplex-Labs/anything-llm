@@ -180,7 +180,7 @@ class AgentHandler {
       case "nvidia-nim":
         if (!process.env.NVIDIA_NIM_LLM_BASE_PATH)
           throw new Error(
-            "Nvidia NIM base path must be provided to use agents."
+            "NVIDIA NIM base path must be provided to use agents."
           );
         break;
 
@@ -245,7 +245,7 @@ class AgentHandler {
       case "xai":
         return process.env.XAI_LLM_MODEL_PREF ?? "grok-beta";
       case "novita":
-        return process.env.NOVITA_LLM_MODEL_PREF ?? "gryphe/mythomax-l2-13b";
+        return process.env.NOVITA_LLM_MODEL_PREF ?? "deepseek/deepseek-r1";
       case "nvidia-nim":
         return process.env.NVIDIA_NIM_LLM_MODEL_PREF ?? null;
       default:

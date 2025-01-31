@@ -32,7 +32,6 @@ import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
-import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
@@ -93,12 +92,12 @@ const LLMS = [
     description: "Google's largest and most capable AI model",
   },
   {
-    name: "Nvidia NIM",
+    name: "NVIDIA NIM",
     value: "nvidia-nim",
     logo: NvidiaNimLogo,
     options: (settings) => <NvidiaNimOptions settings={settings} />,
     description:
-      "Run full parameter LLMs directly on your GPU using Nvidia's inference microservice via Docker.",
+      "Run full parameter LLMs directly on your NVIDIA RTX GPU using NVIDIA NIM.",
   },
   {
     name: "HuggingFace",
@@ -246,14 +245,6 @@ const LLMS = [
     logo: XAILogo,
     options: (settings) => <XAILLMOptions settings={settings} />,
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
-  },
-  {
-    name: "Native",
-    value: "native",
-    logo: AnythingLLMIcon,
-    options: (settings) => <NativeLLMOptions settings={settings} />,
-    description:
-      "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
   },
 ];
 

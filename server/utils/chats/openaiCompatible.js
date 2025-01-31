@@ -481,6 +481,7 @@ function formatJSON(
     model: model,
     choices: [
       {
+        index: 0,
         [chunked ? "delta" : "message"]: {
           role: "assistant",
           content: chat.textResponse,

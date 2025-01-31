@@ -89,6 +89,8 @@ class GroqLLM {
    * Since we can only explicitly support the current models, this is a temporary solution.
    * If the attachments are empty or the model is not a vision model, we will return the default prompt structure which will work for all models.
    * If the attachments are present and the model is a vision model - we only return the user prompt with attachments - see comment at end of function for more.
+   *
+   * Historical attachments are also omitted from prompt chat history for the reasons above. (TDC: Dec 30, 2024)
    */
   #conditionalPromptStruct({
     systemPrompt = "",

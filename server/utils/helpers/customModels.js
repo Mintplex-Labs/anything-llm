@@ -13,7 +13,6 @@ const SUPPORT_CUSTOM_MODELS = [
   "openai",
   "localai",
   "ollama",
-  "native-llm",
   "togetherai",
   "fireworksai",
   "nvidia-nim",
@@ -44,13 +43,11 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "ollama":
       return await ollamaAIModels(basePath);
     case "togetherai":
-      return await getTogetherAiModels();
+      return await getTogetherAiModels(apiKey);
     case "fireworksai":
       return await getFireworksAiModels(apiKey);
     case "mistral":
       return await getMistralModels(apiKey);
-    case "native-llm":
-      return nativeLLMModels();
     case "perplexity":
       return await getPerplexityModels();
     case "openrouter":
@@ -327,19 +324,21 @@ async function ollamaAIModels(basePath = null) {
   return { models, error: null };
 }
 
-async function getTogetherAiModels() {
-  const knownModels = togetherAiModels();
-  if (!Object.keys(knownModels).length === 0)
-    return { models: [], error: null };
-
-  const models = Object.values(knownModels).map((model) => {
-    return {
-      id: model.id,
-      organization: model.organization,
-      name: model.name,
-    };
-  });
-  return { models, error: null };
+async function getTogetherAiModels(apiKey = null) {
+  const _apiKey =
+    apiKey === true
+      ? process.env.TOGETHER_AI_API_KEY
+      : apiKey || process.env.TOGETHER_AI_API_KEY || null;
+  try {
+    const { togetherAiModels } = require("../AiProviders/togetherAi");
+    const models = await togetherAiModels(_apiKey);
+    if (models.length > 0 && !!_apiKey)
+      process.env.TOGETHER_AI_API_KEY = _apiKey;
+    return { models, error: null };
+  } catch (error) {
+    console.error("Error in getTogetherAiModels:", error);
+    return { models: [], error: "Failed to fetch Together AI models" };
+  }
 }
 
 async function getFireworksAiModels() {
@@ -442,26 +441,6 @@ async function getMistralModels(apiKey = null) {
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.MISTRAL_API_KEY = apiKey;
   return { models, error: null };
-}
-
-function nativeLLMModels() {
-  const fs = require("fs");
-  const path = require("path");
-  const storageDir = path.resolve(
-    process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`)
-  );
-  if (!fs.existsSync(storageDir))
-    return { models: [], error: "No model/downloaded storage folder found." };
-
-  const files = fs
-    .readdirSync(storageDir)
-    .filter((file) => file.toLowerCase().includes(".gguf"))
-    .map((file) => {
-      return { id: file, name: file };
-    });
-  return { models: files, error: null };
 }
 
 async function getElevenLabsModels(apiKey = null) {
@@ -571,8 +550,8 @@ async function getNvidiaNimModels(basePath = null) {
 
     return { models, error: null };
   } catch (e) {
-    console.error(`Nvidia NIM:getNvidiaNimModels`, e.message);
-    return { models: [], error: "Could not fetch Nvidia NIM Models" };
+    console.error(`NVIDIA NIM:getNvidiaNimModels`, e.message);
+    return { models: [], error: "Could not fetch NVIDIA NIM Models" };
   }
 }
 
