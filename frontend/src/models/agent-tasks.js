@@ -3,19 +3,20 @@ import { baseHeaders } from "@/utils/request";
 
 const AgentTasks = {
   /**
-   * Save a task configuration with a given name and config
-   * @param {string} name - The name of the task to save
+   * Save a task configuration
+   * @param {string} name - Display name of the task
    * @param {object} config - The configuration object for the task
-   * @returns {Promise<{success: boolean, error: string | null, task: {name: string, config: object} | null}>}
+   * @param {string} [uuid] - Optional UUID for updating existing task
+   * @returns {Promise<{success: boolean, error: string | null, task: {name: string, config: object, uuid: string} | null}>}
    */
-  saveTask: async (name, config) => {
+  saveTask: async (name, config, uuid = null) => {
     return await fetch(`${API_BASE}/agent-task/save`, {
       method: "POST",
       headers: {
         ...baseHeaders(),
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, config }),
+      body: JSON.stringify({ name, config, uuid }),
     })
       .then(async (res) => {
         const response = await res.json();
@@ -31,7 +32,7 @@ const AgentTasks = {
 
   /**
    * List all available tasks in the system
-   * @returns {Promise<{success: boolean, error: string | null, tasks: string[]}>}
+   * @returns {Promise<{success: boolean, error: string | null, tasks: Array<{name: string, uuid: string, description: string, steps: Array}>}>}
    */
   listTasks: async () => {
     return await fetch(`${API_BASE}/agent-task/list`, {
@@ -47,12 +48,12 @@ const AgentTasks = {
   },
 
   /**
-   * Get a specific task by its name
-   * @param {string} name - The name of the task to retrieve
-   * @returns {Promise<{success: boolean, error: string | null, task: {name: string, config: object} | null}>}
+   * Get a specific task by UUID
+   * @param {string} uuid - The UUID of the task to retrieve
+   * @returns {Promise<{success: boolean, error: string | null, task: {name: string, config: object, uuid: string} | null}>}
    */
-  getTask: async (name) => {
-    return await fetch(`${API_BASE}/agent-task/${name}`, {
+  getTask: async (uuid) => {
+    return await fetch(`${API_BASE}/agent-task/${uuid}`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -69,13 +70,13 @@ const AgentTasks = {
   },
 
   /**
-   * Execute a specific task with optional variables
-   * @param {string} name - The name of the task to run
+   * Execute a specific task
+   * @param {string} uuid - The UUID of the task to run
    * @param {object} variables - Optional variables to pass to the task
    * @returns {Promise<{success: boolean, error: string | null, results: object | null}>}
    */
-  runTask: async (name, variables = {}) => {
-    return await fetch(`${API_BASE}/agent-task/${name}/run`, {
+  runTask: async (uuid, variables = {}) => {
+    return await fetch(`${API_BASE}/agent-task/${uuid}/run`, {
       method: "POST",
       headers: {
         ...baseHeaders(),

@@ -1,5 +1,6 @@
 const fs = require("fs").promises;
 const path = require("path");
+const { v4: uuidv4 } = require("uuid");
 
 const TASKS_DIR = process.env.STORAGE_DIR
   ? path.join(process.env.STORAGE_DIR, "plugins", "agent-tasks")
@@ -14,53 +15,72 @@ async function ensureTasksDir() {
   }
 }
 
-// Save a task configuration
-async function saveTask(name, config) {
-  try {
-    await ensureTasksDir();
-    const filename = path.join(TASKS_DIR, `${name}.json`);
+// Helper to get all task files with their contents
+async function getAllTasks() {
+  const files = await fs.readdir(TASKS_DIR);
+  const tasks = {};
 
-    // If this is a rename of an existing task, delete the old file
-    if (config.originalName && config.originalName !== name) {
-      const oldFilename = path.join(TASKS_DIR, `${config.originalName}.json`);
-      try {
-        await fs.unlink(oldFilename);
-      } catch (error) {
-        // Ignore if old file doesn't exist
-      }
-      delete config.originalName;
+  for (const file of files) {
+    if (!file.endsWith('.json')) continue;
+    try {
+      const content = await fs.readFile(path.join(TASKS_DIR, file), 'utf8');
+      const config = JSON.parse(content);
+      const id = file.replace('.json', '');
+      tasks[id] = config;
+    } catch (error) {
+      console.error(`Error reading task file ${file}:`, error);
     }
-
-    await fs.writeFile(filename, JSON.stringify(config, null, 2));
-    return true;
-  } catch (error) {
-    console.error("Failed to save task:", error);
-    return false;
   }
+
+  return tasks;
 }
 
-// Load a task configuration
-async function loadTask(name) {
+// Load a task configuration by UUID
+async function loadTask(uuid) {
   try {
-    const filename = path.join(TASKS_DIR, `${name}.json`);
-    const content = await fs.readFile(filename, "utf8");
-    const config = JSON.parse(content);
-    config.originalName = name; // Track original name for renames
-    return config;
+    const tasks = await getAllTasks();
+    const task = tasks[uuid];
+    if (!task) return null;
+
+    return {
+      name: task.name,
+      uuid,
+      config: task
+    };
   } catch (error) {
     console.error("Failed to load task:", error);
     return null;
   }
 }
 
+// Save a task configuration
+async function saveTask(name, config, uuid = null) {
+  try {
+    await ensureTasksDir();
+
+    // Generate new UUID if not provided
+    if (!uuid) {
+      uuid = uuidv4();
+    }
+
+    const filename = path.join(TASKS_DIR, `${uuid}.json`);
+    await fs.writeFile(filename, JSON.stringify({ ...config, name }, null, 2));
+    return { success: true, uuid };
+  } catch (error) {
+    console.error("Failed to save task:", error);
+    return { success: false };
+  }
+}
+
 // List all available tasks
 async function listTasks() {
   try {
-    await ensureTasksDir();
-    const files = await fs.readdir(TASKS_DIR);
-    return files
-      .filter((f) => f.endsWith(".json"))
-      .map((f) => f.replace(".json", ""));
+    const tasks = await getAllTasks();
+    return Object.entries(tasks).map(([uuid, task]) => ({
+      name: task.name,
+      uuid,
+      description: task.description
+    }));
   } catch (error) {
     console.error("Failed to list tasks:", error);
     return [];
@@ -115,11 +135,11 @@ const taskExecutor = {
       });
 
       aibitat.function("executeAgentTask", {
-        description: "Execute a saved agent task by name",
+        description: "Execute a saved agent task",
         parameters: {
-          taskName: {
+          taskUuid: {
             type: "string",
-            description: "Name of the agent task to execute",
+            description: "UUID of the agent task to execute",
           },
           variables: {
             type: "object",
@@ -128,12 +148,12 @@ const taskExecutor = {
           },
         },
         async handler(params, context) {
-          const { taskName, variables = {} } = params;
-          const taskConfig = await loadTask(taskName);
-          if (!taskConfig) throw new Error(`Task ${taskName} not found`);
+          const { taskUuid, variables = {} } = params;
+          const task = await loadTask(taskUuid);
+          if (!task) throw new Error(`Task ${taskUuid} not found`);
 
           const results = {};
-          for (const step of taskConfig.steps) {
+          for (const step of task.config.steps) {
             const result = await aibitat.executeFunction("executeTask", {
               type: step.type,
               config: replaceVariables(step.config, variables),

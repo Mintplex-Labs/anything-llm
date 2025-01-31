@@ -19,7 +19,7 @@ function agentTaskEndpoints(app) {
     // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const { name, config } = request.body;
+        const { name, config, uuid } = request.body;
 
         if (!name || !config) {
           return response.status(400).json({
@@ -28,8 +28,8 @@ function agentTaskEndpoints(app) {
           });
         }
 
-        const saved = await saveTask(name, config);
-        if (!saved) {
+        const result = await saveTask(name, config, uuid);
+        if (!result.success) {
           return response.status(500).json({
             success: false,
             error: "Failed to save task",
@@ -38,7 +38,7 @@ function agentTaskEndpoints(app) {
 
         return response.status(200).json({
           success: true,
-          task: { name, config },
+          task: { name, config, uuid: result.uuid },
         });
       } catch (error) {
         console.error("Error saving task:", error);
@@ -71,14 +71,14 @@ function agentTaskEndpoints(app) {
     }
   );
 
-  // Get a specific task by name
+  // Get a specific task by UUID
   app.get(
-    "/agent-task/:name",
+    "/agent-task/:uuid",
     // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const { name } = request.params;
-        const task = await loadTask(name);
+        const { uuid } = request.params;
+        const task = await loadTask(uuid);
         if (!task) {
           return response.status(404).json({
             success: false,
@@ -88,7 +88,7 @@ function agentTaskEndpoints(app) {
 
         return response.status(200).json({
           success: true,
-          task: { name, config: task },
+          task,
         });
       } catch (error) {
         console.error(error);
@@ -106,14 +106,14 @@ function agentTaskEndpoints(app) {
     // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const { name } = request.params;
+        const { uuid } = request.params;
         const { variables = {} } = request.body;
 
         const agentHandler = new AgentHandler();
         const results = await agentHandler.aibitat.executeFunction(
           "executeAgentTask",
           {
-            taskName: name,
+            taskUuid: uuid,
             variables,
           }
         );

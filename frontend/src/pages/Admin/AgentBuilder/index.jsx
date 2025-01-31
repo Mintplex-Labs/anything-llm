@@ -10,6 +10,7 @@ import LoadTaskMenu from "./LoadTaskMenu";
 export default function AgentBuilder() {
   const [agentName, setAgentName] = useState("");
   const [agentDescription, setAgentDescription] = useState("");
+  const [currentTaskUuid, setCurrentTaskUuid] = useState(null);
   const [blocks, setBlocks] = useState([
     {
       id: "start",
@@ -24,7 +25,6 @@ export default function AgentBuilder() {
   const [showBlockMenu, setShowBlockMenu] = useState(false);
   const [showLoadMenu, setShowLoadMenu] = useState(false);
   const [availableTasks, setAvailableTasks] = useState([]);
-  const [taskDetails, setTaskDetails] = useState({});
   const [selectedTaskForDetails, setSelectedTaskForDetails] = useState(null);
 
   useEffect(() => {
@@ -34,26 +34,18 @@ export default function AgentBuilder() {
   const loadAvailableTasks = async () => {
     try {
       const { success, error, tasks } = await AgentTasks.listTasks();
+      console.log("tasks", tasks);
       if (!success) throw new Error(error);
       setAvailableTasks(tasks);
-
-      // Load details for each task
-      const details = {};
-      for (const taskName of tasks) {
-        const { success, error, task } = await AgentTasks.getTask(taskName);
-        if (!success) throw new Error(error);
-        details[taskName] = task.config;
-      }
-      setTaskDetails(details);
     } catch (error) {
       console.error(error);
       showToast("Failed to load available tasks", "error");
     }
   };
 
-  const loadTask = async (taskName) => {
+  const loadTask = async (uuid) => {
     try {
-      const { success, error, task } = await AgentTasks.getTask(taskName);
+      const { success, error, task } = await AgentTasks.getTask(uuid);
       if (!success) throw new Error(error);
 
       // Convert steps to blocks with IDs
@@ -66,6 +58,7 @@ export default function AgentBuilder() {
 
       setAgentName(task.config.name);
       setAgentDescription(task.config.description);
+      setCurrentTaskUuid(task.uuid);
       setBlocks(newBlocks);
       setShowLoadMenu(false);
 
@@ -120,14 +113,11 @@ export default function AgentBuilder() {
       })),
     };
 
-    const taskName = agentName.toLowerCase().replace(/[^a-z0-9-]/g, "-");
-
     try {
-      const { success, error } = await AgentTasks.saveTask(
-        taskName,
-        taskConfig
-      );
+      const { success, error, task } = await AgentTasks.saveTask(agentName, taskConfig, currentTaskUuid);
       if (!success) throw new Error(error);
+
+      setCurrentTaskUuid(task.uuid);
       showToast("Agent task saved successfully!", "success");
       await loadAvailableTasks();
     } catch (error) {
@@ -197,29 +187,9 @@ export default function AgentBuilder() {
     });
   };
 
-  const runTask = async (taskName) => {
+  const runTask = async (uuid) => {
     try {
-      const task = taskDetails[taskName];
-      const startBlock = task.steps.find((step) => step.type === "START");
-      const variables = {};
-
-      // If there are variables defined in the start block, prompt for their values
-      if (startBlock?.config?.variables) {
-        for (const variable of startBlock.config.variables) {
-          if (!variable.name) continue;
-          const value = prompt(
-            `Enter value for ${variable.name}:`,
-            variable.value || ""
-          );
-          if (value === null) return; // User cancelled
-          variables[variable.name] = value;
-        }
-      }
-
-      const { success, error, results } = await AgentTasks.runTask(
-        taskName,
-        variables
-      );
+      const { success, error, results } = await AgentTasks.runTask(uuid);
       if (!success) throw new Error(error);
 
       showToast("Task executed successfully!", "success");
@@ -262,7 +232,6 @@ export default function AgentBuilder() {
             showLoadMenu={showLoadMenu}
             setShowLoadMenu={setShowLoadMenu}
             availableTasks={availableTasks}
-            taskDetails={taskDetails}
             selectedTaskForDetails={selectedTaskForDetails}
             setSelectedTaskForDetails={setSelectedTaskForDetails}
             onLoadTask={loadTask}
