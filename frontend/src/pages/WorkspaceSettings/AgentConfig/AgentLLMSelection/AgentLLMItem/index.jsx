@@ -9,6 +9,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
 
+const NO_SETTINGS_NEEDED = ["default", "none"];
 export default function AgentLLMItem({
   llm,
   availableLLMs,
@@ -73,18 +74,20 @@ export default function AgentLLMItem({
               <div className="mt-1 text-xs text-white/60">{description}</div>
             </div>
           </div>
-          {checked && value !== "none" && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                openModal();
-              }}
-              className="p-2 text-white/60 hover:text-white hover:bg-theme-bg-hover rounded-md transition-all duration-300"
-              title="Edit Settings"
-            >
-              <Gear size={20} weight="bold" />
-            </button>
-          )}
+          {checked &&
+            value !== "none" &&
+            !NO_SETTINGS_NEEDED.includes(value) && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  openModal();
+                }}
+                className="border-none p-2 text-white/60 hover:text-white hover:bg-theme-bg-hover rounded-md transition-all duration-300"
+                title="Edit Settings"
+              >
+                <Gear size={20} weight="bold" />
+              </button>
+            )}
         </div>
       </div>
       <SetupProvider
