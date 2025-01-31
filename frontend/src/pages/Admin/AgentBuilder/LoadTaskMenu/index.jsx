@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Info, Play, FolderOpen } from "@phosphor-icons/react";
+import { Info, Play, FolderOpen, Trash } from "@phosphor-icons/react";
 import AgentTasks from "@/models/agent-tasks";
+import showToast from "@/utils/toast";
 
 export default function LoadTaskMenu({
   showLoadMenu,
@@ -8,10 +9,9 @@ export default function LoadTaskMenu({
   availableTasks,
   onLoadTask,
   onRunTask,
+  onTaskDeleted,
 }) {
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null);
-
-  if (!showLoadMenu) return null;
 
   const loadTaskDetails = async (task) => {
     if (selectedTaskDetails?.uuid === task.uuid) {
@@ -29,8 +29,26 @@ export default function LoadTaskMenu({
       setSelectedTaskDetails(taskDetails);
     } catch (error) {
       console.error("Failed to load task details:", error);
+      showToast("Failed to load task details", "error", { clear: true });
     }
   };
+
+  const handleDeleteTask = async (task) => {
+    if (!confirm(`Are you sure you want to delete the task "${task.name}"?`))
+      return;
+
+    try {
+      const { success, error } = await AgentTasks.deleteTask(task.uuid);
+      if (!success) throw new Error(error);
+      showToast("Task deleted successfully!", "success", { clear: true });
+      onTaskDeleted?.();
+    } catch (error) {
+      console.error("Failed to delete task:", error);
+      showToast("Failed to delete task", "error", { clear: true });
+    }
+  };
+
+  if (!showLoadMenu) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -79,6 +97,13 @@ export default function LoadTaskMenu({
                       title="Load task for editing"
                     >
                       <FolderOpen className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteTask(task)}
+                      className="p-1.5 rounded-lg bg-theme-action-menu-bg border border-white/5 text-red-400 hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                      title="Delete task"
+                    >
+                      <Trash className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

@@ -95,6 +95,27 @@ const AgentTasks = {
         results: null,
       }));
   },
+
+  /**
+   * Delete a specific task
+   * @param {string} uuid - The UUID of the task to delete
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  deleteTask: async (uuid) => {
+    return await fetch(`${API_BASE}/agent-task/${uuid}`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then(async (res) => {
+        const response = await res.json();
+        if (!res.ok) throw new Error(response.error || "Failed to delete task");
+        return response;
+      })
+      .catch((e) => ({
+        success: false,
+        error: e.message,
+      }));
+  },
 };
 
 export default AgentTasks;

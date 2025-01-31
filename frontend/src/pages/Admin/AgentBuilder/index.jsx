@@ -257,6 +257,7 @@ export default function AgentBuilder() {
             setSelectedTaskForDetails={setSelectedTaskForDetails}
             onLoadTask={loadTask}
             onRunTask={runTask}
+            onTaskDeleted={loadAvailableTasks}
           />
         </div>
       </div>

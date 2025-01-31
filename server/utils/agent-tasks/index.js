@@ -87,8 +87,21 @@ async function listTasks() {
   }
 }
 
+// Delete a task by UUID
+async function deleteTask(uuid) {
+  try {
+    const filename = path.join(TASKS_DIR, `${uuid}.json`);
+    await fs.unlink(filename);
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete task:", error);
+    return { success: false, error: error.message };
+  }
+}
+
 module.exports = {
   loadTask,
   saveTask,
   listTasks,
+  deleteTask,
 };

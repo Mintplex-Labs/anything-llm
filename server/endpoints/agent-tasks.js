@@ -1,4 +1,9 @@
-const { saveTask, loadTask, listTasks } = require("../utils/agent-tasks");
+const {
+  saveTask,
+  loadTask,
+  listTasks,
+  deleteTask,
+} = require("../utils/agent-tasks");
 
 function agentTaskEndpoints(app) {
   if (!app) return;
@@ -109,6 +114,35 @@ function agentTaskEndpoints(app) {
             results: "test",
             variables: variables,
           },
+        });
+      } catch (error) {
+        console.error(error);
+        return response.status(500).json({
+          success: false,
+          error: error.message,
+        });
+      }
+    }
+  );
+
+  // Delete a specific task
+  app.delete(
+    "/agent-task/:uuid",
+    // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { uuid } = request.params;
+        const result = await deleteTask(uuid);
+
+        if (!result.success) {
+          return response.status(500).json({
+            success: false,
+            error: result.error || "Failed to delete task",
+          });
+        }
+
+        return response.status(200).json({
+          success: true,
         });
       } catch (error) {
         console.error(error);
