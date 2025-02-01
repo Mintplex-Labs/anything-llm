@@ -9,6 +9,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
 
+const NO_SETTINGS_NEEDED = ["default"];
 export default function WorkspaceLLM({
   llm,
   availableLLMs,
@@ -73,7 +74,7 @@ export default function WorkspaceLLM({
               <div className="mt-1 text-xs text-white/60">{description}</div>
             </div>
           </div>
-          {checked && (
+          {checked && !NO_SETTINGS_NEEDED.includes(value) && (
             <button
               onClick={(e) => {
                 e.preventDefault();
