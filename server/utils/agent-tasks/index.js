@@ -33,7 +33,10 @@ class AgentTasks {
     for (const file of files) {
       if (!file.endsWith(".json")) continue;
       try {
-        const content = await fs.readFile(path.join(this.tasksDir, file), "utf8");
+        const content = await fs.readFile(
+          path.join(this.tasksDir, file),
+          "utf8"
+        );
         const config = JSON.parse(content);
         const id = file.replace(".json", "");
         tasks[id] = config;
@@ -84,7 +87,10 @@ class AgentTasks {
       }
 
       const filename = path.join(this.tasksDir, `${uuid}.json`);
-      await fs.writeFile(filename, JSON.stringify({ ...config, name }, null, 2));
+      await fs.writeFile(
+        filename,
+        JSON.stringify({ ...config, name }, null, 2)
+      );
       return { success: true, uuid };
     } catch (error) {
       console.error("Failed to save task:", error);
@@ -150,7 +156,7 @@ class AgentTasks {
     const task = await this.loadTask(uuid);
     if (!task) return null;
 
-    const startBlock = task.config.steps?.find(s => s.type === "start");
+    const startBlock = task.config.steps?.find((s) => s.type === "start");
     const variables = startBlock?.config?.variables || [];
 
     return {
@@ -225,7 +231,9 @@ class AgentTasks {
         continue;
       }
 
-      const typeSchema = Object.values(TASK_TYPES).find(t => t.type === step.type);
+      const typeSchema = Object.values(TASK_TYPES).find(
+        (t) => t.type === step.type
+      );
       if (!typeSchema) {
         errors.push(`Step ${index} has unknown type: ${step.type}`);
         continue;
@@ -237,7 +245,9 @@ class AgentTasks {
       }
 
       // Validate required parameters
-      for (const [paramName, paramSchema] of Object.entries(typeSchema.parameters)) {
+      for (const [paramName, paramSchema] of Object.entries(
+        typeSchema.parameters
+      )) {
         if (paramSchema.required && !step.config[paramName]) {
           errors.push(`Step ${index} missing required parameter: ${paramName}`);
         }
@@ -246,7 +256,7 @@ class AgentTasks {
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     };
   }
 }

@@ -5,8 +5,8 @@
  */
 async function executeCode(config) {
   // For now just log what would happen
-  console.log('Code execution:', config);
-  return { success: true, message: 'Code executed (placeholder)' };
+  console.log("Code execution:", config);
+  return { success: true, message: "Code executed (placeholder)" };
 }
 
 module.exports = executeCode;

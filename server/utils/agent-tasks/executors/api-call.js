@@ -16,7 +16,8 @@ async function executeApiCall(config) {
       const formDataObj = new URLSearchParams();
       formData.forEach(({ key, value }) => formDataObj.append(key, value));
       requestConfig.body = formDataObj.toString();
-      requestConfig.headers["Content-Type"] = "application/x-www-form-urlencoded";
+      requestConfig.headers["Content-Type"] =
+        "application/x-www-form-urlencoded";
     } else if (bodyType === "json") {
       requestConfig.body = body;
       requestConfig.headers["Content-Type"] = "application/json";

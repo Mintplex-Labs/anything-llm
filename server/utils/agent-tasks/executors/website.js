@@ -5,8 +5,8 @@
  */
 async function executeWebsite(config) {
   // For now just log what would happen
-  console.log('Website action:', config);
-  return { success: true, message: 'Website action executed (placeholder)' };
+  console.log("Website action:", config);
+  return { success: true, message: "Website action executed (placeholder)" };
 }
 
 module.exports = executeWebsite;
