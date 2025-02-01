@@ -1,9 +1,4 @@
-const {
-  saveTask,
-  loadTask,
-  listTasks,
-  deleteTask,
-} = require("../utils/agent-tasks");
+const { AgentTasks } = require("../utils/agent-tasks");
 
 function agentTaskEndpoints(app) {
   if (!app) return;
@@ -23,7 +18,7 @@ function agentTaskEndpoints(app) {
           });
         }
 
-        const result = await saveTask(name, config, uuid);
+        const result = await AgentTasks.saveTask(name, config, uuid);
         if (!result.success) {
           return response.status(500).json({
             success: false,
@@ -51,7 +46,7 @@ function agentTaskEndpoints(app) {
     // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_request, response) => {
       try {
-        const tasks = await listTasks();
+        const tasks = await AgentTasks.listTasks();
         return response.status(200).json({
           success: true,
           tasks,
@@ -73,7 +68,7 @@ function agentTaskEndpoints(app) {
     async (request, response) => {
       try {
         const { uuid } = request.params;
-        const task = await loadTask(uuid);
+        const task = await AgentTasks.loadTask(uuid);
         if (!task) {
           return response.status(404).json({
             success: false,
@@ -132,7 +127,7 @@ function agentTaskEndpoints(app) {
     async (request, response) => {
       try {
         const { uuid } = request.params;
-        const result = await deleteTask(uuid);
+        const result = await AgentTasks.deleteTask(uuid);
 
         if (!result.success) {
           return response.status(500).json({

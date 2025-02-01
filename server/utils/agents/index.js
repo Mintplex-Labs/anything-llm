@@ -433,9 +433,12 @@ class AgentHandler {
       await WORKSPACE_AGENT.getDefinition(this.provider)
     );
 
+    // TODO: Load agent tasks as individual plugins
+
     this.#funcsToLoad = [
       ...((await USER_AGENT.getDefinition())?.functions || []),
       ...((await WORKSPACE_AGENT.getDefinition())?.functions || []),
+      // TODO: Load agent tasks as individual plugins
     ];
   }
 
