@@ -5,7 +5,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import PreLoader from "@/components/Preloader";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import DataPrismIcon from "@/media/logo/data-prism-logo.png";
 import OpenAiWhisperOptions from "@/components/TranscriptionSelection/OpenAiOptions";
 import NativeTranscriptionOptions from "@/components/TranscriptionSelection/NativeTranscriptionOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -25,7 +25,7 @@ const PROVIDERS = [
   {
     name: `${process.env.APPLICATION_FALLBACK_NAME || "Prism"} Built-In`,
     value: "local",
-    logo: AnythingLLMIcon,
+    logo: DataPrismIcon,
     options: (settings) => <NativeTranscriptionOptions settings={settings} />,
     description: "Run a built-in whisper model on this instance privately.",
   },
