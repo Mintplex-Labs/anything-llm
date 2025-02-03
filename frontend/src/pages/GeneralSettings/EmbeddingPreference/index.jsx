@@ -3,7 +3,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import DataPrismIcon from "@/media/logo/data-prism-logo.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
@@ -44,7 +44,7 @@ const EMBEDDERS = [
   {
     name: "Native Embedder",
     value: "native",
-    logo: AnythingLLMIcon,
+    logo: DataPrismIcon,
     options: (settings) => <NativeEmbeddingOptions settings={settings} />,
     description:
       "Use the built-in embedding provider for Prism. Zero setup!",
@@ -116,7 +116,7 @@ const EMBEDDERS = [
   {
     name: "Prism",
     value: "generic-openai",
-    logo: AnythingLLMIcon,
+    logo: DataPrismIcon,
     options: (settings) => (
       <GenericOpenAiEmbeddingOptions settings={settings} />
     ),

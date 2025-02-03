@@ -1,6 +1,6 @@
 import PreLoader from "@/components/Preloader";
 import System from "@/models/system";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import DataPrismIcon from "@/media/logo/data-prism-logo.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
@@ -110,7 +110,7 @@ export const LLM_SELECTION_PRIVACY = {
     description: [
       `Your model and chats are only accessible on this ${process.env.APPLICATION_FALLBACK_NAME || "Prism"} instance`,
     ],
-    logo: AnythingLLMIcon,
+    logo: DataPrismIcon,
   },
   togetherai: {
     name: "TogetherAI",
@@ -304,7 +304,7 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     description: [
       `Your document text is embedded privately on this instance of ${process.env.APPLICATION_FALLBACK_NAME || "Prism"}`,
     ],
-    logo: AnythingLLMIcon,
+    logo: DataPrismIcon,
   },
   openai: {
     name: "OpenAI",

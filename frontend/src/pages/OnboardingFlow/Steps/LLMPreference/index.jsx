@@ -10,7 +10,7 @@ import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import DataPrismIcon from "@/media/logo/data-prism-logo.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
@@ -251,7 +251,7 @@ const LLMS = [
   {
     name: "Native",
     value: "native",
-    logo: AnythingLLMIcon,
+    logo: DataPrismIcon,
     options: (settings) => <NativeLLMOptions settings={settings} />,
     description:
       `Use a downloaded custom Llama model for chatting on this ${process.env.APPLICATION_FALLBACK_NAME || "Prism"} instance.`,
