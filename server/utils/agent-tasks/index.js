@@ -259,6 +259,61 @@ class AgentTasks {
       errors,
     };
   }
+
+  /**
+   * Get all active tasks as plugins that can be loaded into the agent
+   * @returns {Promise<string[]>} Array of task names in @@task_{uuid} format
+   */
+  async activeTaskPlugins() {
+    const tasks = await this.getAllTasks();
+    return Object.keys(tasks).map(uuid => `@@task_${uuid}`);
+  }
+
+  /**
+   * Load a task plugin by its UUID
+   * @param {string} uuid - The UUID of the task to load
+   * @returns {Object|null} Plugin configuration or null if not found
+   */
+  async loadTaskPlugin(uuid) {
+    const task = await this.loadTask(uuid);
+    if (!task) return null;
+
+    const startBlock = task.config.steps?.find((s) => s.type === "start");
+    const variables = startBlock?.config?.variables || [];
+
+    return {
+      name: `task_${uuid}`,
+      description: `Execute agent task: ${task.name}`,
+      plugin: (runtimeArgs = {}) => ({
+        name: `task_${uuid}`,
+        description: task.description || `Execute agent task: ${task.name}`,
+        setup: (aibitat) => {
+          aibitat.function({
+            name: `task_${uuid}`,
+            description: task.description || `Execute agent task: ${task.name}`,
+            parameters: {
+              type: "object",
+              properties: variables.reduce((acc, v) => {
+                if (v.name) {
+                  acc[v.name] = {
+                    type: "string",
+                    description: v.description || `Value for variable ${v.name}`,
+                  };
+                }
+                return acc;
+              }, {}),
+            },
+            handler: async (args) => {
+              const result = await this.executeTask(uuid, args);
+              // Convert result to string if it's an object
+              return typeof result === 'object' ? JSON.stringify(result) : String(result);
+            },
+          });
+        },
+      }),
+      taskName: task.name,
+    };
+  }
 }
 
 // Create singleton instance

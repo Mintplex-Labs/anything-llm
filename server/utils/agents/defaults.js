@@ -3,6 +3,7 @@ const { SystemSettings } = require("../../models/systemSettings");
 const { safeJsonParse } = require("../http");
 const Provider = require("./aibitat/providers/ai-provider");
 const ImportedPlugin = require("./imported");
+const { AgentTasks } = require("../agent-tasks");
 
 // This is a list of skills that are built-in and default enabled.
 const DEFAULT_SKILLS = [
@@ -29,6 +30,7 @@ const WORKSPACE_AGENT = {
       functions: [
         ...(await agentSkillsFromSystemSettings()),
         ...(await ImportedPlugin.activeImportedPlugins()),
+        ...(await AgentTasks.activeTaskPlugins()),
       ],
     };
   },
