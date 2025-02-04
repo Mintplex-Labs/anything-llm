@@ -1,10 +1,15 @@
 /**
  * Execute an API call task
  * @param {Object} config Task configuration
+ * @param {Object} context Execution context with introspect function
  * @returns {Promise<string>} Response data
  */
-async function executeApiCall(config) {
+async function executeApiCall(config, context) {
   const { url, method, headers = [], body, bodyType, formData } = config;
+  const { introspect } = context;
+
+  introspect(`Making ${method} request to external API...`);
+  introspect(`Config: ${JSON.stringify(config)}`);
 
   const requestConfig = {
     method,
@@ -29,12 +34,17 @@ async function executeApiCall(config) {
   try {
     const response = await fetch(url, requestConfig);
     if (!response.ok) {
+      introspect(`Request failed with status ${response.status}`);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    introspect(`Successfully received response`);
     const data = await response.text();
     try {
+      // Try to parse as JSON first
       return JSON.stringify(JSON.parse(data));
     } catch {
+      // If not JSON, return as text
       return data;
     }
   } catch (error) {

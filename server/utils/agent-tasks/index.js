@@ -153,13 +153,18 @@ class AgentTasks {
    * @returns {Promise<Object|null>} Function definition for the agent
    */
   async getTaskFunction(uuid) {
+    console.log(`[AgentTasks] Getting function definition for task ${uuid}`);
+
     const task = await this.loadTask(uuid);
-    if (!task) return null;
+    if (!task) {
+      console.log(`[AgentTasks] No task found for UUID ${uuid}`);
+      return null;
+    }
 
     const startBlock = task.config.steps?.find((s) => s.type === "start");
     const variables = startBlock?.config?.variables || [];
 
-    return {
+    const funcDef = {
       name: `task_${uuid}`,
       description: `Execute agent task: ${task.name} - ${task.description}`,
       parameters: variables.reduce((acc, v) => {
@@ -172,6 +177,9 @@ class AgentTasks {
         return acc;
       }, {}),
     };
+
+    console.log(`[AgentTasks] Generated function definition:`, funcDef);
+    return funcDef;
   }
 
   /**
@@ -196,12 +204,13 @@ class AgentTasks {
    * @param {Object} variables - Initial variables for the task
    * @returns {Promise<Object>} Result of task execution
    */
-  async executeTask(uuid, variables = {}) {
+  async executeTask(uuid, variables = {}, introspect = null) {
     const task = await this.loadTask(uuid);
     if (!task) {
       throw new Error(`Task ${uuid} not found`);
     }
-    return await this.executor.executeTask(task, variables);
+
+    return await this.executor.executeTask(task, variables, introspect);
   }
 
   /**
@@ -304,8 +313,13 @@ class AgentTasks {
               }, {}),
             },
             handler: async (args) => {
-              const result = await this.executeTask(uuid, args);
-              // Convert result to string if it's an object
+              aibitat.introspect(`Executing task: ${task.name}`);
+              const result = await this.executeTask(uuid, args, aibitat.introspect);
+              if (!result.success) {
+                aibitat.introspect(`Task failed: ${result.results[0]?.error || 'Unknown error'}`);
+                return `Task execution failed: ${result.results[0]?.error || 'Unknown error'}`;
+              }
+              aibitat.introspect(`Agent task completed successfully`);
               return typeof result === 'object' ? JSON.stringify(result) : String(result);
             },
           });

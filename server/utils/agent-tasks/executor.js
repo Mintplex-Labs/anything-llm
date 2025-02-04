@@ -4,6 +4,16 @@ const executeFile = require("./executors/file");
 const executeCode = require("./executors/code");
 
 const TASK_TYPES = {
+  START: {
+    type: "start",
+    description: "Initialize task variables",
+    parameters: {
+      variables: {
+        type: "array",
+        description: "List of variables to initialize",
+      },
+    },
+  },
   API_CALL: {
     type: "apiCall",
     description: "Make an HTTP request to an API endpoint",
@@ -85,15 +95,22 @@ const TASK_TYPES = {
 class TaskExecutor {
   constructor() {
     this.variables = {};
+    this.introspect = () => {}; // Default no-op introspect
+  }
+
+  setIntrospect(introspectFn) {
+    this.introspect = introspectFn || (() => {});
   }
 
   // Utility to replace variables in config
   replaceVariables(config) {
     const configStr = JSON.stringify(config);
     const replaced = configStr.replace(/\${([^}]+)}/g, (match, varName) => {
-      return this.variables[varName] || match;
+      const value = this.variables[varName] || match;
+      return value;
     });
-    return JSON.parse(replaced);
+    const result = JSON.parse(replaced);
+    return result;
   }
 
   // Main execution method
@@ -101,18 +118,35 @@ class TaskExecutor {
     const config = this.replaceVariables(step.config);
     let result;
 
+    // Create execution context with introspect
+    const context = {
+      introspect: this.introspect,
+      variables: this.variables
+    };
+
     switch (step.type) {
+      case TASK_TYPES.START.type:
+        // For start blocks, we just initialize variables if they're not already set
+        if (config.variables) {
+          config.variables.forEach(v => {
+            if (v.name && !this.variables[v.name]) {
+              this.variables[v.name] = v.value || '';
+            }
+          });
+        }
+        result = this.variables;
+        break;
       case TASK_TYPES.API_CALL.type:
-        result = await executeApiCall(config);
+        result = await executeApiCall(config, context);
         break;
       case TASK_TYPES.WEBSITE.type:
-        result = await executeWebsite(config);
+        result = await executeWebsite(config, context);
         break;
       case TASK_TYPES.FILE.type:
-        result = await executeFile(config);
+        result = await executeFile(config, context);
         break;
       case TASK_TYPES.CODE.type:
-        result = await executeCode(config);
+        result = await executeCode(config, context);
         break;
       default:
         throw new Error(`Unknown task type: ${step.type}`);
@@ -128,8 +162,15 @@ class TaskExecutor {
   }
 
   // Execute entire task
-  async executeTask(task, initialVariables = {}) {
-    this.variables = { ...initialVariables };
+  async executeTask(task, initialVariables = {}, introspect = null) {
+    // Initialize variables with both initial values and any passed-in values
+    this.variables = {
+      ...(task.config.steps.find(s => s.type === 'start')?.config?.variables || [])
+        .reduce((acc, v) => ({ ...acc, [v.name]: v.value }), {}),
+      ...initialVariables // This will override any default values with passed-in values
+    };
+
+    this.setIntrospect(introspect);
     const results = [];
 
     for (const step of task.config.steps) {
