@@ -258,7 +258,7 @@ function StatusResponse({ props }) {
       <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <span
-            className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line`}
+            className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line custom-text-secondary`}
           >
             {props.content}
           </span>
