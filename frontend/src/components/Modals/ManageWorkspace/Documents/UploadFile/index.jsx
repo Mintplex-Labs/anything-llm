@@ -127,7 +127,7 @@ export default function UploadFile({
           </div>
         )}
       </div>
-      <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2 custom-text-secondary">
+      {/* <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2 custom-text-secondary">
         or submit a link
       </div>
       <form onSubmit={handleSendLink} className="flex gap-x-2">
@@ -151,7 +151,7 @@ export default function UploadFile({
         These files will be uploaded to the document processor running on this
         {process.env.APPLICATION_FALLBACK_NAME || "Prism"} instance. These files are not sent or shared with a third
         party.
-      </div>
+      </div> */}
     </div>
   );
 }
