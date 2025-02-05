@@ -17,7 +17,7 @@ export const ANYTHINGLLM_OLLAMA = {
 
 export const READY_EVENT_NAME = "system-ready";
 export const REMOTE_APP_VERSION_URL =
-  "https://cdn.useanything.com/latest/version.txt";
+  "https://cdn.anythingllm.com/latest/version.txt";
 export const _APP_VERSION = {
   value: null,
 };

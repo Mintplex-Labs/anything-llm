@@ -14,7 +14,7 @@ if [ "$(id -u)" -eq 0 ]; then
     exit 1
 fi
 
-APPIMAGE_URL="https://cdn.useanything.com/latest/AnythingLLMDesktop.AppImage"
+APPIMAGE_URL="https://cdn.anythingllm.com/latest/AnythingLLMDesktop.AppImage"
 APPIMAGE_FILE="AnythingLLMDesktop.AppImage"
 EXTRACTED_DIR="anythingllm-desktop"
 OUTDIR="$HOME/AnythingLLMDesktop"
@@ -35,6 +35,6 @@ ln -sf $EXTRACTED_DIR/AppRun start
 
 status "AnythingLLMDesktop is ready to run with $OUTDIR/start."
 status "\e[36mHeads up!\e[0mYou can rerun this installer anytime to get the latest version of AnythingLLM without effecting your existing data."
-status "Documentation: https://docs.useanything.com"
+status "Documentation: https://docs.anythingllm.com"
 status "Issues: https://github.com/Mintplex-Labs/anything-llm"
 status "\e[36mThanks for using AnythingLLM!\e[0m "

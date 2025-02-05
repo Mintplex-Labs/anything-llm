@@ -47,7 +47,7 @@ export default function OrderPlaced({ settings }) {
 
           <div className="font-mono text-white/80 text-sm flex items-center gap-x-2">
             <a
-              href="https://docs.useanything.com/fine-tuning/overview"
+              href="https://docs.anythingllm.com/fine-tuning/overview"
               target="_blank"
               className="underline"
             >

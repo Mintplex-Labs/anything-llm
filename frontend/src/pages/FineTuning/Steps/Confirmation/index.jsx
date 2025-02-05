@@ -49,7 +49,7 @@ export default function Confirmation({ settings, setSettings, setStep }) {
             Below are your fine-tuning order details. If you have any questions
             before or after ordering your fine-tune you can{" "}
             <a
-              href="https://docs.useanything.com/fine-tuning/overview"
+              href="https://docs.anythingllm.com/fine-tuning/overview"
               target="_blank"
               className="underline"
             >

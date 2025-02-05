@@ -28,7 +28,7 @@ function VersionTag({ version, needsUpdate = false }) {
     return (
       <>
         <a
-          href="https://useanything.com/download"
+          href="https://anythingllm.com/download"
           target="_blank"
           data-tooltip-id="version-tag"
           data-tooltip-content="Update available. Click to download."

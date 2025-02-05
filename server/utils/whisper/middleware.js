@@ -11,7 +11,7 @@ const XENOVA_MODELS_PATH =
     ? path.resolve(__dirname, "../../storage/models")
     : path.resolve(process.env.STORAGE_DIR, `models`);
 
-const BUCKET_BASE = "https://cdn.useanything.com/support/whisperstt";
+const BUCKET_BASE = "https://cdn.anythingllm.com/support/whisperstt";
 
 const AVAILABLE_WASM_FILES = ["ort-wasm-simd.wasm"];
 
