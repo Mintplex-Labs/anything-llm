@@ -66,10 +66,13 @@ const MODEL_MAP = {
     "o1-preview-2024-09-12": 128_000,
     "o1-mini": 128_000,
     "o1-mini-2024-09-12": 128_000,
+    "o3-mini": 200_000,
+    "o3-mini-2025-01-31": 200_000,
   },
   deepseek: {
     "deepseek-chat": 128_000,
     "deepseek-coder": 128_000,
+    "deepseek-reasoner": 128_000,
   },
   xai: {
     "grok-beta": 131_072,

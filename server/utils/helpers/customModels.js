@@ -145,7 +145,7 @@ async function openAiModels(apiKey = null) {
     .filter(
       (model) =>
         (model.id.includes("gpt") && !model.id.startsWith("ft:")) ||
-        model.id.includes("o1")
+        model.id.startsWith("o") // o1, o1-mini, o3, etc
     )
     .filter(
       (model) =>
