@@ -8,12 +8,14 @@ import {
   Browser,
   File,
   Code,
+  Brain,
 } from "@phosphor-icons/react";
 import StartNode from "../nodes/StartNode";
 import ApiCallNode from "../nodes/ApiCallNode";
 import WebsiteNode from "../nodes/WebsiteNode";
 import FileNode from "../nodes/FileNode";
 import CodeNode from "../nodes/CodeNode";
+import LLMInstructionNode from "../nodes/LLMInstructionNode";
 
 const BLOCK_TYPES = {
   START: "start",
@@ -21,6 +23,7 @@ const BLOCK_TYPES = {
   WEBSITE: "website",
   FILE: "file",
   CODE: "code",
+  LLM_INSTRUCTION: "llmInstruction",
 };
 
 const BLOCK_INFO = {
@@ -87,6 +90,17 @@ const BLOCK_INFO = {
     },
     getSummary: (config) => `Run ${config.language || "javascript"} code`,
   },
+  [BLOCK_TYPES.LLM_INSTRUCTION]: {
+    label: "LLM Instruction",
+    icon: <Brain className="w-5 h-5 text-theme-text-primary" />,
+    description: "Process data using LLM instructions",
+    defaultConfig: {
+      instruction: "",
+      inputVariable: "",
+      resultVariable: "",
+    },
+    getSummary: (config) => config.instruction || "No instruction",
+  },
 };
 
 export default function BlockList({
@@ -116,6 +130,8 @@ export default function BlockList({
         return <FileNode {...props} />;
       case BLOCK_TYPES.CODE:
         return <CodeNode {...props} />;
+      case BLOCK_TYPES.LLM_INSTRUCTION:
+        return <LLMInstructionNode {...props} />;
       default:
         return <div>Configuration options coming soon...</div>;
     }

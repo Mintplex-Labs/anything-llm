@@ -8,6 +8,8 @@ async function executeApiCall(config, context) {
   const { url, method, headers = [], body, bodyType, formData } = config;
   const { introspect } = context;
 
+  console.log("Executing API call:", config);
+
   introspect(`Making ${method} request to external API...`);
   introspect(`Config: ${JSON.stringify(config)}`);
 

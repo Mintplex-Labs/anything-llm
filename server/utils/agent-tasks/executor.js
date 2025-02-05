@@ -2,6 +2,7 @@ const executeApiCall = require("./executors/api-call");
 const executeWebsite = require("./executors/website");
 const executeFile = require("./executors/file");
 const executeCode = require("./executors/code");
+const executeLLMInstruction = require("./executors/llm-instruction");
 
 const TASK_TYPES = {
   START: {
@@ -90,6 +91,24 @@ const TASK_TYPES = {
       },
     },
   },
+  LLM_INSTRUCTION: {
+    type: "llmInstruction",
+    description: "Process data using LLM instructions",
+    parameters: {
+      instruction: {
+        type: "string",
+        description: "The instruction for the LLM to follow"
+      },
+      inputVariable: {
+        type: "string",
+        description: "Variable containing the input data to process"
+      },
+      resultVariable: {
+        type: "string",
+        description: "Variable to store the processed result",
+      },
+    },
+  },
 };
 
 class TaskExecutor {
@@ -117,6 +136,9 @@ class TaskExecutor {
   async executeStep(step) {
     const config = this.replaceVariables(step.config);
     let result;
+
+    this.introspect(`Executing step: ${step.type}`);
+    this.introspect(`Executing step: ${step.config}`);
 
     // Create execution context with introspect
     const context = {
@@ -147,6 +169,9 @@ class TaskExecutor {
         break;
       case TASK_TYPES.CODE.type:
         result = await executeCode(config, context);
+        break;
+      case TASK_TYPES.LLM_INSTRUCTION.type:
+        result = await executeLLMInstruction(config, context);
         break;
       default:
         throw new Error(`Unknown task type: ${step.type}`);
