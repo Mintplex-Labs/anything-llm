@@ -494,6 +494,10 @@ const EMBEDDING_CONFIG_KEY_MAPPINGS = {
     envKey: "HYBRID_SEARCH_ENABLED",
     checks: [],
   },
+  SparseEngineType: {
+    envKey: "SPARSE_ENGINE_TYPE",
+    checks: [isNotEmpty],
+  },
   HybridSearchDenseVectorWeight: {
     envKey: "HYBRID_SEARCH_DENSE_VECTOR_WEIGHT",
     checks: [isPositiveFloat],
@@ -521,6 +525,7 @@ const EMBEDDING_CONFIG_KEY_MAPPINGS = {
     envKey: "VOYAGEAI_API_KEY",
     checks: [isNotEmpty],
   },
+  
 };
 
 const TRANSCRIPTION_CONFIG_KEY_MAPPINGS = {

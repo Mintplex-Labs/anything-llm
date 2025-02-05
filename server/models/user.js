@@ -87,10 +87,10 @@ const User = {
 
     try {
       // Do not allow new users to bypass validation
-      if (!this.usernameRegex.test(username))
-        throw new Error(
-          "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
-        );
+      // if (!this.usernameRegex.test(username))
+      //   throw new Error(
+      //     "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
+      //   );
 
       const bcrypt = require("bcrypt");
       const hashedPassword = bcrypt.hashSync(password, 10);
@@ -163,8 +163,9 @@ const User = {
 
       if (
         updates.hasOwnProperty("username") &&
-        currentUser.username !== updates.username &&
-        !this.usernameRegex.test(updates.username)
+        currentUser.username !== updates.username 
+        // &&
+        // !this.usernameRegex.test(updates.username)
       )
         return {
           success: false,
