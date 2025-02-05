@@ -25,6 +25,8 @@ class AzureOpenAiLLM {
       }
     );
     this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
+    this.isOTypeModel =
+      process.env.AZURE_OPENAI_MODEL_TYPE === "reasoning" || false;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -34,18 +36,8 @@ class AzureOpenAiLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.#log(
-      `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens. API-Version: ${this.apiVersion}`
+      `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens.\nAPI-Version: ${this.apiVersion}.\nModel Type: ${this.isOTypeModel ? "reasoning" : "default"}`
     );
-  }
-
-  /**
-   * Check if the model is an o# type model.
-   * NOTE: This is HIGHLY dependent on if the user named their deployment "o1" or "o3-mini" or something else to match the model name.
-   * It cannot be determined by the model name alone since model deployments can be named arbitrarily.
-   * @returns {boolean}
-   */
-  get isOTypeModel() {
-    return this.model.startsWith("o");
   }
 
   #log(text, ...args) {
@@ -65,7 +57,13 @@ class AzureOpenAiLLM {
   }
 
   streamingEnabled() {
-    if (this.isOTypeModel && this.model !== "o3-mini") return false;
+    // Streaming of reasoning models is not supported
+    if (this.isOTypeModel) {
+      this.#log(
+        "Streaming will be disabled. AZURE_OPENAI_MODEL_TYPE is set to 'reasoning'."
+      );
+      return false;
+    }
     return "streamGetChatCompletion" in this;
   }
 
