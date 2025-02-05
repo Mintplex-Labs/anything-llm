@@ -316,7 +316,7 @@ const Milvus = {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
       let vectorDimension = null;
-      const { pageContent, docId, ...metadata } = documentData;
+      const { pageContent, docId, contentWithPages, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
       console.log("Adding new vectorized document into namespace", namespace);
@@ -388,6 +388,7 @@ const Milvus = {
       const textChunks = await textSplitter.splitText(pageContent);
       const documentVectors = [];
       const vectors = [];
+
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
 
       // Generate sparse vectors for all chunks beforehand
