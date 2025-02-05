@@ -94,8 +94,6 @@ class OllamaEmbedder {
       }
     }
 
-    console.log("chunks embedded", data.length);
-
     if (!!error) throw new Error(`Ollama Failed to embed: ${error}`);
     return data.length > 0 ? data : null;
   }
