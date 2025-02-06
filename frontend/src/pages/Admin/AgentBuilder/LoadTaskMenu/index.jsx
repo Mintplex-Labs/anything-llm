@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Info, Play, FolderOpen, Trash } from "@phosphor-icons/react";
+import { Info, FolderOpen, Trash } from "@phosphor-icons/react";
 import AgentTasks from "@/models/agent-tasks";
 import showToast from "@/utils/toast";
 
@@ -84,13 +84,14 @@ export default function LoadTaskMenu({
                     >
                       <Info className="w-4 h-4" />
                     </button>
-                    <button
+                    {/* TODO: Add task execution */}
+                    {/* <button
                       onClick={() => onRunTask(task.uuid)}
                       className="p-1.5 rounded-lg bg-theme-action-menu-bg border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                       title="Run task"
                     >
                       <Play className="w-4 h-4" />
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => onLoadTask(task.uuid)}
                       className="p-1.5 rounded-lg bg-theme-action-menu-bg border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
