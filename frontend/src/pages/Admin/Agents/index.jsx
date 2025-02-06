@@ -4,7 +4,15 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import { CaretLeft, CaretRight, Plug, Robot, ListChecks, Plus, Hammer } from "@phosphor-icons/react";
+import {
+  CaretLeft,
+  CaretRight,
+  Plug,
+  Robot,
+  ListChecks,
+  Plus,
+  Hammer,
+} from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
 import { FullScreenLoader } from "@/components/Preloader";
@@ -149,9 +157,9 @@ export default function AdminAgents() {
   const SelectedSkillComponent = selectedTask
     ? TaskPanel
     : selectedSkill.imported
-    ? ImportedSkillConfig
-    : configurableSkills[selectedSkill]?.component ||
-      defaultSkills[selectedSkill]?.component;
+      ? ImportedSkillConfig
+      : configurableSkills[selectedSkill]?.component ||
+        defaultSkills[selectedSkill]?.component;
 
   // Update the click handlers to clear the other selection
   const handleSkillClick = (skill) => {
@@ -328,7 +336,9 @@ export default function AdminAgents() {
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                         <Robot size={40} />
-                        <p className="font-medium">Select an agent skill or task</p>
+                        <p className="font-medium">
+                          Select an agent skill or task
+                        </p>
                       </div>
                     )}
                   </div>
@@ -349,7 +359,9 @@ export default function AdminAgents() {
     >
       <form
         onSubmit={handleSubmit}
-        onChange={() => !selectedSkill.imported && !selectedTask && setHasChanges(true)}
+        onChange={() =>
+          !selectedSkill.imported && !selectedTask && setHasChanges(true)
+        }
         ref={formEl}
         className="flex-1 flex gap-x-6 p-4 mt-10"
       >
@@ -412,7 +424,10 @@ export default function AdminAgents() {
                   <ListChecks size={24} />
                   <p className="text-lg font-medium">Agent Tasks</p>
                 </div>
-                <Link to={paths.agents.builder()} className="text-theme-text-secondary hover:text-theme-text-primary transition-colors duration-200 flex items-center gap-x-2">
+                <Link
+                  to={paths.agents.builder()}
+                  className="text-theme-text-secondary hover:text-theme-text-primary transition-colors duration-200 flex items-center gap-x-2"
+                >
                   <Hammer size={20} />
                   <p className="text-sm">Open Builder</p>
                 </Link>

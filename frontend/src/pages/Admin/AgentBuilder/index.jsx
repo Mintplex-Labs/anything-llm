@@ -28,7 +28,7 @@ export default function AgentBuilder() {
       type: BLOCK_TYPES.FINISH,
       config: {},
       isExpanded: false,
-    }
+    },
   ]);
   const [selectedBlock, setSelectedBlock] = useState("start");
   const [showBlockMenu, setShowBlockMenu] = useState(false);
@@ -139,10 +139,12 @@ export default function AgentBuilder() {
       description: agentDescription,
       active,
       // Exclude the finish block from the saved steps
-      steps: blocks.filter(block => block.type !== BLOCK_TYPES.FINISH).map((block) => ({
-        type: block.type,
-        config: block.config,
-      })),
+      steps: blocks
+        .filter((block) => block.type !== BLOCK_TYPES.FINISH)
+        .map((block) => ({
+          type: block.type,
+          config: block.config,
+        })),
     };
 
     try {
@@ -254,7 +256,7 @@ export default function AgentBuilder() {
         type: BLOCK_TYPES.FINISH,
         config: {},
         isExpanded: false,
-      }
+      },
     ]);
   };
 

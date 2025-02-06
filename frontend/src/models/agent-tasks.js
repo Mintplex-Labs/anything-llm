@@ -134,7 +134,8 @@ const AgentTasks = {
         body: JSON.stringify({ active }),
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Failed to toggle task");
+      if (!response.ok)
+        throw new Error(result.error || "Failed to toggle task");
       return { success: true, task: result.task };
     } catch (error) {
       console.error("Failed to toggle task:", error);

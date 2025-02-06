@@ -157,14 +157,22 @@ function agentTaskEndpoints(app) {
 
       const task = await AgentTasks.loadTask(uuid);
       if (!task) {
-        return response.status(404).json({ success: false, error: "Task not found" });
+        return response
+          .status(404)
+          .json({ success: false, error: "Task not found" });
       }
 
       task.config.active = active;
-      const { success } = await AgentTasks.saveTask(task.name, task.config, uuid);
+      const { success } = await AgentTasks.saveTask(
+        task.name,
+        task.config,
+        uuid
+      );
 
       if (!success) {
-        return response.status(500).json({ success: false, error: "Failed to update task" });
+        return response
+          .status(500)
+          .json({ success: false, error: "Failed to update task" });
       }
 
       return response.json({ success: true, task });

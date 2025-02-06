@@ -27,12 +27,12 @@ async function executeLLMInstruction(config, context) {
     const completion = await provider.complete([
       {
         role: "system",
-        content: `Follow these instructions carefully: ${instruction}`
+        content: `Follow these instructions carefully: ${instruction}`,
       },
       {
         role: "user",
-        content: input
-      }
+        content: input,
+      },
     ]);
 
     console.log("LLM response:", completion.result);

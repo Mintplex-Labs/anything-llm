@@ -309,7 +309,8 @@ class AgentTasks {
                 if (v.name) {
                   acc[v.name] = {
                     type: "string",
-                    description: v.description || `Value for variable ${v.name}`,
+                    description:
+                      v.description || `Value for variable ${v.name}`,
                   };
                 }
                 return acc;
@@ -317,13 +318,21 @@ class AgentTasks {
             },
             handler: async (args) => {
               aibitat.introspect(`Executing task: ${task.name}`);
-              const result = await this.executeTask(uuid, args, aibitat.introspect);
+              const result = await this.executeTask(
+                uuid,
+                args,
+                aibitat.introspect
+              );
               if (!result.success) {
-                aibitat.introspect(`Task failed: ${result.results[0]?.error || 'Unknown error'}`);
-                return `Task execution failed: ${result.results[0]?.error || 'Unknown error'}`;
+                aibitat.introspect(
+                  `Task failed: ${result.results[0]?.error || "Unknown error"}`
+                );
+                return `Task execution failed: ${result.results[0]?.error || "Unknown error"}`;
               }
               aibitat.introspect(`Agent task completed successfully`);
-              return typeof result === 'object' ? JSON.stringify(result) : String(result);
+              return typeof result === "object"
+                ? JSON.stringify(result)
+                : String(result);
             },
           });
         },

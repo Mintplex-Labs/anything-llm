@@ -38,7 +38,9 @@ export default function ApiCallNode({
 
     const newValue =
       currentValue.substring(0, start) +
-      '${' + variableName + '}' +
+      "${" +
+      variableName +
+      "}" +
       currentValue.substring(end);
 
     onConfigChange({ url: newValue });

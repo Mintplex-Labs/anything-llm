@@ -97,11 +97,11 @@ const TASK_TYPES = {
     parameters: {
       instruction: {
         type: "string",
-        description: "The instruction for the LLM to follow"
+        description: "The instruction for the LLM to follow",
       },
       inputVariable: {
         type: "string",
-        description: "Variable containing the input data to process"
+        description: "Variable containing the input data to process",
       },
       resultVariable: {
         type: "string",
@@ -143,16 +143,16 @@ class TaskExecutor {
     // Create execution context with introspect
     const context = {
       introspect: this.introspect,
-      variables: this.variables
+      variables: this.variables,
     };
 
     switch (step.type) {
       case TASK_TYPES.START.type:
         // For start blocks, we just initialize variables if they're not already set
         if (config.variables) {
-          config.variables.forEach(v => {
+          config.variables.forEach((v) => {
             if (v.name && !this.variables[v.name]) {
-              this.variables[v.name] = v.value || '';
+              this.variables[v.name] = v.value || "";
             }
           });
         }
@@ -190,9 +190,11 @@ class TaskExecutor {
   async executeTask(task, initialVariables = {}, introspect = null) {
     // Initialize variables with both initial values and any passed-in values
     this.variables = {
-      ...(task.config.steps.find(s => s.type === 'start')?.config?.variables || [])
-        .reduce((acc, v) => ({ ...acc, [v.name]: v.value }), {}),
-      ...initialVariables // This will override any default values with passed-in values
+      ...(
+        task.config.steps.find((s) => s.type === "start")?.config?.variables ||
+        []
+      ).reduce((acc, v) => ({ ...acc, [v.name]: v.value }), {}),
+      ...initialVariables, // This will override any default values with passed-in values
     };
 
     this.setIntrospect(introspect);

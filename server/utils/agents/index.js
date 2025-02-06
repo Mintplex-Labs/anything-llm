@@ -338,7 +338,8 @@ class AgentHandler {
     for (const [param, definition] of Object.entries(config)) {
       if (
         definition.required &&
-        (!Object.prototype.hasOwnProperty.call(args, param) || args[param] === null)
+        (!Object.prototype.hasOwnProperty.call(args, param) ||
+          args[param] === null)
       ) {
         this.log(
           `'${param}' required parameter for '${pluginName}' plugin is missing. Plugin may not function or crash agent.`

@@ -10,7 +10,10 @@ export default function TaskPanel({ task, toggleTask }) {
   const navigate = useNavigate();
 
   const handleToggle = async () => {
-    const { success, error } = await AgentTasks.toggleTask(task.uuid, !isActive);
+    const { success, error } = await AgentTasks.toggleTask(
+      task.uuid,
+      !isActive
+    );
     if (success) {
       setIsActive(!isActive);
       toggleTask(task.uuid);
