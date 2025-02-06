@@ -149,7 +149,7 @@ export default function App() {
                     element={<AdminRoute Component={AgentBuilder} />}
                   />
                   <Route
-                    path="/settings/agents/builder/:taskId"
+                    path="/settings/agents/builder/:flowId"
                     element={<AdminRoute Component={AgentBuilder} />}
                   />
                   <Route

@@ -1,6 +1,6 @@
 /**
- * Execute a file operation task
- * @param {Object} config Task configuration
+ * Execute a file operation flow step
+ * @param {Object} config Flow step configuration
  * @returns {Promise<Object>} Result of the file operation
  */
 async function executeFile(config) {

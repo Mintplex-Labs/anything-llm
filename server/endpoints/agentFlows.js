@@ -1,16 +1,16 @@
-const { AgentTasks } = require("../utils/agent-tasks");
+const { AgentFlows } = require("../utils/agentFlows");
 const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 
-function agentTaskEndpoints(app) {
+function agentFlowEndpoints(app) {
   if (!app) return;
 
-  // Save a task configuration
+  // Save a flow configuration
   app.post(
-    "/agent-task/save",
+    "/agent-flows/save",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
@@ -23,20 +23,20 @@ function agentTaskEndpoints(app) {
           });
         }
 
-        const result = await AgentTasks.saveTask(name, config, uuid);
-        if (!result.success) {
+        const flow = await AgentFlows.saveFlow(name, config, uuid);
+        if (!flow) {
           return response.status(500).json({
             success: false,
-            error: "Failed to save task",
+            error: "Failed to save flow",
           });
         }
 
         return response.status(200).json({
           success: true,
-          task: { name, config, uuid: result.uuid },
+          flow,
         });
       } catch (error) {
-        console.error("Error saving task:", error);
+        console.error("Error saving flow:", error);
         return response.status(500).json({
           success: false,
           error: error.message,
@@ -45,19 +45,19 @@ function agentTaskEndpoints(app) {
     }
   );
 
-  // List all available tasks
+  // List all available flows
   app.get(
-    "/agent-task/list",
+    "/agent-flows/list",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_request, response) => {
       try {
-        const tasks = await AgentTasks.listTasks();
+        const flows = await AgentFlows.listFlows();
         return response.status(200).json({
           success: true,
-          tasks,
+          flows,
         });
       } catch (error) {
-        console.error(error);
+        console.error("Error listing flows:", error);
         return response.status(500).json({
           success: false,
           error: error.message,
@@ -66,27 +66,27 @@ function agentTaskEndpoints(app) {
     }
   );
 
-  // Get a specific task by UUID
+  // Get a specific flow by UUID
   app.get(
-    "/agent-task/:uuid",
+    "/agent-flows/:uuid",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
-        const task = await AgentTasks.loadTask(uuid);
-        if (!task) {
+        const flow = await AgentFlows.loadFlow(uuid);
+        if (!flow) {
           return response.status(404).json({
             success: false,
-            error: "Task not found",
+            error: "Flow not found",
           });
         }
 
         return response.status(200).json({
           success: true,
-          task,
+          flow,
         });
       } catch (error) {
-        console.error(error);
+        console.error("Error getting flow:", error);
         return response.status(500).json({
           success: false,
           error: error.message,
@@ -95,17 +95,17 @@ function agentTaskEndpoints(app) {
     }
   );
 
-  // Run a specific task
+  // Run a specific flow
   app.post(
-    "/agent-task/:uuid/run",
+    "/agent-flows/:uuid/run",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
         const { variables = {} } = request.body;
 
-        // TODO: Implement task execution
-        console.log("Running task with UUID:", uuid);
+        // TODO: Implement flow execution
+        console.log("Running flow with UUID:", uuid);
 
         return response.status(200).json({
           success: true,
@@ -116,7 +116,7 @@ function agentTaskEndpoints(app) {
           },
         });
       } catch (error) {
-        console.error(error);
+        console.error("Error running flow:", error);
         return response.status(500).json({
           success: false,
           error: error.message,
@@ -125,27 +125,19 @@ function agentTaskEndpoints(app) {
     }
   );
 
-  // Delete a specific task
+  // Delete a specific flow
   app.delete(
-    "/agent-task/:uuid",
+    "/agent-flows/:uuid",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
-        const result = await AgentTasks.deleteTask(uuid);
-
-        if (!result.success) {
-          return response.status(500).json({
-            success: false,
-            error: result.error || "Failed to delete task",
-          });
-        }
-
+        await AgentFlows.deleteFlow(uuid);
         return response.status(200).json({
           success: true,
         });
       } catch (error) {
-        console.error(error);
+        console.error("Error deleting flow:", error);
         return response.status(500).json({
           success: false,
           error: error.message,
@@ -154,42 +146,42 @@ function agentTaskEndpoints(app) {
     }
   );
 
-  // Toggle task active status
+  // Toggle flow active status
   app.post(
-    "/agent-task/:uuid/toggle",
+    "/agent-flows/:uuid/toggle",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
         const { active } = request.body;
 
-        const task = await AgentTasks.loadTask(uuid);
-        if (!task) {
+        const flow = await AgentFlows.loadFlow(uuid);
+        if (!flow) {
           return response
             .status(404)
-            .json({ success: false, error: "Task not found" });
+            .json({ success: false, error: "Flow not found" });
         }
 
-        task.config.active = active;
-        const { success } = await AgentTasks.saveTask(
-          task.name,
-          task.config,
+        flow.config.active = active;
+        const { success } = await AgentFlows.saveFlow(
+          flow.name,
+          flow.config,
           uuid
         );
 
         if (!success) {
           return response
             .status(500)
-            .json({ success: false, error: "Failed to update task" });
+            .json({ success: false, error: "Failed to update flow" });
         }
 
-        return response.json({ success: true, task });
+        return response.json({ success: true, flow });
       } catch (error) {
-        console.error("Error toggling task:", error);
+        console.error("Error toggling flow:", error);
         response.status(500).json({ success: false, error: error.message });
       }
     }
   );
 }
 
-module.exports = { agentTaskEndpoints };
+module.exports = { agentFlowEndpoints };

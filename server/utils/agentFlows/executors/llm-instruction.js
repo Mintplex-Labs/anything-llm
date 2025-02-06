@@ -1,8 +1,8 @@
 const AIbitat = require("../../agents/aibitat");
 
 /**
- * Execute an LLM instruction task
- * @param {Object} config Task configuration
+ * Execute an LLM instruction flow step
+ * @param {Object} config Flow step configuration
  * @param {Object} context Execution context with introspect function
  * @returns {Promise<string>} Processed result
  */

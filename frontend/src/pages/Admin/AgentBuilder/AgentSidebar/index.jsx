@@ -1,5 +1,5 @@
 import React from "react";
-import { FloppyDisk, FolderOpen } from "@phosphor-icons/react";
+import { FloppyDisk, FolderOpen, Plus } from "@phosphor-icons/react";
 import useLogo from "@/hooks/useLogo";
 import { useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -23,7 +23,7 @@ export default function AgentSidebar({
       <div className="relative m-[16px] rounded-[16px] bg-theme-bg-secondary border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[5px] h-[calc(100%-35px)]">
         <div className="p-[10px]">
           <button
-            onClick={() => navigate(paths.home())}
+            onClick={() => navigate(paths.settings.agentSkills())}
             className="flex justify-between w-[250px] min-w-[250px]"
           >
             <img
@@ -34,7 +34,7 @@ export default function AgentSidebar({
           </button>
           <div className="flex flex-col mb-6">
             <span className="text-xs font-light text-theme-text-primary">
-              Agent Task Builder
+              Agent Flow Builder
             </span>
           </div>
           <div className="space-y-6">
@@ -93,21 +93,21 @@ export default function AgentSidebar({
               onClick={onNewClick}
               className="transition-all duration-300 text-xs px-4 py-2.5 font-semibold rounded-lg bg-theme-bg-primary hover:bg-theme-action-menu-item-hover border-2 border-white/10 text-white w-full flex items-center justify-center gap-2"
             >
-              New Task
+              New Flow
             </button>
             <button
               onClick={onLoadClick}
               className="transition-all duration-300 text-xs px-4 py-2.5 font-semibold rounded-lg bg-theme-bg-primary hover:bg-theme-action-menu-item-hover border-2 border-white/10 text-white w-full flex items-center justify-center gap-2"
             >
               <FolderOpen className="w-4 h-4" />
-              Load Task
+              Load Flow
             </button>
             <button
               onClick={onSave}
               className="transition-all duration-300 text-xs px-4 py-2.5 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white w-full flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
             >
               <FloppyDisk className="w-4 h-4" />
-              Save Task
+              Save Flow
             </button>
           </div>
         </div>

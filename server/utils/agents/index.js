@@ -7,7 +7,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const ImportedPlugin = require("./imported");
-const { AgentTasks } = require("../agent-tasks");
+const { AgentFlows } = require("../agentFlows");
 
 class AgentHandler {
   #invocationUUID;
@@ -387,20 +387,20 @@ class AgentHandler {
         continue;
       }
 
-      // Load task plugin. This is marked by `@@task_` in the array of functions to load.
-      if (name.startsWith("@@task_")) {
-        const uuid = name.replace("@@task_", "");
-        const plugin = await AgentTasks.loadTaskPlugin(uuid);
+      // Load flow plugin. This is marked by `@@flow_` in the array of functions to load.
+      if (name.startsWith("@@flow_")) {
+        const uuid = name.replace("@@flow_", "");
+        const plugin = await AgentFlows.loadFlowPlugin(uuid);
         if (!plugin) {
           this.log(
-            `Task ${uuid} not found in tasks directory. Skipping inclusion to agent cluster.`
+            `Flow ${uuid} not found in flows directory. Skipping inclusion to agent cluster.`
           );
           continue;
         }
 
         this.aibitat.use(plugin.plugin());
         this.log(
-          `Attached task ${plugin.name} (${plugin.taskName}) plugin to Agent cluster`
+          `Attached flow ${plugin.name} (${plugin.flowName}) plugin to Agent cluster`
         );
         continue;
       }

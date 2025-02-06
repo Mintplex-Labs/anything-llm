@@ -1,6 +1,6 @@
 /**
- * Execute a website interaction task
- * @param {Object} config Task configuration
+ * Execute a website interaction flow step
+ * @param {Object} config Flow step configuration
  * @returns {Promise<Object>} Result of the website interaction
  */
 async function executeWebsite(config) {

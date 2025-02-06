@@ -4,10 +4,10 @@ const executeFile = require("./executors/file");
 const executeCode = require("./executors/code");
 const executeLLMInstruction = require("./executors/llm-instruction");
 
-const TASK_TYPES = {
+const FLOW_TYPES = {
   START: {
     type: "start",
-    description: "Initialize task variables",
+    description: "Initialize flow variables",
     parameters: {
       variables: {
         type: "array",
@@ -111,7 +111,7 @@ const TASK_TYPES = {
   },
 };
 
-class TaskExecutor {
+class FlowExecutor {
   constructor() {
     this.variables = {};
     this.introspect = () => {}; // Default no-op introspect
@@ -159,7 +159,7 @@ class TaskExecutor {
     };
 
     switch (step.type) {
-      case TASK_TYPES.START.type:
+      case FLOW_TYPES.START.type:
         // For start blocks, we just initialize variables if they're not already set
         if (config.variables) {
           config.variables.forEach((v) => {
@@ -170,23 +170,23 @@ class TaskExecutor {
         }
         result = this.variables;
         break;
-      case TASK_TYPES.API_CALL.type:
+      case FLOW_TYPES.API_CALL.type:
         result = await executeApiCall(config, context);
         break;
-      case TASK_TYPES.WEBSITE.type:
+      case FLOW_TYPES.WEBSITE.type:
         result = await executeWebsite(config, context);
         break;
-      case TASK_TYPES.FILE.type:
+      case FLOW_TYPES.FILE.type:
         result = await executeFile(config, context);
         break;
-      case TASK_TYPES.CODE.type:
+      case FLOW_TYPES.CODE.type:
         result = await executeCode(config, context);
         break;
-      case TASK_TYPES.LLM_INSTRUCTION.type:
+      case FLOW_TYPES.LLM_INSTRUCTION.type:
         result = await executeLLMInstruction(config, context);
         break;
       default:
-        throw new Error(`Unknown task type: ${step.type}`);
+        throw new Error(`Unknown flow type: ${step.type}`);
     }
 
     // Store result in variable if specified
@@ -198,12 +198,12 @@ class TaskExecutor {
     return result;
   }
 
-  // Execute entire task
-  async executeTask(task, initialVariables = {}, introspect = null) {
+  // Execute entire flow
+  async executeFlow(flow, initialVariables = {}, introspect = null) {
     // Initialize variables with both initial values and any passed-in values
     this.variables = {
       ...(
-        task.config.steps.find((s) => s.type === "start")?.config?.variables ||
+        flow.config.steps.find((s) => s.type === "start")?.config?.variables ||
         []
       ).reduce((acc, v) => ({ ...acc, [v.name]: v.value }), {}),
       ...initialVariables, // This will override any default values with passed-in values
@@ -212,11 +212,11 @@ class TaskExecutor {
     this.setIntrospect(introspect);
     const results = [];
 
-    for (const step of task.config.steps) {
+    for (const step of flow.config.steps) {
       console.log("step", step);
       console.log("variables", this.variables);
       console.log("initialVariables", initialVariables);
-      console.log("task", task);
+      console.log("flow", flow);
       try {
         const result = await this.executeStep(step);
         results.push({ success: true, result });
@@ -235,6 +235,6 @@ class TaskExecutor {
 }
 
 module.exports = {
-  TaskExecutor,
-  TASK_TYPES,
+  FlowExecutor,
+  FLOW_TYPES,
 };

@@ -10,6 +10,7 @@ import {
   Brain,
   FlagCheckered,
   Play,
+  Flag,
 } from "@phosphor-icons/react";
 import StartNode from "../nodes/StartNode";
 import ApiCallNode from "../nodes/ApiCallNode";
@@ -31,7 +32,7 @@ const BLOCK_TYPES = {
 
 const BLOCK_INFO = {
   [BLOCK_TYPES.START]: {
-    label: "Agent Start",
+    label: "Flow Start",
     icon: <Play className="w-5 h-5 text-theme-text-primary" />,
     description: "Configure agent variables and settings",
     getSummary: (config) => {
@@ -107,10 +108,12 @@ const BLOCK_INFO = {
     getSummary: (config) => config.instruction || "No instruction",
   },
   [BLOCK_TYPES.FINISH]: {
-    label: "Task Complete",
-    icon: <FlagCheckered className="w-5 h-5 text-theme-text-primary" />,
-    description: "End of agent task",
-    getSummary: () => "Task will end here",
+    label: "Flow Complete",
+    icon: <Flag className="w-4 h-4" />,
+    description: "End of agent flow",
+    getSummary: () => "Flow will end here",
+    defaultConfig: {},
+    renderConfig: () => null,
   },
 };
 

@@ -4,15 +4,15 @@ import { useParams } from "react-router-dom";
 import BlockList, { BLOCK_TYPES, BLOCK_INFO } from "./BlockList";
 import AddBlockMenu from "./AddBlockMenu";
 import showToast from "@/utils/toast";
-import AgentTasks from "@/models/agent-tasks";
+import AgentFlows from "@/models/agentFlows";
 import AgentSidebar from "./AgentSidebar";
-import LoadTaskMenu from "./LoadTaskMenu";
+import LoadFlowMenu from "./LoadFlowMenu";
 
 export default function AgentBuilder() {
-  const { taskId } = useParams();
+  const { flowId } = useParams();
   const [agentName, setAgentName] = useState("");
   const [agentDescription, setAgentDescription] = useState("");
-  const [currentTaskUuid, setCurrentTaskUuid] = useState(null);
+  const [currentFlowUuid, setCurrentFlowUuid] = useState(null);
   const [active, setActive] = useState(true);
   const [blocks, setBlocks] = useState([
     {
@@ -33,37 +33,37 @@ export default function AgentBuilder() {
   const [selectedBlock, setSelectedBlock] = useState("start");
   const [showBlockMenu, setShowBlockMenu] = useState(false);
   const [showLoadMenu, setShowLoadMenu] = useState(false);
-  const [availableTasks, setAvailableTasks] = useState([]);
-  const [selectedTaskForDetails, setSelectedTaskForDetails] = useState(null);
+  const [availableFlows, setAvailableFlows] = useState([]);
+  const [selectedFlowForDetails, setSelectedFlowForDetails] = useState(null);
 
   useEffect(() => {
-    loadAvailableTasks();
+    loadAvailableFlows();
   }, []);
 
   useEffect(() => {
-    if (taskId) {
-      loadTask(taskId);
+    if (flowId) {
+      loadFlow(flowId);
     }
-  }, [taskId]);
+  }, [flowId]);
 
-  const loadAvailableTasks = async () => {
+  const loadAvailableFlows = async () => {
     try {
-      const { success, error, tasks } = await AgentTasks.listTasks();
+      const { success, error, flows } = await AgentFlows.listFlows();
       if (!success) throw new Error(error);
-      setAvailableTasks(tasks);
+      setAvailableFlows(flows);
     } catch (error) {
       console.error(error);
-      showToast("Failed to load available tasks", "error", { clear: true });
+      showToast("Failed to load available flows", "error", { clear: true });
     }
   };
 
-  const loadTask = async (uuid) => {
+  const loadFlow = async (uuid) => {
     try {
-      const { success, error, task } = await AgentTasks.getTask(uuid);
+      const { success, error, flow } = await AgentFlows.getFlow(uuid);
       if (!success) throw new Error(error);
 
       // Convert steps to blocks with IDs, ensuring finish block is at the end
-      const taskBlocks = task.config.steps.map((step, index) => ({
+      const flowBlocks = flow.config.steps.map((step, index) => ({
         id: index === 0 ? "start" : `block_${index}`,
         type: step.type,
         config: step.config,
@@ -71,8 +71,8 @@ export default function AgentBuilder() {
       }));
 
       // Add finish block if not present
-      if (taskBlocks[taskBlocks.length - 1]?.type !== BLOCK_TYPES.FINISH) {
-        taskBlocks.push({
+      if (flowBlocks[flowBlocks.length - 1]?.type !== BLOCK_TYPES.FINISH) {
+        flowBlocks.push({
           id: "finish",
           type: BLOCK_TYPES.FINISH,
           config: {},
@@ -80,17 +80,17 @@ export default function AgentBuilder() {
         });
       }
 
-      setAgentName(task.config.name);
-      setAgentDescription(task.config.description);
-      setActive(task.config.active ?? true);
-      setCurrentTaskUuid(task.uuid);
-      setBlocks(taskBlocks);
+      setAgentName(flow.config.name);
+      setAgentDescription(flow.config.description);
+      setActive(flow.config.active ?? true);
+      setCurrentFlowUuid(flow.uuid);
+      setBlocks(flowBlocks);
       setShowLoadMenu(false);
 
-      showToast("Task loaded successfully!", "success", { clear: true });
+      showToast("Flow loaded successfully!", "success", { clear: true });
     } catch (error) {
       console.error(error);
-      showToast("Failed to load task", "error", { clear: true });
+      showToast("Failed to load flow", "error", { clear: true });
     }
   };
 
@@ -126,15 +126,15 @@ export default function AgentBuilder() {
     }
   };
 
-  const saveTask = async () => {
+  const saveFlow = async () => {
     if (!agentName.trim()) {
-      showToast("Please provide a name for your agent task", "error", {
+      showToast("Please provide a name for your agent flow", "error", {
         clear: true,
       });
       return;
     }
 
-    const taskConfig = {
+    const flowConfig = {
       name: agentName,
       description: agentDescription,
       active,
@@ -148,19 +148,19 @@ export default function AgentBuilder() {
     };
 
     try {
-      const { success, error, task } = await AgentTasks.saveTask(
+      const { success, error, flow } = await AgentFlows.saveFlow(
         agentName,
-        taskConfig,
-        currentTaskUuid
+        flowConfig,
+        currentFlowUuid
       );
       if (!success) throw new Error(error);
 
-      setCurrentTaskUuid(task.uuid);
-      showToast("Agent task saved successfully!", "success", { clear: true });
-      await loadAvailableTasks();
+      setCurrentFlowUuid(flow.uuid);
+      showToast("Agent flow saved successfully!", "success", { clear: true });
+      await loadAvailableFlows();
     } catch (error) {
       console.error("Save error details:", error);
-      showToast("Failed to save agent task", "error", { clear: true });
+      showToast("Failed to save agent flow", "error", { clear: true });
     }
   };
 
@@ -225,22 +225,22 @@ export default function AgentBuilder() {
     });
   };
 
-  const runTask = async (uuid) => {
+  const runFlow = async (uuid) => {
     try {
-      const { success, error, results } = await AgentTasks.runTask(uuid);
+      const { success, error, results } = await AgentFlows.runFlow(uuid);
       if (!success) throw new Error(error);
 
-      showToast("Task executed successfully!", "success", { clear: true });
+      showToast("Flow executed successfully!", "success", { clear: true });
     } catch (error) {
       console.error(error);
-      showToast("Failed to run agent task", "error", { clear: true });
+      showToast("Failed to run agent flow", "error", { clear: true });
     }
   };
 
-  const clearTask = () => {
+  const clearFlow = () => {
     setAgentName("");
     setAgentDescription("");
-    setCurrentTaskUuid(null);
+    setCurrentFlowUuid(null);
     setActive(true);
     setBlocks([
       {
@@ -267,9 +267,9 @@ export default function AgentBuilder() {
         setAgentName={setAgentName}
         agentDescription={agentDescription}
         setAgentDescription={setAgentDescription}
-        onSave={saveTask}
+        onSave={saveFlow}
         onLoadClick={() => setShowLoadMenu(true)}
-        onNewClick={clearTask}
+        onNewClick={clearFlow}
         active={active}
         onToggleActive={setActive}
       />
@@ -291,15 +291,15 @@ export default function AgentBuilder() {
             addBlock={addBlock}
           />
 
-          <LoadTaskMenu
+          <LoadFlowMenu
             showLoadMenu={showLoadMenu}
             setShowLoadMenu={setShowLoadMenu}
-            availableTasks={availableTasks}
-            selectedTaskForDetails={selectedTaskForDetails}
-            setSelectedTaskForDetails={setSelectedTaskForDetails}
-            onLoadTask={loadTask}
-            onRunTask={runTask}
-            onTaskDeleted={loadAvailableTasks}
+            availableFlows={availableFlows}
+            selectedFlowForDetails={selectedFlowForDetails}
+            setSelectedFlowForDetails={setSelectedFlowForDetails}
+            onLoadFlow={loadFlow}
+            onRunFlow={runFlow}
+            onFlowDeleted={loadAvailableFlows}
           />
         </div>
       </div>

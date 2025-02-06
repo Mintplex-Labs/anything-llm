@@ -21,8 +21,8 @@ import { DefaultBadge } from "./Badges/default";
 import ImportedSkillList from "./Imported/SkillList";
 import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
 import { Tooltip } from "react-tooltip";
-import AgentTasksList from "./AgentTasks";
-import TaskPanel from "./AgentTasks/TaskPanel";
+import AgentFlowsList from "./AgentFlows";
+import FlowPanel from "./AgentFlows/FlowPanel";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 
@@ -37,8 +37,8 @@ export default function AdminAgents() {
   const [agentSkills, setAgentSkills] = useState([]);
   const [importedSkills, setImportedSkills] = useState([]);
   const [disabledAgentSkills, setDisabledAgentSkills] = useState([]);
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [activeTaskIds, setActiveTaskIds] = useState([]);
+  const [selectedFlow, setSelectedFlow] = useState(null);
+  const [activeFlowIds, setActiveFlowIds] = useState([]);
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function AdminAgents() {
         "disabled_agent_skills",
         "default_agent_skills",
         "imported_agent_skills",
-        "active_agent_tasks",
+        "active_agent_flows",
       ]);
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
@@ -69,7 +69,7 @@ export default function AdminAgents() {
         _preferences.settings?.disabled_agent_skills ?? []
       );
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
-      setActiveTaskIds(_preferences.settings?.active_agent_tasks ?? []);
+      setActiveFlowIds(_preferences.settings?.active_agent_flows ?? []);
       setLoading(false);
     }
     fetchSettings();
@@ -95,12 +95,12 @@ export default function AdminAgents() {
     });
   };
 
-  const toggleTask = (taskId) => {
-    setActiveTaskIds((prev) => {
-      const updatedTasks = prev.includes(taskId)
-        ? prev.filter((id) => id !== taskId)
-        : [...prev, taskId];
-      return updatedTasks;
+  const toggleFlow = (flowId) => {
+    setActiveFlowIds((prev) => {
+      const updatedFlows = prev.includes(flowId)
+        ? prev.filter((id) => id !== flowId)
+        : [...prev, flowId];
+      return updatedFlows;
     });
   };
 
@@ -154,8 +154,8 @@ export default function AdminAgents() {
     setHasChanges(false);
   };
 
-  const SelectedSkillComponent = selectedTask
-    ? TaskPanel
+  const SelectedSkillComponent = selectedFlow
+    ? FlowPanel
     : selectedSkill.imported
       ? ImportedSkillConfig
       : configurableSkills[selectedSkill]?.component ||
@@ -163,15 +163,14 @@ export default function AdminAgents() {
 
   // Update the click handlers to clear the other selection
   const handleSkillClick = (skill) => {
-    setSelectedTask(null);
+    setSelectedFlow(null);
     setSelectedSkill(skill);
     if (isMobile) setShowSkillModal(true);
   };
 
-  const handleTaskClick = (task) => {
-    setSelectedSkill("");
-    setSelectedTask(task);
-    if (isMobile) setShowSkillModal(true);
+  const handleFlowClick = (flow) => {
+    setSelectedSkill(null);
+    setSelectedFlow(flow);
   };
 
   if (loading) {
@@ -194,7 +193,7 @@ export default function AdminAgents() {
       >
         <form
           onSubmit={handleSubmit}
-          onChange={() => !selectedTask && setHasChanges(true)}
+          onChange={() => !selectedFlow && setHasChanges(true)}
           ref={formEl}
           className="flex flex-col w-full p-4 mt-10"
         >
@@ -220,7 +219,7 @@ export default function AdminAgents() {
               skills={defaultSkills}
               selectedSkill={selectedSkill}
               handleClick={(skill) => {
-                setSelectedTask(null);
+                setSelectedFlow(null);
                 setSelectedSkill(skill);
                 setShowSkillModal(true);
               }}
@@ -233,7 +232,7 @@ export default function AdminAgents() {
               skills={configurableSkills}
               selectedSkill={selectedSkill}
               handleClick={(skill) => {
-                setSelectedTask(null);
+                setSelectedFlow(null);
                 setSelectedSkill(skill);
                 setShowSkillModal(true);
               }}
@@ -252,17 +251,18 @@ export default function AdminAgents() {
 
             <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
               <ListChecks size={24} />
-              <p className="text-lg font-medium">Agent Tasks</p>
+              <p className="text-lg font-medium">Agent Flows</p>
             </div>
-            <AgentTasksList
-              selectedTask={selectedTask}
-              handleClick={handleTaskClick}
-              activeTaskIds={activeTaskIds}
+            <AgentFlowsList
+              selectedFlow={selectedFlow}
+              handleClick={handleFlowClick}
+              activeFlowIds={activeFlowIds}
             />
             <input
-              name="system::active_agent_tasks"
               type="hidden"
-              value={activeTaskIds.join(",")}
+              name="system::active_agent_flows"
+              id="active_agent_flows"
+              value={activeFlowIds.join(",")}
             />
           </div>
 
@@ -289,11 +289,11 @@ export default function AdminAgents() {
                   <div className=" bg-theme-bg-secondary text-white rounded-xl p-4">
                     {SelectedSkillComponent ? (
                       <>
-                        {selectedTask ? (
-                          <TaskPanel
-                            task={selectedTask}
-                            toggleTask={toggleTask}
-                            enabled={activeTaskIds.includes(selectedTask.uuid)}
+                        {selectedFlow ? (
+                          <FlowPanel
+                            flow={selectedFlow}
+                            toggleFlow={toggleFlow}
+                            enabled={activeFlowIds.includes(selectedFlow.uuid)}
                           />
                         ) : selectedSkill.imported ? (
                           <ImportedSkillConfig
@@ -337,7 +337,7 @@ export default function AdminAgents() {
                       <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                         <Robot size={40} />
                         <p className="font-medium">
-                          Select an agent skill or task
+                          Select an agent skill or flow
                         </p>
                       </div>
                     )}
@@ -360,7 +360,7 @@ export default function AdminAgents() {
       <form
         onSubmit={handleSubmit}
         onChange={() =>
-          !selectedSkill.imported && !selectedTask && setHasChanges(true)
+          (!selectedSkill?.imported && !selectedFlow) && setHasChanges(true)
         }
         ref={formEl}
         className="flex-1 flex gap-x-6 p-4 mt-10"
@@ -376,9 +376,10 @@ export default function AdminAgents() {
           value={disabledAgentSkills.join(",")}
         />
         <input
-          name="system::active_agent_tasks"
           type="hidden"
-          value={activeTaskIds.join(",")}
+          name="system::active_agent_flows"
+          id="active_agent_flows"
+          value={activeFlowIds.join(",")}
         />
 
         {/* Skill settings nav - Make this section scrollable */}
@@ -422,7 +423,7 @@ export default function AdminAgents() {
               <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
                 <div className="flex items-center gap-x-2">
                   <ListChecks size={24} />
-                  <p className="text-lg font-medium">Agent Tasks</p>
+                  <p className="text-lg font-medium">Agent Flows</p>
                 </div>
                 <Link
                   to={paths.agents.builder()}
@@ -432,10 +433,10 @@ export default function AdminAgents() {
                   <p className="text-sm">Open Builder</p>
                 </Link>
               </div>
-              <AgentTasksList
-                selectedTask={selectedTask}
-                handleClick={handleTaskClick}
-                activeTaskIds={activeTaskIds}
+              <AgentFlowsList
+                selectedFlow={selectedFlow}
+                handleClick={handleFlowClick}
+                activeFlowIds={activeFlowIds}
               />
             </div>
           </div>
@@ -446,11 +447,11 @@ export default function AdminAgents() {
           <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
             {SelectedSkillComponent ? (
               <>
-                {selectedTask ? (
-                  <TaskPanel
-                    task={selectedTask}
-                    toggleTask={toggleTask}
-                    enabled={activeTaskIds.includes(selectedTask.uuid)}
+                {selectedFlow ? (
+                  <FlowPanel
+                    flow={selectedFlow}
+                    toggleFlow={toggleFlow}
+                    enabled={activeFlowIds.includes(selectedFlow.uuid)}
                   />
                 ) : selectedSkill.imported ? (
                   <ImportedSkillConfig
@@ -493,7 +494,7 @@ export default function AdminAgents() {
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                 <Robot size={40} />
-                <p className="font-medium">Select an agent skill or task</p>
+                <p className="font-medium">Select an agent skill or flow</p>
               </div>
             )}
           </div>

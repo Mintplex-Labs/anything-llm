@@ -1,6 +1,6 @@
 /**
- * Execute an API call task
- * @param {Object} config Task configuration
+ * Execute an API call flow step
+ * @param {Object} config Flow step configuration
  * @param {Object} context Execution context with introspect function
  * @returns {Promise<string>} Response data
  */

@@ -84,11 +84,11 @@ export default function LoadFlowMenu({
                     >
                       <Info className="w-4 h-4" />
                     </button>
-                    {/* TODO: Add task execution */}
+                    {/* TODO: Add flow execution */}
                     {/* <button
-                      onClick={() => onRunTask(task.uuid)}
+                      onClick={() => onRunFlow(flow.uuid)}
                       className="p-1.5 rounded-lg bg-theme-action-menu-bg border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
-                      title="Run task"
+                      title="Run flow"
                     >
                       <Play className="w-4 h-4" />
                     </button> */}

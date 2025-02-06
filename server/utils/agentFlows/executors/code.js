@@ -1,6 +1,6 @@
 /**
- * Execute a code task
- * @param {Object} config Task configuration
+ * Execute a code flow step
+ * @param {Object} config Flow step configuration
  * @returns {Promise<Object>} Result of the code execution
  */
 async function executeCode(config) {
