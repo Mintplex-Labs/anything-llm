@@ -2,6 +2,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const { TaskExecutor, TASK_TYPES } = require("./executor");
+const { normalizePath } = require("../files");
 
 class AgentTasks {
   constructor() {
@@ -33,12 +34,11 @@ class AgentTasks {
     for (const file of files) {
       if (!file.endsWith(".json")) continue;
       try {
-        const content = await fs.readFile(
-          path.join(this.tasksDir, file),
-          "utf8"
-        );
+        const normalizedFile = normalizePath(file);
+        const filePath = path.join(this.tasksDir, normalizedFile);
+        const content = await fs.readFile(filePath, "utf8");
         const config = JSON.parse(content);
-        const id = file.replace(".json", "");
+        const id = normalizedFile.replace(".json", "");
         tasks[id] = config;
       } catch (error) {
         console.error(`Error reading task file ${file}:`, error);
@@ -86,15 +86,16 @@ class AgentTasks {
         uuid = uuidv4();
       }
 
-      const filename = path.join(this.tasksDir, `${uuid}.json`);
+      const normalizedUuid = normalizePath(`${uuid}.json`);
+      const filePath = path.join(this.tasksDir, normalizedUuid);
       await fs.writeFile(
-        filename,
+        filePath,
         JSON.stringify({ ...config, name }, null, 2)
       );
       return { success: true, uuid };
     } catch (error) {
       console.error("Failed to save task:", error);
-      return { success: false };
+      return { success: false, error: error.message };
     }
   }
 
@@ -124,8 +125,9 @@ class AgentTasks {
    */
   async deleteTask(uuid) {
     try {
-      const filename = path.join(this.tasksDir, `${uuid}.json`);
-      await fs.unlink(filename);
+      const normalizedUuid = normalizePath(`${uuid}.json`);
+      const filePath = path.join(this.tasksDir, normalizedUuid);
+      await fs.unlink(filePath);
       return { success: true };
     } catch (error) {
       console.error("Failed to delete task:", error);
@@ -140,8 +142,9 @@ class AgentTasks {
    */
   async taskExists(uuid) {
     try {
-      const filename = path.join(this.tasksDir, `${uuid}.json`);
-      await fs.access(filename);
+      const normalizedUuid = normalizePath(`${uuid}.json`);
+      const filePath = path.join(this.tasksDir, normalizedUuid);
+      await fs.access(filePath);
       return true;
     } catch {
       return false;
