@@ -1,4 +1,9 @@
 const { AgentTasks } = require("../utils/agent-tasks");
+const {
+  flexUserRoleValid,
+  ROLES,
+} = require("../utils/middleware/multiUserProtected");
+const { validatedRequest } = require("../utils/middleware/validatedRequest");
 
 function agentTaskEndpoints(app) {
   if (!app) return;
@@ -6,7 +11,7 @@ function agentTaskEndpoints(app) {
   // Save a task configuration
   app.post(
     "/agent-task/save",
-    // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { name, config, uuid } = request.body;
@@ -43,7 +48,7 @@ function agentTaskEndpoints(app) {
   // List all available tasks
   app.get(
     "/agent-task/list",
-    // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_request, response) => {
       try {
         const tasks = await AgentTasks.listTasks();
@@ -64,7 +69,7 @@ function agentTaskEndpoints(app) {
   // Get a specific task by UUID
   app.get(
     "/agent-task/:uuid",
-    // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
@@ -93,7 +98,7 @@ function agentTaskEndpoints(app) {
   // Run a specific task
   app.post(
     "/agent-task/:uuid/run",
-    // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
@@ -123,7 +128,7 @@ function agentTaskEndpoints(app) {
   // Delete a specific task
   app.delete(
     "/agent-task/:uuid",
-    // [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
@@ -150,37 +155,41 @@ function agentTaskEndpoints(app) {
   );
 
   // Toggle task active status
-  app.post("/agent-task/:uuid/toggle", async (request, response) => {
-    try {
-      const { uuid } = request.params;
-      const { active } = request.body;
+  app.post(
+    "/agent-task/:uuid/toggle",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { uuid } = request.params;
+        const { active } = request.body;
 
-      const task = await AgentTasks.loadTask(uuid);
-      if (!task) {
-        return response
-          .status(404)
-          .json({ success: false, error: "Task not found" });
+        const task = await AgentTasks.loadTask(uuid);
+        if (!task) {
+          return response
+            .status(404)
+            .json({ success: false, error: "Task not found" });
+        }
+
+        task.config.active = active;
+        const { success } = await AgentTasks.saveTask(
+          task.name,
+          task.config,
+          uuid
+        );
+
+        if (!success) {
+          return response
+            .status(500)
+            .json({ success: false, error: "Failed to update task" });
+        }
+
+        return response.json({ success: true, task });
+      } catch (error) {
+        console.error("Error toggling task:", error);
+        response.status(500).json({ success: false, error: error.message });
       }
-
-      task.config.active = active;
-      const { success } = await AgentTasks.saveTask(
-        task.name,
-        task.config,
-        uuid
-      );
-
-      if (!success) {
-        return response
-          .status(500)
-          .json({ success: false, error: "Failed to update task" });
-      }
-
-      return response.json({ success: true, task });
-    } catch (error) {
-      console.error("Error toggling task:", error);
-      response.status(500).json({ success: false, error: error.message });
     }
-  });
+  );
 }
 
 module.exports = { agentTaskEndpoints };
