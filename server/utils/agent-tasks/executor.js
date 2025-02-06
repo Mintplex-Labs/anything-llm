@@ -124,15 +124,17 @@ class TaskExecutor {
   // Utility to replace variables in config
   replaceVariables(config) {
     const deepReplace = (obj) => {
-      if (typeof obj === 'string') {
+      if (typeof obj === "string") {
         return obj.replace(/\${([^}]+)}/g, (match, varName) => {
-          return this.variables[varName] !== undefined ? this.variables[varName] : match;
+          return this.variables[varName] !== undefined
+            ? this.variables[varName]
+            : match;
         });
       }
       if (Array.isArray(obj)) {
-        return obj.map(item => deepReplace(item));
+        return obj.map((item) => deepReplace(item));
       }
-      if (obj && typeof obj === 'object') {
+      if (obj && typeof obj === "object") {
         const result = {};
         for (const [key, value] of Object.entries(obj)) {
           result[key] = deepReplace(value);
