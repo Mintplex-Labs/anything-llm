@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Info, FolderOpen, Trash } from "@phosphor-icons/react";
+import { useNavigate } from "react-router-dom";
 import AgentFlows from "@/models/agentFlows";
 import showToast from "@/utils/toast";
+import paths from "@/utils/paths";
 
 export default function LoadFlowMenu({
   showLoadMenu,
@@ -11,6 +13,7 @@ export default function LoadFlowMenu({
   onRunFlow,
   onFlowDeleted,
 }) {
+  const navigate = useNavigate();
   const [selectedFlowDetails, setSelectedFlowDetails] = useState(null);
 
   const loadFlowDetails = async (flow) => {
@@ -46,6 +49,11 @@ export default function LoadFlowMenu({
       console.error("Failed to delete flow:", error);
       showToast("Failed to delete flow", "error", { clear: true });
     }
+  };
+
+  const handleLoadFlow = (uuid) => {
+    navigate(paths.agents.builder());
+    onLoadFlow(uuid);
   };
 
   if (!showLoadMenu) return null;
@@ -93,7 +101,7 @@ export default function LoadFlowMenu({
                       <Play className="w-4 h-4" />
                     </button> */}
                     <button
-                      onClick={() => onLoadFlow(flow.uuid)}
+                      onClick={() => handleLoadFlow(flow.uuid)}
                       className="p-1.5 rounded-lg bg-theme-action-menu-bg border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                       title="Load flow for editing"
                     >
