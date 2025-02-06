@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 import BlockList, { BLOCK_TYPES, BLOCK_INFO } from "./BlockList";
 import AddBlockMenu from "./AddBlockMenu";
@@ -8,9 +9,11 @@ import AgentSidebar from "./AgentSidebar";
 import LoadTaskMenu from "./LoadTaskMenu";
 
 export default function AgentBuilder() {
+  const { taskId } = useParams();
   const [agentName, setAgentName] = useState("");
   const [agentDescription, setAgentDescription] = useState("");
   const [currentTaskUuid, setCurrentTaskUuid] = useState(null);
+  const [active, setActive] = useState(true);
   const [blocks, setBlocks] = useState([
     {
       id: "start",
@@ -20,6 +23,12 @@ export default function AgentBuilder() {
       },
       isExpanded: true,
     },
+    {
+      id: "finish",
+      type: BLOCK_TYPES.FINISH,
+      config: {},
+      isExpanded: false,
+    }
   ]);
   const [selectedBlock, setSelectedBlock] = useState("start");
   const [showBlockMenu, setShowBlockMenu] = useState(false);
@@ -30,6 +39,12 @@ export default function AgentBuilder() {
   useEffect(() => {
     loadAvailableTasks();
   }, []);
+
+  useEffect(() => {
+    if (taskId) {
+      loadTask(taskId);
+    }
+  }, [taskId]);
 
   const loadAvailableTasks = async () => {
     try {
@@ -47,18 +62,29 @@ export default function AgentBuilder() {
       const { success, error, task } = await AgentTasks.getTask(uuid);
       if (!success) throw new Error(error);
 
-      // Convert steps to blocks with IDs
-      const newBlocks = task.config.steps.map((step, index) => ({
+      // Convert steps to blocks with IDs, ensuring finish block is at the end
+      const taskBlocks = task.config.steps.map((step, index) => ({
         id: index === 0 ? "start" : `block_${index}`,
         type: step.type,
         config: step.config,
         isExpanded: true,
       }));
 
+      // Add finish block if not present
+      if (taskBlocks[taskBlocks.length - 1]?.type !== BLOCK_TYPES.FINISH) {
+        taskBlocks.push({
+          id: "finish",
+          type: BLOCK_TYPES.FINISH,
+          config: {},
+          isExpanded: false,
+        });
+      }
+
       setAgentName(task.config.name);
       setAgentDescription(task.config.description);
+      setActive(task.config.active ?? true);
       setCurrentTaskUuid(task.uuid);
-      setBlocks(newBlocks);
+      setBlocks(taskBlocks);
       setShowLoadMenu(false);
 
       showToast("Task loaded successfully!", "success", { clear: true });
@@ -75,7 +101,10 @@ export default function AgentBuilder() {
       config: { ...BLOCK_INFO[type].defaultConfig },
       isExpanded: true,
     };
-    setBlocks([...blocks, newBlock]);
+    // Insert the new block before the finish block
+    const newBlocks = [...blocks];
+    newBlocks.splice(newBlocks.length - 1, 0, newBlock);
+    setBlocks(newBlocks);
     setShowBlockMenu(false);
   };
 
@@ -108,7 +137,9 @@ export default function AgentBuilder() {
     const taskConfig = {
       name: agentName,
       description: agentDescription,
-      steps: blocks.map((block) => ({
+      active,
+      // Exclude the finish block from the saved steps
+      steps: blocks.filter(block => block.type !== BLOCK_TYPES.FINISH).map((block) => ({
         type: block.type,
         config: block.config,
       })),
@@ -208,6 +239,7 @@ export default function AgentBuilder() {
     setAgentName("");
     setAgentDescription("");
     setCurrentTaskUuid(null);
+    setActive(true);
     setBlocks([
       {
         id: "start",
@@ -217,6 +249,12 @@ export default function AgentBuilder() {
         },
         isExpanded: true,
       },
+      {
+        id: "finish",
+        type: BLOCK_TYPES.FINISH,
+        config: {},
+        isExpanded: false,
+      }
     ]);
   };
 
@@ -230,6 +268,8 @@ export default function AgentBuilder() {
         onSave={saveTask}
         onLoadClick={() => setShowLoadMenu(true)}
         onNewClick={clearTask}
+        active={active}
+        onToggleActive={setActive}
       />
 
       <div className="flex-1 p-6 overflow-y-auto">

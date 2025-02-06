@@ -38,7 +38,7 @@ export default function AddBlockMenu({
         <div className="absolute left-0 right-0 mt-2 bg-theme-action-menu-bg border border-white/10 rounded-lg shadow-lg overflow-hidden z-10 animate-fadeUpIn">
           {Object.entries(BLOCK_INFO).map(
             ([type, info]) =>
-              type !== BLOCK_TYPES.START && (
+              type !== BLOCK_TYPES.START && type !== BLOCK_TYPES.FINISH && (
                 <button
                   key={type}
                   onClick={() => {

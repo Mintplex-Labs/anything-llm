@@ -139,6 +139,14 @@ export default {
       return `/settings/beta-features`;
     },
   },
+  agents: {
+    builder: () => {
+      return `/settings/agents/builder`;
+    },
+    editAgent: (uuid) => {
+      return `/settings/agents/builder/${uuid}`;
+    },
+  },
   communityHub: {
     website: () => {
       return import.meta.env.DEV

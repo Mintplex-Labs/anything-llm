@@ -148,6 +148,31 @@ function agentTaskEndpoints(app) {
       }
     }
   );
+
+  // Toggle task active status
+  app.post("/agent-task/:uuid/toggle", async (request, response) => {
+    try {
+      const { uuid } = request.params;
+      const { active } = request.body;
+
+      const task = await AgentTasks.loadTask(uuid);
+      if (!task) {
+        return response.status(404).json({ success: false, error: "Task not found" });
+      }
+
+      task.config.active = active;
+      const { success } = await AgentTasks.saveTask(task.name, task.config, uuid);
+
+      if (!success) {
+        return response.status(500).json({ success: false, error: "Failed to update task" });
+      }
+
+      return response.json({ success: true, task });
+    } catch (error) {
+      console.error("Error toggling task:", error);
+      response.status(500).json({ success: false, error: error.message });
+    }
+  });
 }
 
 module.exports = { agentTaskEndpoints };

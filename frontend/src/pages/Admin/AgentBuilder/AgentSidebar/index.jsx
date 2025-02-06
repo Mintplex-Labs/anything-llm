@@ -10,6 +10,8 @@ export default function AgentSidebar({
   onSave,
   onLoadClick,
   onNewClick,
+  active = true,
+  onToggleActive,
 }) {
   const { logo } = useLogo();
 
@@ -57,6 +59,25 @@ export default function AgentSidebar({
                 autoComplete="off"
                 spellCheck={false}
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white mb-3">
+                Status
+              </label>
+              <div className="flex items-center gap-x-2">
+                <label className="relative inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    className="peer sr-only"
+                    checked={active}
+                    onChange={() => onToggleActive(!active)}
+                  />
+                  <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+                </label>
+                <span className="text-sm text-theme-text-secondary font-medium">
+                  {active ? "Enabled" : "Disabled"}
+                </span>
+              </div>
             </div>
           </div>
         </div>

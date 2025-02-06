@@ -3,12 +3,13 @@ import {
   X,
   CaretUp,
   CaretDown,
-  Plus,
   Globe,
-  Browser,
-  File,
-  Code,
+  // Browser,
+  // File,
+  // Code,
   Brain,
+  FlagCheckered,
+  Play,
 } from "@phosphor-icons/react";
 import StartNode from "../nodes/StartNode";
 import ApiCallNode from "../nodes/ApiCallNode";
@@ -16,20 +17,22 @@ import WebsiteNode from "../nodes/WebsiteNode";
 import FileNode from "../nodes/FileNode";
 import CodeNode from "../nodes/CodeNode";
 import LLMInstructionNode from "../nodes/LLMInstructionNode";
+import FinishNode from "../nodes/FinishNode";
 
 const BLOCK_TYPES = {
   START: "start",
   API_CALL: "apiCall",
-  WEBSITE: "website",
-  FILE: "file",
-  CODE: "code",
+  // WEBSITE: "website", // Temporarily disabled
+  // FILE: "file", // Temporarily disabled
+  // CODE: "code", // Temporarily disabled
   LLM_INSTRUCTION: "llmInstruction",
+  FINISH: "finish",
 };
 
 const BLOCK_INFO = {
   [BLOCK_TYPES.START]: {
     label: "Agent Start",
-    icon: <Plus className="w-5 h-5 text-theme-text-primary" />,
+    icon: <Play className="w-5 h-5 text-theme-text-primary" />,
     description: "Configure agent variables and settings",
     getSummary: (config) => {
       const varCount = config.variables?.filter((v) => v.name)?.length || 0;
@@ -52,7 +55,8 @@ const BLOCK_INFO = {
     getSummary: (config) =>
       `${config.method || "GET"} ${config.url || "(no URL)"}`,
   },
-  [BLOCK_TYPES.WEBSITE]: {
+  // TODO: Implement website, file, and code blocks
+  /* [BLOCK_TYPES.WEBSITE]: {
     label: "Open Website",
     icon: <Browser className="w-5 h-5 text-theme-text-primary" />,
     description: "Navigate to a URL",
@@ -90,6 +94,7 @@ const BLOCK_INFO = {
     },
     getSummary: (config) => `Run ${config.language || "javascript"} code`,
   },
+  */
   [BLOCK_TYPES.LLM_INSTRUCTION]: {
     label: "LLM Instruction",
     icon: <Brain className="w-5 h-5 text-theme-text-primary" />,
@@ -100,6 +105,12 @@ const BLOCK_INFO = {
       resultVariable: "",
     },
     getSummary: (config) => config.instruction || "No instruction",
+  },
+  [BLOCK_TYPES.FINISH]: {
+    label: "Task Complete",
+    icon: <FlagCheckered className="w-5 h-5 text-theme-text-primary" />,
+    description: "End of agent task",
+    getSummary: () => "Task will end here",
   },
 };
 
@@ -132,6 +143,8 @@ export default function BlockList({
         return <CodeNode {...props} />;
       case BLOCK_TYPES.LLM_INSTRUCTION:
         return <LLMInstructionNode {...props} />;
+      case BLOCK_TYPES.FINISH:
+        return <FinishNode />;
       default:
         return <div>Configuration options coming soon...</div>;
     }
@@ -168,7 +181,7 @@ export default function BlockList({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {block.id !== "start" && (
+                {block.id !== "start" && block.type !== BLOCK_TYPES.FINISH && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();

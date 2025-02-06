@@ -109,6 +109,7 @@ class AgentTasks {
         name: task.name,
         uuid,
         description: task.description,
+        active: task.active !== false,
       }));
     } catch (error) {
       console.error("Failed to list tasks:", error);
@@ -275,7 +276,9 @@ class AgentTasks {
    */
   async activeTaskPlugins() {
     const tasks = await this.getAllTasks();
-    return Object.keys(tasks).map(uuid => `@@task_${uuid}`);
+    return Object.entries(tasks)
+      .filter(([_, task]) => task.active !== false)
+      .map(([uuid]) => `@@task_${uuid}`);
   }
 
   /**

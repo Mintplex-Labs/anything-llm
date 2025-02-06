@@ -114,6 +114,14 @@ export default function LoadTaskMenu({
                         "No description"}
                     </p>
                     <div className="text-sm text-white/60">
+                      <div className="font-medium mb-1">Status:</div>
+                      <p className="mb-2">
+                        {selectedTaskDetails.config.active !== false ? (
+                          <span className="text-green-400">Enabled</span>
+                        ) : (
+                          <span className="text-red-400">Disabled</span>
+                        )}
+                      </p>
                       <div className="font-medium mb-1">Steps:</div>
                       <ul className="list-disc list-inside">
                         {selectedTaskDetails.config.steps.map((step, index) => (

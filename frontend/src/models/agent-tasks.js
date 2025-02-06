@@ -116,6 +116,31 @@ const AgentTasks = {
         error: e.message,
       }));
   },
+
+  /**
+   * Toggle a task's active status
+   * @param {string} uuid - The UUID of the task to toggle
+   * @param {boolean} active - The new active status
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  toggleTask: async (uuid, active) => {
+    try {
+      const response = await fetch(`${API_BASE}/agent-task/${uuid}/toggle`, {
+        method: "POST",
+        headers: {
+          ...baseHeaders(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ active }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Failed to toggle task");
+      return { success: true, task: result.task };
+    } catch (error) {
+      console.error("Failed to toggle task:", error);
+      return { success: false, error: error.message };
+    }
+  },
 };
 
 export default AgentTasks;
