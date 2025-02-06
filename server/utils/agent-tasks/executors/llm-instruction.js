@@ -35,8 +35,6 @@ async function executeLLMInstruction(config, context) {
       },
     ]);
 
-    console.log("LLM response:", completion.result);
-
     introspect(`Successfully received LLM response`);
     if (resultVariable) {
       config.resultVariable = resultVariable;

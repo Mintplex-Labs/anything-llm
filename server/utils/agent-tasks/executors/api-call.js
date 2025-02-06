@@ -8,7 +8,7 @@ async function executeApiCall(config, context) {
   const { url, method, headers = [], body, bodyType, formData } = config;
   const { introspect } = context;
 
-  console.log("Executing API call:", config);
+  console.log("config", config);
 
   introspect(`Making ${method} request to external API...`);
   introspect(`Config: ${JSON.stringify(config)}`);
@@ -26,7 +26,22 @@ async function executeApiCall(config, context) {
       requestConfig.headers["Content-Type"] =
         "application/x-www-form-urlencoded";
     } else if (bodyType === "json") {
-      requestConfig.body = body;
+      // For Discord and other JSON APIs, we want a simple payload
+      const payload = {};
+
+      // If we have a content variable, use that directly
+      if (context.variables.content) {
+        payload.content = context.variables.content;
+      }
+      // Otherwise use the first available variable as content
+      else {
+        const firstVar = Object.entries(context.variables)[0];
+        if (firstVar) {
+          payload.content = String(firstVar[1]);
+        }
+      }
+
+      requestConfig.body = JSON.stringify(payload);
       requestConfig.headers["Content-Type"] = "application/json";
     } else {
       requestConfig.body = body;
