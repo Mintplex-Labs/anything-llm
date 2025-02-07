@@ -1,7 +1,7 @@
 [submodule "browser-extension"]
 	path = browser-extension
-	url = git@github.com:Mintplex-Labs/anythingllm-extension.git
+	url = git@github.com:ascleai/anythingllm-extension.git
 [submodule "embed"]
 	path = embed
-	url = git@github.com:Mintplex-Labs/anythingllm-embed.git
+	url = git@github.com:ascleai/anythingllm-embed.git
 	branch = main
