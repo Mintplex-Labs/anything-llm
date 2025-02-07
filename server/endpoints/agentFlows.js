@@ -132,9 +132,17 @@ function agentFlowEndpoints(app) {
     async (request, response) => {
       try {
         const { uuid } = request.params;
-        await AgentFlows.deleteFlow(uuid);
+        const { success } = await AgentFlows.deleteFlow(uuid);
+
+        if (!success) {
+          return response.status(500).json({
+            success: false,
+            error: "Failed to delete flow",
+          });
+        }
+
         return response.status(200).json({
-          success: true,
+          success,
         });
       } catch (error) {
         console.error("Error deleting flow:", error);

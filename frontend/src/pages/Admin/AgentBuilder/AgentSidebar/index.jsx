@@ -100,7 +100,7 @@ export default function AgentSidebar({
               className="transition-all duration-300 text-xs px-4 py-2.5 font-semibold rounded-lg bg-theme-bg-primary hover:bg-theme-action-menu-item-hover border-2 border-white/10 text-white w-full flex items-center justify-center gap-2"
             >
               <FolderOpen className="w-4 h-4" />
-              Load Flow
+              Flows
             </button>
             <button
               onClick={onSave}

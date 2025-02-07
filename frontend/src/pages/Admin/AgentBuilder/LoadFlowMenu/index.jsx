@@ -62,7 +62,7 @@ export default function LoadFlowMenu({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-theme-action-menu-bg rounded-lg p-6 max-w-md w-full mx-4">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-white">Load Flow</h2>
+          <h2 className="text-xl font-bold text-white">Flows</h2>
           <button
             onClick={() => {
               setShowLoadMenu(false);
