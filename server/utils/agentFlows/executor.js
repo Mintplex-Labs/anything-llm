@@ -3,6 +3,7 @@ const executeWebsite = require("./executors/website");
 const executeFile = require("./executors/file");
 const executeCode = require("./executors/code");
 const executeLLMInstruction = require("./executors/llm-instruction");
+const { Telemetry } = require("../../models/telemetry");
 
 const FLOW_TYPES = {
   START: {
@@ -29,13 +30,24 @@ const FLOW_TYPES = {
         type: "string",
         description: "Type of request body (json, form)",
       },
-      body: { type: "string", description: "Request body content" },
+      body: {
+        type: "string",
+        description:
+          "Request body content. If body type is json, always return a valid json object. If body type is form, always return a valid form data object.",
+      },
       formData: { type: "array", description: "Form data as key-value pairs" },
       responseVariable: {
         type: "string",
         description: "Variable to store the response",
       },
     },
+    examples: [
+      {
+        url: "https://api.example.com/data",
+        method: "GET",
+        headers: [{ key: "Authorization", value: "Bearer 1234567890" }],
+      },
+    ],
   },
   WEBSITE: {
     type: "website",
@@ -200,6 +212,8 @@ class FlowExecutor {
 
   // Execute entire flow
   async executeFlow(flow, initialVariables = {}, introspect = null) {
+    await Telemetry.sendTelemetry("agent_flow_execution_started");
+
     // Initialize variables with both initial values and any passed-in values
     this.variables = {
       ...(

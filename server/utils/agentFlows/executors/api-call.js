@@ -1,3 +1,5 @@
+const { safeJsonParse } = require("../../http");
+
 /**
  * Execute an API call flow step
  * @param {Object} config Flow step configuration
@@ -23,45 +25,34 @@ async function executeApiCall(config, context) {
       requestConfig.headers["Content-Type"] =
         "application/x-www-form-urlencoded";
     } else if (bodyType === "json") {
-      // For Discord and other JSON APIs, we want a simple payload
-      const payload = {};
-
-      // If we have a content variable, use that directly
-      if (context.variables.content) {
-        payload.content = context.variables.content;
+      const parsedBody = safeJsonParse(body, null);
+      if (parsedBody !== null) {
+        requestConfig.body = JSON.stringify(parsedBody);
       }
-      // Otherwise use the first available variable as content
-      else {
-        const firstVar = Object.entries(context.variables)[0];
-        if (firstVar) {
-          payload.content = String(firstVar[1]);
-        }
-      }
-
-      requestConfig.body = JSON.stringify(payload);
       requestConfig.headers["Content-Type"] = "application/json";
+    } else if (bodyType === "text") {
+      requestConfig.body = String(body);
     } else {
       requestConfig.body = body;
     }
   }
 
   try {
+    introspect(
+      `Sending body to ${url}: ${requestConfig?.body || "No body"}`
+    );
     const response = await fetch(url, requestConfig);
     if (!response.ok) {
       introspect(`Request failed with status ${response.status}`);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    introspect(`Successfully received response`);
-    const data = await response.text();
-    try {
-      // Try to parse as JSON first
-      return JSON.stringify(JSON.parse(data));
-    } catch {
-      // If not JSON, return as text
-      return data;
-    }
+    introspect(`API call completed`);
+    return await response.text().then((text) =>
+      safeJsonParse(text, "Failed to parse output from API call block")
+    );
   } catch (error) {
+    console.error(error);
     throw new Error(`API Call failed: ${error.message}`);
   }
 }

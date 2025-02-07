@@ -124,6 +124,7 @@ export default function BlockList({
   toggleBlockExpansion,
   renderVariableSelect,
   onDeleteVariable,
+  moveBlock,
 }) {
   const renderBlockConfig = (block) => {
     const props = {
@@ -185,15 +186,44 @@ export default function BlockList({
               </div>
               <div className="flex items-center gap-2">
                 {block.id !== "start" && block.type !== BLOCK_TYPES.FINISH && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeBlock(block.id);
-                    }}
-                    className="p-1 text-white/60 opacity-0 group-hover:opacity-100 hover:text-red-500 rounded transition-all duration-300"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+                  <>
+                    <div className="flex items-center gap-1">
+                      {index > 1 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            moveBlock(index, index - 1);
+                          }}
+                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          title="Move up"
+                        >
+                          <CaretUp className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      {index < blocks.length - 2 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            moveBlock(index, index + 1);
+                          }}
+                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          title="Move down"
+                        >
+                          <CaretDown className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeBlock(block.id);
+                      }}
+                      className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
+                      title="Delete block"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </>
                 )}
                 <div className="w-4 flex items-center justify-center">
                   {block.isExpanded ? (

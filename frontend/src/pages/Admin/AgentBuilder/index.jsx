@@ -260,6 +260,13 @@ export default function AgentBuilder() {
     ]);
   };
 
+  const moveBlock = (fromIndex, toIndex) => {
+    const newBlocks = [...blocks];
+    const [movedBlock] = newBlocks.splice(fromIndex, 1);
+    newBlocks.splice(toIndex, 0, movedBlock);
+    setBlocks(newBlocks);
+  };
+
   return (
     <div className="w-full h-screen flex bg-theme-bg-primary">
       <AgentSidebar
@@ -283,6 +290,7 @@ export default function AgentBuilder() {
             toggleBlockExpansion={toggleBlockExpansion}
             renderVariableSelect={renderVariableSelect}
             onDeleteVariable={deleteVariable}
+            moveBlock={moveBlock}
           />
 
           <AddBlockMenu
