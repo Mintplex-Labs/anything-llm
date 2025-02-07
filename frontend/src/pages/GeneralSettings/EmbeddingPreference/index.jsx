@@ -254,6 +254,12 @@ export default function GeneralEmbeddingPreference() {
         delete settingsData[key];
       }
     }
+
+    // SparseEngineType if present change value to uppercase in api payload
+    if (settingsData?.SparseEngineType) {
+      settingsData.SparseEngineType =
+        settingsData?.SparseEngineType?.toUpperCase();
+    }
     // ----------------------------------------------------
 
     const { error } = await System.updateSystem(
