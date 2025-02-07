@@ -84,7 +84,7 @@ export const ThoughtChainComponent = forwardRef(
             <div className="flex-1 overflow-hidden">
               {!isExpanded && !autoExpand ? (
                 <span
-                  className="text-xs text-theme-text-secondary font-mono inline-block w-full"
+                  className="text-theme-text-secondary font-mono inline-block w-full"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(
                       truncate(tagStrippedContent, THOUGHT_PREVIEW_LENGTH)
@@ -93,7 +93,7 @@ export const ThoughtChainComponent = forwardRef(
                 />
               ) : (
                 <span
-                  className="text-xs text-theme-text-secondary font-mono inline-block w-full"
+                  className="text-theme-text-secondary font-mono inline-block w-full"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(
                       renderMarkdown(tagStrippedContent)
