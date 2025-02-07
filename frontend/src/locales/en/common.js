@@ -40,6 +40,7 @@ const TRANSLATIONS = {
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
     "reranker-rewriter": "Re-Ranker & Re-Writer",
+    "file-management": "File Management",
   },
 
   // Page Definitions

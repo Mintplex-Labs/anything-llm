@@ -144,6 +144,9 @@ export default {
     experimental: () => {
       return `/settings/beta-features`;
     },
+    fileManagement: () => {
+      return `/settings/file-management`;
+    },
   },
   communityHub: {
     website: () => {

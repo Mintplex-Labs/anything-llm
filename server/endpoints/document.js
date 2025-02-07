@@ -124,7 +124,7 @@ function documentEndpoints(app) {
           return;
         }
         const content = await fileData(document?.docpath);
-        response.send(content?.pageContent || "");
+        response.status(200).json({ content: content?.pageContent || "" });
       } catch (e) {
         console.error(e);
         response.status(500).json({

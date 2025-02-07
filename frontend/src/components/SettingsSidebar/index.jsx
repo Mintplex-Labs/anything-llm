@@ -328,6 +328,12 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin", "manager"],
             },
+            {
+              btnText: t("settings.file-management"),
+              href: paths.settings.fileManagement(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
             // ...(SSO_ENABLED
             //   ? []
             //   : [
