@@ -1,12 +1,21 @@
 const fs = require("fs").promises;
+const path = require("path");
+const os = require("os");  // 임시 폴더 사용 예시
+const { getOcrTextForPage } = require("./ocrEngine");
+const PdfOcrLoader = require("./pdf-ocr-loader.js");
 
 class PDFLoader {
   constructor(filePath, { splitPages = true } = {}) {
     this.filePath = filePath;
     this.splitPages = splitPages;
+    this.loader = null;
   }
 
   async load() {
+    if (!this.loader) {
+      this.loader = await PdfOcrLoader.create(this.filePath);
+    }
+
     const buffer = await fs.readFile(this.filePath);
     const { getDocument, version } = await this.getPdfJS();
 
@@ -22,28 +31,41 @@ class PDFLoader {
 
     for (let i = 1; i <= pdf.numPages; i += 1) {
       const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
+      // const content = await page.getTextContent();
 
-      if (content.items.length === 0) {
+      // if (content.items.length === 0) {
+      //   continue;
+      // }
+
+      // let lastY;
+      // const textItems = [];
+      // for (const item of content.items) {
+      //   if ("str" in item) {
+      //     if (lastY === item.transform[5] || !lastY) {
+      //       textItems.push(item.str);
+      //     } else {
+      //       textItems.push(`\n${item.str}`);
+      //     }
+      //     lastY = item.transform[5];
+      //   }
+      // }
+
+      if (!page) {
         continue;
       }
 
-      let lastY;
-      const textItems = [];
-      for (const item of content.items) {
-        if ("str" in item) {
-          if (lastY === item.transform[5] || !lastY) {
-            textItems.push(item.str);
-          } else {
-            textItems.push(`\n${item.str}`);
-          }
-          lastY = item.transform[5];
-        }
+      // const tempDir = path.join(os.tmpdir(), "pdf-ocr");
+      // const textFromOcr = await getOcrTextForPage(this.filePath, i, tempDir, "kor");
+
+      const textFromOcr = await this.loader.loadPage(i, true);
+      if (!textFromOcr || !textFromOcr.trim().length) {
+        continue;
       }
 
-      const text = textItems.join("");
+      //const text = textItems.join("");
       documents.push({
-        pageContent: text.trim(),
+        // pageContent: text.trim(),
+        pageContent: textFromOcr.trim(),
         metadata: {
           source: this.filePath,
           pdf: {

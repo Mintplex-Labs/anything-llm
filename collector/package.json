@@ -44,7 +44,10 @@
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",
     "winston": "^3.13.0",
-    "youtubei.js": "^9.1.0"
+    "youtubei.js": "^9.1.0",
+    "axios": "^1.7.9",
+    "fs-extra": "^11.3.0",
+    "mupdf": "^1.3.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
