@@ -41,6 +41,7 @@ class MimeDetector {
           "hpp",
           "linq",
           "cs",
+          "swift",
         ],
       },
       true
