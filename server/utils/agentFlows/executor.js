@@ -213,10 +213,6 @@ class FlowExecutor {
     const results = [];
 
     for (const step of flow.config.steps) {
-      console.log("step", step);
-      console.log("variables", this.variables);
-      console.log("initialVariables", initialVariables);
-      console.log("flow", flow);
       try {
         const result = await this.executeStep(step);
         results.push({ success: true, result });
