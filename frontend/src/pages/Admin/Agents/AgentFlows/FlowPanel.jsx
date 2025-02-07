@@ -16,7 +16,10 @@ export default function FlowPanel({ flow, toggleFlow }) {
 
   const handleToggle = async () => {
     try {
-      const { success, error } = await AgentFlows.toggleFlow(flow.uuid, !isActive);
+      const { success, error } = await AgentFlows.toggleFlow(
+        flow.uuid,
+        !isActive
+      );
       if (!success) throw new Error(error);
       setIsActive(!isActive);
       toggleFlow(flow.uuid);

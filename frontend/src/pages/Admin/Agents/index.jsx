@@ -360,7 +360,7 @@ export default function AdminAgents() {
       <form
         onSubmit={handleSubmit}
         onChange={() =>
-          (!selectedSkill?.imported && !selectedFlow) && setHasChanges(true)
+          !selectedSkill?.imported && !selectedFlow && setHasChanges(true)
         }
         ref={formEl}
         className="flex-1 flex gap-x-6 p-4 mt-10"
