@@ -4,6 +4,7 @@ import showToast from "@/utils/toast";
 import hljs from "highlight.js";
 import "@/utils/chat/themes/github-dark.css";
 import "@/utils/chat/themes/github.css";
+import { Link } from "react-router-dom";
 
 export default function CodeSnippetModal({ embed, closeModal }) {
   return (
@@ -89,13 +90,13 @@ const ScriptTag = ({ embed }) => {
           Have your workspace chat embed function like a help desk chat bottom
           in the corner of your website.
         </p>
-        <a
-          href="https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md"
+        <Link
+          to="https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md"
           target="_blank"
           className="text-blue-300 light:text-blue-500 hover:underline"
         >
           View all style and configuration options &rarr;
-        </a>
+        </Link>
       </div>
       <button
         disabled={copied}

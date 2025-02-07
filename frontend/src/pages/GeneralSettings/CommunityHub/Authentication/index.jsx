@@ -8,6 +8,7 @@ import { FullScreenLoader } from "@/components/Preloader";
 import paths from "@/utils/paths";
 import { Info } from "@phosphor-icons/react";
 import UserItems from "./UserItems";
+import { Link } from "react-router-dom";
 
 function useCommunityHubAuthentication() {
   const [originalConnectionKey, setOriginalConnectionKey] = useState("");
@@ -174,12 +175,12 @@ export default function CommunityHubAuthentication() {
               <div className="flex items-center justify-between mt-2">
                 <p className="text-theme-text-secondary text-xs">
                   You can get your API key from your{" "}
-                  <a
-                    href={paths.communityHub.profile()}
+                  <Link
+                    to={paths.communityHub.profile()}
                     className="underline text-primary-button"
                   >
                     AnythingLLM Community Hub profile page
-                  </a>
+                  </Link>
                   .
                 </p>
                 {!!originalConnectionKey && (

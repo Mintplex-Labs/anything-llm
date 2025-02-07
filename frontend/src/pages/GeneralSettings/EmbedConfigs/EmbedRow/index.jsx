@@ -8,6 +8,7 @@ import paths from "@/utils/paths";
 import { nFormatter } from "@/utils/numbers";
 import EditEmbedModal from "./EditEmbedModal";
 import CodeSnippetModal from "./CodeSnippetModal";
+import { Link } from "react-router-dom";
 
 export default function EmbedRow({ embed }) {
   const rowRef = useRef(null);
@@ -69,14 +70,14 @@ export default function EmbedRow({ embed }) {
           scope="row"
           className="px-6 py-4 whitespace-nowrap flex item-center gap-x-1"
         >
-          <a
-            href={paths.workspace.chat(embed.workspace.slug)}
+          <Link
+            to={paths.workspace.chat(embed.workspace.slug)}
             target="_blank"
             rel="noreferrer"
             className="text-white flex items-center hover:underline"
           >
             <LinkSimple className="mr-2 w-5 h-5" /> {embed.workspace.name}
-          </a>
+          </Link>
         </th>
         <th scope="row" className="px-6 py-4 whitespace-nowrap">
           {nFormatter(embed._count.embed_chats)}

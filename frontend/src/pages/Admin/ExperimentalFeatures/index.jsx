@@ -8,6 +8,7 @@ import { configurableFeatures } from "./features";
 import ModalWrapper from "@/components/ModalWrapper";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
+import { Link } from "react-router-dom";
 
 export default function ExperimentalFeatures() {
   const [featureFlags, setFeatureFlags] = useState({});
@@ -262,12 +263,12 @@ function FeatureVerification({ children }) {
                 </div>
               </div>
               <div className="flex w-full justify-between items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
-                <a
-                  href={paths.home()}
+                <Link
+                  to={paths.home()}
                   className="px-4 py-2 rounded-lg text-theme-text-primary hover:bg-red-500/50 light:hover:bg-red-300/50 transition-all duration-300"
                 >
                   Reject & close
-                </a>
+                </Link>
                 <button
                   type="submit"
                   className="transition-all duration-300 text-theme-text-primary hover:bg-blue-300/50 light:hover:bg-blue-300 px-4 py-2 rounded-lg text-sm"

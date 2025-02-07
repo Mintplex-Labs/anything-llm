@@ -14,6 +14,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 export default function AdminApiKeys() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -35,14 +36,14 @@ export default function AdminApiKeys() {
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
               {t("api.description")}
             </p>
-            <a
-              href={paths.apiDocs()}
+            <Link
+              to={paths.apiDocs()}
               target="_blank"
               rel="noreferrer"
               className="text-xs leading-[18px] font-base text-blue-300 light:text-blue-500 hover:underline mt-1"
             >
               {t("api.link")} &rarr;
-            </a>
+            </Link>
           </div>
           <div className="w-full justify-end flex">
             <CTAButton

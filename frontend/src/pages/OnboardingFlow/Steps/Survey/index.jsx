@@ -5,6 +5,7 @@ import {
 import paths from "@/utils/paths";
 import { CheckCircle } from "@phosphor-icons/react";
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const TITLE = "Welcome to AnythingLLM";
@@ -110,12 +111,12 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           <div className="w-auto flex flex-col gap-y-1 items-center">
             <CheckCircle size={60} className="text-green-500" />
             <p className="text-white text-lg">Thank you for your feedback!</p>
-            <a
-              href={paths.mailToMintplex()}
+            <Link
+              to={paths.mailToMintplex()}
               className="text-sky-400 underline text-xs"
             >
               team@mintplexlabs.com
-            </a>
+            </Link>
           </div>
         </div>
       </div>

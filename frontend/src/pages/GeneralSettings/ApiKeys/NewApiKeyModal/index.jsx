@@ -68,14 +68,14 @@ export default function NewApiKeyModal({ closeModal }) {
                 Once created the API key can be used to programmatically access
                 and configure this AnythingLLM instance.
               </p>
-              <a
-                href={paths.apiDocs()}
+              <Link
+                to={paths.apiDocs()}
                 target="_blank"
                 rel="noreferrer"
                 className="text-blue-400 hover:underline"
               >
                 Read the API documentation &rarr;
-              </a>
+              </Link>
             </div>
             <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
               {!apiKey ? (

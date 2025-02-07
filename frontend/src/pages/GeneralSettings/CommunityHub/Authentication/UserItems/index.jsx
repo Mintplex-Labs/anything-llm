@@ -3,6 +3,7 @@ import HubItemCard from "../../Trending/HubItems/HubItemCard";
 import { useUserItems } from "../useUserItems";
 import { HubItemCardSkeleton } from "../../Trending/HubItems";
 import { readableType } from "../../utils";
+import { Link } from "react-router-dom";
 
 export default function UserItems({ connectionKey }) {
   const { loading, userItems } = useUserItems({ connectionKey });
@@ -21,14 +22,14 @@ export default function UserItems({ connectionKey }) {
           <p className="text-lg leading-6 font-bold text-white">
             Created by me
           </p>
-          <a
-            href={paths.communityHub.noPrivateItems()}
+          <Link
+            to={paths.communityHub.noPrivateItems()}
             target="_blank"
             rel="noreferrer"
             className="text-primary-button hover:text-primary-button/80 text-sm"
           >
             Why can't I see my private items?
-          </a>
+          </Link>
         </div>
         <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
           Items you have created and shared publicly on the AnythingLLM

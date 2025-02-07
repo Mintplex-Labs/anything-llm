@@ -4,6 +4,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import paths from "@/utils/paths";
 import Embed from "@/models/embed";
+import { Link } from "react-router-dom";
 
 export default function ChatRow({ chat, onDelete }) {
   const {
@@ -37,15 +38,15 @@ export default function ChatRow({ chat, onDelete }) {
     <>
       <tr className="bg-transparent text-white text-opacity-80 text-sm font-medium">
         <td className="px-6 py-4 font-medium whitespace-nowrap text-white">
-          <a
-            href={paths.settings.embedSetup()}
+          <Link
+            to={paths.settings.embedSetup()}
             target="_blank"
             rel="noreferrer"
             className="text-white flex items-center hover:underline"
           >
             <LinkSimple className="mr-2 w-5 h-5" />{" "}
             {chat.embed_config.workspace.name}
-          </a>
+          </Link>
         </td>
         <td
           onClick={openConnectionDetailsModal}

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import showToast from "@/utils/toast";
 
 export default function DeleteWorkspace({ workspace }) {
+  const navigate = useNavigate();
   const { slug } = useParams();
   const [deleting, setDeleting] = useState(false);
   const { t } = useTranslation();
@@ -28,9 +29,7 @@ export default function DeleteWorkspace({ workspace }) {
       return;
     }
 
-    workspace.slug === slug
-      ? (window.location = paths.home())
-      : window.location.reload();
+    workspace.slug === slug ? navigate(paths.home()) : window.location.reload();
   };
   return (
     <div className="flex flex-col mt-10">

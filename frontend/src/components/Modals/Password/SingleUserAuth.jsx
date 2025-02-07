@@ -6,9 +6,11 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function SingleUserAuth() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [recoveryCodes, setRecoveryCodes] = useState([]);
@@ -38,7 +40,7 @@ export default function SingleUserAuth() {
         openRecoveryCodeModal();
       } else {
         window.localStorage.setItem(AUTH_TOKEN, token);
-        window.location = paths.home();
+        navigate(paths.home());
       }
     } else {
       setError(message);
@@ -54,7 +56,7 @@ export default function SingleUserAuth() {
   useEffect(() => {
     if (downloadComplete && token) {
       window.localStorage.setItem(AUTH_TOKEN, token);
-      window.location = paths.home();
+      navigate(paths.home());
     }
   }, [downloadComplete, token]);
 

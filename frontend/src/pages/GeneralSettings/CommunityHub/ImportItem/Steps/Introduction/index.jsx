@@ -3,6 +3,7 @@ import CTAButton from "@/components/lib/CTAButton";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Introduction({ settings, setSettings, setStep }) {
   const [itemId, setItemId] = useState(settings.itemId);
@@ -38,12 +39,12 @@ export default function Introduction({ settings, setSettings, setStep }) {
             <p className="p-4 bg-yellow-800/30 light:bg-orange-100 light:text-orange-500 light:border-orange-500 rounded-lg border border-yellow-500 text-yellow-500">
               If you are pulling in a private item, make sure it is{" "}
               <b>shared with a team</b> you belong to, and you have added a{" "}
-              <a
-                href={paths.communityHub.authentication()}
+              <Link
+                to={paths.communityHub.authentication()}
                 className="underline text-yellow-100 light:text-orange-500 font-semibold"
               >
                 Connection Key.
-              </a>
+              </Link>
             </p>
           </div>
 

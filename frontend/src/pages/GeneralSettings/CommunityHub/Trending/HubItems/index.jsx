@@ -5,6 +5,7 @@ import HubItemCard from "./HubItemCard";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { readableType, typeToPath } from "../../utils";
+import { Link } from "react-router-dom";
 
 const DEFAULT_EXPLORE_ITEMS = {
   agentSkills: { items: [], hasMore: false, totalCount: 0 },
@@ -65,14 +66,14 @@ function HubCategory({ loading, exploreItems }) {
                 {readableType(type)}
               </h3>
               {exploreItems[type].hasMore && (
-                <a
-                  href={paths.communityHub.viewMoreOfType(path)}
+                <Link
+                  to={paths.communityHub.viewMoreOfType(path)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary-button hover:text-primary-button/80 text-sm"
                 >
                   Explore More →
-                </a>
+                </Link>
               )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">

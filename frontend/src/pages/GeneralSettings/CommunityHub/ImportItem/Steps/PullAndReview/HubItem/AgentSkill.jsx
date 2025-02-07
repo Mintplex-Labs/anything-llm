@@ -13,6 +13,7 @@ import renderMarkdown from "@/utils/chat/markdown";
 import DOMPurify from "dompurify";
 import CommunityHub from "@/models/communityHub";
 import { setEventDelegatorForCodeSnippets } from "@/components/WorkspaceChat";
+import { Link } from "react-router-dom";
 
 export default function AgentSkill({ item, settings, setStep }) {
   const [loading, setLoading] = useState(false);
@@ -62,14 +63,14 @@ export default function AgentSkill({ item, settings, setStep }) {
         {item.creatorUsername && (
           <p className="text-white/60 light:text-theme-text-secondary text-xs font-mono">
             Created by{" "}
-            <a
-              href={paths.communityHub.profile(item.creatorUsername)}
+            <Link
+              to={paths.communityHub.profile(item.creatorUsername)}
               target="_blank"
               className="hover:text-blue-500 hover:underline"
               rel="noreferrer"
             >
               @{item.creatorUsername}
-            </a>
+            </Link>
           </p>
         )}
         <div className="flex gap-x-1">

@@ -9,6 +9,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import truncate from "truncate";
 
@@ -88,8 +89,8 @@ export default function ThreadItem({
             )}
           </div>
         ) : (
-          <a
-            href={
+          <Link
+            to={
               window.location.pathname === linkTo || ctrlPressed ? "#" : linkTo
             }
             className="w-full pl-2 py-1"
@@ -102,7 +103,7 @@ export default function ThreadItem({
             >
               {truncate(thread.name, 25)}
             </p>
-          </a>
+          </Link>
         )}
         {!!thread.slug && !thread.deleted && (
           <div ref={optionsContainer} className="flex items-center">

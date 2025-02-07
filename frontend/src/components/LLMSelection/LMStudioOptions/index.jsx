@@ -5,6 +5,7 @@ import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import { LMSTUDIO_COMMON_URLS } from "@/utils/constants";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
+import { Link } from "react-router-dom";
 
 export default function LMStudioOptions({ settings, showAlert = false }) {
   const {
@@ -39,12 +40,12 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
               use.
             </p>
           </div>
-          <a
-            href={paths.settings.embedder.modelPreference()}
+          <Link
+            to={paths.settings.embedder.modelPreference()}
             className="text-sm md:text-base my-2 underline"
           >
             Manage embedding &rarr;
-          </a>
+          </Link>
         </div>
       )}
       <div className="w-full flex items-start gap-[36px] mt-1.5">

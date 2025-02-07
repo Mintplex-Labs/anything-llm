@@ -3,6 +3,7 @@ import CommunityHubImportItemSteps from "../..";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import CommunityHub from "@/models/communityHub";
+import { Link } from "react-router-dom";
 
 export default function SlashCommand({ item, setStep }) {
   async function handleSubmit() {
@@ -31,14 +32,14 @@ export default function SlashCommand({ item, setStep }) {
         {item.creatorUsername && (
           <p className="text-white/60 text-xs font-mono">
             Created by{" "}
-            <a
-              href={paths.communityHub.profile(item.creatorUsername)}
+            <Link
+              to={paths.communityHub.profile(item.creatorUsername)}
               target="_blank"
               className="hover:text-blue-500 hover:underline"
               rel="noreferrer"
             >
               @{item.creatorUsername}
-            </a>
+            </Link>
           </p>
         )}
       </div>

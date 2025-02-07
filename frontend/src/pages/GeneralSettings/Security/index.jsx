@@ -8,6 +8,7 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function GeneralSecurity() {
   return (
@@ -25,6 +26,7 @@ export default function GeneralSecurity() {
 }
 
 function MultiUserMode() {
+  const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [useMultiUserMode, setUseMultiUserMode] = useState(false);
@@ -51,7 +53,7 @@ function MultiUserMode() {
           window.localStorage.removeItem(AUTH_USER);
           window.localStorage.removeItem(AUTH_TOKEN);
           window.localStorage.removeItem(AUTH_TIMESTAMP);
-          window.location = paths.settings.users();
+          navigate(paths.settings.users());
         }, 2_000);
         return;
       }
