@@ -3,8 +3,10 @@ import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import { userFromStorage } from "@/utils/request";
 import { MessageLimitInput, RoleHintDisplay } from "..";
+import { useNavigate } from "react-router-dom";
 
 export default function NewUserModal({ closeModal }) {
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [role, setRole] = useState("default");
   const [messageLimit, setMessageLimit] = useState({
@@ -21,7 +23,7 @@ export default function NewUserModal({ closeModal }) {
     data.dailyMessageLimit = messageLimit.enabled ? messageLimit.limit : null;
 
     const { user, error } = await Admin.newUser(data);
-    if (!!user) window.location.reload();
+    if (!!user) navigate(0);
     setError(error);
   };
 

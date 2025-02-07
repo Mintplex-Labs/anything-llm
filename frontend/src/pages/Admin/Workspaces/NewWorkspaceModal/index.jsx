@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function NewWorkspaceModal({ closeModal }) {
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
   const { t } = useTranslation();
   const handleCreate = async (e) => {
@@ -11,7 +13,7 @@ export default function NewWorkspaceModal({ closeModal }) {
     e.preventDefault();
     const form = new FormData(e.target);
     const { workspace, error } = await Admin.newWorkspace(form.get("name"));
-    if (!!workspace) window.location.reload();
+    if (!!workspace) navigate(0);
     setError(error);
   };
 

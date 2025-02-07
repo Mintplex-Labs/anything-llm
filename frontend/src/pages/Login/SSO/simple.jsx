@@ -4,8 +4,10 @@ import paths from "@/utils/paths";
 import useQuery from "@/hooks/useQuery";
 import System from "@/models/system";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import { useNavigate } from "react-router-dom";
 
 export default function SimpleSSOPassthrough() {
+  const navigate = useNavigate();
   const query = useQuery();
   const redirectPath = query.get("redirectTo") || paths.home();
   const [ready, setReady] = useState(false);
@@ -46,7 +48,7 @@ export default function SimpleSSOPassthrough() {
         </p>
       </div>
     );
-  if (ready) return window.location.replace(redirectPath);
+  if (ready) return navigate(redirectPath, { replace: true });
 
   // Loading state by default
   return <FullScreenLoader />;

@@ -193,6 +193,7 @@ function MultiUserMode() {
 
 const PW_REGEX = new RegExp(/^[a-zA-Z0-9_\-!@$%^&*();]+$/);
 function PasswordProtection() {
+  const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [multiUserModeEnabled, setMultiUserModeEnabled] = useState(false);
@@ -229,7 +230,7 @@ function PasswordProtection() {
         window.localStorage.removeItem(AUTH_USER);
         window.localStorage.removeItem(AUTH_TOKEN);
         window.localStorage.removeItem(AUTH_TIMESTAMP);
-        window.location.reload();
+        navigate(0);
       }, 3_000);
       return;
     } else {

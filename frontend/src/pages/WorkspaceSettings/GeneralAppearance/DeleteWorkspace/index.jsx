@@ -29,7 +29,7 @@ export default function DeleteWorkspace({ workspace }) {
       return;
     }
 
-    workspace.slug === slug ? navigate(paths.home()) : window.location.reload();
+    workspace.slug === slug ? navigate(paths.home()) : navigate(0);
   };
   return (
     <div className="flex flex-col mt-10">

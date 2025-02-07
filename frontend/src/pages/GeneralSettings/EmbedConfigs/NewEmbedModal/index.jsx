@@ -3,6 +3,7 @@ import { X } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { TagsInput } from "react-tag-input-component";
 import Embed from "@/models/embed";
+import { useNavigate } from "react-router-dom";
 
 export function enforceSubmissionSchema(form) {
   const data = {};
@@ -24,6 +25,7 @@ export function enforceSubmissionSchema(form) {
 }
 
 export default function NewEmbedModal({ closeModal }) {
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
 
   const handleCreate = async (e) => {
@@ -32,7 +34,7 @@ export default function NewEmbedModal({ closeModal }) {
     const form = new FormData(e.target);
     const data = enforceSubmissionSchema(form);
     const { embed, error } = await Embed.newEmbed(data);
-    if (!!embed) window.location.reload();
+    if (!!embed) navigate(0);
     setError(error);
   };
 

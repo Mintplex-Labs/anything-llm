@@ -4,10 +4,11 @@ import showToast from "@/utils/toast";
 import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 export const THREAD_RENAME_EVENT = "renameThread";
 
 export default function ThreadContainer({ workspace }) {
+  const navigate = useNavigate();
   const { threadSlug = null } = useParams();
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -90,7 +91,7 @@ export default function ThreadContainer({ workspace }) {
 
     // Only redirect if current thread is being deleted
     if (slugs.includes(threadSlug)) {
-      window.location.href = paths.workspace.chat(workspace.slug);
+      navigate(paths.workspace.chat(workspace.slug));
     }
   };
 
@@ -157,6 +158,7 @@ export default function ThreadContainer({ workspace }) {
 }
 
 function NewThreadButton({ workspace }) {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const onClick = async () => {
     setLoading(true);
@@ -166,9 +168,7 @@ function NewThreadButton({ workspace }) {
       setLoading(false);
       return;
     }
-    window.location.replace(
-      paths.workspace.thread(workspace.slug, thread.slug)
-    );
+    navigate(paths.workspace.thread(workspace.slug, thread.slug), { replace: true });
   };
 
   return (

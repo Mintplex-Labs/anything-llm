@@ -8,9 +8,10 @@ import { configurableFeatures } from "./features";
 import ModalWrapper from "@/components/ModalWrapper";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ExperimentalFeatures() {
+  const navigate = useNavigate();
   const [featureFlags, setFeatureFlags] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedFeature, setSelectedFeature] = useState(
@@ -178,7 +179,7 @@ function FeatureVerification({ children }) {
         "success"
       );
       setTimeout(() => {
-        window.location.reload();
+        navigate(0);
       }, 2_500);
       return;
     }

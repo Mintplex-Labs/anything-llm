@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { MagnifyingGlass, X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
+import { useNavigate } from "react-router-dom";
 
 export default function AddMemberModal({ closeModal, workspace, users }) {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUsers, setSelectedUsers] = useState(workspace?.userIds || []);
 
@@ -16,7 +18,7 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
     if (success) {
       showToast("Users updated successfully.", "success");
       setTimeout(() => {
-        window.location.reload();
+        navigate(0);
       }, 1000);
     }
     showToast(error, "error");

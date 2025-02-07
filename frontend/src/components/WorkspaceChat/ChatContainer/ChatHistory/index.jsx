@@ -9,7 +9,7 @@ import debounce from "lodash.debounce";
 import useUser from "@/hooks/useUser";
 import Chartable from "./Chartable";
 import Workspace from "@/models/workspace";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
@@ -23,6 +23,7 @@ export default function ChatHistory({
   regenerateAssistantMessage,
   hasAttachments = false,
 }) {
+  const navigate = useNavigate();
   const lastScrollTopRef = useRef(0);
   const { user } = useUser();
   const { threadSlug = null } = useParams();
@@ -132,10 +133,10 @@ export default function ChatHistory({
       threadSlug,
       chatId
     );
-    window.location.href = paths.workspace.thread(
+    navigate(paths.workspace.thread(
       workspace.slug,
       newThreadSlug
-    );
+    ));
   };
 
   const compiledHistory = useMemo(

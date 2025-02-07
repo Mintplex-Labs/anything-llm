@@ -8,8 +8,10 @@ import { Person } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import AccountModal from "../AccountModal";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import { useNavigate } from "react-router-dom";
 
 export default function UserButton() {
+  const navigate = useNavigate();
   const mode = useLoginMode();
   const { user } = useUser();
   const menuRef = useRef();
@@ -89,7 +91,7 @@ export default function UserButton() {
                 window.localStorage.removeItem(AUTH_USER);
                 window.localStorage.removeItem(AUTH_TOKEN);
                 window.localStorage.removeItem(AUTH_TIMESTAMP);
-                window.location.replace(paths.home());
+                navigate(paths.home(), { replace: true });
               }}
               type="button"
               className="text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"

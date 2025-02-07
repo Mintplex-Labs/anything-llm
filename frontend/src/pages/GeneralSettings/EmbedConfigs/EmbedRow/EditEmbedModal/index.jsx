@@ -10,8 +10,10 @@ import {
 } from "../../NewEmbedModal";
 import Embed from "@/models/embed";
 import showToast from "@/utils/toast";
+import { useNavigate } from "react-router-dom";
 
 export default function EditEmbedModal({ embed, closeModal }) {
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
 
   const handleUpdate = async (e) => {
@@ -23,7 +25,7 @@ export default function EditEmbedModal({ embed, closeModal }) {
     if (success) {
       showToast("Embed updated successfully.", "success", { clear: true });
       setTimeout(() => {
-        window.location.reload();
+        navigate(0);
       }, 800);
     }
     setError(error);

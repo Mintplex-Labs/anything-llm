@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import { MessageLimitInput, RoleHintDisplay } from "../..";
+import { useNavigate } from "react-router-dom";
 
 export default function EditUserModal({ currentUser, user, closeModal }) {
+  const navigate = useNavigate();
   const [role, setRole] = useState(user.role);
   const [error, setError] = useState(null);
   const [messageLimit, setMessageLimit] = useState({
@@ -27,7 +29,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
     }
 
     const { success, error } = await Admin.updateUser(user.id, data);
-    if (success) window.location.reload();
+    if (success) navigate(0);
     setError(error);
   };
 
