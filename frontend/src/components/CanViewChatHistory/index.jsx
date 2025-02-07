@@ -13,7 +13,7 @@ export function CanViewChatHistory({ children }) {
   const navigate = useNavigate();
   const { loading, viewable } = useCanViewChatHistory();
   if (loading) return <FullScreenLoader />;
-  if (!viewable) {  
+  if (!viewable) {
     navigate(paths.home());
     return <FullScreenLoader />;
   }

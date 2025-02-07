@@ -133,10 +133,7 @@ export default function ChatHistory({
       threadSlug,
       chatId
     );
-    navigate(paths.workspace.thread(
-      workspace.slug,
-      newThreadSlug
-    ));
+    navigate(paths.workspace.thread(workspace.slug, newThreadSlug));
   };
 
   const compiledHistory = useMemo(

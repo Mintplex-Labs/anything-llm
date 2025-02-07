@@ -168,7 +168,9 @@ function NewThreadButton({ workspace }) {
       setLoading(false);
       return;
     }
-    navigate(paths.workspace.thread(workspace.slug, thread.slug), { replace: true });
+    navigate(paths.workspace.thread(workspace.slug, thread.slug), {
+      replace: true,
+    });
   };
 
   return (
