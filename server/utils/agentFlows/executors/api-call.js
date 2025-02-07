@@ -38,9 +38,7 @@ async function executeApiCall(config, context) {
   }
 
   try {
-    introspect(
-      `Sending body to ${url}: ${requestConfig?.body || "No body"}`
-    );
+    introspect(`Sending body to ${url}: ${requestConfig?.body || "No body"}`);
     const response = await fetch(url, requestConfig);
     if (!response.ok) {
       introspect(`Request failed with status ${response.status}`);
@@ -48,9 +46,11 @@ async function executeApiCall(config, context) {
     }
 
     introspect(`API call completed`);
-    return await response.text().then((text) =>
-      safeJsonParse(text, "Failed to parse output from API call block")
-    );
+    return await response
+      .text()
+      .then((text) =>
+        safeJsonParse(text, "Failed to parse output from API call block")
+      );
   } catch (error) {
     console.error(error);
     throw new Error(`API Call failed: ${error.message}`);
