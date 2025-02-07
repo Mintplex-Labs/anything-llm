@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Info, WarningDiamond } from "@phosphor-icons/react";
+import { sparseEmbeddingProviderOptions } from "@/pages/GeneralSettings/EmbeddingPreference";
 
 const INPUT_CONFIGS = {
   baseUrl: {
@@ -73,7 +74,13 @@ const INPUT_CONFIGS = {
     },
   },
 };
-const HybridSearchPreference = ({ settings, onChange, weightError }) => {
+const HybridSearchPreference = ({
+  settings,
+  onChange,
+  weightError,
+  sparseEmbeddingProviderType,
+  setSparseEmbeddingProviderType,
+}) => {
   const { t } = useTranslation();
 
   const renderInputFields = (inputConfigArr) => (
@@ -108,6 +115,11 @@ const HybridSearchPreference = ({ settings, onChange, weightError }) => {
   const defaultChecked = settings?.HybridSearchEnabled === "true";
   const [isHybridSearchEnabled, setIsHybridSearchEnabled] =
     useState(defaultChecked);
+
+  const isExternalSparseEngineType =
+    sparseEmbeddingProviderType?.label ===
+    sparseEmbeddingProviderOptions?.[0]?.label;
+
   return (
     <div className="flex flex-col gap-[24px]" onChange={onChange}>
       <div className="space-y-3">
@@ -138,28 +150,63 @@ const HybridSearchPreference = ({ settings, onChange, weightError }) => {
           <div className="text-base font-bold text-white custom-text-secondary">
             {t("embedding.provider.sparseTitle")}
           </div>
-          <div className="flex flex-col gap-[24px] custom-llm-provider-modal">
-            {renderInputFields([
-              INPUT_CONFIGS.baseUrl,
-              INPUT_CONFIGS.embeddingModel,
-              INPUT_CONFIGS.apiKey,
-            ])}
-            {renderInputFields([
-              INPUT_CONFIGS.denseEmbedderWeight,
-              INPUT_CONFIGS.sparseEmbedderWeight,
-            ])}
 
-            <p
-              className={`flex items-center gap-2 text-xs leading-[18px] font-base ${weightError ? "text-danger" : "text-white text-opacity-60 "}`}
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-3 custom-text-secondary mt-1.5">
+              Sparse Engine Type
+            </label>
+            <select
+              name="SparseEngineType"
+              required={true}
+              onChange={(e) => {
+                const _selected = sparseEmbeddingProviderOptions?.find(
+                  (value) => value?.label === e?.target?.value
+                );
+                setSparseEmbeddingProviderType(_selected);
+              }}
+              className="w-full border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block p-2.5 capitalize custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
             >
-              {weightError ? (
-                <WarningDiamond className="w-6 h-6" />
-              ) : (
-                <Info className="w-6 h-6" />
-              )}
-              {t("embedding.hybrid-search.weightInfo")}
-            </p>
+              <optgroup label="Available sparse engine types">
+                {sparseEmbeddingProviderOptions?.map((model) => {
+                  return (
+                    <option
+                      key={model?.key}
+                      id={model?.key}
+                      value={model?.label}
+                      selected={sparseEmbeddingProviderType?.key === model?.key}
+                    >
+                      {model?.label}
+                    </option>
+                  );
+                })}
+              </optgroup>
+            </select>
           </div>
+
+          {isExternalSparseEngineType && (
+            <div className="flex flex-col gap-[24px] custom-llm-provider-modal">
+              {renderInputFields([
+                INPUT_CONFIGS.baseUrl,
+                INPUT_CONFIGS.embeddingModel,
+                INPUT_CONFIGS.apiKey,
+              ])}
+              {renderInputFields([
+                INPUT_CONFIGS.denseEmbedderWeight,
+                INPUT_CONFIGS.sparseEmbedderWeight,
+              ])}
+
+              <p
+                className={`flex items-center gap-2 text-xs leading-[18px] font-base ${weightError ? "text-danger" : "text-white text-opacity-60 "}`}
+              >
+                {weightError ? (
+                  <WarningDiamond className="w-6 h-6" />
+                ) : (
+                  <Info className="w-6 h-6" />
+                )}
+                {t("embedding.hybrid-search.weightInfo")}
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

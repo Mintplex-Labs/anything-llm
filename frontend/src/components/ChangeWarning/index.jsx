@@ -7,12 +7,12 @@ export default function ChangeWarningModal({
 }) {
   return (
     <div className="relative w-[650px] max-w-2xl max-h-full">
-      <div className="relative bg-theme-bg-secondary rounded-lg shadow border-2 border-gray-500/50">
+      <div className="relative bg-theme-bg-secondary rounded-lg shadow border-2 border-gray-500/50 custom-theme-bg-tertiary">
         <div
           className="flex justify-end px-4 pt-4 cursor-pointer"
           onClick={onClose}
         >
-          <X className="text-lg text-white w-6 h-6" />
+          <X className="text-lg text-white w-6 h-6 custom-text-secondary" />
         </div>
         <div className="flex items-start justify-between px-4 pb-4 border-b rounded-t border-gray-500/50">
           <div className="flex items-center gap-2">
@@ -22,7 +22,7 @@ export default function ChangeWarningModal({
             </h3>
           </div>
         </div>
-        <div className="p-6 text-white">
+        <div className="p-6 text-white custom-text-secondary">
           <p>
             {warningText}
             <br />
@@ -35,13 +35,13 @@ export default function ChangeWarningModal({
           <button
             onClick={onClose}
             type="button"
-            className="px-4 py-2 rounded-lg text-white hover:bg-white hover:text-black transition-all duration-300 border-2"
+            className="px-4 py-2 rounded-lg text-white transition-all duration-300 border-2 custom-button-secondary"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="transition-all duration-300 border-2 border-slate-200 px-4 py-2 rounded-lg text-white items-center flex gap-x-2 bg-red-500 hover:bg-red-400 focus:ring-gray-800"
+            className="transition-all duration-300 border-slate-200 px-4 py-2 rounded-lg text-white items-center flex gap-x-2 bg-red-500 hover:bg-red-400 focus:ring-gray-800"
           >
             Confirm
           </button>
