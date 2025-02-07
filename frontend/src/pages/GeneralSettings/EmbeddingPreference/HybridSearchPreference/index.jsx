@@ -74,6 +74,15 @@ const INPUT_CONFIGS = {
     },
   },
 };
+
+function reverseOrder(arr = []) {
+  let reversed = [];
+  for (let i = arr.length - 1; i >= 0; i--) {
+    reversed.push(arr[i]);
+  }
+  return reversed;
+}
+
 const HybridSearchPreference = ({
   settings,
   onChange,
@@ -167,7 +176,7 @@ const HybridSearchPreference = ({
               className="w-full border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block p-2.5 capitalize custom-theme-bg-tertiary custom-text-secondary custom-border-secondary"
             >
               <optgroup label="Available sparse engine types">
-                {sparseEmbeddingProviderOptions?.map((model) => {
+                {reverseOrder(sparseEmbeddingProviderOptions)?.map((model) => {
                   return (
                     <option
                       key={model?.key}
