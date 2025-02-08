@@ -3,6 +3,7 @@ const executeWebsite = require("./executors/website");
 const executeFile = require("./executors/file");
 const executeCode = require("./executors/code");
 const executeLLMInstruction = require("./executors/llm-instruction");
+const executeWebScraping = require("./executors/web-scraping");
 const { Telemetry } = require("../../models/telemetry");
 
 const FLOW_TYPES = {
@@ -121,6 +122,20 @@ const FLOW_TYPES = {
       },
     },
   },
+  WEB_SCRAPING: {
+    type: "webScraping",
+    description: "Scrape content from a webpage",
+    parameters: {
+      url: {
+        type: "string",
+        description: "The URL of the webpage to scrape",
+      },
+      resultVariable: {
+        type: "string",
+        description: "Variable to store the scraped content",
+      },
+    },
+  },
 };
 
 class FlowExecutor {
@@ -168,6 +183,8 @@ class FlowExecutor {
     const context = {
       introspect: this.introspect,
       variables: this.variables,
+      model: process.env.LLM_PROVIDER_MODEL || "gpt-4",
+      provider: process.env.LLM_PROVIDER || "openai",
     };
 
     switch (step.type) {
@@ -196,6 +213,9 @@ class FlowExecutor {
         break;
       case FLOW_TYPES.LLM_INSTRUCTION.type:
         result = await executeLLMInstruction(config, context);
+        break;
+      case FLOW_TYPES.WEB_SCRAPING.type:
+        result = await executeWebScraping(config, context);
         break;
       default:
         throw new Error(`Unknown flow type: ${step.type}`);

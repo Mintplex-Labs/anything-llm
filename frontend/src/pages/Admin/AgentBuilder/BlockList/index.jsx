@@ -4,7 +4,7 @@ import {
   CaretUp,
   CaretDown,
   Globe,
-  // Browser,
+  Browser,
   // File,
   // Code,
   Brain,
@@ -19,6 +19,7 @@ import FileNode from "../nodes/FileNode";
 import CodeNode from "../nodes/CodeNode";
 import LLMInstructionNode from "../nodes/LLMInstructionNode";
 import FinishNode from "../nodes/FinishNode";
+import WebScrapingNode from "../nodes/WebScrapingNode";
 
 const BLOCK_TYPES = {
   START: "start",
@@ -27,6 +28,7 @@ const BLOCK_TYPES = {
   // FILE: "file", // Temporarily disabled
   // CODE: "code", // Temporarily disabled
   LLM_INSTRUCTION: "llmInstruction",
+  WEB_SCRAPING: "webScraping",
   FINISH: "finish",
 };
 
@@ -107,6 +109,16 @@ const BLOCK_INFO = {
     },
     getSummary: (config) => config.instruction || "No instruction",
   },
+  [BLOCK_TYPES.WEB_SCRAPING]: {
+    label: "Web Scraping",
+    icon: <Browser className="w-5 h-5 text-theme-text-primary" />,
+    description: "Scrape content from a webpage",
+    defaultConfig: {
+      url: "",
+      resultVariable: "",
+    },
+    getSummary: (config) => config.url || "No URL specified",
+  },
   [BLOCK_TYPES.FINISH]: {
     label: "Flow Complete",
     icon: <Flag className="w-4 h-4" />,
@@ -147,6 +159,8 @@ export default function BlockList({
         return <CodeNode {...props} />;
       case BLOCK_TYPES.LLM_INSTRUCTION:
         return <LLMInstructionNode {...props} />;
+      case BLOCK_TYPES.WEB_SCRAPING:
+        return <WebScrapingNode {...props} />;
       case BLOCK_TYPES.FINISH:
         return <FinishNode />;
       default:
