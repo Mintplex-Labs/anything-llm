@@ -155,7 +155,7 @@ export default function GeneralEmbeddingPreference() {
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const [weightError, setWeightError] = useState(false);
   const [sparseEmbeddingProviderType, setSparseEmbeddingProviderType] =
-    useState(sparseEmbeddingProviderOptions?.[0]);
+    useState();
   const searchInputRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
@@ -221,6 +221,12 @@ export default function GeneralEmbeddingPreference() {
         valuesChanged(formData)) &&
       hasChanges &&
       (hasEmbeddings || hasCachedEmbeddings)
+    ) {
+      openModal();
+    } else if (sparseEmbeddingProviderType?.key && !isHybridSearchEnabled) {
+      openModal();
+    } else if (
+      sparseEmbeddingProviderType?.key !== settings?.SparseEngineType
     ) {
       openModal();
     } else {
@@ -298,6 +304,17 @@ export default function GeneralEmbeddingPreference() {
     setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
     setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
     setHasCachedEmbeddings(_settings?.HasCachedEmbeddings || false);
+
+    // Default selection of SparseEngineType
+    if (_settings?.SparseEngineType) {
+      const selectedSparseEngineType = sparseEmbeddingProviderOptions?.find(
+        (value) => value?.key === _settings?.SparseEngineType
+      );
+      setSparseEmbeddingProviderType(selectedSparseEngineType);
+    } else {
+      setSparseEmbeddingProviderType(sparseEmbeddingProviderOptions?.[1]);
+    }
+    // ----------------------------------
     setLoading(false);
   }
   useEffect(() => {

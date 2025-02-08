@@ -5,6 +5,7 @@ import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useTranslation } from "react-i18next";
 import Workspace from "@/models/workspace";
+import Admin from "@/models/admin";
 import useQuery from "@/hooks/useQuery";
 import moment from "moment";
 import { Eye, X, File } from "@phosphor-icons/react";
@@ -63,7 +64,7 @@ function FileManagementTable() {
   });
 
   async function fetchWorkspaces() {
-    const _workspaces = await Workspace.allAdmin();
+    const _workspaces = await Admin.workspaces();
     setWorkspaces({
       isLoading: false,
       data: _workspaces,
