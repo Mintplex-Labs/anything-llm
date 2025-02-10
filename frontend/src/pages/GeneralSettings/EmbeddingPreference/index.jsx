@@ -138,8 +138,6 @@ const removeInternalKeys = [
   "SparseEmbeddingBasePath",
   "SparseEmbeddingModelPref",
   "SparseGenericOpenAiEmbeddingApiKey",
-  "HybridSearchDenseVectorWeight",
-  "HybridSearchSparseVectorWeight",
 ];
 
 export default function GeneralEmbeddingPreference() {
@@ -196,11 +194,7 @@ export default function GeneralEmbeddingPreference() {
     const form = document.getElementById("embedding-form");
     const formData = new FormData(form);
     const isHybridSearchEnabled = formData.get("HybridSearchEnabled") === "on";
-    const isExternalSparseEngineType =
-      formData.get("SparseEngineType") ===
-      sparseEmbeddingProviderOptions?.[0]?.label;
-
-    if (isHybridSearchEnabled && isExternalSparseEngineType) {
+    if (isHybridSearchEnabled) {
       const HybridSearchDenseVectorWeight =
         parseFloat(formData.get("HybridSearchDenseVectorWeight")) || 0;
       const HybridSearchSparseVectorWeight =

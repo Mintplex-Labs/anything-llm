@@ -191,31 +191,32 @@ const HybridSearchPreference = ({
               </optgroup>
             </select>
           </div>
+          <div className="flex flex-col gap-[24px] custom-llm-provider-modal">
+            {isExternalSparseEngineType && (
+              <>
+                {renderInputFields([
+                  INPUT_CONFIGS.baseUrl,
+                  INPUT_CONFIGS.embeddingModel,
+                  INPUT_CONFIGS.apiKey,
+                ])}
+              </>
+            )}
+            {renderInputFields([
+              INPUT_CONFIGS.denseEmbedderWeight,
+              INPUT_CONFIGS.sparseEmbedderWeight,
+            ])}
 
-          {isExternalSparseEngineType && (
-            <div className="flex flex-col gap-[24px] custom-llm-provider-modal">
-              {renderInputFields([
-                INPUT_CONFIGS.baseUrl,
-                INPUT_CONFIGS.embeddingModel,
-                INPUT_CONFIGS.apiKey,
-              ])}
-              {renderInputFields([
-                INPUT_CONFIGS.denseEmbedderWeight,
-                INPUT_CONFIGS.sparseEmbedderWeight,
-              ])}
-
-              <p
-                className={`flex items-center gap-2 text-xs leading-[18px] font-base ${weightError ? "text-danger" : "text-white text-opacity-60 "}`}
-              >
-                {weightError ? (
-                  <WarningDiamond className="w-6 h-6" />
-                ) : (
-                  <Info className="w-6 h-6" />
-                )}
-                {t("embedding.hybrid-search.weightInfo")}
-              </p>
-            </div>
-          )}
+            <p
+              className={`flex items-center gap-2 text-xs leading-[18px] font-base ${weightError ? "text-danger" : "text-white text-opacity-60 "}`}
+            >
+              {weightError ? (
+                <WarningDiamond className="w-6 h-6" />
+              ) : (
+                <Info className="w-6 h-6" />
+              )}
+              {t("embedding.hybrid-search.weightInfo")}
+            </p>
+          </div>
         </div>
       )}
     </div>
