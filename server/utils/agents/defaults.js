@@ -29,8 +29,8 @@ const WORKSPACE_AGENT = {
       role: Provider.systemPrompt(provider),
       functions: [
         ...(await agentSkillsFromSystemSettings()),
-        ...(await ImportedPlugin.activeImportedPlugins()),
-        ...(await AgentFlows.activeFlowPlugins()),
+        ...ImportedPlugin.activeImportedPlugins(),
+        ...AgentFlows.activeFlowPlugins(),
       ],
     };
   },

@@ -51,7 +51,7 @@ export default function FlowPanel({ flow, toggleFlow }) {
             </label>
             <button
               onClick={() => navigate(paths.agents.editAgent(flow.uuid))}
-              className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+              className="p-1.5 rounded-lg text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
             >
               <Gear className="w-5 h-5" />
             </button>

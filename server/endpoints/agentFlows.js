@@ -24,7 +24,7 @@ function agentFlowEndpoints(app) {
           });
         }
 
-        const flow = await AgentFlows.saveFlow(name, config, uuid);
+        const flow = AgentFlows.saveFlow(name, config, uuid);
         if (!flow) {
           return response.status(500).json({
             success: false,
@@ -58,7 +58,7 @@ function agentFlowEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
-        const flows = await AgentFlows.listFlows();
+        const flows = AgentFlows.listFlows();
         return response.status(200).json({
           success: true,
           flows,
@@ -80,7 +80,7 @@ function agentFlowEndpoints(app) {
     async (request, response) => {
       try {
         const { uuid } = request.params;
-        const flow = await AgentFlows.loadFlow(uuid);
+        const flow = AgentFlows.loadFlow(uuid);
         if (!flow) {
           return response.status(404).json({
             success: false,
@@ -143,7 +143,7 @@ function agentFlowEndpoints(app) {
     async (request, response) => {
       try {
         const { uuid } = request.params;
-        const { success } = await AgentFlows.deleteFlow(uuid);
+        const { success } = AgentFlows.deleteFlow(uuid);
 
         if (!success) {
           return response.status(500).json({
@@ -174,7 +174,7 @@ function agentFlowEndpoints(app) {
         const { uuid } = request.params;
         const { active } = request.body;
 
-        const flow = await AgentFlows.loadFlow(uuid);
+        const flow = AgentFlows.loadFlow(uuid);
         if (!flow) {
           return response
             .status(404)
@@ -182,11 +182,7 @@ function agentFlowEndpoints(app) {
         }
 
         flow.config.active = active;
-        const { success } = await AgentFlows.saveFlow(
-          flow.name,
-          flow.config,
-          uuid
-        );
+        const { success } = AgentFlows.saveFlow(flow.name, flow.config, uuid);
 
         if (!success) {
           return response

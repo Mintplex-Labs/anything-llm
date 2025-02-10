@@ -3,27 +3,29 @@ const AIbitat = require("../../agents/aibitat");
 /**
  * Execute an LLM instruction flow step
  * @param {Object} config Flow step configuration
- * @param {Object} context Execution context with introspect function
+ * @param {{introspect: Function, variables: Object, logger: Function}} context Execution context with introspect function
  * @returns {Promise<string>} Processed result
  */
 async function executeLLMInstruction(config, context) {
   const { instruction, inputVariable, resultVariable } = config;
-  const { introspect, variables } = context;
+  const { introspect, variables, logger } = context;
 
   introspect(`Processing data with LLM instruction...`);
-
   if (!variables[inputVariable]) {
+    logger(`Input variable ${inputVariable} not found`);
     throw new Error(`Input variable ${inputVariable} not found`);
   }
 
-  const input = variables[inputVariable];
-
   try {
     introspect(`Sending request to LLM...`);
+
+    // Ensure the input is a string since we are sending it to the LLM direct as a message
+    let input = variables[inputVariable];
+    if (typeof input === "object") input = JSON.stringify(input);
+    if (typeof input !== "string") input = String(input);
+
     const aibitat = new AIbitat();
-
     const provider = aibitat.getProviderForConfig(aibitat.defaultProvider);
-
     const completion = await provider.complete([
       {
         role: "system",
@@ -36,11 +38,10 @@ async function executeLLMInstruction(config, context) {
     ]);
 
     introspect(`Successfully received LLM response`);
-    if (resultVariable) {
-      config.resultVariable = resultVariable;
-    }
+    if (resultVariable) config.resultVariable = resultVariable;
     return completion.result;
   } catch (error) {
+    logger(`LLM processing failed: ${error.message}`, error);
     throw new Error(`LLM processing failed: ${error.message}`);
   }
 }

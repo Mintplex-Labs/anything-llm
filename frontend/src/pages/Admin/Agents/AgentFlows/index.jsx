@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { CaretRight } from "@phosphor-icons/react";
 import AgentFlows from "@/models/agentFlows";
 import showToast from "@/utils/toast";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
 
 export default function AgentFlowsList({
   selectedFlow,
@@ -25,7 +27,30 @@ export default function AgentFlowsList({
     }
   };
 
-  if (flows.length === 0) return null;
+  if (flows.length === 0) {
+    return (
+      <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
+        <p>No agent flows found</p>
+        <p>
+          <Link
+            className="text-theme-text-secondary underline"
+            to={paths.agents.builder()}
+          >
+            Create a new flow
+          </Link>{" "}
+          or{" "}
+          <a
+            href="https://docs.anythingllm.com/agent/custom/developer-guide"
+            target="_blank"
+            className="text-theme-text-secondary underline"
+          >
+            learn more
+          </a>
+          .
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-theme-bg-secondary text-white rounded-xl min-w-[360px] w-fit">

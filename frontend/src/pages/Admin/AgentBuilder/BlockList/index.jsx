@@ -5,10 +5,7 @@ import {
   CaretDown,
   Globe,
   Browser,
-  // File,
-  // Code,
   Brain,
-  FlagCheckered,
   Play,
   Flag,
 } from "@phosphor-icons/react";
@@ -239,13 +236,6 @@ export default function BlockList({
                     </button>
                   </>
                 )}
-                <div className="w-4 flex items-center justify-center">
-                  {block.isExpanded ? (
-                    <CaretUp className="w-3.5 h-3.5 text-white/60" />
-                  ) : (
-                    <CaretDown className="w-3.5 h-3.5 text-white/60" />
-                  )}
-                </div>
               </div>
             </div>
             <div

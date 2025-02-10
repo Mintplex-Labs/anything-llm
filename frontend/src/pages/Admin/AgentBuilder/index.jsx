@@ -7,9 +7,11 @@ import showToast from "@/utils/toast";
 import AgentFlows from "@/models/agentFlows";
 import AgentSidebar from "./AgentSidebar";
 import LoadFlowMenu from "./LoadFlowMenu";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function AgentBuilder() {
   const { flowId } = useParams();
+  const { theme } = useTheme();
   const [agentName, setAgentName] = useState("");
   const [agentDescription, setAgentDescription] = useState("");
   const [currentFlowUuid, setCurrentFlowUuid] = useState(null);
@@ -227,7 +229,7 @@ export default function AgentBuilder() {
 
   const runFlow = async (uuid) => {
     try {
-      const { success, error, results } = await AgentFlows.runFlow(uuid);
+      const { success, error, _results } = await AgentFlows.runFlow(uuid);
       if (!success) throw new Error(error);
 
       showToast("Flow executed successfully!", "success", { clear: true });
@@ -268,7 +270,17 @@ export default function AgentBuilder() {
   };
 
   return (
-    <div className="w-full h-screen flex bg-theme-bg-primary">
+    <div
+      style={{
+        backgroundImage:
+          theme === "light"
+            ? "radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 0)"
+            : "radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 0)",
+        backgroundSize: "15px 15px",
+        backgroundPosition: "-7.5px -7.5px",
+      }}
+      className="w-full h-screen flex bg-theme-bg-primary"
+    >
       <AgentSidebar
         agentName={agentName}
         setAgentName={setAgentName}

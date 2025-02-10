@@ -9,9 +9,8 @@ import {
   CaretRight,
   Plug,
   Robot,
-  ListChecks,
-  Plus,
   Hammer,
+  FlowArrow,
 } from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
@@ -250,7 +249,7 @@ export default function AdminAgents() {
             />
 
             <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
-              <ListChecks size={24} />
+              <FlowArrow size={24} />
               <p className="text-lg font-medium">Agent Flows</p>
             </div>
             <AgentFlowsList
@@ -422,16 +421,18 @@ export default function AdminAgents() {
 
               <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
                 <div className="flex items-center gap-x-2">
-                  <ListChecks size={24} />
+                  <FlowArrow size={24} />
                   <p className="text-lg font-medium">Agent Flows</p>
                 </div>
-                <Link
-                  to={paths.agents.builder()}
-                  className="text-theme-text-secondary hover:text-theme-text-primary transition-colors duration-200 flex items-center gap-x-2"
-                >
-                  <Hammer size={20} />
-                  <p className="text-sm">Open Builder</p>
-                </Link>
+                {activeFlowIds.length > 0 && (
+                  <Link
+                    to={paths.agents.builder()}
+                    className="text-theme-text-secondary hover:text-theme-text-primary transition-colors duration-200 flex items-center gap-x-2"
+                  >
+                    <Hammer size={20} />
+                    <p className="text-sm">Open Builder</p>
+                  </Link>
+                )}
               </div>
               <AgentFlowsList
                 selectedFlow={selectedFlow}

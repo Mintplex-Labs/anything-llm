@@ -18,11 +18,11 @@ const AgentFlows = {
       },
       body: JSON.stringify({ name, config, uuid }),
     })
-      .then(async (res) => {
-        const response = await res.json();
+      .then((res) => {
         if (!res.ok) throw new Error(response.error || "Failed to save flow");
-        return response;
+        return res;
       })
+      .then((res) => res.json())
       .catch((e) => ({
         success: false,
         error: e.message,
@@ -57,11 +57,11 @@ const AgentFlows = {
       method: "GET",
       headers: baseHeaders(),
     })
-      .then(async (res) => {
-        const response = await res.json();
+      .then((res) => {
         if (!res.ok) throw new Error(response.error || "Failed to get flow");
-        return response;
+        return res;
       })
+      .then((res) => res.json())
       .catch((e) => ({
         success: false,
         error: e.message,
@@ -84,11 +84,11 @@ const AgentFlows = {
       },
       body: JSON.stringify({ variables }),
     })
-      .then(async (res) => {
-        const response = await res.json();
+      .then((res) => {
         if (!res.ok) throw new Error(response.error || "Failed to run flow");
-        return response;
+        return res;
       })
+      .then((res) => res.json())
       .catch((e) => ({
         success: false,
         error: e.message,
@@ -106,11 +106,11 @@ const AgentFlows = {
       method: "DELETE",
       headers: baseHeaders(),
     })
-      .then(async (res) => {
-        const response = await res.json();
+      .then((res) => {
         if (!res.ok) throw new Error(response.error || "Failed to delete flow");
-        return response;
+        return res;
       })
+      .then((res) => res.json())
       .catch((e) => ({
         success: false,
         error: e.message,
@@ -125,17 +125,20 @@ const AgentFlows = {
    */
   toggleFlow: async (uuid, active) => {
     try {
-      const response = await fetch(`${API_BASE}/agent-flows/${uuid}/toggle`, {
+      const result = await fetch(`${API_BASE}/agent-flows/${uuid}/toggle`, {
         method: "POST",
         headers: {
           ...baseHeaders(),
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ active }),
-      });
-      const result = await response.json();
-      if (!response.ok)
-        throw new Error(result.error || "Failed to toggle flow");
+      })
+        .then((res) => {
+          if (!res.ok)
+            throw new Error(response.error || "Failed to toggle flow");
+          return res;
+        })
+        .then((res) => res.json());
       return { success: true, flow: result.flow };
     } catch (error) {
       console.error("Failed to toggle flow:", error);
