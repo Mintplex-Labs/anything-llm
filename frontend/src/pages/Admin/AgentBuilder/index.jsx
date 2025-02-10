@@ -1,11 +1,19 @@
-import React, { useState } from "react";
-import AgentSidebar from "./AgentSidebar";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+
 import BlockList, { BLOCK_TYPES, BLOCK_INFO } from "./BlockList";
 import AddBlockMenu from "./AddBlockMenu";
+import showToast from "@/utils/toast";
+import AgentFlows from "@/models/agentFlows";
+import AgentSidebar from "./AgentSidebar";
+import LoadFlowMenu from "./LoadFlowMenu";
 
 export default function AgentBuilder() {
+  const { flowId } = useParams();
   const [agentName, setAgentName] = useState("");
   const [agentDescription, setAgentDescription] = useState("");
+  const [currentFlowUuid, setCurrentFlowUuid] = useState(null);
+  const [active, setActive] = useState(true);
   const [blocks, setBlocks] = useState([
     {
       id: "start",
@@ -15,9 +23,76 @@ export default function AgentBuilder() {
       },
       isExpanded: true,
     },
+    {
+      id: "finish",
+      type: BLOCK_TYPES.FINISH,
+      config: {},
+      isExpanded: false,
+    },
   ]);
   const [selectedBlock, setSelectedBlock] = useState("start");
   const [showBlockMenu, setShowBlockMenu] = useState(false);
+  const [showLoadMenu, setShowLoadMenu] = useState(false);
+  const [availableFlows, setAvailableFlows] = useState([]);
+  const [selectedFlowForDetails, setSelectedFlowForDetails] = useState(null);
+
+  useEffect(() => {
+    loadAvailableFlows();
+  }, []);
+
+  useEffect(() => {
+    if (flowId) {
+      loadFlow(flowId);
+    }
+  }, [flowId]);
+
+  const loadAvailableFlows = async () => {
+    try {
+      const { success, error, flows } = await AgentFlows.listFlows();
+      if (!success) throw new Error(error);
+      setAvailableFlows(flows);
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to load available flows", "error", { clear: true });
+    }
+  };
+
+  const loadFlow = async (uuid) => {
+    try {
+      const { success, error, flow } = await AgentFlows.getFlow(uuid);
+      if (!success) throw new Error(error);
+
+      // Convert steps to blocks with IDs, ensuring finish block is at the end
+      const flowBlocks = flow.config.steps.map((step, index) => ({
+        id: index === 0 ? "start" : `block_${index}`,
+        type: step.type,
+        config: step.config,
+        isExpanded: true,
+      }));
+
+      // Add finish block if not present
+      if (flowBlocks[flowBlocks.length - 1]?.type !== BLOCK_TYPES.FINISH) {
+        flowBlocks.push({
+          id: "finish",
+          type: BLOCK_TYPES.FINISH,
+          config: {},
+          isExpanded: false,
+        });
+      }
+
+      setAgentName(flow.config.name);
+      setAgentDescription(flow.config.description);
+      setActive(flow.config.active ?? true);
+      setCurrentFlowUuid(flow.uuid);
+      setBlocks(flowBlocks);
+      setShowLoadMenu(false);
+
+      showToast("Flow loaded successfully!", "success", { clear: true });
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to load flow", "error", { clear: true });
+    }
+  };
 
   const addBlock = (type) => {
     const newBlock = {
@@ -26,7 +101,10 @@ export default function AgentBuilder() {
       config: { ...BLOCK_INFO[type].defaultConfig },
       isExpanded: true,
     };
-    setBlocks([...blocks, newBlock]);
+    // Insert the new block before the finish block
+    const newBlocks = [...blocks];
+    newBlocks.splice(newBlocks.length - 1, 0, newBlock);
+    setBlocks(newBlocks);
     setShowBlockMenu(false);
   };
 
@@ -48,16 +126,42 @@ export default function AgentBuilder() {
     }
   };
 
-  const generateJson = () => {
-    const json = {
+  const saveFlow = async () => {
+    if (!agentName.trim()) {
+      showToast("Please provide a name for your agent flow", "error", {
+        clear: true,
+      });
+      return;
+    }
+
+    const flowConfig = {
       name: agentName,
       description: agentDescription,
-      steps: blocks.map((block) => ({
-        type: block.type,
-        config: block.config,
-      })),
+      active,
+      // Exclude the finish block from the saved steps
+      steps: blocks
+        .filter((block) => block.type !== BLOCK_TYPES.FINISH)
+        .map((block) => ({
+          type: block.type,
+          config: block.config,
+        })),
     };
-    console.log(json);
+
+    try {
+      const { success, error, flow } = await AgentFlows.saveFlow(
+        agentName,
+        flowConfig,
+        currentFlowUuid
+      );
+      if (!success) throw new Error(error);
+
+      setCurrentFlowUuid(flow.uuid);
+      showToast("Agent flow saved successfully!", "success", { clear: true });
+      await loadAvailableFlows();
+    } catch (error) {
+      console.error("Save error details:", error);
+      showToast("Failed to save agent flow", "error", { clear: true });
+    }
   };
 
   const toggleBlockExpansion = (blockId) => {
@@ -121,6 +225,48 @@ export default function AgentBuilder() {
     });
   };
 
+  const runFlow = async (uuid) => {
+    try {
+      const { success, error, results } = await AgentFlows.runFlow(uuid);
+      if (!success) throw new Error(error);
+
+      showToast("Flow executed successfully!", "success", { clear: true });
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to run agent flow", "error", { clear: true });
+    }
+  };
+
+  const clearFlow = () => {
+    setAgentName("");
+    setAgentDescription("");
+    setCurrentFlowUuid(null);
+    setActive(true);
+    setBlocks([
+      {
+        id: "start",
+        type: BLOCK_TYPES.START,
+        config: {
+          variables: [{ name: "", value: "" }],
+        },
+        isExpanded: true,
+      },
+      {
+        id: "finish",
+        type: BLOCK_TYPES.FINISH,
+        config: {},
+        isExpanded: false,
+      },
+    ]);
+  };
+
+  const moveBlock = (fromIndex, toIndex) => {
+    const newBlocks = [...blocks];
+    const [movedBlock] = newBlocks.splice(fromIndex, 1);
+    newBlocks.splice(toIndex, 0, movedBlock);
+    setBlocks(newBlocks);
+  };
+
   return (
     <div className="w-full h-screen flex bg-theme-bg-primary">
       <AgentSidebar
@@ -128,7 +274,11 @@ export default function AgentBuilder() {
         setAgentName={setAgentName}
         agentDescription={agentDescription}
         setAgentDescription={setAgentDescription}
-        generateJson={generateJson}
+        onSave={saveFlow}
+        onLoadClick={() => setShowLoadMenu(true)}
+        onNewClick={clearFlow}
+        active={active}
+        onToggleActive={setActive}
       />
 
       <div className="flex-1 p-6 overflow-y-auto">
@@ -140,12 +290,24 @@ export default function AgentBuilder() {
             toggleBlockExpansion={toggleBlockExpansion}
             renderVariableSelect={renderVariableSelect}
             onDeleteVariable={deleteVariable}
+            moveBlock={moveBlock}
           />
 
           <AddBlockMenu
             showBlockMenu={showBlockMenu}
             setShowBlockMenu={setShowBlockMenu}
             addBlock={addBlock}
+          />
+
+          <LoadFlowMenu
+            showLoadMenu={showLoadMenu}
+            setShowLoadMenu={setShowLoadMenu}
+            availableFlows={availableFlows}
+            selectedFlowForDetails={selectedFlowForDetails}
+            setSelectedFlowForDetails={setSelectedFlowForDetails}
+            onLoadFlow={loadFlow}
+            onRunFlow={runFlow}
+            onFlowDeleted={loadAvailableFlows}
           />
         </div>
       </div>

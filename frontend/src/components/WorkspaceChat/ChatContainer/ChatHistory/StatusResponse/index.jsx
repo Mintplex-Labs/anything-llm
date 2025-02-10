@@ -71,7 +71,9 @@ export default function StatusResponse({
           <div
             key={`cot-list-${currentThought.uuid}`}
             className={`mt-2 bg-theme-bg-chat-input backdrop-blur-sm rounded-lg overflow-hidden transition-all duration-300 border border-theme-sidebar-border ${
-              isExpanded ? "max-h-[300px] opacity-100" : "max-h-0 opacity-0"
+              isExpanded
+                ? "max-h-[300px] overflow-y-auto opacity-100"
+                : "max-h-0 opacity-0"
             }`}
           >
             <div className="p-2">

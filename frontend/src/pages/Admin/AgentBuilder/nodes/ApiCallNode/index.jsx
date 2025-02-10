@@ -1,11 +1,15 @@
-import React from "react";
-import { Plus, X } from "@phosphor-icons/react";
+import React, { useRef, useState } from "react";
+import { Plus, X, CaretDown } from "@phosphor-icons/react";
 
 export default function ApiCallNode({
   config,
   onConfigChange,
   renderVariableSelect,
 }) {
+  const urlInputRef = useRef(null);
+  const [showVarMenu, setShowVarMenu] = useState(false);
+  const varButtonRef = useRef(null);
+
   const handleHeaderChange = (index, field, value) => {
     const newHeaders = [...(config.headers || [])];
     newHeaders[index] = { ...newHeaders[index], [field]: value };
@@ -24,19 +28,69 @@ export default function ApiCallNode({
     onConfigChange({ headers: newHeaders });
   };
 
+  const insertVariableAtCursor = (variableName) => {
+    if (!urlInputRef.current) return;
+
+    const input = urlInputRef.current;
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    const currentValue = config.url;
+
+    const newValue =
+      currentValue.substring(0, start) +
+      "${" +
+      variableName +
+      "}" +
+      currentValue.substring(end);
+
+    onConfigChange({ url: newValue });
+    setShowVarMenu(false);
+
+    // Set cursor position after the inserted variable
+    setTimeout(() => {
+      const newPosition = start + variableName.length + 3; // +3 for ${}
+      input.setSelectionRange(newPosition, newPosition);
+      input.focus();
+    }, 0);
+  };
+
   return (
     <div className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-white mb-2">URL</label>
-        <input
-          type="text"
-          placeholder="https://api.example.com/endpoint"
-          value={config.url}
-          onChange={(e) => onConfigChange({ url: e.target.value })}
-          className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
-          autoComplete="off"
-          spellCheck={false}
-        />
+        <div className="flex gap-2">
+          <input
+            ref={urlInputRef}
+            type="text"
+            placeholder="https://api.example.com/endpoint"
+            value={config.url}
+            onChange={(e) => onConfigChange({ url: e.target.value })}
+            className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          <div className="relative">
+            <button
+              ref={varButtonRef}
+              onClick={() => setShowVarMenu(!showVarMenu)}
+              className="h-full px-3 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300 flex items-center gap-1"
+              title="Insert variable"
+            >
+              <Plus className="w-4 h-4" />
+              <CaretDown className="w-3 h-3" />
+            </button>
+            {showVarMenu && (
+              <div className="absolute right-0 top-[calc(100%+4px)] w-48 bg-theme-bg-primary border border-white/5 rounded-lg shadow-lg z-10">
+                {renderVariableSelect(
+                  "",
+                  insertVariableAtCursor,
+                  "Select variable to insert",
+                  true
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <div>

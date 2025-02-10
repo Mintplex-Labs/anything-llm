@@ -194,8 +194,7 @@ const TRANSLATIONS = {
         'Bu ayar, LLM yanıtlarının ne kadar "yaratıcı" olacağını kontrol eder.',
       "desc-end":
         "Sayı yükseldikçe yaratıcı yanıtlar artar. Bazı modeller için bu değer çok yüksek ayarlandığında anlamsız yanıtlar ortaya çıkabilir.",
-      hint:
-        "Çoğu LLM'in farklı kabul edilebilir değer aralıkları vardır. Ayrıntılar için LLM sağlayıcınıza danışın.",
+      hint: "Çoğu LLM'in farklı kabul edilebilir değer aralıkları vardır. Ayrıntılar için LLM sağlayıcınıza danışın.",
     },
   },
 

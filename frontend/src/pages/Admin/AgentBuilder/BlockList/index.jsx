@@ -3,30 +3,39 @@ import {
   X,
   CaretUp,
   CaretDown,
-  Plus,
   Globe,
   Browser,
-  File,
-  Code,
+  // File,
+  // Code,
+  Brain,
+  FlagCheckered,
+  Play,
+  Flag,
 } from "@phosphor-icons/react";
 import StartNode from "../nodes/StartNode";
 import ApiCallNode from "../nodes/ApiCallNode";
 import WebsiteNode from "../nodes/WebsiteNode";
 import FileNode from "../nodes/FileNode";
 import CodeNode from "../nodes/CodeNode";
+import LLMInstructionNode from "../nodes/LLMInstructionNode";
+import FinishNode from "../nodes/FinishNode";
+import WebScrapingNode from "../nodes/WebScrapingNode";
 
 const BLOCK_TYPES = {
   START: "start",
   API_CALL: "apiCall",
-  WEBSITE: "website",
-  FILE: "file",
-  CODE: "code",
+  // WEBSITE: "website", // Temporarily disabled
+  // FILE: "file", // Temporarily disabled
+  // CODE: "code", // Temporarily disabled
+  LLM_INSTRUCTION: "llmInstruction",
+  WEB_SCRAPING: "webScraping",
+  FINISH: "finish",
 };
 
 const BLOCK_INFO = {
   [BLOCK_TYPES.START]: {
-    label: "Agent Start",
-    icon: <Plus className="w-5 h-5 text-theme-text-primary" />,
+    label: "Flow Start",
+    icon: <Play className="w-5 h-5 text-theme-text-primary" />,
     description: "Configure agent variables and settings",
     getSummary: (config) => {
       const varCount = config.variables?.filter((v) => v.name)?.length || 0;
@@ -49,7 +58,8 @@ const BLOCK_INFO = {
     getSummary: (config) =>
       `${config.method || "GET"} ${config.url || "(no URL)"}`,
   },
-  [BLOCK_TYPES.WEBSITE]: {
+  // TODO: Implement website, file, and code blocks
+  /* [BLOCK_TYPES.WEBSITE]: {
     label: "Open Website",
     icon: <Browser className="w-5 h-5 text-theme-text-primary" />,
     description: "Navigate to a URL",
@@ -87,6 +97,36 @@ const BLOCK_INFO = {
     },
     getSummary: (config) => `Run ${config.language || "javascript"} code`,
   },
+  */
+  [BLOCK_TYPES.LLM_INSTRUCTION]: {
+    label: "LLM Instruction",
+    icon: <Brain className="w-5 h-5 text-theme-text-primary" />,
+    description: "Process data using LLM instructions",
+    defaultConfig: {
+      instruction: "",
+      inputVariable: "",
+      resultVariable: "",
+    },
+    getSummary: (config) => config.instruction || "No instruction",
+  },
+  [BLOCK_TYPES.WEB_SCRAPING]: {
+    label: "Web Scraping",
+    icon: <Browser className="w-5 h-5 text-theme-text-primary" />,
+    description: "Scrape content from a webpage",
+    defaultConfig: {
+      url: "",
+      resultVariable: "",
+    },
+    getSummary: (config) => config.url || "No URL specified",
+  },
+  [BLOCK_TYPES.FINISH]: {
+    label: "Flow Complete",
+    icon: <Flag className="w-4 h-4" />,
+    description: "End of agent flow",
+    getSummary: () => "Flow will end here",
+    defaultConfig: {},
+    renderConfig: () => null,
+  },
 };
 
 export default function BlockList({
@@ -96,6 +136,7 @@ export default function BlockList({
   toggleBlockExpansion,
   renderVariableSelect,
   onDeleteVariable,
+  moveBlock,
 }) {
   const renderBlockConfig = (block) => {
     const props = {
@@ -116,6 +157,12 @@ export default function BlockList({
         return <FileNode {...props} />;
       case BLOCK_TYPES.CODE:
         return <CodeNode {...props} />;
+      case BLOCK_TYPES.LLM_INSTRUCTION:
+        return <LLMInstructionNode {...props} />;
+      case BLOCK_TYPES.WEB_SCRAPING:
+        return <WebScrapingNode {...props} />;
+      case BLOCK_TYPES.FINISH:
+        return <FinishNode />;
       default:
         return <div>Configuration options coming soon...</div>;
     }
@@ -130,9 +177,9 @@ export default function BlockList({
               block.isExpanded ? "w-full" : "w-[280px] mx-auto"
             }`}
           >
-            <button
+            <div
               onClick={() => toggleBlockExpansion(block.id)}
-              className="w-full p-4 flex items-center justify-between hover:bg-theme-action-menu-item-hover transition-colors duration-300 group"
+              className="w-full p-4 flex items-center justify-between hover:bg-theme-action-menu-item-hover transition-colors duration-300 group cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center">
@@ -152,16 +199,45 @@ export default function BlockList({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {block.id !== "start" && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeBlock(block.id);
-                    }}
-                    className="p-1 text-white/60 opacity-0 group-hover:opacity-100 hover:text-red-500 rounded transition-all duration-300"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+                {block.id !== "start" && block.type !== BLOCK_TYPES.FINISH && (
+                  <>
+                    <div className="flex items-center gap-1">
+                      {index > 1 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            moveBlock(index, index - 1);
+                          }}
+                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          title="Move up"
+                        >
+                          <CaretUp className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      {index < blocks.length - 2 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            moveBlock(index, index + 1);
+                          }}
+                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          title="Move down"
+                        >
+                          <CaretDown className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeBlock(block.id);
+                      }}
+                      className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
+                      title="Delete block"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </>
                 )}
                 <div className="w-4 flex items-center justify-center">
                   {block.isExpanded ? (
@@ -171,7 +247,7 @@ export default function BlockList({
                   )}
                 </div>
               </div>
-            </button>
+            </div>
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
                 block.isExpanded

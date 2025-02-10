@@ -1,21 +1,43 @@
 import React from "react";
-import { ArrowsClockwise } from "@phosphor-icons/react";
+import { FloppyDisk, FolderOpen, Plus } from "@phosphor-icons/react";
+import useLogo from "@/hooks/useLogo";
+import { useNavigate } from "react-router-dom";
+import paths from "@/utils/paths";
 
 export default function AgentSidebar({
   agentName,
   setAgentName,
   agentDescription,
   setAgentDescription,
-  generateJson,
+  onSave,
+  onLoadClick,
+  onNewClick,
+  active = true,
+  onToggleActive,
 }) {
+  const { logo } = useLogo();
+  const navigate = useNavigate();
+
   return (
-    <div className="w-80 border-r border-theme-sidebar-border bg-theme-bg-secondary p-6 overflow-y-auto">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-xl font-medium  text-theme-text-primary mb-6">
-            Agent Builder
-          </h1>
-          <div className="space-y-4">
+    <div className="w-80">
+      <div className="relative m-[16px] rounded-[16px] bg-theme-bg-secondary border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[5px] h-[calc(100%-35px)]">
+        <div className="p-[10px]">
+          <button
+            onClick={() => navigate(paths.settings.agentSkills())}
+            className="flex justify-between w-[250px] min-w-[250px]"
+          >
+            <img
+              src={logo}
+              alt="Logo"
+              className="rounded max-h-[24px] object-contain mb-1"
+            />
+          </button>
+          <div className="flex flex-col mb-6">
+            <span className="text-xs font-light text-theme-text-primary">
+              Agent Flow Builder
+            </span>
+          </div>
+          <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-white mb-3">
                 Name
@@ -44,16 +66,51 @@ export default function AgentSidebar({
                 spellCheck={false}
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-white mb-3">
+                Status
+              </label>
+              <div className="flex items-center gap-x-2">
+                <label className="relative inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    className="peer sr-only"
+                    checked={active}
+                    onChange={() => onToggleActive(!active)}
+                  />
+                  <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+                </label>
+                <span className="text-sm text-theme-text-secondary font-medium">
+                  {active ? "Enabled" : "Disabled"}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-
-        <button
-          onClick={generateJson}
-          className="transition-all duration-300 text-xs px-4 py-2.5 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white w-full flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
-        >
-          <ArrowsClockwise className="w-4 h-4" />
-          Generate JSON
-        </button>
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={onNewClick}
+              className="transition-all duration-300 text-xs px-4 py-2.5 font-semibold rounded-lg bg-theme-bg-primary hover:bg-theme-action-menu-item-hover border-2 border-white/10 text-white w-full flex items-center justify-center gap-2"
+            >
+              New Flow
+            </button>
+            <button
+              onClick={onLoadClick}
+              className="transition-all duration-300 text-xs px-4 py-2.5 font-semibold rounded-lg bg-theme-bg-primary hover:bg-theme-action-menu-item-hover border-2 border-white/10 text-white w-full flex items-center justify-center gap-2"
+            >
+              <FolderOpen className="w-4 h-4" />
+              Flows
+            </button>
+            <button
+              onClick={onSave}
+              className="transition-all duration-300 text-xs px-4 py-2.5 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white w-full flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+            >
+              <FloppyDisk className="w-4 h-4" />
+              Save Flow
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
