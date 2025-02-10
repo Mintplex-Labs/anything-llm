@@ -38,7 +38,7 @@ export default function DBConnection({ connection, onRemove, setHasChanges }) {
         <button
           type="button"
           onClick={removeConfirmation}
-          className="border-none text-white/40 hover:text-red-500"
+          className="border-none text-white hover:text-red-500"
         >
           <X size={24} />
         </button>
