@@ -12,7 +12,7 @@ function agentFlowEndpoints(app) {
   // Save a flow configuration
   app.post(
     "/agent-flows/save",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { name, config, uuid } = request.body;
@@ -55,7 +55,7 @@ function agentFlowEndpoints(app) {
   // List all available flows
   app.get(
     "/agent-flows/list",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
         const flows = await AgentFlows.listFlows();
@@ -76,7 +76,7 @@ function agentFlowEndpoints(app) {
   // Get a specific flow by UUID
   app.get(
     "/agent-flows/:uuid",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
@@ -105,7 +105,7 @@ function agentFlowEndpoints(app) {
   // Run a specific flow
   app.post(
     "/agent-flows/:uuid/run",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
@@ -139,7 +139,7 @@ function agentFlowEndpoints(app) {
   // Delete a specific flow
   app.delete(
     "/agent-flows/:uuid",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
@@ -168,7 +168,7 @@ function agentFlowEndpoints(app) {
   // Toggle flow active status
   app.post(
     "/agent-flows/:uuid/toggle",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
