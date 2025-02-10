@@ -1782,6 +1782,11 @@
     "@octokit/webhooks-types" "7.6.1"
     aggregate-error "^3.1.0"
 
+"@opentelemetry/api@^1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@opentelemetry/api/-/api-1.9.0.tgz#d03eba68273dc0f7509e2a3d5cba21eae10379fe"
+  integrity sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==
+
 "@petamoriken/float16@^3.8.6":
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/@petamoriken/float16/-/float16-3.9.0.tgz#4e4d129958ba77ed36e6bb3081ac6b8b427df6f8"
@@ -2628,13 +2633,14 @@
   optionalDependencies:
     onnxruntime-node "1.14.0"
 
-"@zilliz/milvus2-sdk-node@^2.3.5":
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/@zilliz/milvus2-sdk-node/-/milvus2-sdk-node-2.5.1.tgz#4afcb2e54826da8d96164a5fe60e96d56e7a356c"
-  integrity sha512-awb5Y2uT9Ku+YJ7m+16T6TphoPIzwgtOXxf7s53qK54mv4F+7YWN4mBE9R2ScVO5H499ra6k+QxbGRbxAuO53g==
+"@zilliz/milvus2-sdk-node@^2.5.0":
+  version "2.5.5"
+  resolved "https://registry.yarnpkg.com/@zilliz/milvus2-sdk-node/-/milvus2-sdk-node-2.5.5.tgz#86f2d37a44c3b63949bd1be07c33a46b0bf0d73d"
+  integrity sha512-vKDbNu6auOTV0PZSvjKhdXR4wEs+ldREmYA3Ffll2kqJxaljAXmTcDXCw7arFa+/n+xDsg+nP1KTpuZATYDZ8g==
   dependencies:
     "@grpc/grpc-js" "^1.12.1"
     "@grpc/proto-loader" "^0.7.10"
+    "@opentelemetry/api" "^1.9.0"
     "@petamoriken/float16" "^3.8.6"
     dayjs "^1.11.7"
     generic-pool "^3.9.0"
@@ -4553,6 +4559,11 @@ functions-have-names@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/functions-have-names/-/functions-have-names-1.2.3.tgz#0404fe4ee2ba2f607f0e0ec3c80bae994133b834"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
+
+fuse.js@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-7.1.0.tgz#306228b4befeee11e05b027087c2744158527d09"
+  integrity sha512-trLf4SzuuUxfusZADLINj+dE8clK1frKdmqiJNb1Es75fmI5oY6X2mxLVUciLLjxqw/xr72Dhy+lER6dGd02FQ==
 
 gauge@^3.0.0:
   version "3.0.2"
