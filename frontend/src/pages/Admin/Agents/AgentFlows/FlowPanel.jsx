@@ -11,7 +11,12 @@ function ManageFlowMenu({ flow, onDelete }) {
   const navigate = useNavigate();
 
   async function deleteFlow() {
-    if (!window.confirm("Are you sure you want to delete this flow? This action cannot be undone.")) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this flow? This action cannot be undone."
+      )
+    )
+      return;
     const { success, error } = await AgentFlows.deleteFlow(flow.uuid);
     if (success) {
       showToast("Flow deleted successfully.", "success");
@@ -75,7 +80,10 @@ export default function FlowPanel({ flow, toggleFlow, onDelete }) {
 
   const handleToggle = async () => {
     try {
-      const { success, error } = await AgentFlows.toggleFlow(flow.uuid, !isActive);
+      const { success, error } = await AgentFlows.toggleFlow(
+        flow.uuid,
+        !isActive
+      );
       if (!success) throw new Error(error);
       setIsActive(!isActive);
       toggleFlow(flow.uuid);

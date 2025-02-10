@@ -174,7 +174,7 @@ export default function AdminAgents() {
 
   const handleFlowDelete = (flowId) => {
     setSelectedFlow(null);
-    setActiveFlowIds(prev => prev.filter(id => id !== flowId));
+    setActiveFlowIds((prev) => prev.filter((id) => id !== flowId));
   };
 
   if (loading) {
