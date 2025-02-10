@@ -948,17 +948,17 @@ does not extend the close button beyond the viewport. */
   --theme-settings-input-bg: #fff;
   --theme-bg-secondary: #ccc;
 }
- /* ----------- */
+/* ----------- */
 
 /* Custom Css */
 .custom-bg-primary {
-  background: linear-gradient(90deg, #281BA5 52.5%, #237489 100%);
+  background: linear-gradient(90deg, #281ba5 52.5%, #237489 100%);
 }
 .custom-theme-bg-container {
-  background: linear-gradient(90deg, #281BA5 52.5%, #237489 100%);
+  background: linear-gradient(90deg, #281ba5 52.5%, #237489 100%);
 }
 .custom-button-primary {
-  background: linear-gradient(90deg, #291CA6 0%, #00A5D4 100%);
+  background: linear-gradient(90deg, #291ca6 0%, #00a5d4 100%);
 }
 .custom-text-primary {
   color: #fff;
@@ -969,7 +969,7 @@ does not extend the close button beyond the viewport. */
   background-repeat: no-repeat;
 }
 .custom-theme-bg-secondary {
-  background-color: #F1F6FC;
+  background-color: #f1f6fc;
 }
 .custom-text-secondary {
   color: #000 !important;
@@ -989,7 +989,7 @@ does not extend the close button beyond the viewport. */
   border: 1px solid #ffffff69;
 }
 .custom-theme-bg-quad {
-  background-color: #00A5D4;
+  background-color: #00a5d4;
 }
 .custom-theme-color-quad {
   color: #fff;
@@ -1014,7 +1014,6 @@ does not extend the close button beyond the viewport. */
     color: #000;
     /* .custom-border-secondary */
     border: 1px solid #0003;
-    
   }
   input::placeholder {
     color: unset;
@@ -1027,7 +1026,7 @@ does not extend the close button beyond the viewport. */
     /* .custom-text-secondary */
     color: #000;
     /* .custom-border-secondary */
-    border: 1px solid #0003; 
+    border: 1px solid #0003;
   }
 }
 .custom-react-tag-input-component {
@@ -1040,9 +1039,9 @@ does not extend the close button beyond the viewport. */
     border: 1px solid #0003;
     .rti--input {
       /* .custom-theme-bg-tertiary */
-    background-color: #fff !important;
-    /* .custom-text-secondary */
-    color: #000 !important;
+      background-color: #fff !important;
+      /* .custom-text-secondary */
+      color: #000 !important;
     }
     .rti--input::placeholder {
       color: unset;
@@ -1065,19 +1064,42 @@ does not extend the close button beyond the viewport. */
   }
   tbody {
     tr {
-      th, td {
+      th,
+      td {
         /* .custom-text-secondary */
         color: #000;
       }
     }
-    button, a, p {
-        /* .custom-text-secondary */
-        color: #000;
+    button,
+    a,
+    p {
+      /* .custom-text-secondary */
+      color: #000;
+    }
+  }
+}
+.custom-file-row {
+  color: #000;
+  background-color: #f1f6fc !important;
+  .custom-file-row-checkbox {
+    border-color: #000;
+    .custom-file-row-checkbox-selected {
+      background-color: #000;
     }
   }
 }
 .markdown strong {
   font-weight: 600;
   color: #000;
+}
+select {
+  appearance: none; /* Remove default arrow */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  background: transparent;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjMDAwMDAwIj48cGF0aCBkPSJNNDgwLTM0NCAyNDAtNTg0bDU2LTU2IDE4NCAxODQgMTg0LTE4NCA1NiA1Ni0yNDAgMjQwWiIvPjwvc3ZnPg==");
+  background-repeat: no-repeat;
+  background-position-x: calc(100% - 5px);
+  background-position-y: 50%;
 }
 /* --------- */

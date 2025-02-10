@@ -3,7 +3,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import DataPrismIcon from "@/media/logo/data-prism-logo.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
@@ -44,10 +44,9 @@ const EMBEDDERS = [
   {
     name: "Native Embedder",
     value: "native",
-    logo: AnythingLLMIcon,
+    logo: DataPrismIcon,
     options: (settings) => <NativeEmbeddingOptions settings={settings} />,
-    description:
-      "Use the built-in embedding provider for Prism. Zero setup!",
+    description: "Use the built-in embedding provider for Prism. Zero setup!",
   },
   {
     name: "OpenAI",
@@ -116,12 +115,29 @@ const EMBEDDERS = [
   {
     name: "Prism",
     value: "generic-openai",
-    logo: AnythingLLMIcon,
+    logo: DataPrismIcon,
     options: (settings) => (
       <GenericOpenAiEmbeddingOptions settings={settings} />
     ),
     description: "Run embedding models from any OpenAI compatible API service.",
   },
+];
+
+export const sparseEmbeddingProviderOptions = [
+  {
+    label: "External",
+    key: "EXTERNAL",
+  },
+  {
+    label: "Internal",
+    key: "INTERNAL",
+  },
+];
+
+const removeInternalKeys = [
+  "SparseEmbeddingBasePath",
+  "SparseEmbeddingModelPref",
+  "SparseGenericOpenAiEmbeddingApiKey",
 ];
 
 export default function GeneralEmbeddingPreference() {
@@ -136,6 +152,8 @@ export default function GeneralEmbeddingPreference() {
   const [selectedEmbedder, setSelectedEmbedder] = useState(null);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const [weightError, setWeightError] = useState(false);
+  const [sparseEmbeddingProviderType, setSparseEmbeddingProviderType] =
+    useState();
   const searchInputRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
@@ -199,6 +217,12 @@ export default function GeneralEmbeddingPreference() {
       (hasEmbeddings || hasCachedEmbeddings)
     ) {
       openModal();
+    } else if (sparseEmbeddingProviderType?.key && !isHybridSearchEnabled) {
+      openModal();
+    } else if (
+      sparseEmbeddingProviderType?.key !== settings?.SparseEngineType
+    ) {
+      openModal();
     } else {
       await handleSaveSettings();
     }
@@ -219,6 +243,24 @@ export default function GeneralEmbeddingPreference() {
 
     settingsData.HybridSearchEnabled =
       settingsData?.HybridSearchEnabled === "on" ? "true" : "false";
+
+    // Remove keys in case of internal sparse engine type
+    const isExternalSparseEngineType =
+      settingsData?.SparseEngineType ===
+      sparseEmbeddingProviderOptions?.[0]?.label;
+
+    if (!isExternalSparseEngineType) {
+      for (let key of removeInternalKeys) {
+        delete settingsData[key];
+      }
+    }
+
+    // SparseEngineType if present change value to uppercase in api payload
+    if (settingsData?.SparseEngineType) {
+      settingsData.SparseEngineType =
+        settingsData?.SparseEngineType?.toUpperCase();
+    }
+    // ----------------------------------------------------
 
     const { error } = await System.updateSystem(
       settingsData,
@@ -256,6 +298,17 @@ export default function GeneralEmbeddingPreference() {
     setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
     setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
     setHasCachedEmbeddings(_settings?.HasCachedEmbeddings || false);
+
+    // Default selection of SparseEngineType
+    if (_settings?.SparseEngineType) {
+      const selectedSparseEngineType = sparseEmbeddingProviderOptions?.find(
+        (value) => value?.key === _settings?.SparseEngineType
+      );
+      setSparseEmbeddingProviderType(selectedSparseEngineType);
+    } else {
+      setSparseEmbeddingProviderType(sparseEmbeddingProviderOptions?.[1]);
+    }
+    // ----------------------------------
     setLoading(false);
   }
   useEffect(() => {
@@ -303,7 +356,10 @@ export default function GeneralEmbeddingPreference() {
             className="flex w-full flex-1 h-full"
           >
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] py-16 md:py-6">
-              <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10 custom-border-secondary" style={{ borderTop: 0, borderRight: 0, borderLeft: 0 }}>
+              <div
+                className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10 custom-border-secondary"
+                style={{ borderTop: 0, borderRight: 0, borderLeft: 0 }}
+              >
                 <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white custom-text-secondary">
                     {t("embedding.title")}
@@ -426,6 +482,10 @@ export default function GeneralEmbeddingPreference() {
                   settings={settings}
                   onChange={() => setHasChanges(true)}
                   weightError={weightError}
+                  sparseEmbeddingProviderType={sparseEmbeddingProviderType}
+                  setSparseEmbeddingProviderType={
+                    setSparseEmbeddingProviderType
+                  }
                 />
               </div>
             </div>

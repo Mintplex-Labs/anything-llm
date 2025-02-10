@@ -86,7 +86,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
           workspace={workspace}
           setHasChanges={setHasChanges}
         />
-        {(!user || user?.role === "admin") && (
+        {/* {(!user || user?.role === "admin") && (
           <>
             {!hasChanges && (
               <div className="flex flex-col gap-y-4">
@@ -104,7 +104,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
               </div>
             )}
           </>
-        )}
+        )} */}
 
         {hasChanges && (
           <button

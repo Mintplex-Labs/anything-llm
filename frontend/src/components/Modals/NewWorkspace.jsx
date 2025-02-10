@@ -25,7 +25,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
 
   return (
     <ModalWrapper isOpen={true}>
-      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden custom-theme-bg-tertiary">
+      <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-theme-modal-border overflow-hidden custom-theme-bg-tertiary">
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap custom-text-secondary">

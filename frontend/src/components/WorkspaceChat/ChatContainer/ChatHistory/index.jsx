@@ -35,6 +35,8 @@ export default function ChatHistory({
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
       scrollToBottom(false); // Use instant scroll for auto-scrolling
+    } else if (history?.length > 0) {
+      scrollToBottom(true); // Use instant scroll for auto-scrolling
     }
   }, [history, isAtBottom, isStreaming, isUserScrolling]);
 
@@ -237,7 +239,7 @@ export default function ChatHistory({
         <div className="fixed bottom-40 right-10 md:right-20 z-50 cursor-pointer animate-pulse">
           <div className="flex flex-col items-center">
             <div
-              className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
+              className="p-1 rounded-full border border-white/10 bg-white/10 custom-theme-bg-quad custom-theme-color-quad"
               onClick={() => {
                 scrollToBottom(true);
                 setIsUserScrolling(false);
@@ -258,7 +260,7 @@ function StatusResponse({ props }) {
       <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <span
-            className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line`}
+            className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line custom-text-secondary`}
           >
             {props.content}
           </span>

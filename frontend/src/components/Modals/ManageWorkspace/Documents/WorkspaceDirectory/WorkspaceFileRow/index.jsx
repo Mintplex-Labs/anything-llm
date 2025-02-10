@@ -60,8 +60,8 @@ export default function WorkspaceFileRow({
         !disableSelection
           ? "hover:bg-theme-file-picker-hover cursor-pointer"
           : ""
-      } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${
-        selected ? "selected light:text-white" : ""
+      } ${isMovedItem ? "bg-green-800/40" : "file-row custom-file-row"} ${
+        selected ? "selected" : ""
       }`}
       onClick={toggleRowSelection}
     >
@@ -77,7 +77,7 @@ export default function WorkspaceFileRow({
         <div className="shrink-0 w-3 h-3">
           {!disableSelection ? (
             <div
-              className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white ${
+              className={`custom-file-row-checkbox shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white ${
                 selected ? "text-white" : "text-theme-text-primary light:invert"
               } flex justify-center items-center cursor-pointer`}
               role="checkbox"
@@ -85,7 +85,7 @@ export default function WorkspaceFileRow({
               tabIndex={0}
               onClick={handleRowSelection}
             >
-              {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+              {selected && <div className="w-2 h-2 bg-white rounded-[2px] custom-file-row-checkbox-selected" />}
             </div>
           ) : null}
         </div>

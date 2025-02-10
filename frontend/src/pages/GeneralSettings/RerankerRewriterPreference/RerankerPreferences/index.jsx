@@ -1,6 +1,6 @@
 import React from "react";
 
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import DataPrismIcon from "@/media/logo/data-prism-logo.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import JinaLogo from "@/media/llmprovider/jina.png";
 
@@ -16,7 +16,7 @@ const RE_RANKERS = [
   {
     name: "Prism",
     value: "prism",
-    logo: AnythingLLMIcon,
+    logo: DataPrismIcon,
     options: (settings) => <PrismRerankerOptions settings={settings} />,
     description: "Use the Prism Re-Ranker model.",
   },
