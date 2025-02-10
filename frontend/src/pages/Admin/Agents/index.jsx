@@ -430,15 +430,13 @@ export default function AdminAgents() {
                   <FlowArrow size={24} />
                   <p className="text-lg font-medium">Agent Flows</p>
                 </div>
-                {activeFlowIds.length > 0 && (
-                  <Link
-                    to={paths.agents.builder()}
-                    className="text-theme-text-secondary hover:text-theme-text-primary transition-colors duration-200 flex items-center gap-x-2"
-                  >
-                    <Hammer size={20} />
-                    <p className="text-sm">Open Builder</p>
-                  </Link>
-                )}
+                <Link
+                  to={paths.agents.builder()}
+                  className="text-theme-text-secondary hover:text-theme-text-primary transition-colors duration-200 flex items-center gap-x-2"
+                >
+                  <Hammer size={20} />
+                  <p className="text-sm">Open Builder</p>
+                </Link>
               </div>
               <AgentFlowsList
                 selectedFlow={selectedFlow}
