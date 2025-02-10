@@ -155,7 +155,7 @@ export default function AdminAgents() {
 
   const SelectedSkillComponent = selectedFlow
     ? FlowPanel
-    : selectedSkill.imported
+    : selectedSkill?.imported
       ? ImportedSkillConfig
       : configurableSkills[selectedSkill]?.component ||
         defaultSkills[selectedSkill]?.component;
@@ -170,6 +170,11 @@ export default function AdminAgents() {
   const handleFlowClick = (flow) => {
     setSelectedSkill(null);
     setSelectedFlow(flow);
+  };
+
+  const handleFlowDelete = (flowId) => {
+    setSelectedFlow(null);
+    setActiveFlowIds(prev => prev.filter(id => id !== flowId));
   };
 
   if (loading) {
@@ -293,6 +298,7 @@ export default function AdminAgents() {
                             flow={selectedFlow}
                             toggleFlow={toggleFlow}
                             enabled={activeFlowIds.includes(selectedFlow.uuid)}
+                            onDelete={handleFlowDelete}
                           />
                         ) : selectedSkill.imported ? (
                           <ImportedSkillConfig
@@ -453,6 +459,7 @@ export default function AdminAgents() {
                     flow={selectedFlow}
                     toggleFlow={toggleFlow}
                     enabled={activeFlowIds.includes(selectedFlow.uuid)}
+                    onDelete={handleFlowDelete}
                   />
                 ) : selectedSkill.imported ? (
                   <ImportedSkillConfig
