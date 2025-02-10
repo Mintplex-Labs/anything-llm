@@ -20,7 +20,11 @@ export default function CodeSnippetModal({ embed, closeModal }) {
             type="button"
             className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white custom-text-secondary" />
+            <X
+              size={24}
+              weight="bold"
+              className="text-white custom-text-secondary"
+            />
           </button>
         </div>
         <div className="px-7 py-6">
@@ -44,18 +48,25 @@ export default function CodeSnippetModal({ embed, closeModal }) {
 }
 
 function createScriptTagSnippet(embed, scriptHost, serverHost) {
-  return `<!--
-Paste this script at the bottom of your HTML before the </body> tag.
-See more style and config options on our docs
-https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md
--->
-<script
-  data-embed-id="${embed.uuid}"
-  data-base-api-url="${serverHost}/api/embed"
-  src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
-</script>
-<!-- AnythingLLM (https://anythingllm.com) -->
-`;
+  //   return `<!--
+  // Paste this script at the bottom of your HTML before the </body> tag.
+  // See more style and config options on our docs
+  // https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md
+  // -->
+  // <script
+  //   data-embed-id="${embed.uuid}"
+  //   data-base-api-url="${serverHost}/api/embed"
+  //   src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
+  // </script>
+  // <!-- AnythingLLM (https://anythingllm.com) -->
+  // `;
+  return `<!-- Paste this script at the bottom of your HTML before the </body> tag. -->
+  <script
+    data-embed-id="${embed.uuid}"
+    data-base-api-url="${serverHost}/api/embed"
+    src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
+  </script>
+  `;
 }
 
 const ScriptTag = ({ embed }) => {
@@ -89,13 +100,13 @@ const ScriptTag = ({ embed }) => {
           Have your workspace chat embed function like a help desk chat bottom
           in the corner of your website.
         </p>
-        <a
+        {/* <a
           href="https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md"
           target="_blank"
           className="text-blue-300 light:text-blue-500 hover:underline"
         >
           View all style and configuration options &rarr;
-        </a>
+        </a> */}
       </div>
       <button
         disabled={copied}
