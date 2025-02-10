@@ -65,7 +65,7 @@ export default function DefaultChatContainer() {
           <UserIcon user={{ uid: "system" }} role={"assistant"} />
           <div>
             <MessageText>{t("welcomeMessage.part3")}</MessageText>
-            <a
+            {/* <a
               href={paths.github()}
               target="_blank"
               rel="noreferrer"
@@ -73,7 +73,7 @@ export default function DefaultChatContainer() {
             >
               <GitMerge className="h-4 w-4" />
               <p>{t("welcomeMessage.githubIssue")}</p>
-            </a>
+            </a> */}
           </div>
         </MessageContent>
       </MessageContainer>
@@ -151,7 +151,7 @@ export default function DefaultChatContainer() {
           <div>
             <MessageText>{t("welcomeMessage.part6")}</MessageText>
 
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
+            {/* <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
               <a
                 href={paths.github()}
                 target="_blank"
@@ -168,7 +168,7 @@ export default function DefaultChatContainer() {
                 <EnvelopeSimple className="h-4 w-4" />
                 <p>{t("welcomeMessage.contact")}</p>
               </a>
-            </div>
+            </div> */}
           </div>
         </MessageContent>
       </MessageContainer>
