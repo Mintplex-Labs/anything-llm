@@ -180,7 +180,7 @@ export default function BlockList({
               className="w-full p-4 flex items-center justify-between hover:bg-theme-action-menu-item-hover transition-colors duration-300 group cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-white/10 light:bg-white flex items-center justify-center">
                   {React.cloneElement(BLOCK_INFO[block.type].icon, {
                     className: "w-4 h-4 text-white",
                   })}
@@ -247,7 +247,7 @@ export default function BlockList({
                   : "max-h-0 opacity-0"
               }`}
             >
-              <div className="border-t border-white/10 p-4 bg-theme-bg-secondary">
+              <div className="border-t border-white/10 p-4 bg-theme-bg-secondary rounded-b-lg">
                 {renderBlockConfig(block)}
               </div>
             </div>
@@ -260,7 +260,7 @@ export default function BlockList({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-white/40"
+                className="text-white/40 light:invert"
               >
                 <path
                   d="M12 4L12 20M12 20L6 14M12 20L18 14"

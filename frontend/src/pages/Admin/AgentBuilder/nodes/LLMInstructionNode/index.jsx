@@ -8,7 +8,7 @@ export default function LLMInstructionNode({
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-theme-text-primary mb-2">
           Input Variable
         </label>
         {renderVariableSelect(
@@ -19,7 +19,7 @@ export default function LLMInstructionNode({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-theme-text-primary mb-2">
           Instruction
         </label>
         <textarea
@@ -30,14 +30,14 @@ export default function LLMInstructionNode({
               instruction: e.target.value,
             })
           }
-          className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+          className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
           rows={3}
           placeholder="Enter instructions for the LLM..."
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-theme-text-primary mb-2">
           Result Variable
         </label>
         {renderVariableSelect(

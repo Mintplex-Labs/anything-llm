@@ -8,7 +8,7 @@ export default function WebScrapingNode({
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-theme-text-primary mb-2">
           URL to Scrape
         </label>
         <input
@@ -20,13 +20,13 @@ export default function WebScrapingNode({
               url: e.target.value,
             })
           }
-          className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+          className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
           placeholder="https://example.com"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-theme-text-primary mb-2">
           Result Variable
         </label>
         {renderVariableSelect(
