@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     survey: {
@@ -10,6 +11,41 @@ const TRANSLATIONS = {
       commentPlaceholder: null,
       skip: null,
       thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
     },
   },
   common: {
@@ -22,8 +58,10 @@ const TRANSLATIONS = {
     save: "Сохранить изменения",
     previous: "Предыдущая страница",
     next: "Следующая страница",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
   settings: {
     title: "Настройки экземпляра",
     system: "Системные настройки",
@@ -52,7 +90,6 @@ const TRANSLATIONS = {
     contact: "联系支持Связаться с Поддержкой",
     "browser-extension": "Расширение браузера",
   },
-
   login: {
     "multi-user": {
       welcome: "Добро пожаловать в",
@@ -76,7 +113,6 @@ const TRANSLATIONS = {
       "back-to-login": "Вернуться к входу",
     },
   },
-
   welcomeMessage: {
     part1:
       "Добро пожаловать в AnythingLLM, открытый инструмент искусственного интеллекта от Mintplex Labs, который превращает что угодно в обученный чат-бот, с которым вы можете общаться и задавать вопросы. AnythingLLM - это ПО BYOK (принеси свои собственные ключи), поэтому за использование этого ПО нет подписки, платы или других сборов, кроме тех, что вы хотите использовать.",
@@ -98,12 +134,10 @@ const TRANSLATIONS = {
     starOnGithub: "Звезда на GitHub",
     contact: "Связаться с Mintplex Labs",
   },
-
   "new-workspace": {
     title: "Новая Рабочая Область",
     placeholder: "Моя Рабочая Область",
   },
-
   "workspaces—settings": {
     general: "Общие настройки",
     chat: "Настройки чата",
@@ -474,5 +508,3 @@ const TRANSLATIONS = {
     anonymous: "Анонимная телеметрия включена",
   },
 };
-
-export default TRANSLATIONS;

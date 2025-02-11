@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     survey: {
@@ -10,6 +11,41 @@ const TRANSLATIONS = {
       commentPlaceholder: null,
       skip: null,
       thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
     },
   },
   common: {
@@ -22,9 +58,10 @@ const TRANSLATIONS = {
     save: "儲存修改",
     previous: "上一頁",
     next: "下一頁",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // 設定側邊欄選單項目
   settings: {
     title: "系統設定",
     system: "一般設定",
@@ -53,8 +90,6 @@ const TRANSLATIONS = {
     contact: "聯絡支援",
     "browser-extension": "瀏覽器擴充功能",
   },
-
-  // 頁面定義
   login: {
     "multi-user": {
       welcome: "歡迎使用",
@@ -77,7 +112,6 @@ const TRANSLATIONS = {
       "back-to-login": "返回登入頁面",
     },
   },
-
   welcomeMessage: {
     part1:
       "歡迎使用 AnythingLLM，AnythingLLM 是由 Mintplex Labs 開發的開源 AI 工具，它能將任何內容轉換成可供查詢和對話的訓練模型對話機器人。AnythingLLM 採用 BYOK（自備金鑰）軟體模式，除了您想使用的服務之外，本軟體不收取任何訂閱費、費用或其他費用。",
@@ -98,13 +132,10 @@ const TRANSLATIONS = {
     starOnGithub: "在 GitHub 上給我們星星",
     contact: "聯絡 Mintplex Labs",
   },
-
   "new-workspace": {
     title: "新增工作區",
     placeholder: "我的工作區",
   },
-
-  // 工作區設定選單項目
   "workspaces—settings": {
     general: "一般設定",
     chat: "對話設定",
@@ -112,8 +143,6 @@ const TRANSLATIONS = {
     members: "成員管理",
     agent: "智慧代理人設定",
   },
-
-  // 一般外觀
   general: {
     vector: {
       title: "向量計數",
@@ -146,8 +175,6 @@ const TRANSLATIONS = {
         "工作區。這將會移除向量資料庫中的所有向量嵌入。\n\n原始檔案將保持不變。此動作無法復原。",
     },
   },
-
-  // 對話設定
   chat: {
     llm: {
       title: "工作區 LLM 提供者",
@@ -201,8 +228,6 @@ const TRANSLATIONS = {
       hint: "大多數 LLM 都有各種可接受的有效值範圍。請查詢您的 LLM 提供者以取得該資訊。",
     },
   },
-
-  // 向量資料庫
   "vector-workspace": {
     identifier: "向量資料庫識別碼",
     snippets: {
@@ -229,8 +254,6 @@ const TRANSLATIONS = {
       success: "工作區向量資料庫已重設！",
     },
   },
-
-  // 智慧代理人設定
   agent: {
     "performance-warning":
       "不直接支援工具呼叫的 LLM 的效能，高度取決於模型的功能和精確度。某些功能可能受限或無法使用。",
@@ -247,7 +270,6 @@ const TRANSLATIONS = {
       description: "此工作區 @agent 智慧代理人將使用的特定 LLM 模型。",
       wait: "-- 等待模型中 --",
     },
-
     skill: {
       title: "預設智慧代理人技能",
       description:
@@ -284,8 +306,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // 工作區對話紀錄
   recorded: {
     title: "工作區對話紀錄",
     description: "這些是所有已記錄的對話和訊息，依建立日期排序。",
@@ -299,8 +319,6 @@ const TRANSLATIONS = {
       at: "傳送時間",
     },
   },
-
-  // 外觀
   appearance: {
     title: "外觀",
     description: "自訂平台的外觀設定。",
@@ -330,8 +348,6 @@ const TRANSLATIONS = {
       link: "連結",
     },
   },
-
-  // API 金鑰
   api: {
     title: "API 金鑰",
     description:
@@ -344,14 +360,12 @@ const TRANSLATIONS = {
       created: "建立時間",
     },
   },
-
   llm: {
     title: "LLM 偏好設定",
     description:
       "這些是您偏好的 LLM 對話與嵌入提供者的憑證和設定。確保這些金鑰是最新且正確的，否則 AnythingLLM 將無法正常運作。",
     provider: "LLM 提供者",
   },
-
   transcription: {
     title: "語音轉錄模型偏好設定",
     description:
@@ -362,7 +376,6 @@ const TRANSLATIONS = {
     "warn-recommend": "我們建議至少 2GB 的記憶體，並且上傳小於 10MB 的檔案。",
     "warn-end": "內建模型將會在第一次使用時自動下載。",
   },
-
   embedding: {
     title: "向量嵌入偏好設定",
     "desc-start":
@@ -374,7 +387,6 @@ const TRANSLATIONS = {
       description: "使用 AnythingLLM 的原生嵌入引擎時，不需要任何設定。",
     },
   },
-
   text: {
     title: "文字分割與區塊化偏好設定",
     "desc-start":
@@ -389,14 +401,11 @@ const TRANSLATIONS = {
       description: "這是單一向量中可包含的最大字元長度。",
       recommend: "嵌入模型的最大長度為",
     },
-
     overlap: {
       title: "文字區塊重疊",
       description: "這是區塊化過程中，兩個相鄰文字區塊之間的最大字元重疊數。",
     },
   },
-
-  // 向量資料庫
   vector: {
     title: "向量資料庫",
     description:
@@ -406,8 +415,6 @@ const TRANSLATIONS = {
       description: "使用 LanceDB 不需要任何設定。",
     },
   },
-
-  // 可嵌入對話小工具
   embeddable: {
     title: "可嵌入對話小工具",
     description:
@@ -419,7 +426,6 @@ const TRANSLATIONS = {
       Active: "已啟用網域",
     },
   },
-
   "embed-chats": {
     title: "嵌入對話",
     export: "匯出",
@@ -432,7 +438,6 @@ const TRANSLATIONS = {
       at: "傳送時間",
     },
   },
-
   multi: {
     title: "多使用者模式",
     description: "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",
@@ -456,8 +461,6 @@ const TRANSLATIONS = {
       password: "系統密碼",
     },
   },
-
-  // 事件記錄
   event: {
     title: "事件記錄",
     description: "檢視此系統上發生的所有動作和事件，以進行監控。",
@@ -468,8 +471,6 @@ const TRANSLATIONS = {
       occurred: "發生時間",
     },
   },
-
-  // 隱私與資料處理
   privacy: {
     title: "隱私與資料處理",
     description:
@@ -480,5 +481,3 @@ const TRANSLATIONS = {
     anonymous: "已啟用匿名統計資訊",
   },
 };
-
-export default TRANSLATIONS;

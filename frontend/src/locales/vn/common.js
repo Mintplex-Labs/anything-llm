@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     survey: {
@@ -10,6 +11,41 @@ const TRANSLATIONS = {
       commentPlaceholder: null,
       skip: null,
       thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
     },
   },
   common: {
@@ -22,9 +58,10 @@ const TRANSLATIONS = {
     save: "Lưu thay đổi",
     previous: "Trang trước",
     next: "Trang tiếp theo",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Cài đặt hệ thống",
     system: "Cài đặt chung",
@@ -53,8 +90,6 @@ const TRANSLATIONS = {
     contact: "Liên hệ hỗ trợ",
     "browser-extension": "Tiện ích trình duyệt",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Chào mừng đến với",
@@ -77,7 +112,6 @@ const TRANSLATIONS = {
       "back-to-login": "Back to Đăng nhập",
     },
   },
-
   welcomeMessage: {
     part1:
       "Chào mừng đến với AnythingLLM, AnythingLLM is an open-source AI tool by Mintplex Labs that turns anything into a trained chatbot you can query and chat with. AnythingLLM is a BYOK (bring-your-own-keys) software so there is no subscription, fee, or charges for this software outside of the services you want to use with it.",
@@ -99,13 +133,10 @@ const TRANSLATIONS = {
     starOnGithub: "Star on GitHub",
     contact: "Contact Mintplex Labs",
   },
-
   "new-workspace": {
     title: "Không gian làm việc mới",
     placeholder: "Không gian làm việc của tôi",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Cài đặt chung",
     chat: "Chat Settings",
@@ -113,8 +144,6 @@ const TRANSLATIONS = {
     members: "Members",
     agent: "Agent Configuration",
   },
-
-  // General Giao diện
   general: {
     vector: {
       title: "Vector Count",
@@ -150,8 +179,6 @@ const TRANSLATIONS = {
         "workspace. This will remove all vector embeddings in your vector database.\n\nThe original source files will remain untouched. This action is irreversible.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Workspace LLM Provider",
@@ -209,8 +236,6 @@ const TRANSLATIONS = {
       hint: "Most LLMs have various acceptable ranges of valid values. Consult your LLM provider for that information.",
     },
   },
-
-  // Cơ sở dữ liệu Vector
   "vector-workspace": {
     identifier: "Vector database identifier",
     snippets: {
@@ -237,8 +262,6 @@ const TRANSLATIONS = {
       success: "Workspace vector database was reset!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "Performance of LLMs that do not explicitly support tool-calling is highly dependent on the model's capabilities and accuracy. Some abilities may be limited or non-functional.",
@@ -258,7 +281,6 @@ const TRANSLATIONS = {
         "The specific LLM model that will be used for this workspace's @agent agent.",
       wait: "-- waiting for models --",
     },
-
     skill: {
       title: "Default agent skills",
       description:
@@ -297,8 +319,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Hội thoại không gian làm việc
   recorded: {
     title: "Hội thoại không gian làm việc",
     description:
@@ -313,8 +333,6 @@ const TRANSLATIONS = {
       at: "Sent At",
     },
   },
-
-  // Giao diện
   appearance: {
     title: "Giao diện",
     description: "Customize the appearance settings of your platform.",
@@ -345,8 +363,6 @@ const TRANSLATIONS = {
       link: "Link",
     },
   },
-
-  // Khóa API
   api: {
     title: "Khóa API",
     description:
@@ -359,14 +375,12 @@ const TRANSLATIONS = {
       created: "Created",
     },
   },
-
   llm: {
     title: "LLM Preference",
     description:
       "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else AnythingLLM will not function properly.",
     provider: "LLM Provider",
   },
-
   transcription: {
     title: "Chuyển đổi giọng nói Model Preference",
     description:
@@ -379,7 +393,6 @@ const TRANSLATIONS = {
     "warn-end":
       "The built-in model will automatically download on the first use.",
   },
-
   embedding: {
     title: "Tùy chọn nhúng",
     "desc-start":
@@ -392,7 +405,6 @@ const TRANSLATIONS = {
         "There is no set up required when using AnythingLLM's native embedding engine.",
     },
   },
-
   text: {
     title: "Tùy chọn chia nhỏ và tách văn bản",
     "desc-start":
@@ -408,15 +420,12 @@ const TRANSLATIONS = {
         "This is the maximum length of characters that can be present in a single vector.",
       recommend: "Embed model maximum length is",
     },
-
     overlap: {
       title: "Text Chunk Overlap",
       description:
         "This is the maximum overlap of characters that occurs during chunking between two adjacent text chunks.",
     },
   },
-
-  // Cơ sở dữ liệu Vector
   vector: {
     title: "Cơ sở dữ liệu Vector",
     description:
@@ -426,8 +435,6 @@ const TRANSLATIONS = {
       description: "There is no configuration needed for LanceDB.",
     },
   },
-
-  // Tiện ích hội thoại nhúng
   embeddable: {
     title: "Tiện ích hội thoại nhúng",
     description:
@@ -439,7 +446,6 @@ const TRANSLATIONS = {
       Active: "Active Domains",
     },
   },
-
   "embed-chats": {
     title: "Embed Chats",
     export: "Export",
@@ -453,7 +459,6 @@ const TRANSLATIONS = {
       at: "Sent At",
     },
   },
-
   multi: {
     title: "Multi-Người dùng Mode",
     description:
@@ -478,8 +483,6 @@ const TRANSLATIONS = {
       password: "Instance password",
     },
   },
-
-  // Nhật ký sự kiện
   event: {
     title: "Nhật ký sự kiện",
     description:
@@ -491,8 +494,6 @@ const TRANSLATIONS = {
       occurred: "Occurred At",
     },
   },
-
-  // Quyền riêng tư & Dữ liệu-Handling
   privacy: {
     title: "Quyền riêng tư & Dữ liệu-Handling",
     description:
@@ -503,5 +504,3 @@ const TRANSLATIONS = {
     anonymous: "Anonymous Telemetry Enabled",
   },
 };
-
-export default TRANSLATIONS;

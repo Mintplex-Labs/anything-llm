@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     survey: {
@@ -10,6 +11,41 @@ const TRANSLATIONS = {
       commentPlaceholder: null,
       skip: null,
       thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
     },
   },
   common: {
@@ -22,9 +58,10 @@ const TRANSLATIONS = {
     save: "שמור שינויים",
     previous: "עמוד קודם",
     next: "עמוד הבא",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "הגדרות מופע",
     system: "הגדרות כלליות",
@@ -53,8 +90,6 @@ const TRANSLATIONS = {
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "ברוכים הבאים ל-",
@@ -77,7 +112,6 @@ const TRANSLATIONS = {
       "back-to-login": "חזרה להתחברות",
     },
   },
-
   welcomeMessage: {
     part1:
       "ברוכים הבאים ל-AnythingLLM, AnythingLLM היא כלי AI קוד פתוח מאת Mintplex Labs שהופך כל דבר לצ'אטבוט מאומן שאפשר לשאול אותו ולקיים איתו שיחה. AnythingLLM הוא תוכנה מסוג BYOK (הביא את המפתחות שלך) כך שאין מנוי, עמלה או חיובים עבור התוכנה הזו מלבד השירותים שאתה רוצה להשתמש בהם.",
@@ -98,13 +132,10 @@ const TRANSLATIONS = {
     starOnGithub: "שים כוכב ב-GitHub",
     contact: "צור קשר עם Mintplex Labs",
   },
-
   "new-workspace": {
     title: "סביבת עבודה חדשה",
     placeholder: "סביבת העבודה שלי",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "הגדרות כלליות",
     chat: "הגדרות צ'אט",
@@ -112,8 +143,6 @@ const TRANSLATIONS = {
     members: "חברים",
     agent: "קונפיגורציה של סוכן",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "ספירת וקטורים",
@@ -148,8 +177,6 @@ const TRANSLATIONS = {
         "סביבת העבודה שלך. זה ימחק את כל הטבעות הווקטוריות בבסיס הנתונים הווקטורי שלך.\n\nקבצי המקור המקוריים יישארו ללא שינוי. פעולה זו היא בלתי הפיכה.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "ספק LLM של סביבת עבודה",
@@ -206,8 +233,6 @@ const TRANSLATIONS = {
       hint: "לרוב ה-LLM יש טווחים שונים של ערכים תקפים. התייעץ עם ספק ה-LLM שלך לקבלת מידע.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "מזהה בסיס נתונים וקטור",
     snippets: {
@@ -234,8 +259,6 @@ const TRANSLATIONS = {
       success: "בסיס הנתונים הווקטורי של סביבת העבודה איפס!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "ביצועי LLM שאינם תומכים באופן מפורש בקריאות כלים תלויים מאוד ביכולות ובדיוק של הדגם. חלק מהיכולות עשויות להיות מוגבלות או לא פונקציונליות.",
@@ -255,7 +278,6 @@ const TRANSLATIONS = {
         "דגם LLM ספציפי שייעשה בו שימוש עבור סוכן @agent של סביבת העבודה הזו.",
       wait: "-- מחכה לדגמים --",
     },
-
     skill: {
       title: "כישורי סוכן ברירת מחדל",
       description:
@@ -292,8 +314,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "שיחות סביבת עבודה",
     description:
@@ -308,8 +328,6 @@ const TRANSLATIONS = {
       at: "נשלח ב-",
     },
   },
-
-  // Appearance
   appearance: {
     title: "מראה",
     description: "התאם אישית את הגדרות המראה של הפלטפורמה שלך.",
@@ -340,8 +358,6 @@ const TRANSLATIONS = {
       link: "קישור",
     },
   },
-
-  // API Keys
   api: {
     title: "מפתחות API",
     description:
@@ -354,14 +370,12 @@ const TRANSLATIONS = {
       created: "נוצר",
     },
   },
-
   llm: {
     title: "העדפת LLM",
     description:
       "אלה אישורי ההרשאה וההגדרות עבור ספק צ'אט והטבעה LLM המועדף עליך. חשוב שאישורי ההרשאה יהיו עדכניים ונכונים אחרת AnythingLLM לא תוכל לפעול כראוי.",
     provider: "ספק LLM",
   },
-
   transcription: {
     title: "העדפת דגם תמלול",
     description:
@@ -373,7 +387,6 @@ const TRANSLATIONS = {
       "אנו ממליצים על לפחות 2GB של זיכרון RAM והעלאת קבצים <10Mb.",
     "warn-end": "הדגם המובנה יתורגם אוטומטית בפעם הראשונה שבה תשתמש בו.",
   },
-
   embedding: {
     title: "העדפת הטבעה",
     "desc-start":
@@ -386,7 +399,6 @@ const TRANSLATIONS = {
         "אין צורך בהגדרה בעת שימוש במנוע ההטבעה המקורי של AnythingLLM.",
     },
   },
-
   text: {
     title: "הגדרות חלוקת טקסט וחלוקה",
     "desc-start":
@@ -401,15 +413,12 @@ const TRANSLATIONS = {
       description: "זהו אורך הדמויות המרבי שיכול להיות נוכח בקטור יחיד.",
       recommend: "אורך מרבי של דגם ההטבעה הוא",
     },
-
     overlap: {
       title: "חפיפה של קטע טקסט",
       description:
         "זו החפיפה המרבית של הדמויות המתרחשת במהלך החלוקה בין שני קטעי טקסט סמוכים.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "בסיס נתונים וקטור",
     description:
@@ -419,8 +428,6 @@ const TRANSLATIONS = {
       description: "אין צורך בקונפיגורציה עבור LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "כלי צ'אט ניתנים להטמעה",
     description:
@@ -432,7 +439,6 @@ const TRANSLATIONS = {
       Active: "תחומים פעילים",
     },
   },
-
   "embed-chats": {
     title: "הטמעת שיחות",
     export: "ייצוא",
@@ -445,7 +451,6 @@ const TRANSLATIONS = {
       at: "נשלח ב-",
     },
   },
-
   multi: {
     title: "מצב משתמשים מרובים",
     description:
@@ -470,8 +475,6 @@ const TRANSLATIONS = {
       password: "סיסמת מופע",
     },
   },
-
-  // Event Logs
   event: {
     title: "יומני אירועים",
     description: "הצג את כל הפעולות והאירועים שקורים במופע זה לצורך ניטור.",
@@ -482,8 +485,6 @@ const TRANSLATIONS = {
       occurred: "התרחש ב-",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "פרטיות וטיפול בנתונים",
     description:
@@ -494,5 +495,3 @@ const TRANSLATIONS = {
     anonymous: "טלמטריה אנונימית מופעלת",
   },
 };
-
-export default TRANSLATIONS;
