@@ -233,7 +233,8 @@ export default function BlockList({
                         removeBlock(block.id);
                       }}
                       className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
-                      title="Delete block"
+                      data-tooltip-id="block-action"
+                      data-tooltip-content="Delete block"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
