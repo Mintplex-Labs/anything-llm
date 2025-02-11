@@ -30,6 +30,9 @@ const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
 
+// 서버 전체의 타임아웃을 환경변수에서 가져와서 설정
+const REQUEST_TIMEOUT = process.env.REQUEST_TIMEOUT || 600000; // 기본값 10분
+
 app.use(cors({ origin: true }));
 app.use(bodyParser.text({ limit: FILE_LIMIT }));
 app.use(bodyParser.json({ limit: FILE_LIMIT }));
@@ -39,6 +42,12 @@ app.use(
     extended: true,
   })
 );
+
+app.use((req, res, next) => {
+  req.setTimeout(REQUEST_TIMEOUT);
+  res.setTimeout(REQUEST_TIMEOUT);
+  next();
+});
 
 if (!!process.env.ENABLE_HTTPS) {
   bootSSL(app, process.env.SERVER_PORT || 3001);
