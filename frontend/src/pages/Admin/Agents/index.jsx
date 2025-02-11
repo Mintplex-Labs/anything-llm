@@ -180,6 +180,7 @@ export default function AdminAgents() {
   const handleFlowDelete = (flowId) => {
     setSelectedFlow(null);
     setActiveFlowIds((prev) => prev.filter((id) => id !== flowId));
+    setAgentFlows((prev) => prev.filter((flow) => flow.uuid !== flowId));
   };
 
   if (loading) {
