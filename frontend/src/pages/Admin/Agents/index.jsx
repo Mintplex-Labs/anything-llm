@@ -24,6 +24,7 @@ import AgentFlowsList from "./AgentFlows";
 import FlowPanel from "./AgentFlows/FlowPanel";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
+import AgentFlows from "@/models/agentFlows";
 
 export default function AdminAgents() {
   const formEl = useRef(null);
@@ -36,6 +37,8 @@ export default function AdminAgents() {
   const [agentSkills, setAgentSkills] = useState([]);
   const [importedSkills, setImportedSkills] = useState([]);
   const [disabledAgentSkills, setDisabledAgentSkills] = useState([]);
+
+  const [agentFlows, setAgentFlows] = useState([]);
   const [selectedFlow, setSelectedFlow] = useState(null);
   const [activeFlowIds, setActiveFlowIds] = useState([]);
 
@@ -62,6 +65,7 @@ export default function AdminAgents() {
         "imported_agent_skills",
         "active_agent_flows",
       ]);
+      const { flows = [] } = await AgentFlows.listFlows();
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
       setDisabledAgentSkills(
@@ -69,6 +73,7 @@ export default function AdminAgents() {
       );
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
       setActiveFlowIds(_preferences.settings?.active_agent_flows ?? []);
+      setAgentFlows(flows);
       setLoading(false);
     }
     fetchSettings();
@@ -258,9 +263,9 @@ export default function AdminAgents() {
               <p className="text-lg font-medium">Agent Flows</p>
             </div>
             <AgentFlowsList
+              flows={agentFlows}
               selectedFlow={selectedFlow}
               handleClick={handleFlowClick}
-              activeFlowIds={activeFlowIds}
             />
             <input
               type="hidden"
@@ -430,18 +435,20 @@ export default function AdminAgents() {
                   <FlowArrow size={24} />
                   <p className="text-lg font-medium">Agent Flows</p>
                 </div>
-                <Link
-                  to={paths.agents.builder()}
-                  className="text-theme-text-secondary hover:text-theme-text-primary transition-colors duration-200 flex items-center gap-x-2"
-                >
-                  <Hammer size={20} />
-                  <p className="text-sm">Open Builder</p>
-                </Link>
+                {agentFlows.length > 0 && (
+                  <Link
+                    to={paths.agents.builder()}
+                    className="text-theme-text-secondary hover:text-theme-text-primary transition-colors duration-200 flex items-center gap-x-2"
+                  >
+                    <Hammer size={20} />
+                    <p className="text-sm">Open Builder</p>
+                  </Link>
+                )}
               </div>
               <AgentFlowsList
+                flows={agentFlows}
                 selectedFlow={selectedFlow}
                 handleClick={handleFlowClick}
-                activeFlowIds={activeFlowIds}
               />
             </div>
           </div>

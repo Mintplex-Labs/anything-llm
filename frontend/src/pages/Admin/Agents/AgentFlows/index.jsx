@@ -1,32 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { CaretRight } from "@phosphor-icons/react";
-import AgentFlows from "@/models/agentFlows";
-import showToast from "@/utils/toast";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 
 export default function AgentFlowsList({
+  flows = [],
   selectedFlow,
   handleClick,
-  activeFlowIds = [],
 }) {
-  const [flows, setFlows] = useState([]);
-
-  useEffect(() => {
-    loadFlows();
-  }, [activeFlowIds]);
-
-  const loadFlows = async () => {
-    try {
-      const { success, error, flows } = await AgentFlows.listFlows();
-      if (!success) throw new Error(error);
-      setFlows(flows);
-    } catch (error) {
-      console.error("Failed to load flows:", error);
-      showToast("Failed to load agent flows", "error", { clear: true });
-    }
-  };
-
   if (flows.length === 0) {
     return (
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
