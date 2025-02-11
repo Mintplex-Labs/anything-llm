@@ -20,7 +20,7 @@ export default function AgentSidebar({
 
   return (
     <div className="w-80">
-      <div className="relative m-[16px] rounded-[16px] bg-theme-bg-secondary border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[5px] h-[calc(100%-35px)]">
+      <div className="relative m-[16px] rounded-[16px] bg-theme-bg-secondary border-[2px] border-theme-sidebar-border light:border-2 light:border-black/10 min-w-[250px] p-[5px] h-[calc(100%-35px)]">
         <div className="p-[10px]">
           <button
             onClick={() => navigate(paths.settings.agentSkills())}
