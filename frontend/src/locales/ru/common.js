@@ -508,3 +508,5 @@ const TRANSLATIONS = {
     anonymous: "Анонимная телеметрия включена",
   },
 };
+
+export default TRANSLATIONS;

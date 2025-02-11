@@ -507,3 +507,5 @@ const TRANSLATIONS = {
     anonymous: "Anonim Telemetri Etkin",
   },
 };
+
+export default TRANSLATIONS;

@@ -503,3 +503,5 @@ const TRANSLATIONS = {
     anonymous: "ارسال تله‌متری ناشناس فعال است",
   },
 };
+
+export default TRANSLATIONS;

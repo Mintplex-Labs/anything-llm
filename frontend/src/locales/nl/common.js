@@ -506,3 +506,5 @@ const TRANSLATIONS = {
     anonymous: "Anonieme Telemetrie Ingeschakeld",
   },
 };
+
+export default TRANSLATIONS;

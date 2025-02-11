@@ -495,3 +495,5 @@ const TRANSLATIONS = {
     anonymous: "익명 원격 분석 활성화",
   },
 };
+
+export default TRANSLATIONS;

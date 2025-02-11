@@ -495,3 +495,5 @@ const TRANSLATIONS = {
     anonymous: "טלמטריה אנונימית מופעלת",
   },
 };
+
+export default TRANSLATIONS;

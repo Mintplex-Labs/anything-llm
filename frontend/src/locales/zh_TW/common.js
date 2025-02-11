@@ -485,3 +485,5 @@ const TRANSLATIONS = {
     anonymous: "已啟用匿名統計資訊",
   },
 };
+
+export default TRANSLATIONS;

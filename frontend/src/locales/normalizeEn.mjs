@@ -137,7 +137,9 @@ for (const [lang, translations] of Object.entries(TRANSLATIONS)) {
   fs.writeFileSync(
     `./${langFilename}/common.js`,
     `// Anything with "null" requires a translation. Contribute to translation via a PR!
-const TRANSLATIONS = ${JSON.stringify(normalized, null, 2)}`
+const TRANSLATIONS = ${JSON.stringify(normalized, null, 2)}
+
+export default TRANSLATIONS;`
   );
 }
 

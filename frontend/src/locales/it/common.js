@@ -511,3 +511,5 @@ const TRANSLATIONS = {
     anonymous: "Telemetria anonima abilitata",
   },
 };
+
+export default TRANSLATIONS;

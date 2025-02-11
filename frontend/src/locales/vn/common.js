@@ -504,3 +504,5 @@ const TRANSLATIONS = {
     anonymous: "Anonymous Telemetry Enabled",
   },
 };
+
+export default TRANSLATIONS;
