@@ -185,7 +185,7 @@ export default function BlockList({
                     className: "w-4 h-4 text-white",
                   })}
                 </div>
-                <div className="flex-1 text-left min-w-0">
+                <div className="flex-1 text-left min-w-0 max-w-[115px]">
                   <span className="text-sm font-medium text-white block">
                     {BLOCK_INFO[block.type].label}
                   </span>
@@ -196,37 +196,35 @@ export default function BlockList({
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center">
                 {block.id !== "start" && block.type !== BLOCK_TYPES.FINISH && (
-                  <>
-                    <div className="flex items-center gap-1">
-                      {index > 1 && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            moveBlock(index, index - 1);
-                          }}
-                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
-                          data-tooltip-id="block-action"
-                          data-tooltip-content="Move block up"
-                        >
-                          <CaretUp className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                      {index < blocks.length - 2 && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            moveBlock(index, index + 1);
-                          }}
-                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
-                          data-tooltip-id="block-action"
-                          data-tooltip-content="Move block down"
-                        >
-                          <CaretDown className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
+                  <div className="flex items-center gap-1">
+                    {index > 1 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          moveBlock(index, index - 1);
+                        }}
+                        className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                        data-tooltip-id="block-action"
+                        data-tooltip-content="Move block up"
+                      >
+                        <CaretUp className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    {index < blocks.length - 2 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          moveBlock(index, index + 1);
+                        }}
+                        className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                        data-tooltip-id="block-action"
+                        data-tooltip-content="Move block down"
+                      >
+                        <CaretDown className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -238,7 +236,7 @@ export default function BlockList({
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
