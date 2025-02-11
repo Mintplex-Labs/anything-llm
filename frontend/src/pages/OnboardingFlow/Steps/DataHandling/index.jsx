@@ -40,10 +40,8 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const TITLE = "Data Handling & Privacy";
-const DESCRIPTION =
-  "We are committed to transparency and control when it comes to your personal data.";
 export const LLM_SELECTION_PRIVACY = {
   openai: {
     name: "OpenAI",
@@ -406,11 +404,15 @@ export const FALLBACKS = {
 };
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
+  const { t } = useTranslation();
   const [llmChoice, setLLMChoice] = useState("openai");
   const [loading, setLoading] = useState(true);
   const [vectorDb, setVectorDb] = useState("pinecone");
   const [embeddingEngine, setEmbeddingEngine] = useState("openai");
   const navigate = useNavigate();
+
+  const TITLE = t("onboarding.data.title");
+  const DESCRIPTION = t("onboarding.data.description");
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
@@ -515,7 +517,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
         </div>
       </div>
       <p className="text-theme-text-secondary text-sm font-medium py-1">
-        These settings can be reconfigured at any time in the settings.
+        {t("onboarding.data.settingsHint")}
       </p>
     </div>
   );
