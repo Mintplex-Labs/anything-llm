@@ -57,7 +57,9 @@ export default function ApiCallNode({
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-white mb-2">URL</label>
+        <label className="block text-sm font-medium text-theme-text-primary mb-2">
+          URL
+        </label>
         <div className="flex gap-2">
           <input
             ref={urlInputRef}
@@ -65,7 +67,7 @@ export default function ApiCallNode({
             placeholder="https://api.example.com/endpoint"
             value={config.url}
             onChange={(e) => onConfigChange({ url: e.target.value })}
-            className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+            className="flex-1 border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
             autoComplete="off"
             spellCheck={false}
           />
@@ -73,14 +75,14 @@ export default function ApiCallNode({
             <button
               ref={varButtonRef}
               onClick={() => setShowVarMenu(!showVarMenu)}
-              className="h-full px-3 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300 flex items-center gap-1"
+              className="h-full px-3 rounded-lg border-none bg-theme-settings-input-bg text-theme-text-primary hover:bg-theme-action-menu-item-hover transition-colors duration-300 flex items-center gap-1"
               title="Insert variable"
             >
               <Plus className="w-4 h-4" />
               <CaretDown className="w-3 h-3" />
             </button>
             {showVarMenu && (
-              <div className="absolute right-0 top-[calc(100%+4px)] w-48 bg-theme-bg-primary border border-white/5 rounded-lg shadow-lg z-10">
+              <div className="absolute right-0 top-[calc(100%+4px)] w-48 bg-theme-settings-input-bg border-none rounded-lg shadow-lg z-10">
                 {renderVariableSelect(
                   "",
                   insertVariableAtCursor,
@@ -94,16 +96,20 @@ export default function ApiCallNode({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-theme-text-primary mb-2">
           Method
         </label>
         <select
           value={config.method}
           onChange={(e) => onConfigChange({ method: e.target.value })}
-          className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+          className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
         >
           {["GET", "POST", "DELETE"].map((method) => (
-            <option key={method} value={method} className="bg-theme-bg-primary">
+            <option
+              key={method}
+              value={method}
+              className="bg-theme-settings-input-bg"
+            >
               {method}
             </option>
           ))}
@@ -112,10 +118,12 @@ export default function ApiCallNode({
 
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="text-sm font-medium text-white">Headers</label>
+          <label className="text-sm font-medium text-theme-text-primary">
+            Headers
+          </label>
           <button
             onClick={addHeader}
-            className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+            className="p-1.5 rounded-lg border-none bg-theme-settings-input-bg text-theme-text-primary hover:bg-theme-action-menu-item-hover transition-colors duration-300"
             title="Add header"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -131,7 +139,7 @@ export default function ApiCallNode({
                 onChange={(e) =>
                   handleHeaderChange(index, "key", e.target.value)
                 }
-                className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+                className="flex-1 border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
                 autoComplete="off"
                 spellCheck={false}
               />
@@ -142,13 +150,13 @@ export default function ApiCallNode({
                 onChange={(e) =>
                   handleHeaderChange(index, "value", e.target.value)
                 }
-                className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+                className="flex-1 border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
                 autoComplete="off"
                 spellCheck={false}
               />
               <button
                 onClick={() => removeHeader(index)}
-                className="p-2.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:text-red-500 hover:border-red-500/20 hover:bg-red-500/10 transition-colors duration-300"
+                className="p-2.5 rounded-lg border-none bg-theme-settings-input-bg text-theme-text-primary hover:text-red-500 hover:border-red-500/20 hover:bg-red-500/10 transition-colors duration-300"
                 title="Remove header"
               >
                 <X className="w-4 h-4" />
@@ -160,22 +168,31 @@ export default function ApiCallNode({
 
       {["POST", "PUT", "PATCH"].includes(config.method) && (
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-theme-text-primary mb-2">
             Request Body
           </label>
           <div className="space-y-2">
             <select
               value={config.bodyType || "json"}
               onChange={(e) => onConfigChange({ bodyType: e.target.value })}
-              className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+              className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-theme-text-primary focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none light:bg-theme-settings-input-bg light:border-black/10"
             >
-              <option value="json" className="bg-theme-bg-primary">
+              <option
+                value="json"
+                className="bg-theme-bg-primary light:bg-theme-settings-input-bg"
+              >
                 JSON
               </option>
-              <option value="text" className="bg-theme-bg-primary">
+              <option
+                value="text"
+                className="bg-theme-bg-primary light:bg-theme-settings-input-bg"
+              >
                 Raw Text
               </option>
-              <option value="form" className="bg-theme-bg-primary">
+              <option
+                value="form"
+                className="bg-theme-bg-primary light:bg-theme-settings-input-bg"
+              >
                 Form Data
               </option>
             </select>
@@ -184,7 +201,7 @@ export default function ApiCallNode({
                 placeholder='{"key": "value"}'
                 value={config.body}
                 onChange={(e) => onConfigChange({ body: e.target.value })}
-                className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none font-mono"
+                className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-theme-text-primary placeholder:text-theme-text-secondary/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none light:bg-theme-settings-input-bg light:border-black/10 font-mono"
                 rows={4}
                 autoComplete="off"
                 spellCheck={false}
@@ -202,7 +219,7 @@ export default function ApiCallNode({
                         newFormData[index] = { ...item, key: e.target.value };
                         onConfigChange({ formData: newFormData });
                       }}
-                      className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+                      className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-theme-text-primary placeholder:text-theme-text-secondary/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none light:bg-theme-settings-input-bg light:border-black/10"
                       autoComplete="off"
                       spellCheck={false}
                     />
@@ -215,7 +232,7 @@ export default function ApiCallNode({
                         newFormData[index] = { ...item, value: e.target.value };
                         onConfigChange({ formData: newFormData });
                       }}
-                      className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+                      className="flex-1 p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-theme-text-primary placeholder:text-theme-text-secondary/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none light:bg-theme-settings-input-bg light:border-black/10"
                       autoComplete="off"
                       spellCheck={false}
                     />
@@ -226,7 +243,7 @@ export default function ApiCallNode({
                         );
                         onConfigChange({ formData: newFormData });
                       }}
-                      className="p-2.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:text-red-500 hover:border-red-500/20 hover:bg-red-500/10 transition-colors duration-300"
+                      className="p-2.5 rounded-lg bg-theme-bg-primary border border-white/5 text-theme-text-primary hover:text-red-500 hover:border-red-500/20 hover:bg-red-500/10 transition-colors duration-300 light:bg-theme-settings-input-bg light:border-black/10"
                       title="Remove field"
                     >
                       <X className="w-4 h-4" />
@@ -241,7 +258,7 @@ export default function ApiCallNode({
                     ];
                     onConfigChange({ formData: newFormData });
                   }}
-                  className="w-full p-2.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300 text-sm"
+                  className="w-full p-2.5 rounded-lg border-none bg-theme-settings-input-bg text-theme-text-primary hover:bg-theme-action-menu-item-hover transition-colors duration-300 text-sm"
                 >
                   Add Form Field
                 </button>
@@ -251,7 +268,7 @@ export default function ApiCallNode({
                 placeholder="Raw request body..."
                 value={config.body}
                 onChange={(e) => onConfigChange({ body: e.target.value })}
-                className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white placeholder:text-white/20 focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+                className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
                 rows={4}
                 autoComplete="off"
                 spellCheck={false}
@@ -262,7 +279,7 @@ export default function ApiCallNode({
       )}
 
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-theme-text-primary mb-2">
           Store Response In
         </label>
         {renderVariableSelect(

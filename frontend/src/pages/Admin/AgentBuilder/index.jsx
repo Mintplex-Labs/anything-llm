@@ -190,7 +190,7 @@ export default function AgentBuilder() {
     <select
       value={value || ""}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full p-2.5 text-sm rounded-lg bg-theme-bg-primary border border-white/5 text-white focus:border-primary-button focus:ring-1 focus:ring-primary-button outline-none"
+      className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
     >
       <option value="" className="bg-theme-bg-primary">
         {placeholder}
