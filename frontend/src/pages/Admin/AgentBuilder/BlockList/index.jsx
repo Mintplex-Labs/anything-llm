@@ -9,6 +9,7 @@ import {
   Play,
   Flag,
 } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 import StartNode from "../nodes/StartNode";
 import ApiCallNode from "../nodes/ApiCallNode";
 import WebsiteNode from "../nodes/WebsiteNode";
@@ -206,7 +207,8 @@ export default function BlockList({
                             moveBlock(index, index - 1);
                           }}
                           className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
-                          title="Move up"
+                          data-tooltip-id="block-action"
+                          data-tooltip-content="Move block up"
                         >
                           <CaretUp className="w-3.5 h-3.5" />
                         </button>
@@ -218,7 +220,8 @@ export default function BlockList({
                             moveBlock(index, index + 1);
                           }}
                           className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
-                          title="Move down"
+                          data-tooltip-id="block-action"
+                          data-tooltip-content="Move block down"
                         >
                           <CaretDown className="w-3.5 h-3.5" />
                         </button>
@@ -272,6 +275,12 @@ export default function BlockList({
           )}
         </div>
       ))}
+      <Tooltip
+        id="block-action"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
     </div>
   );
 }
