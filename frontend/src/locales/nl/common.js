@@ -1,4 +1,17 @@
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+    },
+  },
   common: {
     "workspaces-name": "Werkruimten Naam",
     error: "fout",

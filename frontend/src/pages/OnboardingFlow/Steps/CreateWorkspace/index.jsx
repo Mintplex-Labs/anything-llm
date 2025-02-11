@@ -6,19 +6,17 @@ import { useNavigate } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import { useTranslation } from "react-i18next";
 
-const TITLE = "Create your first workspace";
-const DESCRIPTION =
-  "Create your first workspace and get started with AnythingLLM.";
-
 export default function CreateWorkspace({
   setHeader,
   setForwardBtn,
   setBackBtn,
 }) {
+  const { t } = useTranslation();
   const [workspaceName, setWorkspaceName] = useState("");
   const navigate = useNavigate();
   const createWorkspaceRef = useRef();
-  const { t } = useTranslation();
+  const TITLE = t("onboarding.workspace.title");
+  const DESCRIPTION = t("onboarding.workspace.description");
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
