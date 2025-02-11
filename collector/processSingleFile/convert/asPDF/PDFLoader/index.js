@@ -1,7 +1,6 @@
 const fs = require("fs").promises;
 const path = require("path");
 const os = require("os");  // 임시 폴더 사용 예시
-const { getOcrTextForPage } = require("./ocrEngine");
 const PdfOcrLoader = require("./pdf-ocr-loader.js");
 
 class PDFLoader {
@@ -29,54 +28,21 @@ class PDFLoader {
     const meta = await pdf.getMetadata().catch(() => null);
     const documents = [];
 
-    for (let i = 1; i <= pdf.numPages; i += 1) {
-      const page = await pdf.getPage(i);
-      // const content = await page.getTextContent();
-
-      // if (content.items.length === 0) {
-      //   continue;
-      // }
-
-      // let lastY;
-      // const textItems = [];
-      // for (const item of content.items) {
-      //   if ("str" in item) {
-      //     if (lastY === item.transform[5] || !lastY) {
-      //       textItems.push(item.str);
-      //     } else {
-      //       textItems.push(`\n${item.str}`);
-      //     }
-      //     lastY = item.transform[5];
-      //   }
-      // }
-
-      if (!page) {
-        continue;
-      }
-
-      // const tempDir = path.join(os.tmpdir(), "pdf-ocr");
-      // const textFromOcr = await getOcrTextForPage(this.filePath, i, tempDir, "kor");
-
-      const textFromOcr = await this.loader.loadPage(i, true);
-      if (!textFromOcr || !textFromOcr.trim().length) {
-        continue;
-      }
-
-      //const text = textItems.join("");
-      documents.push({
-        // pageContent: text.trim(),
-        pageContent: textFromOcr.trim(),
-        metadata: {
-          source: this.filePath,
-          pdf: {
-            version,
-            info: meta?.info,
-            metadata: meta?.metadata,
-            totalPages: pdf.numPages,
-          },
-          loc: { pageNumber: i },
-        },
-      });
+    // 페이지 번호 배열 생성
+    const pageNumbers = Array.from({ length: pdf.numPages }, (_, i) => i + 1);
+    
+    // 5개씩 동시 처리
+    const chunkSize = 5;
+    for (let i = 0; i < pageNumbers.length; i += chunkSize) {
+      const chunk = pageNumbers.slice(i, i + chunkSize);
+      console.log(`Processing pages ${chunk.join(', ')}...`);
+      
+      const chunkPromises = chunk.map(pageNum => 
+        this.processPage(pdf, pageNum, version, meta)
+      );
+      
+      const results = await Promise.all(chunkPromises);
+      documents.push(...results.filter(doc => doc !== null));
     }
 
     if (this.splitPages) {
@@ -87,9 +53,33 @@ class PDFLoader {
       return [];
     }
 
-    return [
-      {
-        pageContent: documents.map((doc) => doc.pageContent).join("\n\n"),
+    return [{
+      pageContent: documents.map((doc) => doc.pageContent).join("\n\n"),
+      metadata: {
+        source: this.filePath,
+        pdf: {
+          version,
+          info: meta?.info,
+          metadata: meta?.metadata,
+          totalPages: pdf.numPages,
+        },
+      },
+    }];
+  }
+
+  // 각 페이지 처리를 위한 새로운 메서드
+  async processPage(pdf, pageNum, version, meta) {
+    try {
+      const page = await pdf.getPage(pageNum);
+      if (!page) return null;
+
+      const textFromOcr = await this.loader.loadPage(pageNum, true);
+      if (!textFromOcr || !textFromOcr.trim().length) {
+        return null;
+      }
+
+      return {
+        pageContent: textFromOcr.trim(),
         metadata: {
           source: this.filePath,
           pdf: {
@@ -98,9 +88,13 @@ class PDFLoader {
             metadata: meta?.metadata,
             totalPages: pdf.numPages,
           },
+          loc: { pageNumber: pageNum },
         },
-      },
-    ];
+      };
+    } catch (error) {
+      console.error(`Error processing page ${pageNum}:`, error);
+      return null;
+    }
   }
 
   async getPdfJS() {
