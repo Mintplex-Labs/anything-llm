@@ -6,9 +6,9 @@ import {
   Globe,
   Browser,
   Brain,
-  Play,
   Flag,
   Info,
+  BracketsCurly,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import StartNode from "../nodes/StartNode";
@@ -35,7 +35,7 @@ const BLOCK_TYPES = {
 
 const BLOCK_INFO = {
   [BLOCK_TYPES.FLOW_INFO]: {
-    label: "Flow Info",
+    label: "Flow Infomation",
     icon: <Info className="w-5 h-5 text-theme-text-primary" />,
     description: "Basic flow information",
     defaultConfig: {
@@ -45,8 +45,8 @@ const BLOCK_INFO = {
     getSummary: (config) => config.name || "Untitled Flow",
   },
   [BLOCK_TYPES.START]: {
-    label: "Flow Start",
-    icon: <Play className="w-5 h-5 text-theme-text-primary" />,
+    label: "Flow Variables",
+    icon: <BracketsCurly className="w-5 h-5 text-theme-text-primary" />,
     description: "Configure agent variables and settings",
     getSummary: (config) => {
       const varCount = config.variables?.filter((v) => v.name)?.length || 0;

@@ -1,8 +1,15 @@
-import { CaretDown, CaretUp, Plus, FloppyDisk } from "@phosphor-icons/react";
+import {
+  CaretDown,
+  CaretUp,
+  Plus,
+  FloppyDisk,
+  BookOpen,
+} from "@phosphor-icons/react";
 import AnythingInfinityLogo from "@/media/logo/anything-llm-infinity.png";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import paths from "@/utils/paths";
+import { Link } from "react-router-dom";
 
 export default function HeaderMenu({
   agentName,
@@ -31,7 +38,7 @@ export default function HeaderMenu({
   }, []);
 
   return (
-    <div className="absolute top-4 left-4 right-4 pointer-events-none">
+    <div className="absolute top-4 left-4 right-4">
       <div className="flex justify-between items-center max-w-[1700px] mx-auto">
         <div
           className="flex items-center bg-theme-settings-input-bg rounded-md border border-white/10 pointer-events-auto"
@@ -39,7 +46,7 @@ export default function HeaderMenu({
         >
           <button
             onClick={() => navigate(paths.settings.agentSkills())}
-            className="flex items-center gap-x-2 px-4 py-2 border-r border-white/10 hover:bg-theme-action-menu-bg transition-colors duration-300"
+            className="border-y-none border-l-none flex items-center gap-x-2 px-4 py-2 border-r border-white/10 hover:bg-theme-action-menu-bg transition-colors duration-300"
           >
             <img
               src={AnythingInfinityLogo}
@@ -53,7 +60,7 @@ export default function HeaderMenu({
           <div className="relative">
             <button
               disabled={!hasOtherFlows}
-              className="flex items-center justify-between gap-x-1 text-theme-text-primary text-sm px-4 py-2 enabled:hover:bg-theme-action-menu-bg transition-colors duration-300 min-w-[200px] max-w-[300px]"
+              className="border-none flex items-center justify-between gap-x-1 text-theme-text-primary text-sm px-4 py-2 enabled:hover:bg-theme-action-menu-bg transition-colors duration-300 min-w-[200px] max-w-[300px]"
               onClick={() => {
                 if (!agentName && !hasOtherFlows) {
                   const agentNameInput = document.getElementById(
@@ -88,7 +95,7 @@ export default function HeaderMenu({
                         navigate(paths.agents.editAgent(flow.uuid));
                         setShowDropdown(false);
                       }}
-                      className="w-full text-left px-2 py-1 text-sm text-theme-text-primary hover:bg-theme-action-menu-bg transition-colors duration-300"
+                      className="border-none w-full text-left px-2 py-1 text-sm text-theme-text-primary hover:bg-theme-action-menu-bg transition-colors duration-300"
                     >
                       <span className="block truncate">
                         {flow?.name || "Untitled Flow"}
@@ -100,20 +107,28 @@ export default function HeaderMenu({
           </div>
         </div>
 
-        <div className="flex items-center gap-x-[15px] pointer-events-auto">
-          <button
-            onClick={onNewFlow}
-            className="flex items-center gap-x-2 text-theme-text-primary text-sm font-medium px-3 py-2 rounded-lg border border-white bg-theme-settings-input-bg hover:bg-theme-action-menu-bg transition-colors duration-300"
+        <div className="flex flex-col gap-y-1 items-end">
+          <div className="flex items-center gap-x-[15px]">
+            <button
+              onClick={onNewFlow}
+              className="flex items-center gap-x-2 text-theme-text-primary text-sm font-medium px-3 py-2 rounded-lg border border-white bg-theme-settings-input-bg hover:bg-theme-action-menu-bg transition-colors duration-300"
+            >
+              <Plus className="w-4 h-4" />
+              New Flow
+            </button>
+            <button
+              onClick={onSaveFlow}
+              className="border-none bg-primary-button hover:opacity-80 text-black px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              Save
+            </button>
+          </div>
+          <Link
+            to="https://docs.anythingllm.com/agent-flows/overview"
+            className="text-theme-text-secondary text-sm hover:underline hover:text-cta-button flex items-center gap-x-1 w-fit float-right"
           >
-            <Plus className="w-4 h-4" />
-            New Flow
-          </button>
-          <button
-            onClick={onSaveFlow}
-            className="bg-primary-button hover:opacity-80 text-black px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2"
-          >
-            Save
-          </button>
+            view documentation &rarr;
+          </Link>
         </div>
       </div>
     </div>
