@@ -73,7 +73,6 @@ function ManageFlowMenu({ flow, onDelete }) {
 export default function FlowPanel({ flow, toggleFlow, onDelete }) {
   const [isActive, setIsActive] = useState(flow.active);
 
-  // Keep local state in sync with flow.active when flow changes
   useEffect(() => {
     setIsActive(flow.active);
   }, [flow.uuid, flow.active]);
