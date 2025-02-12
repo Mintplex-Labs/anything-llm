@@ -46,9 +46,9 @@ export default function Tooltip({ legendColor, ...props }) {
       {...props}
       content={({ active, payload, label }) => {
         return active && payload ? (
-          <div className="bg-white text-sm rounded-md border shadow-lg">
+          <div className="bg-theme-bg-primary text-sm rounded-md border shadow-lg">
             <div className="border-b py-2 px-4">
-              <p className="text-elem text-gray-700 font-medium">{label}</p>
+              <p className="text-theme-bg-primary font-medium">{label}</p>
             </div>
             <div className="space-y-1 py-2 px-4">
               {payload.map(({ value, name }, idx) => (
@@ -58,7 +58,7 @@ export default function Tooltip({ legendColor, ...props }) {
                 >
                   <div className="flex items-center space-x-2">
                     <span
-                      className="shrink-0 h-3 w-3 border-white rounded-md rounded-full border-2 shadow-md"
+                      className="shrink-0 h-3 w-3 border-theme-bg-primary rounded-md rounded-full border-2 shadow-md"
                       style={{ backgroundColor: legendColor }}
                     />
                     <p

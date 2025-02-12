@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "Nome dos Workspaces",
     error: "erro",
@@ -9,9 +58,10 @@ const TRANSLATIONS = {
     save: "Salvar alterações",
     previous: "Página Anterior",
     next: "Próxima Página",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Configurações da Instância",
     system: "Configurações Gerais",
@@ -40,8 +90,6 @@ const TRANSLATIONS = {
     contact: "Contato com Suporte",
     "browser-extension": "Extensão do navegador",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Bem-vindo ao",
@@ -65,7 +113,6 @@ const TRANSLATIONS = {
       "back-to-login": "Voltar ao Login",
     },
   },
-
   welcomeMessage: {
     part1:
       "Bem-vindo ao AnythingLLM, AnythingLLM é uma ferramenta de IA de código aberto da Mintplex Labs que transforma qualquer coisa em um chatbot treinado que você pode consultar e conversar. AnythingLLM é um software BYOK (bring-your-own-keys | traga suas próprias chaves), portanto, não há assinatura, taxa ou cobranças para este software fora dos serviços que você deseja usar com ele.",
@@ -87,13 +134,10 @@ const TRANSLATIONS = {
     starOnGithub: "Dar estrela no GitHub",
     contact: "Contato Mintplex Labs",
   },
-
   "new-workspace": {
     title: "Novo Workspace",
     placeholder: "Meu Workspace",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Configurações Gerais",
     chat: "Configurações de Chat",
@@ -101,8 +145,6 @@ const TRANSLATIONS = {
     members: "Membros",
     agent: "Configuração do Agente",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Contagem de Vetores",
@@ -138,8 +180,6 @@ const TRANSLATIONS = {
         "workspace. Isso removerá todas as incorporações vetoriais no seu banco de dados vetorial.\n\nOs arquivos de origem originais permanecerão intactos. Esta ação é irreversível.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Provedor de LLM do Workspace",
@@ -197,8 +237,6 @@ const TRANSLATIONS = {
       hint: "A maioria dos LLMs tem vários intervalos aceitáveis de valores válidos. Consulte seu provedor de LLM para essa informação.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Identificador do Banco de Dados Vetorial",
     snippets: {
@@ -226,8 +264,6 @@ const TRANSLATIONS = {
         "O banco de dados vetorial do workspace foi redefinido com sucesso!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "O desempenho dos LLMs que não suportam explicitamente a chamada de ferramentas depende muito das capacidades e da precisão do modelo. Algumas habilidades podem ser limitadas ou não funcionais.",
@@ -247,7 +283,6 @@ const TRANSLATIONS = {
         "O modelo de LLM específico que será usado para o agente @agent deste workspace.",
       wait: "-- aguardando modelos --",
     },
-
     skill: {
       title: "Habilidades padrão do agente",
       description:
@@ -286,8 +321,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Chats do Workspace",
     description:
@@ -302,8 +335,6 @@ const TRANSLATIONS = {
       at: "Enviado Em",
     },
   },
-
-  // Appearance
   appearance: {
     title: "Aparência",
     description: "Personalize as configurações de aparência da sua plataforma.",
@@ -336,8 +367,6 @@ const TRANSLATIONS = {
       link: "Link",
     },
   },
-
-  // API Keys
   api: {
     title: "Chaves API",
     description:
@@ -350,14 +379,12 @@ const TRANSLATIONS = {
       created: "Criado",
     },
   },
-
   llm: {
     title: "Preferência de LLM",
     description:
       "Estas são as credenciais e configurações para seu provedor preferido de chat e incorporação de LLM. É importante que essas chaves estejam atualizadas e corretas, caso contrário, o AnythingLLM não funcionará corretamente.",
     provider: "Provedor de LLM",
   },
-
   transcription: {
     title: "Preferência de Modelo de Transcrição",
     description:
@@ -370,7 +397,6 @@ const TRANSLATIONS = {
     "warn-end":
       "O modelo embutido será baixado automaticamente no primeiro uso.",
   },
-
   embedding: {
     title: "Preferência de Incorporação",
     "desc-start":
@@ -383,7 +409,6 @@ const TRANSLATIONS = {
         "Não é necessária configuração ao usar o mecanismo de incorporação nativo do AnythingLLM.",
     },
   },
-
   text: {
     title: "Preferências de Divisão e Fragmentação de Texto",
     "desc-start":
@@ -399,15 +424,12 @@ const TRANSLATIONS = {
         "Este é o comprimento máximo de caracteres que pode estar presente em um único vetor.",
       recommend: "O comprimento máximo do modelo de incorporação é",
     },
-
     overlap: {
       title: "Sobreposição de Fragmento de Texto",
       description:
         "Esta é a sobreposição máxima de caracteres que ocorre durante a fragmentação entre dois fragmentos de texto adjacentes.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Banco de Dados Vetorial",
     description:
@@ -417,8 +439,6 @@ const TRANSLATIONS = {
       description: "Não há configuração necessária para o LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Widgets de Chat Incorporáveis",
     description:
@@ -430,7 +450,6 @@ const TRANSLATIONS = {
       Active: "Domínios Ativos",
     },
   },
-
   "embed-chats": {
     title: "Incorporar Chats",
     export: "Exportar",
@@ -444,7 +463,6 @@ const TRANSLATIONS = {
       at: "Enviado Em",
     },
   },
-
   multi: {
     title: "Modo Multiusuário",
     description:
@@ -469,8 +487,6 @@ const TRANSLATIONS = {
       password: "Senha da instância",
     },
   },
-
-  // Event Logs
   event: {
     title: "Logs de Eventos",
     description:
@@ -482,8 +498,6 @@ const TRANSLATIONS = {
       occurred: "Ocorreu Em",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Privacidade e Tratamento de Dados",
     description:

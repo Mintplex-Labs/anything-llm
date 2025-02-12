@@ -1,4 +1,62 @@
 const TRANSLATIONS = {
+  onboarding: {
+    home: {
+      title: "Welcome to",
+      getStarted: "Get Started",
+    },
+    llm: {
+      title: "LLM Preference",
+      description:
+        "AnythingLLM can work with many LLM providers. This will be the service which handles chatting.",
+    },
+    userSetup: {
+      title: "User Setup",
+      description: "Configure your user settings.",
+      howManyUsers: "How many users will be using this instance?",
+      justMe: "Just me",
+      myTeam: "My team",
+      instancePassword: "Instance Password",
+      setPassword: "Would you like to set up a password?",
+      passwordReq: "Passwords must be at least 8 characters.",
+      passwordWarn:
+        "It's important to save this password because there is no recovery method.",
+
+      adminUsername: "Admin account username",
+      adminUsernameReq:
+        "Username must be at least 6 characters long and only contain lowercase letters, numbers, underscores, and hyphens with no spaces.",
+      adminPassword: "Admin account password",
+      adminPasswordReq: "Passwords must be at least 8 characters.",
+      teamHint:
+        "By default, you will be the only admin. Once onboarding is completed you can create and invite others to be users or admins. Do not lose your password as only admins can reset passwords.",
+    },
+    data: {
+      title: "Data Handling & Privacy",
+      description:
+        "We are committed to transparency and control when it comes to your personal data.",
+      settingsHint:
+        "These settings can be reconfigured at any time in the settings.",
+    },
+    survey: {
+      title: "Welcome to AnythingLLM",
+      description: "Help us make AnythingLLM built for your needs. Optional.",
+
+      email: "What's your email?",
+      useCase: "What will you use AnythingLLM for?",
+      useCaseWork: "For work",
+      useCasePersonal: "For personal use",
+      useCaseOther: "Other",
+      comment: "How did you hear about AnythingLLM?",
+      commentPlaceholder:
+        "Reddit, Twitter, GitHub, YouTube, etc. - Let us know how you found us!",
+      skip: "Skip Survey",
+      thankYou: "Thank you for your feedback!",
+    },
+    workspace: {
+      title: "Create your first workspace",
+      description:
+        "Create your first workspace and get started with AnythingLLM.",
+    },
+  },
   common: {
     "workspaces-name": "Workspaces Name",
     error: "error",
@@ -9,6 +67,9 @@ const TRANSLATIONS = {
     save: "Save changes",
     previous: "Previous Page",
     next: "Next Page",
+    optional: "Optional",
+    yes: "Yes",
+    no: "No",
   },
 
   // Setting Sidebar menu items.

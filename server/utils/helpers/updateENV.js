@@ -35,6 +35,15 @@ const KEY_MAPPING = {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  AzureOpenAiModelType: {
+    envKey: "AZURE_OPENAI_MODEL_TYPE",
+    checks: [
+      (input) =>
+        ["default", "reasoning"].includes(input)
+          ? null
+          : "Invalid model type. Must be one of: default, reasoning.",
+    ],
+  },
 
   // Anthropic Settings
   AnthropicApiKey: {

@@ -836,6 +836,10 @@ does not extend the close button beyond the viewport. */
   fill: #fff;
 }
 
+[data-theme="light"] .recharts-text > * {
+  fill: #000;
+}
+
 .recharts-legend-wrapper {
   margin-bottom: 10px;
 }
