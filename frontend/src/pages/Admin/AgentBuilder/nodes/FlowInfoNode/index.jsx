@@ -18,7 +18,7 @@ const FlowInfoNode = forwardRef(({ config, onConfigChange }, refs) => {
           id="agent-flow-name-input"
           ref={refs?.nameRef}
           type="text"
-          placeholder="Enter flow name..."
+          placeholder="Enter flow name"
           value={config?.name || ""}
           onChange={(e) =>
             onConfigChange({
@@ -54,7 +54,7 @@ const FlowInfoNode = forwardRef(({ config, onConfigChange }, refs) => {
           }
           className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
           rows={3}
-          placeholder="Enter flow description..."
+          placeholder="Enter flow description"
         />
       </div>
     </div>
