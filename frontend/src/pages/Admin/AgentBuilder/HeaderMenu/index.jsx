@@ -1,19 +1,21 @@
 import { CaretDown, CaretUp, Plus, FloppyDisk } from "@phosphor-icons/react";
 import AnythingInfinityLogo from "@/media/logo/anything-llm-infinity.png";
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 
 export default function HeaderMenu({
   agentName,
-  availableFlows,
-  onLoadFlow,
+  availableFlows = [],
   onNewFlow,
   onSaveFlow,
 }) {
+  const { flowId = null } = useParams();
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+  const hasOtherFlows =
+    availableFlows.filter((flow) => flow.uuid !== flowId).length > 0;
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -50,33 +52,49 @@ export default function HeaderMenu({
           </button>
           <div className="relative">
             <button
-              className="flex items-center justify-between gap-x-1 text-theme-text-primary text-sm px-4 py-3 hover:bg-theme-action-menu-item-hover transition-colors duration-300 min-w-[200px] max-w-[300px]"
-              onClick={() => setShowDropdown(!showDropdown)}
+              disabled={!!agentName && !hasOtherFlows}
+              className="flex items-center justify-between gap-x-1 text-theme-text-primary text-sm px-4 py-3 not:disabled:hover:bg-theme-action-menu-item-hover transition-colors duration-300 min-w-[200px] max-w-[300px]"
+              onClick={() => {
+                if (!agentName && !hasOtherFlows) {
+                  const agentNameInput = document.getElementById(
+                    "agent-flow-name-input"
+                  );
+                  if (agentNameInput) agentNameInput.focus();
+                  return;
+                }
+                setShowDropdown(!showDropdown);
+              }}
             >
-              <span className="text-theme-text-primary text-sm font-medium truncate">
-                {agentName || "-----------------"}
+              <span
+                className={`text-sm font-medium truncate ${!!agentName ? "text-theme-text-primary " : "text-theme-text-secondary"}`}
+              >
+                {agentName || "Untitled Flow"}
               </span>
-              <div className="flex flex-col ml-2 shrink-0">
-                <CaretUp size={10} />
-                <CaretDown size={10} />
-              </div>
+              {hasOtherFlows && (
+                <div className="flex flex-col ml-2 shrink-0">
+                  <CaretUp size={10} />
+                  <CaretDown size={10} />
+                </div>
+              )}
             </button>
             {showDropdown && (
               <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] max-w-[300px] bg-theme-action-menu-bg border border-white/10 rounded-md shadow-lg z-50 animate-fadeUpIn">
-                {availableFlows?.map((flow) => (
-                  <button
-                    key={flow?.uuid || Math.random()}
-                    onClick={() => {
-                      onLoadFlow(flow.uuid);
-                      setShowDropdown(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-theme-text-primary hover:bg-theme-action-menu-item-hover transition-colors duration-300"
-                  >
-                    <span className="block truncate">
-                      {flow?.name || "Untitled Flow"}
-                    </span>
-                  </button>
-                ))}
+                {availableFlows
+                  .filter((flow) => flow.uuid !== flowId)
+                  .map((flow) => (
+                    <button
+                      key={flow?.uuid || Math.random()}
+                      onClick={() => {
+                        navigate(paths.agents.editAgent(flow.uuid));
+                        setShowDropdown(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-theme-text-primary hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                    >
+                      <span className="block truncate">
+                        {flow?.name || "Untitled Flow"}
+                      </span>
+                    </button>
+                  ))}
               </div>
             )}
           </div>

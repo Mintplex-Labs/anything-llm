@@ -15,6 +15,7 @@ const FlowInfoNode = forwardRef(({ config, onConfigChange }, refs) => {
           <p>"SendMessageToDiscord", "CheckStockPrice", "CheckWeather"</p>
         </div>
         <input
+          id="agent-flow-name-input"
           ref={refs?.nameRef}
           type="text"
           placeholder="Enter flow name..."

@@ -11,6 +11,7 @@ import {
   Robot,
   Hammer,
   FlowArrow,
+  PlusCircle,
 } from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
@@ -436,12 +437,20 @@ export default function AdminAgents() {
                   <FlowArrow size={24} />
                   <p className="text-lg font-medium">Agent Flows</p>
                 </div>
-                {agentFlows.length > 0 && (
+                {agentFlows.length === 0 ? (
                   <Link
                     to={paths.agents.builder()}
-                    className="text-theme-text-secondary hover:text-theme-text-primary transition-colors duration-200 flex items-center gap-x-2"
+                    className="text-cta-button flex items-center gap-x-1 hover:underline"
                   >
-                    <Hammer size={20} />
+                    <Hammer size={16} />
+                    <p className="text-sm">Create Flow</p>
+                  </Link>
+                ) : (
+                  <Link
+                    to={paths.agents.builder()}
+                    className="text-theme-text-secondary hover:text-cta-button flex items-center gap-x-1"
+                  >
+                    <Hammer size={16} />
                     <p className="text-sm">Open Builder</p>
                   </Link>
                 )}

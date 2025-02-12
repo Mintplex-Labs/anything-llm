@@ -1,46 +1,49 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import BlockList, { BLOCK_TYPES, BLOCK_INFO } from "./BlockList";
 import AddBlockMenu from "./AddBlockMenu";
 import showToast from "@/utils/toast";
 import AgentFlows from "@/models/agentFlows";
-import LoadFlowMenu from "./LoadFlowMenu";
 import { useTheme } from "@/hooks/useTheme";
 import HeaderMenu from "./HeaderMenu";
+import paths from "@/utils/paths";
+
+const DEFAULT_BLOCKS = [
+  {
+    id: "flow_info",
+    type: BLOCK_TYPES.FLOW_INFO,
+    config: {
+      name: "",
+      description: "",
+    },
+    isExpanded: true,
+  },
+  {
+    id: "start",
+    type: BLOCK_TYPES.START,
+    config: {
+      variables: [{ name: "", value: "" }],
+    },
+    isExpanded: true,
+  },
+  {
+    id: "finish",
+    type: BLOCK_TYPES.FINISH,
+    config: {},
+    isExpanded: false,
+  },
+];
 
 export default function AgentBuilder() {
   const { flowId } = useParams();
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const [agentName, setAgentName] = useState("");
-  const [agentDescription, setAgentDescription] = useState("");
+  const [_, setAgentDescription] = useState("");
   const [currentFlowUuid, setCurrentFlowUuid] = useState(null);
   const [active, setActive] = useState(true);
-  const [blocks, setBlocks] = useState([
-    {
-      id: "flow_info",
-      type: BLOCK_TYPES.FLOW_INFO,
-      config: {
-        name: "",
-        description: "",
-      },
-      isExpanded: true,
-    },
-    {
-      id: "start",
-      type: BLOCK_TYPES.START,
-      config: {
-        variables: [{ name: "", value: "" }],
-      },
-      isExpanded: true,
-    },
-    {
-      id: "finish",
-      type: BLOCK_TYPES.FINISH,
-      config: {},
-      isExpanded: false,
-    },
-  ]);
+  const [blocks, setBlocks] = useState(DEFAULT_BLOCKS);
   const [selectedBlock, setSelectedBlock] = useState("start");
   const [showBlockMenu, setShowBlockMenu] = useState(false);
   const [showLoadMenu, setShowLoadMenu] = useState(false);
@@ -117,8 +120,6 @@ export default function AgentBuilder() {
       setCurrentFlowUuid(flow.uuid);
       setBlocks(flowBlocks);
       setShowLoadMenu(false);
-
-      showToast("Flow loaded successfully!", "success", { clear: true });
     } catch (error) {
       console.error(error);
       showToast("Failed to load flow", "error", { clear: true });
@@ -300,35 +301,12 @@ export default function AgentBuilder() {
   // };
 
   const clearFlow = () => {
+    if (!!flowId) navigate(paths.agents.builder());
     setAgentName("");
     setAgentDescription("");
     setCurrentFlowUuid(null);
     setActive(true);
-    setBlocks([
-      {
-        id: "flow_info",
-        type: BLOCK_TYPES.FLOW_INFO,
-        config: {
-          name: "",
-          description: "",
-        },
-        isExpanded: true,
-      },
-      {
-        id: "start",
-        type: BLOCK_TYPES.START,
-        config: {
-          variables: [{ name: "", value: "" }],
-        },
-        isExpanded: true,
-      },
-      {
-        id: "finish",
-        type: BLOCK_TYPES.FINISH,
-        config: {},
-        isExpanded: false,
-      },
-    ]);
+    setBlocks(DEFAULT_BLOCKS);
   };
 
   const moveBlock = (fromIndex, toIndex) => {
@@ -354,7 +332,6 @@ export default function AgentBuilder() {
         <HeaderMenu
           agentName={agentName}
           availableFlows={availableFlows}
-          onLoadFlow={loadFlow}
           onNewFlow={clearFlow}
           onSaveFlow={saveFlow}
         />
@@ -375,17 +352,6 @@ export default function AgentBuilder() {
               showBlockMenu={showBlockMenu}
               setShowBlockMenu={setShowBlockMenu}
               addBlock={addBlock}
-            />
-
-            <LoadFlowMenu
-              showLoadMenu={showLoadMenu}
-              setShowLoadMenu={setShowLoadMenu}
-              availableFlows={availableFlows}
-              selectedFlowForDetails={selectedFlowForDetails}
-              setSelectedFlowForDetails={setSelectedFlowForDetails}
-              onLoadFlow={loadFlow}
-              // onRunFlow={runFlow}
-              onFlowDeleted={loadAvailableFlows}
             />
           </div>
         </div>

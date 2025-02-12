@@ -146,11 +146,21 @@ export default function App() {
                   />
                   <Route
                     path="/settings/agents/builder"
-                    element={<AdminRoute Component={AgentBuilder} />}
+                    element={
+                      <AdminRoute
+                        Component={AgentBuilder}
+                        hideUserMenu={true}
+                      />
+                    }
                   />
                   <Route
                     path="/settings/agents/builder/:flowId"
-                    element={<AdminRoute Component={AgentBuilder} />}
+                    element={
+                      <AdminRoute
+                        Component={AgentBuilder}
+                        hideUserMenu={true}
+                      />
+                    }
                   />
                   <Route
                     path="/settings/event-logs"
