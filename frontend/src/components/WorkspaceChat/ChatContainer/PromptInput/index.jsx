@@ -101,7 +101,7 @@ export default function PromptInput({
 
   function checkForAt(e) {
     const input = e.target.value;
-    if (input === "@") return setShowAgents(true);
+    // if (input === "@") return setShowAgents(true);
     if (showAgents) return setShowAgents(false);
   }
   const watchForAt = debounce(checkForAt, 300);
