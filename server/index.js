@@ -31,7 +31,7 @@ const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
 
 // 서버 전체의 타임아웃을 환경변수에서 가져와서 설정
-const REQUEST_TIMEOUT = process.env.REQUEST_TIMEOUT || 600000; // 기본값 10분
+const REQUEST_TIMEOUT = parseInt(process.env.REQUEST_TIMEOUT || '600000', 10);
 
 app.use(cors({ origin: true }));
 app.use(bodyParser.text({ limit: FILE_LIMIT }));
