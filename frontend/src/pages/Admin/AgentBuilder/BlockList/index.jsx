@@ -8,6 +8,7 @@ import {
   Brain,
   Play,
   Flag,
+  Info,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import StartNode from "../nodes/StartNode";
@@ -18,8 +19,10 @@ import CodeNode from "../nodes/CodeNode";
 import LLMInstructionNode from "../nodes/LLMInstructionNode";
 import FinishNode from "../nodes/FinishNode";
 import WebScrapingNode from "../nodes/WebScrapingNode";
+import FlowInfoNode from "../nodes/FlowInfoNode";
 
 const BLOCK_TYPES = {
+  FLOW_INFO: "flowInfo",
   START: "start",
   API_CALL: "apiCall",
   // WEBSITE: "website", // Temporarily disabled
@@ -31,6 +34,16 @@ const BLOCK_TYPES = {
 };
 
 const BLOCK_INFO = {
+  [BLOCK_TYPES.FLOW_INFO]: {
+    label: "Flow Info",
+    icon: <Info className="w-5 h-5 text-theme-text-primary" />,
+    description: "Basic flow information",
+    defaultConfig: {
+      name: "",
+      description: "",
+    },
+    getSummary: (config) => config.name || "Untitled Flow",
+  },
   [BLOCK_TYPES.START]: {
     label: "Flow Start",
     icon: <Play className="w-5 h-5 text-theme-text-primary" />,
@@ -135,6 +148,7 @@ export default function BlockList({
   renderVariableSelect,
   onDeleteVariable,
   moveBlock,
+  refs,
 }) {
   const renderBlockConfig = (block) => {
     const props = {
@@ -145,6 +159,8 @@ export default function BlockList({
     };
 
     switch (block.type) {
+      case BLOCK_TYPES.FLOW_INFO:
+        return <FlowInfoNode {...props} ref={refs} />;
       case BLOCK_TYPES.START:
         return <StartNode {...props} />;
       case BLOCK_TYPES.API_CALL:
@@ -197,47 +213,49 @@ export default function BlockList({
                 </div>
               </div>
               <div className="flex items-center">
-                {block.id !== "start" && block.type !== BLOCK_TYPES.FINISH && (
-                  <div className="flex items-center gap-1">
-                    {index > 1 && (
+                {block.id !== "start" &&
+                  block.type !== BLOCK_TYPES.FINISH &&
+                  block.type !== BLOCK_TYPES.FLOW_INFO && (
+                    <div className="flex items-center gap-1">
+                      {index > 1 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            moveBlock(index, index - 1);
+                          }}
+                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          data-tooltip-id="block-action"
+                          data-tooltip-content="Move block up"
+                        >
+                          <CaretUp className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      {index < blocks.length - 2 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            moveBlock(index, index + 1);
+                          }}
+                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          data-tooltip-id="block-action"
+                          data-tooltip-content="Move block down"
+                        >
+                          <CaretDown className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          moveBlock(index, index - 1);
+                          removeBlock(block.id);
                         }}
-                        className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                        className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
                         data-tooltip-id="block-action"
-                        data-tooltip-content="Move block up"
+                        data-tooltip-content="Delete block"
                       >
-                        <CaretUp className="w-3.5 h-3.5" />
+                        <X className="w-3.5 h-3.5" />
                       </button>
-                    )}
-                    {index < blocks.length - 2 && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          moveBlock(index, index + 1);
-                        }}
-                        className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
-                        data-tooltip-id="block-action"
-                        data-tooltip-content="Move block down"
-                      >
-                        <CaretDown className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeBlock(block.id);
-                      }}
-                      className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
-                      data-tooltip-id="block-action"
-                      data-tooltip-content="Delete block"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                )}
+                    </div>
+                  )}
               </div>
             </div>
             <div

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 import BlockList, { BLOCK_TYPES, BLOCK_INFO } from "./BlockList";
 import AddBlockMenu from "./AddBlockMenu";
 import showToast from "@/utils/toast";
 import AgentFlows from "@/models/agentFlows";
-import AgentSidebar from "./AgentSidebar";
 import LoadFlowMenu from "./LoadFlowMenu";
 import { useTheme } from "@/hooks/useTheme";
+import HeaderMenu from "./HeaderMenu";
 
 export default function AgentBuilder() {
   const { flowId } = useParams();
@@ -17,6 +17,15 @@ export default function AgentBuilder() {
   const [currentFlowUuid, setCurrentFlowUuid] = useState(null);
   const [active, setActive] = useState(true);
   const [blocks, setBlocks] = useState([
+    {
+      id: "flow_info",
+      type: BLOCK_TYPES.FLOW_INFO,
+      config: {
+        name: "",
+        description: "",
+      },
+      isExpanded: true,
+    },
     {
       id: "start",
       type: BLOCK_TYPES.START,
@@ -37,6 +46,8 @@ export default function AgentBuilder() {
   const [showLoadMenu, setShowLoadMenu] = useState(false);
   const [availableFlows, setAvailableFlows] = useState([]);
   const [selectedFlowForDetails, setSelectedFlowForDetails] = useState(null);
+  const nameRef = useRef(null);
+  const descriptionRef = useRef(null);
 
   useEffect(() => {
     loadAvailableFlows();
@@ -47,6 +58,13 @@ export default function AgentBuilder() {
       loadFlow(flowId);
     }
   }, [flowId]);
+
+  useEffect(() => {
+    const flowInfoBlock = blocks.find(
+      (block) => block.type === BLOCK_TYPES.FLOW_INFO
+    );
+    setAgentName(flowInfoBlock?.config?.name || "");
+  }, [blocks]);
 
   const loadAvailableFlows = async () => {
     try {
@@ -65,12 +83,23 @@ export default function AgentBuilder() {
       if (!success) throw new Error(error);
 
       // Convert steps to blocks with IDs, ensuring finish block is at the end
-      const flowBlocks = flow.config.steps.map((step, index) => ({
-        id: index === 0 ? "start" : `block_${index}`,
-        type: step.type,
-        config: step.config,
-        isExpanded: true,
-      }));
+      const flowBlocks = [
+        {
+          id: "flow_info",
+          type: BLOCK_TYPES.FLOW_INFO,
+          config: {
+            name: flow.config.name,
+            description: flow.config.description,
+          },
+          isExpanded: true,
+        },
+        ...flow.config.steps.map((step, index) => ({
+          id: index === 0 ? "start" : `block_${index}`,
+          type: step.type,
+          config: step.config,
+          isExpanded: true,
+        })),
+      ];
 
       // Add finish block if not present
       if (flowBlocks[flowBlocks.length - 1]?.type !== BLOCK_TYPES.FINISH) {
@@ -129,20 +158,51 @@ export default function AgentBuilder() {
   };
 
   const saveFlow = async () => {
-    if (!agentName.trim()) {
-      showToast("Please provide a name for your agent flow", "error", {
-        clear: true,
-      });
+    const flowInfoBlock = blocks.find(
+      (block) => block.type === BLOCK_TYPES.FLOW_INFO
+    );
+    const name = flowInfoBlock?.config?.name;
+    const description = flowInfoBlock?.config?.description;
+
+    if (!name?.trim() || !description?.trim()) {
+      // Make sure the flow info block is expanded first
+      if (!flowInfoBlock.isExpanded) {
+        setBlocks(
+          blocks.map((block) =>
+            block.type === BLOCK_TYPES.FLOW_INFO
+              ? { ...block, isExpanded: true }
+              : block
+          )
+        );
+        // Small delay to allow expansion animation to complete
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      if (!name?.trim()) {
+        nameRef.current?.focus();
+      } else if (!description?.trim()) {
+        descriptionRef.current?.focus();
+      }
+      showToast(
+        "Please provide both a name and description for your flow",
+        "error",
+        {
+          clear: true,
+        }
+      );
       return;
     }
 
     const flowConfig = {
-      name: agentName,
-      description: agentDescription,
+      name,
+      description,
       active,
-      // Exclude the finish block from the saved steps
       steps: blocks
-        .filter((block) => block.type !== BLOCK_TYPES.FINISH)
+        .filter(
+          (block) =>
+            block.type !== BLOCK_TYPES.FINISH &&
+            block.type !== BLOCK_TYPES.FLOW_INFO
+        )
         .map((block) => ({
           type: block.type,
           config: block.config,
@@ -151,7 +211,7 @@ export default function AgentBuilder() {
 
     try {
       const { success, error, flow } = await AgentFlows.saveFlow(
-        agentName,
+        name,
         flowConfig,
         currentFlowUuid
       );
@@ -246,6 +306,15 @@ export default function AgentBuilder() {
     setActive(true);
     setBlocks([
       {
+        id: "flow_info",
+        type: BLOCK_TYPES.FLOW_INFO,
+        config: {
+          name: "",
+          description: "",
+        },
+        isExpanded: true,
+      },
+      {
         id: "start",
         type: BLOCK_TYPES.START,
         config: {
@@ -281,46 +350,44 @@ export default function AgentBuilder() {
       }}
       className="w-full h-screen flex bg-theme-bg-primary"
     >
-      <AgentSidebar
-        agentName={agentName}
-        setAgentName={setAgentName}
-        agentDescription={agentDescription}
-        setAgentDescription={setAgentDescription}
-        onSave={saveFlow}
-        onLoadClick={() => setShowLoadMenu(true)}
-        onNewClick={clearFlow}
-        active={active}
-        onToggleActive={setActive}
-      />
+      <div className="w-full flex flex-col">
+        <HeaderMenu
+          agentName={agentName}
+          availableFlows={availableFlows}
+          onLoadFlow={loadFlow}
+          onNewFlow={clearFlow}
+          onSaveFlow={saveFlow}
+        />
+        <div className="flex-1 p-6 overflow-y-auto">
+          <div className="max-w-xl mx-auto mt-14">
+            <BlockList
+              blocks={blocks}
+              updateBlockConfig={updateBlockConfig}
+              removeBlock={removeBlock}
+              toggleBlockExpansion={toggleBlockExpansion}
+              renderVariableSelect={renderVariableSelect}
+              onDeleteVariable={deleteVariable}
+              moveBlock={moveBlock}
+              refs={{ nameRef, descriptionRef }}
+            />
 
-      <div className="flex-1 p-6 overflow-y-auto">
-        <div className="max-w-xl mx-auto">
-          <BlockList
-            blocks={blocks}
-            updateBlockConfig={updateBlockConfig}
-            removeBlock={removeBlock}
-            toggleBlockExpansion={toggleBlockExpansion}
-            renderVariableSelect={renderVariableSelect}
-            onDeleteVariable={deleteVariable}
-            moveBlock={moveBlock}
-          />
+            <AddBlockMenu
+              showBlockMenu={showBlockMenu}
+              setShowBlockMenu={setShowBlockMenu}
+              addBlock={addBlock}
+            />
 
-          <AddBlockMenu
-            showBlockMenu={showBlockMenu}
-            setShowBlockMenu={setShowBlockMenu}
-            addBlock={addBlock}
-          />
-
-          <LoadFlowMenu
-            showLoadMenu={showLoadMenu}
-            setShowLoadMenu={setShowLoadMenu}
-            availableFlows={availableFlows}
-            selectedFlowForDetails={selectedFlowForDetails}
-            setSelectedFlowForDetails={setSelectedFlowForDetails}
-            onLoadFlow={loadFlow}
-            onRunFlow={runFlow}
-            onFlowDeleted={loadAvailableFlows}
-          />
+            <LoadFlowMenu
+              showLoadMenu={showLoadMenu}
+              setShowLoadMenu={setShowLoadMenu}
+              availableFlows={availableFlows}
+              selectedFlowForDetails={selectedFlowForDetails}
+              setSelectedFlowForDetails={setSelectedFlowForDetails}
+              onLoadFlow={loadFlow}
+              onRunFlow={runFlow}
+              onFlowDeleted={loadAvailableFlows}
+            />
+          </div>
         </div>
       </div>
     </div>

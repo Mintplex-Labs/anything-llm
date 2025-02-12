@@ -39,7 +39,8 @@ export default function AddBlockMenu({
           {Object.entries(BLOCK_INFO).map(
             ([type, info]) =>
               type !== BLOCK_TYPES.START &&
-              type !== BLOCK_TYPES.FINISH && (
+              type !== BLOCK_TYPES.FINISH &&
+              type !== BLOCK_TYPES.FLOW_INFO && (
                 <button
                   key={type}
                   onClick={() => {
