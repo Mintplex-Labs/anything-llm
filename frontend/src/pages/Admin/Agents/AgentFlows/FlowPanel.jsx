@@ -114,7 +114,7 @@ export default function FlowPanel({ flow, toggleFlow, onDelete }) {
             </label>
             <ManageFlowMenu flow={flow} onDelete={onDelete} />
           </div>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          <p className="whitespace-pre-wrap text-white text-opacity-60 text-xs font-medium py-1.5">
             {flow.description || "No description provided"}
           </p>
         </div>
