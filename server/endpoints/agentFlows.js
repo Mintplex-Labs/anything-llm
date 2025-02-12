@@ -103,38 +103,38 @@ function agentFlowEndpoints(app) {
   );
 
   // Run a specific flow
-  app.post(
-    "/agent-flows/:uuid/run",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
-    async (request, response) => {
-      try {
-        const { uuid } = request.params;
-        const { variables = {} } = request.body;
+  // app.post(
+  //   "/agent-flows/:uuid/run",
+  //   [validatedRequest, flexUserRoleValid([ROLES.admin])],
+  //   async (request, response) => {
+  //     try {
+  //       const { uuid } = request.params;
+  //       const { variables = {} } = request.body;
 
-        // TODO: Implement flow execution
-        console.log("Running flow with UUID:", uuid);
+  //       // TODO: Implement flow execution
+  //       console.log("Running flow with UUID:", uuid);
 
-        await Telemetry.sendTelemetry("agent_flow_executed", {
-          variableCount: Object.keys(variables).length,
-        });
+  //       await Telemetry.sendTelemetry("agent_flow_executed", {
+  //         variableCount: Object.keys(variables).length,
+  //       });
 
-        return response.status(200).json({
-          success: true,
-          results: {
-            success: true,
-            results: "test",
-            variables: variables,
-          },
-        });
-      } catch (error) {
-        console.error("Error running flow:", error);
-        return response.status(500).json({
-          success: false,
-          error: error.message,
-        });
-      }
-    }
-  );
+  //       return response.status(200).json({
+  //         success: true,
+  //         results: {
+  //           success: true,
+  //           results: "test",
+  //           variables: variables,
+  //         },
+  //       });
+  //     } catch (error) {
+  //       console.error("Error running flow:", error);
+  //       return response.status(500).json({
+  //         success: false,
+  //         error: error.message,
+  //       });
+  //     }
+  //   }
+  // );
 
   // Delete a specific flow
   app.delete(

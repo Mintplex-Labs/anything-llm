@@ -287,17 +287,17 @@ export default function AgentBuilder() {
     });
   };
 
-  const runFlow = async (uuid) => {
-    try {
-      const { success, error, _results } = await AgentFlows.runFlow(uuid);
-      if (!success) throw new Error(error);
+  // const runFlow = async (uuid) => {
+  //   try {
+  //     const { success, error, _results } = await AgentFlows.runFlow(uuid);
+  //     if (!success) throw new Error(error);
 
-      showToast("Flow executed successfully!", "success", { clear: true });
-    } catch (error) {
-      console.error(error);
-      showToast("Failed to run agent flow", "error", { clear: true });
-    }
-  };
+  //     showToast("Flow executed successfully!", "success", { clear: true });
+  //   } catch (error) {
+  //     console.error(error);
+  //     showToast("Failed to run agent flow", "error", { clear: true });
+  //   }
+  // };
 
   const clearFlow = () => {
     setAgentName("");
@@ -384,7 +384,7 @@ export default function AgentBuilder() {
               selectedFlowForDetails={selectedFlowForDetails}
               setSelectedFlowForDetails={setSelectedFlowForDetails}
               onLoadFlow={loadFlow}
-              onRunFlow={runFlow}
+              // onRunFlow={runFlow}
               onFlowDeleted={loadAvailableFlows}
             />
           </div>

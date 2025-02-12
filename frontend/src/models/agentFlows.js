@@ -75,26 +75,26 @@ const AgentFlows = {
    * @param {object} variables - Optional variables to pass to the flow
    * @returns {Promise<{success: boolean, error: string | null, results: object | null}>}
    */
-  runFlow: async (uuid, variables = {}) => {
-    return await fetch(`${API_BASE}/agent-flows/${uuid}/run`, {
-      method: "POST",
-      headers: {
-        ...baseHeaders(),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ variables }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(response.error || "Failed to run flow");
-        return res;
-      })
-      .then((res) => res.json())
-      .catch((e) => ({
-        success: false,
-        error: e.message,
-        results: null,
-      }));
-  },
+  // runFlow: async (uuid, variables = {}) => {
+  //   return await fetch(`${API_BASE}/agent-flows/${uuid}/run`, {
+  //     method: "POST",
+  //     headers: {
+  //       ...baseHeaders(),
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ variables }),
+  //   })
+  //     .then((res) => {
+  //       if (!res.ok) throw new Error(response.error || "Failed to run flow");
+  //       return res;
+  //     })
+  //     .then((res) => res.json())
+  //     .catch((e) => ({
+  //       success: false,
+  //       error: e.message,
+  //       results: null,
+  //     }));
+  // },
 
   /**
    * Delete a specific flow

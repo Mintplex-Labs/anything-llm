@@ -10,7 +10,7 @@ export default function LoadFlowMenu({
   setShowLoadMenu,
   availableFlows,
   onLoadFlow,
-  onRunFlow,
+  // onRunFlow,
   onFlowDeleted,
 }) {
   const navigate = useNavigate();
