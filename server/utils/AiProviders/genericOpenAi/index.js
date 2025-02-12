@@ -309,8 +309,6 @@ class GenericOpenAiLLM {
             });
           }
 
-          // LocalAi returns '' and others return null on chunks - the last chunk is not "" or null.
-          // Either way, the key `finish_reason` must be present to determine ending chunk.
           if (
             message?.hasOwnProperty("finish_reason") && // Got valid message and it is an object with finish_reason
             message.finish_reason !== "" &&
@@ -341,7 +339,7 @@ class GenericOpenAiLLM {
           error: e.message,
         });
         stream?.endMeasurement(usage);
-        resolve(fullText); // Return what we currently have - if anything.
+        resolve(fullText);
       }
     });
   }
