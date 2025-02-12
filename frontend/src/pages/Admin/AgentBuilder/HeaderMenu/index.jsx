@@ -1,4 +1,4 @@
-import { CaretDown, CaretUp, Plus, FloppyDisk } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, Plus } from "@phosphor-icons/react";
 import AnythingInfinityLogo from "@/media/logo/anything-llm-infinity.png";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
