@@ -668,6 +668,11 @@ dialog::backdrop {
   padding: 14px 15px;
 }
 
+.markdown > * a {
+  color: var(--theme-button-cta);
+  text-decoration: underline;
+}
+
 @media (max-width: 600px) {
   .markdown table th,
   .markdown table td {
