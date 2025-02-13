@@ -127,6 +127,7 @@ const BLOCK_INFO = {
     defaultConfig: {
       url: "",
       captureAs: "text",
+      querySelector: "",
       resultVariable: "",
     },
     getSummary: (config) => config.url || "No URL specified",

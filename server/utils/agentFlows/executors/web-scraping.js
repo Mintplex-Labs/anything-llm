@@ -62,11 +62,16 @@ async function executeWebScraping(config, context) {
 /**
  * Parse HTML with a CSS selector
  * @param {string} html - The HTML to parse
- * @param {string} selector - The CSS selector to use (as text string)
+ * @param {string|null} selector - The CSS selector to use (as text string)
  * @param {{introspect: Function}} context - The context object
  * @returns {Object} The parsed content
  */
-function parseHTMLwithSelector(html, selector, context) {
+function parseHTMLwithSelector(html, selector = null, context) {
+  if (!selector || selector.length === 0) {
+    context.introspect("No selector provided. Returning the entire HTML.");
+    return { success: true, content: html };
+  }
+
   const Cheerio = require("cheerio");
   const $ = Cheerio.load(html);
   const selectedElements = $(selector);

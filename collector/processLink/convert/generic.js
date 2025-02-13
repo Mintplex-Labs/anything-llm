@@ -83,7 +83,7 @@ async function getPageContent(link, captureAs = "text") {
       async evaluate(page, browser) {
         const result = await page.evaluate((captureAs) => {
           if (captureAs === "text") return document.body.innerText;
-          if (captureAs === "html") return document.documentElement.outerHTML;
+          if (captureAs === "html") return document.documentElement.innerHTML;
           return document.body.innerText;
         }, captureAs);
         await browser.close();
