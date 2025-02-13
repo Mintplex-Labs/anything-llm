@@ -20,7 +20,7 @@ Welcome to the AnythingLLM development container configuration, designed to crea
 
 ## Getting Started
 
-1. Using Github Codepaces. Just select to create a new workspace, and the devcontainer will be created for you.
+1. Using GitHub Codespaces. Just select to create a new workspace, and the devcontainer will be created for you.
 
 2. Using your Local VSCode (Release or Insiders). We suggest you first make a fork of the repo and then clone it to your local machine using VSCode tools. Then open the project folder in VSCode, which will prompt you to open the project in a devcontainer. Select yes, and the devcontainer will be created for you. If this does not happen, you can open the command palette and select "Remote-Containers: Reopen in Container".
 
@@ -36,16 +36,16 @@ Checklist:
 
 - [ ] The usual message asking you to start the Server and Frontend in different windows are now "hidden" in the building process of the devcontainer. Don't forget to do as suggested.
 - [ ] Open a JavaScript file, for example "server/index.js" and check if `eslint` is working. It will complain that `'err' is defined but never used.`. This means it is working.
-- [ ] Open a React File, for example, "frontend/src/main.jsx," and check if `eslint` complains about `Fast refresh only works when a file has exports. Move your component(s) to a separate file.`. Again, it means `eslint` is working. Now check at the status bar if the `Prettier` has a double checkmark :heavy_check_mark: (double). It means Prettier is working. You will see a nice extension `Formatting:`:heavy_check_mark: that can be used to disable the `Format on Save` feature temporarily. 
+- [ ] Open a React File, for example, "frontend/src/main.jsx," and check if `eslint` complains about `Fast refresh only works when a file has exports. Move your component(s) to a separate file.`. Again, it means `eslint` is working. Now check at the status bar if the `Prettier` has a double checkmark :heavy_check_mark: (double). It means Prettier is working. You will see a nice extension `Formatting:`:heavy_check_mark: that can be used to disable the `Format on Save` feature temporarily.
 - [ ] Check if, on the left pane, you have the NPM Scripts (this may be disabled; look at the "Explorer" tree-dots up-right). There will be scripts inside the `package.json` files. You will basically need to run the `dev:collector`, `dev:server` and the `dev:frontend` in this order. When the frontend finishes starting, a window browser will open **inside** the VSCode. Still, you can open it outside.
 
 :warning: **Important for all developers** :warning:
 
 - [ ] When you are using the `NODE_ENV=development` the server will not store the configurations you set for security reasons. Please set the proper config on file `.env.development`. The side-effect if you don't, everytime you restart the server, you will be sent to the "Onboarding" page again.
 
-**Note when using Github Codespaces**
+**Note when using GitHub Codespaces**
 
-- [ ] When running the "Server" for the first time, it will automatically configure its port to be publicly accessible by default, as this is required for the front end to reach the server backend. To know more, read the content of the `.env` file on the frontend folder about this, and if any issues occur, make sure to manually set the port "Visibility" of the "Server" is set to "Public" if needed. Again, this is only needed for developing on Github Codespaces.
+- [ ] When running the "Server" for the first time, it will automatically configure its port to be publicly accessible by default, as this is required for the front end to reach the server backend. To know more, read the content of the `.env` file on the frontend folder about this, and if any issues occur, make sure to manually set the port "Visibility" of the "Server" is set to "Public" if needed. Again, this is only needed for developing on GitHub Codespaces.
 
 
 **For the Collector:**

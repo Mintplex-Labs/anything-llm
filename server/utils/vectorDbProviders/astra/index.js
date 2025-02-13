@@ -85,7 +85,7 @@ const AstraDB = {
     if (!isExists) {
       if (!dimensions)
         throw new Error(
-          `AstraDB:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on Github for support.`
+          `AstraDB:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on GitHub for support.`
         );
 
       await client.createCollection(namespace, {

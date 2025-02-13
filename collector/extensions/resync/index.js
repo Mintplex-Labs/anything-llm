@@ -2,7 +2,7 @@ const { getLinkText } = require("../../processLink");
 
 /**
  * Fetches the content of a raw link. Returns the content as a text string of the link in question.
- * @param {object} data - metadata from document (eg: link) 
+ * @param {object} data - metadata from document (eg: link)
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncLink({ link }, response) {
@@ -24,7 +24,7 @@ async function resyncLink({ link }, response) {
  * Fetches the content of a YouTube link. Returns the content as a text string of the video in question.
  * We offer this as there may be some videos where a transcription could be manually edited after initial scraping
  * but in general - transcriptions often never change.
- * @param {object} data - metadata from document (eg: link) 
+ * @param {object} data - metadata from document (eg: link)
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncYouTube({ link }, response) {
@@ -44,9 +44,9 @@ async function resyncYouTube({ link }, response) {
 }
 
 /**
- * Fetches the content of a specific confluence page via its chunkSource. 
+ * Fetches the content of a specific confluence page via its chunkSource.
  * Returns the content as a text string of the page in question and only that page.
- * @param {object} data - metadata from document (eg: chunkSource) 
+ * @param {object} data - metadata from document (eg: chunkSource)
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncConfluence({ chunkSource }, response) {
@@ -76,26 +76,26 @@ async function resyncConfluence({ chunkSource }, response) {
 }
 
 /**
- * Fetches the content of a specific confluence page via its chunkSource. 
+ * Fetches the content of a specific confluence page via its chunkSource.
  * Returns the content as a text string of the page in question and only that page.
- * @param {object} data - metadata from document (eg: chunkSource) 
+ * @param {object} data - metadata from document (eg: chunkSource)
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
-async function resyncGithub({ chunkSource }, response) {
+async function resyncGitHub({ chunkSource }, response) {
   if (!chunkSource) throw new Error('Invalid source property provided');
   try {
-    // Github file data is `payload` encrypted (might contain PAT). So we need to expand its
+    // GitHub file data is `payload` encrypted (might contain PAT). So we need to expand its
     // encrypted payload back into query params so we can reFetch the page with same access token/params.
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
-    const { fetchGithubFile } = require("../../utils/extensions/RepoLoader/GithubRepo");
-    const { success, reason, content } = await fetchGithubFile({
+    const { fetchGitHubFile } = require("../../utils/extensions/RepoLoader/GitHubRepo");
+    const { success, reason, content } = await fetchGitHubFile({
       repoUrl: `https:${source.pathname}`, // need to add back the real protocol
       branch: source.searchParams.get('branch'),
       accessToken: source.searchParams.get('pat'),
       sourceFilePath: source.searchParams.get('path'),
     });
 
-    if (!success) throw new Error(`Failed to sync Github file content. ${reason}`);
+    if (!success) throw new Error(`Failed to sync GitHub file content. ${reason}`);
     response.status(200).json({ success, content });
   } catch (e) {
     console.error(e);
@@ -110,5 +110,5 @@ module.exports = {
   link: resyncLink,
   youtube: resyncYouTube,
   confluence: resyncConfluence,
-  github: resyncGithub,
+  github: resyncGitHub,
 }

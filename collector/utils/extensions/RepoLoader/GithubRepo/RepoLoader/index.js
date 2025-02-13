@@ -28,14 +28,14 @@ class GitHubRepoLoader {
     this.branches = [];
   }
 
-  #validGithubUrl() {
+  #validGitHubUrl() {
     try {
       const url = new URL(this.repo);
 
       // Not a github url at all.
       if (url.hostname !== "github.com") {
         console.log(
-          `[Github Loader]: Invalid Github URL provided! Hostname must be 'github.com'. Got ${url.hostname}`
+          `[GitHub Loader]: Invalid GitHub URL provided! Hostname must be 'github.com'. Got ${url.hostname}`
         );
         return false;
       }
@@ -45,7 +45,7 @@ class GitHubRepoLoader {
       const [author, project, ..._rest] = url.pathname.slice(1).split("/");
       if (!author || !project) {
         console.log(
-          `[Github Loader]: Invalid Github URL provided! URL must be in the format of 'github.com/{author}/{project}'. Got ${url.pathname}`
+          `[GitHub Loader]: Invalid GitHub URL provided! URL must be in the format of 'github.com/{author}/{project}'. Got ${url.pathname}`
         );
         return false;
       }
@@ -55,7 +55,7 @@ class GitHubRepoLoader {
       return true;
     } catch (e) {
       console.log(
-        `[Github Loader]: Invalid Github URL provided! Error: ${e.message}`
+        `[GitHub Loader]: Invalid GitHub URL provided! Error: ${e.message}`
       );
       return false;
     }
@@ -68,10 +68,10 @@ class GitHubRepoLoader {
     if (!!this.branch && this.branches.includes(this.branch)) return;
 
     console.log(
-      "[Github Loader]: Branch not set! Auto-assigning to a default branch."
+      "[GitHub Loader]: Branch not set! Auto-assigning to a default branch."
     );
     this.branch = this.branches.includes("main") ? "main" : "master";
-    console.log(`[Github Loader]: Branch auto-assigned to ${this.branch}.`);
+    console.log(`[GitHub Loader]: Branch auto-assigned to ${this.branch}.`);
     return;
   }
 
@@ -90,7 +90,7 @@ class GitHubRepoLoader {
       })
       .catch((e) => {
         console.error(
-          "Invalid Github Access Token provided! Access token will not be used",
+          "Invalid GitHub Access Token provided! Access token will not be used",
           e.message
         );
         return false;
@@ -105,7 +105,7 @@ class GitHubRepoLoader {
    * @returns {Promise<RepoLoader>} The initialized RepoLoader instance.
    */
   async init() {
-    if (!this.#validGithubUrl()) return;
+    if (!this.#validGitHubUrl()) return;
     await this.#validBranch();
     await this.#validateAccessToken();
     this.ready = true;
@@ -118,17 +118,17 @@ class GitHubRepoLoader {
    * @throws {Error} If the RepoLoader is not in a ready state.
    */
   async recursiveLoader() {
-    if (!this.ready) throw new Error("[Github Loader]: not in ready state!");
+    if (!this.ready) throw new Error("[GitHub Loader]: not in ready state!");
     const {
-      GithubRepoLoader: LCGithubLoader,
+      GitHubRepoLoader: LCGitHubLoader,
     } = require("@langchain/community/document_loaders/web/github");
 
     if (this.accessToken)
       console.log(
-        `[Github Loader]: Access token set! Recursive loading enabled!`
+        `[GitHub Loader]: Access token set! Recursive loading enabled!`
       );
 
-    const loader = new LCGithubLoader(this.repo, {
+    const loader = new LCGitHubLoader(this.repo, {
       branch: this.branch,
       recursive: !!this.accessToken, // Recursive will hit rate limits.
       maxConcurrency: 5,
@@ -156,7 +156,7 @@ class GitHubRepoLoader {
    * @returns {Promise<string[]>} An array of branch names.
    */
   async getRepoBranches() {
-    if (!this.#validGithubUrl() || !this.author || !this.project) return [];
+    if (!this.#validGitHubUrl() || !this.author || !this.project) return [];
     await this.#validateAccessToken(); // Ensure API access token is valid for pre-flight
 
     let page = 0;
@@ -179,7 +179,7 @@ class GitHubRepoLoader {
       )
         .then((res) => {
           if (res.ok) return res.json();
-          throw new Error(`Invalid request to Github API: ${res.statusText}`);
+          throw new Error(`Invalid request to GitHub API: ${res.statusText}`);
         })
         .then((branchObjects) => {
           polling = branchObjects.length > 0;
@@ -218,7 +218,7 @@ class GitHubRepoLoader {
       )
         .then((res) => {
           if (res.ok) return res.json();
-          throw new Error(`Failed to fetch from Github API: ${res.statusText}`);
+          throw new Error(`Failed to fetch from GitHub API: ${res.statusText}`);
         })
         .then((json) => {
           if (json.hasOwnProperty("status") || !json.hasOwnProperty("content"))
