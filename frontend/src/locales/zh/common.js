@@ -123,7 +123,7 @@ const TRANSLATIONS = {
       "AnythingLLM 是将强大的 AI 产品（如 OpenAi、GPT-4、LangChain、PineconeDB、ChromaDB 等）整合在一个整洁的包中而无需繁琐操作的最简单方法，可以将你的生产力提高 100 倍。",
     part3:
       "AnythingLLM 可以完全在你的本地计算机上运行，几乎没有开销，你甚至不会注意到它的存在！无需 GPU。也可以进行云端和本地安装。\nAI 工具生态系统每天都在变得更强大。AnythingLLM 使其易于使用。",
-    githubIssue: "在 Github 上创建问题",
+    githubIssue: "在 GitHub 上创建问题",
     user1: "我该如何开始?!",
     part4:
       "很简单。所有集合都组织成我们称之为“工作区”的桶。工作区是文件、文档、图像、PDF 和其他文件的存储桶，这些文件将被转换为 LLM 可以理解和在对话中使用的内容。\n\n你可以随时添加和删除文件。",
@@ -133,7 +133,7 @@ const TRANSLATIONS = {
       "AnythingLLM 不仅仅是一个更智能的 Dropbox。\n\nAnythingLLM 提供了两种与你的数据交流的方式：\n\n<i>查询：</i> 你的聊天将返回在你的工作区中访问的文档中找到的数据或推论。向工作区添加更多文档会使其更智能！\n\n<i>对话：</i> 你的文档和正在进行的聊天记录同时为 LLM 知识做出贡献。非常适合添加基于文本的实时信息或纠正 LLM 可能存在的误解。\n\n你可以在聊天过程中 <i>切换模式！</i>",
     user3: "哇，这听起来很棒，让我马上试试！",
     part6: "玩得开心！",
-    starOnGithub: "在 GitHub 上加星",
+    starOnGitHub: "在 GitHub 上加星",
     contact: "联系 Mintplex Labs",
   },
   "new-workspace": {

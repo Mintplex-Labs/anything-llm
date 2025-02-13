@@ -194,7 +194,7 @@ function TelemetryLogs({ settings }) {
               className="underline text-blue-400"
               target="_blank"
             >
-              Github here
+              GitHub here
             </a>
             .
           </p>

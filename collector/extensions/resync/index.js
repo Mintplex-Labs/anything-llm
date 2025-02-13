@@ -95,7 +95,7 @@ async function resyncGithub({ chunkSource }, response) {
       sourceFilePath: source.searchParams.get('path'),
     });
 
-    if (!success) throw new Error(`Failed to sync Github file content. ${reason}`);
+    if (!success) throw new Error(`Failed to sync GitHub file content. ${reason}`);
     response.status(200).json({ success, content });
   } catch (e) {
     console.error(e);
