@@ -55,7 +55,7 @@ export default function WebScrapingNode({
           <label className="block text-sm font-medium text-theme-text-primary mb-2">
             Query Selector
           </label>
-          <p className="text-sm text-theme-text-secondary mb-2">
+          <p className="text-xs text-theme-text-secondary mb-2">
             Enter a valid CSS selector to scrape the content of the page.
           </p>
           <input
