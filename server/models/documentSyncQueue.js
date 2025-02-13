@@ -51,7 +51,7 @@ const DocumentSyncQueue = {
     if (chunkSource.startsWith("youtube://")) return true; // If is a youtube link
     if (chunkSource.startsWith("confluence://")) return true; // If is a confluence document link
     if (chunkSource.startsWith("github://")) return true; // If is a GitHub file reference
-    if (chunkSource.startsWith("gitlab://")) return true; // If is a GitLab file reference
+    if (chunkSource.startsWith("gitlab://")) return true; // If is a Gitlab file reference
     return false;
   },
 
