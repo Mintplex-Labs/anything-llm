@@ -1,6 +1,6 @@
 import ConnectorImages from "@/components/DataConnectorOption/media";
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import GitHubOptions from "./Connectors/GitHub";
+import GithubOptions from "./Connectors/Github";
 import GitlabOptions from "./Connectors/Gitlab";
 import YoutubeOptions from "./Connectors/Youtube";
 import ConfluenceOptions from "./Connectors/Confluence";
@@ -14,7 +14,7 @@ export const DATA_CONNECTORS = {
     image: ConnectorImages.github,
     description:
       "Import an entire public or private GitHub repository in a single click.",
-    options: <GitHubOptions />,
+    options: <GithubOptions />,
   },
   gitlab: {
     name: "GitLab Repo",

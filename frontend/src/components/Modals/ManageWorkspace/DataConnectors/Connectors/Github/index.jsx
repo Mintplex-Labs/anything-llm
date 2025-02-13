@@ -7,7 +7,7 @@ import { Info, Warning } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
 const DEFAULT_BRANCHES = ["main", "master"];
-export default function GitHubOptions() {
+export default function GithubOptions() {
   const [loading, setLoading] = useState(false);
   const [repo, setRepo] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
@@ -242,7 +242,7 @@ function PATAlert({ accessToken }) {
       <div className="gap-x-2 flex items-center">
         <Info className="shrink-0" size={25} />
         <p className="text-sm">
-          Without filling out the <b>GitHub Access Token</b> this data connector
+          Without filling out the <b>Github Access Token</b> this data connector
           will only be able to collect the <b>top-level</b> files of the repo
           due to GitHub's public API rate-limits.
           <br />
