@@ -54,7 +54,9 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
 
   const document = writeToServerDocuments(
     data,
-    `${slugify(filename)}-${data.id}`
+    `${slugify(filename, {
+      remove: /[^\w\s$*_+~.()'"!\-:@\uAC00-\uD7A3]+/g,
+    })}-${data.id}`
   );
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
