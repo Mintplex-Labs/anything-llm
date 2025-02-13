@@ -83,7 +83,7 @@ function safeJsonParse(jsonString, fallback = null) {
   }
 
   try {
-    return extract(jsonString)[0];
+    return extract(jsonString)?.[0] || fallback;
   } catch {}
 
   return fallback;

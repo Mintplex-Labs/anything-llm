@@ -18,6 +18,10 @@ import {
 } from "../ThoughtContainer";
 
 const DOMPurify = createDOMPurify(window);
+DOMPurify.setConfig({
+  ADD_ATTR: ["target", "rel"],
+});
+
 const HistoricalMessage = ({
   uuid = v4(),
   message,

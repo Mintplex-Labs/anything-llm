@@ -56,10 +56,7 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
-
-const TITLE = "LLM Preference";
-const DESCRIPTION =
-  "AnythingLLM can work with many LLM providers. This will be the service which handles chatting.";
+import { useTranslation } from "react-i18next";
 
 const LLMS = [
   {
@@ -260,6 +257,7 @@ export default function LLMPreference({
   setForwardBtn,
   setBackBtn,
 }) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
@@ -268,6 +266,9 @@ export default function LLMPreference({
   const hiddenSubmitButtonRef = useRef(null);
   const isHosted = window.location.hostname.includes("useanything.com");
   const navigate = useNavigate();
+
+  const TITLE = t("onboarding.llm.title");
+  const DESCRIPTION = t("onboarding.llm.description");
 
   useEffect(() => {
     async function fetchKeys() {
