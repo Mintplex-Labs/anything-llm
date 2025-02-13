@@ -29,6 +29,7 @@ export default {
         "historical-msg-user": "#2C2F35",
         outline: "#4E5153",
         "primary-button": "var(--theme-button-primary)",
+        "cta-button": "var(--theme-button-cta)",
         secondary: "#2C2F36",
         "dark-input": "#18181B",
         "mobile-onboarding": "#2C2F35",
