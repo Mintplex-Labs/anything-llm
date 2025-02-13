@@ -12,7 +12,7 @@ const { tokenizeString } = require("../../../tokenizer");
  * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
  * @returns
  */
-async function loadGitLabRepo(args, response) {
+async function loadGitlabRepo(args, response) {
   const repo = new RepoLoader(args);
   await repo.init();
 
@@ -110,7 +110,7 @@ async function loadGitLabRepo(args, response) {
   };
 }
 
-async function fetchGitLabFile({
+async function fetchGitlabFile({
   repoUrl,
   branch,
   accessToken = null,
@@ -249,4 +249,4 @@ ${issue.discussions.join("\n\n")}
   return markdown;
 }
 
-module.exports = { loadGitLabRepo, fetchGitLabFile };
+module.exports = { loadGitlabRepo, fetchGitlabFile };

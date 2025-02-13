@@ -1,7 +1,7 @@
 import ConnectorImages from "@/components/DataConnectorOption/media";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import GithubOptions from "./Connectors/Github";
-import GitLabOptions from "./Connectors/GitLab";
+import GitlabOptions from "./Connectors/Gitlab";
 import YoutubeOptions from "./Connectors/Youtube";
 import ConfluenceOptions from "./Connectors/Confluence";
 import { useState } from "react";
@@ -21,7 +21,7 @@ export const DATA_CONNECTORS = {
     image: ConnectorImages.gitlab,
     description:
       "Import an entire public or private GitLab repository in a single click.",
-    options: <GitLabOptions />,
+    options: <GitlabOptions />,
   },
   "youtube-transcript": {
     name: "YouTube Transcript",
