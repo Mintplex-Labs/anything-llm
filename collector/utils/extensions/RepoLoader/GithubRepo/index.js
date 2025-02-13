@@ -12,7 +12,7 @@ const { tokenizeString } = require("../../../tokenizer");
  * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
  * @returns
  */
-async function loadGitHubRepo(args, response) {
+async function loadGithubRepo(args, response) {
   const repo = new RepoLoader(args);
   await repo.init();
 
@@ -95,7 +95,7 @@ async function loadGitHubRepo(args, response) {
  * Gets the page content from a specific source file in a give GitHub Repo, not all items in a repo.
  * @returns
  */
-async function fetchGitGubFile({
+async function fetchGithubFile({
   repoUrl,
   branch,
   accessToken = null,
@@ -156,4 +156,4 @@ function generateChunkSource(repo, doc, encryptionWorker) {
   )}`;
 }
 
-module.exports = { loadGitHubRepo, fetchGitHubFile };
+module.exports = { loadGithubRepo, fetchGithubFile };

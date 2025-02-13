@@ -28,7 +28,7 @@ class GitHubRepoLoader {
     this.branches = [];
   }
 
-  #validGitHubUrl() {
+  #validGithubUrl() {
     try {
       const url = new URL(this.repo);
 
@@ -105,7 +105,7 @@ class GitHubRepoLoader {
    * @returns {Promise<RepoLoader>} The initialized RepoLoader instance.
    */
   async init() {
-    if (!this.#validGitHubUrl()) return;
+    if (!this.#validGithubUrl()) return;
     await this.#validBranch();
     await this.#validateAccessToken();
     this.ready = true;
@@ -120,7 +120,7 @@ class GitHubRepoLoader {
   async recursiveLoader() {
     if (!this.ready) throw new Error("[GitHub Loader]: not in ready state!");
     const {
-      GitHubRepoLoader: LCGitHubLoader,
+      GithubRepoLoader: LCGithubLoader,
     } = require("@langchain/community/document_loaders/web/github");
 
     if (this.accessToken)
@@ -128,7 +128,7 @@ class GitHubRepoLoader {
         `[GitHub Loader]: Access token set! Recursive loading enabled!`
       );
 
-    const loader = new LCGitHubLoader(this.repo, {
+    const loader = new LCGithubLoader(this.repo, {
       branch: this.branch,
       recursive: !!this.accessToken, // Recursive will hit rate limits.
       maxConcurrency: 5,
@@ -156,7 +156,7 @@ class GitHubRepoLoader {
    * @returns {Promise<string[]>} An array of branch names.
    */
   async getRepoBranches() {
-    if (!this.#validGitHubUrl() || !this.author || !this.project) return [];
+    if (!this.#validGithubUrl() || !this.author || !this.project) return [];
     await this.#validateAccessToken(); // Ensure API access token is valid for pre-flight
 
     let page = 0;
@@ -179,7 +179,7 @@ class GitHubRepoLoader {
       )
         .then((res) => {
           if (res.ok) return res.json();
-          throw new Error(`Invalid request to GitHub API: ${res.statusText}`);
+          throw new Error(`Invalid request to Github API: ${res.statusText}`);
         })
         .then((branchObjects) => {
           polling = branchObjects.length > 0;
@@ -218,7 +218,7 @@ class GitHubRepoLoader {
       )
         .then((res) => {
           if (res.ok) return res.json();
-          throw new Error(`Failed to fetch from GitHub API: ${res.statusText}`);
+          throw new Error(`Failed to fetch from Github API: ${res.statusText}`);
         })
         .then((json) => {
           if (json.hasOwnProperty("status") || !json.hasOwnProperty("content"))
