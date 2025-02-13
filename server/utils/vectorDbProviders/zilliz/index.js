@@ -98,7 +98,7 @@ const Zilliz = {
     if (!isExists) {
       if (!dimensions)
         throw new Error(
-          `Zilliz:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on Github for support.`
+          `Zilliz:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on GitHub for support.`
         );
 
       await client.createCollection({

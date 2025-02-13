@@ -1,7 +1,7 @@
-# This Github action is for publishing of the primary image for AnythingLLM
+# This GitHub action is for publishing of the primary image for AnythingLLM
 # It will publish a linux/amd64 and linux/arm64 image at the same time
 # This file should ONLY BY USED FOR `master` BRANCH. 
-# TODO: Github now has an ubuntu-24.04-arm64 runner, but we still need
+# TODO: GitHub now has an ubuntu-24.04-arm64 runner, but we still need
 # to use QEMU to build the arm64 image because Chromium is not available for Linux arm64
 # so builds will still fail, or fail much more often. Its inconsistent and frustrating.
 name: Publish AnythingLLM Primary Docker image (amd64/arm64)

@@ -120,7 +120,7 @@ const TRANSLATIONS = {
       "AnythingLLM è il modo più semplice per mettere insieme potenti prodotti di intelligenza artificiale come OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB e altri servizi in un pacchetto ordinato e senza problemi per aumentare la tua produttività di 100 volte.",
     part3:
       "AnythingLLM può essere eseguito completamente in locale sulla tua macchina con un overhead minimo, non ti accorgerai nemmeno che c'è! Non serve GPU. Sono disponibili anche installazioni cloud e on-premise.\nL'ecosistema degli strumenti di intelligenza artificiale diventa ogni giorno più potente. AnythingLLM lo rende facile da usare.",
-    githubIssue: "Apri una issue su Github",
+    githubIssue: "Apri una issue su GitHub",
     user1: "Come posso iniziare?!",
     part4:
       'È semplice. Tutte le raccolte sono organizzate in contenitori che chiamiamo "Aree di lavoro". Le aree di lavoro sono contenitori di file, documenti, immagini, PDF e altri file che verranno trasformati in qualcosa che gli LLM possono comprendere e utilizzare nella conversazione.\n\nPuoi aggiungere e rimuovere file in qualsiasi momento.',
@@ -131,7 +131,7 @@ const TRANSLATIONS = {
       "AnythingLLM è migliore di un Dropbox più smart.\n\nAnythingLLM offre due modi di comunicare con i tuoi dati:\n\n<i>Query:</i> Le tue chat restituiranno dati o inferenze trovate con i documenti nella tua area di lavoro a cui ha accesso. Aggiungere più documenti all'area di lavoro lo rende più intelligente! \n\n<i>Conversazionale:</i> i tuoi documenti + la cronologia delle chat in corso contribuiscono entrambi alla conoscenza dell'LLM allo stesso tempo. Ottimo per aggiungere informazioni basate su testo in tempo reale o correzioni e incomprensioni che l'LLM potrebbe avere. \n\nPuoi passare da una modalità all'altra \n<i>nel mezzo della chat!</i>",
     user3: "Wow, sembra fantastico, fammi provare!",
     part6: "Divertiti!",
-    starOnGithub: "Metti una stella su GitHub",
+    starOnGitHub: "Metti una stella su GitHub",
     contact: "Contatta Mintplex Labs",
   },
   "new-workspace": {

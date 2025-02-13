@@ -123,7 +123,7 @@ const QDrant = {
     }
     if (!dimensions)
       throw new Error(
-        `Qdrant:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on Github for support.`
+        `Qdrant:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on GitHub for support.`
       );
     await client.createCollection(namespace, {
       vectors: {
