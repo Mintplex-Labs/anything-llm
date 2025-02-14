@@ -127,6 +127,7 @@ async function chatSync({
             type: chatMode,
             thoughts,
           },
+          user: user,
           include: false,
           apiSessionId: sessionId,
         });
