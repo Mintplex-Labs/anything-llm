@@ -112,4 +112,4 @@ class PPIOProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 }
 
-module.exports = PPIOProvider; 
+module.exports = PPIOProvider;
