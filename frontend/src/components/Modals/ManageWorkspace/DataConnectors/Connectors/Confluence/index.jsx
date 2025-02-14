@@ -8,10 +8,6 @@ export default function ConfluenceOptions() {
   const [loading, setLoading] = useState(false);
   const [accessType, setAccessType] = useState("username");
 
-  const changeAccessType = (value) => {
-    setAccessType(value);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -136,12 +132,12 @@ export default function ConfluenceOptions() {
                   </p>
                 </div>
                 <select
-                  name="userLang"
+                  name="accessType"
                   className="border-none bg-theme-settings-input-bg w-fit mt-2 px-4 border-gray-500 text-white text-sm rounded-lg block py-2"
                   defaultValue={accessType}
-                  onChange={(e) => changeAccessType(e.target.value)}
+                  onChange={(e) => setAccessType(e.target.value)}
                 >
-                 {[
+                  {[
                     {
                       name: "Username and Access Token",
                       value: "username",
