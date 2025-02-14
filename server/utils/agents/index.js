@@ -249,6 +249,8 @@ class AgentHandler {
         return process.env.NOVITA_LLM_MODEL_PREF ?? "deepseek/deepseek-r1";
       case "nvidia-nim":
         return process.env.NVIDIA_NIM_LLM_MODEL_PREF ?? null;
+      case "ppio":
+        return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
       default:
         return null;
     }

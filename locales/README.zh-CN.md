@@ -74,6 +74,7 @@ AnythingLLM的一些酷炫特性
 - [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Hugging Face (聊天模型)](https://huggingface.co/)
+- [PPIO (聊天模型)](https://ppinfra.com?utm_source=github_anything-llm)
 - [Ollama (聊天模型)](https://ollama.ai/)
 - [LM Studio (所有模型)](https://lmstudio.ai)
 - [LocalAi (所有模型)](https://localai.io/)

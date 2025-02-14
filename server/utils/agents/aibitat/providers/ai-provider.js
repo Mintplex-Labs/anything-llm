@@ -223,6 +223,14 @@ class Provider {
           apiKey: null,
           ...config,
         });
+      case "ppio":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.ppinfra.com/v3/openai",
+          },
+          apiKey: process.env.PPIO_API_KEY ?? null,
+          ...config,
+        });
 
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);

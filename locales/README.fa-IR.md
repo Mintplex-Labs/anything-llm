@@ -86,6 +86,7 @@ AnythingLLM اسناد شما را به اشیایی به نام `workspaces` ت
 - [NVIDIA NIM (chat models)](https://build.nvidia.com/explore/discover)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Hugging Face (chat models)](https://huggingface.co/)
+- [PPIO (chat models)](https://ppinfra.com?utm_source=github_anything-llm)
 - [Ollama (chat models)](https://ollama.ai/)
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
