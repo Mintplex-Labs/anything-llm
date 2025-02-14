@@ -40,8 +40,40 @@ class PdfOcrLoader {
         );
         loader.numPages = loader.document.countPages();
         console.log(`📄 ${pdfPath}: 총 ${loader.numPages} 페이지 확인`);
-        loader.outputDir = loader.parseToImage();
+        loader.outputDir = loader._createOutputDir();
         return loader;
+    }
+
+        /**
+     * PDF 파일 경로로부터 출력 디렉토리 경로를 생성하고 디렉토리를 만듭니다.
+     * 
+     * @returns {string} outputDir - 생성된 디렉토리 경로
+     * @private
+     */
+    _createOutputDir() {
+        const { dir, name } = path.parse(this.pdfPath);
+        const outputDir = path.join(dir, name);
+        fs.ensureDirSync(outputDir);
+        console.log(`📂 출력 디렉토리 생성: ${outputDir}`);
+        return outputDir;
+    }
+
+    /**
+     * 단일 PDF 페이지를 이미지로 변환
+     * 
+     * @param {number} pageIndex - 변환할 페이지 인덱스 (1-based)
+     * @param {number} [scaleFactor=2.0] - 생성할 이미지의 해상도 스케일 팩터
+     * @returns {string} outputPath - 생성된 이미지 파일 경로
+     */
+    parsePageToImage(pageIndex, scaleFactor = 2.0) {
+        const highResMatrix = this.mupdfjs.Matrix.scale(scaleFactor, scaleFactor);
+        let page = new this.mupdfjs.PDFPage(this.document, pageIndex - 1);
+        let pixmap = page.toPixmap(highResMatrix, this.mupdfjs.ColorSpace.DeviceRGB, false, true);
+        let pngImage = pixmap.asPNG();
+        const outputPath = path.join(this.outputDir, `${pageIndex}.png`);
+        fs.writeFileSync(outputPath, pngImage);
+        console.log(`✅ 페이지 ${pageIndex} 변환 완료: ${outputPath}`);
+        return outputPath;
     }
 
     /**
@@ -56,24 +88,11 @@ class PdfOcrLoader {
      *         /home/test/1/2.png, ... 파일 생성
      * 
      * @param {number} [scaleFactor=2.0] - 생성할 이미지의 해상도 스케일 팩터
-     * @returns {string} outputDir - 생성된 이미지들이 저장된 디렉토리 경로
      */
     parseToImage(scaleFactor = 2.0) {
-        const { dir, name } = path.parse(this.pdfPath);
-        const outputDir = path.join(dir, name);
-        fs.ensureDirSync(outputDir);
-        console.log(`📂 출력 디렉토리 생성: ${outputDir}`);
-
-        const highResMatrix = this.mupdfjs.Matrix.scale(scaleFactor, scaleFactor);
-        for (let i = 0; i < this.numPages; i++) {
-            let page = new this.mupdfjs.PDFPage(this.document, i);
-            let pixmap = page.toPixmap(highResMatrix, this.mupdfjs.ColorSpace.DeviceRGB, false, true);
-            let pngImage = pixmap.asPNG();
-            const outputPath = path.join(outputDir, `${i + 1}.png`);
-            fs.writeFileSync(outputPath, pngImage);
-            console.log(`✅ 페이지 ${i + 1} 변환 완료: ${outputPath}`);
+        for (let i = 1; i <= this.numPages; i++) {
+            this.parsePageToImage(i, scaleFactor);
         }
-        return outputDir;
     }
 
     /**

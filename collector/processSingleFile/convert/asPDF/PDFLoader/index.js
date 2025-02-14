@@ -73,13 +73,43 @@ class PDFLoader {
       const page = await pdf.getPage(pageNum);
       if (!page) return null;
 
-      const textFromOcr = await this.loader.loadPage(pageNum, true);
-      if (!textFromOcr || !textFromOcr.trim().length) {
-        return null;
+      let text = '';
+
+      const content = await page.getTextContent();
+
+      if (content.items.length !== 0) {
+        let lastY;
+        const textItems = [];
+        for (const item of content.items) {
+          if ("str" in item) {
+            if (lastY === item.transform[5] || !lastY) {
+              textItems.push(item.str);
+            } else {
+              textItems.push(`\n${item.str}`);
+            }
+            lastY = item.transform[5];
+          }
+        }
+
+        text = textItems.join("");
+      } 
+
+      if (content.items.length === 0 || !text.trim()) {
+        try {
+          await this.loader.parsePageToImage(pageNum);
+          text = await this.loader.loadPage(pageNum, true);
+          
+          if (!text || !text.trim().length) {
+            return null;
+          }
+        } catch (error) {
+          console.error(`[Page ${pageNum}] OCR processing error:`, error);
+          return null;
+        }
       }
 
       return {
-        pageContent: textFromOcr.trim(),
+        pageContent: text.trim(),
         metadata: {
           source: this.filePath,
           pdf: {
