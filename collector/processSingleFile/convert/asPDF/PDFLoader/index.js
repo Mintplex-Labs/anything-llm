@@ -1,4 +1,6 @@
 const fs = require("fs").promises;
+const path = require("path");
+const NodeCanvasFactory = require("./CanvasFactory");
 
 class PDFLoader {
   constructor(filePath, { splitPages = true } = {}) {
@@ -83,74 +85,64 @@ class PDFLoader {
    * @returns {Promise<{pageContent: string, metadata: object}[]>} An array of documents with page content and metadata.
    */
   async asOCR() {
-    const { fork } = require("child_process");
-    const path = require("path");
-    const timeout = 300_000;
-    const ocrDataDirectory =
-      process.env.NODE_ENV === "development"
-        ? path.resolve(__dirname, `../../../../../server/storage/models/ocr`)
-        : path.resolve(
-            process.env.STORAGE_DIR ??
-              path.resolve(__dirname, `../../../../../server/storage`),
-            `models/ocr`
-          );
+    const documents = [];
+    const pdfjs = await import("pdf-parse/lib/pdf.js/v2.0.550/build/pdf.js");
+    const buffer = await fs.readFile(this.filePath);
+    const canvasFactory = new NodeCanvasFactory();
+    await canvasFactory.init();
+    global.Image = canvasFactory.Image;
 
-    return new Promise((resolve, _) => {
-      const worker = fork(path.join(__dirname, "ocrWorker.js"));
-      let isResolved = false;
+    const pdfDocument = await pdfjs.getDocument({
+      data: new Uint8Array(buffer),
+      canvasFactory,
+    }).promise;
 
-      const cleanupAndResolve = (result = []) => {
-        if (!isResolved) {
-          isResolved = true;
-          worker.kill("SIGTERM");
-          resolve(result);
-        }
-      };
+    async function getPageAsBuffer(pageNumber, scale = 1) {
+      const page = await pdfDocument.getPage(pageNumber);
+      const viewport = page.getViewport(scale);
+      const { canvas, context } = canvasFactory.create(
+        viewport.width,
+        viewport.height,
+        false
+      );
 
-      worker.on("message", (result) => {
-        if (result.error) {
-          console.log(
-            `[PDFLoader] Error parsing PDF with OCR engine: ${result.error}`
-          );
-          cleanupAndResolve([]);
-        } else {
-          cleanupAndResolve([
-            {
-              pageContent: result.textContent,
-              metadata: {
-                ...this.metadata,
-                source: this.filePath,
-              },
-            },
-          ]);
-        }
-      });
+      await page.render({
+        canvasFactory,
+        canvasContext: context,
+        viewport,
+      }).promise;
 
-      setTimeout(() => {
-        console.log(
-          `[PDFLoader] OCR Worker timeout (${timeout / 1000} seconds)`
-        );
-        cleanupAndResolve([]);
-      }, timeout);
+      return canvas.toBuffer();
+    }
 
-      worker.on("error", (error) => {
-        console.error(`[PDFLoader] OCR Worker error: ${error}`);
-        cleanupAndResolve([]);
-      });
-
-      worker.send({
-        filePath: this.filePath,
-        mode: "speed", // TODO: Make this configurable
-        langs: ["eng"], // TODO: Make this configurable
-        runDir: ocrDataDirectory,
-      });
+    const { createWorker, setLogging, OEM } = require("tesseract.js");
+    setLogging(false);
+    const worker = await createWorker("eng", OEM.LSTM_ONLY, {
+      cachePath: path.resolve(__dirname, `../../../../storage/tmp`),
     });
+
+    for (let i = 1; i <= pdfDocument.numPages; i += 1) {
+      const image = await getPageAsBuffer(i, 5);
+      const { data } = await worker.recognize(image, {}, "text");
+      documents.push({
+        pageContent: data.text,
+        metadata: {
+          ...this.metadata,
+          loc: { pageNumber: i },
+        },
+      });
+    }
+
+    return documents;
   }
 
   async getPdfJS() {
     try {
       const pdfjs = await import("pdf-parse/lib/pdf.js/v1.10.100/build/pdf.js");
-      return { getDocument: pdfjs.getDocument, version: pdfjs.version };
+      return {
+        getDocument: pdfjs.getDocument,
+        version: pdfjs.version,
+      };
     } catch (e) {
       console.error(e);
       throw new Error(
