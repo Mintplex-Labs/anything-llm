@@ -264,7 +264,7 @@ class PPIOLLM {
 }
 
 async function fetchPPIOModels() {
-  return await fetch(`${this.basePath}/models`, {
+  return await fetch(`https://api.ppinfra.com/v3/openai/models`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
