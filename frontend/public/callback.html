@@ -3,9 +3,22 @@
     <meta charset="UTF-8" />
   </head>
 
-  <body>
-    <script type="module">
-      window.close();
+  <body style="background-color: #f1f1f1;">
+    <script>
+      function closeWindow() {
+        window.close();
+      }
     </script>
+    <div style="display: flex; justify-content: center; flex-direction: column; align-items: center; border: 1px solid #ccc; width: fit-content; margin: 0 auto; margin-top: 30px; padding: 20px; background-color: #fff; border-radius: 6px;">
+      <h1 style="margin-bottom: 5px; margin-top: 0px;">Authentication Successful</h1>
+      <h3 style="margin-bottom: 0px; margin-top: 5px;">Microsoft Teams has been successfully authenticated. You may now close this page.</h3>
+    </div>
+
+    <div style="display: flex; justify-content: center; margin-top:10px">
+      <div style="background-color: blue; width: fit-content; border-radius: 6px; padding: 5px 10px; color: #fff; cursor: pointer;" onclick="closeWindow()">
+        Close this page
+      </div>
+    </div>
+    
   </body>
 </html>
