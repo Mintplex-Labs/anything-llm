@@ -185,6 +185,67 @@ class OCRLoader {
     });
     return documents;
   }
+
+  /**
+   * Loads an image file and returns the OCRed text.
+   * @param {string} filePath - The path to the image file.
+   * @param {Object} options - The options for the OCR.
+   * @param {number} options.maxExecutionTime - The maximum execution time of the OCR in milliseconds.
+   * @returns {Promise<string>} The OCRed text.
+   */
+  async ocrImage(filePath, { maxExecutionTime = 300_000 } = {}) {
+    let content = "";
+    let worker = null;
+    if (
+      !filePath ||
+      !fs.existsSync(filePath) ||
+      !fs.statSync(filePath).isFile()
+    ) {
+      this.log(`File ${filePath} does not exist. Skipping OCR.`);
+      return null;
+    }
+
+    const documentTitle = path.basename(filePath);
+    try {
+      this.log(`Starting OCR of ${documentTitle}`);
+      const startTime = Date.now();
+      const { createWorker, OEM } = require("tesseract.js");
+      worker = await createWorker("eng", OEM.LSTM_ONLY, {
+        cachePath: this.cacheDir,
+      });
+
+      // Race the timeout with the OCR
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(
+            new Error(
+              `OCR job took too long to complete (${
+                maxExecutionTime / 1000
+              } seconds)`
+            )
+          );
+        }, maxExecutionTime);
+      });
+
+      const processImage = async () => {
+        const { data } = await worker.recognize(filePath, {}, "text");
+        content = data.text;
+      };
+
+      await Promise.race([timeoutPromise, processImage()]);
+      this.log(`Completed OCR of ${documentTitle}!`, {
+        executionTime: `${((Date.now() - startTime) / 1000).toFixed(2)}s`,
+      });
+
+      return content;
+    } catch (e) {
+      this.log(`Error: ${e.message}`);
+      return null;
+    } finally {
+      if (!worker) return;
+      await worker.terminate();
+    }
+  }
 }
 
 module.exports = OCRLoader;
