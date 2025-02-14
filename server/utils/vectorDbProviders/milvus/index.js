@@ -366,7 +366,9 @@ const Milvus = {
                   id,
                   vector: chunk.values,
                   metadata: chunk.metadata,
-                  text: cleanText(chunk.metadata.text),
+                  ...(process.env.FULL_TEXT_SEARCH === "true" && {
+                    text: cleanText(chunk.metadata.text),
+                  }),
                 };
               });
               const insertResult = await client.insert({
