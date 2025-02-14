@@ -339,7 +339,25 @@ async function streamChatWithWorkspace(
   return;
 }
 
+async function searchWithWorkspace(
+  workspace,
+  message,
+) {
+  const VectorDb = getVectorDbClass();
+
+  const LLMConnector = getLLMProvider({
+    provider: workspace?.chatProvider,
+    model: workspace?.chatModel,
+  });
+  return VectorDb.fullTextSearch(
+    LLMConnector,
+    workspace.slug,
+    message,
+  )
+}
+
 module.exports = {
   VALID_CHAT_MODE,
   streamChatWithWorkspace,
+  searchWithWorkspace
 };
