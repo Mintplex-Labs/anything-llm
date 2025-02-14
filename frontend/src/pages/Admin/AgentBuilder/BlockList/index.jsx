@@ -126,6 +126,8 @@ const BLOCK_INFO = {
     description: "Scrape content from a webpage",
     defaultConfig: {
       url: "",
+      captureAs: "text",
+      querySelector: "",
       resultVariable: "",
     },
     getSummary: (config) => config.url || "No URL specified",
