@@ -1,12 +1,12 @@
-import Github from "./github.svg";
-import Gitlab from "./gitlab.svg";
+import GitHub from "./github.svg";
+import GitLab from "./gitlab.svg";
 import YouTube from "./youtube.svg";
 import Link from "./link.svg";
 import Confluence from "./confluence.jpeg";
 
 const ConnectorImages = {
-  github: Github,
-  gitlab: Gitlab,
+  github: GitHub,
+  gitlab: GitLab,
   youtube: YouTube,
   websiteDepth: Link,
   confluence: Confluence,

@@ -119,7 +119,7 @@ const TRANSLATIONS = {
       "AnythingLLM, OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB ve benzeri güçlü yapay zeka ürünlerini zahmetsizce, düzenli bir paket içinde bir araya getirmenin en kolay yoludur; böylece verimliliğinizi 100 kat artırabilirsiniz.",
     part3:
       "AnythingLLM tamamen yerel olarak makinenizde çok az kaynakla çalışabilir—orada olduğunu bile fark etmezsiniz! GPU gerekmez. Bulut veya şirket içi (on-premises) kurulum da mevcuttur.\nYapay zeka araç ekosistemi her geçen gün daha da güçleniyor. AnythingLLM bu gücü kolayca kullanmanızı sağlar.",
-    githubIssue: "Github'da bir sorun oluşturun",
+    githubIssue: "GitHub'da bir sorun oluşturun",
     user1: "Nasıl başlarım?!",
     part4:
       "Bu çok basit. Tüm koleksiyonlar, 'Çalışma Alanları' (Workspaces) adını verdiğimiz gruplar halinde düzenlenir. Çalışma Alanları; dosyalar, belgeler, resimler, PDF'ler ve diğer dosyaların LLM'lerin anlayabileceği ve sohbette kullanabileceği biçime dönüştürüleceği gruplardır.\n\nİstediğiniz zaman dosya ekleyip kaldırabilirsiniz.",
@@ -130,7 +130,7 @@ const TRANSLATIONS = {
       "AnythingLLM, sıradan bir Dropbox'tan çok daha fazlasıdır.\n\nAnythingLLM, verilerinizle etkileşime geçmenin iki yolunu sunar:\n\n<i>Sorgu (Query):</i> Sohbetleriniz, çalışma alanınızdaki belgelere erişip onlardan elde ettiği verileri veya çıkarımları size sunar. Çalışma Alanınıza daha fazla belge eklemek, onu daha akıllı hâle getirir!\n\n<i>Konuşma (Conversational):</i> Belgeleriniz ve devam eden sohbet geçmişiniz, aynı anda LLM'in bilgi tabanına katkıda bulunur. Bu, gerçek zamanlı metin bilgileri, düzeltmeler veya LLM'nin yanlış anlayabileceği noktaların düzeltilmesi için mükemmeldir.\n\nSohbet esnasında, <i>iki mod arasında istediğiniz an</i> geçiş yapabilirsiniz!",
     user3: "Vay, harika görünüyor. Hemen denemek istiyorum!",
     part6: "İyi eğlenceler!",
-    starOnGithub: "GitHub'da Yıldız Verin",
+    starOnGitHub: "GitHub'da Yıldız Verin",
     contact: "Mintplex Labs ile İletişime Geçin",
   },
   "new-workspace": {
