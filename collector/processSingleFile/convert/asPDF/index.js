@@ -15,7 +15,14 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
 
   console.log(`-- Working ${filename} --`);
   const pageContent = [];
-  const docs = await pdfLoader.load();
+  let docs = await pdfLoader.load();
+
+  if (docs.length === 0) {
+    console.log(
+      `[PDFLoader] No text content found for ${filename}. Attempting OCR parse.`
+    );
+    docs = await pdfLoader.asOCR();
+  }
 
   for (const doc of docs) {
     console.log(
@@ -28,7 +35,9 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
   }
 
   if (!pageContent.length) {
-    console.error(`Resulting text content was empty for ${filename}.`);
+    console.error(
+      `[PDFLoader] Resulting text content was empty for ${filename}.`
+    );
     trashFile(fullFilePath);
     return {
       success: false,
