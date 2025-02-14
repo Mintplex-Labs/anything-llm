@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "Werkruimten Naam",
     error: "fout",
@@ -9,9 +58,10 @@ const TRANSLATIONS = {
     save: "Wijzigingen opslaan",
     previous: "Vorige pagina",
     next: "Volgende pagina",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Instelling Instanties",
     system: "Algemene Instellingen",
@@ -40,8 +90,6 @@ const TRANSLATIONS = {
     contact: "Contact Ondersteuning",
     "browser-extension": "Browser Extensie",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Welkom bij",
@@ -65,7 +113,6 @@ const TRANSLATIONS = {
       "back-to-login": "Terug naar Inloggen",
     },
   },
-
   welcomeMessage: {
     part1:
       "Welkom bij AnythingLLM, AnythingLLM is een open-source AI-tool van Mintplex Labs die alles omzet in een getrainde chatbot waarmee je kunt vragen en chatten. AnythingLLM is een BYOK (bring-your-own-keys) software, dus er is geen abonnement, vergoeding of kosten voor deze software buiten de diensten die je ermee wilt gebruiken.",
@@ -73,7 +120,7 @@ const TRANSLATIONS = {
       "AnythingLLM is de eenvoudigste manier om krachtige AI-producten zoals OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB en andere diensten samen te voegen in een net pakket zonder gedoe om je productiviteit met 100x te verhogen.",
     part3:
       "AnythingLLM kan volledig lokaal op je machine draaien met weinig overhead, je merkt niet eens dat het er is! Geen GPU nodig. Cloud en on-premises installatie is ook beschikbaar.\nHet AI-tooling ecosysteem wordt elke dag krachtiger. AnythingLLM maakt het gemakkelijk te gebruiken.",
-    githubIssue: "Maak een probleem aan op Github",
+    githubIssue: "Maak een probleem aan op GitHub",
     user1: "Hoe kan ik beginnen?",
     part4:
       "Het is simpel. Alle verzamelingen zijn georganiseerd in buckets die we \"Werkruimten\" noemen. Werkruimten zijn buckets van bestanden, documenten, afbeeldingen, PDF's en andere bestanden die worden omgezet in iets wat LLM's kunnen begrijpen en gebruiken in gesprekken.\n\nJe kunt op elk moment bestanden toevoegen en verwijderen.",
@@ -84,16 +131,13 @@ const TRANSLATIONS = {
       "AnythingLLM is meer dan een slimmere Dropbox.\n\nAnythingLLM biedt twee manieren om met je gegevens te praten:\n\n<i>Query:</i> Je chats zullen gegevens of inferenties retourneren die zijn gevonden met de documenten in je werkruimte waar het toegang toe heeft. Meer documenten toevoegen aan de Werkruimte maakt het slimmer! \n\n<i>Conversational:</i> Je documenten + je lopende chatgeschiedenis dragen beide tegelijkertijd bij aan de LLM-kennis. Geweldig voor het toevoegen van realtime tekstgebaseerde informatie of correcties en misverstanden die de LLM kan hebben. \n\nJe kunt tijdens het chatten tussen beide modi schakelen \n<i>in het midden van de chat!</i>",
     user3: "Wauw, dit klinkt geweldig, laat me het al proberen!",
     part6: "Veel Plezier!",
-    starOnGithub: "Ster op GitHub",
+    starOnGitHub: "Ster op GitHub",
     contact: "Contact Mintplex Labs",
   },
-
   "new-workspace": {
     title: "Nieuwe Werkruimte",
     placeholder: "Mijn Werkruimte",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Algemene Instellingen",
     chat: "Chat Instellingen",
@@ -101,8 +145,6 @@ const TRANSLATIONS = {
     members: "Leden",
     agent: "Agent Configuratie",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Vector Teller",
@@ -138,8 +180,6 @@ const TRANSLATIONS = {
         "werkruimte te verwijderen. Dit zal alle vector inbeddingen in je vector database verwijderen.\n\nDe originele bronbestanden blijven onaangetast. Deze actie is onomkeerbaar.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Werkruimte LLM Provider",
@@ -197,8 +237,6 @@ const TRANSLATIONS = {
       hint: "De meeste LLM's hebben verschillende acceptabele reeksen van geldige waarden. Raadpleeg je LLM-provider voor die informatie.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Vector database-identificator",
     snippets: {
@@ -225,8 +263,6 @@ const TRANSLATIONS = {
       success: "Werkruimte vector database is gereset!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "De prestaties van LLM's die geen tool-aanroep expliciet ondersteunen, zijn sterk afhankelijk van de capaciteiten en nauwkeurigheid van het model. Sommige vaardigheden kunnen beperkt of niet-functioneel zijn.",
@@ -246,7 +282,6 @@ const TRANSLATIONS = {
         "Het specifieke LLM-model dat voor het @agent-agent van deze werkruimte zal worden gebruikt.",
       wait: "-- wachten op modellen --",
     },
-
     skill: {
       title: "Standaard agentvaardigheden",
       description:
@@ -285,8 +320,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Werkruimte Chats",
     description:
@@ -301,8 +334,6 @@ const TRANSLATIONS = {
       at: "Verzonden Om",
     },
   },
-
-  // Appearance
   appearance: {
     title: "Verschijning",
     description: "Pas de verschijningsinstellingen van je platform aan.",
@@ -334,8 +365,6 @@ const TRANSLATIONS = {
       link: "Link",
     },
   },
-
-  // API Keys
   api: {
     title: "API-sleutels",
     description:
@@ -348,14 +377,12 @@ const TRANSLATIONS = {
       created: "Aangemaakt",
     },
   },
-
   llm: {
     title: "LLM Voorkeur",
     description:
       "Dit zijn de inloggegevens en instellingen voor je voorkeurs LLM-chat & inbeddingprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders zal AnythingLLM niet goed werken.",
     provider: "LLM Provider",
   },
-
   transcription: {
     title: "Transcriptiemodel Voorkeur",
     description:
@@ -368,7 +395,6 @@ const TRANSLATIONS = {
     "warn-end":
       "Het ingebouwde model wordt automatisch gedownload bij het eerste gebruik.",
   },
-
   embedding: {
     title: "Inbedding Voorkeur",
     "desc-start":
@@ -381,7 +407,6 @@ const TRANSLATIONS = {
         "Er is geen instelling vereist bij gebruik van de ingebouwde inbeddingengine van AnythingLLM.",
     },
   },
-
   text: {
     title: "Tekst Splitsen & Chunking Voorkeuren",
     "desc-start":
@@ -397,15 +422,12 @@ const TRANSLATIONS = {
         "Dit is de maximale lengte van tekens die aanwezig kan zijn in een enkele vector.",
       recommend: "Inbed model maximale lengte is",
     },
-
     overlap: {
       title: "Tekst Chunk Overlap",
       description:
         "Dit is de maximale overlap van tekens die optreedt tijdens het chunking tussen twee aangrenzende tekstchunks.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Vector Database",
     description:
@@ -415,8 +437,6 @@ const TRANSLATIONS = {
       description: "Er is geen configuratie nodig voor LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Inbedbare Chat Widgets",
     description:
@@ -428,7 +448,6 @@ const TRANSLATIONS = {
       Active: "Actieve Domeinen",
     },
   },
-
   "embed-chats": {
     title: "Inbedding Chats",
     export: "Exporteren",
@@ -442,7 +461,6 @@ const TRANSLATIONS = {
       at: "Verzonden Om",
     },
   },
-
   multi: {
     title: "Multi-Gebruikersmodus",
     description:
@@ -467,8 +485,6 @@ const TRANSLATIONS = {
       password: "Instantie wachtwoord",
     },
   },
-
-  // Event Logs
   event: {
     title: "Gebeurtenislogboeken",
     description:
@@ -480,8 +496,6 @@ const TRANSLATIONS = {
       occurred: "Opgetreden Op",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Privacy & Gegevensverwerking",
     description:

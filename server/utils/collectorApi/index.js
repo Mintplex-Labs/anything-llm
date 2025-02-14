@@ -148,10 +148,10 @@ class CollectorApi {
       });
   }
 
-  async getLinkContent(link = "") {
+  async getLinkContent(link = "", captureAs = "text") {
     if (!link) return false;
 
-    const data = JSON.stringify({ link });
+    const data = JSON.stringify({ link, captureAs });
     return await fetch(`${this.endpoint}/util/get-link`, {
       method: "POST",
       headers: {

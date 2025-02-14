@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "Çalışma Alanları Adı",
     error: "hata",
@@ -9,9 +58,10 @@ const TRANSLATIONS = {
     save: "Değişiklikleri Kaydet",
     previous: "Önceki Sayfa",
     next: "Sonraki Sayfa",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Instance Ayarları",
     system: "Genel Ayarlar",
@@ -40,8 +90,6 @@ const TRANSLATIONS = {
     contact: "Destekle İletişime Geçin",
     "browser-extension": "Tarayıcı Uzantısı",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Hoş geldiniz",
@@ -64,7 +112,6 @@ const TRANSLATIONS = {
       "back-to-login": "Girişe Geri Dön",
     },
   },
-
   welcomeMessage: {
     part1:
       "AnythingLLM'e hoş geldiniz. AnythingLLM, Mintplex Labs tarafından geliştirilen açık kaynaklı bir yapay zeka aracıdır ve her şeyi, sorgulayabileceğiniz ve sohbet edebileceğiniz eğitimli bir chatbota dönüştürür. AnythingLLM, BYOK (kendi anahtarlarınızı getirin) yazılımıdır; bu nedenle, kullanmak istediğiniz hizmetler dışında herhangi bir abonelik, ücret ya da ek masraf yoktur.",
@@ -72,7 +119,7 @@ const TRANSLATIONS = {
       "AnythingLLM, OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB ve benzeri güçlü yapay zeka ürünlerini zahmetsizce, düzenli bir paket içinde bir araya getirmenin en kolay yoludur; böylece verimliliğinizi 100 kat artırabilirsiniz.",
     part3:
       "AnythingLLM tamamen yerel olarak makinenizde çok az kaynakla çalışabilir—orada olduğunu bile fark etmezsiniz! GPU gerekmez. Bulut veya şirket içi (on-premises) kurulum da mevcuttur.\nYapay zeka araç ekosistemi her geçen gün daha da güçleniyor. AnythingLLM bu gücü kolayca kullanmanızı sağlar.",
-    githubIssue: "Github'da bir sorun oluşturun",
+    githubIssue: "GitHub'da bir sorun oluşturun",
     user1: "Nasıl başlarım?!",
     part4:
       "Bu çok basit. Tüm koleksiyonlar, 'Çalışma Alanları' (Workspaces) adını verdiğimiz gruplar halinde düzenlenir. Çalışma Alanları; dosyalar, belgeler, resimler, PDF'ler ve diğer dosyaların LLM'lerin anlayabileceği ve sohbette kullanabileceği biçime dönüştürüleceği gruplardır.\n\nİstediğiniz zaman dosya ekleyip kaldırabilirsiniz.",
@@ -83,16 +130,13 @@ const TRANSLATIONS = {
       "AnythingLLM, sıradan bir Dropbox'tan çok daha fazlasıdır.\n\nAnythingLLM, verilerinizle etkileşime geçmenin iki yolunu sunar:\n\n<i>Sorgu (Query):</i> Sohbetleriniz, çalışma alanınızdaki belgelere erişip onlardan elde ettiği verileri veya çıkarımları size sunar. Çalışma Alanınıza daha fazla belge eklemek, onu daha akıllı hâle getirir!\n\n<i>Konuşma (Conversational):</i> Belgeleriniz ve devam eden sohbet geçmişiniz, aynı anda LLM'in bilgi tabanına katkıda bulunur. Bu, gerçek zamanlı metin bilgileri, düzeltmeler veya LLM'nin yanlış anlayabileceği noktaların düzeltilmesi için mükemmeldir.\n\nSohbet esnasında, <i>iki mod arasında istediğiniz an</i> geçiş yapabilirsiniz!",
     user3: "Vay, harika görünüyor. Hemen denemek istiyorum!",
     part6: "İyi eğlenceler!",
-    starOnGithub: "GitHub'da Yıldız Verin",
+    starOnGitHub: "GitHub'da Yıldız Verin",
     contact: "Mintplex Labs ile İletişime Geçin",
   },
-
   "new-workspace": {
     title: "Yeni Çalışma Alanı",
     placeholder: "Benim Çalışma Alanım",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Genel Ayarlar",
     chat: "Sohbet Ayarları",
@@ -100,8 +144,6 @@ const TRANSLATIONS = {
     members: "Üyeler",
     agent: "Ajan Yapılandırması",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Vektör Sayısı",
@@ -138,8 +180,6 @@ const TRANSLATIONS = {
         ". Bu, vektör veritabanınızdaki tüm vektör gömme verilerini kaldıracaktır.\n\nOrijinal kaynak dosyalar etkilenmeyecektir. Bu işlem geri alınamaz.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Çalışma Alanı LLM Sağlayıcısı",
@@ -194,12 +234,9 @@ const TRANSLATIONS = {
         'Bu ayar, LLM yanıtlarının ne kadar "yaratıcı" olacağını kontrol eder.',
       "desc-end":
         "Sayı yükseldikçe yaratıcı yanıtlar artar. Bazı modeller için bu değer çok yüksek ayarlandığında anlamsız yanıtlar ortaya çıkabilir.",
-      hint:
-        "Çoğu LLM'in farklı kabul edilebilir değer aralıkları vardır. Ayrıntılar için LLM sağlayıcınıza danışın.",
+      hint: "Çoğu LLM'in farklı kabul edilebilir değer aralıkları vardır. Ayrıntılar için LLM sağlayıcınıza danışın.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Vektör veritabanı tanımlayıcısı",
     snippets: {
@@ -226,8 +263,6 @@ const TRANSLATIONS = {
       success: "Çalışma alanının vektör veritabanı sıfırlandı!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "Araç çağırmayı açıkça desteklemeyen LLM'lerin performansı, modelin yetenekleri ve doğruluğuna büyük ölçüde bağlıdır. Bazı beceriler kısıtlı veya işlevsiz olabilir.",
@@ -247,7 +282,6 @@ const TRANSLATIONS = {
         "Bu çalışma alanındaki @agent ajanı için kullanılacak spesifik LLM modeli.",
       wait: "-- modeller bekleniyor --",
     },
-
     skill: {
       title: "Varsayılan ajan becerileri",
       description:
@@ -286,8 +320,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Çalışma Alanı Sohbetleri",
     description:
@@ -302,8 +334,6 @@ const TRANSLATIONS = {
       at: "Gönderilme Zamanı",
     },
   },
-
-  // Appearance
   appearance: {
     title: "Görünüm",
     description: "Platformunuzun görünüm ayarlarını özelleştirin.",
@@ -336,8 +366,6 @@ const TRANSLATIONS = {
       link: "Bağlantı",
     },
   },
-
-  // API Keys
   api: {
     title: "API Anahtarları",
     description:
@@ -350,14 +378,12 @@ const TRANSLATIONS = {
       created: "Oluşturulma Tarihi",
     },
   },
-
   llm: {
     title: "LLM Tercihi",
     description:
       "Bu, tercih ettiğiniz LLM sohbet ve gömme sağlayıcısının kimlik bilgileri ile ayarlarıdır. Bu anahtarların güncel ve doğru olması önemlidir; aksi takdirde AnythingLLM doğru çalışmayacaktır.",
     provider: "LLM Sağlayıcısı",
   },
-
   transcription: {
     title: "Transkripsiyon Model Tercihi",
     description:
@@ -370,7 +396,6 @@ const TRANSLATIONS = {
     "warn-end":
       "Yerleşik model, ilk kullanımda otomatik olarak indirilecektir.",
   },
-
   embedding: {
     title: "Gömme (Embedding) Tercihi",
     "desc-start":
@@ -383,8 +408,6 @@ const TRANSLATIONS = {
         "AnythingLLM'nin yerel gömme motoru kullanıldığında ek bir kurulum gerekmez.",
     },
   },
-
-  // Text Splitting & Chunking Preferences
   text: {
     title: "Metin Bölme & Parçalama Tercihleri",
     "desc-start":
@@ -406,8 +429,6 @@ const TRANSLATIONS = {
         "İki bitişik metin parçası arasındaki, parçalama sırasında oluşabilecek maksimum karakter örtüşme miktarını belirtir.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Vektör Veritabanı",
     description:
@@ -417,8 +438,6 @@ const TRANSLATIONS = {
       description: "LanceDB için ek bir yapılandırma gerekmez.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Gömülebilir Sohbet Widget'ları",
     description:
@@ -430,8 +449,6 @@ const TRANSLATIONS = {
       Active: "Aktif Alan Adları",
     },
   },
-
-  // Embed Chats
   "embed-chats": {
     title: "Gömme Sohbetler",
     export: "Dışa Aktar",
@@ -445,8 +462,6 @@ const TRANSLATIONS = {
       at: "Gönderilme Zamanı",
     },
   },
-
-  // Multi-User Mode
   multi: {
     title: "Çoklu Kullanıcı Modu",
     description:
@@ -471,8 +486,6 @@ const TRANSLATIONS = {
       password: "Örnek Şifresi",
     },
   },
-
-  // Event Logs
   event: {
     title: "Olay Kayıtları",
     description:
@@ -484,8 +497,6 @@ const TRANSLATIONS = {
       occurred: "Gerçekleşme Zamanı",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Gizlilik & Veri İşleme",
     description:

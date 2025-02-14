@@ -1,4 +1,4 @@
-# This Github action is for validation of all languages which translations are offered for
+# This GitHub action is for validation of all languages which translations are offered for
 # in the locales folder in `frontend/src`. All languages are compared to the EN translation
 # schema since that is the fallback language setting. This workflow will run on all PRs that
 # modify any files in the translation directory

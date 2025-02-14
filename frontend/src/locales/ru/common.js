@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "Имя рабочих пространств",
     error: "ошибка",
@@ -9,8 +58,10 @@ const TRANSLATIONS = {
     save: "Сохранить изменения",
     previous: "Предыдущая страница",
     next: "Следующая страница",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
   settings: {
     title: "Настройки экземпляра",
     system: "Системные настройки",
@@ -39,7 +90,6 @@ const TRANSLATIONS = {
     contact: "联系支持Связаться с Поддержкой",
     "browser-extension": "Расширение браузера",
   },
-
   login: {
     "multi-user": {
       welcome: "Добро пожаловать в",
@@ -63,7 +113,6 @@ const TRANSLATIONS = {
       "back-to-login": "Вернуться к входу",
     },
   },
-
   welcomeMessage: {
     part1:
       "Добро пожаловать в AnythingLLM, открытый инструмент искусственного интеллекта от Mintplex Labs, который превращает что угодно в обученный чат-бот, с которым вы можете общаться и задавать вопросы. AnythingLLM - это ПО BYOK (принеси свои собственные ключи), поэтому за использование этого ПО нет подписки, платы или других сборов, кроме тех, что вы хотите использовать.",
@@ -71,7 +120,7 @@ const TRANSLATIONS = {
       "AnythingLLM - это самый простой способ объединить мощные продукты ИИ, такие как OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB и другие сервисы, в аккуратный пакет без лишних хлопот, чтобы повысить вашу продуктивность в 100 раз.",
     part3:
       "AnythingLLM может работать полностью локально на вашем компьютере с минимальной нагрузкой, вы даже не заметите его присутствия! GPU не требуется. Также доступна установка в облаке и на локальных серверах.\nЭкосистема инструментов ИИ становится мощнее с каждым днем. AnythingLLM упрощает их использование.",
-    githubIssue: "Создать задачу на Github",
+    githubIssue: "Создать задачу на GitHub",
     user1: "Как начать?!",
     part4:
       'Это просто. Все коллекции организованы в корзины, которые мы называем "Workspaces". Workspaces - это корзины файлов, документов, изображений, PDF и других файлов, которые будут преобразованы в нечто, что LLM сможет понять и использовать в беседе.\n\nВы можете добавлять и удалять файлы в любое время.',
@@ -82,15 +131,13 @@ const TRANSLATIONS = {
       "AnythingLLM - это больше, чем просто умный Dropbox.\n\nAnythingLLM предлагает два способа общения с вашими данными:\n\n<i>Запрос:</i> Ваши чаты будут возвращать данные или выводы, найденные в документах в вашем workspace, к которому у него есть доступ. Добавление большего количества документов в workspace делает его умнее!\n\n<i>Беседа:</i> Ваши документы и история чатов вместе способствуют знаниям LLM одновременно. Отлично подходит для добавления информации в реальном времени на основе текста или исправления и недоразумений, которые может иметь LLM.\n\nВы можете переключаться между режимами <i>прямо во время чата!</i>",
     user3: "Вау, это звучит потрясающе, дайте попробовать прямо сейчас!",
     part6: "Веселитесь!",
-    starOnGithub: "Звезда на GitHub",
+    starOnGitHub: "Звезда на GitHub",
     contact: "Связаться с Mintplex Labs",
   },
-
   "new-workspace": {
     title: "Новая Рабочая Область",
     placeholder: "Моя Рабочая Область",
   },
-
   "workspaces—settings": {
     general: "Общие настройки",
     chat: "Настройки чата",
