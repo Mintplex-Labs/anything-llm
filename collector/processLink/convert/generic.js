@@ -6,9 +6,20 @@ const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
-async function scrapeGenericUrl(link, textOnly = false) {
-  console.log(`-- Working URL ${link} --`);
-  const content = await getPageContent(link);
+/**
+ * Scrape a generic URL and return the content in the specified format
+ * @param {string} link - The URL to scrape
+ * @param {('html' | 'text')} captureAs - The format to capture the page content as
+ * @param {boolean} processAsDocument - Whether to process the content as a document or return the content directly
+ * @returns {Promise<Object>} - The content of the page
+ */
+async function scrapeGenericUrl(
+  link,
+  captureAs = "text",
+  processAsDocument = true
+) {
+  console.log(`-- Working URL ${link} => (${captureAs}) --`);
+  const content = await getPageContent(link, captureAs);
 
   if (!content.length) {
     console.error(`Resulting URL content was empty at ${link}.`);
@@ -19,7 +30,7 @@ async function scrapeGenericUrl(link, textOnly = false) {
     };
   }
 
-  if (textOnly) {
+  if (!processAsDocument) {
     return {
       success: true,
       content,
@@ -52,7 +63,13 @@ async function scrapeGenericUrl(link, textOnly = false) {
   return { success: true, reason: null, documents: [document] };
 }
 
-async function getPageContent(link) {
+/**
+ * Get the content of a page
+ * @param {string} link - The URL to get the content of
+ * @param {('html' | 'text')} captureAs - The format to capture the page content as
+ * @returns {Promise<string>} - The content of the page
+ */
+async function getPageContent(link, captureAs = "text") {
   try {
     let pageContents = [];
     const loader = new PuppeteerWebBaseLoader(link, {
@@ -64,7 +81,11 @@ async function getPageContent(link) {
         waitUntil: "networkidle2",
       },
       async evaluate(page, browser) {
-        const result = await page.evaluate(() => document.body.innerText);
+        const result = await page.evaluate((captureAs) => {
+          if (captureAs === "text") return document.body.innerText;
+          if (captureAs === "html") return document.documentElement.innerHTML;
+          return document.body.innerText;
+        }, captureAs);
         await browser.close();
         return result;
       },
