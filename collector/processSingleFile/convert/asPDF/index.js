@@ -7,6 +7,7 @@ const {
 const { tokenizeString } = require("../../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 const PDFLoader = require("./PDFLoader");
+const OCRLoader = require("../../../utils/OCRLoader");
 
 async function asPdf({ fullFilePath = "", filename = "" }) {
   const pdfLoader = new PDFLoader(fullFilePath, {
@@ -19,9 +20,9 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
 
   if (docs.length === 0) {
     console.log(
-      `[PDFLoader] No text content found for ${filename}. Attempting OCR parse.`
+      `[asPDF] No text content found for ${filename}. Will attempt OCR parse.`
     );
-    docs = await pdfLoader.asOCR();
+    docs = await new OCRLoader().ocrPDF(fullFilePath);
   }
 
   for (const doc of docs) {
@@ -35,9 +36,7 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
   }
 
   if (!pageContent.length) {
-    console.error(
-      `[PDFLoader] Resulting text content was empty for ${filename}.`
-    );
+    console.error(`[asPDF] Resulting text content was empty for ${filename}.`);
     trashFile(fullFilePath);
     return {
       success: false,
