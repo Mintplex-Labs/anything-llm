@@ -27,6 +27,9 @@ const ACCEPTED_MIMES = {
   "video/mp4": [".mp4"],
   "video/mpeg": [".mpeg"],
   "application/epub+zip": [".epub"],
+  "image/png": [".png"],
+  "image/jpeg": [".jpg"],
+  "image/jpg": [".jpg"],
 };
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
@@ -55,6 +58,10 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".wav": "./convert/asAudio.js",
   ".mp4": "./convert/asAudio.js",
   ".mpeg": "./convert/asAudio.js",
+
+  ".png": "./convert/asImage.js",
+  ".jpg": "./convert/asImage.js",
+  ".jpeg": "./convert/asImage.js",
 };
 
 module.exports = {

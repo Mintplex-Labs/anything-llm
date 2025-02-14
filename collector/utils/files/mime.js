@@ -1,6 +1,6 @@
 const MimeLib = require("mime");
 class MimeDetector {
-  nonTextTypes = ["multipart", "image", "model", "audio", "video", "font"];
+  nonTextTypes = ["multipart", "model", "audio", "video", "font"];
   badMimes = [
     "application/octet-stream",
     "application/zip",
