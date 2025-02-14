@@ -250,12 +250,12 @@ const Milvus = {
       const index_params = [
         {
           field_name: "vector",
-          index_type: IndexType.HNSW,
+          index_type: IndexType.AUTOINDEX,
           metric_type: MetricType.COSINE,
           description: "dense_vector",
-          extra_params: {
-            params: '{"M":16,"efConstruction":150}',
-          },
+          // extra_params: {
+          //   params: '{"M":16,"efConstruction":150}',
+          // },
         },
       ];
 
