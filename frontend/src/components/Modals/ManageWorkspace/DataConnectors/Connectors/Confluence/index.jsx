@@ -141,10 +141,19 @@ export default function ConfluenceOptions() {
                   defaultValue={accessType}
                   onChange={(e) => changeAccessType(e.target.value)}
                 >
-                  {["username", "personalToken"].map((type) => {
+                 {[
+                    {
+                      name: "Username and Access Token",
+                      value: "username",
+                    },
+                    {
+                      name: "Personal Access Token",
+                      value: "personalToken",
+                    },
+                  ].map((type) => {
                     return (
-                      <option key={type} value={type}>
-                        {type}
+                      <option key={type.value} value={type.value}>
+                        {type.name}
                       </option>
                     );
                   })}
