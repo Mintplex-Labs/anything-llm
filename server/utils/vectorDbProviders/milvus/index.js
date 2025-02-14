@@ -276,7 +276,10 @@ const Milvus = {
         });
       }
 
-      if (process.env.SPARSE_ENGINE_TYPE === "INTERNAL") {
+      if (
+        process.env.HYBRID_SEARCH_ENABLED === "true" &&
+        process.env.SPARSE_ENGINE_TYPE === "INTERNAL"
+      ) {
         // schema for sparse vector
         fields.push({
           name: "text",
@@ -458,11 +461,16 @@ const Milvus = {
 
         console.log("Inserting vectorized chunks into Milvus.");
         const totalChunk = toChunks(vectors, 100);
+        if (
+          process.env.FULL_TEXT_SEARCH === "true" &&
+          process.env.SPARSE_ENGINE_TYPE === "INTERNAL"
+        ) {
+          cleanContentWithPage = contentWithPages.map((data) => ({
+            text: cleanString(data.text),
+            page: data.page,
+          }));
+        }
 
-        cleanContentWithPage = contentWithPages.map((data) => ({
-          text: cleanString(data.text),
-          page: data.page,
-        }));
         for (const [index, chunk] of totalChunk.entries()) {
           chunks.push(chunk);
           console.log(
@@ -472,10 +480,15 @@ const Milvus = {
             console.log(
               `Processing smallar chunk ${index + 1} out of ${chunk.length}`
             );
-            chunkMatchResult = findBestMatchPage(
-              cleanText(item.metadata.text),
-              cleanContentWithPage
-            );
+            if (
+              process.env.FULL_TEXT_SEARCH === "true" &&
+              process.env.SPARSE_ENGINE_TYPE === "INTERNAL"
+            ) {
+              chunkMatchResult = findBestMatchPage(
+                cleanText(item.metadata.text),
+                cleanContentWithPage
+              );
+            }
 
             return {
               id: item.id,
@@ -487,13 +500,15 @@ const Milvus = {
                 }), // Conditionally add sparse_vector
               metadata: {
                 ...item.metadata,
-                ...(process.env.SPARSE_ENGINE_TYPE === "INTERNAL" && {
-                  page: chunkMatchResult.page,
-                }),
+                ...(process.env.FULL_TEXT_SEARCH === "true" &&
+                  process.env.SPARSE_ENGINE_TYPE === "INTERNAL" && {
+                    page: chunkMatchResult.page,
+                  }),
               },
-              ...(process.env.SPARSE_ENGINE_TYPE === "INTERNAL" && {
-                text: cleanText(item.metadata.text),
-              }), //
+              ...(process.env.HYBRID_SEARCH_ENABLED === "true" &&
+                process.env.SPARSE_ENGINE_TYPE === "INTERNAL" && {
+                  text: cleanText(item.metadata.text),
+                }), //
             };
           });
           let insertResult;
@@ -583,7 +598,8 @@ const Milvus = {
     const queryVector = await LLMConnector.embedTextInput(input);
 
     const sparseVector =
-      process.env.HYBRID_SEARCH_ENABLED === "true"
+      process.env.HYBRID_SEARCH_ENABLED === "true" &&
+      process.env.SPARSE_ENGINE_TYPE === "EXTERNAL"
         ? await getSparseEmbedding(input)
         : null;
 
@@ -690,7 +706,10 @@ const Milvus = {
             ? "sparse_vector"
             : "sparse",
         param: {
-          metric_type: "BM25",
+          metric_type:
+            process.env.SPARSE_ENGINE_TYPE === "EXTERNAL"
+              ? MetricType.IP
+              : MetricType.BM25,
           params: { drop_ratio_build: 0.2 },
         },
         limit: topN,
@@ -795,7 +814,7 @@ const Milvus = {
       data: query,
       anns_field: "sparse",
       param: {
-        metric_type: "BM25",
+        metric_type: MetricType.BM25,
         params: { drop_ratio_build: 0.2 },
       },
       limit: 5,

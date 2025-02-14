@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const { reqBody, userFromSession, multiUserMode } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
-const { streamChatWithWorkspace } = require("../utils/chats/stream");
+const { streamChatWithWorkspace, searchWithWorkspace } = require("../utils/chats/stream");
 const {
   ROLES,
   flexUserRoleValid,
@@ -102,6 +102,22 @@ function chatEndpoints(app) {
           error: e.message,
         });
         response.end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/search",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const { message } = reqBody(request);
+        const result = await searchWithWorkspace(workspace, message);
+        return response.json(result);
+      } catch (e) {
+        console.error(e);
+        
       }
     }
   );
