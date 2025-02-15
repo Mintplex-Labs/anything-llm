@@ -61,41 +61,6 @@ class OCRLoader {
     });
     await pdfSharp.init();
 
-    // WORKING - DO NOT TOUCH
-    // const { default: sharp } = await import("sharp");
-    // for (let k = 1; k <= pdfDocument.numPages; k++) {
-    //   console.log(`Processing page ${k} of ${pdfDocument.numPages}`);
-    //   const page = await pdfDocument.getPage(k);
-    //   const ops = await page.getOperatorList();
-    //   const pageImages = ops.fnArray.length;
-
-    //   for (let i = 0; i < pageImages; i++) {
-    //     try {
-    //       if (
-    //         ops.fnArray[i] === pdfjs.OPS.paintJpegXObject ||
-    //         ops.fnArray[i] === pdfjs.OPS.paintImageXObject ||
-    //         ops.fnArray[i] === pdfjs.OPS.paintInlineImageXObject
-    //       ) {
-    //         const name = ops.argsArray[i][0];
-    //         const img = await page.objs.get(name);
-    //         const { width, height } = img;
-    //         const size = img.data.length;
-    //         const channels = size / width / height;
-    //         const image = sharp(img.data, {
-    //           raw: { width, height, channels },
-    //         });
-
-    //         // Write the image to a file
-    //         await image.toFile(path.resolve(__dirname, `../../storage/`, `pg${k}-${i}.png`));
-    //         await new Promise(resolve => setTimeout(resolve, 1000));
-    //       } else { continue; }
-    //     } catch (error) {
-    //       console.log(error);
-    //       continue;
-    //     }
-    //   }
-    // }
-
     const { createWorker, OEM } = require("tesseract.js");
     const BATCH_SIZE = batchSize;
     const MAX_EXECUTION_TIME = maxExecutionTime;
@@ -158,9 +123,6 @@ class OCRLoader {
               const imageBuffer = await pdfSharp.pageToBuffer({ page });
               if (!imageBuffer) continue;
               const { data } = await worker.recognize(imageBuffer, {}, "text");
-              // const imagePath = path.resolve(__dirname, `../../storage/`, `pg${pageNum}.png`);
-              // const { data } = await worker.recognize(imagePath, {}, "text");
-
               this.log(
                 `✅ \x1b[34m[Worker ${
                   workerIndex + 1
