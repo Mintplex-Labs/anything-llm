@@ -133,7 +133,7 @@ const TRANSLATIONS = {
       "AnythingLLM 不僅是一個更聰明的 Dropbox。\n\nAnythingLLM 提供兩種與您的資料互動的方式：\n\n<i>查詢：</i> 您的對話將會根據工作區中可存取的文件內容，傳回資料或推論。新增更多文件到工作區會讓它變得更聰明！\n\n<i>對話：</i> 您的文件加上持續進行中的對話紀錄，兩者會同時貢獻給 LLM 的知識庫。這非常適合用於附加即時的文字資訊，或是修正 LLM 可能產生的誤解。\n\n您可以在<i>對話過程中</i>隨時切換這兩種模式！",
     user3: "哇，這聽起來很棒，讓我馬上試試看！",
     part6: "祝您使用愉快！",
-    starOnGithub: "在 GitHub 上給我們星星",
+    starOnGitHub: "在 GitHub 上給我們星星",
     contact: "聯絡 Mintplex Labs",
   },
   "new-workspace": {

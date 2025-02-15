@@ -43,6 +43,7 @@
     "body-parser": "^1.20.2",
     "chalk": "^4",
     "check-disk-space": "^3.4.0",
+    "cheerio": "^1.0.0",
     "chromadb": "^1.5.2",
     "cohere-ai": "^7.9.5",
     "cors": "^2.8.5",

@@ -13,7 +13,7 @@ export const DATA_CONNECTORS = {
     name: "GitHub Repo",
     image: ConnectorImages.github,
     description:
-      "Import an entire public or private Github repository in a single click.",
+      "Import an entire public or private GitHub repository in a single click.",
     options: <GithubOptions />,
   },
   gitlab: {
