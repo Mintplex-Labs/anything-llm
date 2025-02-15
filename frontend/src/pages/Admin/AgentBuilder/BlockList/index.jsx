@@ -219,7 +219,7 @@ export default function BlockList({
                   block.type !== BLOCK_TYPES.FINISH &&
                   block.type !== BLOCK_TYPES.FLOW_INFO && (
                     <div className="flex items-center gap-1">
-                      {index > 1 && (
+                      {index > 2 && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
