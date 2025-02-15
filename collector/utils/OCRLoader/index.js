@@ -4,11 +4,10 @@ const path = require("path");
 
 class OCRLoader {
   constructor() {
-    this.cacheDir = path.resolve(
-      process.env.STORAGE_DIR
-        ? path.resolve(process.env.STORAGE_DIR, `models`, `tesseract`)
-        : path.resolve(__dirname, `../../../server/storage/models/tesseract`)
-    );
+    this.cacheDir =
+      process.env.NODE_ENV === "production"
+        ? path.resolve("/storage/models/tesseract") // hardcoded to Render storage mount.
+        : path.resolve(__dirname, "../../../server/storage/models/tesseract");
   }
 
   log(text, ...args) {
