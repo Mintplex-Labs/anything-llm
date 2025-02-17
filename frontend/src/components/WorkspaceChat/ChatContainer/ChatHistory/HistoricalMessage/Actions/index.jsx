@@ -5,6 +5,7 @@ import Workspace from "@/models/workspace";
 import { EditMessageAction } from "./EditMessage";
 import RenderMetrics from "./RenderMetrics";
 import ActionMenu from "./ActionMenu";
+import { useMessageDirection } from "@/hooks/useMessageDirection";
 
 const Actions = ({
   message,
@@ -25,9 +26,12 @@ const Actions = ({
     await Workspace.updateChatFeedback(chatId, slug, updatedFeedback);
     setSelectedFeedback(updatedFeedback);
   };
+  const { msgDirection } = useMessageDirection();
+
+  const direction = role === "user" && msgDirection==='left_right' ? "flex-row-reverse" : ""
 
   return (
-    <div className="flex w-full justify-between items-center">
+    <div className={`flex w-full justify-between items-center ${direction}`}>
       <div className="flex justify-start items-center gap-x-[8px]">
         <CopyMessage message={message} />
         <div className="md:group-hover:opacity-100 transition-all duration-300 md:opacity-0 flex justify-start items-center gap-x-[8px]">

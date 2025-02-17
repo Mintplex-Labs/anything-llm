@@ -16,6 +16,7 @@ import {
   THOUGHT_REGEX_OPEN,
   ThoughtChainComponent,
 } from "../ThoughtContainer";
+import { useMessageDirection } from "@/hooks/useMessageDirection";
 
 const DOMPurify = createDOMPurify(window);
 DOMPurify.setConfig({
@@ -48,7 +49,10 @@ const HistoricalMessage = ({
     element.style.height = "auto";
     element.style.height = element.scrollHeight + "px";
   };
+  const { msgDirection } = useMessageDirection();
 
+  const direction =
+    role === "user" && msgDirection === "left_right" ? "flex-row-reverse" : "";
   if (!!error) {
     return (
       <div
@@ -56,7 +60,7 @@ const HistoricalMessage = ({
         className={`flex justify-center items-end w-full bg-theme-bg-chat`}
       >
         <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-          <div className="flex gap-x-5">
+          <div className={`flex gap-x-5 ${direction}`}>
             <ProfileImage role={role} workspace={workspace} />
             <div className="p-2 rounded-lg bg-red-50 text-red-500">
               <span className="inline-block">
@@ -74,6 +78,7 @@ const HistoricalMessage = ({
   }
 
   if (completeDelete) return null;
+
   return (
     <div
       key={uuid}
@@ -83,7 +88,7 @@ const HistoricalMessage = ({
       } flex justify-center items-end w-full group bg-theme-bg-chat`}
     >
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-        <div className="flex gap-x-5">
+        <div className={`flex gap-x-5 ${direction}`}>
           <div className="flex flex-col items-center">
             <ProfileImage role={role} workspace={workspace} />
             <div className="mt-1 -mb-10">
