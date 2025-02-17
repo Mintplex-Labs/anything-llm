@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/keycloak-js@15.0.2/dist/keycloak.min.js"></script>
+  </head>
+
+  <body>
+    <script type="module">
+      var keycloak = new Keycloak({
+        url: "https://dev2.digixt.ae/auth",
+        realm: "Dof",
+        clientId: "prism-teams",
+      });
+
+      keycloak
+        .init({ onLoad: "login-required" })
+        .success(function (auth) {
+          if (auth) {
+            window.close();
+            // Success
+          } else {
+            // Error
+          }
+        })
+        .error(function () {
+          // Error
+        });
+    </script>
+  </body>
+</html>
