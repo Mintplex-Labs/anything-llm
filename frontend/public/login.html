@@ -14,7 +14,7 @@
 
       keycloak
         .init({ onLoad: "login-required" })
-        .success(function (auth) {
+        .then(function (auth) {
           if (auth) {
             window.close();
             // Success
@@ -22,7 +22,7 @@
             // Error
           }
         })
-        .error(function () {
+        .catch(function () {
           // Error
         });
     </script>
