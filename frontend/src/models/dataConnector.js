@@ -137,6 +137,7 @@ const DataConnector = {
       username,
       accessToken,
       cloud,
+      personalAccessToken,
     }) {
       return await fetch(`${API_BASE}/ext/confluence`, {
         method: "POST",
@@ -147,6 +148,7 @@ const DataConnector = {
           username,
           accessToken,
           cloud,
+          personalAccessToken,
         }),
       })
         .then((res) => res.json())
