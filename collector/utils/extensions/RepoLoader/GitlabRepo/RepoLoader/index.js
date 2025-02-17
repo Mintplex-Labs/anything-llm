@@ -60,7 +60,7 @@ class GitLabRepoLoader {
       };
       match = this.repo.match(pattern);
     }
-    if (!match) return false;
+    if (!match?.groups) return false;
     const { author, project } = match.groups;
 
     this.projectId = encodeURIComponent(`${author}/${project}`);
