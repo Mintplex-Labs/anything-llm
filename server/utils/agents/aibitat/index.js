@@ -798,7 +798,7 @@ ${this.getHistory({ to: route.to })
 
       default:
         throw new Error(
-          `Unknown provider: ${config.provider}. Please use "openai"`
+          `Unknown provider: ${config.provider}. Please use a valid provider.`
         );
     }
   }
