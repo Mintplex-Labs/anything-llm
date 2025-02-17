@@ -122,7 +122,7 @@ function GeminiModelSelection({ apiKey, settings }) {
                   value={model.id}
                   selected={settings?.GeminiLLMModelPref === model.id}
                 >
-                  {model.name}
+                  {model.id}
                 </option>
               ))}
             </optgroup>

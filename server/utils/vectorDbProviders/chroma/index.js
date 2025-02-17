@@ -100,7 +100,7 @@ const Chroma = {
   distanceToSimilarity: function (distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
     if (distance >= 1.0) return 1;
-    if (distance <= 0) return 0;
+    if (distance < 0) return 1 - Math.abs(distance);
     return 1 - distance;
   },
   namespaceCount: async function (_namespace = null) {
@@ -108,14 +108,14 @@ const Chroma = {
     const namespace = await this.namespace(client, this.normalize(_namespace));
     return namespace?.vectorCount || 0;
   },
-  similarityResponse: async function (
+  similarityResponse: async function ({
     client,
     namespace,
     queryVector,
     similarityThreshold = 0.25,
     topN = 4,
-    filterIdentifiers = []
-  ) {
+    filterIdentifiers = [],
+  }) {
     const collection = await client.getCollection({
       name: this.normalize(namespace),
     });
@@ -356,14 +356,14 @@ const Chroma = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+    const { contextTexts, sourceDocuments } = await this.similarityResponse({
       client,
       namespace,
       queryVector,
       similarityThreshold,
       topN,
-      filterIdentifiers
-    );
+      filterIdentifiers,
+    });
 
     const sources = sourceDocuments.map((metadata, i) => {
       return { metadata: { ...metadata, text: contextTexts[i] } };

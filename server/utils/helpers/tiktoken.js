@@ -1,10 +1,36 @@
 const { getEncodingNameForModel, getEncoding } = require("js-tiktoken");
 
+/**
+ * @class TokenManager
+ *
+ * @notice
+ * We cannot do estimation of tokens here like we do in the collector
+ * because we need to know the model to do it.
+ * Other issues are we also do reverse tokenization here for the chat history during cannonballing.
+ * So here we are stuck doing the actual tokenization and encoding until we figure out what to do with prompt overflows.
+ */
 class TokenManager {
+  static instance = null;
+  static currentModel = null;
+
   constructor(model = "gpt-3.5-turbo") {
+    if (TokenManager.instance && TokenManager.currentModel === model) {
+      this.log("Returning existing instance for model:", model);
+      return TokenManager.instance;
+    }
+
     this.model = model;
     this.encoderName = this.#getEncodingFromModel(model);
     this.encoder = getEncoding(this.encoderName);
+
+    TokenManager.instance = this;
+    TokenManager.currentModel = model;
+    this.log("Initialized new TokenManager instance for model:", model);
+    return this;
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[35m[TokenManager]\x1b[0m ${text}`, ...args);
   }
 
   #getEncodingFromModel(model) {
@@ -15,9 +41,11 @@ class TokenManager {
     }
   }
 
-  // Pass in an empty array of disallowedSpecials to handle all tokens as text and to be tokenized.
-  // https://github.com/openai/tiktoken/blob/9e79899bc248d5313c7dd73562b5e211d728723d/tiktoken/core.py#L91C20-L91C38
-  // Returns number[]
+  /**
+   * Pass in an empty array of disallowedSpecials to handle all tokens as text and to be tokenized.
+   * @param {string} input
+   * @returns {number[]}
+   */
   tokensFromString(input = "") {
     try {
       const tokens = this.encoder.encode(String(input), undefined, []);
@@ -28,17 +56,31 @@ class TokenManager {
     }
   }
 
+  /**
+   * Converts an array of tokens back to a string.
+   * @param {number[]} tokens
+   * @returns {string}
+   */
   bytesFromTokens(tokens = []) {
     const bytes = this.encoder.decode(tokens);
     return bytes;
   }
 
-  // Returns number
+  /**
+   * Counts the number of tokens in a string.
+   * @param {string} input
+   * @returns {number}
+   */
   countFromString(input = "") {
     const tokens = this.tokensFromString(input);
     return tokens.length;
   }
 
+  /**
+   * Estimates the number of tokens in a string or array of strings.
+   * @param {string | string[]} input
+   * @returns {number}
+   */
   statsFrom(input) {
     if (typeof input === "string") return this.countFromString(input);
 

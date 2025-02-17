@@ -1,4 +1,57 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    home: {
+      title: "歡迎使用",
+      getStarted: "開始使用",
+    },
+    llm: {
+      title: "LLM 偏好",
+      description:
+        "AnythingLLM 可以與多家 LLM 提供商合作。這將是處理聊天的服務。",
+    },
+    userSetup: {
+      title: "使用者設定",
+      description: "配置您的使用者設定。",
+      howManyUsers: "將有多少使用者使用此實例？",
+      justMe: "只有我",
+      myTeam: "我的團隊",
+      instancePassword: "實例密碼",
+      setPassword: "您想要設定密碼嗎？",
+      passwordReq: "密碼必須至少包含 8 個字元。",
+      passwordWarn: "保存此密碼很重要，因為沒有恢復方法。",
+      adminUsername: "管理員帳號使用者名稱",
+      adminUsernameReq:
+        "使用者名稱必須至少為 6 個字元，並且只能包含小寫字母、數字、底線和連字號，不含空格。",
+      adminPassword: "管理員帳號密碼",
+      adminPasswordReq: "密碼必須至少包含 8 個字元。",
+      teamHint:
+        "預設情況下，您將是唯一的管理員。完成入職後，您可以創建和邀請其他人成為使用者或管理員。不要遺失您的密碼，因為只有管理員可以重置密碼。",
+    },
+    data: {
+      title: "資料處理與隱私",
+      description: "我們致力於在涉及您的個人資料時提供透明和控制。",
+      settingsHint: "這些設定可以隨時在設定中重新配置。",
+    },
+    survey: {
+      title: "歡迎使用 AnythingLLM",
+      description: "幫助我們為您的需求打造 AnythingLLM。可選。",
+      email: "您的電子郵件是什麼？",
+      useCase: "您將如何使用 AnythingLLM？",
+      useCaseWork: "用於工作",
+      useCasePersonal: "用於個人使用",
+      useCaseOther: "其他",
+      comment: "您是如何聽說 AnythingLLM 的？",
+      commentPlaceholder:
+        "Reddit，Twitter，GitHub，YouTube 等 - 讓我們知道您是如何找到我們的！",
+      skip: "跳過調查",
+      thankYou: "感謝您的反饋！",
+    },
+    workspace: {
+      title: "創建您的第一個工作區",
+      description: "創建您的第一個工作區並開始使用 AnythingLLM。",
+    },
+  },
   common: {
     "workspaces-name": "工作區名稱",
     error: "錯誤",
@@ -9,9 +62,10 @@ const TRANSLATIONS = {
     save: "儲存修改",
     previous: "上一頁",
     next: "下一頁",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // 設定側邊欄選單項目
   settings: {
     title: "系統設定",
     system: "一般設定",
@@ -40,8 +94,6 @@ const TRANSLATIONS = {
     contact: "聯絡支援",
     "browser-extension": "瀏覽器擴充功能",
   },
-
-  // 頁面定義
   login: {
     "multi-user": {
       welcome: "歡迎使用",
@@ -64,7 +116,6 @@ const TRANSLATIONS = {
       "back-to-login": "返回登入頁面",
     },
   },
-
   welcomeMessage: {
     part1:
       "歡迎使用 AnythingLLM，AnythingLLM 是由 Mintplex Labs 開發的開源 AI 工具，它能將任何內容轉換成可供查詢和對話的訓練模型對話機器人。AnythingLLM 採用 BYOK（自備金鑰）軟體模式，除了您想使用的服務之外，本軟體不收取任何訂閱費、費用或其他費用。",
@@ -82,16 +133,13 @@ const TRANSLATIONS = {
       "AnythingLLM 不僅是一個更聰明的 Dropbox。\n\nAnythingLLM 提供兩種與您的資料互動的方式：\n\n<i>查詢：</i> 您的對話將會根據工作區中可存取的文件內容，傳回資料或推論。新增更多文件到工作區會讓它變得更聰明！\n\n<i>對話：</i> 您的文件加上持續進行中的對話紀錄，兩者會同時貢獻給 LLM 的知識庫。這非常適合用於附加即時的文字資訊，或是修正 LLM 可能產生的誤解。\n\n您可以在<i>對話過程中</i>隨時切換這兩種模式！",
     user3: "哇，這聽起來很棒，讓我馬上試試看！",
     part6: "祝您使用愉快！",
-    starOnGithub: "在 GitHub 上給我們星星",
+    starOnGitHub: "在 GitHub 上給我們星星",
     contact: "聯絡 Mintplex Labs",
   },
-
   "new-workspace": {
     title: "新增工作區",
     placeholder: "我的工作區",
   },
-
-  // 工作區設定選單項目
   "workspaces—settings": {
     general: "一般設定",
     chat: "對話設定",
@@ -99,8 +147,6 @@ const TRANSLATIONS = {
     members: "成員管理",
     agent: "智慧代理人設定",
   },
-
-  // 一般外觀
   general: {
     vector: {
       title: "向量計數",
@@ -133,8 +179,6 @@ const TRANSLATIONS = {
         "工作區。這將會移除向量資料庫中的所有向量嵌入。\n\n原始檔案將保持不變。此動作無法復原。",
     },
   },
-
-  // 對話設定
   chat: {
     llm: {
       title: "工作區 LLM 提供者",
@@ -188,8 +232,6 @@ const TRANSLATIONS = {
       hint: "大多數 LLM 都有各種可接受的有效值範圍。請查詢您的 LLM 提供者以取得該資訊。",
     },
   },
-
-  // 向量資料庫
   "vector-workspace": {
     identifier: "向量資料庫識別碼",
     snippets: {
@@ -216,8 +258,6 @@ const TRANSLATIONS = {
       success: "工作區向量資料庫已重設！",
     },
   },
-
-  // 智慧代理人設定
   agent: {
     "performance-warning":
       "不直接支援工具呼叫的 LLM 的效能，高度取決於模型的功能和精確度。某些功能可能受限或無法使用。",
@@ -234,7 +274,6 @@ const TRANSLATIONS = {
       description: "此工作區 @agent 智慧代理人將使用的特定 LLM 模型。",
       wait: "-- 等待模型中 --",
     },
-
     skill: {
       title: "預設智慧代理人技能",
       description:
@@ -271,8 +310,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // 工作區對話紀錄
   recorded: {
     title: "工作區對話紀錄",
     description: "這些是所有已記錄的對話和訊息，依建立日期排序。",
@@ -286,8 +323,6 @@ const TRANSLATIONS = {
       at: "傳送時間",
     },
   },
-
-  // 外觀
   appearance: {
     title: "外觀",
     description: "自訂平台的外觀設定。",
@@ -317,8 +352,6 @@ const TRANSLATIONS = {
       link: "連結",
     },
   },
-
-  // API 金鑰
   api: {
     title: "API 金鑰",
     description:
@@ -331,14 +364,12 @@ const TRANSLATIONS = {
       created: "建立時間",
     },
   },
-
   llm: {
     title: "LLM 偏好設定",
     description:
       "這些是您偏好的 LLM 對話與嵌入提供者的憑證和設定。確保這些金鑰是最新且正確的，否則 AnythingLLM 將無法正常運作。",
     provider: "LLM 提供者",
   },
-
   transcription: {
     title: "語音轉錄模型偏好設定",
     description:
@@ -349,7 +380,6 @@ const TRANSLATIONS = {
     "warn-recommend": "我們建議至少 2GB 的記憶體，並且上傳小於 10MB 的檔案。",
     "warn-end": "內建模型將會在第一次使用時自動下載。",
   },
-
   embedding: {
     title: "向量嵌入偏好設定",
     "desc-start":
@@ -361,7 +391,6 @@ const TRANSLATIONS = {
       description: "使用 AnythingLLM 的原生嵌入引擎時，不需要任何設定。",
     },
   },
-
   text: {
     title: "文字分割與區塊化偏好設定",
     "desc-start":
@@ -376,14 +405,11 @@ const TRANSLATIONS = {
       description: "這是單一向量中可包含的最大字元長度。",
       recommend: "嵌入模型的最大長度為",
     },
-
     overlap: {
       title: "文字區塊重疊",
       description: "這是區塊化過程中，兩個相鄰文字區塊之間的最大字元重疊數。",
     },
   },
-
-  // 向量資料庫
   vector: {
     title: "向量資料庫",
     description:
@@ -393,8 +419,6 @@ const TRANSLATIONS = {
       description: "使用 LanceDB 不需要任何設定。",
     },
   },
-
-  // 可嵌入對話小工具
   embeddable: {
     title: "可嵌入對話小工具",
     description:
@@ -406,7 +430,6 @@ const TRANSLATIONS = {
       Active: "已啟用網域",
     },
   },
-
   "embed-chats": {
     title: "嵌入對話",
     export: "匯出",
@@ -419,7 +442,6 @@ const TRANSLATIONS = {
       at: "傳送時間",
     },
   },
-
   multi: {
     title: "多使用者模式",
     description: "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",
@@ -443,8 +465,6 @@ const TRANSLATIONS = {
       password: "系統密碼",
     },
   },
-
-  // 事件記錄
   event: {
     title: "事件記錄",
     description: "檢視此系統上發生的所有動作和事件，以進行監控。",
@@ -455,8 +475,6 @@ const TRANSLATIONS = {
       occurred: "發生時間",
     },
   },
-
-  // 隱私與資料處理
   privacy: {
     title: "隱私與資料處理",
     description:

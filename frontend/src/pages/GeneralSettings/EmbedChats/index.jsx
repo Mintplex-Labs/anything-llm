@@ -174,6 +174,9 @@ export default function EmbedChats() {
             <div className="overflow-x-auto mt-6">
               <ChatsContainer />
             </div>
+            <div className="overflow-x-auto mt-6">
+              <ChatsContainer />
+            </div>
           </div>
         </div>
       </div>

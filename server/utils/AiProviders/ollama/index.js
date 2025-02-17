@@ -1,6 +1,7 @@
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
@@ -120,7 +121,7 @@ class OllamaAILLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent, "spread"),
       {
         role: "user",
         ...this.#generateContent({ userPrompt, attachments }),
@@ -186,7 +187,7 @@ class OllamaAILLM {
         keep_alive: this.keepAlive,
         options: {
           temperature,
-          use_mlock: false,
+          use_mlock: true,
           // There are currently only two performance settings so if its not "base" - its max context.
           ...(this.performanceMode === "base"
             ? {}

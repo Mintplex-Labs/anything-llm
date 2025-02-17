@@ -345,17 +345,17 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 </label>
                 <input
                   type="text"
-                  name="database"
-                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder="the database the agent will interact with"
-                  required={true}
-                  autoComplete="off"
-                  spellCheck={false}
-                />
-              </div>
-              <p className="text-theme-text-secondary text-sm">
-                {assembleConnectionString({ engine, ...config })}
-              </p>
+                    name="database"
+                    className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    placeholder="the database the agent will interact with"
+                    required={true}
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                </div>
+                <p className="text-theme-text-secondary text-sm">
+                  {assembleConnectionString({ engine, ...config })}
+                </p>
             </div>
             <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border px-7 pb-6">
               <button

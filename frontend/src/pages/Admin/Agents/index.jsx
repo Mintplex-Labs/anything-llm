@@ -4,7 +4,15 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import { CaretLeft, CaretRight, Plug, Robot } from "@phosphor-icons/react";
+import {
+  CaretLeft,
+  CaretRight,
+  Plug,
+  Robot,
+  Hammer,
+  FlowArrow,
+  PlusCircle,
+} from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
 import { FullScreenLoader } from "@/components/Preloader";
@@ -13,16 +21,27 @@ import { DefaultBadge } from "./Badges/default";
 import ImportedSkillList from "./Imported/SkillList";
 import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
 import { Tooltip } from "react-tooltip";
+import AgentFlowsList from "./AgentFlows";
+import FlowPanel from "./AgentFlows/FlowPanel";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
+import AgentFlows from "@/models/agentFlows";
 
 export default function AdminAgents() {
+  const formEl = useRef(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState({});
   const [selectedSkill, setSelectedSkill] = useState("");
-  const [agentSkills, setAgentSkills] = useState([]);
-  const [importedSkills, setImportedSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSkillModal, setShowSkillModal] = useState(false);
-  const formEl = useRef(null);
+
+  const [agentSkills, setAgentSkills] = useState([]);
+  const [importedSkills, setImportedSkills] = useState([]);
+  const [disabledAgentSkills, setDisabledAgentSkills] = useState([]);
+
+  const [agentFlows, setAgentFlows] = useState([]);
+  const [selectedFlow, setSelectedFlow] = useState(null);
+  const [activeFlowIds, setActiveFlowIds] = useState([]);
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {
@@ -42,16 +61,34 @@ export default function AdminAgents() {
     async function fetchSettings() {
       const _settings = await System.keys();
       const _preferences = await Admin.systemPreferencesByFields([
+        "disabled_agent_skills",
         "default_agent_skills",
         "imported_agent_skills",
+        "active_agent_flows",
       ]);
+      const { flows = [] } = await AgentFlows.listFlows();
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
+      setDisabledAgentSkills(
+        _preferences.settings?.disabled_agent_skills ?? []
+      );
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
+      setActiveFlowIds(_preferences.settings?.active_agent_flows ?? []);
+      setAgentFlows(flows);
       setLoading(false);
     }
     fetchSettings();
   }, []);
+
+  const toggleDefaultSkill = (skillName) => {
+    setDisabledAgentSkills((prev) => {
+      const updatedSkills = prev.includes(skillName)
+        ? prev.filter((name) => name !== skillName)
+        : [...prev, skillName];
+      setHasChanges(true);
+      return updatedSkills;
+    });
+  };
 
   const toggleAgentSkill = (skillName) => {
     setAgentSkills((prev) => {
@@ -60,6 +97,15 @@ export default function AdminAgents() {
         : [...prev, skillName];
       setHasChanges(true);
       return updatedSkills;
+    });
+  };
+
+  const toggleFlow = (flowId) => {
+    setActiveFlowIds((prev) => {
+      const updatedFlows = prev.includes(flowId)
+        ? prev.filter((id) => id !== flowId)
+        : [...prev, flowId];
+      return updatedFlows;
     });
   };
 
@@ -93,11 +139,15 @@ export default function AdminAgents() {
     if (success) {
       const _settings = await System.keys();
       const _preferences = await Admin.systemPreferencesByFields([
+        "disabled_agent_skills",
         "default_agent_skills",
         "imported_agent_skills",
       ]);
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
+      setDisabledAgentSkills(
+        _preferences.settings?.disabled_agent_skills ?? []
+      );
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
       showToast(`Agent preferences saved successfully.`, "success", {
         clear: true,
@@ -109,10 +159,30 @@ export default function AdminAgents() {
     setHasChanges(false);
   };
 
-  const SelectedSkillComponent = selectedSkill.imported
-    ? ImportedSkillConfig
-    : configurableSkills[selectedSkill]?.component ||
-      defaultSkills[selectedSkill]?.component;
+  const SelectedSkillComponent = selectedFlow
+    ? FlowPanel
+    : selectedSkill?.imported
+      ? ImportedSkillConfig
+      : configurableSkills[selectedSkill]?.component ||
+        defaultSkills[selectedSkill]?.component;
+
+  // Update the click handlers to clear the other selection
+  const handleSkillClick = (skill) => {
+    setSelectedFlow(null);
+    setSelectedSkill(skill);
+    if (isMobile) setShowSkillModal(true);
+  };
+
+  const handleFlowClick = (flow) => {
+    setSelectedSkill(null);
+    setSelectedFlow(flow);
+  };
+
+  const handleFlowDelete = (flowId) => {
+    setSelectedFlow(null);
+    setActiveFlowIds((prev) => prev.filter((id) => id !== flowId));
+    setAgentFlows((prev) => prev.filter((flow) => flow.uuid !== flowId));
+  };
 
   if (loading) {
     return (
@@ -134,7 +204,7 @@ export default function AdminAgents() {
       >
         <form
           onSubmit={handleSubmit}
-          onChange={() => setHasChanges(true)}
+          onChange={() => !selectedFlow && setHasChanges(true)}
           ref={formEl}
           className="flex flex-col w-full p-4 mt-10"
         >
@@ -142,6 +212,11 @@ export default function AdminAgents() {
             name="system::default_agent_skills"
             type="hidden"
             value={agentSkills.join(",")}
+          />
+          <input
+            name="system::disabled_agent_skills"
+            type="hidden"
+            value={disabledAgentSkills.join(",")}
           />
 
           {/* Skill settings nav */}
@@ -152,19 +227,23 @@ export default function AdminAgents() {
             </div>
             {/* Default skills */}
             <SkillList
-              isDefault={true}
               skills={defaultSkills}
               selectedSkill={selectedSkill}
               handleClick={(skill) => {
+                setSelectedFlow(null);
                 setSelectedSkill(skill);
                 setShowSkillModal(true);
               }}
+              activeSkills={Object.keys(defaultSkills).filter(
+                (skill) => !disabledAgentSkills.includes(skill)
+              )}
             />
             {/* Configurable skills */}
             <SkillList
               skills={configurableSkills}
               selectedSkill={selectedSkill}
               handleClick={(skill) => {
+                setSelectedFlow(null);
                 setSelectedSkill(skill);
                 setShowSkillModal(true);
               }}
@@ -178,7 +257,23 @@ export default function AdminAgents() {
             <ImportedSkillList
               skills={importedSkills}
               selectedSkill={selectedSkill}
-              handleClick={setSelectedSkill}
+              handleClick={handleSkillClick}
+            />
+
+            <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
+              <FlowArrow size={24} />
+              <p className="text-lg font-medium">Agent Flows</p>
+            </div>
+            <AgentFlowsList
+              flows={agentFlows}
+              selectedFlow={selectedFlow}
+              handleClick={handleFlowClick}
+            />
+            <input
+              type="hidden"
+              name="system::active_agent_flows"
+              id="active_agent_flows"
+              value={activeFlowIds.join(",")}
             />
           </div>
 
@@ -205,30 +300,57 @@ export default function AdminAgents() {
                   <div className=" bg-theme-bg-secondary text-white rounded-xl p-4">
                     {SelectedSkillComponent ? (
                       <>
-                        {selectedSkill.imported ? (
+                        {selectedFlow ? (
+                          <FlowPanel
+                            flow={selectedFlow}
+                            toggleFlow={toggleFlow}
+                            enabled={activeFlowIds.includes(selectedFlow.uuid)}
+                            onDelete={handleFlowDelete}
+                          />
+                        ) : selectedSkill.imported ? (
                           <ImportedSkillConfig
                             key={selectedSkill.hubId}
                             selectedSkill={selectedSkill}
                             setImportedSkills={setImportedSkills}
                           />
                         ) : (
-                          <SelectedSkillComponent
-                            skill={configurableSkills[selectedSkill]?.skill}
-                            settings={settings}
-                            toggleSkill={toggleAgentSkill}
-                            enabled={agentSkills.includes(
-                              configurableSkills[selectedSkill]?.skill
+                          <>
+                            {defaultSkills?.[selectedSkill] ? (
+                              // The selected skill is a default skill - show the default skill panel
+                              <SelectedSkillComponent
+                                skill={defaultSkills[selectedSkill]?.skill}
+                                settings={settings}
+                                toggleSkill={toggleDefaultSkill}
+                                enabled={
+                                  !disabledAgentSkills.includes(
+                                    defaultSkills[selectedSkill]?.skill
+                                  )
+                                }
+                                setHasChanges={setHasChanges}
+                                {...defaultSkills[selectedSkill]}
+                              />
+                            ) : (
+                              // The selected skill is a configurable skill - show the configurable skill panel
+                              <SelectedSkillComponent
+                                skill={configurableSkills[selectedSkill]?.skill}
+                                settings={settings}
+                                toggleSkill={toggleAgentSkill}
+                                enabled={agentSkills.includes(
+                                  configurableSkills[selectedSkill]?.skill
+                                )}
+                                setHasChanges={setHasChanges}
+                                {...configurableSkills[selectedSkill]}
+                              />
                             )}
-                            setHasChanges={setHasChanges}
-                            {...(configurableSkills[selectedSkill] ||
-                              defaultSkills[selectedSkill])}
-                          />
+                          </>
                         )}
                       </>
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                         <Robot size={40} />
-                        <p className="font-medium">Select an agent skill</p>
+                        <p className="font-medium">
+                          Select an agent skill or flow
+                        </p>
                       </div>
                     )}
                   </div>
@@ -249,7 +371,9 @@ export default function AdminAgents() {
     >
       <form
         onSubmit={handleSubmit}
-        onChange={() => !selectedSkill.imported && setHasChanges(true)}
+        onChange={() =>
+          !selectedSkill?.imported && !selectedFlow && setHasChanges(true)
+        }
         ref={formEl}
         className="flex-1 flex gap-x-6 p-4 mt-10"
       >
@@ -258,38 +382,86 @@ export default function AdminAgents() {
           type="hidden"
           value={agentSkills.join(",")}
         />
+        <input
+          name="system::disabled_agent_skills"
+          type="hidden"
+          value={disabledAgentSkills.join(",")}
+        />
+        <input
+          type="hidden"
+          name="system::active_agent_flows"
+          id="active_agent_flows"
+          value={activeFlowIds.join(",")}
+        />
 
-        {/* Skill settings nav */}
-        <div className="flex flex-col gap-y-[18px]">
-          <div className="text-theme-text-primary flex items-center gap-x-2">
-            <Robot size={24} />
-            <p className="text-lg font-medium">Agent Skills</p>
+        {/* Skill settings nav - Make this section scrollable */}
+        <div className="flex flex-col min-w-[360px] h-[calc(100vh-90px)]">
+          <div className="flex-none mb-4">
+            <div className="text-theme-text-primary flex items-center gap-x-2">
+              <Robot size={24} />
+              <p className="text-lg font-medium">Agent Skills</p>
+            </div>
           </div>
 
-          {/* Default skills list */}
-          <SkillList
-            isDefault={true}
-            skills={defaultSkills}
-            selectedSkill={selectedSkill}
-            handleClick={setSelectedSkill}
-          />
-          {/* Configurable skills */}
-          <SkillList
-            skills={configurableSkills}
-            selectedSkill={selectedSkill}
-            handleClick={setSelectedSkill}
-            activeSkills={agentSkills}
-          />
+          <div className="flex-1 overflow-y-auto pr-2 pb-4">
+            <div className="space-y-4">
+              {/* Default skills list */}
+              <SkillList
+                skills={defaultSkills}
+                selectedSkill={selectedSkill}
+                handleClick={handleSkillClick}
+                activeSkills={Object.keys(defaultSkills).filter(
+                  (skill) => !disabledAgentSkills.includes(skill)
+                )}
+              />
+              {/* Configurable skills */}
+              <SkillList
+                skills={configurableSkills}
+                selectedSkill={selectedSkill}
+                handleClick={handleSkillClick}
+                activeSkills={agentSkills}
+              />
 
-          <div className="text-theme-text-primary flex items-center gap-x-2">
-            <Plug size={24} />
-            <p className="text-lg font-medium">Custom Skills</p>
+              <div className="text-theme-text-primary flex items-center gap-x-2 mt-4">
+                <Plug size={24} />
+                <p className="text-lg font-medium">Custom Skills</p>
+              </div>
+              <ImportedSkillList
+                skills={importedSkills}
+                selectedSkill={selectedSkill}
+                handleClick={handleSkillClick}
+              />
+
+              <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
+                <div className="flex items-center gap-x-2">
+                  <FlowArrow size={24} />
+                  <p className="text-lg font-medium">Agent Flows</p>
+                </div>
+                {agentFlows.length === 0 ? (
+                  <Link
+                    to={paths.agents.builder()}
+                    className="text-cta-button flex items-center gap-x-1 hover:underline"
+                  >
+                    <Hammer size={16} />
+                    <p className="text-sm">Create Flow</p>
+                  </Link>
+                ) : (
+                  <Link
+                    to={paths.agents.builder()}
+                    className="text-theme-text-secondary hover:text-cta-button flex items-center gap-x-1"
+                  >
+                    <Hammer size={16} />
+                    <p className="text-sm">Open Builder</p>
+                  </Link>
+                )}
+              </div>
+              <AgentFlowsList
+                flows={agentFlows}
+                selectedFlow={selectedFlow}
+                handleClick={handleFlowClick}
+              />
+            </div>
           </div>
-          <ImportedSkillList
-            skills={importedSkills}
-            selectedSkill={selectedSkill}
-            handleClick={setSelectedSkill}
-          />
         </div>
 
         {/* Selected agent skill setting panel */}
@@ -297,30 +469,55 @@ export default function AdminAgents() {
           <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
             {SelectedSkillComponent ? (
               <>
-                {selectedSkill.imported ? (
+                {selectedFlow ? (
+                  <FlowPanel
+                    flow={selectedFlow}
+                    toggleFlow={toggleFlow}
+                    enabled={activeFlowIds.includes(selectedFlow.uuid)}
+                    onDelete={handleFlowDelete}
+                  />
+                ) : selectedSkill.imported ? (
                   <ImportedSkillConfig
                     key={selectedSkill.hubId}
                     selectedSkill={selectedSkill}
                     setImportedSkills={setImportedSkills}
                   />
                 ) : (
-                  <SelectedSkillComponent
-                    skill={configurableSkills[selectedSkill]?.skill}
-                    settings={settings}
-                    toggleSkill={toggleAgentSkill}
-                    enabled={agentSkills.includes(
-                      configurableSkills[selectedSkill]?.skill
+                  <>
+                    {defaultSkills?.[selectedSkill] ? (
+                      // The selected skill is a default skill - show the default skill panel
+                      <SelectedSkillComponent
+                        skill={defaultSkills[selectedSkill]?.skill}
+                        settings={settings}
+                        toggleSkill={toggleDefaultSkill}
+                        enabled={
+                          !disabledAgentSkills.includes(
+                            defaultSkills[selectedSkill]?.skill
+                          )
+                        }
+                        setHasChanges={setHasChanges}
+                        {...defaultSkills[selectedSkill]}
+                      />
+                    ) : (
+                      // The selected skill is a configurable skill - show the configurable skill panel
+                      <SelectedSkillComponent
+                        skill={configurableSkills[selectedSkill]?.skill}
+                        settings={settings}
+                        toggleSkill={toggleAgentSkill}
+                        enabled={agentSkills.includes(
+                          configurableSkills[selectedSkill]?.skill
+                        )}
+                        setHasChanges={setHasChanges}
+                        {...configurableSkills[selectedSkill]}
+                      />
                     )}
-                    setHasChanges={setHasChanges}
-                    {...(configurableSkills[selectedSkill] ||
-                      defaultSkills[selectedSkill])}
-                  />
+                  </>
                 )}
               </>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                 <Robot size={40} />
-                <p className="font-medium">Select an agent skill</p>
+                <p className="font-medium">Select an agent skill or flow</p>
               </div>
             )}
           </div>

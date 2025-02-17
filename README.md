@@ -56,10 +56,11 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 ## Cool features of AnythingLLM
 
 - 🆕 [**Custom AI Agents**](https://docs.anythingllm.com/agent/custom/introduction)
+- 🆕 [**No-code AI Agent builder**](https://docs.anythingllm.com/agent-flows/overview)
 - 🖼️ **Multi-modal support (both closed and open-source LLMs!)**
 - 👤 Multi-user instance support and permissioning _Docker version only_
-- 🦾 Agents inside your workspace (browse the web, run code, etc)
-- 💬 [Custom Embeddable Chat widget for your website](./embed/README.md) _Docker version only_
+- 🦾 Agents inside your workspace (browse the web, etc)
+- 💬 [Custom Embeddable Chat widget for your website](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _Docker version only_
 - 📖 Multiple document type support (PDF, TXT, DOCX, etc)
 - Simple chat UI with Drag-n-Drop funcitonality and clear citations.
 - 100% Cloud deployment ready.
@@ -238,7 +239,7 @@ You can verify these claims by finding all locations `Telemetry.sendTelemetry` i
 
 ---
 
-Copyright © 2024 [Mintplex Labs][profile-link]. <br />
+Copyright © 2025 [Mintplex Labs][profile-link]. <br />
 This project is [MIT](./LICENSE) licensed.
 
 <!-- LINK GROUP -->
