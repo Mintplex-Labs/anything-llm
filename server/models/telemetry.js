@@ -44,11 +44,7 @@ const Telemetry = {
       const { client, distinctId: systemId } = await this.connect();
       if (!client) return;
       const distinctId = !!subUserId ? `${systemId}::${subUserId}` : systemId;
-      const properties = {
-        ...eventProperties,
-        runtime: this.runtime(),
-        $process_person_profile: false,
-      };
+      const properties = { ...eventProperties, runtime: this.runtime() };
 
       // Silence some events to keep logs from being too messy in production
       // eg: Tool calls from agents spamming the logs.
