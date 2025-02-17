@@ -26,12 +26,9 @@ const Actions = ({
     await Workspace.updateChatFeedback(chatId, slug, updatedFeedback);
     setSelectedFeedback(updatedFeedback);
   };
-  const { msgDirection } = useMessageDirection();
-
-  const direction = role === "user" && msgDirection==='left_right' ? "flex-row-reverse" : ""
-
+  const { directionCls } = useMessageDirection(role);
   return (
-    <div className={`flex w-full justify-between items-center ${direction}`}>
+    <div className={`flex w-full justify-between items-center ${directionCls}`}>
       <div className="flex justify-start items-center gap-x-[8px]">
         <CopyMessage message={message} />
         <div className="md:group-hover:opacity-100 transition-all duration-300 md:opacity-0 flex justify-start items-center gap-x-[8px]">

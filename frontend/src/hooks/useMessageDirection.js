@@ -4,7 +4,7 @@ import {
 } from "react";
 
 
-export function useMessageDirection() {
+export function useMessageDirection(role) {
   const [msgDirection, setMsgDirection] = useState(() => {
     return localStorage.getItem("msg-direction") || 'left';
   });
@@ -15,8 +15,11 @@ export function useMessageDirection() {
     }
   }, [msgDirection]);
 
+  const isLeftToRight = role === 'user' && msgDirection === 'left_right';
   return {
     msgDirection,
-    setMsgDirection
+    setMsgDirection,
+    isLeftToRight: isLeftToRight,
+    directionCls: isLeftToRight ? 'flex-row-reverse' : ''
   };
 }
