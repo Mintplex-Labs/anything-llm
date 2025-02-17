@@ -53,16 +53,12 @@ class GitLabRepoLoader {
       /(http|https):\/\/[^\/]+\/(?<author>[^\/]+)\/(?<project>.*)/,
     ];
 
-    let match = null;
-    for (const pattern of validPatterns) {
-      if (match?.groups) {
-        break;
-      };
-      match = this.repo.match(pattern);
-    }
+    const match = validPatterns
+      .find((pattern) => this.repo.match(pattern)?.groups)
+      ?.exec(this.repo);
     if (!match?.groups) return false;
-    const { author, project } = match.groups;
 
+    const { author, project } = match.groups;
     this.projectId = encodeURIComponent(`${author}/${project}`);
     this.apiBase = new URL(this.repo).origin;
     this.author = author;
