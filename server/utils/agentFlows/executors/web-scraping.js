@@ -11,13 +11,15 @@ const { summarizeContent } = require("../../agents/aibitat/utils/summarize");
  */
 async function executeWebScraping(config, context) {
   const { url, captureAs = "text" } = config;
-  const { introspect, model, provider } = context;
+  const { introspect, logger, aibitat } = context;
+  logger(
+    `\x1b[43m[AgentFlowToolExecutor]\x1b[0m - executing Web Scraping block`
+  );
 
   if (!url) {
     throw new Error("URL is required for web scraping");
   }
 
-  // Remap the captureAs to the correct mode for the CollectorApi
   const captureMode = captureAs === "querySelector" ? "html" : captureAs;
   introspect(`Scraping the content of ${url} as ${captureAs}`);
   const { success, content } = await new CollectorApi()
@@ -33,29 +35,30 @@ async function executeWebScraping(config, context) {
   }
 
   introspect(`Successfully scraped content from ${url}`);
-
   if (!content || content?.length === 0) {
+    introspect("There was no content to be collected or read.");
     throw new Error("There was no content to be collected or read.");
   }
 
-  const tokenCount = new TokenManager(model).countFromString(content);
-  const contextLimit = Provider.contextLimit(provider, model);
-
-  if (tokenCount < contextLimit) {
-    return content;
-  }
+  const tokenCount = new TokenManager(
+    aibitat.defaultProvider.model
+  ).countFromString(content);
+  const contextLimit = Provider.contextLimit(
+    aibitat.defaultProvider.provider,
+    aibitat.defaultProvider.model
+  );
+  if (tokenCount < contextLimit) return content;
 
   introspect(
-    `This page's content is way too long. I will summarize it right now.`
+    `This page's content is way too long (${tokenCount} tokens). I will summarize it right now.`
   );
   const summary = await summarizeContent({
-    provider,
-    model,
+    provider: aibitat.defaultProvider.provider,
+    model: aibitat.defaultProvider.model,
     content,
   });
 
   introspect(`Successfully summarized content`);
-
   return summary;
 }
 
