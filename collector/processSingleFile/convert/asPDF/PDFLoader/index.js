@@ -79,20 +79,37 @@ class PDFLoader {
 
       if (content.items.length !== 0) {
         let lastY;
+        let isNewLine = true; // 개행 이후 첫 문자열을 확인하는 변수
+        let isEncoded = content.items.some(item => "str" in item && item.str.includes("{LF}")); // 문서가 인코딩되었는지 판별
         const textItems = [];
         for (const item of content.items) {
           if ("str" in item) {
-            if (lastY === item.transform[5] || !lastY) {
-              textItems.push(item.str);
+            if (isEncoded) {
+              // 기존에 인코딩된 문서 처리
+              let processedStr = item.str.replace(/{LF}/g, "\n");
+              
+              if (isNewLine) {
+                  textItems.push(processedStr); // 개행 후 첫 문자열은 그대로 추가
+              } else {
+                  textItems.push(" " + processedStr); // 이후 문자열은 앞에 공백 추가
+              }
+  
+              // 마지막 줄바꿈이 포함되어 있다면 다음 문자는 첫 번째 단어가 됨
+              isNewLine = processedStr.includes("\n");
+  
             } else {
-              textItems.push(`\n${item.str}`);
+              // 인코딩된 줄바꿈이 없는 일반 문서 처리
+              if (lastY === item.transform[5] || !lastY) {
+                textItems.push(item.str);
+              } else {
+                textItems.push(`\n${item.str}`);
+              }
+              lastY = item.transform[5];
             }
-            lastY = item.transform[5];
           }
         }
-
         text = textItems.join("");
-      } 
+      }
 
       if (content.items.length === 0 || !text.trim()) {
         try {
