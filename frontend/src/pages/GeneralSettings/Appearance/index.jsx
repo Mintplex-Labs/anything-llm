@@ -35,7 +35,7 @@ export default function Appearance() {
           </div>
           <ThemePreference />
           <LanguagePreference />
-          <MessageDirection/>
+          <MessageDirection />
           <ShowScrollbar />
           <CustomLogo />
           <CustomAppName />

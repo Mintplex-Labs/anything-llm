@@ -51,7 +51,6 @@ const HistoricalMessage = ({
   };
   const { directionCls } = useMessageDirection(role);
 
-
   if (!!error) {
     return (
       <div

@@ -1,12 +1,8 @@
-import {
-  useState,
-  useEffect
-} from "react";
-
+import { useState, useEffect } from "react";
 
 export function useMessageDirection(role) {
   const [msgDirection, setMsgDirection] = useState(() => {
-    return localStorage.getItem("msg-direction") || 'left';
+    return localStorage.getItem("msg-direction") || "left";
   });
 
   useEffect(() => {
@@ -15,11 +11,11 @@ export function useMessageDirection(role) {
     }
   }, [msgDirection]);
 
-  const isLeftToRight = role === 'user' && msgDirection === 'left_right';
+  const isLeftToRight = role === "user" && msgDirection === "left_right";
   return {
     msgDirection,
     setMsgDirection,
     isLeftToRight: isLeftToRight,
-    directionCls: isLeftToRight ? 'flex-row-reverse' : ''
+    directionCls: isLeftToRight ? "flex-row-reverse" : "",
   };
 }
