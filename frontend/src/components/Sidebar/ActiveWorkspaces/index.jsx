@@ -108,7 +108,6 @@ export default function ActiveWorkspaces() {
                           weight="bold"
                         />
                       </button>
-                      {user?.role !== "manager" && (
                       <Link
                         to={
                           isInWorkspaceSettings
@@ -130,7 +129,6 @@ export default function ActiveWorkspaces() {
                           className="h-[20px] w-[20px]"
                         />
                       </Link>
-                      )}
                     </div>
                   )}
                 </div>
