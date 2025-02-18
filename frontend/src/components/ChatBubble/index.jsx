@@ -2,12 +2,7 @@ import React from "react";
 import UserIcon from "../UserIcon";
 import { userFromStorage } from "@/utils/request";
 import renderMarkdown from "@/utils/chat/markdown";
-import createDOMPurify from "dompurify";
-
-const DOMPurify = createDOMPurify(window);
-DOMPurify.setConfig({
-  ADD_ATTR: ["target", "rel"],
-});
+import DOMPurify from "@/utils/chat/purify";
 
 export default function ChatBubble({ message, type, popMsg }) {
   const isUser = type === "user";

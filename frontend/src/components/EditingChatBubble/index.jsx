@@ -2,12 +2,7 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import renderMarkdown from "@/utils/chat/markdown";
-import createDOMPurify from "dompurify";
-
-const DOMPurify = createDOMPurify(window);
-DOMPurify.setConfig({
-  ADD_ATTR: ["target", "rel"],
-});
+import DOMPurify from "@/utils/chat/purify";
 
 export default function EditingChatBubble({
   message,
