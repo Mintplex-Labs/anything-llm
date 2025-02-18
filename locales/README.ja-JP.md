@@ -78,7 +78,6 @@ AnythingLLMのいくつかのクールな機能
 - [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Hugging Face (チャットモデル)](https://huggingface.co/)
-- [PPIO (チャットモデル)](https://ppinfra.com?utm_source=github_anything-llm)
 - [Ollama (チャットモデル)](https://ollama.ai/)
 - [LM Studio (すべてのモデル)](https://lmstudio.ai)
 - [LocalAi (すべてのモデル)](https://localai.io/)
@@ -91,6 +90,7 @@ AnythingLLMのいくつかのクールな機能
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 
 **埋め込みモデル：**
 

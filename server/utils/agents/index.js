@@ -184,6 +184,10 @@ class AgentHandler {
             "NVIDIA NIM base path must be provided to use agents."
           );
         break;
+      case "ppio":
+        if (!process.env.PPIO_API_KEY)
+          throw new Error("PPIO API Key must be provided to use agents.");
+        break;
 
       default:
         throw new Error(

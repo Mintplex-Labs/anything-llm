@@ -254,7 +254,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     logo: PPIOLogo,
     options: (settings) => <PPIOLLMOptions settings={settings} />,
     description:
-      "PPIO supports stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
+      "Run stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
     requiredConfig: ["PPIOApiKey"],
   },
   {

@@ -210,19 +210,19 @@ const LLMS = [
     description: "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
   },
   {
-    name: "PPIO",
-    value: "ppio",
-    logo: PPIOLogo,
-    options: (settings) => <PPIOLLMOptions settings={settings} />,
-    description:
-      "PPIO supports stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
-  },
-  {
     name: "DeepSeek",
     value: "deepseek",
     logo: DeepSeekLogo,
     options: (settings) => <DeepSeekOptions settings={settings} />,
     description: "Run DeepSeek's powerful LLMs.",
+  },
+  {
+    name: "PPIO",
+    value: "ppio",
+    logo: PPIOLogo,
+    options: (settings) => <PPIOLLMOptions settings={settings} />,
+    description:
+      "Run stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
   },
   {
     name: "APIpie",

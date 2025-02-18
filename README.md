@@ -90,7 +90,6 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [DeepSeek (chat models)](https://deepseek.com/)
-- [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
@@ -100,6 +99,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Apipie](https://apipie.ai/)
 - [xAI](https://x.ai/)
 - [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
+- [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 
 **Embedder models:**
 

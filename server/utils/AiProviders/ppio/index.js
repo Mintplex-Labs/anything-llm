@@ -1,9 +1,6 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
-const { v4: uuidv4 } = require("uuid");
 const {
-  writeResponseChunk,
-  clientAbortedHandler,
-  formatChatHistory,
+  handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const fs = require("fs");
 const path = require("path");
@@ -52,8 +49,8 @@ class PPIOLLM {
     this.log(`Loaded with model: ${this.model}`);
   }
 
-  log(msg) {
-    console.log(`[PPIO] ${msg}`);
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
   async #syncModels() {
@@ -66,12 +63,23 @@ class PPIOLLM {
   }
 
   #cacheIsStale() {
+    const MAX_STALE = 6.048e8; // 1 Week in MS
     if (!fs.existsSync(this.cacheAtPath)) return true;
-    const cacheAge = Number(
-      fs.readFileSync(this.cacheAtPath, { encoding: "utf-8" })
-    );
     const now = Number(new Date());
-    return (now - cacheAge) / 1000 / 60 / 60 >= 24;
+    const timestampMs = Number(fs.readFileSync(this.cacheAtPath));
+    return now - timestampMs > MAX_STALE;
+  }
+
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
   }
 
   models() {
@@ -98,38 +106,41 @@ class PPIOLLM {
     return Object.prototype.hasOwnProperty.call(availableModels, model);
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+          detail: "auto",
+        },
+      });
+    }
+    return content.flat();
+  }
+
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
+    chatHistory = [],
     userPrompt = "",
-    messageHistory = [],
+    // attachments = [], - not supported
   }) {
-    const messages = [];
-    if (systemPrompt?.length > 0) {
-      messages.push({
-        role: "system",
-        content: systemPrompt,
-      });
-    }
-
-    if (contextTexts.length > 0) {
-      messages.push({
-        role: "system",
-        content: `Context:\n${contextTexts
-          .map((text) => `${text?.trim()}`)
-          .join("\n\n")}`,
-      });
-    }
-
-    if (messageHistory.length > 0) {
-      messages.push(...formatChatHistory(messageHistory));
-    }
-
-    messages.push({
-      role: "user",
-      content: userPrompt,
-    });
-    return messages;
+    const prompt = {
+      role: "system",
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
+    };
+    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -187,66 +198,7 @@ class PPIOLLM {
   }
 
   handleStream(response, stream, responseProps) {
-    const { uuid = uuidv4(), sources = [] } = responseProps;
-    return new Promise((resolve) => {
-      let fullText = "";
-      const handleAbort = () => {
-        stream?.endMeasurement({
-          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-        });
-        clientAbortedHandler(resolve, fullText);
-      };
-      response.on("close", handleAbort);
-
-      (async () => {
-        try {
-          for await (const chunk of stream) {
-            if (!chunk?.choices?.[0]?.delta?.content) continue;
-            const content = chunk.choices[0].delta.content;
-            fullText += content;
-
-            writeResponseChunk(response, {
-              uuid,
-              sources,
-              type: "textResponseChunk",
-              textResponse: content,
-              close: false,
-              error: false,
-            });
-          }
-        } catch (error) {
-          console.error("Error in stream processing:", error);
-          writeResponseChunk(response, {
-            uuid,
-            sources,
-            type: "textResponseChunk",
-            textResponse: "",
-            close: true,
-            error: true,
-          });
-          response.removeListener("close", handleAbort);
-          stream?.endMeasurement({
-            completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-          });
-          resolve(fullText);
-          return;
-        }
-
-        writeResponseChunk(response, {
-          uuid,
-          sources,
-          type: "textResponseChunk",
-          textResponse: "",
-          close: true,
-          error: false,
-        });
-        response.removeListener("close", handleAbort);
-        stream?.endMeasurement({
-          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-        });
-        resolve(fullText);
-      })();
-    });
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   async embedTextInput(textInput) {
@@ -275,10 +227,11 @@ async function fetchPPIOModels() {
     .then(({ data = [] }) => {
       const models = {};
       data.forEach((model) => {
+        const organization = model.id?.split("/")?.[0] || "PPIO";
         models[model.id] = {
           id: model.id,
           name: model.display_name || model.title || model.id,
-          organization: "PPIO",
+          organization,
           maxLength: model.context_size || 4096,
         };
       });

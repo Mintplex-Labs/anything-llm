@@ -613,7 +613,6 @@ const KEY_MAPPING = {
   },
 
   // PPIO Options
-  // Novita Options
   PPIOApiKey: {
     envKey: "PPIO_API_KEY",
     checks: [isNotEmpty],
