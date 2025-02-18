@@ -48,11 +48,6 @@ export default function PromptInput({
     setPromptInput(e?.detail ?? "");
   }
 
-  function resetTextAreaHeight() {
-    if (!textareaRef.current) return;
-    textareaRef.current.style.height = "auto";
-  }
-
   useEffect(() => {
     if (!!window)
       window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
