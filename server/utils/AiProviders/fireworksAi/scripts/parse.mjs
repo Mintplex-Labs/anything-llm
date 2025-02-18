@@ -9,8 +9,8 @@
 
 // Update the date below if you run this again because Fireworks AI added new models.
 
-// Last Collected: Sep 27, 2024
-// NOTE: Only managed to collect 20 out of ~100 models!
+// Last Collected: Feb 18, 2024 (added DeepSeek V3 + R1)
+// NOTE: Only managed to collect 22 out of ~100 models!
 // https://fireworks.ai/models lists almost 100 chat language models.
 // If you want to add models, please manually add them to chat_models.txt...
 // ... I tried to write a script to grab them all but gave up after a few hours...

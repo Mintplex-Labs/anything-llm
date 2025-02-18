@@ -1,4 +1,16 @@
 const MODELS = {
+  "accounts/fireworks/models/deepseek-r1": {
+    id: "accounts/fireworks/models/deepseek-r1",
+    organization: "DeepSeek AI",
+    name: "DeepSeek R1",
+    maxLength: 65536,
+  },
+  "accounts/fireworks/models/deepseek-v3": {
+    id: "accounts/fireworks/models/deepseek-v3",
+    organization: "DeepSeek AI",
+    name: "DeepSeek V3",
+    maxLength: 65536,
+  },
   "accounts/fireworks/models/llama-v3p2-3b-instruct": {
     id: "accounts/fireworks/models/llama-v3p2-3b-instruct",
     organization: "Meta",
