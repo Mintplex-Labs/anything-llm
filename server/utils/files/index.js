@@ -94,9 +94,12 @@ async function viewLocalFiles() {
 async function getDocumentsByFolder(folderName = "") {
   if (!folderName) throw new Error("Folder name must be provided.");
   const folderPath = path.resolve(documentsPath, normalizePath(folderName));
-  if (!fs.existsSync(folderPath) || !fs.lstatSync(folderPath).isDirectory()) {
+  if (
+    !isWithin(documentsPath, folderPath) ||
+    !fs.existsSync(folderPath) ||
+    !fs.lstatSync(folderPath).isDirectory()
+  )
     throw new Error(`Folder "${folderName}" does not exist.`);
-  }
 
   const documents = [];
   const filenames = {};
