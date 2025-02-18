@@ -24,7 +24,7 @@
     "js-levenshtein": "^1.1.6",
     "lodash.debounce": "^4.0.8",
     "markdown-it": "^13.0.1",
-    "markdown-it-katex": "^2.0.3",
+    "katex": "^0.6.0",
     "moment": "^2.30.1",
     "onnxruntime-web": "^1.18.0",
     "pluralize": "^8.0.0",

@@ -7,7 +7,7 @@ const { writeToServerDocuments } = require("../../../files");
 const { tokenizeString } = require("../../../tokenizer");
 
 /**
- * Load in a Github Repo recursively or just the top level if no PAT is provided
+ * Load in a GitHub Repo recursively or just the top level if no PAT is provided
  * @param {object} args - forwarded request body params
  * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
  * @returns
@@ -19,11 +19,11 @@ async function loadGithubRepo(args, response) {
   if (!repo.ready)
     return {
       success: false,
-      reason: "Could not prepare Github repo for loading! Check URL",
+      reason: "Could not prepare GitHub repo for loading! Check URL",
     };
 
   console.log(
-    `-- Working Github ${repo.author}/${repo.project}:${repo.branch} --`
+    `-- Working GitHub ${repo.author}/${repo.project}:${repo.branch} --`
   );
   const docs = await repo.recursiveLoader();
   if (!docs.length) {
@@ -33,7 +33,7 @@ async function loadGithubRepo(args, response) {
     };
   }
 
-  console.log(`[Github Loader]: Found ${docs.length} source files. Saving...`);
+  console.log(`[GitHub Loader]: Found ${docs.length} source files. Saving...`);
   const outFolder = slugify(
     `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
@@ -66,10 +66,10 @@ async function loadGithubRepo(args, response) {
       published: new Date().toLocaleString(),
       wordCount: doc.pageContent.split(" ").length,
       pageContent: doc.pageContent,
-      token_count_estimate: tokenizeString(doc.pageContent).length,
+      token_count_estimate: tokenizeString(doc.pageContent),
     };
     console.log(
-      `[Github Loader]: Saving ${doc.metadata.source} to ${outFolder}`
+      `[GitHub Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
     writeToServerDocuments(
       data,
@@ -92,7 +92,7 @@ async function loadGithubRepo(args, response) {
 }
 
 /**
- * Gets the page content from a specific source file in a give Github Repo, not all items in a repo.
+ * Gets the page content from a specific source file in a give GitHub Repo, not all items in a repo.
  * @returns
  */
 async function fetchGithubFile({
@@ -112,11 +112,11 @@ async function fetchGithubFile({
     return {
       success: false,
       content: null,
-      reason: "Could not prepare Github repo for loading! Check URL or PAT.",
+      reason: "Could not prepare GitHub repo for loading! Check URL or PAT.",
     };
 
   console.log(
-    `-- Working Github ${repo.author}/${repo.project}:${repo.branch} file:${sourceFilePath} --`
+    `-- Working GitHub ${repo.author}/${repo.project}:${repo.branch} file:${sourceFilePath} --`
   );
   const fileContent = await repo.fetchSingleFile(sourceFilePath);
   if (!fileContent) {

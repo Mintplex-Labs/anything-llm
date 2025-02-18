@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "Nome delle aree di lavoro",
     error: "errore",
@@ -9,9 +58,10 @@ const TRANSLATIONS = {
     save: "Salva modifiche",
     previous: "Pagina precedente",
     next: "Pagina successiva",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Impostazioni istanza",
     system: "Impostazioni generali",
@@ -40,8 +90,6 @@ const TRANSLATIONS = {
     contact: "Contatta il Supporto",
     "browser-extension": "Estensione del browser",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Benvenuto in",
@@ -65,7 +113,6 @@ const TRANSLATIONS = {
       "back-to-login": "Torna al Login",
     },
   },
-
   welcomeMessage: {
     part1:
       "Benvenuti in AnythingLLM, AnythingLLM è uno strumento di intelligenza artificiale open source di Mintplex Labs che trasforma qualsiasi cosa in un chatbot addestrato con cui puoi effettuare query e chattare. AnythingLLM è un software BYOK (bring-your-own-keys), quindi non ci sono abbonamenti, commissioni o costi per questo software al di fuori dei servizi che vuoi utilizzare.",
@@ -73,7 +120,7 @@ const TRANSLATIONS = {
       "AnythingLLM è il modo più semplice per mettere insieme potenti prodotti di intelligenza artificiale come OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB e altri servizi in un pacchetto ordinato e senza problemi per aumentare la tua produttività di 100 volte.",
     part3:
       "AnythingLLM può essere eseguito completamente in locale sulla tua macchina con un overhead minimo, non ti accorgerai nemmeno che c'è! Non serve GPU. Sono disponibili anche installazioni cloud e on-premise.\nL'ecosistema degli strumenti di intelligenza artificiale diventa ogni giorno più potente. AnythingLLM lo rende facile da usare.",
-    githubIssue: "Apri una issue su Github",
+    githubIssue: "Apri una issue su GitHub",
     user1: "Come posso iniziare?!",
     part4:
       'È semplice. Tutte le raccolte sono organizzate in contenitori che chiamiamo "Aree di lavoro". Le aree di lavoro sono contenitori di file, documenti, immagini, PDF e altri file che verranno trasformati in qualcosa che gli LLM possono comprendere e utilizzare nella conversazione.\n\nPuoi aggiungere e rimuovere file in qualsiasi momento.',
@@ -84,16 +131,13 @@ const TRANSLATIONS = {
       "AnythingLLM è migliore di un Dropbox più smart.\n\nAnythingLLM offre due modi di comunicare con i tuoi dati:\n\n<i>Query:</i> Le tue chat restituiranno dati o inferenze trovate con i documenti nella tua area di lavoro a cui ha accesso. Aggiungere più documenti all'area di lavoro lo rende più intelligente! \n\n<i>Conversazionale:</i> i tuoi documenti + la cronologia delle chat in corso contribuiscono entrambi alla conoscenza dell'LLM allo stesso tempo. Ottimo per aggiungere informazioni basate su testo in tempo reale o correzioni e incomprensioni che l'LLM potrebbe avere. \n\nPuoi passare da una modalità all'altra \n<i>nel mezzo della chat!</i>",
     user3: "Wow, sembra fantastico, fammi provare!",
     part6: "Divertiti!",
-    starOnGithub: "Metti una stella su GitHub",
+    starOnGitHub: "Metti una stella su GitHub",
     contact: "Contatta Mintplex Labs",
   },
-
   "new-workspace": {
     title: "Nuova area di lavoro",
     placeholder: "La mia area di lavoro",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Impostazioni generali",
     chat: "Impostazioni Chat",
@@ -101,8 +145,6 @@ const TRANSLATIONS = {
     members: "Membri",
     agent: "Configurazione dell'agente",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Contatore dei vettori",
@@ -139,8 +181,6 @@ const TRANSLATIONS = {
         "area di lavoro. Verranno rimossi tutti gli embeddings vettoriali nel tuo database vettoriale.\n\nI file sorgente originali rimarranno intatti. Questa azione è irreversibile.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "LLM Provider dell'area di lavoro",
@@ -198,8 +238,6 @@ const TRANSLATIONS = {
       hint: "La maggior parte degli LLM ha vari intervalli accettabili di valori validi. Consulta il tuo fornitore LLM per queste informazioni.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Identificatore del database vettoriale",
     snippets: {
@@ -228,8 +266,6 @@ const TRANSLATIONS = {
         "Il database vettoriale dell'area di lavoro è stato reimpostato!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "Le prestazioni degli LLM che non supportano esplicitamente la chiamata degli strumenti dipendono in larga misura dalle capacità e dalla precisione del modello. Alcune capacità potrebbero essere limitate o non funzionali.",
@@ -249,7 +285,6 @@ const TRANSLATIONS = {
         "Il modello LLM specifico che verrà utilizzato per l'agente @agent di quest'area di lavoro.",
       wait: "-- in attesa dei modelli --",
     },
-
     skill: {
       title: "Abilità predefinite dell'agente",
       description:
@@ -288,8 +323,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Chat dell'area di lavoro",
     description:
@@ -304,8 +337,6 @@ const TRANSLATIONS = {
       at: "Inviato a",
     },
   },
-
-  // Appearance
   appearance: {
     title: "Aspetto",
     description:
@@ -339,8 +370,6 @@ const TRANSLATIONS = {
       link: "Collegamento",
     },
   },
-
-  // API Keys
   api: {
     title: "Chiavi API",
     description:
@@ -353,14 +382,12 @@ const TRANSLATIONS = {
       created: "Creato",
     },
   },
-
   llm: {
     title: "Preferenza LLM",
     description:
       "Queste sono le credenziali e le impostazioni per il tuo provider di chat e embedding LLM preferito. È importante che queste chiavi siano aggiornate e corrette, altrimenti AnythingLLM non funzionerà correttamente.",
     provider: "Provider LLM",
   },
-
   transcription: {
     title: "Preferenza del modello di trascrizione",
     description:
@@ -373,7 +400,6 @@ const TRANSLATIONS = {
     "warn-end":
       "Il modello integrato verrà scaricato automaticamente al primo utilizzo.",
   },
-
   embedding: {
     title: "Preferenza di embedding",
     "desc-start":
@@ -386,7 +412,6 @@ const TRANSLATIONS = {
         "Non è richiesta alcuna configurazione quando si utilizza il motore di embedding nativo di AnythingLLM.",
     },
   },
-
   text: {
     title: "Preferenze di suddivisione e suddivisione in blocchi del testo",
     "desc-start":
@@ -408,8 +433,6 @@ const TRANSLATIONS = {
         "Questa è la sovrapposizione massima di caratteri che si verifica durante la suddivisione in blocchi tra due porzioni di testo adiacenti.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Database vettoriale",
     description:
@@ -419,8 +442,6 @@ const TRANSLATIONS = {
       description: "Non è richiesta alcuna configurazione per LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Widget di chat incorporabili",
     description:
@@ -432,7 +453,6 @@ const TRANSLATIONS = {
       Active: "Domini attivi",
     },
   },
-
   "embed-chats": {
     title: "Chat incorporate",
     export: "Esporta",
@@ -446,7 +466,6 @@ const TRANSLATIONS = {
       at: "Inviato a",
     },
   },
-
   multi: {
     title: "Modalità multi-utente",
     description:
@@ -471,8 +490,6 @@ const TRANSLATIONS = {
       password: "Password istanza",
     },
   },
-
-  // Event Logs
   event: {
     title: "Registro eventi",
     description:
@@ -484,8 +501,6 @@ const TRANSLATIONS = {
       occurred: "Si è verificato alle",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Privacy e gestione dei dati",
     description:

@@ -13,7 +13,6 @@ const SUPPORT_CUSTOM_MODELS = [
   "openai",
   "localai",
   "ollama",
-  "native-llm",
   "togetherai",
   "fireworksai",
   "nvidia-nim",
@@ -49,8 +48,6 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getFireworksAiModels(apiKey);
     case "mistral":
       return await getMistralModels(apiKey);
-    case "native-llm":
-      return nativeLLMModels();
     case "perplexity":
       return await getPerplexityModels();
     case "openrouter":
@@ -148,7 +145,7 @@ async function openAiModels(apiKey = null) {
     .filter(
       (model) =>
         (model.id.includes("gpt") && !model.id.startsWith("ft:")) ||
-        model.id.includes("o1")
+        model.id.startsWith("o") // o1, o1-mini, o3, etc
     )
     .filter(
       (model) =>
@@ -451,26 +448,6 @@ async function getMistralModels(apiKey = null) {
   return { models, error: null };
 }
 
-function nativeLLMModels() {
-  const fs = require("fs");
-  const path = require("path");
-  const storageDir = path.resolve(
-    process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`)
-  );
-  if (!fs.existsSync(storageDir))
-    return { models: [], error: "No model/downloaded storage folder found." };
-
-  const files = fs
-    .readdirSync(storageDir)
-    .filter((file) => file.toLowerCase().includes(".gguf"))
-    .map((file) => {
-      return { id: file, name: file };
-    });
-  return { models: files, error: null };
-}
-
 async function getElevenLabsModels(apiKey = null) {
   const models = (await ElevenLabsTTS.voices(apiKey)).map((model) => {
     return {
@@ -578,8 +555,8 @@ async function getNvidiaNimModels(basePath = null) {
 
     return { models, error: null };
   } catch (e) {
-    console.error(`Nvidia NIM:getNvidiaNimModels`, e.message);
-    return { models: [], error: "Could not fetch Nvidia NIM Models" };
+    console.error(`NVIDIA NIM:getNvidiaNimModels`, e.message);
+    return { models: [], error: "Could not fetch NVIDIA NIM Models" };
   }
 }
 

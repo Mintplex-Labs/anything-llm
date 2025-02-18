@@ -25,6 +25,8 @@ class AzureOpenAiLLM {
       }
     );
     this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
+    this.isOTypeModel =
+      process.env.AZURE_OPENAI_MODEL_TYPE === "reasoning" || false;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -34,7 +36,7 @@ class AzureOpenAiLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.#log(
-      `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens. API-Version: ${this.apiVersion}`
+      `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens.\nAPI-Version: ${this.apiVersion}.\nModel Type: ${this.isOTypeModel ? "reasoning" : "default"}`
     );
   }
 
@@ -55,6 +57,13 @@ class AzureOpenAiLLM {
   }
 
   streamingEnabled() {
+    // Streaming of reasoning models is not supported
+    if (this.isOTypeModel) {
+      this.#log(
+        "Streaming will be disabled. AZURE_OPENAI_MODEL_TYPE is set to 'reasoning'."
+      );
+      return false;
+    }
     return "streamGetChatCompletion" in this;
   }
 
@@ -110,7 +119,7 @@ class AzureOpenAiLLM {
     attachments = [], // This is the specific attachment for only this prompt
   }) {
     const prompt = {
-      role: "system",
+      role: this.isOTypeModel ? "user" : "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [
@@ -131,7 +140,7 @@ class AzureOpenAiLLM {
 
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.getChatCompletions(this.model, messages, {
-        temperature,
+        ...(this.isOTypeModel ? {} : { temperature }),
       })
     );
 
@@ -161,7 +170,7 @@ class AzureOpenAiLLM {
 
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       await this.openai.streamChatCompletions(this.model, messages, {
-        temperature,
+        ...(this.isOTypeModel ? {} : { temperature }),
         n: 1,
       }),
       messages

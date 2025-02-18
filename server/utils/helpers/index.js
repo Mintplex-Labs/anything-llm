@@ -158,9 +158,6 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return new MistralLLM(embedder, model);
-    case "native":
-      const { NativeLLM } = require("../AiProviders/native");
-      return new NativeLLM(embedder, model);
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
       return new HuggingFaceLLM(embedder, model);
@@ -302,9 +299,6 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return MistralLLM;
-    case "native":
-      const { NativeLLM } = require("../AiProviders/native");
-      return NativeLLM;
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
       return HuggingFaceLLM;
