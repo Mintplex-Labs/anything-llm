@@ -1,7 +1,6 @@
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-const NodeCanvasFactory = require("./CanvasFactory");
 
 class OCRLoader {
   constructor() {
@@ -38,15 +37,8 @@ class OCRLoader {
     this.log(`Starting OCR of ${documentTitle}`);
     const pdfjs = await import("pdf-parse/lib/pdf.js/v2.0.550/build/pdf.js");
     let buffer = fs.readFileSync(filePath);
-    const canvasFactory = new NodeCanvasFactory();
-    await canvasFactory.init();
-    global.Image = canvasFactory.Image;
 
-    const pdfDocument = await pdfjs.getDocument({
-      data: new Uint8Array(buffer),
-      canvasFactory,
-    }).promise;
-    buffer = null;
+    const pdfDocument = await pdfjs.getDocument({ data: buffer });
 
     const documents = [];
     const meta = await pdfDocument.getMetadata().catch(() => null);
@@ -60,30 +52,14 @@ class OCRLoader {
       },
     };
 
-    async function getPageAsBuffer(pageNumber, scale = 1) {
-      let canvas = null;
-      let context = null;
-      try {
-        const page = await pdfDocument.getPage(pageNumber);
-        const viewport = page.getViewport(scale);
-        ({ canvas, context } = canvasFactory.create(
-          viewport.width,
-          viewport.height
-        ));
-        await page.render({
-          canvasFactory,
-          canvasContext: context,
-          viewport,
-        }).promise;
-        return canvas.toBuffer();
-      } catch (e) {
-        this.log(`Error getting page as buffer: ${e.message}`);
-        return null;
-      } finally {
-        canvas = null;
-        context = null;
-      }
-    }
+    const pdfSharp = new PDFSharp({
+      validOps: [
+        pdfjs.OPS.paintJpegXObject,
+        pdfjs.OPS.paintImageXObject,
+        pdfjs.OPS.paintInlineImageXObject,
+      ],
+    });
+    await pdfSharp.init();
 
     const { createWorker, OEM } = require("tesseract.js");
     const BATCH_SIZE = batchSize;
@@ -143,7 +119,9 @@ class OCRLoader {
                   workerIndex + 1
                 }]\x1b[0m assigned pg${pageNum}`
               );
-              const imageBuffer = await getPageAsBuffer(pageNum, 5);
+              const page = await pdfDocument.getPage(pageNum);
+              const imageBuffer = await pdfSharp.pageToBuffer({ page });
+              if (!imageBuffer) continue;
               const { data } = await worker.recognize(imageBuffer, {}, "text");
               this.log(
                 `✅ \x1b[34m[Worker ${
@@ -172,7 +150,7 @@ class OCRLoader {
 
       await Promise.race([timeoutPromise, processPages()]);
     } catch (e) {
-      this.log(`Error: ${e.message}`);
+      this.log(`Error: ${e.message}`, e.stack);
     } finally {
       global.Image = undefined;
       await Promise.all(workerPool.map((worker) => worker.terminate()));
@@ -244,6 +222,84 @@ class OCRLoader {
     } finally {
       if (!worker) return;
       await worker.terminate();
+    }
+  }
+}
+
+/**
+ * Converts a PDF page to a buffer using Sharp.
+ * @param {Object} options - The options for the Sharp PDF page object.
+ * @param {Object} options.page - The PDFJS page proxy object.
+ * @returns {Promise<Buffer>} The buffer of the page.
+ */
+class PDFSharp {
+  constructor({ validOps = [] } = {}) {
+    this.sharp = null;
+    this.validOps = validOps;
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[PDFSharp]\x1b[0m ${text}`, ...args);
+  }
+
+  async init() {
+    this.sharp = (await import("sharp")).default;
+  }
+
+  /**
+   * Converts a PDF page to a buffer.
+   * @param {Object} options - The options for the Sharp PDF page object.
+   * @param {Object} options.page - The PDFJS page proxy object.
+   * @returns {Promise<Buffer>} The buffer of the page.
+   */
+  async pageToBuffer({ page }) {
+    if (!this.sharp) await this.init();
+    try {
+      this.log(`Converting page ${page.pageNumber} to image...`);
+      const ops = await page.getOperatorList();
+      const pageImages = ops.fnArray.length;
+
+      for (let i = 0; i < pageImages; i++) {
+        try {
+          if (!this.validOps.includes(ops.fnArray[i])) continue;
+
+          const name = ops.argsArray[i][0];
+          const img = await page.objs.get(name);
+          const { width, height } = img;
+          const size = img.data.length;
+          const channels = size / width / height;
+          const targetDPI = 70;
+          const targetWidth = Math.floor(width * (targetDPI / 72));
+          const targetHeight = Math.floor(height * (targetDPI / 72));
+
+          const image = this.sharp(img.data, {
+            raw: { width, height, channels },
+            density: targetDPI,
+          })
+            .resize({
+              width: targetWidth,
+              height: targetHeight,
+              fit: "fill",
+            })
+            .withMetadata({
+              density: targetDPI,
+              resolution: targetDPI,
+            })
+            .png();
+
+          // For debugging purposes
+          // await image.toFile(path.resolve(__dirname, `../../storage/`, `pg${page.pageNumber}.png`));
+          return await image.toBuffer();
+        } catch (error) {
+          this.log(`Iteration error: ${error.message}`, error.stack);
+          continue;
+        }
+      }
+      this.log(`No valid images found on page ${page.pageNumber}`);
+      return null;
+    } catch (error) {
+      this.log(`Error: ${error.message}`, error.stack);
+      return null;
     }
   }
 }
