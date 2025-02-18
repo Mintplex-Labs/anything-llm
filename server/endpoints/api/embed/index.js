@@ -127,7 +127,7 @@ function apiEmbedEndpoints(app) {
       try {
         const { embedUuid } = request.params;
         const chats = await EmbedChats.where({
-          embed_config: { uuid: embedUuid },
+          embed_config: { uuid: String(embedUuid) },
         });
         response.status(200).json({ chats });
       } catch (e) {
@@ -187,8 +187,8 @@ function apiEmbedEndpoints(app) {
       try {
         const { embedUuid, sessionUuid } = request.params;
         const chats = await EmbedChats.where({
-          embed_config: { uuid: embedUuid },
-          session_id: sessionUuid,
+          embed_config: { uuid: String(embedUuid) },
+          session_id: String(sessionUuid),
         });
         response.status(200).json({ chats });
       } catch (e) {
@@ -261,13 +261,16 @@ function apiEmbedEndpoints(app) {
     try {
       const data = reqBody(request);
 
-      // Validate workspace exists
+      if (!data.workspace_slug)
+        return response
+          .status(400)
+          .json({ error: "Workspace slug is required" });
       const workspace = await Workspace.get({
-        slug: data.workspace_slug,
+        slug: String(data.workspace_slug),
       });
-      if (!workspace) {
+
+      if (!workspace)
         return response.status(404).json({ error: "Workspace not found" });
-      }
 
       const { embed, message: error } = await EmbedConfig.new({
         ...data,
@@ -388,12 +391,9 @@ function apiEmbedEndpoints(app) {
     */
       try {
         const { embedUuid } = request.params;
-
         const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
-        if (!embed) {
+        if (!embed)
           return response.status(404).json({ error: "Embed not found" });
-        }
-
         const success = await EmbedConfig.delete({ id: embed.id });
         response
           .status(200)
