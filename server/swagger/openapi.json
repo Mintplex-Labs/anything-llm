@@ -3577,6 +3577,226 @@
           }
         }
       }
+    },
+    "/v1/embed/new": {
+      "post": {
+        "tags": [
+          "Embed"
+        ],
+        "description": "Create a new embed configuration",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "embed": {
+                      "id": 1,
+                      "uuid": "embed-uuid-1",
+                      "enabled": true,
+                      "chat_mode": "chat",
+                      "allowlist_domains": [
+                        "example.com"
+                      ],
+                      "allow_model_override": false,
+                      "allow_temperature_override": false,
+                      "allow_prompt_override": false,
+                      "max_chats_per_day": 100,
+                      "max_chats_per_session": 10,
+                      "createdAt": "2023-04-01T12:00:00Z",
+                      "workspace_slug": "workspace-slug-1"
+                    },
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workspace not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object containing embed configuration details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "workspace_slug": "workspace-slug-1",
+                  "chat_mode": "chat",
+                  "allowlist_domains": [
+                    "example.com"
+                  ],
+                  "allow_model_override": false,
+                  "allow_temperature_override": false,
+                  "allow_prompt_override": false,
+                  "max_chats_per_day": 100,
+                  "max_chats_per_session": 10
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/embed/{embedUuid}": {
+      "post": {
+        "tags": [
+          "Embed"
+        ],
+        "description": "Update an existing embed configuration",
+        "parameters": [
+          {
+            "name": "embedUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "UUID of the embed to update"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Embed not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object containing embed configuration updates",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "enabled": true,
+                  "chat_mode": "chat",
+                  "allowlist_domains": [
+                    "example.com"
+                  ],
+                  "allow_model_override": false,
+                  "allow_temperature_override": false,
+                  "allow_prompt_override": false,
+                  "max_chats_per_day": 100,
+                  "max_chats_per_session": 10
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Embed"
+        ],
+        "description": "Delete an existing embed configuration",
+        "parameters": [
+          {
+            "name": "embedUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "UUID of the embed to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Embed not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "components": {
