@@ -25,7 +25,7 @@ class LocalAiLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7;
+    this.defaultTemp = 0.0; //0.7
   }
 
   #appendContext(contextTexts = []) {
