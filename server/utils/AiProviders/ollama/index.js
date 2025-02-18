@@ -31,7 +31,6 @@ class OllamaAILLM {
     const headers = this.authToken
       ? { Authorization: `Bearer ${this.authToken}` }
       : {};
-    console.log("headers", headers);
     this.client = new Ollama({ host: this.basePath, headers: headers });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
@@ -278,9 +277,8 @@ class OllamaAILLM {
           type: "textResponseChunk",
           textResponse: "",
           close: true,
-          error: `Ollama:streaming - could not stream chat. ${
-            error?.cause ?? error.message
-          }`,
+          error: `Ollama:streaming - could not stream chat. ${error?.cause ?? error.message
+            }`,
         });
         response.removeListener("close", handleAbort);
         stream?.endMeasurement(usage);
