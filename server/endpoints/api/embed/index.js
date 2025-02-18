@@ -350,6 +350,60 @@ function apiEmbedEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.delete(
+    "/v1/embed/:embedUuid",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Embed']
+      #swagger.description = 'Delete an existing embed configuration'
+      #swagger.parameters['embedUuid'] = {
+        in: 'path',
+        description: 'UUID of the embed to delete',
+        required: true,
+        type: 'string'
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                "success": true,
+                "error": null
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[404] = {
+        description: "Embed not found"
+      }
+    */
+      try {
+        const { embedUuid } = request.params;
+
+        const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
+        if (!embed) {
+          return response.status(404).json({ error: "Embed not found" });
+        }
+
+        const success = await EmbedConfig.delete({ id: embed.id });
+        response
+          .status(200)
+          .json({ success, error: success ? null : "Failed to delete embed" });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { apiEmbedEndpoints };
