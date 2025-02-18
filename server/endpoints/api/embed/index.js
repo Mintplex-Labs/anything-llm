@@ -123,6 +123,17 @@ function apiEmbedEndpoints(app) {
       #swagger.responses[404] = {
         description: "Embed not found",
       }
+    */
+      try {
+        const { embedUuid } = request.params;
+        const chats = await EmbedChats.where({
+          embed_config: { uuid: embedUuid },
+        });
+        response.status(200).json({ chats });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
   );
 
@@ -172,6 +183,18 @@ function apiEmbedEndpoints(app) {
       #swagger.responses[404] = {
         description: "Embed or session not found",
       }
+    */
+      try {
+        const { embedUuid, sessionUuid } = request.params;
+        const chats = await EmbedChats.where({
+          embed_config: { uuid: embedUuid },
+          session_id: sessionUuid,
+        });
+        response.status(200).json({ chats });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
   );
 
@@ -187,7 +210,7 @@ function apiEmbedEndpoints(app) {
             schema: {
               type: 'object',
               example: {
-                "workspace_id": 1,
+                "workspace_slug": "workspace-slug-1",
                 "chat_mode": "chat",
                 "allowlist_domains": ["example.com"],
                 "allow_model_override": false,
@@ -218,7 +241,7 @@ function apiEmbedEndpoints(app) {
                   "max_chats_per_day": 100,
                   "max_chats_per_session": 10,
                   "createdAt": "2023-04-01T12:00:00Z",
-                  "workspace_id": 1
+                  "workspace_slug": "workspace-slug-1"
                 },
                 "error": null
               }
@@ -235,25 +258,28 @@ function apiEmbedEndpoints(app) {
         description: "Workspace not found"
       }
     */
-      try {
-        const data = reqBody(request);
+    try {
+      const data = reqBody(request);
 
-        // Validate workspace exists
-        const workspace = await Workspace.get({
-          id: Number(data.workspace_id),
-        });
-        if (!workspace) {
-          return response.status(404).json({ error: "Workspace not found" });
-        }
-
-        const { embed, message: error } = await EmbedConfig.new(data);
-        response.status(200).json({ embed, error });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
+      // Validate workspace exists
+      const workspace = await Workspace.get({
+        slug: data.workspace_slug,
+      });
+      if (!workspace) {
+        return response.status(404).json({ error: "Workspace not found" });
       }
+
+      const { embed, message: error } = await EmbedConfig.new({
+        ...data,
+        workspace_id: workspace.id,
+      });
+
+      response.status(200).json({ embed, error });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
     }
-  );
+  });
 
   app.post("/v1/embed/:embedUuid", [validApiKey], async (request, response) => {
     /*
