@@ -1124,6 +1124,30 @@
         }
       }
     },
+    "/v1/documents/folder/{folderName}": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Get all documents stored in a specific folder.",
+        "parameters": [
+          {
+            "name": "folderName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Name of the folder to retrieve documents from"
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
     "/v1/document/accepted-file-types": {
       "get": {
         "tags": [
