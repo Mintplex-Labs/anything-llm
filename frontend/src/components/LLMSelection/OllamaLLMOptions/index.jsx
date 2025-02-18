@@ -19,7 +19,7 @@ export default function OllamaLLMOptions({ settings }) {
   } = useProviderEndpointAutoDiscovery({
     provider: "ollama",
     initialBasePath: settings?.OllamaLLMBasePath,
-    initialAuthToken: settings?.OllamaAuthToken,
+    initialAuthToken: settings?.OllamaLLMAuthToken,
     ENDPOINTS: OLLAMA_COMMON_URLS,
   });
   const [performanceMode, setPerformanceMode] = useState(
@@ -193,13 +193,20 @@ export default function OllamaLLMOptions({ settings }) {
             </div>
           </div>
           <div className="w-full flex items-start gap-4">
-            <div className="flex flex-col w-60">
+            <div className="flex flex-col w-100">
               <label className="text-white text-sm font-semibold">
                 Auth Token
               </label>
+              <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+                Enter a <code>Bearer</code> Auth Token for interacting with your
+                Ollama server.
+                <br />
+                Used <b>only</b> if running Ollama behind an authentication
+                server.
+              </p>
               <input
                 type="password"
-                name="OllamaAuthToken"
+                name="OllamaLLMAuthToken"
                 className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5"
                 placeholder="Ollama Auth Token"
                 value={authTokenValue.value}

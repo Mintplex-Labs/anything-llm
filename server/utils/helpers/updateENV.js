@@ -120,7 +120,7 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
     checks: [isInteger],
   },
-  OllamaAuthToken: {
+  OllamaLLMAuthToken: {
     envKey: "OLLAMA_AUTH_TOKEN",
     checks: [],
   },

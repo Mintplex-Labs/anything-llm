@@ -31,6 +31,7 @@ class OllamaAILLM {
     const headers = this.authToken
       ? { Authorization: `Bearer ${this.authToken}` }
       : {};
+    console.log("headers", headers);
     this.client = new Ollama({ host: this.basePath, headers: headers });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
