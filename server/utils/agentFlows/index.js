@@ -141,25 +141,14 @@ class AgentFlows {
    * Execute a flow by UUID
    * @param {string} uuid - The UUID of the flow to execute
    * @param {Object} variables - Initial variables for the flow
-   * @param {Function} introspectFn - Function to introspect the flow
-   * @param {Function} loggerFn - Function to log the flow
+   * @param {Object} aibitat - The aibitat instance from the agent handler
    * @returns {Promise<Object>} Result of flow execution
    */
-  static async executeFlow(
-    uuid,
-    variables = {},
-    introspectFn = null,
-    loggerFn = null
-  ) {
+  static async executeFlow(uuid, variables = {}, aibitat = null) {
     const flow = AgentFlows.loadFlow(uuid);
     if (!flow) throw new Error(`Flow ${uuid} not found`);
     const flowExecutor = new FlowExecutor();
-    return await flowExecutor.executeFlow(
-      flow,
-      variables,
-      introspectFn,
-      loggerFn
-    );
+    return await flowExecutor.executeFlow(flow, variables, aibitat);
   }
 
   /**
@@ -210,12 +199,7 @@ class AgentFlows {
             },
             handler: async (args) => {
               aibitat.introspect(`Executing flow: ${flow.name}`);
-              const result = await AgentFlows.executeFlow(
-                uuid,
-                args,
-                aibitat.introspect,
-                aibitat.handlerProps.log
-              );
+              const result = await AgentFlows.executeFlow(uuid, args, aibitat);
               if (!result.success) {
                 aibitat.introspect(
                   `Flow failed: ${result.results[0]?.error || "Unknown error"}`
