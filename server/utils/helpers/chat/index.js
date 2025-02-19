@@ -77,9 +77,8 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
       compressedContext = context;
     }
 
-    system.content = `${compressedPrompt}${
-      compressedContext ? `\nContext: ${compressedContext}` : ""
-    }`;
+    system.content = `${compressedPrompt}${compressedContext ? `\nContext: ${compressedContext}` : ""
+      }`;
     resolve(system);
   });
 
@@ -285,23 +284,22 @@ function truncateContent({
   const initialInputSize = tokenManager.countFromString(input);
   if (initialInputSize < targetTokenSize) return input;
 
+  console.log("input", input.length);
   if (input.length > TokenManager.MAX_STRING_LENGTH) {
-    console.log(
-      "[truncateContent] input is very large - truncating end of input by estimate"
-    );
-    const charsToTruncate = targetTokenSize * TokenManager.TOKEN_CHAR_ESTIMATE; // approx number of chars to truncate
-    return input.slice(0, input.length - charsToTruncate);
+    const charsToTruncate = input.length - (targetTokenSize * TokenManager.TOKEN_CHAR_ESTIMATE); // approx number of chars to truncate
+    const truncatedInput = input.slice(0, (charsToTruncate * -1)) + truncText;
+    console.log(`[Content Truncated (estimated)] ${initialInputSize} input tokens, target: ${targetTokenSize} => ${tokenManager.countFromString(truncatedInput)} tokens.`);
+    return truncatedInput;
   }
 
   // if the delta is the token difference between where our prompt is in size
   // and where we ideally need to land.
+  console.log("Truncating input via encoder method");
   const delta = initialInputSize - targetTokenSize;
   const tokenChunks = tokenManager.tokensFromString(input);
   const allowedTokens = tokenChunks.slice(0, delta * -1);
   const truncatedText = tokenManager.bytesFromTokens(allowedTokens) + truncText;
-  console.log(
-    `[Content Truncated] ${initialInputSize} => ${allowedTokens.length} tokens.`
-  );
+  console.log(`[Content Truncated (encoder)] ${initialInputSize} tokens, target: ${targetTokenSize} => ${allowedTokens.length} tokens.`);
   return truncatedText;
 }
 
