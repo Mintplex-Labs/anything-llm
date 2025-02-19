@@ -62,7 +62,7 @@ class OpenAIProvider extends Provider {
    * @param functions
    * @returns The completion.
    */
-  async complete(messages, functions = null) {
+  async complete(messages, functions = []) {
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,

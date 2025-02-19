@@ -116,7 +116,7 @@ class AnthropicProvider extends Provider {
    * @param functions
    * @returns The completion.
    */
-  async complete(messages, functions = null) {
+  async complete(messages, functions = []) {
     try {
       const [systemPrompt, chats] = this.#parseSystemPrompt(messages);
       const response = await this.client.messages.create(
@@ -151,22 +151,22 @@ class AnthropicProvider extends Provider {
         thought =
           thought?.content?.length > 0
             ? {
-                role: thought.role,
-                content: [
-                  { type: "text", text: thought.content },
-                  { ...toolCall },
-                ],
-              }
+              role: thought.role,
+              content: [
+                { type: "text", text: thought.content },
+                { ...toolCall },
+              ],
+            }
             : {
-                role: "assistant",
-                content: [
-                  {
-                    type: "text",
-                    text: `Okay, im going to use ${toolCall.name} to help me.`,
-                  },
-                  { ...toolCall },
-                ],
-              };
+              role: "assistant",
+              content: [
+                {
+                  type: "text",
+                  text: `Okay, im going to use ${toolCall.name} to help me.`,
+                },
+                { ...toolCall },
+              ],
+            };
 
         // Modify messages forcefully by adding system thought so that tool_use/tool_result
         // messaging works with Anthropic's disastrous tool calling API.
