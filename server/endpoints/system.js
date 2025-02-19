@@ -953,7 +953,8 @@ function systemEndpoints(app) {
         const { models, error } = await getCustomModels(
           provider,
           apiKey,
-          basePath
+          basePath,
+          response.locals?.user?.role
         );
         return response.status(200).json({
           models,
