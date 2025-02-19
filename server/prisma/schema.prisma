@@ -325,8 +325,8 @@ model temporary_auth_tokens {
 
 model groups {
   id               Int                @id @default(autoincrement())
-  group_name       String             @unique(map: "group_groupname_key")
-  suspended        Int                @default(0)
+  groupname        String             @unique(map: "group_groupname_key")
+  uid              String?
   createdBy        Int
   createdAt        DateTime           @default(now())
   lastUpdatedAt    DateTime           @default(now())
