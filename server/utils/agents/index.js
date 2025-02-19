@@ -390,7 +390,7 @@ class AgentHandler {
       // Load flow plugin. This is marked by `@@flow_` in the array of functions to load.
       if (name.startsWith("@@flow_")) {
         const uuid = name.replace("@@flow_", "");
-        const plugin = AgentFlows.loadFlowPlugin(uuid);
+        const plugin = AgentFlows.loadFlowPlugin(uuid, this.aibitat);
         if (!plugin) {
           this.log(
             `Flow ${uuid} not found in flows directory. Skipping inclusion to agent cluster.`

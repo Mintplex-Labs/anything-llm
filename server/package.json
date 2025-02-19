@@ -63,7 +63,7 @@
     "mssql": "^10.0.2",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.9.8",
-    "ollama": "^0.5.0",
+    "ollama": "^0.5.10",
     "openai": "4.38.5",
     "pg": "^8.11.5",
     "pinecone-client": "^1.1.0",

@@ -4,6 +4,7 @@ const { handleAPIFileUpload } = require("../../../utils/files/multer");
 const {
   viewLocalFiles,
   findDocumentInDocuments,
+  getDocumentsByFolder,
   normalizePath,
   isWithin,
 } = require("../../../utils/files");
@@ -394,6 +395,66 @@ function apiDocumentEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.get(
+    "/v1/documents/folder/:folderName",
+    [validApiKey],
+    async (request, response) => {
+      /*
+    #swagger.tags = ['Documents']
+    #swagger.description = 'Get all documents stored in a specific folder.'
+    #swagger.parameters['folderName'] = {
+      in: 'path',
+      description: 'Name of the folder to retrieve documents from',
+      required: true,
+      type: 'string'
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              folder: "custom-documents",
+              documents: [
+                {
+                  name: "document1.json",
+                  type: "file",
+                  cached: false,
+                  pinnedWorkspaces: [],
+                  watched: false,
+                  more: "data",
+                },
+                {
+                  name: "document2.json",
+                  type: "file",
+                  cached: false,
+                  pinnedWorkspaces: [],
+                  watched: false,
+                  more: "data",
+                },
+              ]
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+      try {
+        const { folderName } = request.params;
+        const result = await getDocumentsByFolder(folderName);
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 
   app.get(
     "/v1/document/accepted-file-types",
