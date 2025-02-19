@@ -411,7 +411,7 @@ function apiWorkspaceEndpoints(app) {
         const {
           apiSessionId = null,
           limit = 100,
-          orderBy = "desc",
+          orderBy = "asc",
         } = request.query;
         const workspace = await Workspace.get({ slug });
 
@@ -423,7 +423,7 @@ function apiWorkspaceEndpoints(app) {
         const validLimit = Math.max(1, parseInt(limit));
         const validOrderBy = ["asc", "desc"].includes(orderBy)
           ? orderBy
-          : "desc";
+          : "asc";
 
         const history = apiSessionId
           ? await WorkspaceChats.forWorkspaceByApiSessionId(
