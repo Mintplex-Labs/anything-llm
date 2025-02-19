@@ -246,6 +246,56 @@ const Admin = {
         return false;
       });
   },
+  getGroups: async () => {
+    return await fetch(`${API_BASE}/admin/groups`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.groups || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  addGroup: async (data) => {
+    return await fetch(`${API_BASE}/admin/groups/new`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((res) => res || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  updateGroup: async (data, id) => {
+    return await fetch(`${API_BASE}/admin/group/${id}`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((res) => res || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  deleteGroup: async (id) => {
+    return await fetch(`${API_BASE}/admin/group/${id}`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
 };
 
 export default Admin;

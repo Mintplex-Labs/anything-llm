@@ -317,6 +317,11 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin", "manager"],
             },
             {
+              btnText: t("settings.groups"),
+              href: paths.settings.groups(),
+              roles: ["admin", "manager"],
+            },
+            {
               btnText: t("settings.workspaces"),
               href: paths.settings.workspaces(),
               roles: ["admin", "manager"],

@@ -29,6 +29,7 @@ const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
 const AdminAgents = lazy(() => import("@/pages/Admin/Agents"));
 const AdminFileManagement = lazy(() => import("@/pages/Admin/FileManagement"));
+const AdminGroups = lazy(() => import("@/pages/Admin/Groups"));
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
 const GeneralAppearance = lazy(
   () => import("@/pages/GeneralSettings/Appearance")
@@ -162,6 +163,10 @@ export default function App() {
                   <Route
                     path="/settings/file-management"
                     element={<AdminRoute Component={AdminFileManagement} />}
+                  />
+                  <Route
+                    path="/settings/groups"
+                    element={<AdminRoute Component={AdminGroups} />}
                   />
                   <Route
                     path="/settings/embed-config"
