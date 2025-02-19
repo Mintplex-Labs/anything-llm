@@ -8,6 +8,7 @@ import { X, Gear } from "@phosphor-icons/react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
+import { userFromStorage } from "@/utils/request";
 
 const NO_SETTINGS_NEEDED = ["default"];
 export default function WorkspaceLLM({
@@ -20,6 +21,9 @@ export default function WorkspaceLLM({
   const { isOpen, openModal, closeModal } = useModal();
   const { name, value, logo, description } = llm;
   const [currentSettings, setCurrentSettings] = useState(settings);
+  const [isConfigured, setIsConfigured] = useState(false);
+  const user = userFromStorage();
+  const isManager = user?.role === "manager";
 
   useEffect(() => {
     async function getSettings() {
@@ -31,7 +35,21 @@ export default function WorkspaceLLM({
     getSettings();
   }, [isOpen]);
 
+  useEffect(() => {
+    // Check if provider is configured by verifying all required config is set
+    const requiresAdditionalSetup = (llm.requiredConfig || []).some(
+      (key) => !currentSettings[key]
+    );
+    setIsConfigured(!requiresAdditionalSetup);
+  }, [currentSettings, llm]);
+
   function handleProviderSelection() {
+    // If user is a manager, they can only select configured providers
+    if (isManager && !isConfigured && !NO_SETTINGS_NEEDED.includes(value)) {
+      showToast("This provider needs to be configured by an admin.", "error");
+      return;
+    }
+
     // Determine if provider needs additional setup because its minimum required keys are
     // not yet set in settings.
     if (!checked) {
@@ -39,6 +57,10 @@ export default function WorkspaceLLM({
         (key) => !currentSettings[key]
       );
       if (requiresAdditionalSetup) {
+        if (isManager) {
+          showToast("This provider needs to be configured by an admin.", "error");
+          return;
+        }
         openModal();
         return;
       }
@@ -74,7 +96,7 @@ export default function WorkspaceLLM({
               <div className="mt-1 text-xs text-white/60">{description}</div>
             </div>
           </div>
-          {checked && !NO_SETTINGS_NEEDED.includes(value) && (
+          {checked && !NO_SETTINGS_NEEDED.includes(value) && !isManager && (
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -88,14 +110,16 @@ export default function WorkspaceLLM({
           )}
         </div>
       </div>
-      <SetupProvider
-        availableLLMs={availableLLMs}
-        isOpen={isOpen}
-        provider={value}
-        closeModal={closeModal}
-        postSubmit={onClick}
-        settings={currentSettings}
-      />
+      {!isManager && (
+        <SetupProvider
+          availableLLMs={availableLLMs}
+          isOpen={isOpen}
+          provider={value}
+          closeModal={closeModal}
+          postSubmit={onClick}
+          settings={currentSettings}
+        />
+      )}
     </>
   );
 }

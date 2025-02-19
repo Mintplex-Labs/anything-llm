@@ -7,6 +7,7 @@ import ChatModelSelection from "./ChatModelSelection";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
+import { userFromStorage } from "@/utils/request";
 
 // Some providers do not support model selection via /models.
 // In that case we allow the user to enter the model name manually and hope they
@@ -29,23 +30,35 @@ const LLM_DEFAULT = {
   requiredConfig: [],
 };
 
-const LLMS = [LLM_DEFAULT, ...AVAILABLE_LLM_PROVIDERS].filter(
-  (llm) => !DISABLED_PROVIDERS.includes(llm.value)
-);
-
 export default function WorkspaceLLMSelection({
   settings,
   workspace,
   setHasChanges,
 }) {
-  const [filteredLLMs, setFilteredLLMs] = useState([]);
-  const [selectedLLM, setSelectedLLM] = useState(
-    workspace?.chatProvider ?? "default"
-  );
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredLLMs, setFilteredLLMs] = useState([]);
+  const [selectedLLM, setSelectedLLM] = useState(workspace?.chatProvider ?? "default");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { t } = useTranslation();
+  const user = userFromStorage();
+  const isManager = user?.role === "manager";
+
+  // Filter out disabled providers and for managers, only show configured providers
+  const LLMS = React.useMemo(() => {
+    const allLLMs = [LLM_DEFAULT, ...AVAILABLE_LLM_PROVIDERS].filter(
+      (llm) => !DISABLED_PROVIDERS.includes(llm.value)
+    );
+
+    if (!isManager) return allLLMs;
+
+    // For managers, only show providers that are fully configured
+    return allLLMs.filter((llm) => {
+      if (llm.value === "default") return true;
+      return !(llm.requiredConfig || []).some((key) => !settings?.[key]);
+    });
+  }, [settings, isManager]);
+
   function updateLLMChoice(selection) {
     setSearchQuery("");
     setSelectedLLM(selection);
@@ -68,7 +81,8 @@ export default function WorkspaceLLMSelection({
     );
     setFilteredLLMs(filtered);
   }, [LLMS, searchQuery, selectedLLM]);
-  const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
+
+  const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM) || LLM_DEFAULT;
 
   return (
     <div className="border-b border-white/40 pb-8">
