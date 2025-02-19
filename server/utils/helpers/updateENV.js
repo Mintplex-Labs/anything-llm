@@ -120,6 +120,10 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
     checks: [isInteger],
   },
+  OllamaLLMAuthToken: {
+    envKey: "OLLAMA_AUTH_TOKEN",
+    checks: [],
+  },
 
   // Mistral AI API Settings
   MistralApiKey: {
