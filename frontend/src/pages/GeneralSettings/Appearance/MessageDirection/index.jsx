@@ -12,7 +12,7 @@ export function MessageDirection() {
       <p className="text-xs leading-[18px] font-base text-white/60">
         Select the message alignment mode when using the chat interface.
       </p>
-      <div className="flex flex-row flex-wrap gap-x-4 pt-1">
+      <div className="flex flex-row flex-wrap gap-x-4 pt-1 gap-y-4 md:gap-y-0">
         <ItemDirection
           active={msgDirection === "left"}
           reverse={false}
