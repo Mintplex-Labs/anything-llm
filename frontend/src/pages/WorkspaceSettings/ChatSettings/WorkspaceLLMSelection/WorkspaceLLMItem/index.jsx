@@ -58,7 +58,10 @@ export default function WorkspaceLLM({
       );
       if (requiresAdditionalSetup) {
         if (isManager) {
-          showToast("This provider needs to be configured by an admin.", "error");
+          showToast(
+            "This provider needs to be configured by an admin.",
+            "error"
+          );
           return;
         }
         openModal();

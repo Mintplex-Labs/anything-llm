@@ -37,7 +37,9 @@ export default function WorkspaceLLMSelection({
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
-  const [selectedLLM, setSelectedLLM] = useState(workspace?.chatProvider ?? "default");
+  const [selectedLLM, setSelectedLLM] = useState(
+    workspace?.chatProvider ?? "default"
+  );
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { t } = useTranslation();
@@ -82,7 +84,8 @@ export default function WorkspaceLLMSelection({
     setFilteredLLMs(filtered);
   }, [LLMS, searchQuery, selectedLLM]);
 
-  const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM) || LLM_DEFAULT;
+  const selectedLLMObject =
+    LLMS.find((llm) => llm.value === selectedLLM) || LLM_DEFAULT;
 
   return (
     <div className="border-b border-white/40 pb-8">
