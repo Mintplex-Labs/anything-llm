@@ -12,6 +12,8 @@ const { getEncodingNameForModel, getEncoding } = require("js-tiktoken");
 class TokenManager {
   static instance = null;
   static currentModel = null;
+  static MAX_STRING_LENGTH = 400_000; // 400k chars as a sanity limit for low-end devices
+  static TOKEN_CHAR_ESTIMATE = 6;
 
   constructor(model = "gpt-3.5-turbo") {
     if (TokenManager.instance && TokenManager.currentModel === model) {
@@ -57,7 +59,7 @@ class TokenManager {
   }
 
   /**
-   * Converts an array of tokens back to a string.
+   * Conversion function for tokenIds to a string via encoder module.
    * @param {number[]} tokens
    * @returns {string}
    */
@@ -72,6 +74,11 @@ class TokenManager {
    * @returns {number}
    */
   countFromString(input = "") {
+    if (input.length > TokenManager.MAX_STRING_LENGTH) {
+      this.log("input is very large - estimating tokens for performance");
+      return Math.ceil(input.length / TokenManager.TOKEN_CHAR_ESTIMATE);
+    }
+
     const tokens = this.tokensFromString(input);
     return tokens.length;
   }
