@@ -5,7 +5,6 @@ import Workspace from "@/models/workspace";
 import { EditMessageAction } from "./EditMessage";
 import RenderMetrics from "./RenderMetrics";
 import ActionMenu from "./ActionMenu";
-import { useMessageDirection } from "@/hooks/useMessageDirection";
 
 const Actions = ({
   message,
@@ -18,6 +17,7 @@ const Actions = ({
   isEditing,
   role,
   metrics = {},
+  alignmentCls = "",
 }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
   const handleFeedback = async (newFeedback) => {
@@ -26,9 +26,9 @@ const Actions = ({
     await Workspace.updateChatFeedback(chatId, slug, updatedFeedback);
     setSelectedFeedback(updatedFeedback);
   };
-  const { directionCls } = useMessageDirection(role);
+
   return (
-    <div className={`flex w-full justify-between items-center ${directionCls}`}>
+    <div className={`flex w-full justify-between items-center ${alignmentCls}`}>
       <div className="flex justify-start items-center gap-x-[8px]">
         <CopyMessage message={message} />
         <div className="md:group-hover:opacity-100 transition-all duration-300 md:opacity-0 flex justify-start items-center gap-x-[8px]">
