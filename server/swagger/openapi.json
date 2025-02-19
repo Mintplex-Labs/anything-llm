@@ -1142,8 +1142,54 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "folder": "custom-documents",
+                    "documents": [
+                      {
+                        "name": "document1.json",
+                        "type": "file",
+                        "cached": false,
+                        "pinnedWorkspaces": [],
+                        "watched": false,
+                        "more": "data"
+                      },
+                      {
+                        "name": "document2.json",
+                        "type": "file",
+                        "cached": false,
+                        "pinnedWorkspaces": [],
+                        "watched": false,
+                        "more": "data"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

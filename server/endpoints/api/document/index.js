@@ -423,9 +423,16 @@ function apiDocumentEndpoints(app) {
                   cached: false,
                   pinnedWorkspaces: [],
                   watched: false,
-                  // ... other document metadata
+                  more: "data",
                 },
-                // more documents
+                {
+                  name: "document2.json",
+                  type: "file",
+                  cached: false,
+                  pinnedWorkspaces: [],
+                  watched: false,
+                  more: "data",
+                },
               ]
             }
           }
