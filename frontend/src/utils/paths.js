@@ -147,6 +147,9 @@ export default {
     fileManagement: () => {
       return `/settings/file-management`;
     },
+    groups: () => {
+      return `/settings/groups`;
+    },
   },
   communityHub: {
     website: () => {
