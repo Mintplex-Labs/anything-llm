@@ -123,6 +123,150 @@ function apiDocumentEndpoints(app) {
   );
 
   app.post(
+    "/v1/document/upload-folder",
+    [validApiKey, handleAPIFileUpload],
+    async (request, response) => {
+      /*
+    #swagger.tags = ['Documents']
+    #swagger.description = 'Upload a new file to AnythingLLM to be parsed and prepared for embedding.'
+    #swagger.requestBody = {
+      description: 'File to be uploaded.',
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: {
+            type: 'string',
+            format: 'binary',
+            properties: {
+              file: {
+                type: 'string',
+                format: 'binary',
+              }
+            }
+          },
+        }
+      }
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              success: true,
+              error: null,
+              documents: [
+                {
+                  "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                  "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                  "url": "file:///Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
+                  "title": "anythingllm.txt",
+                  "docAuthor": "Unknown",
+                  "description": "Unknown",
+                  "docSource": "a text file uploaded by the user.",
+                  "chunkSource": "anythingllm.txt",
+                  "published": "1/16/2024, 3:07:00 PM",
+                  "wordCount": 93,
+                  "token_count_estimate": 115,
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+      try {
+        const { originalname } = request.file;
+        let folder = request.body.folder || "custom-documents";
+        folder = normalizePath(folder);
+        const targetFolderPath = path.join(documentsPath, folder);
+
+        if (
+          !isWithin(path.resolve(documentsPath), path.resolve(targetFolderPath))
+        ) {
+          throw new Error("Invalid folder name");
+        }
+
+        // Create the folder if it does not exist
+        if (!fs.existsSync(targetFolderPath)) {
+          fs.mkdirSync(targetFolderPath, { recursive: true });
+        }
+
+        const Collector = new CollectorApi();
+        const processingOnline = await Collector.online();
+        if (!processingOnline) {
+          response
+            .status(500)
+            .json({
+              success: false,
+              error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
+            })
+            .end();
+          return;
+        }
+
+        // Process the uploaded document
+        const { success, reason, documents } =
+          await Collector.processDocument(originalname);
+        if (!success) {
+          response
+            .status(500)
+            .json({ success: false, error: reason, documents })
+            .end();
+          return;
+        }
+
+        // For each processed document, check if it is already in the desired folder.
+        // If not, move it using similar logic as in the move-files endpoint.
+        for (const doc of documents) {
+          const currentFolder = path.dirname(doc.location);
+          if (currentFolder !== folder) {
+            const sourcePath = path.join(
+              documentsPath,
+              normalizePath(doc.location)
+            );
+            const destinationPath = path.join(
+              targetFolderPath,
+              path.basename(doc.location)
+            );
+
+            if (
+              !isWithin(documentsPath, sourcePath) ||
+              !isWithin(documentsPath, destinationPath)
+            ) {
+              throw new Error("Invalid file location");
+            }
+
+            await fs.promises.rename(sourcePath, destinationPath);
+
+            doc.location = path.join(folder, path.basename(doc.location));
+            doc.name = path.basename(doc.location);
+          }
+        }
+
+        Collector.log(
+          `Document ${originalname} uploaded, processed, and moved to folder ${folder} successfully.`
+        );
+        await Telemetry.sendTelemetry("document_uploaded_to_folder");
+        await EventLogs.logEvent("api_document_uploaded_to_folder", {
+          documentName: originalname,
+          folder,
+        });
+        response.status(200).json({ success: true, error: null, documents });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
     "/v1/document/upload-link",
     [validApiKey],
     async (request, response) => {
