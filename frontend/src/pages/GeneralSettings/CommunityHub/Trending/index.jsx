@@ -18,7 +18,7 @@ export default function CommunityHub() {
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              Share and collaborate with the AnythingLLM community.
+              Share and collaborate with the A-Insight community.
             </p>
           </div>
           <HubItems />

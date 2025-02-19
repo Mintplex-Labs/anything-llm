@@ -85,7 +85,7 @@ export default function CommunityHubImportItemFlow() {
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              Import items from the AnythingLLM Community Hub to enhance your
+              Import items from the A-Insight Community Hub to enhance your
               instance with community-created prompts, skills, and commands.
             </p>
           </div>

@@ -125,11 +125,11 @@ const TRANSLATIONS = {
   },
   welcomeMessage: {
     part1:
-      "AnythingLLM에 오신 것을 환영합니다. AnythingLLM은 Mintplex Labs에서 개발한 오픈 소스 AI 도구로, 어떤 것이든 훈련된 챗봇으로 변환하여 쿼리하고 대화할 수 있습니다. AnythingLLM은 BYOK(Bring Your Own Key) 소프트웨어이므로 사용하려는 서비스 외에는 구독료나 기타 비용이 없습니다.",
+      "A-Insight에 오신 것을 환영합니다. A-Insight은 Mintplex Labs에서 개발한 오픈 소스 AI 도구로, 어떤 것이든 훈련된 챗봇으로 변환하여 쿼리하고 대화할 수 있습니다. A-Insight은 BYOK(Bring Your Own Key) 소프트웨어이므로 사용하려는 서비스 외에는 구독료나 기타 비용이 없습니다.",
     part2:
-      "AnythingLLM은 OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB 등 강력한 AI 제품을 번거로움 없이 깔끔하게 패키지로 묶어 생산성을 100배 향상시키는 가장 쉬운 방법입니다.",
+      "A-Insight은 OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB 등 강력한 AI 제품을 번거로움 없이 깔끔하게 패키지로 묶어 생산성을 100배 향상시키는 가장 쉬운 방법입니다.",
     part3:
-      "AnythingLLM은 로컬 컴퓨터에서 완전히 작동하며, 거의 리소스를 사용하지 않으므로 존재조차 느끼지 못할 것입니다! GPU가 필요하지 않습니다. 클라우드 및 온프레미스 설치도 가능합니다.\nAI 도구 생태계는 날로 강력해지고 있습니다. AnythingLLM은 이를 쉽게 사용할 수 있게 해줍니다.",
+      "A-Insight은 로컬 컴퓨터에서 완전히 작동하며, 거의 리소스를 사용하지 않으므로 존재조차 느끼지 못할 것입니다! GPU가 필요하지 않습니다. 클라우드 및 온프레미스 설치도 가능합니다.\nAI 도구 생태계는 날로 강력해지고 있습니다. A-Insight은 이를 쉽게 사용할 수 있게 해줍니다.",
     githubIssue: "GitHub에 이슈 생성하기",
     user1: "어떻게 시작하나요?!",
     part4:
@@ -138,7 +138,7 @@ const TRANSLATIONS = {
     user2:
       "이것은 AI 드롭박스와 같은 건가요? 채팅은 어떤가요? 이건 챗봇 아닌가요?",
     part5:
-      "AnythingLLM은 더 스마트한 Dropbox 이상의 것입니다.\n\nAnythingLLM은 데이터와 대화할 수 있는 두 가지 방법을 제공합니다:\n\n<i>쿼리:</i> 워크스페이스 내 문서에서 찾아낸 데이터나 추론 결과만 채팅으로 제공합니다. 워크스페이스에 문서를 더 많이 추가할수록 더 똑똑해집니다!\n\n<i>대화:</i> 문서와 실시간 채팅 기록이 동시에 LLM의 지식에 기여합니다. 실시간 텍스트 정보나 LLM의 오해를 바로잡는 데 매우 유용합니다.\n\n채팅 중간에 <i>모드를 전환할 수 있습니다!</i>",
+      "A-Insight은 더 스마트한 Dropbox 이상의 것입니다.\n\nA-Insight은 데이터와 대화할 수 있는 두 가지 방법을 제공합니다:\n\n<i>쿼리:</i> 워크스페이스 내 문서에서 찾아낸 데이터나 추론 결과만 채팅으로 제공합니다. 워크스페이스에 문서를 더 많이 추가할수록 더 똑똑해집니다!\n\n<i>대화:</i> 문서와 실시간 채팅 기록이 동시에 LLM의 지식에 기여합니다. 실시간 텍스트 정보나 LLM의 오해를 바로잡는 데 매우 유용합니다.\n\n채팅 중간에 <i>모드를 전환할 수 있습니다!</i>",
     user3: "와, 이거 정말 놀랍네요, 당장 사용해보고 싶어요!",
     part6: "즐기세요!",
     starOnGitHub: "GitHub에 별표 달기",
@@ -158,7 +158,7 @@ const TRANSLATIONS = {
       add: "새 메시지 추가",
       save: "메시지 저장",
       heading: "저에게 설명해주세요",
-      body: "AnythingLLM의 장점",
+      body: "A-Insight의 장점",
     },
     pfp: {
       title: "어시스턴트 프로필 이미지",
@@ -347,7 +347,7 @@ const TRANSLATIONS = {
       system: "시스템",
       user: "사용자",
       message: "메시지",
-      assistant: "AnythingLLM 채팅 어시스턴트",
+      assistant: "A-Insight 채팅 어시스턴트",
       "double-click": "더블 클릭하여 편집...",
       save: "메시지 저장",
     },
@@ -361,7 +361,7 @@ const TRANSLATIONS = {
   api: {
     title: "API 키",
     description:
-      "API 키는 소유자가 프로그래밍 방식으로 이 AnythingLLM 인스턴스에 액세스하고 관리할 수 있도록 합니다.",
+      "API 키는 소유자가 프로그래밍 방식으로 이 A-Insight 인스턴스에 액세스하고 관리할 수 있도록 합니다.",
     link: "API 문서 읽기",
     generate: "새 API 키 생성",
     table: {
@@ -373,7 +373,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM 기본 설정",
     description:
-      "이것은 채팅과 임베딩을 하기 위한 선호하는 LLM 제공자의 인증입니다. 이 키가 현재 활성 상태이고 정확해야 AnythingLLM이 제대로 작동합니다.",
+      "이것은 채팅과 임베딩을 하기 위한 선호하는 LLM 제공자의 인증입니다. 이 키가 현재 활성 상태이고 정확해야 A-Insight이 제대로 작동합니다.",
     provider: "LLM 제공자",
   },
   transcription: {
@@ -382,7 +382,7 @@ const TRANSLATIONS = {
       "이것은 선호하는 텍스트 변환 모델 제공자의 인증입니다. 이 키가 현재 활성 상태이고 정확해야 미디어 파일 및 오디오가 텍스트 변환됩니다.",
     provider: "텍스트 변환 제공자",
     "warn-start":
-      "RAM 또는 CPU 성능이 제한된 머신에서 로컬 위스퍼 모델을 사용하면 미디어 파일을 처리할 때 AnythingLLM이 중단될 수 있습니다.",
+      "RAM 또는 CPU 성능이 제한된 머신에서 로컬 위스퍼 모델을 사용하면 미디어 파일을 처리할 때 A-Insight이 중단될 수 있습니다.",
     "warn-recommend": "최소 2GB RAM과 10Mb 보다 작은 파일 업로드를 권장합니다.",
     "warn-end": "내장된 모델은 첫 번째 사용 시 자동으로 다운로드됩니다.",
   },
@@ -391,11 +391,11 @@ const TRANSLATIONS = {
     "desc-start":
       "임베딩 엔진을 지원하지 않는 LLM을 사용할 때 텍스트를 임베딩하는 데 다른 임베딩 엔진 제공자의 인증이 필요할 수 있습니다.",
     "desc-end":
-      "임베딩은 텍스트를 벡터로 변환하는 과정입니다. 파일과 프롬프트를 AnythingLLM이 처리할 수 있는 형식으로 변환하려면 이러한 인증이 필요합니다.",
+      "임베딩은 텍스트를 벡터로 변환하는 과정입니다. 파일과 프롬프트를 A-Insight이 처리할 수 있는 형식으로 변환하려면 이러한 인증이 필요합니다.",
     provider: {
       title: "임베딩 제공자",
       description:
-        "AnythingLLM의 기본 임베딩 엔진을 사용할 때는 설정이 필요하지 않습니다.",
+        "A-Insight의 기본 임베딩 엔진을 사용할 때는 설정이 필요하지 않습니다.",
     },
   },
   text: {
@@ -421,7 +421,7 @@ const TRANSLATIONS = {
   vector: {
     title: "벡터 데이터베이스",
     description:
-      "이것은 AnythingLLM 인스턴스가 벡터 데이터베이스 사용을 위한 인증 설정입니다. 이 키가 활성 상태이고 정확해야 합니다.",
+      "이것은 A-Insight 인스턴스가 벡터 데이터베이스 사용을 위한 인증 설정입니다. 이 키가 활성 상태이고 정확해야 합니다.",
     provider: {
       title: "벡터 데이터베이스 제공자",
       description: "LanceDB를 선택하면 설정이 필요 없습니다.",
@@ -465,7 +465,7 @@ const TRANSLATIONS = {
     password: {
       title: "비밀번호 보호",
       description:
-        "AnythingLLM 인스턴스를 비밀번호로 보호하십시오. 이 비밀번호를 잊어버리면 복구 방법이 없으므로 반드시 저장하세요.",
+        "A-Insight 인스턴스를 비밀번호로 보호하십시오. 이 비밀번호를 잊어버리면 복구 방법이 없으므로 반드시 저장하세요.",
     },
     instance: {
       title: "인스턴스 비밀번호 보호",
@@ -488,7 +488,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "개인정보와 데이터 처리",
     description:
-      "연결된 타사 제공자와 AnythingLLM이 데이터를 처리하는 방식을 구성합니다.",
+      "연결된 타사 제공자와 A-Insight이 데이터를 처리하는 방식을 구성합니다.",
     llm: "LLM 선택",
     embedding: "임베딩 기본 설정",
     vector: "벡터 데이터베이스",

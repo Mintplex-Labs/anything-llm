@@ -18,7 +18,7 @@ const exportOptions = {
     mimeType: "text/csv",
     fileExtension: "csv",
     filenameFunc: () => {
-      return `anythingllm-chats-${new Date().toLocaleDateString()}`;
+      return `a-insight-chats-${new Date().toLocaleDateString()}`;
     },
   },
   json: {
@@ -26,7 +26,7 @@ const exportOptions = {
     mimeType: "application/json",
     fileExtension: "json",
     filenameFunc: () => {
-      return `anythingllm-chats-${new Date().toLocaleDateString()}`;
+      return `a-insight-chats-${new Date().toLocaleDateString()}`;
     },
   },
   jsonl: {
@@ -34,7 +34,7 @@ const exportOptions = {
     mimeType: "application/jsonl",
     fileExtension: "jsonl",
     filenameFunc: () => {
-      return `anythingllm-chats-${new Date().toLocaleDateString()}-lines`;
+      return `a-insight-chats-${new Date().toLocaleDateString()}-lines`;
     },
   },
   jsonAlpaca: {
@@ -42,7 +42,7 @@ const exportOptions = {
     mimeType: "application/json",
     fileExtension: "json",
     filenameFunc: () => {
-      return `anythingllm-chats-${new Date().toLocaleDateString()}-alpaca`;
+      return `a-insight-chats-${new Date().toLocaleDateString()}-alpaca`;
     },
   },
 };

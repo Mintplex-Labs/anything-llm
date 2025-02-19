@@ -41,43 +41,43 @@ export default function DefaultChatContainer() {
   }, []);
 
   const MESSAGES = [
-    <React.Fragment key="msg1">
-      <MessageContainer>
-        <MessageContent>
-          <UserIcon user={{ uid: "system" }} role={"assistant"} />
-          <MessageText>{t("welcomeMessage.part1")}</MessageText>
-        </MessageContent>
-      </MessageContainer>
-    </React.Fragment>,
+    // <React.Fragment key="msg1">
+    //   <MessageContainer>
+    //     <MessageContent>
+    //       <UserIcon user={{ uid: "system" }} role={"assistant"} />
+    //       <MessageText>{t("welcomeMessage.part1")}</MessageText>
+    //     </MessageContent>
+    //   </MessageContainer>
+    // </React.Fragment>,
 
-    <React.Fragment key="msg2">
-      <MessageContainer>
-        <MessageContent>
-          <UserIcon user={{ uid: "system" }} role={"assistant"} />
-          <MessageText>{t("welcomeMessage.part2")}</MessageText>
-        </MessageContent>
-      </MessageContainer>
-    </React.Fragment>,
+    // <React.Fragment key="msg2">
+    //   <MessageContainer>
+    //     <MessageContent>
+    //       <UserIcon user={{ uid: "system" }} role={"assistant"} />
+    //       <MessageText>{t("welcomeMessage.part2")}</MessageText>
+    //     </MessageContent>
+    //   </MessageContainer>
+    // </React.Fragment>,
 
-    <React.Fragment key="msg3">
-      <MessageContainer>
-        <MessageContent>
-          <UserIcon user={{ uid: "system" }} role={"assistant"} />
-          <div>
-            <MessageText>{t("welcomeMessage.part3")}</MessageText>
-            <a
-              href={paths.github()}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-            >
-              <GitMerge className="h-4 w-4" />
-              <p>{t("welcomeMessage.githubIssue")}</p>
-            </a>
-          </div>
-        </MessageContent>
-      </MessageContainer>
-    </React.Fragment>,
+    // <React.Fragment key="msg3">
+    //   <MessageContainer>
+    //     <MessageContent>
+    //       <UserIcon user={{ uid: "system" }} role={"assistant"} />
+    //       <div>
+    //         <MessageText>{t("welcomeMessage.part3")}</MessageText>
+    //         <a
+    //           href={paths.github()}
+    //           target="_blank"
+    //           rel="noreferrer"
+    //           className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+    //         >
+    //           <GitMerge className="h-4 w-4" />
+    //           <p>{t("welcomeMessage.githubIssue")}</p>
+    //         </a>
+    //       </div>
+    //     </MessageContent>
+    //   </MessageContainer>
+    // </React.Fragment>,
 
     <React.Fragment key="msg4">
       <MessageContainer>
@@ -109,70 +109,70 @@ export default function DefaultChatContainer() {
       </MessageContainer>
     </React.Fragment>,
 
-    <React.Fragment key="msg6">
-      <MessageContainer>
-        <MessageContent>
-          <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
-          <MessageText>{t("welcomeMessage.user2")}</MessageText>
-        </MessageContent>
-      </MessageContainer>
-    </React.Fragment>,
+    // <React.Fragment key="msg6">
+    //   <MessageContainer>
+    //     <MessageContent>
+    //       <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
+    //       <MessageText>{t("welcomeMessage.user2")}</MessageText>
+    //     </MessageContent>
+    //   </MessageContainer>
+    // </React.Fragment>,
 
-    <React.Fragment key="msg7">
-      <MessageContainer>
-        <MessageContent>
-          <UserIcon user={{ uid: "system" }} role={"assistant"} />
-          <MessageText>
-            <Trans
-              i18nKey="welcomeMessage.part5"
-              components={{
-                i: <i />,
-                br: <br />,
-              }}
-            />
-          </MessageText>
-        </MessageContent>
-      </MessageContainer>
-    </React.Fragment>,
+    // <React.Fragment key="msg7">
+    //   <MessageContainer>
+    //     <MessageContent>
+    //       <UserIcon user={{ uid: "system" }} role={"assistant"} />
+    //       <MessageText>
+    //         <Trans
+    //           i18nKey="welcomeMessage.part5"
+    //           components={{
+    //             i: <i />,
+    //             br: <br />,
+    //           }}
+    //         />
+    //       </MessageText>
+    //     </MessageContent>
+    //   </MessageContainer>
+    // </React.Fragment>,
 
-    <React.Fragment key="msg8">
-      <MessageContainer>
-        <MessageContent>
-          <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
-          <MessageText>{t("welcomeMessage.user3")}</MessageText>
-        </MessageContent>
-      </MessageContainer>
-    </React.Fragment>,
+    // <React.Fragment key="msg8">
+    //   <MessageContainer>
+    //     <MessageContent>
+    //       <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
+    //       <MessageText>{t("welcomeMessage.user3")}</MessageText>
+    //     </MessageContent>
+    //   </MessageContainer>
+    // </React.Fragment>,
 
-    <React.Fragment key="msg9">
-      <MessageContainer>
-        <MessageContent>
-          <UserIcon user={{ uid: "system" }} role={"assistant"} />
-          <div>
-            <MessageText>{t("welcomeMessage.part6")}</MessageText>
+    // <React.Fragment key="msg9">
+    //   <MessageContainer>
+    //     <MessageContent>
+    //       <UserIcon user={{ uid: "system" }} role={"assistant"} />
+    //       <div>
+    //         <MessageText>{t("welcomeMessage.part6")}</MessageText>
 
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
-              <a
-                href={paths.github()}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                <GithubLogo className="h-4 w-4" />
-                <p>{t("welcomeMessage.starOnGitHub")}</p>
-              </a>
-              <a
-                href={paths.mailToMintplex()}
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                <EnvelopeSimple className="h-4 w-4" />
-                <p>{t("welcomeMessage.contact")}</p>
-              </a>
-            </div>
-          </div>
-        </MessageContent>
-      </MessageContainer>
-    </React.Fragment>,
+    //         <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
+    //           <a
+    //             href={paths.github()}
+    //             target="_blank"
+    //             rel="noreferrer"
+    //             className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+    //           >
+    //             <GithubLogo className="h-4 w-4" />
+    //             <p>{t("welcomeMessage.starOnGitHub")}</p>
+    //           </a>
+    //           <a
+    //             href={paths.mailToMintplex()}
+    //             className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+    //           >
+    //             <EnvelopeSimple className="h-4 w-4" />
+    //             <p>{t("welcomeMessage.contact")}</p>
+    //           </a>
+    //         </div>
+    //       </div>
+    //     </MessageContent>
+    //   </MessageContainer>
+    // </React.Fragment>,
   ];
 
   useEffect(() => {

@@ -284,7 +284,7 @@ const PinAlert = memo(() => {
         <div className="py-7 px-9 space-y-2 flex-col">
           <div className="w-full text-white text-md flex flex-col gap-y-2">
             <p>
-              When you <b>pin</b> a document in AnythingLLM we will inject the
+              When you <b>pin</b> a document in A-Insight we will inject the
               entire content of the document into your prompt window for your
               LLM to fully comprehend.
             </p>
@@ -293,7 +293,7 @@ const PinAlert = memo(() => {
               that are critical to its knowledge-base.
             </p>
             <p>
-              If you are not getting the answers you desire from AnythingLLM by
+              If you are not getting the answers you desire from A-Insight by
               default then pinning is a great way to get higher quality answers
               in a click.
             </p>
@@ -347,7 +347,7 @@ const DocumentWatchAlert = memo(() => {
         <div className="py-7 px-9 space-y-2 flex-col">
           <div className="w-full text-white text-md flex flex-col gap-y-2">
             <p>
-              When you <b>watch</b> a document in AnythingLLM we will{" "}
+              When you <b>watch</b> a document in A-Insight we will{" "}
               <i>automatically</i> sync your document content from it's original
               source on regular intervals. This will automatically update the
               content in every workspace where this file is managed.

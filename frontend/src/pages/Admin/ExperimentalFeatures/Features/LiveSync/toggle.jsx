@@ -50,7 +50,7 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
           <p className="text-theme-text-secondary text-sm">
             Enable the ability to specify a document to be "watched". Watched
             document's content will be regularly fetched and updated in
-            AnythingLLM.
+            A-Insight.
           </p>
           <p className="text-theme-text-secondary text-sm">
             Watched documents will automatically update in all workspaces they
