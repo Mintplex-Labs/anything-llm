@@ -200,24 +200,26 @@ export default function PromptInput({
 
     const pasteText = e.clipboardData.getData("text/plain");
     if (pasteText) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const newPromptInput =
-        promptInput.substring(0, start) +
-        pasteText +
-        promptInput.substring(end);
-      setPromptInput(newPromptInput);
-      onChange({ target: { value: newPromptInput } });
-
-      // Set the cursor position after the pasted text
-      // we need to use setTimeout to prevent the cursor from being set to the end of the text
-      setTimeout(() => {
-        textarea.selectionStart = textarea.selectionEnd =
-          start + pasteText.length;
-      }, 0);
+      addToInputPrompt(pasteText);
     }
     return;
+  }
+
+  function addToInputPrompt(text) {
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const newPromptInput =
+      promptInput.substring(0, start) + text + promptInput.substring(end);
+    setPromptInput(newPromptInput);
+    onChange({ target: { value: newPromptInput } });
+
+    // Set the cursor position after the pasted text
+    // we need to use setTimeout to prevent the cursor from being set to the end of the text
+    setTimeout(() => {
+      textarea.selectionStart = textarea.selectionEnd =
+        start + pasteText.length;
+    }, 0);
   }
 
   function handleChange(e) {
@@ -310,7 +312,7 @@ export default function PromptInput({
                 <TextSizeButton />
               </div>
               <div className="flex gap-x-2">
-                <SpeechToText sendCommand={sendCommand} />
+                <SpeechToText addToInputPrompt={addToInputPrompt} />
               </div>
             </div>
           </div>
