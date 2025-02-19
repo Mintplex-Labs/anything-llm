@@ -10,12 +10,14 @@ const { Telemetry } = require("../../models/telemetry");
 class FlowExecutor {
   constructor() {
     this.variables = {};
-    this.introspect = () => {}; // Default no-op introspect
-    this.logger = console.info; // Default console.info
+    this.introspect = (...args) => console.log("[introspect] ", ...args);
+    this.logger = console.info;
+    this.aibitat = null;
   }
 
-  attachLogging(introspectFn, loggerFn) {
-    this.introspect = introspectFn || (() => {});
+  attachLogging(introspectFn = null, loggerFn = null) {
+    this.introspect =
+      introspectFn || ((...args) => console.log("[introspect] ", ...args));
     this.logger = loggerFn || console.info;
   }
 
@@ -54,8 +56,7 @@ class FlowExecutor {
       introspect: this.introspect,
       variables: this.variables,
       logger: this.logger,
-      model: process.env.LLM_PROVIDER_MODEL || "gpt-4",
-      provider: process.env.LLM_PROVIDER || "openai",
+      aibitat: this.aibitat,
     };
 
     switch (step.type) {
@@ -101,13 +102,13 @@ class FlowExecutor {
     return result;
   }
 
-  // Execute entire flow
-  async executeFlow(
-    flow,
-    initialVariables = {},
-    introspectFn = null,
-    loggerFn = null
-  ) {
+  /**
+   * Execute entire flow
+   * @param {Object} flow - The flow to execute
+   * @param {Object} initialVariables - Initial variables for the flow
+   * @param {Object} aibitat - The aibitat instance from the agent handler
+   */
+  async executeFlow(flow, initialVariables = {}, aibitat) {
     await Telemetry.sendTelemetry("agent_flow_execution_started");
 
     // Initialize variables with both initial values and any passed-in values
@@ -119,7 +120,8 @@ class FlowExecutor {
       ...initialVariables, // This will override any default values with passed-in values
     };
 
-    this.attachLogging(introspectFn, loggerFn);
+    this.aibitat = aibitat;
+    this.attachLogging(aibitat?.introspect, aibitat?.handlerProps?.log);
     const results = [];
 
     for (const step of flow.config.steps) {
