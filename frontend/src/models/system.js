@@ -40,15 +40,31 @@ const System = {
       .catch(() => null);
   },
   localFiles: async function () {
-    return await fetch(`${API_BASE}/system/local-files`, {
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Could not find setup information.");
-        return res.json();
-      })
-      .then((res) => res.localFiles)
-      .catch(() => null);
+    try {
+      console.log('Fetching local files from:', `${API_BASE}/system/local-files`);
+      const response = await fetch(`${API_BASE}/system/local-files`, {
+        headers: baseHeaders(),
+      });
+      
+      if (!response.ok) {
+        const error = await response.text();
+        console.error('Error fetching local files:', error);
+        throw new Error(error || 'Could not fetch local files');
+      }
+      
+      const data = await response.json();
+      console.log('Local files response:', data);
+      
+      if (!data.localFiles) {
+        console.error('No localFiles in response:', data);
+        return { name: "documents", type: "folder", items: [] };
+      }
+      
+      return data.localFiles;
+    } catch (error) {
+      console.error('Failed to fetch local files:', error);
+      return { name: "documents", type: "folder", items: [] };
+    }
   },
   needsAuthCheck: function () {
     const lastAuthCheck = window.localStorage.getItem(AUTH_TIMESTAMP);

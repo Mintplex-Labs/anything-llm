@@ -1,9 +1,11 @@
 const { v4: uuidv4 } = require("uuid");
-const { getVectorDbClass } = require("../utils/helpers");
 const prisma = require("../utils/prisma");
+const { getVectorDbClass } = require("../utils/helpers");
 const { Telemetry } = require("./telemetry");
 const { EventLogs } = require("./eventLogs");
 const { safeJsonParse } = require("../utils/http");
+const path = require('path');
+const fs = require('fs');
 
 const Document = {
   writable: ["pinned", "watched", "lastUpdatedAt"],
@@ -87,59 +89,131 @@ const Document = {
     const failedToEmbed = [];
     const errors = new Set();
 
-    for (const path of additions) {
-      const data = await fileData(path);
-      if (!data) continue;
+    // Ensure custom-documents directory exists
+    const documentsPath = process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, "../storage/documents")
+      : path.resolve(process.env.STORAGE_DIR, "documents");
+    const customDocsDir = path.join(documentsPath, "custom-documents");
+    
+    if (!fs.existsSync(customDocsDir)) {
+      console.log('Creating custom-documents directory:', customDocsDir);
+      fs.mkdirSync(customDocsDir, { recursive: true });
+    }
 
-      const docId = uuidv4();
-      const { pageContent, ...metadata } = data;
-      const newDoc = {
-        docId,
-        filename: path.split("/")[1],
-        docpath: path,
-        workspaceId: workspace.id,
-        metadata: JSON.stringify(metadata),
-      };
-
-      const { vectorized, error } = await VectorDb.addDocumentToNamespace(
-        workspace.slug,
-        { ...data, docId },
-        path
-      );
-
-      if (!vectorized) {
-        console.error(
-          "Failed to vectorize",
-          metadata?.title || newDoc.filename
-        );
-        failedToEmbed.push(metadata?.title || newDoc.filename);
-        errors.add(error);
-        continue;
-      }
-
+    for (const filePath of additions) {
       try {
-        await prisma.workspace_documents.create({ data: newDoc });
-        embedded.push(path);
+        console.log('Processing file:', filePath);
+        
+        // Handle different file path formats
+        let absolutePath;
+        let originalPath = filePath;
+        
+        if (filePath.startsWith('googledocs://')) {
+          // For Google Docs, search for any JSON file in custom-documents that contains the doc ID
+          const docId = filePath.split('//')[1];
+          console.log('Looking for Google Doc with ID:', docId);
+          
+          const files = fs.readdirSync(customDocsDir);
+          const matchingFile = files.find(file => {
+            if (!file.endsWith('.json')) return false;
+            try {
+              const content = JSON.parse(fs.readFileSync(path.join(customDocsDir, file), 'utf8'));
+              return content.metadata?.sourceId === docId || 
+                     content.metadata?.docId === `googledoc-${docId}` ||
+                     content.id === `googledoc-${docId}`;
+            } catch (e) {
+              console.error('Error reading file:', file, e);
+              return false;
+            }
+          });
+
+          if (matchingFile) {
+            console.log('Found matching file:', matchingFile);
+            absolutePath = path.join(customDocsDir, matchingFile);
+            originalPath = `custom-documents/${matchingFile}`;
+          } else {
+            console.error('No matching Google Doc found for ID:', docId);
+            failedToEmbed.push(filePath);
+            errors.add(`No matching Google Doc found for ID: ${docId}`);
+            continue;
+          }
+        } else {
+          absolutePath = path.isAbsolute(filePath)
+            ? filePath
+            : path.join(documentsPath, filePath);
+        }
+
+        console.log('Reading file from:', absolutePath);
+        const data = await fileData(absolutePath);
+        if (!data) {
+          console.error('No data found for file:', filePath);
+          failedToEmbed.push(filePath);
+          errors.add(`No data found for file: ${filePath}`);
+          continue;
+        }
+
+        const { pageContent, metadata = {}, id, chunkSource } = data;
+        if (!pageContent) {
+          console.error('No page content found in file:', filePath);
+          failedToEmbed.push(filePath);
+          errors.add(`No page content found in file: ${filePath}`);
+          continue;
+        }
+
+        // Use the document's ID from metadata or data
+        const documentId = metadata.docId || id || (filePath.startsWith('googledocs://') ? 
+          `googledoc-${filePath.split('//')[1]}` : 
+          `doc-${path.basename(filePath, '.json')}`);
+        
+        console.log('Using document ID:', documentId);
+
+        // Check if document already exists
+        const existingDoc = await this.get({ docId: documentId });
+        if (existingDoc) {
+          console.log(`Document with ID ${documentId} already exists, skipping...`);
+          embedded.push(filePath);
+          continue;
+        }
+
+        // Ensure metadata is properly structured
+        const processedMetadata = {
+          ...metadata,
+          source: metadata.source || (filePath.startsWith('googledocs://') ? 'google_docs' : 'local'),
+          type: metadata.type || 'text/plain',
+          documentType: metadata.documentType || (filePath.startsWith('googledocs://') ? 'google_document' : 'unknown'),
+          docId: documentId,
+          chunkSource: chunkSource || metadata.chunkSource || `file://${originalPath}`,
+          cached: true
+        };
+
+        // Create document record in database
+        try {
+          const doc = await this.create({
+            docId: documentId,
+            workspaceId: workspace.id,
+            docpath: originalPath,
+            filename: path.basename(originalPath),
+            metadata: JSON.stringify(processedMetadata)
+          });
+          console.log('Successfully created document:', doc);
+          embedded.push(filePath);
+        } catch (error) {
+          console.error('Failed to create document:', error);
+          failedToEmbed.push(filePath);
+          errors.add(`Failed to create document: ${error.message}`);
+        }
       } catch (error) {
-        console.error(error.message);
+        console.error('Error processing file:', error);
+        failedToEmbed.push(filePath);
+        errors.add(error.message);
       }
     }
 
-    await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
-      LLMSelection: process.env.LLM_PROVIDER || "openai",
-      Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-      VectorDbSelection: process.env.VECTOR_DB || "lancedb",
-      TTSSelection: process.env.TTS_PROVIDER || "native",
-    });
-    await EventLogs.logEvent(
-      "workspace_documents_added",
-      {
-        workspaceName: workspace?.name || "Unknown Workspace",
-        numberOfDocumentsAdded: additions.length,
-      },
-      userId
-    );
-    return { failedToEmbed, errors: Array.from(errors), embedded };
+    return {
+      failed: failedToEmbed,
+      embedded,
+      errors: Array.from(errors)
+    };
   },
 
   removeDocuments: async function (workspace, removals = [], userId = null) {
@@ -255,6 +329,43 @@ const Document = {
 
     return sourceString;
   },
+
+  // Add create function
+  create: async function (data = {}) {
+    try {
+      // If docId is provided, use it, otherwise generate one
+      const docId = data.docId || `doc_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      
+      // Ensure metadata is properly structured
+      const metadata = {
+        name: data.name || data.metadata?.name,
+        type: data.metadata?.type || data.type || 'text/plain',
+        size: data.metadata?.size || 0,
+        ...data.metadata
+      };
+
+      const document = await prisma.workspace_documents.create({
+        data: {
+          docId,
+          filename: path.basename(data.docpath),
+          docpath: data.docpath,
+          workspaceId: data.workspaceId,
+          metadata: JSON.stringify(metadata),
+          pinned: false,
+          watched: false,
+        },
+        include: {
+          workspace: true,
+        },
+      });
+
+      return { document, message: null };
+    } catch (error) {
+      console.error("Failed to create workspace document.", error);
+      return { document: null, message: error.message };
+    }
+  },
 };
 
 module.exports = { Document };
+

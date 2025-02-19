@@ -238,21 +238,20 @@ function Directory({
                 </div>
               ) : filteredFiles.length > 0 ? (
                 filteredFiles.map(
-                  (item, index) =>
-                    item.type === "folder" && (
-                      <FolderRow
-                        key={index}
-                        item={item}
-                        selected={isSelected(
-                          item.id,
-                          item.type === "folder" ? item : null
-                        )}
-                        onRowClick={() => toggleSelection(item)}
-                        toggleSelection={toggleSelection}
-                        isSelected={isSelected}
-                        autoExpanded={index === 0}
-                      />
-                    )
+                  (item, index) => (
+                    <FolderRow
+                      key={index}
+                      item={item}
+                      selected={isSelected(
+                        item.id,
+                        item.type === "folder" ? item : null
+                      )}
+                      onRowClick={() => toggleSelection(item)}
+                      toggleSelection={toggleSelection}
+                      isSelected={isSelected}
+                      autoExpanded={searchTerm.length > 0}
+                    />
+                  )
                 )
               ) : (
                 <div className="w-full h-full flex items-center justify-center">

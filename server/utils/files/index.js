@@ -3,29 +3,113 @@ const path = require("path");
 const { v5: uuidv5 } = require("uuid");
 const { Document } = require("../../models/documents");
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
-const documentsPath =
-  process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../storage/documents`)
-    : path.resolve(process.env.STORAGE_DIR, `documents`);
-const vectorCachePath =
-  process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../storage/vector-cache`)
-    : path.resolve(process.env.STORAGE_DIR, `vector-cache`);
+const { tokenizeString } = require('../tokenizer');
 
-// Should take in a folder that is a subfolder of documents
-// eg: youtube-subject/video-123.json
-async function fileData(filePath = null) {
-  if (!filePath) throw new Error("No docPath provided in request");
-  const fullFilePath = path.resolve(documentsPath, normalizePath(filePath));
-  if (!fs.existsSync(fullFilePath) || !isWithin(documentsPath, fullFilePath))
-    return null;
+// Get the absolute path to the server directory
+const serverDir = path.resolve(__dirname, '../..');
+console.log('Server directory:', serverDir);
 
-  const data = fs.readFileSync(fullFilePath, "utf8");
-  return JSON.parse(data);
+// Resolve the storage path
+const storagePath = process.env.STORAGE_DIR || path.join(serverDir, 'storage');
+console.log('Storage path:', storagePath);
+
+// Resolve the documents path
+const documentsPath = path.join(storagePath, 'documents');
+console.log('Documents path:', documentsPath);
+
+// Resolve the vector cache path
+const vectorCachePath = path.join(storagePath, 'vector-cache');
+console.log('Vector cache path:', vectorCachePath);
+
+// Ensure storage directories exist
+function ensureStorageDirectories() {
+  const directories = [
+    storagePath,
+    documentsPath,
+    vectorCachePath,
+    path.join(documentsPath, 'custom-documents')
+  ];
+
+  for (const dir of directories) {
+    if (!fs.existsSync(dir)) {
+      console.log(`Creating directory: ${dir}`);
+      fs.mkdirSync(dir, { recursive: true, mode: 0o755 });
+    }
+  }
 }
 
+// Call this on module load to ensure directories exist
+ensureStorageDirectories();
+
+async function fileData(filepath) {
+  try {
+    // Ensure storage directories exist first
+    ensureStorageDirectories();
+
+    // Handle both absolute and relative paths
+    const absolutePath = path.isAbsolute(filepath) 
+      ? filepath 
+      : path.join(documentsPath, filepath);
+
+    console.log('Reading file from:', absolutePath);
+    
+    if (!fs.existsSync(absolutePath)) {
+      console.error('File not found:', absolutePath);
+      return null;
+    }
+
+    const rawData = fs.readFileSync(absolutePath, 'utf-8');
+    let data;
+
+    try {
+      // Try to parse as JSON first
+      data = JSON.parse(rawData);
+      
+      // If this is already in our expected format, return as is
+      if (data.pageContent) {
+        return data;
+      }
+
+      // If not, structure the JSON data appropriately
+      return {
+        pageContent: data.content || data.text || JSON.stringify(data),
+        metadata: {
+          title: data.title || path.basename(filepath),
+          source: data.source || 'local',
+          author: data.author || 'unknown',
+          type: data.type || 'application/json',
+          published: data.published || new Date().toISOString()
+        }
+      };
+    } catch (e) {
+      // If not JSON, treat as raw text
+      console.log('File is not JSON, treating as raw text');
+      return {
+        pageContent: rawData,
+        metadata: {
+          title: path.basename(filepath),
+          source: 'local',
+          author: 'unknown',
+          type: 'text/plain',
+          published: new Date().toISOString()
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Error reading file:', error);
+    return null;
+  }
+}
+
+// Call this when the server starts
+ensureStorageDirectories();
+
 async function viewLocalFiles() {
-  if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
+  console.log('Documents path:', documentsPath);
+  
+  // Ensure directories exist
+  ensureStorageDirectories();
+  
   const liveSyncAvailable = await DocumentSyncQueue.enabled();
   const directory = {
     name: "documents",
@@ -33,60 +117,112 @@ async function viewLocalFiles() {
     items: [],
   };
 
-  for (const file of fs.readdirSync(documentsPath)) {
-    if (path.extname(file) === ".md") continue;
-    const folderPath = path.resolve(documentsPath, file);
-    const isFolder = fs.lstatSync(folderPath).isDirectory();
-    if (isFolder) {
-      const subdocs = {
-        name: file,
-        type: "folder",
-        items: [],
-      };
-      const subfiles = fs.readdirSync(folderPath);
-      const filenames = {};
+  // Process each folder in the documents directory
+  const folders = fs.readdirSync(documentsPath);
+  console.log('Found folders:', folders);
 
-      for (const subfile of subfiles) {
-        if (path.extname(subfile) !== ".json") continue;
-        const filePath = path.join(folderPath, subfile);
-        const rawData = fs.readFileSync(filePath, "utf8");
-        const cachefilename = `${file}/${subfile}`;
-        const { pageContent, ...metadata } = JSON.parse(rawData);
-        subdocs.items.push({
-          name: subfile,
-          type: "file",
-          ...metadata,
-          cached: await cachedVectorInformation(cachefilename, true),
-          canWatch: liveSyncAvailable
-            ? DocumentSyncQueue.canWatch(metadata)
-            : false,
-          // pinnedWorkspaces: [], // This is the list of workspaceIds that have pinned this document
-          // watched: false, // boolean to indicate if this document is watched in ANY workspace
-        });
-        filenames[cachefilename] = subfile;
-      }
+  // Always process custom-documents first
+  const orderedFolders = [
+    "custom-documents",
+    ...folders.filter(f => f !== "custom-documents" && f !== ".DS_Store")
+  ];
 
-      // Grab the pinned workspaces and watched documents for this folder's documents
-      // at the time of the query so we don't have to re-query the database for each file
-      const pinnedWorkspacesByDocument =
-        await getPinnedWorkspacesByDocument(filenames);
-      const watchedDocumentsFilenames =
-        await getWatchedDocumentFilenames(filenames);
-      for (const item of subdocs.items) {
-        item.pinnedWorkspaces = pinnedWorkspacesByDocument[item.name] || [];
-        item.watched =
-          watchedDocumentsFilenames.hasOwnProperty(item.name) || false;
-      }
-
-      directory.items.push(subdocs);
+  for (const folder of orderedFolders) {
+    if (path.extname(folder) === ".md") continue;
+    const itemPath = path.resolve(documentsPath, folder);
+    console.log('Processing folder:', folder, 'at path:', itemPath);
+    
+    const isFolder = fs.lstatSync(itemPath).isDirectory();
+    if (!isFolder) {
+      console.log('Skipping non-folder:', itemPath);
+      continue;
     }
+
+    const subdocs = {
+      name: folder,
+      type: "folder",
+      items: [],
+    };
+
+    const subfiles = fs.readdirSync(itemPath);
+    console.log(`Found ${subfiles.length} files in ${folder}`);
+    const filenames = {};
+
+    for (const subfile of subfiles) {
+      if (path.extname(subfile) !== ".json") {
+        console.log('Skipping non-JSON file:', subfile);
+        continue;
+      }
+      const filePath = path.join(itemPath, subfile);
+      console.log('Processing file:', filePath);
+      
+      try {
+        const rawData = fs.readFileSync(filePath, "utf8");
+        const cachefilename = `${folder}/${subfile}`;
+        const fileData = JSON.parse(rawData);
+        const { pageContent, metadata = {}, ...rest } = fileData;
+
+        // Create a standardized item object with guaranteed docId
+        const docId = metadata.docId || rest.id || `doc-${path.basename(subfile, '.json')}`;
+        const item = {
+          id: docId,
+          docId: docId, // Ensure docId is explicitly set
+          name: subfile,
+          title: metadata.title || rest.title || subfile.replace('.json', ''),
+          type: metadata.type || rest.type || "file",
+          url: metadata.url || rest.url || `file://${cachefilename}`,
+          cached: await cachedVectorInformation(cachefilename, true),
+          canWatch: liveSyncAvailable ? DocumentSyncQueue.canWatch(metadata) : false,
+          published: metadata.published || rest.published || new Date().toISOString(),
+          docpath: cachefilename,
+          metadata: {
+            ...metadata,
+            docId: docId // Ensure docId is in metadata
+          },
+          ...rest
+        };
+
+        subdocs.items.push(item);
+        filenames[cachefilename] = subfile;
+        console.log('Successfully processed file:', subfile);
+      } catch (error) {
+        console.error(`Error processing file ${subfile}:`, error);
+        continue;
+      }
+    }
+
+    // Get pinned workspaces and watched status
+    const pinnedWorkspacesByDocument = await getPinnedWorkspacesByDocument(filenames);
+    const watchedDocumentsFilenames = await getWatchedDocumentFilenames(filenames);
+    
+    for (const item of subdocs.items) {
+      item.pinnedWorkspaces = pinnedWorkspacesByDocument[item.name] || [];
+      item.watched = watchedDocumentsFilenames.hasOwnProperty(item.name) || false;
+    }
+
+    // Sort items by published date in descending order
+    subdocs.items.sort((a, b) => new Date(b.published) - new Date(a.published));
+    directory.items.push(subdocs);
   }
 
-  // Make sure custom-documents is always the first folder in picker
-  directory.items = [
-    directory.items.find((folder) => folder.name === "custom-documents"),
-    ...directory.items.filter((folder) => folder.name !== "custom-documents"),
-  ].filter((i) => !!i);
+  // Ensure custom-documents exists in the items array
+  const hasCustomDocs = directory.items.some(folder => folder.name === "custom-documents");
+  if (!hasCustomDocs) {
+    console.log('Adding empty custom-documents folder to directory');
+    directory.items.unshift({
+      name: "custom-documents",
+      type: "folder",
+      items: []
+    });
+  }
+
+  console.log('Final directory structure:', {
+    totalFolders: directory.items.length,
+    folders: directory.items.map(f => ({
+      name: f.name,
+      itemCount: f.items.length
+    }))
+  });
 
   return directory;
 }

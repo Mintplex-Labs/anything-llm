@@ -1,12 +1,39 @@
-process.env.NODE_ENV === "development"
-  ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
-  : require("dotenv").config();
+const path = require('path');
+
+// Only load environment variables if not already loaded
+if (!process.env.GOOGLE_CLIENT_ID) {
+  if (process.env.NODE_ENV === "development") {
+    require("dotenv").config({ path: path.join(__dirname, '.env') });
+  } else {
+    require("dotenv").config();
+  }
+}
+
+// Validate required environment variables
+const requiredEnvVars = {
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI
+};
+
+Object.entries(requiredEnvVars).forEach(([key, value]) => {
+  if (!value) {
+    console.error(`Missing required environment variable: ${key}`);
+  }
+});
+
+// Log environment variables for debugging
+console.log('Environment loaded:', {
+  nodeEnv: process.env.NODE_ENV,
+  googleClientId: process.env.GOOGLE_CLIENT_ID ? 'Set' : 'Not Set',
+  googleRedirectUri: process.env.GOOGLE_REDIRECT_URI,
+  serverPort: process.env.SERVER_PORT
+});
 
 require("./utils/logger")();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const path = require("path");
 const { reqBody } = require("./utils/http");
 const { systemEndpoints } = require("./endpoints/system");
 const { workspaceEndpoints } = require("./endpoints/workspaces");
@@ -29,6 +56,9 @@ const { communityHubEndpoints } = require("./endpoints/communityHub");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
+
+// Import the Google Docs routes
+const googleDocsRoutes = require('./routes/googledocs');
 
 app.use(cors({ origin: true }));
 app.use(bodyParser.text({ limit: FILE_LIMIT }));
@@ -67,6 +97,9 @@ embeddedEndpoints(apiRouter);
 
 // Externally facing browser extension endpoints
 browserExtensionEndpoints(apiRouter);
+
+// Register the Google Docs routes
+apiRouter.use('/ext/googledocs', googleDocsRoutes);
 
 if (process.env.NODE_ENV !== "development") {
   const { MetaGenerator } = require("./utils/boot/MetaGenerator");

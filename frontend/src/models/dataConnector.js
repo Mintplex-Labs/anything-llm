@@ -160,6 +160,95 @@ const DataConnector = {
         });
     },
   },
+  googledocs: {
+    checkAuth: async () => {
+      try {
+        const response = await fetch(`${API_BASE}/ext/googledocs/auth/status`, {
+          method: "GET",
+          headers: baseHeaders(),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to check authorization status');
+        }
+        return data;
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        return { authorized: false, error: error.message };
+      }
+    },
+    getAuthUrl: async () => {
+      try {
+        const response = await fetch(`${API_BASE}/ext/googledocs/auth/url`, {
+          method: "GET",
+          headers: baseHeaders(),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to generate authorization URL');
+        }
+        return { data: { url: data.url }, error: null };
+      } catch (error) {
+        console.error('Get auth URL failed:', error);
+        return { data: null, error: error.message };
+      }
+    },
+    listDocs: async () => {
+      try {
+        const response = await fetch(`${API_BASE}/ext/googledocs/list`, {
+          method: "GET",
+          headers: baseHeaders(),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to list documents');
+        }
+        return { documents: data.documents || [], error: null };
+      } catch (error) {
+        console.error('List documents failed:', error);
+        return { documents: [], error: error.message };
+      }
+    },
+    collect: async ({ documentIds, workspaceId }) => {
+      try {
+        if (!documentIds || !Array.isArray(documentIds) || documentIds.length === 0) {
+          throw new Error('Document IDs array is required and must not be empty');
+        }
+
+        if (!workspaceId) {
+          throw new Error('Workspace ID is required');
+        }
+
+        console.log('Collecting documents with IDs:', documentIds);
+        console.log('For workspace:', workspaceId);
+        
+        const response = await fetch(`${API_BASE}/ext/googledocs/collect`, {
+          method: "POST",
+          headers: {
+            ...baseHeaders(),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            documentIds: documentIds,
+            workspaceId: workspaceId 
+          })
+        });
+
+        console.log('Raw response:', response);
+        const data = await response.json();
+        console.log('Response data:', data);
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to collect documents');
+        }
+
+        return { data, error: null };
+      } catch (error) {
+        console.error('Collect documents failed:', error);
+        return { data: null, error: error.message };
+      }
+    },
+  },
 };
 
 export default DataConnector;

@@ -4,7 +4,7 @@ import {
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
-import { ArrowUUpLeft, Eye, File, PushPin } from "@phosphor-icons/react";
+import { ArrowUUpLeft, Eye, File, GoogleLogo, PushPin } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
@@ -23,6 +23,20 @@ export default function WorkspaceFileRow({
   disableSelection,
   setSelectedItems,
 }) {
+  // Check for Google Doc in multiple places
+  const isGoogleDoc = 
+    item.metadata?.source === 'google_docs' ||
+    item.metadata?.type === 'google_document' ||
+    item.type === 'google_document' ||
+    (item.docId && item.docId.startsWith('googledoc-')) ||
+    (item.chunkSource && item.chunkSource.startsWith('googledocs://'));
+
+  // Get proper display type
+  const getDisplayType = () => {
+    if (isGoogleDoc) return 'GOOGLE DOC';
+    return getFileExtension(item.title || item.name).toUpperCase();
+  };
+
   const onRemoveClick = async (e) => {
     e.stopPropagation();
     setLoading(true);
@@ -69,9 +83,10 @@ export default function WorkspaceFileRow({
         className="col-span-10 w-fit flex gap-x-[2px] items-center relative"
         data-tooltip-id="ws-directory-item"
         data-tooltip-content={JSON.stringify({
-          title: item.title,
-          date: formatDate(item?.published),
-          extension: getFileExtension(item.url).toUpperCase(),
+          title: item.title || item.name,
+          date: formatDate(item?.metadata?.updatedAt || item?.published || item?.lastUpdated),
+          extension: getDisplayType(),
+          type: isGoogleDoc ? 'Google Document' : item.type || 'file'
         })}
       >
         <div className="shrink-0 w-3 h-3">
@@ -89,38 +104,44 @@ export default function WorkspaceFileRow({
             </div>
           ) : null}
         </div>
-        <File
-          className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-1"
-          weight="fill"
-        />
-        <p className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
-          {middleTruncate(item.title, 50)}
-        </p>
-      </div>
-      <div className="col-span-2 flex justify-end items-center">
-        {hasChanges ? (
-          <div className="w-4 h-4 ml-2 flex-shrink-0" />
+        {isGoogleDoc ? (
+          <GoogleLogo
+            className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-1"
+            weight="fill"
+          />
         ) : (
-          <div className="flex gap-x-2 items-center">
-            <WatchForChanges
-              workspace={workspace}
-              docPath={`${folderName}/${item.name}`}
-              item={item}
-            />
-            <PinItemToWorkspace
-              workspace={workspace}
-              docPath={`${folderName}/${item.name}`}
-              item={item}
-            />
-            <RemoveItemFromWorkspace item={item} onClick={onRemoveClick} />
-          </div>
+          <File
+            className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-1"
+            weight="fill"
+          />
+        )}
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
+          {middleTruncate(item.title || item.name, 50)}
+        </p>
+        <span className="ml-2 text-xs opacity-50">
+          {getDisplayType()}
+        </span>
+      </div>
+      <div className="col-span-2 flex justify-end items-center gap-2">
+        <PinDocumentToWorkspace
+          workspace={workspace}
+          docPath={`${folderName}/${item.name}`}
+          item={item}
+        />
+        <WatchForChanges
+          workspace={workspace}
+          docPath={`${folderName}/${item.name}`}
+          item={item}
+        />
+        {!hasChanges && (
+          <RemoveItemFromWorkspace item={item} onClick={onRemoveClick} />
         )}
       </div>
     </div>
   );
 }
 
-const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
+const PinDocumentToWorkspace = memo(({ workspace, docPath, item }) => {
   const [pinned, setPinned] = useState(
     item?.pinnedWorkspaces?.includes(workspace.id) || false
   );

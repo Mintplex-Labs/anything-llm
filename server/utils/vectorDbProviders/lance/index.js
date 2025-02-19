@@ -219,15 +219,78 @@ const LanceDb = {
    * @returns
    */
   updateOrCreateCollection: async function (client, data = [], namespace) {
-    const hasNamespace = await this.hasNamespace(namespace);
-    if (hasNamespace) {
-      const collection = await client.openTable(namespace);
-      await collection.add(data);
-      return true;
-    }
+    try {
+      // Drop existing table to ensure clean schema
+      const exists = await this.namespaceExists(client, namespace);
+      if (exists) {
+        await client.dropTable(namespace);
+      }
 
-    await client.createTable(namespace, data);
-    return true;
+      // Ensure data has valid values for all fields
+      const cleanData = data.map((record, index) => {
+        if (!record.docId) {
+          console.error(`Record at index ${index} missing docId`);
+          throw new Error('Document ID is required for all records');
+        }
+
+        return {
+          id: record.id || `vec-${uuidv4()}`,
+          vector: record.vector,
+          text: record.text || '',
+          source: record.source || 'unknown',
+          title: record.title || 'untitled',
+          docId: String(record.docId), // Ensure docId is a string
+          documentType: record.documentType || 'unknown',
+          author: record.author || 'unknown',
+          sourceId: record.sourceId || String(record.docId),
+          filename: record.filename || '',
+          filepath: record.filepath || '',
+          chunkIndex: typeof record.chunkIndex === 'number' ? record.chunkIndex : 0,
+          status: record.status || 'processed'
+        };
+      });
+
+      // Convert the schema to proper LanceDB format with fields property
+      const lanceSchema = {
+        fields: [
+          { name: 'id', type: 'string' },
+          { 
+            name: 'vector', 
+            type: { 
+              type: 'fixed_size_list',
+              length: 384,
+              child: { type: 'float32' }
+            }
+          },
+          { name: 'text', type: 'string' },
+          { name: 'source', type: 'string' },
+          { name: 'title', type: 'string' },
+          { name: 'docId', type: 'string' },
+          { name: 'documentType', type: 'string' },
+          { name: 'author', type: 'string' },
+          { name: 'sourceId', type: 'string' },
+          { name: 'filename', type: 'string' },
+          { name: 'filepath', type: 'string' },
+          { name: 'chunkIndex', type: 'int32' },
+          { name: 'status', type: 'string' }
+        ]
+      };
+
+      console.log('Using LanceDB schema:', JSON.stringify(lanceSchema, null, 2));
+
+      // Create the table with the proper schema
+      const newTable = await client.createTable(namespace, cleanData, lanceSchema);
+      
+      if (!newTable) {
+        throw new Error('Failed to create table');
+      }
+
+      console.log(`Successfully created table ${namespace}`);
+      return { success: true };
+    } catch (error) {
+      console.error('Error in updateOrCreateCollection:', error);
+      throw error;
+    }
   },
   hasNamespace: async function (namespace = null) {
     if (!namespace) return false;
@@ -284,37 +347,13 @@ const LanceDb = {
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
-      const { pageContent, docId, ...metadata } = documentData;
+      const { pageContent, docId, metadata = {}, ...rest } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
-
-      console.log("Adding new vectorized document into namespace", namespace);
-      if (!skipCache) {
-        const cacheResult = await cachedVectorInformation(fullFilePath);
-        if (cacheResult.exists) {
-          const { client } = await this.connect();
-          const { chunks } = cacheResult;
-          const documentVectors = [];
-          const submissions = [];
-
-          for (const chunk of chunks) {
-            chunk.forEach((chunk) => {
-              const id = uuidv4();
-              const { id: _id, ...metadata } = chunk.metadata;
-              documentVectors.push({ docId, vectorId: id });
-              submissions.push({ id: id, vector: chunk.values, ...metadata });
-            });
-          }
-
-          await this.updateOrCreateCollection(client, submissions, namespace);
-          await DocumentVectors.bulkInsert(documentVectors);
-          return { vectorized: true, error: null };
-        }
+      if (!docId) {
+        throw new Error("Document ID is required");
       }
 
-      // If we are here then we are going to embed and store a novel document.
-      // We have to do this manually as opposed to using LangChains `xyz.fromDocuments`
-      // because we then cannot atomically control our namespace to granularly find/remove documents
-      // from vectordb.
+      console.log("Adding new vectorized document into namespace", namespace);
       const EmbedderEngine = getEmbeddingEngineSelection();
       const textSplitter = new TextSplitter({
         chunkSize: TextSplitter.determineMaxChunkSize(
@@ -327,49 +366,60 @@ const LanceDb = {
           { label: "text_splitter_chunk_overlap" },
           20
         ),
-        chunkHeaderMeta: TextSplitter.buildHeaderMeta(metadata),
+        chunkHeaderMeta: TextSplitter.buildHeaderMeta({ ...metadata, ...rest }),
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
       const documentVectors = [];
-      const vectors = [];
       const submissions = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
-          const vectorRecord = {
-            id: uuidv4(),
-            values: vector,
-            // [DO NOT REMOVE]
-            // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
-            // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
-            metadata: { ...metadata, text: textChunks[i] },
-          };
+          const vectorId = uuidv4();
+          documentVectors.push({ docId, vectorId });
 
-          vectors.push(vectorRecord);
+          // Ensure vector is properly formatted
+          const formattedVector = Array.from(vector).map(v => Number(v));
+          if (formattedVector.some(v => typeof v !== 'number' || isNaN(v))) {
+            throw new Error('Invalid vector values detected');
+          }
+
           submissions.push({
-            ...vectorRecord.metadata,
-            id: vectorRecord.id,
-            vector: vectorRecord.values,
+            id: vectorId,
+            vector: formattedVector,
+            text: textChunks[i] || '',
+            source: metadata.source || 'unknown',
+            title: metadata.title || '',
+            docId: String(docId), // Ensure docId is a string
+            documentType: metadata.documentType || 'unknown',
+            author: metadata.author || 'unknown',
+            sourceId: metadata.sourceId || String(docId),
+            filename: metadata.filename || '',
+            filepath: metadata.filepath || '',
+            chunkIndex: i,
+            status: 'processed'
           });
-          documentVectors.push({ docId, vectorId: vectorRecord.id });
         }
+
+        console.log("Vector records prepared:", {
+          count: submissions.length,
+          sampleRecord: {
+            ...submissions[0],
+            vector: `[${submissions[0].vector.slice(0, 3)}...]`
+          }
+        });
       } else {
         throw new Error(
           "Could not embed document chunks! This document will not be recorded."
         );
       }
 
-      if (vectors.length > 0) {
-        const chunks = [];
-        for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
-
+      if (submissions.length > 0) {
         console.log("Inserting vectorized chunks into LanceDB collection.");
         const { client } = await this.connect();
         await this.updateOrCreateCollection(client, submissions, namespace);
-        await storeVectorResult(chunks, fullFilePath);
       }
 
       await DocumentVectors.bulkInsert(documentVectors);

@@ -4,49 +4,67 @@ import GithubOptions from "./Connectors/Github";
 import GitlabOptions from "./Connectors/Gitlab";
 import YoutubeOptions from "./Connectors/Youtube";
 import ConfluenceOptions from "./Connectors/Confluence";
+import GoogleDocsOptions from "./Connectors/GoogleDocs";
 import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
 import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 
-export const DATA_CONNECTORS = {
+const createConnectorOptions = (workspace) => ({
   github: {
     name: "GitHub Repo",
     image: ConnectorImages.github,
     description:
       "Import an entire public or private Github repository in a single click.",
-    options: <GithubOptions />,
+    options: <GithubOptions workspace={workspace} />,
   },
   gitlab: {
     name: "GitLab Repo",
     image: ConnectorImages.gitlab,
     description:
       "Import an entire public or private GitLab repository in a single click.",
-    options: <GitlabOptions />,
+    options: <GitlabOptions workspace={workspace} />,
   },
   "youtube-transcript": {
     name: "YouTube Transcript",
     image: ConnectorImages.youtube,
     description:
       "Import the transcription of an entire YouTube video from a link.",
-    options: <YoutubeOptions />,
+    options: <YoutubeOptions workspace={workspace} />,
   },
   "website-depth": {
     name: "Bulk Link Scraper",
     image: ConnectorImages.websiteDepth,
     description: "Scrape a website and its sub-links up to a certain depth.",
-    options: <WebsiteDepthOptions />,
+    options: <WebsiteDepthOptions workspace={workspace} />,
   },
   confluence: {
     name: "Confluence",
     image: ConnectorImages.confluence,
     description: "Import an entire Confluence page in a single click.",
-    options: <ConfluenceOptions />,
+    options: <ConfluenceOptions workspace={workspace} />,
   },
-};
+  googledocs: {
+    name: "Google Documents",
+    image: ConnectorImages.googledocs,
+    description: "Import documents directly from your Google Drive.",
+    options: <GoogleDocsOptions workspace={workspace} />,
+  },
+});
 
-export default function DataConnectors() {
+export default function DataConnectors({ workspace, systemSettings }) {
   const [selectedConnector, setSelectedConnector] = useState("github");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Return early if no workspace is provided
+  if (!workspace) {
+    return (
+      <div className="flex justify-center items-center w-full h-full">
+        <p className="text-white text-opacity-80">Loading workspace...</p>
+      </div>
+    );
+  }
+
+  const DATA_CONNECTORS = createConnectorOptions(workspace);
 
   const filteredConnectors = Object.keys(DATA_CONNECTORS).filter((slug) =>
     DATA_CONNECTORS[slug].name.toLowerCase().includes(searchQuery.toLowerCase())

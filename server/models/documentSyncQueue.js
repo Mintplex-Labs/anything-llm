@@ -2,6 +2,9 @@ const { BackgroundService } = require("../utils/BackgroundWorkers");
 const prisma = require("../utils/prisma");
 const { SystemSettings } = require("./systemSettings");
 const { Telemetry } = require("./telemetry");
+const { getVectorDbClass } = require('../utils/helpers');
+const { fileData } = require('../utils/files');
+const path = require('path');
 
 /**
  * @typedef {('link'|'youtube'|'confluence'|'github'|'gitlab')} validFileType
@@ -45,13 +48,32 @@ const DocumentSyncQueue = {
    * @param {string} metadata.chunkSource - chunk source of the document
    * @returns {boolean} - true if the document can be watched, false otherwise
    */
-  canWatch: function ({ title, chunkSource = null } = {}) {
-    if (chunkSource.startsWith("link://") && title.endsWith(".html"))
-      return true; // If is web-link material (prior to feature most chunkSources were links://)
-    if (chunkSource.startsWith("youtube://")) return true; // If is a youtube link
-    if (chunkSource.startsWith("confluence://")) return true; // If is a confluence document link
-    if (chunkSource.startsWith("github://")) return true; // If is a Github file reference
-    if (chunkSource.startsWith("gitlab://")) return true; // If is a Gitlab file reference
+  canWatch: function(metadata = {}) {
+    if (!metadata) return false;
+
+    // For Google Docs, we don't want to watch for changes since they're managed through the API
+    const isGoogleDoc = 
+      metadata.source === 'google_docs' ||
+      metadata.type === 'google_document' ||
+      (metadata.docId && metadata.docId.startsWith('googledoc-')) ||
+      (metadata.chunkSource && metadata.chunkSource.startsWith('googledocs://'));
+
+    if (isGoogleDoc) return false;
+
+    // Check for other watchable types
+    if (metadata.chunkSource) {
+      if (metadata.chunkSource.startsWith("link://") && metadata.title?.endsWith(".html"))
+        return true; // If is web-link material
+      if (metadata.chunkSource.startsWith("youtube://")) 
+        return true; // If is a youtube link
+      if (metadata.chunkSource.startsWith("confluence://")) 
+        return true; // If is a confluence document
+      if (metadata.chunkSource.startsWith("github://")) 
+        return true; // If is a Github file
+      if (metadata.chunkSource.startsWith("gitlab://")) 
+        return true; // If is a Gitlab file
+    }
+
     return false;
   },
 

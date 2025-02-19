@@ -273,15 +273,18 @@ const Workspace = {
   get: async function (clause = {}) {
     try {
       const workspace = await prisma.workspaces.findFirst({
-        where: clause,
-        include: {
-          documents: true,
+        where: {
+          id: clause.id ? parseInt(clause.id) : undefined,
+          slug: clause.slug,
+          name: clause.name
         },
+        include: {
+          documents: true
+        }
       });
-
       return workspace || null;
     } catch (error) {
-      console.error(error.message);
+      console.error("Failed to get workspace.", error);
       return null;
     }
   },
@@ -469,6 +472,42 @@ const Workspace = {
     } catch (error) {
       console.error(error.message);
       return null;
+    }
+  },
+
+  // Add document to workspace
+  addDocument: async function (workspaceId, documentData) {
+    try {
+      const docId = `doc_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      const filename = documentData.docpath.split('/').pop();
+      
+      const document = await prisma.workspace_documents.create({
+        data: {
+          docId,
+          filename,
+          docpath: documentData.docpath,
+          workspaceId: parseInt(workspaceId),
+          metadata: JSON.stringify({
+            name: documentData.metadata.name,
+            type: documentData.metadata.type,
+            size: documentData.metadata.size,
+            chunkSource: `file://${documentData.docpath}`,
+            token_count_estimate: documentData.metadata.tokens
+          }),
+          pinned: false,
+          watched: false,
+          createdAt: new Date(),
+          lastUpdatedAt: new Date()
+        },
+        include: {
+          workspace: true
+        }
+      });
+      
+      return { document, message: null };
+    } catch (error) {
+      console.error("Failed to add document to workspace.", error);
+      return { document: null, message: error.message };
     }
   },
 };

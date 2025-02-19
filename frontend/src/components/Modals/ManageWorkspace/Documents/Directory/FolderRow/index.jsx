@@ -20,7 +20,7 @@ export default function FolderRow({
 
   return (
     <>
-      <tr
+      <div
         onClick={onRowClick}
         className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-theme-file-picker-hover cursor-pointer file-row ${
           selected ? "selected light:text-white !text-white" : ""
@@ -57,13 +57,13 @@ export default function FolderRow({
             className="shrink-0 text-base font-bold w-4 h-4 mr-[3px]"
             weight="fill"
           />
-          <p className="whitespace-nowrap overflow-show max-w-[400px]">
+          <span className="whitespace-nowrap overflow-show max-w-[400px]">
             {middleTruncate(item.name, 35)}
-          </p>
+          </span>
         </div>
-        <p className="col-span-2 pl-3.5" />
-        <p className="col-span-2 pl-2" />
-      </tr>
+        <div className="col-span-2 pl-3.5" />
+        <div className="col-span-2 pl-2" />
+      </div>
       {expanded && (
         <>
           {item.items.map((fileItem) => (
