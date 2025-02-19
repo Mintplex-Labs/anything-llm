@@ -65,6 +65,9 @@ export default {
       members: (slug) => {
         return `/workspace/${slug}/settings/members`;
       },
+      groups: (slug) => {
+        return `/workspace/${slug}/settings/groups`;
+      },
       agentConfig: (slug) => {
         return `/workspace/${slug}/settings/agent-config`;
       },
