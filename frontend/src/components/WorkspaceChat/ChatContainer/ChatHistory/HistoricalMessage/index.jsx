@@ -6,7 +6,7 @@ import renderMarkdown from "@/utils/chat/markdown";
 import { userFromStorage } from "@/utils/request";
 import Citations from "../Citation";
 import { v4 } from "uuid";
-import createDOMPurify from "dompurify";
+import DOMPurify from "@/utils/chat/purify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
 import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
 import TTSMessage from "./Actions/TTSButton";
@@ -16,11 +16,6 @@ import {
   THOUGHT_REGEX_OPEN,
   ThoughtChainComponent,
 } from "../ThoughtContainer";
-
-const DOMPurify = createDOMPurify(window);
-DOMPurify.setConfig({
-  ADD_ATTR: ["target", "rel"],
-});
 
 const HistoricalMessage = ({
   uuid = v4(),
