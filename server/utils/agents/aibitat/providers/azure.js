@@ -48,7 +48,7 @@ class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
    * @param functions
    * @returns The completion.
    */
-  async complete(messages, functions = null) {
+  async complete(messages, functions = []) {
     try {
       let completion;
       if (functions.length > 0) {
