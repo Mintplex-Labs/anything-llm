@@ -116,7 +116,7 @@ class AnthropicProvider extends Provider {
    * @param functions
    * @returns The completion.
    */
-  async complete(messages, functions = null) {
+  async complete(messages, functions = []) {
     try {
       const [systemPrompt, chats] = this.#parseSystemPrompt(messages);
       const response = await this.client.messages.create(

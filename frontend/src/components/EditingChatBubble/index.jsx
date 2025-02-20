@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
+import renderMarkdown from "@/utils/chat/markdown";
+import DOMPurify from "@/utils/chat/purify";
 
 export default function EditingChatBubble({
   message,
@@ -57,9 +59,12 @@ export default function EditingChatBubble({
             />
           ) : (
             tempMessage && (
-              <p className=" font-[500] md:font-semibold text-sm md:text-base break-words light:invert">
-                {tempMessage}
-              </p>
+              <div
+                className="markdown font-[500] md:font-semibold text-sm md:text-base break-words light:invert"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(renderMarkdown(tempMessage)),
+                }}
+              />
             )
           )}
         </div>
