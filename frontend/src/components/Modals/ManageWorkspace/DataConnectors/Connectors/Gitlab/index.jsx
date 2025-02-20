@@ -123,7 +123,7 @@ export default function GitlabOptions() {
                     Select additional entities to fetch from the GitLab API.
                   </p>
                 </div>
-                <div className="flex items-center gap-x-2 mb-1">
+                <div className="flex items-center gap-x-2 mb-3">
                   <label className="relative inline-flex cursor-pointer items-center">
                     <input
                       type="checkbox"
