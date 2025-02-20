@@ -865,7 +865,7 @@
                         "description": "Unknown",
                         "docSource": "a text file uploaded by the user.",
                         "chunkSource": "anythingllm.txt",
-                        "published": "1/16/2024, 3:07:00 PM",
+                        "published": "1/16/2024, 3:07:00 PM",
                         "wordCount": 93,
                         "token_count_estimate": 115
                       }
@@ -900,12 +900,15 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "type": "string",
-                "format": "binary",
+                "type": "object",
+                "required": [
+                  "file"
+                ],
                 "properties": {
                   "file": {
                     "type": "string",
-                    "format": "binary"
+                    "format": "binary",
+                    "description": "The file to upload"
                   }
                 }
               }
@@ -914,13 +917,22 @@
         }
       }
     },
-    "/v1/document/upload-folder": {
+    "/v1/document/upload/{folderName}": {
       "post": {
         "tags": [
           "Documents"
         ],
-        "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding.",
-        "parameters": [],
+        "description": "Upload a new file to a specific folder in AnythingLLM to be parsed and prepared for embedding. If the folder does not exist, it will be created.",
+        "parameters": [
+          {
+            "name": "folderName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -941,7 +953,7 @@
                         "description": "Unknown",
                         "docSource": "a text file uploaded by the user.",
                         "chunkSource": "anythingllm.txt",
-                        "published": "1/16/2024, 3:07:00 PM",
+                        "published": "1/16/2024, 3:07:00 PM",
                         "wordCount": 93,
                         "token_count_estimate": 115
                       }
@@ -967,7 +979,18 @@
             }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": false,
+                    "error": "Document processing API is not online. Document will not be processed automatically."
+                  }
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -976,12 +999,15 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "type": "string",
-                "format": "binary",
+                "type": "object",
+                "required": [
+                  "file"
+                ],
                 "properties": {
                   "file": {
                     "type": "string",
-                    "format": "binary"
+                    "format": "binary",
+                    "description": "The file to upload"
                   }
                 }
               }
@@ -1016,7 +1042,7 @@
                         "description": "No description found.",
                         "docSource": "URL link uploaded by the user.",
                         "chunkSource": "https:anythingllm.com.html",
-                        "published": "1/16/2024, 3:46:33 PM",
+                        "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
                         "pageContent": "AnythingLLM is the best....",
                         "token_count_estimate": 447,
@@ -1089,7 +1115,7 @@
                         "description": "No description found.",
                         "docSource": "My custom description set during upload",
                         "chunkSource": "no chunk source specified",
-                        "published": "1/16/2024, 3:46:33 PM",
+                        "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
                         "pageContent": "AnythingLLM is the best....",
                         "token_count_estimate": 447,

@@ -35,12 +35,13 @@ function apiDocumentEndpoints(app) {
       content: {
         "multipart/form-data": {
           schema: {
-            type: 'string',
-            format: 'binary',
+            type: 'object',
+            required: ['file'],
             properties: {
               file: {
                 type: 'string',
                 format: 'binary',
+                description: 'The file to upload'
               }
             }
           }
@@ -65,7 +66,7 @@ function apiDocumentEndpoints(app) {
                   "description": "Unknown",
                   "docSource": "a text file uploaded by the user.",
                   "chunkSource": "anythingllm.txt",
-                  "published": "1/16/2024, 3:07:00 PM",
+                  "published": "1/16/2024, 3:07:00 PM",
                   "wordCount": 93,
                   "token_count_estimate": 115,
                 }
@@ -123,27 +124,35 @@ function apiDocumentEndpoints(app) {
   );
 
   app.post(
-    "/v1/document/upload-folder",
+    "/v1/document/upload/:folderName",
     [validApiKey, handleAPIFileUpload],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Upload a new file to AnythingLLM to be parsed and prepared for embedding.'
+    #swagger.description = 'Upload a new file to a specific folder in AnythingLLM to be parsed and prepared for embedding. If the folder does not exist, it will be created.'
+    #swagger.parameters['folderName'] = {
+      in: 'path',
+      description: 'Target folder path (defaults to "custom-documents" if not provided)',
+      required: true,
+      type: 'string',
+      example: 'my-folder'
+    }
     #swagger.requestBody = {
       description: 'File to be uploaded.',
       required: true,
       content: {
         "multipart/form-data": {
           schema: {
-            type: 'string',
-            format: 'binary',
+            type: 'object',
+            required: ['file'],
             properties: {
               file: {
                 type: 'string',
                 format: 'binary',
+                description: 'The file to upload'
               }
             }
-          },
+          }
         }
       }
     }
@@ -165,9 +174,9 @@ function apiDocumentEndpoints(app) {
                   "description": "Unknown",
                   "docSource": "a text file uploaded by the user.",
                   "chunkSource": "anythingllm.txt",
-                  "published": "1/16/2024, 3:07:00 PM",
+                  "published": "1/16/2024, 3:07:00 PM",
                   "wordCount": 93,
-                  "token_count_estimate": 115,
+                  "token_count_estimate": 115
                 }
               ]
             }
@@ -180,10 +189,24 @@ function apiDocumentEndpoints(app) {
         "$ref": "#/definitions/InvalidAPIKey"
       }
     }
+    #swagger.responses[500] = {
+      description: "Internal Server Error",
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              success: false,
+              error: "Document processing API is not online. Document will not be processed automatically."
+            }
+          }
+        }
+      }
+    }
     */
       try {
         const { originalname } = request.file;
-        let folder = request.body.folder || "custom-documents";
+        let folder = request.params.folderName || "custom-documents";
         folder = normalizePath(folder);
         const targetFolderPath = path.join(documentsPath, folder);
 
@@ -304,7 +327,7 @@ function apiDocumentEndpoints(app) {
                   "description": "No description found.",
                   "docSource": "URL link uploaded by the user.",
                   "chunkSource": "https:anythingllm.com.html",
-                  "published": "1/16/2024, 3:46:33 PM",
+                  "published": "1/16/2024, 3:46:33 PM",
                   "wordCount": 252,
                   "pageContent": "AnythingLLM is the best....",
                   "token_count_estimate": 447,
@@ -407,7 +430,7 @@ function apiDocumentEndpoints(app) {
                   "description": "No description found.",
                   "docSource": "My custom description set during upload",
                   "chunkSource": "no chunk source specified",
-                  "published": "1/16/2024, 3:46:33 PM",
+                  "published": "1/16/2024, 3:46:33 PM",
                   "wordCount": 252,
                   "pageContent": "AnythingLLM is the best....",
                   "token_count_estimate": 447,
