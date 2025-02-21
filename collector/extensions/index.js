@@ -154,6 +154,32 @@ function extensions(app) {
       return;
     }
   );
+
+  app.post(
+    "/ext/drupalwiki",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { loadAndStoreSpaces } = require("../utils/extensions/DrupalWiki");
+        const { success, reason, data } = await loadAndStoreSpaces(
+          reqBody(request),
+          response
+        );
+        response.status(200).json({ success, reason, data });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: {
+            title: null,
+            author: null,
+          },
+        });
+      }
+      return;
+    }
+  );
 }
 
 module.exports = extensions;
