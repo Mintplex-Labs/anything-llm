@@ -2,16 +2,19 @@ import { useEffect, useRef, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { At } from "@phosphor-icons/react";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
+import { useTranslation } from "react-i18next";
 
 export default function AvailableAgentsButton({ showing, setShowAgents }) {
   const agentSessionActive = useIsAgentSessionActive();
+  const { t } = useTranslation();
+
   if (agentSessionActive) return null;
   return (
     <div
       id="agent-list-btn"
       data-tooltip-id="tooltip-agent-list-btn"
-      data-tooltip-content="View all available agents you can use for chatting."
-      aria-label="View all available agents you can use for chatting."
+      data-tooltip-content={t("agent.menu.available")}
+      aria-label={t("agent.menu.available")}
       onClick={() => setShowAgents(!showing)}
       className={`flex justify-center items-center cursor-pointer ${
         showing ? "!opacity-100" : ""
@@ -47,6 +50,8 @@ export function AvailableAgents({
 }) {
   const formRef = useRef(null);
   const agentSessionActive = useIsAgentSessionActive();
+  const { t } = useTranslation();
+
   useEffect(() => {
     function listenForOutsideClick() {
       if (!showing || !formRef.current) return false;
@@ -81,7 +86,7 @@ export function AvailableAgents({
             >
               <div className="w-full flex-col text-left flex pointer-events-none">
                 <div className="text-theme-text-primary text-sm">
-                  <b>@agent</b> - the default agent for this workspace.
+                  <b>@agent</b>{t("agent.menu.default")}
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <AbilityTag text="rag-search" />
@@ -101,7 +106,7 @@ export function AvailableAgents({
             >
               <div className="w-full flex-col text-center flex pointer-events-none">
                 <div className="text-theme-text-secondary text-xs italic">
-                  custom agents are coming soon!
+                  {t("agent.menu.custom")}
                 </div>
               </div>
             </button>

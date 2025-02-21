@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Trash, DotsThreeVertical, TreeView } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 function ActionMenu({ chatId, forkThread, isEditing, role }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
+  const { t } = useTranslation();
 
   const toggleMenu = () => setOpen(!open);
 
@@ -40,8 +42,8 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
         onClick={toggleMenu}
         className="border-none text-[var(--theme-sidebar-footer-icon-fill)] hover:text-[var(--theme-sidebar-footer-icon-fill)] transition-colors duration-200"
         data-tooltip-id="action-menu"
-        data-tooltip-content="More actions"
-        aria-label="More actions"
+        data-tooltip-content={t("general.message.more-actions")}
+        aria-label="general.message.more-actions"
       >
         <DotsThreeVertical size={24} weight="bold" />
       </button>
@@ -52,14 +54,14 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
             className="border-none rounded-t-lg flex items-center text-white gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <TreeView size={18} />
-            <span className="text-sm">Fork</span>
+            <span className="text-sm">{t("general.message.fork")}</span>
           </button>
           <button
             onClick={handleDelete}
             className="border-none flex rounded-b-lg items-center text-white gap-x-2 hover:bg-theme-action-menu-item-hover py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <Trash size={18} />
-            <span className="text-sm">Delete</span>
+            <span className="text-sm">{t("general.message.delete")}</span>
           </button>
         </div>
       )}
