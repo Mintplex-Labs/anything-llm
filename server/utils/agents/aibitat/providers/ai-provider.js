@@ -116,16 +116,28 @@ class Provider {
           ),
           ...config,
         });
-      case "bedrock":
+      case "bedrock": {
+        const awsAuthMethod =
+          process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
         return new ChatBedrockConverse({
           model: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
           region: process.env.AWS_BEDROCK_LLM_REGION,
-          credentials: {
-            accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-          },
+          ...(awsAuthMethod === "profile"
+            ? {
+                profile: process.env.AWS_BEDROCK_LLM_PROFILE_NAME,
+              }
+            : {
+                credentials: {
+                  accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+                  secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+                  ...(awsAuthMethod === "sessionToken" && {
+                    sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
+                  }),
+                },
+              }),
           ...config,
         });
+      }
       case "fireworksai":
         return new ChatOpenAI({
           apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
