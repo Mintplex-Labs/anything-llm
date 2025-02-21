@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { v5: uuidv5 } = require("uuid");
+const { toChunks } = require("../helpers");
 const { Document } = require("../../models/documents");
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
 const documentsPath =
@@ -155,6 +156,20 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
   console.log(
     `Cached vectorized results of ${filename} found! Using cached data to save on embed costs.`
   );
+
+  if (fs.lstatSync(file).isDirectory()) {
+    // If the file is a directory, it means it was chunked
+    const chunks = fs
+      .readdirSync(file)
+      .map((f) => {
+        const chunkPath = path.resolve(file, f);
+        const rawData = fs.readFileSync(chunkPath, "utf8");
+        return JSON.parse(rawData);
+      })
+      .flat(1);
+    return { exists: true, chunks };
+  }
+
   const rawData = fs.readFileSync(file, "utf8");
   return { exists: true, chunks: JSON.parse(rawData) };
 }
@@ -166,11 +181,25 @@ async function storeVectorResult(vectorData = [], filename = null) {
   console.log(
     `Caching vectorized results of ${filename} to prevent duplicated embedding.`
   );
-  if (!fs.existsSync(vectorCachePath)) fs.mkdirSync(vectorCachePath);
 
+  if (!fs.existsSync(vectorCachePath)) fs.mkdirSync(vectorCachePath);
   const digest = uuidv5(filename, uuidv5.URL);
-  const writeTo = path.resolve(vectorCachePath, `${digest}.json`);
-  fs.writeFileSync(writeTo, JSON.stringify(vectorData), "utf8");
+  const base = path.resolve(vectorCachePath, `${digest}.json`);
+
+  const chunks = toChunks(vectorData, 100);
+  if (chunks.length > 1) {
+    console.log(
+      `Vectorized data for ${filename} is too large to store in a single file. Splitting into ${chunks.length} chunks.`
+    );
+    if (!fs.existsSync(base)) fs.mkdirSync(base);
+
+    for (const [i, chunk] of chunks.entries()) {
+      const writeTo = path.resolve(base, `${digest}-${i}.json`);
+      fs.writeFileSync(writeTo, JSON.stringify(chunk), "utf8");
+    }
+  } else {
+    fs.writeFileSync(base, JSON.stringify(vectorData), "utf8");
+  }
   return;
 }
 
@@ -197,9 +226,15 @@ async function purgeVectorCache(filename = null) {
   const digest = uuidv5(filename, uuidv5.URL);
   const filePath = path.resolve(vectorCachePath, `${digest}.json`);
 
-  if (!fs.existsSync(filePath) || !fs.lstatSync(filePath).isFile()) return;
+  if (
+    !fs.existsSync(filePath) ||
+    !(fs.lstatSync(filePath).isFile() || fs.lstatSync(filePath).isDirectory())
+  ) {
+    return;
+  }
+
   console.log(`Purging vector-cache of ${filename}.`);
-  fs.rmSync(filePath);
+  fs.rmSync(filePath, { recursive: true, force: true });
   return;
 }
 
