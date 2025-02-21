@@ -35,14 +35,15 @@ function apiDocumentEndpoints(app) {
       content: {
         "multipart/form-data": {
           schema: {
-            type: 'string',
-            format: 'binary',
+            type: 'object',
             properties: {
               file: {
                 type: 'string',
                 format: 'binary',
+                description: 'The file to upload'
               }
-            }
+            },
+            required: ['file']
           }
         }
       }
