@@ -186,7 +186,24 @@ async function storeVectorResult(vectorData = [], filename = null) {
   const digest = uuidv5(filename, uuidv5.URL);
   const base = path.resolve(vectorCachePath, `${digest}.json`);
 
-  const chunks = toChunks(vectorData, 100);
+  // split the vector data into chunks by about 100MB
+  const chunkSizeLimit = 100 * 1024 * 1024;
+  const { chunks, chunk } = vectorData.reduce(
+    (acc, curr) => {
+      if (acc.chunkLength > chunkSizeLimit) {
+        acc.chunks.push(acc.chunk);
+        acc.chunk = [];
+        acc.chunkLength = 0;
+      }
+      acc.chunk.push(curr);
+      acc.chunkLength += JSON.stringify(curr).length;
+
+      return acc;
+    },
+    { chunkLength: 0, chunk: [], chunks: [] }
+  );
+  if (chunk.length > 0) chunks.push(chunk);
+
   if (chunks.length > 1) {
     console.log(
       `Vectorized data for ${filename} is too large to store in a single file. Splitting into ${chunks.length} chunks.`

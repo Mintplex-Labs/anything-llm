@@ -273,7 +273,12 @@ const LanceDb = {
     );
 
     if (vectorIds.length === 0) return;
-    await table.delete(`id IN (${vectorIds.map((v) => `'${v}'`).join(",")})`);
+
+    const chunks = toChunks(vectorIds, 1_000);
+    for (const chunk of chunks) {
+      await table.delete(`id IN (${chunk.map((v) => `'${v}'`).join(",")})`);
+    }
+
     return true;
   },
   addDocumentToNamespace: async function (
