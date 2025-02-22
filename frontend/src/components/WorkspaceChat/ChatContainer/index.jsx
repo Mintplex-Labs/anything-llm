@@ -282,8 +282,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         <PromptInput
           submit={handleSubmit}
           onChange={handleMessageChange}
-          inputDisabled={loadingResponse}
-          buttonDisabled={loadingResponse}
+          isStreaming={loadingResponse}
           sendCommand={sendCommand}
           attachments={files}
         />

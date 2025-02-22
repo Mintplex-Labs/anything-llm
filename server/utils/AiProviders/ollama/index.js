@@ -15,6 +15,7 @@ class OllamaAILLM {
     if (!process.env.OLLAMA_BASE_PATH)
       throw new Error("No Ollama Base Path was set.");
 
+    this.authToken = process.env.OLLAMA_AUTH_TOKEN;
     this.basePath = process.env.OLLAMA_BASE_PATH;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
     this.performanceMode = process.env.OLLAMA_PERFORMANCE_MODE || "base";
@@ -27,7 +28,10 @@ class OllamaAILLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    this.client = new Ollama({ host: this.basePath });
+    const headers = this.authToken
+      ? { Authorization: `Bearer ${this.authToken}` }
+      : {};
+    this.client = new Ollama({ host: this.basePath, headers: headers });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.#log(

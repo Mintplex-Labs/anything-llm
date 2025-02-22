@@ -35,14 +35,15 @@ function apiDocumentEndpoints(app) {
       content: {
         "multipart/form-data": {
           schema: {
-            type: 'string',
-            format: 'binary',
+            type: 'object',
             properties: {
               file: {
                 type: 'string',
                 format: 'binary',
+                description: 'The file to upload'
               }
-            }
+            },
+            required: ['file']
           }
         }
       }
@@ -423,9 +424,16 @@ function apiDocumentEndpoints(app) {
                   cached: false,
                   pinnedWorkspaces: [],
                   watched: false,
-                  // ... other document metadata
+                  more: "data",
                 },
-                // more documents
+                {
+                  name: "document2.json",
+                  type: "file",
+                  cached: false,
+                  pinnedWorkspaces: [],
+                  watched: false,
+                  more: "data",
+                },
               ]
             }
           }
