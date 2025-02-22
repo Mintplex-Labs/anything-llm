@@ -86,6 +86,7 @@ AnythingLLM的一些酷炫特性
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [PPIO (聊天模型)](https://ppinfra.com?utm_source=github_anything-llm)
 
 **支持的嵌入模型：**
 
