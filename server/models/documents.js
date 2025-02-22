@@ -49,12 +49,27 @@ const Document = {
 
   get: async function (clause = {}) {
     try {
+      // Handle different types of lookups
+      let whereClause = {};
+      
+      if (clause.id) {
+        whereClause.id = clause.id;
+      } else if (clause.docId) {
+        whereClause.docId = clause.docId;
+      } else {
+        whereClause = clause;
+      }
+
+      console.log('Document lookup with clause:', whereClause);
       const document = await prisma.workspace_documents.findFirst({
-        where: clause,
+        where: whereClause,
+        include: {
+          workspace: true
+        }
       });
       return document || null;
     } catch (error) {
-      console.error(error.message);
+      console.error('Failed to get document:', error);
       return null;
     }
   },
@@ -67,12 +82,23 @@ const Document = {
     select = null
   ) {
     try {
+      // If select is provided, use it exclusively
+      if (select !== null) {
+        const results = await prisma.workspace_documents.findMany({
+          where: clause,
+          ...(limit !== null ? { take: limit } : {}),
+          ...(orderBy !== null ? { orderBy } : {}),
+          select: { ...select }
+        });
+        return results;
+      }
+
+      // Otherwise use include (with workspace by default)
       const results = await prisma.workspace_documents.findMany({
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
-        ...(include !== null ? { include } : {}),
-        ...(select !== null ? { select: { ...select } } : {}),
+        ...(include !== null ? { include } : { include: { workspace: true } })
       });
       return results;
     } catch (error) {
@@ -118,8 +144,7 @@ const Document = {
             if (!file.endsWith('.json')) return false;
             try {
               const content = JSON.parse(fs.readFileSync(path.join(customDocsDir, file), 'utf8'));
-              return content.metadata?.sourceId === docId || 
-                     content.metadata?.docId === `googledoc-${docId}` ||
+              return content.metadata?.sourceId === docId ||content.metadata?.docId === docId === `googledoc-${docId}` ||
                      content.id === `googledoc-${docId}`;
             } catch (e) {
               console.error('Error reading file:', file, e);

@@ -28,44 +28,57 @@ class DocumentManager {
 
   async pinnedDocs() {
     if (!this.workspace) return [];
-    const docPaths = (await this.pinnedDocuments()).map((doc) => doc.docpath);
-    if (docPaths.length === 0) return [];
+    const pinnedDocs = await this.pinnedDocuments();
+    if (pinnedDocs.length === 0) return [];
 
     let tokens = 0;
-    const pinnedDocs = [];
-    for await (const docPath of docPaths) {
+    const processedDocs = [];
+    
+    for (const doc of pinnedDocs) {
       try {
-        const filePath = path.resolve(this.documentStoragePath, docPath);
-        const data = JSON.parse(
-          fs.readFileSync(filePath, { encoding: "utf-8" })
-        );
-
-        if (
-          !data.hasOwnProperty("pageContent") ||
-          !data.hasOwnProperty("token_count_estimate")
-        ) {
+        const metadata = JSON.parse(doc.metadata);
+        if (!metadata.pageContent) {
           this.log(
-            `Skipping document - Could not find page content or token_count_estimate in pinned source.`
+            `Skipping document ${doc.name} - Could not find page content in pinned source.`
           );
           continue;
+        }
+
+        if (!metadata.token_count_estimate) {
+          metadata.token_count_estimate = Math.ceil(metadata.pageContent.length / 4);
+          this.log(
+            `Generated token estimate for document ${doc.name}: ${metadata.token_count_estimate}`
+          );
         }
 
         if (tokens >= this.maxTokens) {
           this.log(
-            `Skipping document - Token limit of ${this.maxTokens} has already been exceeded by pinned documents.`
+            `Skipping document ${doc.name} - Token limit of ${this.maxTokens} has already been exceeded by pinned documents.`
           );
           continue;
         }
 
-        pinnedDocs.push(data);
-        tokens += data.token_count_estimate || 0;
-      } catch {}
+        processedDocs.push({
+          ...metadata,
+          pageContent: metadata.pageContent,
+          metadata: {
+            ...metadata,
+            name: doc.name,
+            docId: doc.docId,
+            token_count: metadata.token_count_estimate
+          }
+        });
+        tokens += metadata.token_count_estimate;
+      } catch (error) {
+        this.log(`Error processing pinned document ${doc.name}: ${error.message}`);
+        continue;
+      }
     }
 
     this.log(
-      `Found ${pinnedDocs.length} pinned sources - prepending to content with ~${tokens} tokens of content.`
+      `Found ${processedDocs.length} pinned sources - prepending to content with ~${tokens} tokens of content.`
     );
-    return pinnedDocs;
+    return processedDocs;
   }
 }
 

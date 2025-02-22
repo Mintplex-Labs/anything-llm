@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const GoogleDocsLoader = require('../utils/extensions/GoogleDocs');
+const GoogleDocsLoader = require('../utils/extensions/GoogleDocs/index');
 const { Workspace } = require('../models/workspace');
 const path = require('path');
 
 router.get('/auth/status', async (req, res) => {
   try {
     console.log('Checking auth status...');
-    const status = await GoogleDocsLoader.checkAuth();
+    const loader = new GoogleDocsLoader();
+    const status = await loader.checkAuth();
     console.log('Auth status result:', status);
     res.json(status);
   } catch (error) {
@@ -22,7 +23,8 @@ router.get('/auth/status', async (req, res) => {
 router.get('/auth/url', async (req, res) => {
   try {
     console.log('Generating auth URL...');
-    const result = await GoogleDocsLoader.getAuthUrl();
+    const loader = new GoogleDocsLoader();
+    const result = loader.getAuthUrl();
     
     if (!result || !result.url) {
       throw new Error('Failed to generate authorization URL');
@@ -52,7 +54,8 @@ router.get('/callback', async (req, res) => {
 
   try {
     console.log('Processing callback with code...');
-    const result = await GoogleDocsLoader.handleCallback(code);
+    const loader = new GoogleDocsLoader();
+    const result = await loader.handleCallback(code);
     
     if (result.success) {
       console.log('Successfully processed callback');
@@ -70,7 +73,8 @@ router.get('/callback', async (req, res) => {
 router.get('/list', async (req, res) => {
   try {
     console.log('Fetching document list...');
-    const result = await GoogleDocsLoader.listDocuments();
+    const loader = new GoogleDocsLoader();
+    const result = await loader.listDocuments();
     
     if (result.error) {
       console.error('Error listing documents:', result.error);
@@ -107,7 +111,8 @@ router.post('/collect', async (req, res) => {
     }
 
     // First collect the documents from Google
-    const result = await GoogleDocsLoader.collect(documentIds);
+    const loader = new GoogleDocsLoader();
+    const result = await loader.collect(documentIds);
     console.log('Collection result:', result);
     
     if (!result.success || !result.documents || result.documents.length === 0) {
@@ -134,16 +139,22 @@ router.post('/collect', async (req, res) => {
           source: 'google_docs',
           type: 'google_document',
           documentType: 'google_document',
-          sourceId: doc.id.replace('googledoc-', ''), // Extract original Google Doc ID
+          sourceId: doc.metadata.sourceId, // Extract original Google Doc ID
           docId: doc.id,
           name: doc.name,
           filename: path.basename(doc.path),
           filepath: doc.path,
           size: doc.size,
           token_count_estimate: doc.token_count_estimate,
-          chunkSource: `googledocs://${doc.id.replace('googledoc-', '')}`,
+          originalId: doc.metadata.sourceId, // Extract pure Google Doc ID
+          chunkSource: `googledocs://${doc.metadata.sourceId}`,
+          source: 'google_docs',
           cached: true,
-          ...doc.metadata
+          pageContent: doc.pageContent,
+          ...doc.metadata,
+          createdAt: doc.metadata?.createdAt || new Date().toISOString(),
+          updatedAt: doc.metadata?.updatedAt || new Date().toISOString(),
+          lastSynced: new Date().toISOString()
         };
 
         const { document, message } = await Workspace.addDocument(workspace.id, {
@@ -200,4 +211,4 @@ router.post('/collect', async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;

@@ -1,10 +1,10 @@
-import { memo, useState } from "react";
+import { memo, useState, useMemo } from "react";
 import {
   formatDate,
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
-import { ArrowUUpLeft, Eye, File, GoogleLogo, PushPin } from "@phosphor-icons/react";
+import { ArrowUUpLeft, Eye, File, GoogleLogo, PushPin, ArrowClockwise } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
@@ -132,6 +132,12 @@ export default function WorkspaceFileRow({
           workspace={workspace}
           docPath={`${folderName}/${item.name}`}
           item={item}
+          folderName={folderName}
+        />
+        <SyncDocument
+          workspace={workspace}
+          docPath={`${folderName}/${item.name}`}
+          item={item}
         />
         {!hasChanges && (
           <RemoveItemFromWorkspace item={item} onClick={onRemoveClick} />
@@ -201,51 +207,66 @@ const PinDocumentToWorkspace = memo(({ workspace, docPath, item }) => {
   );
 });
 
-const WatchForChanges = memo(({ workspace, docPath, item }) => {
+const WatchForChanges = memo(({ workspace, docPath, item, folderName }) => {
   const [watched, setWatched] = useState(item?.watched || false);
   const [hover, setHover] = useState(false);
+  const [loading, setLoading] = useState(false);
   const watchEvent = new CustomEvent("watch_document_for_changes");
 
-  const updateWatchStatus = async () => {
-    try {
-      if (!watched) window.dispatchEvent(watchEvent);
-      const success =
-        await System.experimentalFeatures.liveSync.setWatchStatusForDocument(
-          workspace.slug,
-          docPath,
-          !watched
-        );
+  // Check if the document can be watched
+  const canBeWatched = useMemo(() => {
+    if (!item?.metadata) return false;
 
-      if (!success) {
-        showToast(
-          `Failed to ${!watched ? "watch" : "unwatch"} document.`,
-          "error",
-          {
-            clear: true,
-          }
-        );
-        return;
+    // Check for Google Docs
+    const isGoogleDoc = 
+      item.metadata?.source === 'google_docs' ||
+      item.metadata?.type === 'google_document' ||
+      (item.docId && item.docId.startsWith('googledoc-')) ||
+      (item.chunkSource && item.chunkSource.startsWith('googledocs://'));
+
+    // Return true for Google Docs and other watchable types
+    return isGoogleDoc || item.canWatch;
+  }, [item]);
+
+  const updateWatchStatus = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (loading) return; // Prevent multiple clicks while loading
+    
+    try {
+      console.log('Updating watch status for:', {
+        workspaceSlug: workspace.slug,
+        docPath: item.docpath || `${folderName}/${item.name}`,
+        item
+      });
+
+      setLoading(true);
+      const response = await System.experimentalFeatures.liveSync.setWatchStatusForDocument(
+        workspace.slug,
+        item.docpath || `${folderName}/${item.name}`,
+        !watched
+      );
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to update watch status');
       }
 
-      showToast(
-        `Document ${
-          !watched
-            ? "will be watched for changes"
-            : "will no longer be watched for changes"
-        }.`,
-        "success",
-        { clear: true }
-      );
       setWatched(!watched);
+      showToast(
+        `Document ${!watched ? 'added to' : 'removed from'} watch list`,
+        'success'
+      );
     } catch (error) {
-      showToast(`Failed to watch document. ${error.message}`, "error", {
-        clear: true,
-      });
-      return;
+      console.error('Failed to update watch status:', error);
+      showToast(`Failed to update watch status: ${error.message}`, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!item || !item.canWatch) return <div className="w-[16px] p-[2px] ml-2" />;
+  // Only show watch icon if document can be watched
+  if (!canBeWatched) return <div className="w-[16px] p-[2px] ml-2" />;
 
   return (
     <div
@@ -261,7 +282,51 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
         size={16}
         onClick={updateWatchStatus}
         weight={hover || watched ? "fill" : "regular"}
-        className="outline-none text-base font-bold flex-shrink-0 cursor-pointer"
+        className={`outline-none text-base font-bold flex-shrink-0 cursor-pointer ${loading ? 'opacity-50' : ''}`}
+      />
+    </div>
+  );
+});
+
+const SyncDocument = memo(({ workspace, docPath, item }) => {
+  const [syncing, setSyncing] = useState(false);
+  const [hover, setHover] = useState(false);
+
+  // Only show sync icon if document is being watched
+  if (!item?.watched) return null;
+
+  const handleSync = async (e) => {
+    try {
+      e.stopPropagation();
+      setSyncing(true);
+      const success = await System.experimentalFeatures.liveSync.syncDocument(item.id);
+
+      if (!success) {
+        showToast('Failed to sync document.', 'error', { clear: true });
+        return;
+      }
+
+      showToast('Document synced successfully.', 'success', { clear: true });
+    } catch (error) {
+      showToast(`Failed to sync document. ${error.message}`, 'error', { clear: true });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  return (
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="flex gap-x-2 items-center hover:bg-theme-file-picker-hover p-[2px] rounded ml-2"
+    >
+      <ArrowClockwise
+        data-tooltip-id="sync-document"
+        data-tooltip-content="Sync document now"
+        size={16}
+        onClick={handleSync}
+        weight={hover ? "fill" : "regular"}
+        className={`outline-none text-base font-bold flex-shrink-0 cursor-pointer ${syncing ? 'animate-spin' : ''}`}
       />
     </div>
   );

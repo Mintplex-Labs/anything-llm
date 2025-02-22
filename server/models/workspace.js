@@ -478,22 +478,36 @@ const Workspace = {
   // Add document to workspace
   addDocument: async function (workspaceId, documentData) {
     try {
-      const docId = `doc_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      const docId = documentData.docId || `doc_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       const filename = documentData.docpath.split('/').pop();
       
+      // Ensure we have all required metadata fields
+      const metadata = {
+        name: documentData.metadata.name,
+        type: documentData.metadata.type,
+        size: documentData.metadata.size,
+        chunkSource: documentData.metadata.chunkSource,
+        token_count_estimate: documentData.metadata.token_count_estimate,
+        pageContent: documentData.metadata.pageContent, // Add pageContent
+        cached: documentData.metadata.cached || false,
+        sourceId: documentData.metadata.sourceId,
+        documentType: documentData.metadata.documentType,
+        createdAt: documentData.metadata.createdAt || new Date().toISOString(),
+        updatedAt: documentData.metadata.updatedAt || new Date().toISOString(),
+        author: documentData.metadata.author,
+        mimeType: documentData.metadata.mimeType,
+        wordCount: documentData.metadata.wordCount,
+        tokenCount: documentData.metadata.token_count_estimate,
+        status: 'processed'
+      };
+
       const document = await prisma.workspace_documents.create({
         data: {
           docId,
           filename,
           docpath: documentData.docpath,
           workspaceId: parseInt(workspaceId),
-          metadata: JSON.stringify({
-            name: documentData.metadata.name,
-            type: documentData.metadata.type,
-            size: documentData.metadata.size,
-            chunkSource: `file://${documentData.docpath}`,
-            token_count_estimate: documentData.metadata.tokens
-          }),
+          metadata: JSON.stringify(metadata),
           pinned: false,
           watched: false,
           createdAt: new Date(),

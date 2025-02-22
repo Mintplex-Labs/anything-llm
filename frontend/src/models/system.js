@@ -753,7 +753,72 @@ const System = {
   },
 
   experimentalFeatures: {
-    liveSync: LiveDocumentSync,
+    liveSync: {
+      setWatchStatusForDocument: async (workspaceSlug, docPath, watchStatus) => {
+        try {
+          console.log('Sending watch status update:', {
+            workspaceSlug,
+            docPath,
+            watchStatus
+          });
+
+          const response = await fetch(
+            `${API_BASE}/experimental/workspace/${workspaceSlug}/document/watch-status`,
+            {
+              method: "POST",
+              headers: {
+                ...baseHeaders(),
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ docPath, watchStatus })
+            }
+          );
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to update watch status');
+          }
+
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          console.error("Failed to update watch status:", error);
+          return { success: false, error: error.message };
+        }
+      },
+      syncDocument: async (documentId) => {
+        try {
+          const response = await fetch(
+            `${API_BASE}/experimental/sync-document/${documentId}`,
+            {
+              method: "POST",
+              headers: baseHeaders(),
+            }
+          );
+          const result = await response.json();
+          return result.success;
+        } catch (error) {
+          console.error("Failed to sync document:", error);
+          return false;
+        }
+      },
+      watchedDocuments: async () => {
+        try {
+          const response = await fetch(
+            `${API_BASE}/experimental/watched-documents`,
+            {
+              method: "GET",
+              headers: baseHeaders(),
+            }
+          );
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          console.error("Failed to fetch watched documents:", error);
+          return { success: false, error: error.message };
+        }
+      }
+    },
     agentPlugins: AgentPlugins,
   },
 };

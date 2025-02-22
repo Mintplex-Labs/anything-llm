@@ -195,7 +195,7 @@ class GoogleDocsLoader {
           // Create filename without type inference
           const timestamp = new Date().getTime();
           const cleanName = docInfo.data.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-          const filename = `${cleanName}_${timestamp}.json`;
+          const filename = `googledoc_${docId}.json`; // Same pattern as syncDocument
           const filePath = path.join(customDocsDir, filename);
           const relativePath = `custom-documents/${filename}`;
 
@@ -214,16 +214,12 @@ class GoogleDocsLoader {
             mimeType: 'application/vnd.google-apps.document',
             sourceId: docId,
             docId: uniqueDocId,
-            filename,
-            filepath: relativePath,
-            size: contentSize,
-            wordCount: content.split(/\s+/).length,
-            tokenCount: tokenCount,
-            status: 'processed',
-            cached: true,
+            originalId: docId,
             chunkSource: `googledocs://${docId}`,
-            name: docInfo.data.name,
-            token_count_estimate: tokenCount
+            cached: true,
+            pageContent: content,
+            token_count_estimate: Math.ceil(content.length / 4),
+            size: Buffer.from(content).length
           };
 
           const documentData = {
@@ -286,6 +282,87 @@ class GoogleDocsLoader {
       return { 
         success: false,
         error: `Collection failed: ${error.message}` 
+      };
+    }
+  }
+
+  async syncDocument(metadata) {
+    try {
+      console.log('Syncing Google Doc with metadata:', metadata);
+      
+      if (!metadata.sourceId && !metadata.originalId) {
+        throw new Error('No source ID found in metadata');
+      }
+
+      const docId = metadata.sourceId || metadata.originalId;
+      console.log('Using document ID for sync:', docId);
+
+      // Fetch latest content from Google Docs
+      const doc = await this.docs.documents.get({ documentId: docId });
+      let content = '';
+      
+      // Extract text content
+      const elements = doc.data.body.content || [];
+      for (const element of elements) {
+        if (element.paragraph) {
+          for (const paragraphElement of element.paragraph.elements) {
+            if (paragraphElement.textRun) {
+              content += paragraphElement.textRun.content;
+            }
+          }
+          content += '\n';
+        }
+      }
+
+      // Get document metadata
+      const docInfo = await this.drive.files.get({
+        fileId: docId,
+        fields: 'name,mimeType,size,modifiedTime,createdTime,owners'
+      });
+
+      // Create updated document data
+      const documentData = {
+        id: metadata.docId || `googledoc-${docId}`,
+        url: `googledocs://${docId}`,
+        title: docInfo.data.name,
+        docAuthor: docInfo.data.owners?.[0]?.displayName || 'Unknown',
+        description: `Imported from Google Docs: ${docInfo.data.name}`,
+        docSource: 'Google Docs',
+        chunkSource: `googledocs://${docId}`,
+        published: docInfo.data.modifiedTime || new Date().toISOString(),
+        created: docInfo.data.createdTime || metadata.createdAt || new Date().toISOString(),
+        wordCount: content.split(/\s+/).length,
+        pageContent: content,
+        token_count_estimate: Math.ceil(content.length / 4),
+        cached: true,
+        type: 'google_document',
+        size: Buffer.from(content).length,
+        metadata: {
+          source: 'google_docs',
+          type: 'google_document',
+          title: docInfo.data.name,
+          docId: metadata.docId,
+          originalId: docId,
+          created: docInfo.data.createdTime,
+          modified: docInfo.data.modifiedTime,
+          mimeType: docInfo.data.mimeType,
+          lastSynced: new Date().toISOString()
+        }
+      };
+
+      return {
+        success: true,
+        document: documentData,
+        requiresReembed: true,
+        debug: { // Add debug info
+          contentPreview: content.substring(0, 200) + '...' 
+        }
+      };
+    } catch (error) {
+      console.error('Sync document failed:', error);
+      return {
+        success: false,
+        error: error.message
       };
     }
   }

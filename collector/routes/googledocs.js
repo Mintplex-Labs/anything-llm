@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const GoogleDocsLoader = require('../utils/extensions/GoogleDocs');
+const GoogleDocsLoader = require('../../../server/utils/extensions/GoogleDocs/index');
 
 router.get('/auth/status', async (req, res) => {
   try {
-    const status = await GoogleDocsLoader.checkAuth();
+    const loader = new GoogleDocsLoader();
+    const status = await loader.checkAuth();
     res.json(status);
   } catch (error) {
     console.error('Error checking auth status:', error);

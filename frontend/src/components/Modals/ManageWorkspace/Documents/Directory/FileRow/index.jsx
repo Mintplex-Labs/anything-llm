@@ -36,6 +36,9 @@ export default function FileRow({ item, selected, toggleSelection }) {
   // Get last modified date
   const lastModified = item.metadata?.updatedAt || item.metadata?.lastUpdated || item.lastModified || new Date().toISOString();
 
+  // Determine if file can be watched
+  const canBeWatched = isGoogleDoc || item.canWatch;
+
   return (
     <div
       onClick={() => toggleSelection(item)}
@@ -50,7 +53,8 @@ export default function FileRow({ item, selected, toggleSelection }) {
           title: displayName,
           date: formatDate(lastModified),
           extension: getDisplayType(),
-          type: getFileType()
+          type: getFileType(),
+          canWatch: canBeWatched
         })}
       >
         <div
