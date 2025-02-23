@@ -4,6 +4,9 @@ const path = require("path");
 
 class OCRLoader {
   constructor() {
+    this.language = process.env.OCR_LANG
+      ? process.env.OCR_LANG.split(",")
+      : ["eng"];
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
         ? path.resolve(process.env.STORAGE_DIR, `models`, `tesseract`)
@@ -70,7 +73,7 @@ class OCRLoader {
       Array(NUM_WORKERS)
         .fill(0)
         .map(() =>
-          createWorker("eng", OEM.LSTM_ONLY, {
+          createWorker(this.language, OEM.LSTM_ONLY, {
             cachePath: this.cacheDir,
           })
         )
@@ -188,7 +191,7 @@ class OCRLoader {
       this.log(`Starting OCR of ${documentTitle}`);
       const startTime = Date.now();
       const { createWorker, OEM } = require("tesseract.js");
-      worker = await createWorker("eng", OEM.LSTM_ONLY, {
+      worker = await createWorker(this.language, OEM.LSTM_ONLY, {
         cachePath: this.cacheDir,
       });
 
