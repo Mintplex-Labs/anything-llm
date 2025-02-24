@@ -76,7 +76,7 @@ const Group = {
           createdBy: currUser,  // Required foreign key reference
         },
       });
-      
+
       return { group: this.filterFields(group), error: null };
     } catch (error) {
       console.error("FAILED TO CREATE GROUP.", error.message);
@@ -229,8 +229,19 @@ const Group = {
       const groups = await prisma.groups.findMany({
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
+        include: {
+          users: {
+            select: {
+              username: true, // Get the username from the users table
+            },
+          },
+        },
       });
-      return groups.map((usr) => this.filterFields(usr));
+      // return groups.map((usr) => this.filterFields(usr));
+      return groups.map((group) => ({
+        ...this.filterFields(group), 
+        createdBy: group.users?.username || null, // Assign username to createdBy
+    }));
     } catch (error) {
       console.error(error.message);
       return [];
