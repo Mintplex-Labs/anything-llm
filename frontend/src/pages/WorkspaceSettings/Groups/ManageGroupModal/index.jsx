@@ -1,29 +1,39 @@
 import React, { useState } from "react";
 import { MagnifyingGlass, X } from "@phosphor-icons/react";
-// import Admin from "@/models/admin";
-// import showToast from "@/utils/toast";
+import Admin from "@/models/admin";
+import showToast from "@/utils/toast";
 
-export default function AddMemberModal({ closeModal, groups = [] }) {
+export default function AddMemberModal({
+  closeModal,
+  groups = [],
+  workspaceGroups = [],
+  workspace,
+}) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const _defaultSelectedGroups = workspaceGroups?.map((val) => val?.groupId);
+  const [selectedGroups, setSelectedGroups] = useState(
+    _defaultSelectedGroups?.length ? _defaultSelectedGroups : []
+  );
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    // const { success, error } = await Admin.updateUsersInWorkspace(
-    //   workspace.id,
-    //   selectedUsers
-    // );
-    // if (success) {
-    //   showToast("Users updated successfully.", "success");
-    //   setTimeout(() => {
-    //     window.location.reload();
-    //   }, 1000);
-    // }
-    // showToast(error, "error");
+    const { success, error } = await Admin.updateGroupsInWorkspace(
+      workspace.id,
+      {
+        groupIds: selectedGroups,
+      }
+    );
+    if (success) {
+      showToast("Groups updated successfully.", "success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+    showToast(error, "error");
   };
 
   const handleUserSelect = (userId) => {
-    setSelectedUsers((prevSelectedUsers) => {
+    setSelectedGroups((prevSelectedUsers) => {
       if (prevSelectedUsers.includes(userId)) {
         return prevSelectedUsers.filter((id) => id !== userId);
       } else {
@@ -33,19 +43,19 @@ export default function AddMemberModal({ closeModal, groups = [] }) {
   };
 
   const handleSelectAll = () => {
-    if (selectedUsers.length === filteredUsers.length) {
-      setSelectedUsers([]);
+    if (selectedGroups?.length === filteredUsers?.length) {
+      setSelectedGroups([]);
     } else {
-      setSelectedUsers(filteredUsers.map((group) => group.id));
+      setSelectedGroups(filteredUsers.map((group) => group.id));
     }
   };
 
   const handleUnselect = () => {
-    setSelectedUsers([]);
+    setSelectedGroups([]);
   };
 
   const isUserSelected = (userId) => {
-    return selectedUsers.includes(userId);
+    return selectedGroups?.includes(userId);
   };
 
   const handleSearch = (event) => {
@@ -127,10 +137,12 @@ export default function AddMemberModal({ closeModal, groups = [] }) {
                 <div
                   className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer custom-border-secondary"
                   role="checkbox"
-                  aria-checked={selectedUsers.length === filteredUsers.length}
+                  aria-checked={
+                    selectedGroups?.length === filteredUsers?.length
+                  }
                   tabIndex={0}
                 >
-                  {selectedUsers.length === filteredUsers.length && (
+                  {selectedGroups?.length === filteredUsers?.length && (
                     <div className="w-2 h-2 bg-white rounded-[2px] custom-theme-bg-quad" />
                   )}
                 </div>
@@ -138,7 +150,7 @@ export default function AddMemberModal({ closeModal, groups = [] }) {
                   Select All
                 </p>
               </button>
-              {selectedUsers.length > 0 && (
+              {selectedGroups?.length > 0 && (
                 <button
                   type="button"
                   onClick={handleUnselect}

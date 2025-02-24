@@ -5,7 +5,9 @@ export default function WorkspaceMemberRow({ group }) {
         <th scope="row" className="px-6 py-4 whitespace-nowrap">
           {group?.groupname || "-"}
         </th>
-        <td className="px-6 py-4">{group?.createdAt || "-"}</td>
+        <td className="px-6 py-4">
+          {group?.createdAt || group?.lastUpdatedAt || "-"}
+        </td>
       </tr>
     </>
   );

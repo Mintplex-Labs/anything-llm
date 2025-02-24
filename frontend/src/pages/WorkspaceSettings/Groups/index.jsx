@@ -7,14 +7,17 @@ import ManageGroupModal from "./ManageGroupModal";
 import GroupMemberRow from "./GroupMemberRow";
 import CTAButton from "@/components/lib/CTAButton";
 
-export default function Groups() {
+export default function Groups({ workspace }) {
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
+  const [workspaceGroups, setWorkspaceGroups] = useState([]);
   const { isOpen, openModal, closeModal } = useModal();
 
   async function fetchGroups() {
     const _groups = await Admin.getGroups();
+    const _workspaceGroups = await Admin.getWorkspaceGroups(workspace?.id);
     setGroups(_groups);
+    setWorkspaceGroups(_workspaceGroups);
     setLoading(false);
   }
 
@@ -53,8 +56,8 @@ export default function Groups() {
           </tr>
         </thead>
         <tbody>
-          {groups.length > 0 ? (
-            groups.map((group, index) => (
+          {workspaceGroups?.length > 0 ? (
+            workspaceGroups?.map((group, index) => (
               <GroupMemberRow key={index} group={group} />
             ))
           ) : (
@@ -68,7 +71,12 @@ export default function Groups() {
       </table>
       <CTAButton onClick={openModal}>Manage Groups</CTAButton>
       <ModalWrapper isOpen={isOpen}>
-        <ManageGroupModal closeModal={closeModal} groups={groups} />
+        <ManageGroupModal
+          closeModal={closeModal}
+          groups={groups}
+          workspaceGroups={workspaceGroups}
+          workspace={workspace}
+        />
       </ModalWrapper>
     </div>
   );
