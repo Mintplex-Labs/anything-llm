@@ -2,7 +2,6 @@ import { useState, forwardRef, useImperativeHandle } from "react";
 import renderMarkdown from "@/utils/chat/markdown";
 import { CaretDown } from "@phosphor-icons/react";
 import DOMPurify from "dompurify";
-import truncate from "truncate";
 import { isMobile } from "react-device-detect";
 import ThinkingAnimation from "@/media/animations/thinking-animation.webm";
 import ThinkingStatic from "@/media/animations/thinking-static.png";
@@ -97,10 +96,10 @@ export const ThoughtChainComponent = forwardRef(
             </div>
             <div className="flex-1 min-w-0">
               <div
-                className={`overflow-hidden transition-all transform duration-300 ease-in-out origin-top ${isExpanded || autoExpand ? "max-h-[500px] scale-y-100" : "max-h-6 scale-y-95"}`}
+                className={`overflow-hidden transition-all transform duration-300 ease-in-out origin-top ${isExpanded || autoExpand ? "max-h-[500px]" : "max-h-6"}`}
               >
                 <div
-                  className={`text-theme-text-secondary font-mono leading-6 ${isExpanded || autoExpand ? "-ml-[5.5px] -mt-[5.5px]" : ""}`}
+                  className={`text-theme-text-secondary font-mono leading-6 ${isExpanded || autoExpand ? "-ml-[5.5px] -mt-[4px]" : "mt-[2px]"}`}
                 >
                   <span
                     className={`block w-full ${!isExpanded && !autoExpand ? "truncate" : ""}`}
@@ -140,5 +139,4 @@ export const ThoughtChainComponent = forwardRef(
     );
   }
 );
-
 ThoughtChainComponent.displayName = "ThoughtChainComponent";
