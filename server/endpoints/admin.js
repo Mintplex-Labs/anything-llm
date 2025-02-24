@@ -178,8 +178,6 @@ function adminEndpoints(app) {
     [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        console.log('hello moto')
-        
         const currUser = await userFromSession(request, response);
         const newGroupParams = reqBody(request);
         const existingGroup = await Group.get({
@@ -268,13 +266,16 @@ function adminEndpoints(app) {
         const { id } = request.params;
         const group = await Group.get({ id: Number(id) });
 
+        if (!group) {
+          return response.status(404).json({ error: "Group not found with this ID" });
+        }
         // const canModify = validCanModify(currUser, user);
         // if (!canModify.valid) {
         //   response.status(200).json({ success: false, error: canModify.error });
         //   return;
         // }
 
-        await User.delete({ id: Number(id) });
+        await Group.delete({ id: Number(id) });
         await EventLogs.logEvent(
           "group_deleted",
           {
@@ -421,6 +422,40 @@ function adminEndpoints(app) {
         const { success, error } = await Workspace.updateUsers(
           workspaceId,
           userIds
+        );
+        response.status(200).json({ success, error });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/admin/workspaces/:workspaceId/groups",
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { workspaceId } = request.params;
+        const groups = await Workspace.workspaceGroups(workspaceId);
+        response.status(200).json({ groups });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/admin/workspaces/:workspaceId/update-groups",
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { workspaceId } = request.params;
+        const { groupIds } = reqBody(request);
+        const { success, error } = await Workspace.updateGroups(
+          workspaceId,
+          groupIds
         );
         response.status(200).json({ success, error });
       } catch (e) {
