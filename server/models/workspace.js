@@ -2,9 +2,11 @@ const prisma = require("../utils/prisma");
 const slugifyModule = require("slugify");
 const { Document } = require("./documents");
 const { WorkspaceUser } = require("./workspaceUsers");
+const { WorkspaceGroup } = require("./workspaceGroups");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
 const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
+const { Group} = require("./group");
 
 const DEFAULT_WORKSPACE = process.env.DEFAULT_WORKSPACE || "default-workspace";
 
@@ -324,10 +326,47 @@ const Workspace = {
     }
   },
 
+  workspaceGroups: async function (workspaceId) {
+    try {
+      const groups = (
+        await WorkspaceGroup.where({ workspace_id: Number(workspaceId) })
+      ).map((rel) => rel);
+
+      const groupsById = await Group.where({
+        id: { in: groups.map((group) => group.group_id) },
+      });
+
+      const groupInfo = groupsById.map((group) => {
+        const workspaceUser = groups.find((u) => u.group_id === group.id);
+        return {
+          groupId: group.id,
+          groupname: group.groupname,
+          lastUpdatedAt: workspaceUser.lastUpdatedAt,
+        };
+      });
+
+      return groupInfo;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
+
   updateUsers: async function (workspaceId, userIds = []) {
     try {
       await WorkspaceUser.delete({ workspace_id: Number(workspaceId) });
       await WorkspaceUser.createManyUsers(userIds, workspaceId);
+      return { success: true, error: null };
+    } catch (error) {
+      console.error(error.message);
+      return { success: false, error: error.message };
+    }
+  },
+
+  updateGroups: async function (workspaceId, groupIds = []) {
+    try {
+      await WorkspaceGroup.delete({ workspace_id: Number(workspaceId) });
+      await WorkspaceGroup.createManyGroups(groupIds, workspaceId);
       return { success: true, error: null };
     } catch (error) {
       console.error(error.message);
