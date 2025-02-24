@@ -58,6 +58,7 @@ class AnthropicLLM {
       "claude-3-5-sonnet-latest",
       "claude-3-5-sonnet-20241022",
       "claude-3-5-sonnet-20240620",
+      "claude-3-7-sonnet-20250219",
     ];
     return validModels.includes(modelName);
   }
@@ -194,9 +195,8 @@ class AnthropicLLM {
         const parseErrorMsg = (event) => {
           const error = event?.error?.error;
           if (!!error)
-            return `Anthropic Error:${error?.type || "unknown"} ${
-              error?.message || "unknown error."
-            }`;
+            return `Anthropic Error:${error?.type || "unknown"} ${error?.message || "unknown error."
+              }`;
           return event.message;
         };
 
