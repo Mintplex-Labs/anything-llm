@@ -104,6 +104,7 @@ const TRANSLATIONS = {
     vector: "Vector Database",
     members: "Members",
     agent: "Agent Configuration",
+    groups: "Groups",
   },
 
   // General Appearance

@@ -19,14 +19,14 @@ export default function AdminGroups() {
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
 
-  async function fetchUsers() {
-    const _users = await Admin.getGroups();
-    setGroups(_users);
+  async function fetchGroups() {
+    const _groups = await Admin.getGroups();
+    setGroups(_groups);
     setLoading(false);
   }
 
   useEffect(() => {
-    fetchUsers();
+    fetchGroups();
   }, []);
 
   return (
@@ -64,14 +64,14 @@ export default function AdminGroups() {
             <UsersContainer
               groups={groups}
               loading={loading}
-              fetchData={fetchUsers}
+              fetchData={fetchGroups}
             />
           </div>
         </div>
         <ModalWrapper isOpen={isOpen}>
           <NewGroupModal
             closeModal={closeModal}
-            fetchData={() => fetchUsers()}
+            fetchData={() => fetchGroups()}
           />
         </ModalWrapper>
       </div>

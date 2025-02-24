@@ -296,6 +296,31 @@ const Admin = {
         return [];
       });
   },
+  getWorkspaceGroups: async (id) => {
+    return await fetch(`${API_BASE}/admin/workspaces/${id}/groups`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.groups || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  updateGroupsInWorkspace: async (id, data) => {
+    return await fetch(`${API_BASE}/admin/workspaces/${id}/update-groups`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((res) => res || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
 };
 
 export default Admin;
