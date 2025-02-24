@@ -26,3 +26,28 @@ CHROMA_ENDPOINT='http://localhost:8000'
 # CHROMA_API_HEADER="X-Api-Key" // If you have an Auth middleware on your instance.
 # CHROMA_API_KEY="sk-123abc" // If you have an Auth middleware on your instance.
 ```
+
+# How to setup a connection to Chroma Cloud
+
+### How to get started
+
+**Requirements**
+
+- A Chroma Cloud Account
+
+**Instructions**
+
+- Go to trychroma.com and login to Chroma Cloud.
+- Create a new database.
+- Click "Connection String"
+- Capture your host, tenant id, database name, API Header, and API key.
+
+```
+VECTOR_DB="chroma"
+CHROMA_ENDPOINT='https://api.trychroma.com'
+CHROMA_API_HEADER="X-CHROMA-TOKEN"
+CHROMA_API_KEY="sk-123abc"
+CHROMA_CLOUD="true"
+CHROMA_TENANT_ID="your-tenant-id"
+CHROMA_DATABASE_NAME="your-database-name"
+```
