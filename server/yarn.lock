@@ -2544,10 +2544,10 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chromadb@^1.5.2:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/chromadb/-/chromadb-1.8.1.tgz#d2563a67c650187b5d79f171c46b2a1abbb4f056"
-  integrity sha512-NpbYydbg4Uqt/9BXKgkZXn0fqpsh2Z1yjhkhKH+rcHMoq0pwI18BFSU2QU7Fk/ZypwGefW2AvqyE/3ZJIgy4QA==
+chromadb@^1.10.4:
+  version "1.10.4"
+  resolved "https://registry.yarnpkg.com/chromadb/-/chromadb-1.10.4.tgz#6831984312b3623eae907c0552a278039412ffd6"
+  integrity sha512-K6HLpTvOby7GVQi2CftNGS2/mW0x1A+4Zo6TRFfbJCywgBKFBKZSJXbT75fJ+JGPe+8ULi7eUNjsRdSRIdOq4A==
   dependencies:
     cliui "^8.0.1"
     isomorphic-fetch "^3.0.0"

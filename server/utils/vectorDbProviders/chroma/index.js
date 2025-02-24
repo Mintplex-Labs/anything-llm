@@ -60,15 +60,22 @@ const Chroma = {
       throw new Error("Chroma::Invalid ENV settings");
 
     const client = new ChromaClient({
-      path: process.env.CHROMA_ENDPOINT, // if not set will fallback to localhost:8000
-      ...(!!process.env.CHROMA_API_HEADER && !!process.env.CHROMA_API_KEY
+      path: process.env.CHROMA_ENDPOINT,
+      ...(process.env.CHROMA_API_KEY && process.env.CHROMA_API_HEADER
         ? {
-            fetchOptions: {
-              headers: parseAuthHeader(
-                process.env.CHROMA_API_HEADER || "X-Api-Key",
-                process.env.CHROMA_API_KEY
-              ),
+            auth: {
+              provider: "token",
+              credentials: process.env.CHROMA_API_KEY,
+              tokenHeaderType: process.env.CHROMA_API_HEADER || "X-Api-Key",
             },
+          }
+        : {}),
+      ...(process.env.CHROMA_CLOUD === "true" &&
+      process.env.CHROMA_TENANT_ID &&
+      process.env.CHROMA_DATABASE_NAME
+        ? {
+            tenant: process.env.CHROMA_TENANT_ID,
+            database: process.env.CHROMA_DATABASE_NAME,
           }
         : {}),
     });
@@ -296,7 +303,6 @@ const Chroma = {
         name: this.normalize(namespace),
         metadata: { "hnsw:space": "cosine" },
       });
-
       if (vectors.length > 0) {
         const chunks = [];
 
@@ -304,7 +310,7 @@ const Chroma = {
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
         const additionResult = await collection.add(submission);
-        if (!additionResult)
+        if (additionResult && additionResult.error)
           throw new Error("Error embedding into ChromaDB", additionResult);
 
         await storeVectorResult(chunks, fullFilePath);
@@ -409,7 +415,7 @@ const Chroma = {
       if (Object.keys(metadata).length > 0) {
         documents.push({
           ...metadata,
-          ...(source.hasOwnProperty("pageContent")
+          ...(Object.prototype.hasOwnProperty.call(source, "pageContent")
             ? { text: source.pageContent }
             : {}),
         });
