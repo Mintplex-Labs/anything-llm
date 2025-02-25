@@ -10,7 +10,7 @@ const crypto = require("crypto");
 const { Workspace } = require("../models/workspace");
 const { KeycloakHelper } = require("../utils/keycloak");
 
-const setCookies = (res, userDetails) => {
+const setCookies = (res, userDetails, userGroups) => {
   const fullAuthResponse = {
     valid: true,
     user: User.filterFields(userDetails),
@@ -19,6 +19,7 @@ const setCookies = (res, userDetails) => {
         id: userDetails.id,
         username: userDetails.username,
         uid: userDetails?.uid,
+        groups: userGroups
       },
       "30d"
     ),
@@ -94,12 +95,12 @@ function authEndpoints(app) {
       }
 
       const redirectUrl = process.env.FRONTEND_BASE_URL || "/";
-      if (existingUser.suspended) {
+      if (existingUser?.suspended) {
         await KeycloakHelper.logoutUser(existingUser?.uid);
         res.redirect(`${redirectUrl}suspended-user`);
         return;
       }
-      setCookies(res, existingUser);
+      setCookies(res, existingUser, userInfo?.user?.groups);
       // redirecting to frontend app
       res.redirect(redirectUrl);
     } catch (error) {

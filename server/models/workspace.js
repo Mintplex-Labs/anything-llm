@@ -479,7 +479,7 @@ const Workspace = {
         workspace_id: defaultWorkspace?.id,
       });
 
-      console.log("Checking is user in default ws", user, !!user);
+      // console.log("Checking is user in default ws", user, !!user);
       return !!user;
     } catch (error) {
       console.error(

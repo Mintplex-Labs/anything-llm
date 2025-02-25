@@ -45,6 +45,21 @@ async function userFromSession(request, response = null) {
   return user;
 }
 
+async function userGroupsFromToken(request) {
+  const auth = request.header("Authorization");
+  const token = auth ? auth.split(" ")[1] : null;
+
+  if (!token) {
+    return null;
+  }
+
+  const valid = decodeJWT(token);
+  if (!valid || !valid.id) {
+    return null;
+  }
+  return valid?.groups;
+}
+
 function decodeJWT(jwtToken) {
   try {
     return JWT.verify(jwtToken, process.env.JWT_SECRET);
@@ -109,4 +124,5 @@ module.exports = {
   safeJsonParse,
   isValidUrl,
   toValidNumber,
+  userGroupsFromToken,
 };
