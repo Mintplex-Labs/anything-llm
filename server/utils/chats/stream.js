@@ -395,8 +395,8 @@ async function prismStreamChatWithWorkspace(
   let embeddingsCount;
   let workspaces;
 
-  workspace.slug = "all-workspaces"
-  console.log("searching from slug: ", workspace?.slug)
+  // workspace.slug = "all-workspaces"
+  // console.log("searching from slug: ", workspace?.slug)
 
 
   if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
