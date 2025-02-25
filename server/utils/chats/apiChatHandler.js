@@ -39,7 +39,7 @@ const { systemPrompt } = require("../agents/aibitat/providers/ai-provider");
  */
 
 
-async function performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount,) {
+async function performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount,topN) {
 
   const VectorDb = getVectorDbClass();
   // Use Promise.all to handle all searches concurrently
@@ -50,7 +50,7 @@ async function performSimilaritySearches(workspace, workspaces, message, LLMConn
         input: message,
         LLMConnector,
         similarityThreshold: workspace?.similarityThreshold,
-        topN: workspace?.topN,
+        topN: topN,
         filterIdentifiers: pinnedDocIdentifiers,
       })
       : Promise.resolve({ // Ensure the promise is resolved even when embeddingsCount is 0
@@ -156,9 +156,21 @@ async function chatSync({
 
   // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true') {
   if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
-    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null })
-    workspaces = userWorkspaces.map(item => item.workspaceSlug);
-    // console.log('Workspace Users:', workspaceSlugs);
+    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null });
+
+    const groupRecords = await Group.where({ groupname: { in: userGroups } });
+    const groupIds = groupRecords.map(group => group.id);
+    let groupWorkspaces;
+    if (groupIds.length != 0) {
+      groupWorkspaces = await WorkspaceGroup.getGroupWorkspaces({
+        group_id: { in: groupIds }
+      });
+    }
+
+    const userWorkspaceSlugs = userWorkspaces.map(ws => ws.workspaceSlug);
+    const groupWorkspaceSlugs = groupWorkspaces.map(ws => ws.workspaceSlug);
+    workspaces = [...new Set([...userWorkspaceSlugs, ...groupWorkspaceSlugs])];
+    
     embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);
   } else {
     embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
@@ -254,23 +266,13 @@ async function chatSync({
       });
     });
 
-  // let vectorSearchResults =
-  //   embeddingsCount !== 0
-  //     ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
-
-  //     : {
-  //       contextTexts: [],
-  //       sources: [],
-  //       message: null,
-  //     };
 
   let vectorSearchResults;
 
-  // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
   if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     // Perform multi workspace searches if the environment variable is 'true'
     vectorSearchResults = embeddingsCount !== 0
-      ? await performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
+      ? await performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, pinnedDocIdentifiers, embeddingsCount, workspace?.topN)
       : {
         contextTexts: [],
         sources: [],
@@ -420,12 +422,6 @@ async function chatSync({
     user,
     multiple_workspaces: workspaces ? workspaces.join(",") : null,
     rewrite_question: process.env.QUERY_REWRITER_ENABLED == 'true' ? effectiveQuestion : null,
-
-
-
-
-
-
   });
 
   return {
@@ -438,6 +434,105 @@ async function chatSync({
     sources,
   };
 }
+
+
+async function suggestQuestions(
+  workspace,
+  message = null,
+  user = null,
+  userGroups
+) {
+
+  // const effectiveQuestion = message
+
+  const LLMConnector = getLLMProvider({
+    provider: workspace?.chatProvider,
+    model: workspace?.chatModel,
+  });
+
+  const VectorDb = getVectorDbClass();
+  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
+  let embeddingsCount;
+  let workspaces;
+
+  if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
+    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null });
+
+    const groupRecords = await Group.where({ groupname: { in: userGroups } });
+    const groupIds = groupRecords.map(group => group.id);
+    let groupWorkspaces;
+    if (groupIds.length != 0) {
+      groupWorkspaces = await WorkspaceGroup.getGroupWorkspaces({
+        group_id: { in: groupIds }
+      });
+    }
+
+    const userWorkspaceSlugs = userWorkspaces.map(ws => ws.workspaceSlug);
+    const groupWorkspaceSlugs = groupWorkspaces.map(ws => ws.workspaceSlug);
+    workspaces = [...new Set([...userWorkspaceSlugs, ...groupWorkspaceSlugs])];
+    
+    embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);
+  } else {
+    embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+  }
+
+  if ((!hasVectorizedSpace || embeddingsCount === 0)) {
+    const textResponse =
+      workspace?.queryRefusalResponse ??
+      "No embedded documents found in this workspace. System cannot provide suggestions";
+
+    return {
+      type: "textResponse",
+      close: true,
+      error: null,
+      textResponse,
+    };
+  }
+
+  let vectorSearchResults;
+
+  // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
+  if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
+    // Perform multi workspace searches if the environment variable is 'true'
+    vectorSearchResults = embeddingsCount !== 0
+      ? await performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, null, embeddingsCount, 15)
+      : {
+        contextTexts: [],
+        sources: [],
+        message: null,
+      };
+  } else {
+    // Perform a single workspace search if the environment variable is not 'true'
+    vectorSearchResults = embeddingsCount !== 0
+      ? await VectorDb.performSimilaritySearch({
+        namespace: workspace.slug,
+        input: message,
+        LLMConnector,
+        similarityThreshold: workspace?.similarityThreshold,
+        topN: 15,
+        filterIdentifiers: [],
+      })
+      : {
+        contextTexts: [],
+        sources: [],
+        message: null,
+      };
+  }
+  
+  const messages = await LLMConnector.compressMessages(
+    {
+      systemPrompt: message,
+      userPrompt: "Please follow system prompt",
+      contextTexts: vectorSearchResults?.contextTexts,
+    }
+  );
+  const textResponse = await LLMConnector.getChatCompletion(messages, {
+    temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+  });
+
+  return textResponse;
+}
+
 
 /**
  * Handle streamable HTTP chunks for chats with your workspace via the developer API endpoint
@@ -531,9 +626,21 @@ async function streamChat({
   let workspaces;
   // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true') {
   if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
-    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null })
-    workspaces = userWorkspaces.map(item => item.workspaceSlug);
-    // console.log('Workspace Users:', workspaceSlugs);
+    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null });
+
+    const groupRecords = await Group.where({ groupname: { in: userGroups } });
+    const groupIds = groupRecords.map(group => group.id);
+    let groupWorkspaces;
+    if (groupIds.length != 0) {
+      groupWorkspaces = await WorkspaceGroup.getGroupWorkspaces({
+        group_id: { in: groupIds }
+      });
+    }
+
+    const userWorkspaceSlugs = userWorkspaces.map(ws => ws.workspaceSlug);
+    const groupWorkspaceSlugs = groupWorkspaces.map(ws => ws.workspaceSlug);
+    workspaces = [...new Set([...userWorkspaceSlugs, ...groupWorkspaceSlugs])];
+    
     embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);
   } else {
     embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
@@ -614,7 +721,6 @@ async function streamChat({
 
   }
 
-
   // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
   // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
   // However we limit the maximum of appended context to 80% of its overall size, mostly because if it expands beyond this
@@ -640,32 +746,12 @@ async function streamChat({
       });
     });
 
-  // const vectorSearchResults =
-  //   embeddingsCount !== 0
-  //     // ? await VectorDb.performSimilaritySearch({
-  //     //     namespace: workspace.slug,
-  //     //     input: message,
-  //     //     LLMConnector,
-  //     //     similarityThreshold: workspace?.similarityThreshold,
-  //     //     topN: workspace?.topN,
-  //     //     filterIdentifiers: pinnedDocIdentifiers,
-  //     //   })
-
-  //     ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
-
-  //     : {
-  //       contextTexts: [],
-  //       sources: [],
-  //       message: null,
-  //     };
-
   let vectorSearchResults;
 
-  // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED === 'true') {
   if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     // Perform multi workspace searches if the environment variable is 'true'
     vectorSearchResults = embeddingsCount !== 0
-      ? await performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
+      ? await performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, pinnedDocIdentifiers, embeddingsCount, workspace?.topN)
       : {
         contextTexts: [],
         sources: [],
@@ -862,5 +948,6 @@ async function streamChat({
 module.exports.ApiChatHandler = {
   chatSync,
   streamChat,
-  performSimilaritySearches
+  performSimilaritySearches,
+  suggestQuestions
 };

@@ -739,7 +739,7 @@ const Milvus = {
 
     response.results.forEach((match) => {
       // console.log("#########################################################################")
-      console.log(`match score is ${match.score}`);
+      // console.log(`match score is ${match.score}`);
       if (match.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
         console.log(
