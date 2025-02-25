@@ -34,6 +34,7 @@ CHROMA_ENDPOINT='http://localhost:8000'
 **Requirements**
 
 - A Chroma Cloud Account
+- Sign up for an account [here](https://trychroma.com/signup)
 
 **Instructions**
 
