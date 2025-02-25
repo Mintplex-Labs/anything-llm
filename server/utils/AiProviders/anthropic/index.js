@@ -196,8 +196,9 @@ class AnthropicLLM {
         const parseErrorMsg = (event) => {
           const error = event?.error?.error;
           if (!!error)
-            return `Anthropic Error:${error?.type || "unknown"} ${error?.message || "unknown error."
-              }`;
+            return `Anthropic Error:${error?.type || "unknown"} ${
+              error?.message || "unknown error."
+            }`;
           return event.message;
         };
 
