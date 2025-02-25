@@ -276,6 +276,12 @@ const SystemSettings = {
       // Disable View Chat History for the whole instance.
       DisableViewChatHistory:
         "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
+
+      // --------------------------------------------------------
+      // Appearance Settings
+      // --------------------------------------------------------
+      ShowAllCustomizations:
+        process.env.SHOW_ALL_CUSTOMIZATIONS === "0" ? false : true
     };
   },
 

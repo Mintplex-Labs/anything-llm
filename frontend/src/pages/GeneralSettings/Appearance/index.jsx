@@ -10,9 +10,11 @@ import LanguagePreference from "./LanguagePreference";
 import CustomSiteSettings from "./CustomSiteSettings";
 import ShowScrollbar from "./ShowScrollbar";
 import ThemePreference from "./ThemePreference";
+import { useSettings } from "@/hooks/useSettings"; 
 
 export default function Appearance() {
   const { t } = useTranslation();
+  const { settings } = useSettings();
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
@@ -35,12 +37,16 @@ export default function Appearance() {
           <ThemePreference />
           <LanguagePreference />
           <ShowScrollbar />
+          {settings.showAllCustomizations && (
+        <>
           <CustomLogo />
           <CustomAppName />
           <CustomMessages />
           <FooterCustomization />
           <SupportEmail />
           <CustomSiteSettings />
+        </>
+      )}
         </div>
       </div>
     </div>
