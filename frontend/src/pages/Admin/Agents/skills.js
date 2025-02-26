@@ -32,25 +32,25 @@ export const defaultSkills = {
     icon: File,
     image: SummarizeImage,
   },
-  "scrape-websites": {
-    title: "Scrape websites",
-    description: "Allow the agent to visit and scrape the content of websites.",
-    component: DefaultSkillPanel,
-    icon: Browser,
-    image: ScrapeWebsitesImage,
-  },
+  // "scrape-websites": {
+  //   title: "Scrape websites",
+  //   description: "Allow the agent to visit and scrape the content of websites.",
+  //   component: DefaultSkillPanel,
+  //   icon: Browser,
+  //   image: ScrapeWebsitesImage,
+  // },
 };
 
 export const configurableSkills = {
-  "save-file-to-browser": {
-    title: "Generate & save files to browser",
-    description:
-      "Enable the default agent to generate and write to files that can be saved to your computer.",
-    component: GenericSkillPanel,
-    skill: "save-file-to-browser",
-    icon: FileMagnifyingGlass,
-    image: GenerateSaveImages,
-  },
+  // "save-file-to-browser": {
+  //   title: "Generate & save files to browser",
+  //   description:
+  //     "Enable the default agent to generate and write to files that can be saved to your computer.",
+  //   component: GenericSkillPanel,
+  //   skill: "save-file-to-browser",
+  //   icon: FileMagnifyingGlass,
+  //   image: GenerateSaveImages,
+  // },
   "create-chart": {
     title: "Generate charts",
     description:
@@ -60,11 +60,11 @@ export const configurableSkills = {
     icon: ChartBar,
     image: GenerateChartsImage,
   },
-  "web-browsing": {
-    title: "Web Search",
-    component: AgentWebSearchSelection,
-    skill: "web-browsing",
-  },
+  // "web-browsing": {
+  //   title: "Web Search",
+  //   component: AgentWebSearchSelection,
+  //   skill: "web-browsing",
+  // },
   "sql-agent": {
     title: "SQL Connector",
     component: AgentSQLConnectorSelection,
