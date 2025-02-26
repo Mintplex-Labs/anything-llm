@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const { reqBody, userFromSession, multiUserMode, userGroupsFromToken } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
-const { streamChatWithWorkspace, searchWithWorkspace, prismStreamChatWithWorkspace } = require("../utils/chats/stream");
+const { streamChatWithWorkspace, searchWithWorkspace, prismStreamChatWithWorkspace, suggestedQuestions } = require("../utils/chats/stream");
 const {
   ROLES,
   flexUserRoleValid,
@@ -16,6 +16,8 @@ const { writeResponseChunk } = require("../utils/helpers/chat/responses");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const { User } = require("../models/user");
 const truncate = require("truncate");
+const { ApiChatHandler } = require("../utils/chats/apiChatHandler");
+
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -26,9 +28,7 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        // const userGroups = await userGroupsFromToken(request)
         const { message, attachments = [] } = reqBody(request);
-        // const workspaces = response.locals.workspaces;
         const workspace = response.locals.workspace;
 
         if (!message?.length) {
@@ -126,17 +126,11 @@ function chatEndpoints(app) {
       flexUserRoleValid([ROLES.all]),
       validWorkspaceAndThreadSlug,
     ],
-    // [
-    //   validatedRequest,
-    //   flexUserRoleValid([ROLES.all]),
-    //   includeRbacWorkSpacesAndThreadSlug,
-    // ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
         const { message, attachments = [] } = reqBody(request);
         const workspace = response.locals.workspace;
-        // const workspaces = response.locals.workspaces;
         const thread = response.locals.thread;
 
         if (!message?.length) {
@@ -209,7 +203,6 @@ function chatEndpoints(app) {
           "sent_chat",
           {
             workspaceName: workspace.name,
-            // workspaceName: workspaces.map(workspace => workspace.name).join(", "),
             thread: thread.name,
             chatModel: workspace?.chatModel || "System Default",
           },
@@ -403,13 +396,84 @@ function chatEndpoints(app) {
           "sent_chat",
           {
             workspaceName: workspace.name,
-            // workspaceName: workspaces.map(workspace => workspace.name).join(", "),
             thread: thread.name,
             chatModel: workspace?.chatModel || "System Default",
           },
           user?.id
         );
         response.end();
+      } catch (e) {
+        console.error(e);
+        writeResponseChunk(response, {
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: e.message,
+        });
+        response.end();
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/suggestions",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        let userGroups = await userGroupsFromToken(request);
+        userGroups = userGroups.map(group => group.replace(/^\/+/, ''));
+        const workspace = response.locals.workspace;
+
+        if (multiUserMode(response) && !(await User.canSendChat(user))) {
+          writeResponseChunk(response, {
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `You have met your maximum 24 hour chat quota of ${user.dailyMessageLimit} chats. Try again later.`,
+          });
+          return;
+        }
+        const message = `
+                      Generate an array of 4 possible natural language questions that can be asked based solely on the documents, without requiring specific data such as dates in the input. Ensure all questions are general and relevant to the document
+                      Avoid ambiguous terms like "recent," "specific date," or anything requiring external contextual data. Ensure the questions are varied, covering different texts or combinations of texts.
+                      Use same lanuage as input text to generate questions.
+                      Return the JSON as follows without extra formatting such as newline and escaped quotes:
+                      {
+                          "response": [
+                              "Example question 1",
+                              "Example question 2",
+                              "Example question 3",
+                              "Example question 4"
+                          ]
+                      }
+                      Avoid adding extra formatting, newlines, or escaped quotes in the output. Ensure all questions are relevant to the document structure and avoid unrelated topics or ambiguous questions.
+                      `;
+
+        suggestions = await ApiChatHandler.suggestQuestions(
+          workspace,
+          message,
+          user,
+          userGroups
+        );
+        const parsedSuggestions = JSON.parse(suggestions); // Convert string to JSON if needed
+        response.status(200).json(parsedSuggestions);
+
+        // response.status(200).json({ suggestions });
+
+        // await EventLogs.logEvent(
+        //   "suggestion_chat",
+        //   {
+        //     workspaceName: workspace.name,
+        //     chatModel: workspace?.chatModel || "System Default", 
+        //   },
+        //   user?.id
+        // );
+        // response.end();
       } catch (e) {
         console.error(e);
         writeResponseChunk(response, {

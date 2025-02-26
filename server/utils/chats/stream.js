@@ -395,10 +395,6 @@ async function prismStreamChatWithWorkspace(
   let embeddingsCount;
   let workspaces;
 
-  // workspace.slug = "all-workspaces"
-  // console.log("searching from slug: ", workspace?.slug)
-
-
   if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     
     const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null });
@@ -522,7 +518,7 @@ async function prismStreamChatWithWorkspace(
     if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
       // Perform multi workspace searches if the environment variable is 'true'
       vectorSearchResults = embeddingsCount !== 0
-        ? await ApiChatHandler.performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, pinnedDocIdentifiers, embeddingsCount)
+        ? await ApiChatHandler.performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, pinnedDocIdentifiers, embeddingsCount,workspace?.topN)
         : {
           contextTexts: [],
           sources: [],
