@@ -52,8 +52,8 @@ export default function AccountModal({ user, hideModal }) {
       let storedUser = JSON.parse(localStorage.getItem(AUTH_USER));
 
       if (storedUser) {
-        Object.keys(data).forEach(key => {
-          if (key !== 'password') {
+        Object.keys(data).forEach((key) => {
+          if (key !== "password") {
             storedUser[key] = data[key];
           }
         });
