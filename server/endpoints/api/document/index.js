@@ -207,20 +207,16 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const { originalname } = request.file;
-        let folder = request.params.folderName || "custom-documents";
+        let folder = request.params?.folderName || "custom-documents";
         folder = normalizePath(folder);
         const targetFolderPath = path.join(documentsPath, folder);
 
         if (
           !isWithin(path.resolve(documentsPath), path.resolve(targetFolderPath))
-        ) {
+        )
           throw new Error("Invalid folder name");
-        }
-
-        // Create the folder if it does not exist
-        if (!fs.existsSync(targetFolderPath)) {
+        if (!fs.existsSync(targetFolderPath))
           fs.mkdirSync(targetFolderPath, { recursive: true });
-        }
 
         const Collector = new CollectorApi();
         const processingOnline = await Collector.online();
@@ -263,12 +259,10 @@ function apiDocumentEndpoints(app) {
             if (
               !isWithin(documentsPath, sourcePath) ||
               !isWithin(documentsPath, destinationPath)
-            ) {
+            )
               throw new Error("Invalid file location");
-            }
 
-            await fs.promises.rename(sourcePath, destinationPath);
-
+            fs.renameSync(sourcePath, destinationPath);
             doc.location = path.join(folder, path.basename(doc.location));
             doc.name = path.basename(doc.location);
           }
@@ -277,8 +271,9 @@ function apiDocumentEndpoints(app) {
         Collector.log(
           `Document ${originalname} uploaded, processed, and moved to folder ${folder} successfully.`
         );
-        await Telemetry.sendTelemetry("document_uploaded_to_folder");
-        await EventLogs.logEvent("api_document_uploaded_to_folder", {
+
+        await Telemetry.sendTelemetry("document_uploaded");
+        await EventLogs.logEvent("api_document_uploaded", {
           documentName: originalname,
           folder,
         });

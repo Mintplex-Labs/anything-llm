@@ -910,10 +910,7 @@
                     "format": "binary",
                     "description": "The file to upload"
                   }
-                },
-                "required": [
-                  "file"
-                ]
+                }
               }
             }
           }
