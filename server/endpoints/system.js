@@ -925,24 +925,31 @@ function systemEndpoints(app) {
     }
   );
 
-  app.delete("/system/api-key", [validatedRequest], async (_, response) => {
-    try {
-      if (response.locals.multiUserMode) {
-        return response.sendStatus(401).end();
-      }
+  // TODO: This endpoint is replicated in the admin endpoints file.
+  // and should be consolidated to be a single endpoint with flexible role protection.
+  app.delete(
+    "/system/api-key/:id",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (response.locals.multiUserMode)
+          return response.sendStatus(401).end();
+        const { id } = request.params;
+        if (!id || isNaN(Number(id))) return response.sendStatus(400).end();
 
-      await ApiKey.delete();
-      await EventLogs.logEvent(
-        "api_key_deleted",
-        { deletedBy: response.locals?.user?.username },
-        response?.locals?.user?.id
-      );
-      return response.status(200).end();
-    } catch (error) {
-      console.error(error);
-      response.status(500).end();
+        await ApiKey.delete({ id: Number(id) });
+        await EventLogs.logEvent(
+          "api_key_deleted",
+          { deletedBy: response.locals?.user?.username },
+          response?.locals?.user?.id
+        );
+        return response.status(200).end();
+      } catch (error) {
+        console.error(error);
+        response.status(500).end();
+      }
     }
-  });
+  );
 
   app.post(
     "/system/custom-models",
