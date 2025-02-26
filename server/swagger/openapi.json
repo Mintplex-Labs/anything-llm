@@ -930,7 +930,9 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Target folder path (defaults to 'custom-documents' if not provided)",
+            "example": "my-folder"
           }
         ],
         "responses": {

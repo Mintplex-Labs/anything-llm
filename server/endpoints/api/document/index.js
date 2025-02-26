@@ -129,44 +129,43 @@ function apiDocumentEndpoints(app) {
     [validApiKey, handleAPIFileUpload],
     async (request, response) => {
       /*
-    #swagger.tags = ['Documents']
-    #swagger.description = 'Upload a new file to a specific folder in AnythingLLM to be parsed and prepared for embedding. If the folder does not exist, it will be created.'
-    #swagger.parameters['folderName'] = {
-      in: 'path',
-      description: 'Target folder path (defaults to "custom-documents" if not provided)',
-      required: true,
-      type: 'string',
-      example: 'my-folder'
-    }
-    #swagger.requestBody = {
-      description: 'File to be uploaded.',
-      required: true,
-      content: {
-        "multipart/form-data": {
-          schema: {
-            type: 'object',
-            required: ['file'],
-            properties: {
-              file: {
-                type: 'string',
-                format: 'binary',
-                description: 'The file to upload'
+      #swagger.tags = ['Documents']
+      #swagger.description = 'Upload a new file to a specific folder in AnythingLLM to be parsed and prepared for embedding. If the folder does not exist, it will be created.'
+      #swagger.parameters['folderName'] = {
+        in: 'path',
+        description: 'Target folder path (defaults to \"custom-documents\" if not provided)',
+        required: true,
+        type: 'string',
+        example: 'my-folder'
+      }
+      #swagger.requestBody = {
+        description: 'File to be uploaded.',
+        required: true,
+        content: {
+          "multipart/form-data": {
+            schema: {
+              type: 'object',
+              required: ['file'],
+              properties: {
+                file: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The file to upload'
+                }
               }
             }
           }
         }
       }
-    }
-    #swagger.responses[200] = {
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            example: {
-              success: true,
-              error: null,
-              documents: [
-                {
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                success: true,
+                error: null,
+                documents: [{
                   "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
                   "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
                   "url": "file:///Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
@@ -178,33 +177,32 @@ function apiDocumentEndpoints(app) {
                   "published": "1/16/2024, 3:07:00 PM",
                   "wordCount": 93,
                   "token_count_estimate": 115
-                }
-              ]
+                }]
+              }
             }
           }
         }
       }
-    }
-    #swagger.responses[403] = {
-      schema: {
-        "$ref": "#/definitions/InvalidAPIKey"
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
       }
-    }
-    #swagger.responses[500] = {
-      description: "Internal Server Error",
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            example: {
-              success: false,
-              error: "Document processing API is not online. Document will not be processed automatically."
+      #swagger.responses[500] = {
+        description: "Internal Server Error",
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                success: false,
+                error: "Document processing API is not online. Document will not be processed automatically."
+              }
             }
           }
         }
       }
-    }
-    */
+      */
       try {
         const { originalname } = request.file;
         let folder = request.params?.folderName || "custom-documents";
