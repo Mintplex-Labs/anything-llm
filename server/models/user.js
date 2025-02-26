@@ -78,6 +78,7 @@ const User = {
     password,
     role = "default",
     dailyMessageLimit = null,
+    bio = "",
   }) {
     const passwordCheck = this.checkPasswordComplexity(password);
     if (!passwordCheck.checkedOK) {
@@ -100,6 +101,7 @@ const User = {
           role: this.validations.role(role),
           dailyMessageLimit:
             this.validations.dailyMessageLimit(dailyMessageLimit),
+          bio,
         },
       });
       return { user: this.filterFields(user), error: null };
