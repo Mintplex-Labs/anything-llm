@@ -1,13 +1,13 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
 const { fetchApiPieModels } = require("../AiProviders/apipie");
 const { perplexityModels } = require("../AiProviders/perplexity");
-const { togetherAiModels } = require("../AiProviders/togetherAi");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const { fetchNovitaModels } = require("../AiProviders/novita");
 const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
 const { GeminiLLM } = require("../AiProviders/gemini");
+const { ROLES } = require("../middleware/multiUserProtected");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -31,23 +31,37 @@ const SUPPORT_CUSTOM_MODELS = [
   "gemini",
 ];
 
-async function getCustomModels(provider = "", apiKey = null, basePath = null) {
+/**
+ * Get custom models for a given provider
+ * @param {string} provider - see SUPPORT_CUSTOM_MODELS for supported providers
+ * @param {string|null} apiKey
+ * @param {string|null} basePath
+ * @param {string|null} role
+ * @returns {Promise<Object[]>}
+ */
+async function getCustomModels(
+  provider = "",
+  apiKey = null,
+  basePath = null,
+  role = null
+) {
   if (!SUPPORT_CUSTOM_MODELS.includes(provider))
     return { models: [], error: "Invalid provider for custom models" };
+  const updateAfterCheck = role === null || role === ROLES.admin;
 
   switch (provider) {
     case "openai":
-      return await openAiModels(apiKey);
+      return await openAiModels(apiKey, updateAfterCheck);
     case "localai":
-      return await localAIModels(basePath, apiKey);
+      return await localAIModels(basePath, apiKey, updateAfterCheck);
     case "ollama":
-      return await ollamaAIModels(basePath, apiKey);
+      return await ollamaAIModels(basePath, apiKey, updateAfterCheck);
     case "togetherai":
-      return await getTogetherAiModels(apiKey);
+      return await getTogetherAiModels(apiKey, updateAfterCheck);
     case "fireworksai":
-      return await getFireworksAiModels(apiKey);
+      return await getFireworksAiModels();
     case "mistral":
-      return await getMistralModels(apiKey);
+      return await getMistralModels(apiKey, updateAfterCheck);
     case "perplexity":
       return await getPerplexityModels();
     case "openrouter":
@@ -57,29 +71,29 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "koboldcpp":
       return await getKoboldCPPModels(basePath);
     case "litellm":
-      return await liteLLMModels(basePath, apiKey);
+      return await liteLLMModels(basePath, apiKey, updateAfterCheck);
     case "elevenlabs-tts":
-      return await getElevenLabsModels(apiKey);
+      return await getElevenLabsModels(apiKey, updateAfterCheck);
     case "groq":
-      return await getGroqAiModels(apiKey);
+      return await getGroqAiModels(apiKey, updateAfterCheck);
     case "deepseek":
-      return await getDeepSeekModels(apiKey);
+      return await getDeepSeekModels(apiKey, updateAfterCheck);
     case "apipie":
       return await getAPIPieModels(apiKey);
     case "novita":
       return await getNovitaModels();
     case "xai":
-      return await getXAIModels(apiKey);
+      return await getXAIModels(apiKey, updateAfterCheck);
     case "nvidia-nim":
       return await getNvidiaNimModels(basePath);
     case "gemini":
-      return await getGeminiModels(apiKey);
+      return await getGeminiModels(apiKey, updateAfterCheck);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
 }
 
-async function openAiModels(apiKey = null) {
+async function openAiModels(apiKey = null, updateAfterCheck = false) {
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
     apiKey: apiKey || process.env.OPEN_AI_KEY,
@@ -176,12 +190,20 @@ async function openAiModels(apiKey = null) {
     });
 
   // Api Key was successful so lets save it for future uses
-  if ((gpts.length > 0 || customModels.length > 0) && !!apiKey)
+  if (
+    updateAfterCheck &&
+    (gpts.length > 0 || customModels.length > 0) &&
+    !!apiKey
+  )
     process.env.OPEN_AI_KEY = apiKey;
   return { models: [...gpts, ...customModels], error: null };
 }
 
-async function localAIModels(basePath = null, apiKey = null) {
+async function localAIModels(
+  basePath = null,
+  apiKey = null,
+  updateAfterCheck = false
+) {
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
     baseURL: basePath || process.env.LOCAL_AI_BASE_PATH,
@@ -196,11 +218,12 @@ async function localAIModels(basePath = null, apiKey = null) {
     });
 
   // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!apiKey) process.env.LOCAL_AI_API_KEY = apiKey;
+  if (updateAfterCheck && models.length > 0 && !!apiKey)
+    process.env.LOCAL_AI_API_KEY = apiKey;
   return { models, error: null };
 }
 
-async function getGroqAiModels(_apiKey = null) {
+async function getGroqAiModels(_apiKey = null, updateAfterCheck = false) {
   const { OpenAI: OpenAIApi } = require("openai");
   const apiKey =
     _apiKey === true
@@ -223,11 +246,16 @@ async function getGroqAiModels(_apiKey = null) {
   );
 
   // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!apiKey) process.env.GROQ_API_KEY = apiKey;
+  if (updateAfterCheck && models.length > 0 && !!apiKey)
+    process.env.GROQ_API_KEY = apiKey;
   return { models, error: null };
 }
 
-async function liteLLMModels(basePath = null, apiKey = null) {
+async function liteLLMModels(
+  basePath = null,
+  apiKey = null,
+  updateAfterCheck = false
+) {
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
     baseURL: basePath || process.env.LITE_LLM_BASE_PATH,
@@ -242,7 +270,8 @@ async function liteLLMModels(basePath = null, apiKey = null) {
     });
 
   // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!apiKey) process.env.LITE_LLM_API_KEY = apiKey;
+  if (updateAfterCheck && models.length > 0 && !!apiKey)
+    process.env.LITE_LLM_API_KEY = apiKey;
   return { models, error: null };
 }
 
@@ -292,7 +321,11 @@ async function getKoboldCPPModels(basePath = null) {
   }
 }
 
-async function ollamaAIModels(basePath = null, _authToken = null) {
+async function ollamaAIModels(
+  basePath = null,
+  _authToken = null,
+  updateAfterCheck = false
+) {
   let url;
   try {
     let urlPath = basePath ?? process.env.OLLAMA_BASE_PATH;
@@ -324,12 +357,12 @@ async function ollamaAIModels(basePath = null, _authToken = null) {
     });
 
   // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!authToken)
+  if (updateAfterCheck && models.length > 0 && !!authToken)
     process.env.OLLAMA_AUTH_TOKEN = authToken;
   return { models, error: null };
 }
 
-async function getTogetherAiModels(apiKey = null) {
+async function getTogetherAiModels(apiKey = null, updateAfterCheck = false) {
   const _apiKey =
     apiKey === true
       ? process.env.TOGETHER_AI_API_KEY
@@ -337,7 +370,7 @@ async function getTogetherAiModels(apiKey = null) {
   try {
     const { togetherAiModels } = require("../AiProviders/togetherAi");
     const models = await togetherAiModels(_apiKey);
-    if (models.length > 0 && !!_apiKey)
+    if (updateAfterCheck && models.length > 0 && !!_apiKey)
       process.env.TOGETHER_AI_API_KEY = _apiKey;
     return { models, error: null };
   } catch (error) {
@@ -411,7 +444,6 @@ async function getAPIPieModels(apiKey = null) {
 
   const models = Object.values(knownModels)
     .filter((model) => {
-      // Filter for chat models
       return (
         model.subtype &&
         (model.subtype.includes("chat") || model.subtype.includes("chatx"))
@@ -427,7 +459,7 @@ async function getAPIPieModels(apiKey = null) {
   return { models, error: null };
 }
 
-async function getMistralModels(apiKey = null) {
+async function getMistralModels(apiKey = null, updateAfterCheck = false) {
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
     apiKey: apiKey || process.env.MISTRAL_API_KEY || null,
@@ -444,11 +476,12 @@ async function getMistralModels(apiKey = null) {
     });
 
   // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!apiKey) process.env.MISTRAL_API_KEY = apiKey;
+  if (updateAfterCheck && models.length > 0 && !!apiKey)
+    process.env.MISTRAL_API_KEY = apiKey;
   return { models, error: null };
 }
 
-async function getElevenLabsModels(apiKey = null) {
+async function getElevenLabsModels(apiKey = null, updateAfterCheck = false) {
   const models = (await ElevenLabsTTS.voices(apiKey)).map((model) => {
     return {
       id: model.voice_id,
@@ -470,11 +503,12 @@ async function getElevenLabsModels(apiKey = null) {
     };
   }
 
-  if (models.length > 0 && !!apiKey) process.env.TTS_ELEVEN_LABS_KEY = apiKey;
+  if (updateAfterCheck && models.length > 0 && !!apiKey)
+    process.env.TTS_ELEVEN_LABS_KEY = apiKey;
   return { models, error: null };
 }
 
-async function getDeepSeekModels(apiKey = null) {
+async function getDeepSeekModels(apiKey = null, updateAfterCheck = false) {
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
     apiKey: apiKey || process.env.DEEPSEEK_API_KEY,
@@ -495,11 +529,12 @@ async function getDeepSeekModels(apiKey = null) {
       return [];
     });
 
-  if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
+  if (updateAfterCheck && models.length > 0 && !!apiKey)
+    process.env.DEEPSEEK_API_KEY = apiKey;
   return { models, error: null };
 }
 
-async function getXAIModels(_apiKey = null) {
+async function getXAIModels(_apiKey = null, updateAfterCheck = false) {
   const { OpenAI: OpenAIApi } = require("openai");
   const apiKey =
     _apiKey === true
@@ -525,7 +560,8 @@ async function getXAIModels(_apiKey = null) {
     });
 
   // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!apiKey) process.env.XAI_LLM_API_KEY = apiKey;
+  if (updateAfterCheck && models.length > 0 && !!apiKey)
+    process.env.XAI_LLM_API_KEY = apiKey;
   return { models, error: null };
 }
 
@@ -560,14 +596,15 @@ async function getNvidiaNimModels(basePath = null) {
   }
 }
 
-async function getGeminiModels(_apiKey = null) {
+async function getGeminiModels(_apiKey = null, updateAfterCheck = false) {
   const apiKey =
     _apiKey === true
       ? process.env.GEMINI_API_KEY
       : _apiKey || process.env.GEMINI_API_KEY || null;
   const models = await GeminiLLM.fetchModels(apiKey);
   // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!apiKey) process.env.GEMINI_API_KEY = apiKey;
+  if (updateAfterCheck && models.length > 0 && !!apiKey)
+    process.env.GEMINI_API_KEY = apiKey;
   return { models, error: null };
 }
 
