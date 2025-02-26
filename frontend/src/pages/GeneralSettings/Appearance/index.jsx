@@ -10,6 +10,7 @@ import LanguagePreference from "./LanguagePreference";
 import CustomSiteSettings from "./CustomSiteSettings";
 import ShowScrollbar from "./ShowScrollbar";
 import ThemePreference from "./ThemePreference";
+import { MessageDirection } from "./MessageDirection";
 import { useSettings } from "@/hooks/useSettings"; 
 
 export default function Appearance() {
@@ -36,6 +37,7 @@ export default function Appearance() {
           </div>
           <ThemePreference />
           <LanguagePreference />
+          <MessageDirection />
           <ShowScrollbar />
           {settings.showAllCustomizations && (
         <>

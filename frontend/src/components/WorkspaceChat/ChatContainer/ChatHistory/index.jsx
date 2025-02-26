@@ -14,6 +14,7 @@ import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import { v4 } from "uuid";
+import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
 export default function ChatHistory({
   history = [],
@@ -33,6 +34,7 @@ export default function ChatHistory({
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
+  const { getMessageAlignment } = useChatMessageAlignment();
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -146,6 +148,7 @@ export default function ChatHistory({
         regenerateAssistantMessage,
         saveEditedMessage,
         forkThread,
+        getMessageAlignment,
       }),
     [
       workspace,
@@ -282,6 +285,7 @@ function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
  * @param {Function} param0.regenerateAssistantMessage - The function to regenerate the assistant message.
  * @param {Function} param0.saveEditedMessage - The function to save the edited message.
  * @param {Function} param0.forkThread - The function to fork the thread.
+ * @param {Function} param0.getMessageAlignment - The function to get the alignment of the message (returns class).
  * @returns {Array} The compiled history of messages.
  */
 function buildMessages({
@@ -290,6 +294,7 @@ function buildMessages({
   regenerateAssistantMessage,
   saveEditedMessage,
   forkThread,
+  getMessageAlignment,
 }) {
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
@@ -338,6 +343,7 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
+          alignmentCls={getMessageAlignment?.(props.role)}
         />
       );
     }
