@@ -57,7 +57,6 @@ export default function AccountModal({ user, hideModal }) {
       }
       showToast("Profile updated.", "success", { clear: true });
       hideModal();
-      window.location.reload();
     } else {
       showToast(`Failed to update user: ${error}`, "error");
     }

@@ -30,13 +30,13 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
     const { success, error } = await Admin.updateUser(user.id, data);
     if (success) {
       // Update local storage if we're editing our own user
-      const storedUser = JSON.parse(localStorage.getItem(AUTH_USER));
-      if (storedUser && storedUser.id === user.id) {
-        storedUser.username = data.username;
-        storedUser.bio = data.bio;
-        storedUser.role = data.role;
-        localStorage.setItem(AUTH_USER, JSON.stringify(storedUser));
+      if (currentUser && currentUser.id === user.id) {
+        currentUser.username = data.username;
+        currentUser.bio = data.bio;
+        currentUser.role = data.role;
+        localStorage.setItem(AUTH_USER, JSON.stringify(currentUser));
       }
+
       window.location.reload();
     }
     setError(error);

@@ -1091,16 +1091,10 @@ function systemEndpoints(app) {
       }
 
       const updates = {};
-      if (username) {
+      if (username)
         updates.username = User.validations.username(String(username));
-      }
-      if (password) {
-        updates.password = String(password);
-      }
-
-      if (bio) {
-        updates.bio = String(bio);
-      }
+      if (password) updates.password = String(password);
+      if (bio) updates.bio = String(bio);
 
       if (Object.keys(updates).length === 0) {
         response
