@@ -1082,7 +1082,7 @@ function systemEndpoints(app) {
   app.post("/system/user", [validatedRequest], async (request, response) => {
     try {
       const sessionUser = await userFromSession(request, response);
-      const { username, password } = reqBody(request);
+      const { username, password, bio } = reqBody(request);
       const id = Number(sessionUser.id);
 
       if (!id) {
@@ -1096,6 +1096,10 @@ function systemEndpoints(app) {
       }
       if (password) {
         updates.password = String(password);
+      }
+
+      if (bio) {
+        updates.bio = String(bio);
       }
 
       if (Object.keys(updates).length === 0) {

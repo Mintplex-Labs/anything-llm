@@ -22,6 +22,7 @@ const User = {
     "role",
     "suspended",
     "dailyMessageLimit",
+    "bio",
   ],
   validations: {
     username: (newValue = "") => {
