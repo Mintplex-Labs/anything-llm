@@ -43,7 +43,7 @@ export default {
     return "https://docs.anythingllm.com";
   },
   mailToMintplex: () => {
-    return "mailto:team@mintplexlabs.com";
+    return "mailto:saal@saal.ai";
   },
   hosting: () => {
     return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
@@ -79,9 +79,9 @@ export default {
   apiDocs: () => {
     return `${API_BASE}/docs`;
   },
-  orderFineTune: () => {
-    return `/fine-tuning`;
-  },
+  // orderFineTune: () => {
+  //   return `/fine-tuning`;
+  // },
   settings: {
     users: () => {
       return `/settings/users`;

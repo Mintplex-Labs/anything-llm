@@ -57,20 +57,20 @@ const startApp = () => {
   workspaceThreadEndpoints(apiRouter);
   chatEndpoints(apiRouter);
   adminEndpoints(apiRouter);
-  inviteEndpoints(apiRouter);
+  // inviteEndpoints(apiRouter);
   embedManagementEndpoints(apiRouter);
   utilEndpoints(apiRouter);
   documentEndpoints(apiRouter);
   agentWebsocket(apiRouter);
   experimentalEndpoints(apiRouter);
   developerEndpoints(app, apiRouter);
-  communityHubEndpoints(apiRouter);
+  // communityHubEndpoints(apiRouter);
 
   // Externally facing embedder endpoints
   embeddedEndpoints(apiRouter);
 
   // Externally facing browser extension endpoints
-  browserExtensionEndpoints(apiRouter);
+  // browserExtensionEndpoints(apiRouter);
 
   if (process.env.NODE_ENV !== "development") {
     const { MetaGenerator } = require("./utils/boot/MetaGenerator");
