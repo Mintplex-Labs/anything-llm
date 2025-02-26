@@ -10,6 +10,7 @@ import LanguagePreference from "./LanguagePreference";
 import CustomSiteSettings from "./CustomSiteSettings";
 import ShowScrollbar from "./ShowScrollbar";
 import ThemePreference from "./ThemePreference";
+import { MessageDirection } from "./MessageDirection";
 
 export default function Appearance() {
   const { t } = useTranslation();
@@ -34,6 +35,7 @@ export default function Appearance() {
           </div>
           <ThemePreference />
           <LanguagePreference />
+          <MessageDirection />
           <ShowScrollbar />
           <CustomLogo />
           <CustomAppName />
