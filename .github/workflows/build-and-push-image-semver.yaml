@@ -33,7 +33,11 @@ jobs:
         id: dockerhub
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3.4.0
+        uses: docker/setup-qemu-action@v2
+        # Temporary workaround for ARM builds
+        # https://github.com/docker/setup-qemu-action/issues/198
+        with:
+          image: tonistiigi/binfmt:qemu-v7.0.0-28
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
