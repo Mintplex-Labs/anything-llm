@@ -32,11 +32,9 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
       // Update local storage if we're editing our own user
       const storedUser = JSON.parse(localStorage.getItem(AUTH_USER));
       if (storedUser && storedUser.id === user.id) {
-        Object.keys(data).forEach((key) => {
-          if (key !== "password") {
-            storedUser[key] = data[key];
-          }
-        });
+        storedUser.username = data.username;
+        storedUser.bio = data.bio;
+        storedUser.role = data.role;
         localStorage.setItem(AUTH_USER, JSON.stringify(storedUser));
       }
       window.location.reload();

@@ -50,13 +50,9 @@ export default function AccountModal({ user, hideModal }) {
     const { success, error } = await System.updateUser(data);
     if (success) {
       let storedUser = JSON.parse(localStorage.getItem(AUTH_USER));
-
       if (storedUser) {
-        Object.keys(data).forEach((key) => {
-          if (key !== "password") {
-            storedUser[key] = data[key];
-          }
-        });
+        storedUser.username = data.username;
+        storedUser.bio = data.bio;
         localStorage.setItem(AUTH_USER, JSON.stringify(storedUser));
       }
       showToast("Profile updated.", "success", { clear: true });
