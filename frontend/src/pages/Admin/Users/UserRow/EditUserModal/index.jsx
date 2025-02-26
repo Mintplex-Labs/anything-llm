@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import { MessageLimitInput, RoleHintDisplay } from "../..";
+import { AUTH_USER } from "@/utils/constants";
 
 export default function EditUserModal({ currentUser, user, closeModal }) {
   const [role, setRole] = useState(user.role);
@@ -27,7 +28,19 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
     }
 
     const { success, error } = await Admin.updateUser(user.id, data);
-    if (success) window.location.reload();
+    if (success) {
+      // Update local storage if we're editing our own user
+      const storedUser = JSON.parse(localStorage.getItem(AUTH_USER));
+      if (storedUser && storedUser.id === user.id) {
+        Object.keys(data).forEach((key) => {
+          if (key !== "password") {
+            storedUser[key] = data[key];
+          }
+        });
+        localStorage.setItem(AUTH_USER, JSON.stringify(storedUser));
+      }
+      window.location.reload();
+    }
     setError(error);
   };
 
@@ -91,6 +104,22 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 <p className="mt-2 text-xs text-white/60">
                   Password must be at least 8 characters long
                 </p>
+              </div>
+              <div>
+                <label
+                  htmlFor="bio"
+                  className="block mb-2 text-sm font-medium text-white"
+                >
+                  Bio
+                </label>
+                <textarea
+                  name="bio"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  placeholder="User's bio"
+                  defaultValue={user.bio}
+                  autoComplete="off"
+                  rows={3}
+                />
               </div>
               <div>
                 <label
