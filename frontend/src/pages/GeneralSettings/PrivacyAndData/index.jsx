@@ -199,11 +199,11 @@ function TelemetryLogs({ settings }) {
             telemetry all we ask is to consider sending us feedback and thoughts
             so that we can continue to improve {process.env.APPLICATION_FALLBACK_NAME || "Prism"} for you.{" "}
             <a
-              href="mailto:team@mintplexlabs.com"
+              href="mailto:saal@saal.ai"
               className="underline text-blue-400"
               target="_blank"
             >
-              team@mintplexlabs.com
+              saal@saal.ai
             </a>
             .
           </p>

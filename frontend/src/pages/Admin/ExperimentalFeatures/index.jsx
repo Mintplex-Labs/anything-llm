@@ -253,10 +253,10 @@ function FeatureVerification({ children }) {
                     </a>{" "}
                     or email{" "}
                     <a
-                      href="mailto:team@mintplexlabs.com"
+                      href="mailto:saal@saal.ai"
                       className="underline text-blue-500"
                     >
-                      team@mintplexlabs.com
+                      saal@saal.ai
                     </a>
                   </p>
                 </div>

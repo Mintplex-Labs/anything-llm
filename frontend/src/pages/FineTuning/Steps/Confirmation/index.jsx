@@ -80,9 +80,9 @@ export default function Confirmation({ settings, setSettings, setStep }) {
             or email{" "}
             <a
               className="underline text-sky-400"
-              href="mailto:team@mintplexlabs.com"
+              href="mailto:saal@saal.ai"
             >
-              team@mintplexlabs.com
+              saal@saal.ai
             </a>
             .
           </p>

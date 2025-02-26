@@ -350,14 +350,14 @@ const SidebarOptions = ({ user = null, t }) => (
             //     ]),
           ]}
         />
-        {/* <Option
+        <Option
           btnText={t("settings.agent-skills")}
           icon={<Robot className="h-5 w-5 flex-shrink-0" />}
           href={paths.settings.agentSkills()}
           user={user}
           flex={true}
           roles={["admin"]}
-        /> */}
+        />
         {/* <Option
           btnText="Community Hub"
           icon={<Globe className="h-5 w-5 flex-shrink-0" />}

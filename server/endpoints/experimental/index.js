@@ -7,7 +7,7 @@ const { importedAgentPluginEndpoints } = require("./imported-agent-plugins");
 // When a feature is promoted it should be removed from here and added to the appropriate scope.
 function experimentalEndpoints(router) {
   liveSyncEndpoints(router);
-  fineTuningEndpoints(router);
+  // fineTuningEndpoints(router);
   importedAgentPluginEndpoints(router);
 }
 

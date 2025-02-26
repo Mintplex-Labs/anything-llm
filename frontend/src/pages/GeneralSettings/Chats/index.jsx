@@ -171,13 +171,13 @@ export default function WorkspaceChats() {
                       <Trash size={18} weight="bold" />
                       Clear Chats
                     </button>
-                    <a
+                    {/* <a
                       href={paths.orderFineTune()}
                       className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-yellow-300 light:border-yellow-600 text-yellow-300/80 light:text-yellow-600 rounded-lg bg-transparent hover:light:text-yellow-800 hover:text-theme-text-primary text-xs font-semibold hover:bg-yellow-300/75 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                     >
                       <Sparkle size={18} weight="bold" />
                       Order Fine-Tune Model
-                    </a>
+                    </a> */}
                   </>
                 )}
               </div>
