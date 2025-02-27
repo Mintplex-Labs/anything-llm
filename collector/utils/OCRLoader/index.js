@@ -1,17 +1,61 @@
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
+const { VALID_LANGUAGE_CODES } = require("./validLangs");
 
 class OCRLoader {
-  constructor() {
-    this.language = process.env.OCR_LANG
-      ? process.env.OCR_LANG.split(",")
-      : ["eng"];
+  /**
+   * The language code(s) to use for the OCR.
+   * @type {string[]}
+   */
+  language;
+  /**
+   * The cache directory for the OCR.
+   * @type {string}
+   */
+  cacheDir;
+
+  /**
+   * The constructor for the OCRLoader.
+   * @param {Object} options - The options for the OCRLoader.
+   * @param {string} options.targetLanguages - The target languages to use for the OCR as a comma separated string. eg: "eng,deu,..."
+   */
+  constructor({ targetLanguages = "eng" } = {}) {
+    this.language = this.parseLanguages(targetLanguages);
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
         ? path.resolve(process.env.STORAGE_DIR, `models`, `tesseract`)
         : path.resolve(__dirname, `../../../server/storage/models/tesseract`)
     );
+
+    // Ensure the cache directory exists or else Tesseract will persist the cache in the default location.
+    if (!fs.existsSync(this.cacheDir))
+      fs.mkdirSync(this.cacheDir, { recursive: true });
+    this.log(
+      `OCRLoader initialized with language support for:`,
+      this.language.map((lang) => VALID_LANGUAGE_CODES[lang]).join(", ")
+    );
+  }
+
+  /**
+   * Parses the language code from a provided comma separated string of language codes.
+   * @param {string} language - The language code to parse.
+   * @returns {string[]} The parsed language code.
+   */
+  parseLanguages(language = null) {
+    try {
+      if (!language || typeof language !== "string") return ["eng"];
+      const langList = language
+        .split(",")
+        .map((lang) => (lang.trim() !== "" ? lang.trim() : null))
+        .filter(Boolean)
+        .filter((lang) => VALID_LANGUAGE_CODES.hasOwnProperty(lang));
+      if (langList.length === 0) return ["eng"];
+      return langList;
+    } catch (e) {
+      this.log(`Error parsing languages: ${e.message}`, e.stack);
+      return ["eng"];
+    }
   }
 
   log(text, ...args) {
