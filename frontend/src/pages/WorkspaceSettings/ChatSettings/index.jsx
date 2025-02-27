@@ -9,11 +9,13 @@ import ChatTemperatureSettings from "./ChatTemperatureSettings";
 import ChatModeSelection from "./ChatModeSelection";
 import WorkspaceLLMSelection from "./WorkspaceLLMSelection";
 import ChatQueryRefusalResponse from "./ChatQueryRefusalResponse";
+import useUser from "@/hooks/useUser";
 
 export default function ChatSettings({ workspace }) {
   const [settings, setSettings] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
+  const { user } = useUser();
 
   const formEl = useRef(null);
   useEffect(() => {
@@ -52,11 +54,13 @@ export default function ChatSettings({ workspace }) {
         id="chat-settings-form"
         className="w-1/2 flex flex-col gap-y-6"
       >
+        {user?.role !== "manager" && (
         <WorkspaceLLMSelection
           settings={settings}
           workspace={workspace}
           setHasChanges={setHasChanges}
         />
+        )}
         <ChatModeSelection
           workspace={workspace}
           setHasChanges={setHasChanges}
