@@ -615,6 +615,14 @@ const KEY_MAPPING = {
       },
     ],
   },
+  GiteeAIApiKey: {
+    envKey: "GITEE_AI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  GiteeAIModelPref: {
+    envKey: "GITEE_AI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -721,6 +729,7 @@ function supportedLLM(input = "") {
     "apipie",
     "xai",
     "nvidia-nim",
+    "giteeai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

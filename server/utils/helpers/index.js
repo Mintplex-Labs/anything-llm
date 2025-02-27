@@ -197,6 +197,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "nvidia-nim":
       const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
       return new NvidiaNimLLM(embedder, model);
+    case "giteeai":
+      const { GiteeAILLM } = require("../AiProviders/giteeai");
+      return new GiteeAILLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`

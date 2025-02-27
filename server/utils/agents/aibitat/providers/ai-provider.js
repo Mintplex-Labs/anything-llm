@@ -223,6 +223,14 @@ class Provider {
           apiKey: null,
           ...config,
         });
+      case "giteeai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://ai.gitee.com/v1",
+          },
+          apiKey: process.env.GITEE_AI_API_KEY ?? null,
+          ...config,
+        });
 
       default:
         throw new Error(`Unsupported provider ${provider} for this task.`);

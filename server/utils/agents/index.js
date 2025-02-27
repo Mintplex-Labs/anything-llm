@@ -184,6 +184,10 @@ class AgentHandler {
             "NVIDIA NIM base path must be provided to use agents."
           );
         break;
+      case "giteeai":
+        if (!process.env.GITEE_AI_API_KEY)
+          throw new Error("GiteeAI API Key must be provided to use agents.");
+        break;
 
       default:
         throw new Error(
