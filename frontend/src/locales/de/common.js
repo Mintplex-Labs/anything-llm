@@ -513,10 +513,10 @@ const TRANSLATIONS = {
     github: {
       name: "GitHub Repository",
       description:
-        "Importieren Sie ein öffentliches oder privates Github-Repository mit einem einzigen Klick.",
+        "Importieren Sie ein öffentliches oder privates GitHub-Repository mit einem einzigen Klick.",
       URL: "GitHub Repo URL",
       URL_explained: "URL des GitHub-Repositories, das Sie sammeln möchten.",
-      token: "Github Zugriffstoken",
+      token: "GitHub Zugriffstoken",
       optional: "optional",
       token_explained: "Zugriffstoken um Ratenlimits zu vermeiden.",
       token_explained_start: "Ohne einen ",
@@ -534,7 +534,7 @@ const TRANSLATIONS = {
       branch_loading: "-- lade verfügbare Branches --",
       branch_explained: "Branch, von dem Sie Dateien sammeln möchten.",
       token_information:
-        "Ohne Angabe des <b>Github Zugriffstokens</b> kann dieser Datenkonnektor aufgrund der öffentlichen API-Ratenlimits von GitHub nur die <b>Top-Level</b>-Dateien des Repositories sammeln.",
+        "Ohne Angabe des <b>GitHub Zugriffstokens</b> kann dieser Datenkonnektor aufgrund der öffentlichen API-Ratenlimits von GitHub nur die <b>Top-Level</b>-Dateien des Repositories sammeln.",
       token_personal:
         "Holen Sie sich hier einen kostenlosen persönlichen Zugriffstoken mit einem GitHub-Konto.",
     },
@@ -614,10 +614,11 @@ const TRANSLATIONS = {
         "Dies ist der Space-Key Ihrer Confluence-Instanz, der verwendet wird. Beginnt normalerweise mit ~",
       username: "Confluence Benutzername",
       username_explained: "Ihr Confluence Benutzername.",
-      auth_type: null,
-      auth_type_explained: null,
-      auth_type_username: null,
-      auth_type_personal: null,
+      auth_type: "Confluence Authentifizierungstyp",
+      auth_type_explained:
+        "Wählen Sie den Authentifizierungstyp, den Sie verwenden möchten, um auf Ihre Confluence-Seiten zuzugreifen.",
+      auth_type_username: "Benutzername und Zugriffstoken",
+      auth_type_personal: "Persönliches Zugriffstoken",
       token: "Confluence API-Token",
       token_explained_start:
         "Sie müssen ein Zugriffstoken für die Authentifizierung bereitstellen. Sie können ein Zugriffstoken",

@@ -558,10 +558,10 @@ const TRANSLATIONS = {
     github: {
       name: "GitHub Repo",
       description:
-        "Import an entire public or private Github repository in a single click.",
+        "Import an entire public or private GitHub repository in a single click.",
       URL: "GitHub Repo URL",
       URL_explained: "Url of the GitHub repo you wish to collect.",
-      token: "Github Access Token",
+      token: "GitHub Access Token",
       optional: "optional",
       token_explained: "Access Token to prevent rate limiting.",
       token_explained_start: "Without a ",
@@ -579,7 +579,7 @@ const TRANSLATIONS = {
       branch_loading: "-- loading available branches --",
       branch_explained: "Branch you wish to collect files from.",
       token_information:
-        "Without filling out the <b>Github Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitHub's public API rate-limits.",
+        "Without filling out the <b>GitHub Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitHub's public API rate-limits.",
       token_personal:
         "Get a free Personal Access Token with a GitHub account here.",
     },
