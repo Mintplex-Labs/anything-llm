@@ -22,6 +22,7 @@ const User = {
     "role",
     "suspended",
     "dailyMessageLimit",
+    "bio",
   ],
   validations: {
     username: (newValue = "") => {
@@ -54,6 +55,12 @@ const User = {
       }
       return limit;
     },
+    bio: (bio = "") => {
+      if (!bio || typeof bio !== "string") return "";
+      if (bio.length > 1000)
+        throw new Error("Bio cannot be longer than 1,000 characters");
+      return String(bio);
+    },
   },
   // validations for the above writable fields.
   castColumnValue: function (key, value) {
@@ -77,6 +84,7 @@ const User = {
     password,
     role = "default",
     dailyMessageLimit = null,
+    bio = "",
   }) {
     const passwordCheck = this.checkPasswordComplexity(password);
     if (!passwordCheck.checkedOK) {
@@ -97,6 +105,7 @@ const User = {
           username: this.validations.username(username),
           password: hashedPassword,
           role: this.validations.role(role),
+          bio: this.validations.bio(bio),
           dailyMessageLimit:
             this.validations.dailyMessageLimit(dailyMessageLimit),
         },
