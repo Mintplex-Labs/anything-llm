@@ -68,14 +68,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
     if (listening) {
       // Stop the mic if the send button is clicked
-      endTTSSession();
+      endSTTSession();
     }
     setChatHistory(prevChatHistory);
     setMessageEmit("");
     setLoadingResponse(true);
   };
 
-  function endTTSSession() {
+  function endSTTSession() {
     SpeechRecognition.stopListening();
     resetTranscript();
   }
