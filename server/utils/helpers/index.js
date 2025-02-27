@@ -158,9 +158,6 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return new MistralLLM(embedder, model);
-    case "native":
-      const { NativeLLM } = require("../AiProviders/native");
-      return new NativeLLM(embedder, model);
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
       return new HuggingFaceLLM(embedder, model);
@@ -200,6 +197,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "nvidia-nim":
       const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
       return new NvidiaNimLLM(embedder, model);
+    case "ppio":
+      const { PPIOLLM } = require("../AiProviders/ppio");
+      return new PPIOLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -302,9 +302,6 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return MistralLLM;
-    case "native":
-      const { NativeLLM } = require("../AiProviders/native");
-      return NativeLLM;
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
       return HuggingFaceLLM;
@@ -344,6 +341,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "nvidia-nim":
       const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
       return NvidiaNimLLM;
+    case "ppio":
+      const { PPIOLLM } = require("../AiProviders/ppio");
+      return PPIOLLM;
     default:
       return null;
   }

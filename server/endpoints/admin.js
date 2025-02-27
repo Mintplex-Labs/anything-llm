@@ -374,6 +374,9 @@ function adminEndpoints(app) {
             case "default_agent_skills":
               requestedSettings[label] = safeJsonParse(setting?.value, []);
               break;
+            case "disabled_agent_skills":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
             case "imported_agent_skills":
               requestedSettings[label] = ImportedPlugin.listImportedPlugins();
               break;
@@ -437,6 +440,12 @@ function adminEndpoints(app) {
           default_agent_skills:
             safeJsonParse(
               (await SystemSettings.get({ label: "default_agent_skills" }))
+                ?.value,
+              []
+            ) || [],
+          disabled_agent_skills:
+            safeJsonParse(
+              (await SystemSettings.get({ label: "disabled_agent_skills" }))
                 ?.value,
               []
             ) || [],
@@ -528,6 +537,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
+        if (!id || isNaN(Number(id))) return response.sendStatus(400).end();
         await ApiKey.delete({ id: Number(id) });
 
         await EventLogs.logEvent(

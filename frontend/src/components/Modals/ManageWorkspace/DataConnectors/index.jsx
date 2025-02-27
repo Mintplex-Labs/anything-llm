@@ -11,33 +11,33 @@ import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 
 export const getDataConnectors = (t) => ({
   github: {
-    name: t('connectors.github.name'),
+    name: t("connectors.github.name"),
     image: ConnectorImages.github,
-    description: t('connectors.github.description'),
+    description: t("connectors.github.description"),
     options: <GithubOptions />,
   },
   gitlab: {
-    name: t('connectors.gitlab.name'),
+    name: t("connectors.gitlab.name"),
     image: ConnectorImages.gitlab,
-    description: t('connectors.gitlab.description'),
+    description: t("connectors.gitlab.description"),
     options: <GitlabOptions />,
   },
   "youtube-transcript": {
-    name: t('connectors.youtube.name'),
+    name: t("connectors.youtube.name"),
     image: ConnectorImages.youtube,
-    description: t('connectors.youtube.description'),
+    description: t("connectors.youtube.description"),
     options: <YoutubeOptions />,
   },
   "website-depth": {
-    name: t('connectors.website-depth.name'),
+    name: t("connectors.website-depth.name"),
     image: ConnectorImages.websiteDepth,
-    description: t('connectors.website-depth.description'),
+    description: t("connectors.website-depth.description"),
     options: <WebsiteDepthOptions />,
   },
   confluence: {
-    name: t('connectors.confluence.name'),
+    name: t("connectors.confluence.name"),
     image: ConnectorImages.confluence,
-    description: t('connectors.confluence.description'),
+    description: t("connectors.confluence.description"),
     options: <ConfluenceOptions />,
   },
 });
@@ -63,7 +63,7 @@ export default function DataConnectors() {
           />
           <input
             type="text"
-            placeholder={t('connectors.search-placeholder')}
+            placeholder={t("connectors.search-placeholder")}
             className="border-none z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-settings-input-placeholder text-white bg-theme-settings-input-bg"
             autoComplete="off"
             value={searchQuery}
@@ -85,7 +85,7 @@ export default function DataConnectors() {
             ))
           ) : (
             <div className="text-white text-center mt-4">
-              {t('connectors.no-connectors')}
+              {t("connectors.no-connectors")}
             </div>
           )}
         </div>

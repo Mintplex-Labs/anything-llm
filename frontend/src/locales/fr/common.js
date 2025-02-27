@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "Nom des espaces de travail",
     error: "erreur",
@@ -9,9 +58,10 @@ const TRANSLATIONS = {
     save: "Enregistrer les modifications",
     previous: "Page précédente",
     next: "Page suivante",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Paramètres de l'instance",
     system: "Préférences système",
@@ -40,8 +90,6 @@ const TRANSLATIONS = {
     contact: "Contacter le Support",
     "browser-extension": "Extension de navigateur",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Bienvenue à",
@@ -65,7 +113,6 @@ const TRANSLATIONS = {
       "back-to-login": "Retour à la connexion",
     },
   },
-
   welcomeMessage: {
     part1:
       "Bienvenue sur AnythingLLM, un outil d'intelligence artificielle open-source créé par Mintplex Labs qui transforme n'importe quoi en un chatbot entraîné avec lequel vous pouvez interroger et discuter. AnythingLLM est un logiciel BYOK (apportez vos propres clés), il n'y a donc pas d'abonnement, de frais ou de charges pour ce logiciel en dehors des services que vous souhaitez utiliser.",
@@ -73,7 +120,7 @@ const TRANSLATIONS = {
       "AnythingLLM est le moyen le plus simple de regrouper des produits d'intelligence artificielle puissants tels que OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB et d'autres services dans un package soigné, sans tracas, pour augmenter votre productivité de 100x.",
     part3:
       "AnythingLLM peut fonctionner totalement localement sur votre machine avec peu d'impact, vous ne remarquerez même pas qu'il est là ! Pas besoin de GPU. L'installation en cloud et sur site est également disponible.\nL'écosystème des outils d'IA devient plus puissant chaque jour. AnythingLLM le rend facile à utiliser.",
-    githubIssue: "Créer un problème sur Github",
+    githubIssue: "Créer un problème sur GitHub",
     user1: "Comment commencer?!",
     part4:
       'C\'est simple. Toutes les collections sont organisées en compartiments que nous appelons "Workspaces". Les Workspaces sont des compartiments de fichiers, documents, images, PDFs et autres fichiers qui seront transformés en quelque chose que les LLM peuvent comprendre et utiliser dans une conversation.\n\nVous pouvez ajouter et supprimer des fichiers à tout moment.',
@@ -84,16 +131,13 @@ const TRANSLATIONS = {
       "AnythingLLM est plus qu'un Dropbox plus intelligent.\n\nAnythingLLM offre deux façons de parler avec vos données:\n\n<i>Interrogation :</i> Vos chats renverront des données ou des inférences trouvées avec les documents dans votre workspace auquel il a accès. Ajouter plus de documents au workspace le rend plus intelligent !\n\n<i>Conversationnel :</i> Vos documents et votre historique de chat en cours contribuent tous deux aux connaissances du LLM en même temps. Idéal pour ajouter des informations en temps réel basées sur du texte ou des corrections et des malentendus que le LLM pourrait avoir.\n\nVous pouvez basculer entre les deux modes <i>en plein milieu d'une conversation !</i>",
     user3: "Wow, cela semble incroyable, laissez-moi l'essayer tout de suite !",
     part6: "Amusez-vous bien !",
-    starOnGithub: "Étoile sur GitHub",
+    starOnGitHub: "Étoile sur GitHub",
     contact: "Contacter Mintplex Labs",
   },
-
   "new-workspace": {
     title: "Nouveau Espace de Travail",
     placeholder: "Mon Espace de Travail",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Paramètres généraux",
     chat: "Paramètres de chat",
@@ -101,8 +145,6 @@ const TRANSLATIONS = {
     members: "Membres",
     agent: "Configuration de l'agent",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Nombre de vecteurs",
@@ -140,8 +182,6 @@ const TRANSLATIONS = {
         "espace de travail. Cela supprimera toutes les intégrations vectorielles dans votre base de données vectorielle.\n\nLes fichiers source originaux resteront intacts. Cette action est irréversible.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Fournisseur LLM de l'espace de travail",
@@ -200,8 +240,6 @@ const TRANSLATIONS = {
       hint: "La plupart des LLM ont diverses plages acceptables de valeurs valides. Consultez votre fournisseur LLM pour cette information.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Identifiant de la base de données vectorielle",
     snippets: {
@@ -230,8 +268,6 @@ const TRANSLATIONS = {
         "La base de données vectorielle de l'espace de travail a été réinitialisée !",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "La performance des LLM qui ne supportent pas explicitement l'appel d'outils dépend fortement des capacités et de la précision du modèle. Certaines capacités peuvent être limitées ou non fonctionnelles.",
@@ -251,7 +287,6 @@ const TRANSLATIONS = {
         "Le modèle LLM spécifique qui sera utilisé pour l'agent @agent de cet espace de travail.",
       wait: "-- en attente des modèles --",
     },
-
     skill: {
       title: "Compétences par défaut de l'agent",
       description:
@@ -290,8 +325,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Chats de l'espace de travail",
     description:
@@ -306,8 +339,6 @@ const TRANSLATIONS = {
       at: "Envoyé à",
     },
   },
-
-  // Appearance
   appearance: {
     title: "Apparence",
     description:
@@ -341,8 +372,6 @@ const TRANSLATIONS = {
       link: "Lien",
     },
   },
-
-  // API Keys
   api: {
     title: "Clés API",
     description:
@@ -355,14 +384,12 @@ const TRANSLATIONS = {
       created: "Créé",
     },
   },
-
   llm: {
     title: "Préférence LLM",
     description:
       "Voici les identifiants et les paramètres de votre fournisseur LLM de chat et d'intégration préféré. Il est important que ces clés soient actuelles et correctes, sinon AnythingLLM ne fonctionnera pas correctement.",
     provider: "Fournisseur LLM",
   },
-
   transcription: {
     title: "Préférence du modèle de transcription",
     description:
@@ -375,7 +402,6 @@ const TRANSLATIONS = {
     "warn-end":
       "Le modèle intégré se téléchargera automatiquement lors de la première utilisation.",
   },
-
   embedding: {
     title: "Préférence d'intégration",
     "desc-start":
@@ -388,7 +414,6 @@ const TRANSLATIONS = {
         "Aucune configuration n'est nécessaire lors de l'utilisation du moteur d'intégration natif de AnythingLLM.",
     },
   },
-
   text: {
     title: "Préférences de division et de découpage du texte",
     "desc-start":
@@ -404,15 +429,12 @@ const TRANSLATIONS = {
         "C'est la longueur maximale de caractères pouvant être présents dans un seul vecteur.",
       recommend: "Longueur maximale du modèle d'intégration est",
     },
-
     overlap: {
       title: "Chevauchement des segments de texte",
       description:
         "C'est le chevauchement maximal de caractères qui se produit pendant le découpage entre deux segments de texte adjacents.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Base de données vectorielle",
     description:
@@ -422,8 +444,6 @@ const TRANSLATIONS = {
       description: "Aucune configuration n'est nécessaire pour LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Widgets de chat intégrables",
     description:
@@ -435,7 +455,6 @@ const TRANSLATIONS = {
       Active: "Domaines actifs",
     },
   },
-
   "embed-chats": {
     title: "Chats intégrés",
     export: "Exporter",
@@ -449,7 +468,6 @@ const TRANSLATIONS = {
       at: "Envoyé à",
     },
   },
-
   multi: {
     title: "Mode multi-utilisateurs",
     description:
@@ -474,8 +492,6 @@ const TRANSLATIONS = {
       password: "Mot de passe de l'instance",
     },
   },
-
-  // Event Logs
   event: {
     title: "Journaux d'événements",
     description:
@@ -487,8 +503,6 @@ const TRANSLATIONS = {
       occurred: "Survenu à",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Confidentialité et gestion des données",
     description:
@@ -504,7 +518,8 @@ const TRANSLATIONS = {
     "no-connectors": "No data connectors found.",
     github: {
       name: "GitHub Repo",
-      description: "Import an entire public or private Github repository in a single click.",
+      description:
+        "Import an entire public or private Github repository in a single click.",
       URL: "GitHub Repo URL",
       URL_explained: "Url of the GitHub repo you wish to collect.",
       token: "Github Access Token",
@@ -512,53 +527,69 @@ const TRANSLATIONS = {
       token_explained: "Access Token to prevent rate limiting.",
       token_explained_start: "Without a ",
       token_explained_link1: "Personal Access Token",
-      token_explained_middle: ", the GitHub API may limit the number of files that can be collected due to rate limits. You can ",
+      token_explained_middle:
+        ", the GitHub API may limit the number of files that can be collected due to rate limits. You can ",
       token_explained_link2: "create a temporary Access Token",
       token_explained_end: " to avoid this issue.",
       ignores: "File Ignores",
-      git_ignore: "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
-      task_explained: "Once complete, all files will be available for embedding into workspaces in the document picker.",
+      git_ignore:
+        "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
+      task_explained:
+        "Once complete, all files will be available for embedding into workspaces in the document picker.",
       branch: "Branch you wish to collect files from.",
       branch_loading: "-- loading available branches --",
       branch_explained: "Branch you wish to collect files from.",
-      token_information: "Without filling out the <b>Github Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitHub's public API rate-limits.",
-      token_personal: "Get a free Personal Access Token with a GitHub account here."
+      token_information:
+        "Without filling out the <b>Github Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitHub's public API rate-limits.",
+      token_personal:
+        "Get a free Personal Access Token with a GitHub account here.",
     },
     gitlab: {
       name: "GitLab Repo",
-      description: "Import an entire public or private GitLab repository in a single click.",
+      description:
+        "Import an entire public or private GitLab repository in a single click.",
       URL: "GitLab Repo URL",
       URL_explained: "URL of the GitLab repo you wish to collect.",
       token: "GitLab Access Token",
       optional: "optional",
       token_explained: "Access Token to prevent rate limiting.",
-      token_description: "Select additional entities to fetch from the GitLab API.",
+      token_description:
+        "Select additional entities to fetch from the GitLab API.",
       token_explained_start: "Without a ",
       token_explained_link1: "Personal Access Token",
-      token_explained_middle: ", the GitLab API may limit the number of files that can be collected due to rate limits. You can ",
+      token_explained_middle:
+        ", the GitLab API may limit the number of files that can be collected due to rate limits. You can ",
       token_explained_link2: "create a temporary Access Token",
       token_explained_end: " to avoid this issue.",
       fetch_issues: "Fetch Issues as Documents",
       ignores: "File Ignores",
-      git_ignore: "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
-      task_explained: "Once complete, all files will be available for embedding into workspaces in the document picker.",
+      git_ignore:
+        "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
+      task_explained:
+        "Once complete, all files will be available for embedding into workspaces in the document picker.",
       branch: "Branch you wish to collect files from",
       branch_loading: "-- loading available branches --",
       branch_explained: "Branch you wish to collect files from.",
-      token_information: "Without filling out the <b>GitLab Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitLab's public API rate-limits.",
-      token_personal: "Get a free Personal Access Token with a GitLab account here."
+      token_information:
+        "Without filling out the <b>GitLab Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitLab's public API rate-limits.",
+      token_personal:
+        "Get a free Personal Access Token with a GitLab account here.",
     },
     youtube: {
       name: "YouTube Transcript",
-      description: "Import the transcription of an entire YouTube video from a link.",
+      description:
+        "Import the transcription of an entire YouTube video from a link.",
       URL: "YouTube Video URL",
-      URL_explained_start: "Enter the URL of any YouTube video to fetch its transcript. The video must have ",
+      URL_explained_start:
+        "Enter the URL of any YouTube video to fetch its transcript. The video must have ",
       URL_explained_link: "closed captions",
       URL_explained_end: " available.",
-      task_explained: "Once complete, the transcript will be available for embedding into workspaces in the document picker.",
+      task_explained:
+        "Once complete, the transcript will be available for embedding into workspaces in the document picker.",
       language: "Transcript Language",
-      language_explained: "Select the language of the transcript you want to collect.",
-      loading_languages: "-- loading available languages --"
+      language_explained:
+        "Select the language of the transcript you want to collect.",
+      loading_languages: "-- loading available languages --",
     },
     "website-depth": {
       name: "Bulk Link Scraper",
@@ -566,36 +597,43 @@ const TRANSLATIONS = {
       URL: "Website URL",
       URL_explained: "URL of the website you want to scrape.",
       depth: "Crawl Depth",
-      depth_explained: "This is the number of child-links that the worker should follow from the origin URL.",
+      depth_explained:
+        "This is the number of child-links that the worker should follow from the origin URL.",
       max_pages: "Maximum Pages",
       max_pages_explained: "Maximum number of links to scrape.",
-      task_explained: "Once complete, all scraped content will be available for embedding into workspaces in the document picker."
+      task_explained:
+        "Once complete, all scraped content will be available for embedding into workspaces in the document picker.",
     },
     confluence: {
       name: "Confluence",
       description: "Import an entire Confluence page in a single click.",
       deployment_type: "Confluence deployment type",
-      deployment_type_explained: "Determine if your Confluence instance is hosted on Atlassian cloud or self-hosted.",
+      deployment_type_explained:
+        "Determine if your Confluence instance is hosted on Atlassian cloud or self-hosted.",
       base_url: "Confluence base URL",
       base_url_explained: "This is the base URL of your Confluence space.",
       space_key: "Confluence space key",
-      space_key_explained: "This is the spaces key of your confluence instance that will be used. Usually begins with ~",
+      space_key_explained:
+        "This is the spaces key of your confluence instance that will be used. Usually begins with ~",
       username: "Confluence Username",
       username_explained: "Your Confluence username.",
       token: "Confluence API Token",
       token_explained_start: "A ",
       token_explained_link1: "Personal API Token",
-      token_explained_middle: " is required to access Confluence pages. You can ",
+      token_explained_middle:
+        " is required to access Confluence pages. You can ",
       token_explained_link2: "create an API Token here",
       token_explained_end: ".",
       token_desc: "Access token for authentication.",
-      task_explained: "Once complete, the page content will be available for embedding into workspaces in the document picker."
+      task_explained:
+        "Once complete, the page content will be available for embedding into workspaces in the document picker.",
     },
 
     manage: {
       documents: "Documents",
       "data-connectors": "Data Connectors",
-      "desktop-only": "Editing these settings are only available on a desktop device. Please access this page on your desktop to continue.",
+      "desktop-only":
+        "Editing these settings are only available on a desktop device. Please access this page on your desktop to continue.",
       dismiss: "Dismiss",
       editing: "Editing",
     },
@@ -606,48 +644,59 @@ const TRANSLATIONS = {
       "no-documents": "No Documents",
       "move-workspace": "Move to Workspace",
       name: "Name",
-      "delete-confirmation": "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible.",
-      "removing-message": "Removing {{count}} documents and {{folderCount}} folders. Please wait.",
+      "delete-confirmation":
+        "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible.",
+      "removing-message":
+        "Removing {{count}} documents and {{folderCount}} folders. Please wait.",
       "move-success": "Successfully moved {{count}} documents.",
       date: "Date",
       type: "Type",
       no_docs: "No Documents",
-      select_all:"Select All",
-      deselect_all:"Deselect All",
+      select_all: "Select All",
+      deselect_all: "Deselect All",
       remove_selected: "Remove Selected",
       costs: "*One time cost for embeddings",
       save_embed: "Save and Embed",
     },
     upload: {
       "processor-offline": "Document Processor Unavailable",
-      "processor-offline-desc": "We can't upload your files right now because the document processor is offline. Please try again later.",
+      "processor-offline-desc":
+        "We can't upload your files right now because the document processor is offline. Please try again later.",
       "click-upload": "Click to upload or drag and drop",
-      "file-types": "supports text files, csv's, spreadsheets, audio files, and more!",
+      "file-types":
+        "supports text files, csv's, spreadsheets, audio files, and more!",
       "or-submit-link": "or submit a link",
       "placeholder-link": "https://example.com",
-      "fetching": "Fetching...",
+      fetching: "Fetching...",
       "fetch-website": "Fetch website",
-      "privacy-notice": "These files will be uploaded to the document processor running on this AnythingLLM instance. These files are not sent or shared with a third party.",
+      "privacy-notice":
+        "These files will be uploaded to the document processor running on this AnythingLLM instance. These files are not sent or shared with a third party.",
     },
     pinning: {
       what_pinning: "What is document pinning?",
-      pin_explained_block1: "When you <b>pin</b> a document in AnythingLLM we will inject the entire content of the document into your prompt window for your LLM to fully comprehend.", 
-      pin_explained_block2: "This works best with <b>large-context models</b> or small files that are critical to its knowledge-base.",
-      pin_explained_block3: "If you are not getting the answers you desire from AnythingLLM by default then pinning is a great way to get higher quality answers in a click.",
-      accept: "Okay, got it"
+      pin_explained_block1:
+        "When you <b>pin</b> a document in AnythingLLM we will inject the entire content of the document into your prompt window for your LLM to fully comprehend.",
+      pin_explained_block2:
+        "This works best with <b>large-context models</b> or small files that are critical to its knowledge-base.",
+      pin_explained_block3:
+        "If you are not getting the answers you desire from AnythingLLM by default then pinning is a great way to get higher quality answers in a click.",
+      accept: "Okay, got it",
     },
     watching: {
       what_watching: "What does watching a document do?",
-      watch_explained_block1: "When you <b>watch</b> a document in AnythingLLM we will <i>automatically</i> sync your document content from it's original source on regular intervals. This will automatically update the content in every workspace where this file is managed.", 
-      watch_explained_block2: "This feature currently supports online-based content and will not be available for manually uploaded documents.",
-      watch_explained_block3_start: "You can manage what documents are watched from the ",
+      watch_explained_block1:
+        "When you <b>watch</b> a document in AnythingLLM we will <i>automatically</i> sync your document content from it's original source on regular intervals. This will automatically update the content in every workspace where this file is managed.",
+      watch_explained_block2:
+        "This feature currently supports online-based content and will not be available for manually uploaded documents.",
+      watch_explained_block3_start:
+        "You can manage what documents are watched from the ",
       watch_explained_block3_link: "File manager",
       watch_explained_block3_end: " admin view.",
-      accept: "Okay, got it"
-    }
+      accept: "Okay, got it",
+    },
   },
 
-  chat_window:{
+  chat_window: {
     welcome: "Welcome to your new workspace.",
     get_started: "To get started either",
     get_started_default: "To get started",
@@ -663,12 +712,13 @@ const TRANSLATIONS = {
     send: "Send prompt message to workspace",
   },
 
-  profile_settings:{
+  profile_settings: {
     edit_account: "Edit Account",
     profile_picture: "Profile Picture",
     remove_profile_picture: "Remove Profile Picture",
     username: "Username",
-    username_description: "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+    username_description:
+      "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
     new_password: "New Password",
     passwort_description: "Password must be at least 8 characters long",
     cancel: "Cancel",

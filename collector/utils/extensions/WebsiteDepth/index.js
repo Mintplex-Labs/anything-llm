@@ -122,7 +122,7 @@ async function bulkScrapePages(links, outFolderPath) {
         published: new Date().toLocaleString(),
         wordCount: content.split(" ").length,
         pageContent: content,
-        token_count_estimate: tokenizeString(content).length,
+        token_count_estimate: tokenizeString(content),
       };
 
       writeToServerDocuments(data, data.title, outFolderPath);

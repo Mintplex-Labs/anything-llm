@@ -71,6 +71,21 @@ export default function AzureAiOptions({ settings }) {
             </option>
           </select>
         </div>
+
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Model Type
+          </label>
+          <select
+            name="AzureOpenAiModelType"
+            defaultValue={settings?.AzureOpenAiModelType || "default"}
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            required={true}
+          >
+            <option value="default">Default</option>
+            <option value="reasoning">Reasoning</option>
+          </select>
+        </div>
       </div>
     </div>
   );

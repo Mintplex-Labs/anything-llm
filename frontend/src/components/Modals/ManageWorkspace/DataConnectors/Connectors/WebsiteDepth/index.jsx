@@ -5,7 +5,7 @@ import pluralize from "pluralize";
 import { useTranslation } from "react-i18next";
 
 export default function WebsiteDepthOptions() {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -57,10 +57,10 @@ export default function WebsiteDepthOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                  {t("connectors.website-depth.URL")}
+                    {t("connectors.website-depth.URL")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                  {t("connectors.website-depth.URL_explained")}
+                    {t("connectors.website-depth.URL_explained")}
                   </p>
                 </div>
                 <input
@@ -75,9 +75,12 @@ export default function WebsiteDepthOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold"> {t("connectors.website-depth.depth")}</label>
+                  <label className="text-white text-sm font-bold">
+                    {" "}
+                    {t("connectors.website-depth.depth")}
+                  </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                  {t("connectors.website-depth.depth_explained")}
+                    {t("connectors.website-depth.depth_explained")}
                   </p>
                 </div>
                 <input
@@ -93,10 +96,10 @@ export default function WebsiteDepthOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                  {t("connectors.website-depth.max_pages")}
+                    {t("connectors.website-depth.max_pages")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                  {t("connectors.website-depth.max_pages_explained")}
+                    {t("connectors.website-depth.max_pages_explained")}
                   </p>
                 </div>
                 <input
@@ -123,7 +126,7 @@ export default function WebsiteDepthOptions() {
             </button>
             {loading && (
               <p className="text-xs text-theme-text-secondary">
-                          {t("connectors.website-depth.task_explained")}
+                {t("connectors.website-depth.task_explained")}
               </p>
             )}
           </div>

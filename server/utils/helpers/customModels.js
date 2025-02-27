@@ -7,13 +7,13 @@ const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const { fetchNovitaModels } = require("../AiProviders/novita");
 const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
+const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
   "localai",
   "ollama",
-  "native-llm",
   "togetherai",
   "fireworksai",
   "nvidia-nim",
@@ -30,6 +30,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "novita",
   "xai",
   "gemini",
+  "ppio",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -42,15 +43,13 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "localai":
       return await localAIModels(basePath, apiKey);
     case "ollama":
-      return await ollamaAIModels(basePath);
+      return await ollamaAIModels(basePath, apiKey);
     case "togetherai":
-      return await getTogetherAiModels();
+      return await getTogetherAiModels(apiKey);
     case "fireworksai":
       return await getFireworksAiModels(apiKey);
     case "mistral":
       return await getMistralModels(apiKey);
-    case "native-llm":
-      return nativeLLMModels();
     case "perplexity":
       return await getPerplexityModels();
     case "openrouter":
@@ -77,6 +76,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getNvidiaNimModels(basePath);
     case "gemini":
       return await getGeminiModels(apiKey);
+    case "ppio":
+      return await getPPIOModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -148,7 +149,7 @@ async function openAiModels(apiKey = null) {
     .filter(
       (model) =>
         (model.id.includes("gpt") && !model.id.startsWith("ft:")) ||
-        model.id.includes("o1")
+        model.id.startsWith("o") // o1, o1-mini, o3, etc
     )
     .filter(
       (model) =>
@@ -295,7 +296,7 @@ async function getKoboldCPPModels(basePath = null) {
   }
 }
 
-async function ollamaAIModels(basePath = null) {
+async function ollamaAIModels(basePath = null, _authToken = null) {
   let url;
   try {
     let urlPath = basePath ?? process.env.OLLAMA_BASE_PATH;
@@ -307,7 +308,9 @@ async function ollamaAIModels(basePath = null) {
     return { models: [], error: "Not a valid URL." };
   }
 
-  const models = await fetch(`${url}/api/tags`)
+  const authToken = _authToken || process.env.OLLAMA_AUTH_TOKEN || null;
+  const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+  const models = await fetch(`${url}/api/tags`, { headers: headers })
     .then((res) => {
       if (!res.ok)
         throw new Error(`Could not reach Ollama server! ${res.status}`);
@@ -324,22 +327,27 @@ async function ollamaAIModels(basePath = null) {
       return [];
     });
 
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!authToken)
+    process.env.OLLAMA_AUTH_TOKEN = authToken;
   return { models, error: null };
 }
 
-async function getTogetherAiModels() {
-  const knownModels = togetherAiModels();
-  if (!Object.keys(knownModels).length === 0)
-    return { models: [], error: null };
-
-  const models = Object.values(knownModels).map((model) => {
-    return {
-      id: model.id,
-      organization: model.organization,
-      name: model.name,
-    };
-  });
-  return { models, error: null };
+async function getTogetherAiModels(apiKey = null) {
+  const _apiKey =
+    apiKey === true
+      ? process.env.TOGETHER_AI_API_KEY
+      : apiKey || process.env.TOGETHER_AI_API_KEY || null;
+  try {
+    const { togetherAiModels } = require("../AiProviders/togetherAi");
+    const models = await togetherAiModels(_apiKey);
+    if (models.length > 0 && !!_apiKey)
+      process.env.TOGETHER_AI_API_KEY = _apiKey;
+    return { models, error: null };
+  } catch (error) {
+    console.error("Error in getTogetherAiModels:", error);
+    return { models: [], error: "Failed to fetch Together AI models" };
+  }
 }
 
 async function getFireworksAiModels() {
@@ -442,26 +450,6 @@ async function getMistralModels(apiKey = null) {
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.MISTRAL_API_KEY = apiKey;
   return { models, error: null };
-}
-
-function nativeLLMModels() {
-  const fs = require("fs");
-  const path = require("path");
-  const storageDir = path.resolve(
-    process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`)
-  );
-  if (!fs.existsSync(storageDir))
-    return { models: [], error: "No model/downloaded storage folder found." };
-
-  const files = fs
-    .readdirSync(storageDir)
-    .filter((file) => file.toLowerCase().includes(".gguf"))
-    .map((file) => {
-      return { id: file, name: file };
-    });
-  return { models: files, error: null };
 }
 
 async function getElevenLabsModels(apiKey = null) {
@@ -571,8 +559,8 @@ async function getNvidiaNimModels(basePath = null) {
 
     return { models, error: null };
   } catch (e) {
-    console.error(`Nvidia NIM:getNvidiaNimModels`, e.message);
-    return { models: [], error: "Could not fetch Nvidia NIM Models" };
+    console.error(`NVIDIA NIM:getNvidiaNimModels`, e.message);
+    return { models: [], error: "Could not fetch NVIDIA NIM Models" };
   }
 }
 
@@ -584,6 +572,19 @@ async function getGeminiModels(_apiKey = null) {
   const models = await GeminiLLM.fetchModels(apiKey);
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.GEMINI_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getPPIOModels() {
+  const ppioModels = await fetchPPIOModels();
+  if (!Object.keys(ppioModels).length === 0) return { models: [], error: null };
+  const models = Object.values(ppioModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
   return { models, error: null };
 }
 

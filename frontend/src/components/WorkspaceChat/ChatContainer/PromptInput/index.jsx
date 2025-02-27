@@ -25,8 +25,7 @@ const MAX_EDIT_STACK_SIZE = 100;
 export default function PromptInput({
   submit,
   onChange,
-  inputDisabled,
-  buttonDisabled,
+  isStreaming,
   sendCommand,
   attachments = [],
 }) {
@@ -51,11 +50,6 @@ export default function PromptInput({
     setPromptInput(e?.detail ?? "");
   }
 
-  function resetTextAreaHeight() {
-    if (!textareaRef.current) return;
-    textareaRef.current.style.height = "auto";
-  }
-
   useEffect(() => {
     if (!!window)
       window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
@@ -64,9 +58,9 @@ export default function PromptInput({
   }, []);
 
   useEffect(() => {
-    if (!inputDisabled && textareaRef.current) textareaRef.current.focus();
+    if (!isStreaming && textareaRef.current) textareaRef.current.focus();
     resetTextAreaHeight();
-  }, [inputDisabled]);
+  }, [isStreaming]);
 
   /**
    * Save the current state before changes
@@ -117,6 +111,7 @@ export default function PromptInput({
     // Is simple enter key press w/o shift key
     if (event.keyCode === 13 && !event.shiftKey) {
       event.preventDefault();
+      if (isStreaming) return;
       return submit(event);
     }
 
@@ -266,7 +261,6 @@ export default function PromptInput({
                   handlePasteEvent(e);
                 }}
                 required={true}
-                disabled={inputDisabled}
                 onFocus={() => setFocused(true)}
                 onBlur={(e) => {
                   setFocused(false);
@@ -274,9 +268,9 @@ export default function PromptInput({
                 }}
                 value={promptInput}
                 className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full leading-5 md:text-md text-white bg-transparent placeholder:text-white/60 light:placeholder:text-theme-text-primary resize-none active:outline-none focus:outline-none flex-grow ${textSizeClass}`}
-                placeholder={t('chat_window.send_message')}
+                placeholder={t("chat_window.send_message")}
               />
-              {buttonDisabled ? (
+              {isStreaming ? (
                 <StopGenerationButton />
               ) : (
                 <>
@@ -285,8 +279,8 @@ export default function PromptInput({
                     type="submit"
                     className="border-none inline-flex justify-center rounded-2xl cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ml-4"
                     data-tooltip-id="send-prompt"
-                    data-tooltip-content={t('chat_window.send')}
-                    aria-label={t('chat_window.send')}
+                    data-tooltip-content={t("chat_window.send")}
+                    aria-label={t("chat_window.send")}
                   >
                     <PaperPlaneRight
                       color="var(--theme-sidebar-footer-icon-fill)"

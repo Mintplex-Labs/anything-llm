@@ -493,8 +493,8 @@ const System = {
         return { apiKey: null, error: e.message };
       });
   },
-  deleteApiKey: async function () {
-    return fetch(`${API_BASE}/system/api-key`, {
+  deleteApiKey: async function (apiKeyId = "") {
+    return fetch(`${API_BASE}/system/api-key/${apiKeyId}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })

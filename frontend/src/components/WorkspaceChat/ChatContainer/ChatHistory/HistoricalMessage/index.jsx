@@ -6,7 +6,7 @@ import renderMarkdown from "@/utils/chat/markdown";
 import { userFromStorage } from "@/utils/request";
 import Citations from "../Citation";
 import { v4 } from "uuid";
-import createDOMPurify from "dompurify";
+import DOMPurify from "@/utils/chat/purify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
 import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
 import TTSMessage from "./Actions/TTSButton";
@@ -17,7 +17,6 @@ import {
   ThoughtChainComponent,
 } from "../ThoughtContainer";
 
-const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = ({
   uuid = v4(),
   message,
@@ -33,6 +32,7 @@ const HistoricalMessage = ({
   saveEditedMessage,
   forkThread,
   metrics = {},
+  alignmentCls = "",
 }) => {
   const { isEditing } = useEditMessage({ chatId, role });
   const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
@@ -52,7 +52,7 @@ const HistoricalMessage = ({
         className={`flex justify-center items-end w-full bg-theme-bg-chat`}
       >
         <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-          <div className="flex gap-x-5">
+          <div className={`flex gap-x-5 ${alignmentCls}`}>
             <ProfileImage role={role} workspace={workspace} />
             <div className="p-2 rounded-lg bg-red-50 text-red-500">
               <span className="inline-block">
@@ -70,6 +70,7 @@ const HistoricalMessage = ({
   }
 
   if (completeDelete) return null;
+
   return (
     <div
       key={uuid}
@@ -79,7 +80,7 @@ const HistoricalMessage = ({
       } flex justify-center items-end w-full group bg-theme-bg-chat`}
     >
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-        <div className="flex gap-x-5">
+        <div className={`flex gap-x-5 ${alignmentCls}`}>
           <div className="flex flex-col items-center">
             <ProfileImage role={role} workspace={workspace} />
             <div className="mt-1 -mb-10">
@@ -124,6 +125,7 @@ const HistoricalMessage = ({
             role={role}
             forkThread={forkThread}
             metrics={metrics}
+            alignmentCls={alignmentCls}
           />
         </div>
         {role === "assistant" && <Citations sources={sources} />}

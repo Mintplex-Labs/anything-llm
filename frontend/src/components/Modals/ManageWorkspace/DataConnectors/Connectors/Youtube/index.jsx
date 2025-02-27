@@ -4,7 +4,7 @@ import showToast from "@/utils/toast";
 import { useTranslation } from "react-i18next";
 
 export default function YoutubeOptions() {
-      const { t } = useTranslation();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -52,20 +52,20 @@ export default function YoutubeOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                  {t("connectors.youtube.URL")}
+                    {t("connectors.youtube.URL")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                  {t("connectors.youtube.URL_explained_start")}
-                  <a
-                    href="https://support.google.com/youtube/answer/6373554"
-                    rel="noreferrer"
-                    target="_blank"
-                    className="underline"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {t("connectors.youtube.URL_explained_link")}
-                  </a>
-                  {t("connectors.youtube.URL_explained_end")}
+                    {t("connectors.youtube.URL_explained_start")}
+                    <a
+                      href="https://support.google.com/youtube/answer/6373554"
+                      rel="noreferrer"
+                      target="_blank"
+                      className="underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {t("connectors.youtube.URL_explained_link")}
+                    </a>
+                    {t("connectors.youtube.URL_explained_end")}
                   </p>
                 </div>
                 <input

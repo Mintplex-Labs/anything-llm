@@ -25,6 +25,7 @@ const ENABLED_PROVIDERS = [
   "bedrock",
   "fireworksai",
   "deepseek",
+  "ppio",
   "litellm",
   "apipie",
   "xai",
@@ -48,11 +49,12 @@ const WARN_PERFORMANCE = [
 ];
 
 const LLM_DEFAULT = {
-  name: "Please make a selection",
+  name: "System Default",
   value: "none",
   logo: AnythingLLMIcon,
   options: () => <React.Fragment />,
-  description: "Agents will not work until a valid selection is made.",
+  description:
+    "Agents will use the workspace or system LLM unless otherwise specified.",
   requiredConfig: [],
 };
 

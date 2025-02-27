@@ -91,7 +91,9 @@ export default function GitlabOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white font-bold text-sm flex gap-x-2 items-center">
-                    <p className="font-bold text-white">{t("connectors.gitlab.token")}</p>{" "}
+                    <p className="font-bold text-white">
+                      {t("connectors.gitlab.token")}
+                    </p>{" "}
                     <p className="text-xs font-light flex items-center">
                       <span className="text-theme-text-secondary">
                         {t("connectors.gitlab.optional")}
@@ -121,7 +123,7 @@ export default function GitlabOptions() {
                     <p className="font-bold text-white">Settings</p>{" "}
                   </label>
                   <p className="text-xs font-normal text-white/50">
-                  {t("connectors.gitlab.token_description")}
+                    {t("connectors.gitlab.token_description")}
                   </p>
                 </div>
                 <div className="flex items-center gap-x-2">
@@ -148,7 +150,9 @@ export default function GitlabOptions() {
             <div className="flex flex-col w-full py-4 pr-10">
               <div className="flex flex-col gap-y-1 mb-4">
                 <label className="text-white text-sm flex gap-x-2 items-center">
-                  <p className="text-white text-sm font-bold">{t("connectors.gitlab.ignores")}</p>
+                  <p className="text-white text-sm font-bold">
+                    {t("connectors.gitlab.ignores")}
+                  </p>
                 </label>
                 <p className="text-xs font-normal text-theme-text-secondary">
                   {t("connectors.gitlab.git_ignore")}
@@ -217,7 +221,9 @@ function GitLabBranchSelection({ repo, accessToken }) {
     return (
       <div className="flex flex-col w-60">
         <div className="flex flex-col gap-y-1 mb-4">
-          <label className="text-white text-sm font-bold">{t("connectors.gitlab.branch")}</label>
+          <label className="text-white text-sm font-bold">
+            {t("connectors.gitlab.branch")}
+          </label>
           <p className="text-xs font-normal text-theme-text-secondary">
             {t("connectors.gitlab.branch_explained")}
           </p>
@@ -240,7 +246,7 @@ function GitLabBranchSelection({ repo, accessToken }) {
       <div className="flex flex-col gap-y-1 mb-4">
         <label className="text-white text-sm font-bold">Branch</label>
         <p className="text-xs font-normal text-theme-text-secondary">
-        {t("connectors.gitlab.branch_explained")}
+          {t("connectors.gitlab.branch_explained")}
         </p>
       </div>
       <select
@@ -268,7 +274,11 @@ function PATAlert({ accessToken }) {
       <div className="gap-x-2 flex items-center">
         <Info className="shrink-0" size={25} />
         <p className="text-sm">
-          <span dangerouslySetInnerHTML={{ __html: t("connectors.gitlab.token_information") }} />
+          <span
+            dangerouslySetInnerHTML={{
+              __html: t("connectors.gitlab.token_information"),
+            }}
+          />
           <br />
           <br />
           <a
@@ -306,7 +316,7 @@ function PATTooltip({ accessToken }) {
         clickable={true}
       >
         <p className="text-sm">
-          {t('connectors.gitlab.token_explained_start')}
+          {t("connectors.gitlab.token_explained_start")}
           <a
             href="https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html"
             rel="noreferrer"
@@ -314,9 +324,9 @@ function PATTooltip({ accessToken }) {
             className="underline"
             onClick={(e) => e.stopPropagation()}
           >
-            {t('connectors.gitlab.token_explained_link1')}
+            {t("connectors.gitlab.token_explained_link1")}
           </a>
-          {t('connectors.gitlab.token_explained_middle')}
+          {t("connectors.gitlab.token_explained_middle")}
           <a
             href="https://gitlab.com/-/profile/personal_access_tokens"
             rel="noreferrer"
@@ -324,9 +334,9 @@ function PATTooltip({ accessToken }) {
             className="underline"
             onClick={(e) => e.stopPropagation()}
           >
-            {t('connectors.gitlab.token_explained_link2')}
+            {t("connectors.gitlab.token_explained_link2")}
           </a>
-          {t('connectors.gitlab.token_explained_end')}
+          {t("connectors.gitlab.token_explained_end")}
         </p>
       </Tooltip>
     </>

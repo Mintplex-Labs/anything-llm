@@ -167,6 +167,18 @@ class OpenRouterLLM {
     return content.flat();
   }
 
+  /**
+   * Parses and prepends reasoning from the response and returns the full text response.
+   * @param {Object} response
+   * @returns {string}
+   */
+  #parseReasoningFromResponse({ message }) {
+    let textResponse = message?.content;
+    if (!!message?.reasoning && message.reasoning.trim().length > 0)
+      textResponse = `<think>${message.reasoning}</think>${textResponse}`;
+    return textResponse;
+  }
+
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
@@ -200,6 +212,9 @@ class OpenRouterLLM {
           model: this.model,
           messages,
           temperature,
+          // This is an OpenRouter specific option that allows us to get the reasoning text
+          // before the token text.
+          include_reasoning: true,
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -207,13 +222,15 @@ class OpenRouterLLM {
     );
 
     if (
-      !result.output.hasOwnProperty("choices") ||
-      result.output.choices.length === 0
+      !result?.output?.hasOwnProperty("choices") ||
+      result?.output?.choices?.length === 0
     )
-      return null;
+      throw new Error(
+        `Invalid response body returned from OpenRouter: ${result.output?.error?.message || "Unknown error"} ${result.output?.error?.code || "Unknown code"}`
+      );
 
     return {
-      textResponse: result.output.choices[0].message.content,
+      textResponse: this.#parseReasoningFromResponse(result.output.choices[0]),
       metrics: {
         prompt_tokens: result.output.usage.prompt_tokens || 0,
         completion_tokens: result.output.usage.completion_tokens || 0,
@@ -236,6 +253,9 @@ class OpenRouterLLM {
         stream: true,
         messages,
         temperature,
+        // This is an OpenRouter specific option that allows us to get the reasoning text
+        // before the token text.
+        include_reasoning: true,
       }),
       messages
       // We have to manually count the tokens
@@ -262,6 +282,7 @@ class OpenRouterLLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      let reasoningText = "";
       let lastChunkTime = null; // null when first token is still not received.
 
       // Establish listener to early-abort a streaming response
@@ -313,7 +334,54 @@ class OpenRouterLLM {
         for await (const chunk of stream) {
           const message = chunk?.choices?.[0];
           const token = message?.delta?.content;
+          const reasoningToken = message?.delta?.reasoning;
           lastChunkTime = Number(new Date());
+
+          // Reasoning models will always return the reasoning text before the token text.
+          // can be null or ''
+          if (reasoningToken) {
+            // If the reasoning text is empty (''), we need to initialize it
+            // and send the first chunk of reasoning text.
+            if (reasoningText.length === 0) {
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: `<think>${reasoningToken}`,
+                close: false,
+                error: false,
+              });
+              reasoningText += `<think>${reasoningToken}`;
+              continue;
+            } else {
+              // If the reasoning text is not empty, we need to append the reasoning text
+              // to the existing reasoning text.
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: reasoningToken,
+                close: false,
+                error: false,
+              });
+              reasoningText += reasoningToken;
+            }
+          }
+
+          // If the reasoning text is not empty, but the reasoning token is empty
+          // and the token text is not empty we need to close the reasoning text and begin sending the token text.
+          if (!!reasoningText && !reasoningToken && token) {
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: `</think>`,
+              close: false,
+              error: false,
+            });
+            fullText += `${reasoningText}</think>`;
+            reasoningText = "";
+          }
 
           if (token) {
             fullText += token;

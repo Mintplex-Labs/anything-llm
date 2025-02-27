@@ -68,14 +68,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
     if (listening) {
       // Stop the mic if the send button is clicked
-      endTTSSession();
+      endSTTSession();
     }
     setChatHistory(prevChatHistory);
     setMessageEmit("");
     setLoadingResponse(true);
   };
 
-  function endTTSSession() {
+  function endSTTSession() {
     SpeechRecognition.stopListening();
     resetTranscript();
   }
@@ -282,8 +282,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         <PromptInput
           submit={handleSubmit}
           onChange={handleMessageChange}
-          inputDisabled={loadingResponse}
-          buttonDisabled={loadingResponse}
+          isStreaming={loadingResponse}
           sendCommand={sendCommand}
           attachments={files}
         />

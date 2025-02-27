@@ -47,7 +47,7 @@
 
 AnythingLLM是一个全栈应用程序，您可以使用现成的商业大语言模型或流行的开源大语言模型，再结合向量数据库解决方案构建一个私有ChatGPT，不再受制于人：您可以本地运行，也可以远程托管，并能够与您提供的任何文档智能聊天。
 
-AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工作区的功能类似于线程，同时增加了文档的容器化，。工作区可以共享文档，但工作区之间的内容不会互相干扰或污染，因此您可以保持每个工作区的上下文清晰。
+AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工作区的功能类似于线程，同时增加了文档的容器化。工作区可以共享文档，但工作区之间的内容不会互相干扰或污染，因此您可以保持每个工作区的上下文清晰。
 
 AnythingLLM的一些酷炫特性
 
@@ -56,11 +56,11 @@ AnythingLLM的一些酷炫特性
 - [为您的网站定制的可嵌入聊天窗口](./embed/README.md)
 - 支持多种文档类型（PDF、TXT、DOCX等）
 - 通过简单的用户界面管理向量数据库中的文档
-- 两种对话模式：`聊天`和`查询`。聊天模式保留先前的对话记录。查询模式则是是针对您的文档做简单问答
+- 两种对话模式：`聊天`和`查询`。聊天模式保留先前的对话记录。查询模式则是针对您的文档做简单问答
 - 聊天中会提供所引用的相应文档内容
 - 100%云部署就绪。
 - “部署你自己的LLM模型”。
-- 管理超大文档时高效、低耗。只需要一次就可以嵌入（Embedding)一个庞大的文档或文字记录。比其他文档聊天机器人解决方案节省90%的成本。
+- 管理超大文档时高效、低耗。只需要一次就可以嵌入（Embedding）一个庞大的文档或文字记录。比其他文档聊天机器人解决方案节省90%的成本。
 - 全套的开发人员API，用于自定义集成！
 
 ### 支持的LLM、嵌入模型、转录模型和向量数据库
@@ -86,6 +86,7 @@ AnythingLLM的一些酷炫特性
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [PPIO (聊天模型)](https://ppinfra.com?utm_source=github_anything-llm)
 
 **支持的嵌入模型：**
 
@@ -101,6 +102,18 @@ AnythingLLM的一些酷炫特性
 
 - [AnythingLLM内置](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) （默认）
 - [OpenAI](https://openai.com/)
+
+**TTS (文本转语音) 支持：**
+
+- 浏览器内置（默认）
+- [PiperTTSLocal - 在浏览器中运行](https://github.com/rhasspy/piper)
+- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
+- [ElevenLabs](https://elevenlabs.io/)
+- 任何与 OpenAI 兼容的 TTS 服务
+
+**STT (语音转文本) 支持：**
+
+- 浏览器内置（默认）
 
 **支持的向量数据库：**
 
@@ -169,7 +182,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ### 怎样关闭
 
-通过在服务器或 docker 的 `.env` 设置中将 `DISABLE_TELEMETRY` 设置为 “true” 来选择退出 Telemetry 远程信息收集功能。您也可以进入 AnythingLLM 应用 >>> 侧边栏最下方 >>> `隐私和数据` （Privacy&Data) >>> 找到最下方的 Anonymous Telemetry Enabled，点击绿色按钮让它变灰色，从而禁用信息收集功能。
+通过在服务器或 docker 的 `.env` 设置中将 `DISABLE_TELEMETRY` 设置为 “true” 来选择退出 Telemetry 远程信息收集功能。您也可以进入 AnythingLLM 应用 >>> 侧边栏最下方 >>> `隐私和数据` （Privacy&Data） >>> 找到最下方的 Anonymous Telemetry Enabled，点击绿色按钮让它变灰色，从而禁用信息收集功能。
 
 ### 你们跟踪收集哪些信息？
 
@@ -200,7 +213,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ---
 
-版权所有 © 2024 [Mintplex Labs][profile-link]。<br />
+版权所有 © 2025 [Mintplex Labs][profile-link]。<br />
 本项目采用[MIT](./LICENSE)许可证。
 
 <!-- LINK GROUP -->

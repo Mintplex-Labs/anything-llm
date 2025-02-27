@@ -231,7 +231,7 @@ function WorkspaceDirectory({
                     }`}
               </p>
               <p className="mt-2 text-xs italic" hidden={embeddingCosts === 0}>
-              {t("new-workspace.costs")}
+                {t("new-workspace.costs")}
               </p>
             </div>
 
@@ -287,14 +287,20 @@ const PinAlert = memo(() => {
         <div className="py-7 px-9 space-y-2 flex-col">
           <div className="w-full text-white text-md flex flex-col gap-y-2">
             <p>
-            <span dangerouslySetInnerHTML={{ __html: t("connectors.pinning.pin_explained_block1") }} />
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: t("connectors.pinning.pin_explained_block1"),
+                }}
+              />
             </p>
             <p>
-            <span dangerouslySetInnerHTML={{ __html: t("connectors.pinning.pin_explained_block2") }} />
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: t("connectors.pinning.pin_explained_block2"),
+                }}
+              />
             </p>
-            <p>
-            {t("connectors.pinning.pin_explained_block3")}
-            </p>
+            <p>{t("connectors.pinning.pin_explained_block3")}</p>
           </div>
         </div>
         <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
@@ -339,20 +345,22 @@ const DocumentWatchAlert = memo(() => {
               weight="regular"
             />
             <h3 className="text-xl font-semibold text-white">
-            {t("connectors.pinning.what_watching")}
+              {t("connectors.pinning.what_watching")}
             </h3>
           </div>
         </div>
         <div className="py-7 px-9 space-y-2 flex-col">
           <div className="w-full text-white text-md flex flex-col gap-y-2">
             <p>
-            <span dangerouslySetInnerHTML={{ __html: t("connectors.watching.watch_explained_block1") }} />
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: t("connectors.watching.watch_explained_block1"),
+                }}
+              />
             </p>
+            <p>{t("connectors.watching.watch_explained_block2")}</p>
             <p>
-            {t("connectors.watching.watch_explained_block2")}
-            </p>
-            <p>
-            {t("connectors.watching.watch_explained_block3_start")}
+              {t("connectors.watching.watch_explained_block3_start")}
               <Link
                 to={paths.experimental.liveDocumentSync.manage()}
                 className="text-blue-600 underline"

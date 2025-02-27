@@ -12,7 +12,7 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
     <div
       id="slash-cmd-btn"
       data-tooltip-id="tooltip-slash-cmd-btn"
-      data-tooltip-content={t('chat_window.slash')}
+      data-tooltip-content={t("chat_window.slash")}
       onClick={() => setShowSlashCommand(!showing)}
       className={`flex justify-center items-center cursor-pointer ${
         showing ? "!opacity-100" : ""

@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
  * @returns
  */
 export default function AttachItem() {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useUser();
   if (!!user && user.role === "default") return null;
 
@@ -17,8 +17,8 @@ export default function AttachItem() {
       <button
         id="attach-item-btn"
         data-tooltip-id="attach-item-btn"
-        data-tooltip-content={t('chat_window.attach_file')}
-        aria-label={t('chat_window.attach_file')}
+        data-tooltip-content={t("chat_window.attach_file")}
+        aria-label={t("chat_window.attach_file")}
         type="button"
         onClick={(e) => {
           e?.target?.blur();

@@ -4,6 +4,7 @@ const { handleAPIFileUpload } = require("../../../utils/files/multer");
 const {
   viewLocalFiles,
   findDocumentInDocuments,
+  getDocumentsByFolder,
   normalizePath,
   isWithin,
 } = require("../../../utils/files");
@@ -34,14 +35,16 @@ function apiDocumentEndpoints(app) {
       content: {
         "multipart/form-data": {
           schema: {
-            type: 'string',
-            format: 'binary',
+            type: 'object',
+            required: ['file'],
             properties: {
               file: {
                 type: 'string',
                 format: 'binary',
+                description: 'The file to upload'
               }
-            }
+            },
+            required: ['file']
           }
         }
       }
@@ -64,7 +67,7 @@ function apiDocumentEndpoints(app) {
                   "description": "Unknown",
                   "docSource": "a text file uploaded by the user.",
                   "chunkSource": "anythingllm.txt",
-                  "published": "1/16/2024, 3:07:00 PM",
+                  "published": "1/16/2024, 3:07:00 PM",
                   "wordCount": 93,
                   "token_count_estimate": 115,
                 }
@@ -122,6 +125,165 @@ function apiDocumentEndpoints(app) {
   );
 
   app.post(
+    "/v1/document/upload/:folderName",
+    [validApiKey, handleAPIFileUpload],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Documents']
+      #swagger.description = 'Upload a new file to a specific folder in AnythingLLM to be parsed and prepared for embedding. If the folder does not exist, it will be created.'
+      #swagger.parameters['folderName'] = {
+        in: 'path',
+        description: 'Target folder path (defaults to \"custom-documents\" if not provided)',
+        required: true,
+        type: 'string',
+        example: 'my-folder'
+      }
+      #swagger.requestBody = {
+        description: 'File to be uploaded.',
+        required: true,
+        content: {
+          "multipart/form-data": {
+            schema: {
+              type: 'object',
+              required: ['file'],
+              properties: {
+                file: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The file to upload'
+                }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                success: true,
+                error: null,
+                documents: [{
+                  "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                  "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                  "url": "file:///Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
+                  "title": "anythingllm.txt",
+                  "docAuthor": "Unknown",
+                  "description": "Unknown",
+                  "docSource": "a text file uploaded by the user.",
+                  "chunkSource": "anythingllm.txt",
+                  "published": "1/16/2024, 3:07:00 PM",
+                  "wordCount": 93,
+                  "token_count_estimate": 115
+                }]
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[500] = {
+        description: "Internal Server Error",
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                success: false,
+                error: "Document processing API is not online. Document will not be processed automatically."
+              }
+            }
+          }
+        }
+      }
+      */
+      try {
+        const { originalname } = request.file;
+        let folder = request.params?.folderName || "custom-documents";
+        folder = normalizePath(folder);
+        const targetFolderPath = path.join(documentsPath, folder);
+
+        if (
+          !isWithin(path.resolve(documentsPath), path.resolve(targetFolderPath))
+        )
+          throw new Error("Invalid folder name");
+        if (!fs.existsSync(targetFolderPath))
+          fs.mkdirSync(targetFolderPath, { recursive: true });
+
+        const Collector = new CollectorApi();
+        const processingOnline = await Collector.online();
+        if (!processingOnline) {
+          response
+            .status(500)
+            .json({
+              success: false,
+              error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
+            })
+            .end();
+          return;
+        }
+
+        // Process the uploaded document
+        const { success, reason, documents } =
+          await Collector.processDocument(originalname);
+        if (!success) {
+          response
+            .status(500)
+            .json({ success: false, error: reason, documents })
+            .end();
+          return;
+        }
+
+        // For each processed document, check if it is already in the desired folder.
+        // If not, move it using similar logic as in the move-files endpoint.
+        for (const doc of documents) {
+          const currentFolder = path.dirname(doc.location);
+          if (currentFolder !== folder) {
+            const sourcePath = path.join(
+              documentsPath,
+              normalizePath(doc.location)
+            );
+            const destinationPath = path.join(
+              targetFolderPath,
+              path.basename(doc.location)
+            );
+
+            if (
+              !isWithin(documentsPath, sourcePath) ||
+              !isWithin(documentsPath, destinationPath)
+            )
+              throw new Error("Invalid file location");
+
+            fs.renameSync(sourcePath, destinationPath);
+            doc.location = path.join(folder, path.basename(doc.location));
+            doc.name = path.basename(doc.location);
+          }
+        }
+
+        Collector.log(
+          `Document ${originalname} uploaded, processed, and moved to folder ${folder} successfully.`
+        );
+
+        await Telemetry.sendTelemetry("document_uploaded");
+        await EventLogs.logEvent("api_document_uploaded", {
+          documentName: originalname,
+          folder,
+        });
+        response.status(200).json({ success: true, error: null, documents });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
     "/v1/document/upload-link",
     [validApiKey],
     async (request, response) => {
@@ -159,7 +321,7 @@ function apiDocumentEndpoints(app) {
                   "description": "No description found.",
                   "docSource": "URL link uploaded by the user.",
                   "chunkSource": "https:anythingllm.com.html",
-                  "published": "1/16/2024, 3:46:33 PM",
+                  "published": "1/16/2024, 3:46:33 PM",
                   "wordCount": 252,
                   "pageContent": "AnythingLLM is the best....",
                   "token_count_estimate": 447,
@@ -262,7 +424,7 @@ function apiDocumentEndpoints(app) {
                   "description": "No description found.",
                   "docSource": "My custom description set during upload",
                   "chunkSource": "no chunk source specified",
-                  "published": "1/16/2024, 3:46:33 PM",
+                  "published": "1/16/2024, 3:46:33 PM",
                   "wordCount": 252,
                   "pageContent": "AnythingLLM is the best....",
                   "token_count_estimate": 447,
@@ -394,6 +556,66 @@ function apiDocumentEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.get(
+    "/v1/documents/folder/:folderName",
+    [validApiKey],
+    async (request, response) => {
+      /*
+    #swagger.tags = ['Documents']
+    #swagger.description = 'Get all documents stored in a specific folder.'
+    #swagger.parameters['folderName'] = {
+      in: 'path',
+      description: 'Name of the folder to retrieve documents from',
+      required: true,
+      type: 'string'
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              folder: "custom-documents",
+              documents: [
+                {
+                  name: "document1.json",
+                  type: "file",
+                  cached: false,
+                  pinnedWorkspaces: [],
+                  watched: false,
+                  more: "data",
+                },
+                {
+                  name: "document2.json",
+                  type: "file",
+                  cached: false,
+                  pinnedWorkspaces: [],
+                  watched: false,
+                  more: "data",
+                },
+              ]
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+      try {
+        const { folderName } = request.params;
+        const result = await getDocumentsByFolder(folderName);
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 
   app.get(
     "/v1/document/accepted-file-types",

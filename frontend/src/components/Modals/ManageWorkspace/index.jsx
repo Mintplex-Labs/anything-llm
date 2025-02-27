@@ -44,7 +44,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
           <div className="relative p-6 border-b rounded-t border-theme-modal-border">
             <div className="w-full flex gap-x-2 items-center">
               <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-                {t('connectors.manage.editing')} "{workspace.name}"
+                {t("connectors.manage.editing")} "{workspace.name}"
               </h3>
             </div>
             <button
@@ -61,7 +61,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
           >
             <div className="py-7 px-9 space-y-2 flex-col">
               <p className="text-white">
-                {t('connectors.manage.desktop-only')}
+                {t("connectors.manage.desktop-only")}
               </p>
             </div>
           </div>
@@ -71,7 +71,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
               type="button"
               className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
             >
-              {t('connectors.manage.dismiss')}
+              {t("connectors.manage.dismiss")}
             </button>
           </div>
         </div>
@@ -127,7 +127,7 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
               : "text-white/20 font-medium hover:text-white light:bg-white light:text-[#535862] light:hover:bg-[#E0F2FE]"
           }`}
         >
-          {t('connectors.manage.documents')}
+          {t("connectors.manage.documents")}
         </button>
         <button
           onClick={() => setSelectedTab("dataConnectors")}
@@ -137,7 +137,7 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
               : "text-white/20 font-medium hover:text-white light:bg-white light:text-[#535862] light:hover:bg-[#E0F2FE]"
           }`}
         >
-          {t('connectors.manage.data-connectors')}
+          {t("connectors.manage.data-connectors")}
         </button>
       </div>
     </div>

@@ -37,7 +37,9 @@ const fileAPIUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = normalizePath(file.originalname);
+    file.originalname = normalizePath(
+      Buffer.from(file.originalname, "latin1").toString("utf8")
+    );
     cb(null, file.originalname);
   },
 });

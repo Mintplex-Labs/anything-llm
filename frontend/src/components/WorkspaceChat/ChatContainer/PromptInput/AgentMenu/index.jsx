@@ -12,8 +12,8 @@ export default function AvailableAgentsButton({ showing, setShowAgents }) {
     <div
       id="agent-list-btn"
       data-tooltip-id="tooltip-agent-list-btn"
-      data-tooltip-content={t('chat_window.agents')}
-      aria-label={t('chat_window.agents')}
+      data-tooltip-content={t("chat_window.agents")}
+      aria-label={t("chat_window.agents")}
       onClick={() => setShowAgents(!showing)}
       className={`flex justify-center items-center cursor-pointer ${
         showing ? "!opacity-100" : ""
