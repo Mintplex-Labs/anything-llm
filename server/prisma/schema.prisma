@@ -68,6 +68,7 @@ model users {
   createdAt                   DateTime                      @default(now())
   lastUpdatedAt               DateTime                      @default(now())
   dailyMessageLimit           Int?
+  bio                         String?                       @default("")
   workspace_chats             workspace_chats[]
   workspace_users             workspace_users[]
   embed_configs               embed_configs[]
