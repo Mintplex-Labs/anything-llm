@@ -507,7 +507,6 @@ const TRANSLATIONS = {
     vector: "Vektordatenbank",
     anonymous: "Anonyme Telemetrie aktiviert",
   },
-
   connectors: {
     "search-placeholder": "Datenverbindungen durchsuchen",
     "no-connectors": "Keine Datenverbindungen gefunden.",
@@ -629,7 +628,6 @@ const TRANSLATIONS = {
       task_explained:
         "Sobald der Vorgang abgeschlossen ist, ist der Seiteninhalt im Dokumenten-Picker zur Einbettung in Arbeitsbereiche verfügbar.",
     },
-
     manage: {
       documents: "Dokumente",
       "data-connectors": "Datenverbindungen",
@@ -697,7 +695,6 @@ const TRANSLATIONS = {
       accept: "Alles klar, ich habe es verstanden.",
     },
   },
-
   chat_window: {
     welcome: "Willkommen zu deinem Arbeitsbereich.",
     get_started: "Starte mit ",
@@ -713,7 +710,6 @@ const TRANSLATIONS = {
     microphone: "Spreche deinen Prompt ein.",
     send: "Versende den Prompt an den Arbeitsbereich.",
   },
-
   profile_settings: {
     edit_account: "Account bearbeiten",
     profile_picture: "Profilbild",
