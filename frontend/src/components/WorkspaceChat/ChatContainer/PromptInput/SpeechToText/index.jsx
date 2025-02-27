@@ -36,7 +36,7 @@ export default function SpeechToText({ sendCommand }) {
     });
   }
 
-  function endTTSSession() {
+  function endSTTSession() {
     SpeechRecognition.stopListening();
     if (transcript.length > 0) {
       sendCommand(transcript, true);
@@ -50,18 +50,18 @@ export default function SpeechToText({ sendCommand }) {
     (event) => {
       if (event.ctrlKey && event.keyCode === 77) {
         if (listening) {
-          endTTSSession();
+          endSTTSession();
         } else {
           startSTTSession();
         }
       }
     },
-    [listening, endTTSSession, startSTTSession]
+    [listening, endSTTSession, startSTTSession]
   );
 
   function handlePromptUpdate(e) {
     if (!e?.detail && timeout) {
-      endTTSSession();
+      endSTTSession();
       clearTimeout(timeout);
     }
   }
@@ -85,7 +85,7 @@ export default function SpeechToText({ sendCommand }) {
       sendCommand(transcript, false);
       clearTimeout(timeout);
       timeout = setTimeout(() => {
-        endTTSSession();
+        endSTTSession();
       }, SILENCE_INTERVAL);
     }
   }, [transcript, listening]);
@@ -97,7 +97,7 @@ export default function SpeechToText({ sendCommand }) {
       data-tooltip-id="tooltip-text-size-btn"
       data-tooltip-content="Speak your prompt"
       aria-label="Speak your prompt"
-      onClick={listening ? endTTSSession : startSTTSession}
+      onClick={listening ? endSTTSession : startSTTSession}
       className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${
         !!listening ? "!opacity-100" : ""
       }`}

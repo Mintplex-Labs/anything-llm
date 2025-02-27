@@ -29,6 +29,7 @@ import Vietnamese from "./vn/common.js";
 import TraditionalChinese from "./zh_TW/common.js";
 import Farsi from "./fa/common.js";
 import Turkish from "./tr/common.js";
+import Arabic from "./ar/common.js";
 
 export const defaultNS = "common";
 export const resources = {
@@ -76,5 +77,8 @@ export const resources = {
   },
   tr: {
     common: Turkish,
+  },
+  ar: {
+    common: Arabic,
   },
 };
