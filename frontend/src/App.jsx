@@ -68,6 +68,7 @@ const LiveDocumentSyncManage = lazy(
   () => import("@/pages/Admin/ExperimentalFeatures/Features/LiveSync/manage")
 );
 const AgentBuilder = lazy(() => import("@/pages/Admin/AgentBuilder"));
+const SystemVariables = lazy(() => import("@/pages/Admin/SystemVariables"));
 
 const CommunityHubTrending = lazy(
   () => import("@/pages/GeneralSettings/CommunityHub/Trending")
@@ -194,6 +195,10 @@ export default function App() {
                   <Route
                     path="/settings/api-keys"
                     element={<AdminRoute Component={GeneralApiKeys} />}
+                  />
+                  <Route
+                    path="/settings/system-variables"
+                    element={<AdminRoute Component={SystemVariables} />}
                   />
                   <Route
                     path="/settings/browser-extension"

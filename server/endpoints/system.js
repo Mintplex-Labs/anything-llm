@@ -56,6 +56,7 @@ const {
 } = require("../utils/middleware/chatHistoryViewable");
 const { simpleSSOEnabled } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
+const { SystemVariables } = require("../models/systemVariables");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -1219,6 +1220,131 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error("Error deleting slash command preset:", error);
         response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.get(
+    "/system/variables",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const variables = await SystemVariables.getAllWithDynamic(user?.id);
+        response.status(200).json({ variables });
+      } catch (error) {
+        console.error("Error fetching system variables:", error.message);
+        response.status(500).json({
+          success: false,
+          error: "Failed to fetch system variables",
+        });
+      }
+    }
+  );
+
+  app.post(
+    "/system/variables",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { key, value, description, type } = reqBody(request);
+
+        if (!key || !value) {
+          return response.status(400).json({
+            success: false,
+            error: "Key and value are required"
+          });
+        }
+
+        const variable = await SystemVariables.create({
+          key,
+          value,
+          description,
+          type: type || "user",
+          userId: user?.id || null,
+        });
+
+        response.status(200).json({
+          success: true,
+          variable
+        });
+      } catch (error) {
+        console.error("Error creating system variable:", error.message);
+        response.status(500).json({
+          success: false,
+          error: "Failed to create system variable",
+        });
+      }
+    }
+  );
+
+  app.put(
+    "/system/variables/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const { key, value, description } = reqBody(request);
+
+        if (!key || !value) {
+          return response.status(400).json({
+            success: false,
+            error: "Key and value are required"
+          });
+        }
+
+        const variable = await SystemVariables.update(Number(id), {
+          key,
+          value,
+          description,
+        });
+
+        if (!variable) {
+          return response.status(404).json({
+            success: false,
+            error: "Variable not found"
+          });
+        }
+
+        response.status(200).json({
+          success: true,
+          variable
+        });
+      } catch (error) {
+        console.error("Error updating system variable:", error.message);
+        response.status(500).json({
+          success: false,
+          error: "Failed to update system variable",
+        });
+      }
+    }
+  );
+
+  app.delete(
+    "/system/variables/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const success = await SystemVariables.delete(Number(id));
+
+        if (!success) {
+          return response.status(404).json({
+            success: false,
+            error: "Variable not found or could not be deleted"
+          });
+        }
+
+        response.status(200).json({
+          success: true
+        });
+      } catch (error) {
+        console.error("Error deleting system variable:", error.message);
+        response.status(500).json({
+          success: false,
+          error: "Failed to delete system variable",
+        });
       }
     }
   );

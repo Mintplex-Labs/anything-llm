@@ -736,9 +736,86 @@ const System = {
       });
   },
 
-  experimentalFeatures: {
+  experimental: {
     liveSync: LiveDocumentSync,
     agentPlugins: AgentPlugins,
+  },
+
+  getSystemVariables: async function() {
+    try {
+      const response = await fetch(`${API_BASE}/system/variables`, {
+        method: "GET",
+        headers: baseHeaders(),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+      return { variables: [] };
+    } catch (error) {
+      console.error("Error fetching system variables:", error);
+      return { variables: [] };
+    }
+  },
+
+  createSystemVariable: async function(variable) {
+    try {
+      const response = await fetch(`${API_BASE}/system/variables`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify(variable),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+      const error = await response.json();
+      return { success: false, error };
+    } catch (error) {
+      console.error("Error creating system variable:", error);
+      return { success: false, error };
+    }
+  },
+
+  updateSystemVariable: async function(id, variable) {
+    try {
+      const response = await fetch(`${API_BASE}/system/variables/${id}`, {
+        method: "PUT",
+        headers: baseHeaders(),
+        body: JSON.stringify(variable),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+      const error = await response.json();
+      return { success: false, error };
+    } catch (error) {
+      console.error("Error updating system variable:", error);
+      return { success: false, error };
+    }
+  },
+
+  deleteSystemVariable: async function(id) {
+    try {
+      const response = await fetch(`${API_BASE}/system/variables/${id}`, {
+        method: "DELETE",
+        headers: baseHeaders(),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+      const error = await response.json();
+      return { success: false, error };
+    } catch (error) {
+      console.error("Error deleting system variable:", error);
+      return { success: false, error };
+    }
   },
 };
 
