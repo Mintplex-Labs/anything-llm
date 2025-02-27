@@ -50,9 +50,9 @@ export default function AccountModal({ user, hideModal }) {
     const { success, error } = await System.updateUser(data);
     if (success) {
       let storedUser = JSON.parse(localStorage.getItem(AUTH_USER));
-
       if (storedUser) {
         storedUser.username = data.username;
+        storedUser.bio = data.bio;
         localStorage.setItem(AUTH_USER, JSON.stringify(storedUser));
       }
       showToast("Profile updated.", "success", { clear: true });
@@ -163,6 +163,20 @@ export default function AccountModal({ user, hideModal }) {
                 <p className="mt-2 text-xs text-white/60">
                   Password must be at least 8 characters long
                 </p>
+              </div>
+              <div>
+                <label
+                  htmlFor="bio"
+                  className="block mb-2 text-sm font-medium text-white"
+                >
+                  Bio
+                </label>
+                <textarea
+                  name="bio"
+                  className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder border-gray-500 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 min-h-[100px] resize-y"
+                  placeholder="Tell us about yourself..."
+                  defaultValue={user.bio}
+                />
               </div>
               <div className="flex flex-row gap-x-8">
                 <ThemePreference />
