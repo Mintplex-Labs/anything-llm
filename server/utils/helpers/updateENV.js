@@ -978,6 +978,9 @@ function dumpENV() {
 
     // Nvidia NIM Keys that are automatically managed
     "NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT",
+
+    // OCR Language Support
+    "TARGET_OCR_LANG",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
