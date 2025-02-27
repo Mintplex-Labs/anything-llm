@@ -20,6 +20,7 @@ const ApiPieProvider = require("./apipie.js");
 const XAIProvider = require("./xai.js");
 const NovitaProvider = require("./novita.js");
 const NvidiaNimProvider = require("./nvidiaNim.js");
+const GiteeAIProvider = require("./giteeai.js");
 
 module.exports = {
   OpenAIProvider,
@@ -44,4 +45,5 @@ module.exports = {
   XAIProvider,
   NovitaProvider,
   NvidiaNimProvider,
+  GiteeAIProvider,
 };

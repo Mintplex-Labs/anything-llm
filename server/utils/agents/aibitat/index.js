@@ -795,6 +795,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.XAIProvider({ model: config.model });
       case "novita":
         return new Providers.NovitaProvider({ model: config.model });
+      case "giteeai":
+        return new Providers.GiteeAIProvider({ model: config.model });
 
       default:
         throw new Error(

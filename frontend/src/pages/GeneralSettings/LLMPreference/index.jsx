@@ -30,6 +30,7 @@ import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
+import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -57,6 +58,7 @@ import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
+import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -288,6 +290,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <XAILLMOptions settings={settings} />,
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
     requiredConfig: ["XAIApiKey", "XAIModelPref"],
+  },
+  {
+    name: "GiteeAI",
+    value: "giteeai",
+    logo: GiteeAILogo,
+    options: (settings) => <GiteeAIOptions settings={settings} />,
+    description: "Run GiteeAI's powerful LLMs.",
+    requiredConfig: ["GiteeAIApiKey"],
   },
 ];
 
