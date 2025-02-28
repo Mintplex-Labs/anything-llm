@@ -1253,7 +1253,7 @@ function systemEndpoints(app) {
         if (!key || !value) {
           return response.status(400).json({
             success: false,
-            error: "Key and value are required"
+            error: "Key and value are required",
           });
         }
 
@@ -1267,7 +1267,7 @@ function systemEndpoints(app) {
 
         response.status(200).json({
           success: true,
-          variable
+          variable,
         });
       } catch (error) {
         console.error("Error creating system variable:", error.message);
@@ -1290,7 +1290,7 @@ function systemEndpoints(app) {
         if (!key || !value) {
           return response.status(400).json({
             success: false,
-            error: "Key and value are required"
+            error: "Key and value are required",
           });
         }
 
@@ -1303,13 +1303,13 @@ function systemEndpoints(app) {
         if (!variable) {
           return response.status(404).json({
             success: false,
-            error: "Variable not found"
+            error: "Variable not found",
           });
         }
 
         response.status(200).json({
           success: true,
-          variable
+          variable,
         });
       } catch (error) {
         console.error("Error updating system variable:", error.message);
@@ -1332,12 +1332,12 @@ function systemEndpoints(app) {
         if (!success) {
           return response.status(404).json({
             success: false,
-            error: "Variable not found or could not be deleted"
+            error: "Variable not found or could not be deleted",
           });
         }
 
         response.status(200).json({
-          success: true
+          success: true,
         });
       } catch (error) {
         console.error("Error deleting system variable:", error.message);

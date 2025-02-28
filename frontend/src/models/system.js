@@ -741,7 +741,7 @@ const System = {
     agentPlugins: AgentPlugins,
   },
 
-  getSystemVariables: async function() {
+  getSystemVariables: async function () {
     try {
       const response = await fetch(`${API_BASE}/system/variables`, {
         method: "GET",
@@ -759,7 +759,7 @@ const System = {
     }
   },
 
-  createSystemVariable: async function(variable) {
+  createSystemVariable: async function (variable) {
     try {
       const response = await fetch(`${API_BASE}/system/variables`, {
         method: "POST",
@@ -779,7 +779,7 @@ const System = {
     }
   },
 
-  updateSystemVariable: async function(id, variable) {
+  updateSystemVariable: async function (id, variable) {
     try {
       const response = await fetch(`${API_BASE}/system/variables/${id}`, {
         method: "PUT",
@@ -799,7 +799,7 @@ const System = {
     }
   },
 
-  deleteSystemVariable: async function(id) {
+  deleteSystemVariable: async function (id) {
     try {
       const response = await fetch(`${API_BASE}/system/variables/${id}`, {
         method: "DELETE",

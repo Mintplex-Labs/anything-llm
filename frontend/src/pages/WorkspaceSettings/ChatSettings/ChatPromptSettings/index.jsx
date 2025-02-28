@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import { chatPrompt } from "@/utils/chat";
 import { useTranslation } from "react-i18next";
-import { Plus } from "@phosphor-icons/react";
-import VariableAutocomplete from "@/components/VariableAutocomplete";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import VariableAutoComplete from "./VariableAutoComplete";
 
 export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const { t } = useTranslation();
   const [showVariables, setShowVariables] = useState(false);
   const [variables, setVariables] = useState([]);
-  const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
+  const [cursorPosition, setCursorPosition] = useState(null);
   const [promptValue, setPromptValue] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const textareaRef = useRef(null);
+  const measureRef = useRef(null);
 
   useEffect(() => {
-    // Initialize prompt value
     setPromptValue(chatPrompt(workspace));
   }, [workspace]);
 
@@ -32,24 +32,88 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
     fetchVariables();
   }, []);
 
+  useEffect(() => {
+    if (showVariables) {
+      updateCursorPosition();
+      requestAnimationFrame(updateCursorPosition);
+    }
+  }, [showVariables]);
+
+  const updateCursorPosition = () => {
+    if (!textareaRef.current || !showVariables || !measureRef.current) return;
+
+    const textarea = textareaRef.current;
+    const measure = measureRef.current;
+    const { selectionStart } = textarea;
+    const text = textarea.value.substring(0, selectionStart);
+    const textBeforeCursor = text.split("\n").pop() || "";
+
+    // Update the measuring span with the text
+    measure.textContent = textBeforeCursor;
+
+    // Get positions
+    const textareaRect = textarea.getBoundingClientRect();
+    const measureRect = measure.getBoundingClientRect();
+    const computedStyle = window.getComputedStyle(textarea);
+    const lineHeight =
+      parseInt(computedStyle.lineHeight) ||
+      parseInt(computedStyle.fontSize) * 1.2;
+
+    // Calculate the number of lines
+    const lines = text.split("\n");
+    const currentLineIndex = lines.length - 1;
+
+    setCursorPosition({
+      top:
+        textareaRect.top + currentLineIndex * lineHeight - textarea.scrollTop,
+      left: textareaRect.left + measureRect.width,
+    });
+  };
+
   const handleKeyDown = (e) => {
+    if (
+      showVariables &&
+      ["ArrowUp", "ArrowDown", "Enter", "Tab"].includes(e.key)
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      return; // Let the menu handle these keys
+    }
+
     if (e.key === "{") {
-      const rect = e.target.getBoundingClientRect();
-      const selectionStart = e.target.selectionStart;
-      const textBeforeCursor = e.target.value.substring(0, selectionStart);
-      const lastLineBreak = textBeforeCursor.lastIndexOf("\n");
-      const currentLineText = textBeforeCursor.substring(lastLineBreak + 1);
+      e.preventDefault();
+      const textarea = e.target;
+      const { selectionStart } = textarea;
 
-      // Calculate position for the autocomplete popup
-      const lineHeight = 20; // Approximate line height
-      const lineCount = (textBeforeCursor.match(/\n/g) || []).length;
-      const top = rect.top + lineCount * lineHeight + 30; // 30px offset for padding
-      const left = rect.left + currentLineText.length * 8; // 8px per character (approximate)
-
-      setCursorPosition({ top, left });
+      // Insert the bracket
+      const textBeforeCursor = textarea.value.substring(0, selectionStart);
+      const newValue =
+        textBeforeCursor + "{" + textarea.value.substring(selectionStart);
+      setPromptValue(newValue);
       setShowVariables(true);
+      setSearchTerm("");
     } else if (e.key === "Escape") {
       setShowVariables(false);
+    } else if (showVariables && e.key !== "Enter" && e.key !== "Tab") {
+      requestAnimationFrame(() => {
+        const textarea = e.target;
+        const cursorPos = textarea.selectionStart;
+        const textBefore = textarea.value.substring(0, cursorPos);
+        const lastOpenBrace = textBefore.lastIndexOf("{");
+        if (lastOpenBrace >= 0) {
+          const newSearchTerm = textBefore.substring(lastOpenBrace + 1);
+          setSearchTerm(newSearchTerm);
+        }
+        updateCursorPosition();
+      });
+    }
+  };
+
+  const handleChange = (e) => {
+    setPromptValue(e.target.value);
+    setHasChanges(true);
+    if (showVariables) {
+      requestAnimationFrame(updateCursorPosition);
     }
   };
 
@@ -60,41 +124,21 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
     const cursorPos = textarea.selectionStart;
     const textBefore = textarea.value.substring(0, cursorPos);
     const textAfter = textarea.value.substring(cursorPos);
+    const lastOpenBrace = textBefore.lastIndexOf("{");
 
-    // Insert the variable at cursor position
-    const newValue = `${textBefore}{${variable.key}}${textAfter}`;
-    textarea.value = newValue;
+    // Replace from the last open brace to cursor with the selected variable
+    const newValue =
+      textBefore.substring(0, lastOpenBrace) + `{${variable.key}}` + textAfter;
+
     setPromptValue(newValue);
-
-    // Update cursor position after the inserted variable
-    const newCursorPos = cursorPos + variable.key.length + 2; // +2 for the braces
-    textarea.selectionStart = newCursorPos;
-    textarea.selectionEnd = newCursorPos;
-
-    // Focus back on textarea and trigger change event
-    textarea.focus();
     setHasChanges(true);
     setShowVariables(false);
-  };
 
-  const handleChange = (e) => {
-    setPromptValue(e.target.value);
-    setHasChanges(true);
-  };
-
-  // Function to highlight variables in the displayed text
-  const getHighlightedText = () => {
-    if (!promptValue) return "";
-
-    // Replace variables with highlighted spans
-    return promptValue.replace(/\{([^}]+)\}/g, (match, variable) => {
-      const isKnownVariable = variables.some(v => v.key === variable);
-      const className = isKnownVariable
-        ? "bg-primary-button/20 text-primary-button"
-        : "bg-yellow-500/20 text-yellow-500";
-
-      return `<span class="${className} px-1 rounded">${match}</span>`;
-    });
+    // Set cursor position after the inserted variable
+    const newCursorPos = lastOpenBrace + variable.key.length + 2;
+    textarea.selectionStart = newCursorPos;
+    textarea.selectionEnd = newCursorPos;
+    textarea.focus();
   };
 
   return (
@@ -106,27 +150,36 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           {t("chat.prompt.description")}
         </p>
-        <div className="text-white text-opacity-60 text-xs font-medium mb-2">
-          <span>Available variables: </span>
+        <p className="text-white text-opacity-60 text-xs font-medium mb-2">
+          Type &ldquo;&#123;&rdquo; to insert variables like:{" "}
           {variables.slice(0, 3).map((v, i) => (
-            <span key={v.key} className="bg-theme-settings-input-bg px-1 py-0.5 rounded mx-1">
+            <span
+              key={v.key}
+              className="bg-theme-settings-input-bg px-1 py-0.5 rounded mx-1"
+            >
               {`{${v.key}}`}
             </span>
           ))}
-          {variables.length > 3 && <span>and {variables.length - 3} more...</span>}
-          <button
-            className="ml-2 text-primary-button hover:text-primary-button-hover"
-            onClick={() => {
-              setCursorPosition({ top: 100, left: 100 });
-              setShowVariables(true);
-            }}
-          >
-            <Plus size={14} className="inline" /> Insert variable
-          </button>
-        </div>
+          {variables.length > 3 && (
+            <span>and {variables.length - 3} more...</span>
+          )}
+        </p>
       </div>
 
       <div className="relative">
+        <span
+          ref={measureRef}
+          aria-hidden="true"
+          className="absolute invisible whitespace-pre text-sm"
+          style={{
+            padding: "0",
+            border: "0",
+            font: "inherit",
+            whiteSpace: "pre",
+            overflow: "hidden",
+          }}
+        />
+
         <textarea
           ref={textareaRef}
           name="openAiPrompt"
@@ -141,21 +194,16 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           onKeyDown={handleKeyDown}
         />
 
-        {/* Overlay to show highlighted variables */}
-        <div
-          className="absolute top-0 left-0 w-full h-full pointer-events-none p-2.5 mt-2 text-sm"
-          dangerouslySetInnerHTML={{ __html: getHighlightedText() }}
-        />
+        {showVariables && cursorPosition && (
+          <VariableAutoComplete
+            variables={variables}
+            onSelect={handleVariableSelect}
+            position={cursorPosition}
+            onClose={() => setShowVariables(false)}
+            searchTerm={searchTerm}
+          />
+        )}
       </div>
-
-      {showVariables && (
-        <VariableAutocomplete
-          variables={variables}
-          onSelect={handleVariableSelect}
-          position={cursorPosition}
-          onClose={() => setShowVariables(false)}
-        />
-      )}
     </div>
   );
 }

@@ -49,7 +49,8 @@ export default function SystemVariables() {
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              System variables are used to store configuration values that can be referenced in your prompts.
+              System variables are used to store configuration values that can
+              be referenced in your prompts.
             </p>
           </div>
 

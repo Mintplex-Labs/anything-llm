@@ -64,16 +64,16 @@ export default function VariableRow({ variable, onRefresh }) {
             ? variable.value()
             : variable.value}
         </td>
-        <td className="px-6 py-4">
-          {variable.description || "-"}
-        </td>
+        <td className="px-6 py-4">{variable.description || "-"}</td>
         <td className="px-6 py-4">
           <span
             className={`rounded-full ${colorTheme.bg} px-2 py-0.5 text-xs leading-5 font-semibold ${colorTheme.text} shadow-sm`}
           >
-            {variable.type === "system" ? "System" :
-             variable.type === "dynamic" ? "Dynamic" :
-             "User"}
+            {variable.type === "system"
+              ? "System"
+              : variable.type === "dynamic"
+                ? "Dynamic"
+                : "User"}
           </span>
         </td>
         <td className="px-6 py-4 flex items-center justify-end gap-x-6">
