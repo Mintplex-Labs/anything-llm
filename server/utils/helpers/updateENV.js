@@ -615,6 +615,16 @@ const KEY_MAPPING = {
       },
     ],
   },
+
+  // PPIO Options
+  PPIOApiKey: {
+    envKey: "PPIO_API_KEY",
+    checks: [isNotEmpty],
+  },
+  PPIOModelPref: {
+    envKey: "PPIO_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -721,6 +731,7 @@ function supportedLLM(input = "") {
     "apipie",
     "xai",
     "nvidia-nim",
+    "ppio",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -967,6 +978,9 @@ function dumpENV() {
 
     // Nvidia NIM Keys that are automatically managed
     "NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT",
+
+    // OCR Language Support
+    "TARGET_OCR_LANG",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
