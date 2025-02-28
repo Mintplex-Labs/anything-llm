@@ -12,6 +12,7 @@ const { GeminiLLM } = require("../AiProviders/gemini");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
+  "anthropic",
   "localai",
   "ollama",
   "togetherai",
@@ -40,6 +41,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
   switch (provider) {
     case "openai":
       return await openAiModels(apiKey);
+    case "anthropic":
+      return await anthropicModels(apiKey);
     case "localai":
       return await localAIModels(basePath, apiKey);
     case "ollama":
@@ -183,6 +186,36 @@ async function openAiModels(apiKey = null) {
   if ((gpts.length > 0 || customModels.length > 0) && !!apiKey)
     process.env.OPEN_AI_KEY = apiKey;
   return { models: [...gpts, ...customModels], error: null };
+}
+
+async function anthropicModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.ANTHROPIC_API_KEY
+      : _apiKey || process.env.ANTHROPIC_API_KEY || null;
+  const AnthropicAI = require("@anthropic-ai/sdk");
+  const anthropic = new AnthropicAI({ apiKey });
+  const models = await anthropic.models
+    .list()
+    .then((results) => results.data)
+    .then((models) => {
+      return models
+        .filter((model) => model.type === "model")
+        .map((model) => {
+          return {
+            id: model.id,
+            name: model.display_name,
+          };
+        });
+    })
+    .catch((e) => {
+      console.error(`Anthropic:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.ANTHROPIC_API_KEY = apiKey;
+  return { models, error: null };
 }
 
 async function localAIModels(basePath = null, apiKey = null) {
