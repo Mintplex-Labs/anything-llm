@@ -7,6 +7,7 @@ const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const { fetchNovitaModels } = require("../AiProviders/novita");
 const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
+const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 
 const SUPPORT_CUSTOM_MODELS = [
@@ -29,6 +30,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "novita",
   "xai",
   "gemini",
+  "ppio",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -74,6 +76,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getNvidiaNimModels(basePath);
     case "gemini":
       return await getGeminiModels(apiKey);
+    case "ppio":
+      return await getPPIOModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -568,6 +572,19 @@ async function getGeminiModels(_apiKey = null) {
   const models = await GeminiLLM.fetchModels(apiKey);
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.GEMINI_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getPPIOModels() {
+  const ppioModels = await fetchPPIOModels();
+  if (!Object.keys(ppioModels).length === 0) return { models: [], error: null };
+  const models = Object.values(ppioModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
   return { models, error: null };
 }
 

@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -19,7 +20,6 @@ const TRANSLATIONS = {
       setPassword: "هل تريد إنشاء كلمة مرور ؟",
       passwordReq: "يجب أن تحتوي كلمة المرور على ثمانية حروف على الأقل",
       passwordWarn: "من المهم حفظ كلمة المرور هذه لأنه لا يمكن استردادها.",
-
       adminUsername: "اسم مستعمل حساب المشرف",
       adminUsernameReq:
         "يجب أن يكون اسم المستعمل بطول 6 أحرف على الأقل وأن يحتوي فقط على أحرف صغيرة وأرقام وشرطات سفلية وواصلات بدون مسافات.",
@@ -38,7 +38,6 @@ const TRANSLATIONS = {
       title: "مرحباً في إيني ثينك إلْلْمْ",
       description:
         " بما يتناسب مع احتياجاتك ساعدنا إذا أحببت في تصميم  إيني ثينك إلْلْمْ",
-
       email: "ما هو بريدك الالكتروني؟",
       useCase: "لماذا ستستخدم إيني ثينك إلْلْمْ؟",
       useCaseWork: "للعمل",
@@ -70,8 +69,6 @@ const TRANSLATIONS = {
     yes: "نعم",
     no: "لا",
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "إعدادات المثيل",
     system: "الإعدادات العامة",
@@ -101,8 +98,6 @@ const TRANSLATIONS = {
     "browser-extension": "ملحق المتصفح",
     "system-variables": "متغيرات النظام",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "مرحبا في",
@@ -126,7 +121,6 @@ const TRANSLATIONS = {
       "back-to-login": "العودة إلى تسجيل الدخول",
     },
   },
-
   welcomeMessage: {
     part1:
       "مرحبًا بك في إيني ثينك إلْلْ اِمْ ، إيني ثينك إلْلْ اِمْ هي أداة ذكاء اصطناعي مفتوحة المصدر من مينْتْ بْلِكْس تعمل على تحويل أي شيء إلى روبوت محادثة مدرب يمكنك الاستعلام منه والمحادثة معه. إيني ثينك إلْلْ اِمْ هو برنامج (احضر مفاتيحك الخاصة) لذا لا توجد اشتراكات أو رسوم أو تكاليف لهذا البرنامج خارج الخدمات التي تريد استخدامها معه.",
@@ -148,13 +142,10 @@ const TRANSLATIONS = {
     starOnGitHub: "ابدأ على جيثوب",
     contact: "اتصل ب مينْت بليكْس",
   },
-
   "new-workspace": {
     title: "مساحة عمل جديدة",
     placeholder: "مساحتي للعمل",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "الإعدادات العامة",
     chat: "إعدادات المحادثة",
@@ -162,8 +153,6 @@ const TRANSLATIONS = {
     members: "أعضاء",
     agent: "تكوين الوكيل",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "عدد المتجهات",
@@ -199,8 +188,6 @@ const TRANSLATIONS = {
         "لمساحة العمل. سيؤدي هذا إلى إزالة جميع تضمينات المتجهات في قاعدة بيانات المتجهات الخاصة بك.\n\nستظل ملفات المصدر الأصلية دون مساس. هذا الإجراء لا رجعة فيه.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "موفر نموذج التعلم العميق لمساحة العمل",
@@ -258,8 +245,6 @@ const TRANSLATIONS = {
       hint: "لدى معظم نماذج التعلم العميق مجالات مقبولة مختلفة من القيم الصالحة. استشر موفر نموذج التعلم العميق الخاص بك للحصول على هذه المعلومات.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "معرف قاعدة بيانات المتجهة",
     snippets: {
@@ -286,8 +271,6 @@ const TRANSLATIONS = {
       success: "تم إعادة تعيين قاعدة بيانات متجهة مساحة العمل!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "يعتمد أداء نماذج التعلم العميق التي لا تدعم صراحةً استدعاء الأدوات بشكل كبير على قدرات النموذج ودقته. قد تكون بعض القدرات محدودة أو غير وظيفية.",
@@ -307,7 +290,6 @@ const TRANSLATIONS = {
         "نموذج نموذج التعلم العميق المحدد الذي سيتم استخدامه لوكيل الخاص بمساحة العمل هذه.",
       wait: "-- في انتظار النماذج --",
     },
-
     skill: {
       title: "مهارات الوكيل الافتراضية",
       description:
@@ -345,8 +327,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "محادثات مساحة العمل",
     description:
@@ -361,8 +341,6 @@ const TRANSLATIONS = {
       at: "أرسلت في",
     },
   },
-
-  // Appearance
   appearance: {
     title: "مظهر",
     description: "تخصيص إعدادات مظهر منصتك.",
@@ -392,8 +370,6 @@ const TRANSLATIONS = {
       link: "رابط",
     },
   },
-
-  // API Keys
   api: {
     title: " مفاتيح واجهة برمجة التطبيقات.",
     description:
@@ -406,14 +382,12 @@ const TRANSLATIONS = {
       created: "تم إنشاؤها",
     },
   },
-
   llm: {
     title: "تفضيل نموذج التعلم العميق",
     description:
       "هذه هي بيانات الاعتماد والإعدادات الخاصة بنموذج التعلم العميق للمحادثة وموفر التضمين المفضلين لديك . من المهم أن تكون هذه المفاتيح حديثة وصحيحة وإلا فلن يعمل برنامج إني ثينك إلْلْم بشكل صحيح.",
     provider: "موفر نموذج التعلم العميق",
   },
-
   transcription: {
     title: "تفضيل نموذج النسخ",
     description:
@@ -425,7 +399,6 @@ const TRANSLATIONS = {
       "نوصي بذاكرة وصول عشوائي بسعة 2 جيجابايت على الأقل وتحميل ملفات أقل من 10 ميجا بايت.",
     "warn-end": "سيتم تنزيل النموذج المدمج تلقائيًا عند الاستخدام الأول.",
   },
-
   embedding: {
     title: "تفضيل التضمين",
     "desc-start":
@@ -438,7 +411,6 @@ const TRANSLATIONS = {
         "لا يلزم إجراء أي إعداد عند استخدام محرك التضمين الأصلي الخاص بـ إني ثينك إلْلْمْ.",
     },
   },
-
   text: {
     title: "تقسيم النص وتفضيلات التقطيع",
     "desc-start":
@@ -454,15 +426,12 @@ const TRANSLATIONS = {
         "هذا هو الحد الأقصى لطول الأحرف التي يمكن أن تكون موجودة في متجهة واحدة.",
       recommend: "الحد الأقصى لطول نموذج التضمين هو",
     },
-
     overlap: {
       title: "تداخل قطعة النص",
       description:
         "هذا هو الحد الأقصى لتداخل الأحرف الذي يحدث أثناء تقطيع قطعتي نص متجاورتين.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "قاعدة بيانات المتجهة",
     description:
@@ -472,8 +441,6 @@ const TRANSLATIONS = {
       description: "ليست هناك حاجة تعيين إعدادات لانسديبي .",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "أدوات المحادثة القابلة للتضمين",
     description:
@@ -485,7 +452,6 @@ const TRANSLATIONS = {
       Active: "المجالات النشطة",
     },
   },
-
   "embed-chats": {
     title: "تضمين المحادثات",
     export: "تصدير",
@@ -499,7 +465,6 @@ const TRANSLATIONS = {
       at: "أرسلت في",
     },
   },
-
   multi: {
     title: "وضعية المستعملين المتعددين",
     description:
@@ -524,8 +489,6 @@ const TRANSLATIONS = {
       password: "كلمة مرور المثيل",
     },
   },
-
-  // Event Logs
   event: {
     title: "سجلات الحدث",
     description:
@@ -537,8 +500,6 @@ const TRANSLATIONS = {
       occurred: "حدث في",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "الخصوصية ومعالجة البيانات",
     description:
@@ -547,6 +508,183 @@ const TRANSLATIONS = {
     embedding: "تفضيلات التضمين",
     vector: "قاعدة بيانات المتجهة",
     anonymous: "تم تمكين القياس المستتر عن بعد ",
+  },
+  connectors: {
+    "search-placeholder": null,
+    "no-connectors": null,
+    github: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    gitlab: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_description: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      fetch_issues: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    youtube: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained_start: null,
+      URL_explained_link: null,
+      URL_explained_end: null,
+      task_explained: null,
+      language: null,
+      language_explained: null,
+      loading_languages: null,
+    },
+    "website-depth": {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      depth: null,
+      depth_explained: null,
+      max_pages: null,
+      max_pages_explained: null,
+      task_explained: null,
+    },
+    confluence: {
+      name: null,
+      description: null,
+      deployment_type: null,
+      deployment_type_explained: null,
+      base_url: null,
+      base_url_explained: null,
+      space_key: null,
+      space_key_explained: null,
+      username: null,
+      username_explained: null,
+      auth_type: null,
+      auth_type_explained: null,
+      auth_type_username: null,
+      auth_type_personal: null,
+      token: null,
+      token_explained_start: null,
+      token_explained_link: null,
+      token_desc: null,
+      pat_token: null,
+      pat_token_explained: null,
+      task_explained: null,
+    },
+    manage: {
+      documents: null,
+      "data-connectors": null,
+      "desktop-only": null,
+      dismiss: null,
+      editing: null,
+    },
+    directory: {
+      "my-documents": null,
+      "new-folder": null,
+      "search-document": null,
+      "no-documents": null,
+      "move-workspace": null,
+      name: null,
+      "delete-confirmation": null,
+      "removing-message": null,
+      "move-success": null,
+      date: null,
+      type: null,
+      no_docs: null,
+      select_all: null,
+      deselect_all: null,
+      remove_selected: null,
+      costs: null,
+      save_embed: null,
+    },
+    upload: {
+      "processor-offline": null,
+      "processor-offline-desc": null,
+      "click-upload": null,
+      "file-types": null,
+      "or-submit-link": null,
+      "placeholder-link": null,
+      fetching: null,
+      "fetch-website": null,
+      "privacy-notice": null,
+    },
+    pinning: {
+      what_pinning: null,
+      pin_explained_block1: null,
+      pin_explained_block2: null,
+      pin_explained_block3: null,
+      accept: null,
+    },
+    watching: {
+      what_watching: null,
+      watch_explained_block1: null,
+      watch_explained_block2: null,
+      watch_explained_block3_start: null,
+      watch_explained_block3_link: null,
+      watch_explained_block3_end: null,
+      accept: null,
+    },
+  },
+  chat_window: {
+    welcome: null,
+    get_started: null,
+    get_started_default: null,
+    upload: null,
+    or: null,
+    send_chat: null,
+    send_message: null,
+    attach_file: null,
+    slash: null,
+    agents: null,
+    text_size: null,
+    microphone: null,
+    send: null,
+  },
+  profile_settings: {
+    edit_account: null,
+    profile_picture: null,
+    remove_profile_picture: null,
+    username: null,
+    username_description: null,
+    new_password: null,
+    passwort_description: null,
+    cancel: null,
+    update_account: null,
+    theme: null,
+    language: null,
   },
 };
 

@@ -4,13 +4,15 @@ import { Tooltip } from "react-tooltip";
 import ResetCommand from "./reset";
 import EndAgentSession from "./endAgentSession";
 import SlashPresets from "./SlashPresets";
+import { useTranslation } from "react-i18next";
 
 export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
+  const { t } = useTranslation();
   return (
     <div
       id="slash-cmd-btn"
       data-tooltip-id="tooltip-slash-cmd-btn"
-      data-tooltip-content="View all available slash commands for chatting."
+      data-tooltip-content={t("chat_window.slash")}
       onClick={() => setShowSlashCommand(!showing)}
       className={`flex justify-center items-center cursor-pointer ${
         showing ? "!opacity-100" : ""

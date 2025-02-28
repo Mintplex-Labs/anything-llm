@@ -560,6 +560,10 @@ const SystemSettings = {
       NvidiaNimLLMBasePath: process.env.NVIDIA_NIM_LLM_BASE_PATH,
       NvidiaNimLLMModelPref: process.env.NVIDIA_NIM_LLM_MODEL_PREF,
       NvidiaNimLLMTokenLimit: process.env.NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT,
+
+      // PPIO API keys
+      PPIOApiKey: !!process.env.PPIO_API_KEY,
+      PPIOModelPref: process.env.PPIO_MODEL_PREF,
     };
   },
 
