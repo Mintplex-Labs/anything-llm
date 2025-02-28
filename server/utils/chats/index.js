@@ -3,6 +3,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
 const { convertToPromptHistory } = require("../helpers/chat/responses");
 const { SlashCommandPresets } = require("../../models/slashCommandsPresets");
+const { SystemVariables } = require("../../models/systemVariables");
 
 const VALID_COMMANDS = {
   "/reset": resetMemory,
@@ -58,11 +59,11 @@ async function recentChatHistory({
   return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
 }
 
-function chatPrompt(workspace) {
-  return (
+async function chatPrompt(workspace, user = null) {
+  const basePrompt =
     workspace?.openAiPrompt ??
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
-  );
+    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
+  return await SystemVariables.processString(basePrompt, user?.id);
 }
 
 // We use this util function to deduplicate sources from similarity searching

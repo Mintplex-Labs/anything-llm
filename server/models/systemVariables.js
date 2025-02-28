@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const moment = require("moment");
+const { SystemSettings } = require("./systemSettings");
 
 const SystemVariables = {
   // Static system variables that are always available
@@ -12,6 +13,7 @@ const SystemVariables = {
       },
       description: "Current time in HH:MM:SS format",
       type: "dynamic",
+      multiUserRequired: false,
     },
     {
       key: "date",
@@ -21,6 +23,7 @@ const SystemVariables = {
       },
       description: "Current date in YYYY-MM-DD format",
       type: "dynamic",
+      multiUserRequired: false,
     },
     {
       key: "datetime",
@@ -30,6 +33,7 @@ const SystemVariables = {
       },
       description: "Current date and time",
       type: "dynamic",
+      multiUserRequired: false,
     },
     // DESKTOP ONLY
     // {
@@ -58,6 +62,7 @@ const SystemVariables = {
       },
       description: "Current user's username",
       type: "dynamic",
+      multiUserRequired: true,
     },
     {
       key: "user.bio",
@@ -76,6 +81,7 @@ const SystemVariables = {
       },
       description: "Current user's bio information",
       type: "dynamic",
+      multiUserRequired: true,
     },
   ],
 
@@ -85,6 +91,7 @@ const SystemVariables = {
   },
 
   getAllWithDynamic: async function (userId = null) {
+    const multiUserMode = await SystemSettings.isMultiUserMode();
     const whereClause = {
       OR: [{ type: "system" }, { userId: null }],
     };
@@ -107,8 +114,13 @@ const SystemVariables = {
       userId: v.userId,
     }));
 
+    // Filter SYSTEM_VARIABLES based on multiUserMode
+    const filteredSystemVars = this.SYSTEM_VARIABLES.filter(
+      (v) => !v.multiUserRequired || multiUserMode
+    );
+
     // Combine with dynamic system variables
-    return [...formattedDbVars, ...this.SYSTEM_VARIABLES];
+    return [...formattedDbVars, ...filteredSystemVars];
   },
 
   create: async function ({
@@ -164,12 +176,10 @@ const SystemVariables = {
 
       // Find all variable patterns in the string
       const matches = str.match(/\{([^}]+)\}/g) || [];
-      console.log(`Found ${matches.length} variables to process in string`);
 
       // Process each match
       for (const match of matches) {
         const key = match.substring(1, match.length - 1); // Remove { and }
-        console.log(`Processing variable: ${key}`);
 
         // Handle user.X variables specially
         if (key.startsWith("user.")) {
@@ -181,14 +191,12 @@ const SystemVariables = {
               // For async functions, we need to await the result
               const value = await variable.value(userId);
               result = result.replace(match, value);
-              console.log(`Replaced user variable ${key} with value: ${value}`);
             } catch (error) {
               console.error(`Error processing user variable ${key}:`, error);
               result = result.replace(match, `[User ${userProp}]`);
             }
           } else {
             // Fallback if variable not found
-            console.log(`User variable ${key} not found, using fallback`);
             result = result.replace(match, `[User ${userProp}]`);
           }
           continue;
@@ -197,7 +205,6 @@ const SystemVariables = {
         // Handle regular variables
         const variable = allVariables.find((v) => v.key === key);
         if (!variable) {
-          console.log(`Variable ${key} not found, skipping`);
           continue;
         }
 
@@ -210,15 +217,9 @@ const SystemVariables = {
             if (variable.value.constructor.name === "AsyncFunction") {
               const value = await variable.value(userId);
               result = result.replace(match, value);
-              console.log(
-                `Replaced dynamic async variable ${key} with value: ${value}`
-              );
             } else {
               const value = variable.value();
               result = result.replace(match, value);
-              console.log(
-                `Replaced dynamic variable ${key} with value: ${value}`
-              );
             }
           } catch (error) {
             console.error(`Error processing dynamic variable ${key}:`, error);
@@ -226,12 +227,8 @@ const SystemVariables = {
           }
         } else {
           result = result.replace(match, variable.value || match);
-          console.log(
-            `Replaced static variable ${key} with value: ${variable.value || match}`
-          );
         }
       }
-
       return result;
     } catch (error) {
       console.error("Error in processString:", error);
