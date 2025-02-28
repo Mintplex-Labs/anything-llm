@@ -89,6 +89,7 @@ const TRANSLATIONS = {
     "experimental-features": "실험적 기능",
     contact: "지원팀 연락",
     "browser-extension": "브라우저 확장 프로그램",
+    "system-variables": "시스템 변수",
   },
   login: {
     "multi-user": {

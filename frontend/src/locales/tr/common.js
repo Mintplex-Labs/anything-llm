@@ -89,6 +89,7 @@ const TRANSLATIONS = {
     "experimental-features": "Deneysel Özellikler",
     contact: "Destekle İletişime Geçin",
     "browser-extension": "Tarayıcı Uzantısı",
+    "system-variables": "Sistem Değişkenleri",
   },
   login: {
     "multi-user": {

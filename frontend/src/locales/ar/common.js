@@ -99,6 +99,7 @@ const TRANSLATIONS = {
     "experimental-features": "الميزات التجريبية",
     contact: "اتصل بالدعم",
     "browser-extension": "ملحق المتصفح",
+    "system-variables": "متغيرات النظام",
   },
 
   // Page Definitions
