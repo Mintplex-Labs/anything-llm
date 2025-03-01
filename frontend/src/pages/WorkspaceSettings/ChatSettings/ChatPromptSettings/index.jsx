@@ -5,6 +5,24 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import VariableAutoComplete from "./VariableAutoComplete";
 
+// Helper function to find all variable matches in text
+function findVariableMatches(text, variables) {
+  const matches = [];
+  const regex = /\{([^}]+)\}/g;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    const isValid = variables.some(v => v.key === match[1]);
+    matches.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      value: match[0],
+      isValid
+    });
+  }
+  return matches;
+}
+
 export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const { t } = useTranslation();
   const [showVariables, setShowVariables] = useState(false);
@@ -14,6 +32,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const [searchTerm, setSearchTerm] = useState("");
   const textareaRef = useRef(null);
   const measureRef = useRef(null);
+  const overlayRef = useRef(null);
 
   useEffect(() => {
     setPromptValue(chatPrompt(workspace));
@@ -38,6 +57,21 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
       requestAnimationFrame(updateCursorPosition);
     }
   }, [showVariables]);
+
+  // Sync overlay scroll with textarea
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    const overlay = overlayRef.current;
+    if (!textarea || !overlay) return;
+
+    const syncScroll = () => {
+      overlay.scrollTop = textarea.scrollTop;
+      overlay.scrollLeft = textarea.scrollLeft;
+    };
+
+    textarea.addEventListener('scroll', syncScroll);
+    return () => textarea.removeEventListener('scroll', syncScroll);
+  }, []);
 
   const updateCursorPosition = () => {
     if (!textareaRef.current || !showVariables || !measureRef.current) return;
@@ -141,6 +175,53 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
     textarea.focus();
   };
 
+  // Create highlighted content
+  const renderHighlightedContent = () => {
+    const matches = findVariableMatches(promptValue, variables);
+    if (matches.length === 0) return promptValue;
+
+    let lastIndex = 0;
+    const elements = [];
+
+    matches.forEach((match, i) => {
+      // Add text before the match
+      if (match.start > lastIndex) {
+        elements.push(
+          <span key={`text-${i}`}>
+            {promptValue.slice(lastIndex, match.start)}
+          </span>
+        );
+      }
+
+      // Add the highlighted variable
+      elements.push(
+        <span
+          key={`var-${i}`}
+          className={`whitespace-pre ${
+            match.isValid
+              ? "bg-white text-black rounded"
+              : "bg-red-500/30 text-white border border-red-500 rounded"
+          }`}
+        >
+          {match.value}
+        </span>
+      );
+
+      lastIndex = match.end;
+    });
+
+    // Add any remaining text
+    if (lastIndex < promptValue.length) {
+      elements.push(
+        <span key="text-end">
+          {promptValue.slice(lastIndex)}
+        </span>
+      );
+    }
+
+    return elements;
+  };
+
   return (
     <div className="relative">
       <div className="flex flex-col">
@@ -180,19 +261,37 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           }}
         />
 
-        <textarea
-          ref={textareaRef}
-          name="openAiPrompt"
-          rows={5}
-          value={promptValue}
-          className="border-none bg-theme-settings-input-bg placeholder:text-theme-settings-input-placeholder text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
-          placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
-          required={true}
-          wrap="soft"
-          autoComplete="off"
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-        />
+        <div className="relative mt-2">
+          <div className="relative bg-theme-settings-input-bg rounded-lg">
+            <div
+              ref={overlayRef}
+              className="absolute inset-0 text-white text-sm whitespace-pre-wrap break-words pointer-events-none p-2.5 overflow-hidden"
+              style={{
+                font: 'inherit',
+                zIndex: 1
+              }}
+            >
+              {renderHighlightedContent()}
+            </div>
+
+            <textarea
+              ref={textareaRef}
+              name="openAiPrompt"
+              rows={5}
+              value={promptValue}
+              className="border-none bg-transparent placeholder:text-theme-settings-input-placeholder text-transparent text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+              required={true}
+              wrap="soft"
+              autoComplete="off"
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+              style={{
+                caretColor: 'white'
+              }}
+            />
+          </div>
+        </div>
 
         {showVariables && cursorPosition && (
           <VariableAutoComplete
