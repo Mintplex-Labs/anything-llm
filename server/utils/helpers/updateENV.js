@@ -52,7 +52,7 @@ const KEY_MAPPING = {
   },
   AnthropicModelPref: {
     envKey: "ANTHROPIC_MODEL_PREF",
-    checks: [isNotEmpty, validAnthropicModel],
+    checks: [isNotEmpty],
   },
 
   GeminiLLMApiKey: {
@@ -620,6 +620,16 @@ const KEY_MAPPING = {
       },
     ],
   },
+
+  // PPIO Options
+  PPIOApiKey: {
+    envKey: "PPIO_API_KEY",
+    checks: [isNotEmpty],
+  },
+  PPIOModelPref: {
+    envKey: "PPIO_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -734,6 +744,7 @@ function supportedLLM(input = "") {
     "apipie",
     "xai",
     "nvidia-nim",
+    "ppio",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -755,27 +766,6 @@ function validGeminiSafetySetting(input = "") {
   return validModes.includes(input)
     ? null
     : `Invalid Safety setting. Must be one of ${validModes.join(", ")}.`;
-}
-
-function validAnthropicModel(input = "") {
-  const validModels = [
-    "claude-instant-1.2",
-    "claude-2.0",
-    "claude-2.1",
-    "claude-3-haiku-20240307",
-    "claude-3-sonnet-20240229",
-    "claude-3-opus-latest",
-    "claude-3-5-haiku-latest",
-    "claude-3-5-haiku-20241022",
-    "claude-3-5-sonnet-latest",
-    "claude-3-5-sonnet-20241022",
-    "claude-3-5-sonnet-20240620",
-    "claude-3-7-sonnet-20250219",
-    "claude-3-7-sonnet-latest",
-  ];
-  return validModels.includes(input)
-    ? null
-    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
 }
 
 function supportedEmbeddingModel(input = "") {
@@ -980,6 +970,9 @@ function dumpENV() {
 
     // Nvidia NIM Keys that are automatically managed
     "NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT",
+
+    // OCR Language Support
+    "TARGET_OCR_LANG",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

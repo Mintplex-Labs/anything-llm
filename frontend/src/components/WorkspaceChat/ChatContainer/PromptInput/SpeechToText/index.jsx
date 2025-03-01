@@ -6,6 +6,7 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 import { PROMPT_INPUT_EVENT } from "../../PromptInput";
+import { useTranslation } from "react-i18next";
 
 let timeout;
 const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
@@ -20,7 +21,7 @@ export default function SpeechToText({ sendSTTCommand }) {
   } = useSpeechRecognition({
     clearTranscriptOnListen: true,
   });
-
+  const { t } = useTranslation();
   function startSTTSession() {
     if (!isMicrophoneAvailable) {
       alert(
@@ -94,8 +95,8 @@ export default function SpeechToText({ sendSTTCommand }) {
     <div
       id="text-size-btn"
       data-tooltip-id="tooltip-text-size-btn"
-      data-tooltip-content="Speak your prompt"
-      aria-label="Speak your prompt"
+      data-tooltip-content={t("chat_window.microphone")}
+      aria-label={t("chat_window.microphone")}
       onClick={listening ? endSTTSession : startSTTSession}
       className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${
         !!listening ? "!opacity-100" : ""
