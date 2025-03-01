@@ -9,7 +9,7 @@ import { PROMPT_INPUT_EVENT } from "../../PromptInput";
 
 let timeout;
 const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
-export default function SpeechToText({ addToInputPrompt }) {
+export default function SpeechToText({ sendSTTCommand }) {
   const {
     transcript,
     listening,
@@ -39,7 +39,7 @@ export default function SpeechToText({ addToInputPrompt }) {
   function endSTTSession() {
     SpeechRecognition.stopListening();
     if (transcript.length > 0) {
-      addToInputPrompt(transcript);
+      sendSTTCommand(transcript);
     }
 
     resetTranscript();

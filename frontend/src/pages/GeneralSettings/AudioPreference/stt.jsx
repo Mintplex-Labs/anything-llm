@@ -27,11 +27,14 @@ export default function SpeechToTextProvider({ settings }) {
   );
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
+  const [autoSubmit, setAutoSubmit] = useState(
+    settings?.SpeechToTextAutoSubmit === "true"
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
-    const data = { SpeechToTextProvider: selectedProvider };
+    const data = { SpeechToTextProvider: selectedProvider, SpeechToTextAutoSubmit: String(autoSubmit) };
     const formData = new FormData(form);
 
     for (var [key, value] of formData.entries()) data[key] = value;
@@ -53,6 +56,11 @@ export default function SpeechToTextProvider({ settings }) {
     setSearchMenuOpen(false);
     setHasChanges(true);
   };
+
+  const updateAutoSubmitChoice = () => {
+    setAutoSubmit(!autoSubmit);
+    setHasChanges(true);
+  }
 
   const handleXButton = () => {
     if (searchQuery.length > 0) {
@@ -184,6 +192,18 @@ export default function SpeechToTextProvider({ settings }) {
             PROVIDERS.find(
               (provider) => provider.value === selectedProvider
             )?.options(settings)}
+        </div>
+        <div className="text-base font-bold text-white mt-6 mb-4">Autosubmit</div>
+        <div>
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+            <input
+              onChange={updateAutoSubmitChoice}
+              type="checkbox"
+              checked={autoSubmit}
+            />&nbsp;
+            Here you can specify whether you want your speech to text prompt to be submitted automatically after 3s of silence
+            or if it should be submitted manually
+          </p>
         </div>
       </div>
     </form>

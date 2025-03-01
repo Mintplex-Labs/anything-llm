@@ -518,6 +518,11 @@ const KEY_MAPPING = {
   },
 
   // TTS/STT Integration ENVS
+  SpeechToTextAutoSubmit: {
+    envKey: "STT_AUTO_SUBMIT",
+    checks: [validBooleanString],
+  },
+
   TextToSpeechProvider: {
     envKey: "TTS_PROVIDER",
     checks: [supportedTTSProvider],
@@ -671,6 +676,14 @@ function validOllamaLLMBasePath(input = "") {
   } catch {
     return "Not a valid URL";
   }
+}
+
+function validBooleanString(input = "") {
+  const validSelection = [
+    "true",
+    "false",
+  ].includes(input);
+  return validSelection ? null : `${input} is not a valid boolean flag.`;
 }
 
 function supportedTTSProvider(input = "") {
