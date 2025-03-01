@@ -67,7 +67,7 @@ export default function PromptInput({
   useEffect(() => {
     async function getSettings() {
       const _settings = await System.keys();
-      setSpeechToTextAutoSubmit(_settings?.SpeechToTextAutoSubmit ?? true);
+      setSpeechToTextAutoSubmit(_settings?.SpeechToTextAutoSubmit === "true");
     }
     getSettings();
   }, []);
@@ -230,7 +230,7 @@ export default function PromptInput({
     // we need to use setTimeout to prevent the cursor from being set to the end of the text
     setTimeout(() => {
       textarea.selectionStart = textarea.selectionEnd =
-        start + pasteText.length;
+        start + text.length;
     }, 0);
   }
 
