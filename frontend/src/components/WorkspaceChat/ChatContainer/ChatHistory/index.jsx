@@ -14,6 +14,8 @@ import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
 import { v4 } from "uuid";
+import { useTranslation } from "react-i18next";
+import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
 export default function ChatHistory({
   history = [],
@@ -23,6 +25,7 @@ export default function ChatHistory({
   regenerateAssistantMessage,
   hasAttachments = false,
 }) {
+  const { t } = useTranslation();
   const lastScrollTopRef = useRef(0);
   const { user } = useUser();
   const { threadSlug = null } = useParams();
@@ -33,6 +36,7 @@ export default function ChatHistory({
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
+  const { getMessageAlignment } = useChatMessageAlignment();
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -146,6 +150,7 @@ export default function ChatHistory({
         regenerateAssistantMessage,
         saveEditedMessage,
         forkThread,
+        getMessageAlignment,
       }),
     [
       workspace,
@@ -179,22 +184,24 @@ export default function ChatHistory({
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
           <p className="text-white/60 text-lg font-base py-4">
-            Welcome to your new workspace.
+            {t("chat_window.welcome")}
           </p>
           {!user || user.role !== "default" ? (
             <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
-              To get started either{" "}
+              {t("chat_window.get_started")}
               <span
                 className="underline font-medium cursor-pointer"
                 onClick={showModal}
               >
-                upload a document
+                {t("chat_window.upload")}
               </span>
-              or <b className="font-medium italic">send a chat.</b>
+              {t("chat_window.or")}{" "}
+              <b className="font-medium italic">{t("chat_window.send_chat")}</b>
             </p>
           ) : (
             <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
-              To get started <b className="font-medium italic">send a chat.</b>
+              {t("chat_window.get_started_default")}{" "}
+              <b className="font-medium italic">{t("chat_window.send_chat")}</b>
             </p>
           )}
           <WorkspaceChatSuggestions
@@ -282,6 +289,7 @@ function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
  * @param {Function} param0.regenerateAssistantMessage - The function to regenerate the assistant message.
  * @param {Function} param0.saveEditedMessage - The function to save the edited message.
  * @param {Function} param0.forkThread - The function to fork the thread.
+ * @param {Function} param0.getMessageAlignment - The function to get the alignment of the message (returns class).
  * @returns {Array} The compiled history of messages.
  */
 function buildMessages({
@@ -290,6 +298,7 @@ function buildMessages({
   regenerateAssistantMessage,
   saveEditedMessage,
   forkThread,
+  getMessageAlignment,
 }) {
   return history.reduce((acc, props, index) => {
     const isLastBotReply =
@@ -338,6 +347,7 @@ function buildMessages({
           saveEditedMessage={saveEditedMessage}
           forkThread={forkThread}
           metrics={props.metrics}
+          alignmentCls={getMessageAlignment?.(props.role)}
         />
       );
     }

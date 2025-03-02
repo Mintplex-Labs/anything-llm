@@ -10,8 +10,8 @@
     "node": ">=18.12.1"
   },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js",
-    "start": "NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./endpoints ./models ./utils index.js",
     "swagger": "node ./swagger/init.js"
   },
@@ -19,7 +19,7 @@
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.32.1",
+    "@anthropic-ai/sdk": "^0.39.0",
     "@azure/openai": "1.0.0-beta.10",
     "@datastax/astra-db-ts": "^0.1.3",
     "@google/generative-ai": "^0.7.1",
@@ -95,6 +95,7 @@
     "hermes-eslint": "^0.15.0",
     "node-html-markdown": "^1.3.0",
     "nodemon": "^2.0.22",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "cross-env": "^7.0.3"
   }
 }

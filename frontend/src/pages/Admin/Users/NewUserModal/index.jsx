@@ -97,6 +97,21 @@ export default function NewUserModal({ closeModal }) {
               </div>
               <div>
                 <label
+                  htmlFor="bio"
+                  className="block mb-2 text-sm font-medium text-white"
+                >
+                  Bio
+                </label>
+                <textarea
+                  name="bio"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  placeholder="User's bio"
+                  autoComplete="off"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label
                   htmlFor="role"
                   className="block mb-2 text-sm font-medium text-white"
                 >

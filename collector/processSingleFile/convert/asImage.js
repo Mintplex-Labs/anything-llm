@@ -8,8 +8,10 @@ const {
 const OCRLoader = require("../../utils/OCRLoader");
 const { default: slugify } = require("slugify");
 
-async function asImage({ fullFilePath = "", filename = "" }) {
-  let content = await new OCRLoader().ocrImage(fullFilePath);
+async function asImage({ fullFilePath = "", filename = "", options = {} }) {
+  let content = await new OCRLoader({
+    targetLanguages: options?.ocr?.langList,
+  }).ocrImage(fullFilePath);
 
   if (!content?.length) {
     console.error(`Resulting text content was empty for ${filename}.`);

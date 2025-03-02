@@ -795,7 +795,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.XAIProvider({ model: config.model });
       case "novita":
         return new Providers.NovitaProvider({ model: config.model });
-
+      case "ppio":
+        return new Providers.PPIOProvider({ model: config.model });
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`

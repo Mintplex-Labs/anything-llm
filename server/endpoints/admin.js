@@ -537,6 +537,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
+        if (!id || isNaN(Number(id))) return response.sendStatus(400).end();
         await ApiKey.delete({ id: Number(id) });
 
         await EventLogs.logEvent(
