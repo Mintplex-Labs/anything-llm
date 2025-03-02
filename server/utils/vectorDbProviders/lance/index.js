@@ -400,12 +400,31 @@ const LanceDb = {
       };
     }
 
-    const queryVector = await LLMConnector.embedTextInput(input);
+    let textInput = "";
+    if (typeof input === "string" || input instanceof String) {
+      textInput = input;
+    } else if (Array.isArray(input)) {
+      textInput = [];
+      for (const x of input) {
+        if (typeof x.text === "string" || x.text instanceof String) {
+          textInput.push(x.text);
+        } else if (typeof x === "string" || x instanceof String) {
+          textInput.push(x);
+        }
+      }
+    } else {
+      return {
+        contextTexts: [],
+        sources: [],
+        message: "Invalid query - the type of input is not string or array !",
+      };
+    }
+    const queryVector = await LLMConnector.embedTextInput(textInput);
     const result = rerank
       ? await this.rerankedSimilarityResponse({
           client,
           namespace,
-          query: input,
+          query: textInput,
           queryVector,
           similarityThreshold,
           topN,
