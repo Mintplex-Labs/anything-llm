@@ -101,8 +101,7 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
     // Extract text using the external API
     if (process.env.PRISM_OCR_PARSER == 'true') {
       logger.info(`using prism doc parser - external `);
-      const result = await extractTextFromApi(fullFilePath);
-      content = result.map((page) => page.text).join("");
+      content = await extractTextFromApi(fullFilePath);
       data = {
         id: v4(),
         url: "file://" + fullFilePath,
@@ -114,8 +113,7 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
         published: createdDate(fullFilePath),
         wordCount: content.split(" ").length,
         pageContent: content,
-        token_count_estimate: tokenizeString(content).length,
-        contentWithPages: result, // Return the content with pages eg; [{page: 1, text: "page 1 text"}, ...]
+        token_count_estimate: tokenizeString(content).length
       };
     } else {
       const result = await extractTextNative(fullFilePath);
@@ -135,7 +133,6 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
         token_count_estimate: tokenizeString(content).length,
       };
     }
-    
   } catch (error) {
     logger.error(`Failed to extract text for ${filename}: ${error.message}`);
     trashFile(fullFilePath);

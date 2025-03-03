@@ -67,6 +67,13 @@ function decodeJWT(jwtToken) {
   return { p: null, id: null, username: null };
 }
 
+function decodeKeycloakJWT(jwtToken) {
+  try {
+    return JWT.decode(jwtToken)
+  } catch {}
+  return { p: null, id: null, username: null };
+}
+
 function multiUserMode(response) {
   return response?.locals?.multiUserMode;
 }
@@ -125,4 +132,5 @@ module.exports = {
   isValidUrl,
   toValidNumber,
   userGroupsFromToken,
+  decodeKeycloakJWT
 };

@@ -200,7 +200,7 @@ function systemEndpoints(app) {
             user: User.filterFields(existingUser),
             token: makeJWT(
               { id: existingUser.id, username: existingUser.username },
-              "30d"
+              "60d"
             ),
             message: null,
             recoveryCodes: plainTextCodes,
@@ -213,7 +213,7 @@ function systemEndpoints(app) {
           user: User.filterFields(existingUser),
           token: makeJWT(
             { id: existingUser.id, username: existingUser.username },
-            "30d"
+            "60d"
           ),
           message: null,
         });
@@ -247,7 +247,7 @@ function systemEndpoints(app) {
           valid: true,
           token: makeJWT(
             { p: new EncryptionManager().encrypt(password) },
-            "30d"
+            "60d"
           ),
           message: null,
         });

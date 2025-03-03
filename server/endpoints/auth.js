@@ -2,7 +2,7 @@ process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
 
-const { makeJWT, userFromSession } = require("../utils/http");
+const { makeJWT, userFromSession, decodeKeycloakJWT } = require("../utils/http");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
@@ -21,7 +21,7 @@ const setCookies = (res, userDetails, userGroups) => {
         uid: userDetails?.uid,
         groups: userGroups
       },
-      "30d"
+      "60d"
     ),
     message: null,
   };
@@ -64,6 +64,10 @@ function authEndpoints(app) {
     }
     try {
       const userInfo = await KeycloakHelper.getUserInfoByCode(code);
+
+      const keycloakGroups = userInfo?.user?.keycloakgroups || [];
+      const samlGroups = userInfo?.user?.samlgroups || [];
+      const userGroups = [...new Set([...keycloakGroups, ...samlGroups])];
       let existingUser = await User._get({
         username: String(userInfo?.user?.username),
       });
@@ -100,7 +104,7 @@ function authEndpoints(app) {
         res.redirect(`${redirectUrl}suspended-user`);
         return;
       }
-      setCookies(res, existingUser, userInfo?.user?.groups);
+      setCookies(res, existingUser, userGroups);
       // redirecting to frontend app
       res.redirect(redirectUrl);
     } catch (error) {
@@ -127,6 +131,72 @@ function authEndpoints(app) {
     //getting admin token
     const logoutResponse = await KeycloakHelper.logoutUser(existingUser?.uid);
     res.json({ status: logoutResponse });
+  });
+
+  app.get("/auth/get-prism-token", async (req, res) => {
+
+    const authHeader = req.headers['authorization'];
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Unauthorized: No Bearer token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const userInfo = decodeKeycloakJWT(token)
+    if(!userInfo) {
+      console.debug("not a valid JWT Token")
+      return res.status(400).json({ error: "Bearer Token is not decodable" });
+    }
+
+    const keycloakGroups = userInfo?.user?.keycloakgroups || [];
+    const samlGroups = userInfo?.user?.samlgroups || [];
+    const userGroups = [...new Set([...keycloakGroups, ...samlGroups])];
+
+    let existingUser = await User._get({
+      username: String(userInfo?.user?.username),
+    });
+
+    if (!existingUser) {
+      existingUser = (
+        await User.create({
+          username: userInfo?.user?.username,
+          password: crypto.randomUUID(),
+          role: ROLES.default,
+          uid: userInfo?.sub,
+        })
+      )?.user;
+      await Workspace.addToDefaultWorkspace(existingUser?.id);
+    } else {
+      const isUserInDefaultWS = await Workspace.isUserInDefaultWS(
+        existingUser?.id
+      );
+      if (!isUserInDefaultWS) {
+        await Workspace.addToDefaultWorkspace(existingUser?.id);
+      }
+      if (!existingUser?.uid || existingUser?.uid !== userInfo?.sub) {
+        existingUser = await User.update(existingUser?.id, {
+          uid: userInfo?.sub,
+        });
+      }
+    }
+
+    const redirectUrl = process.env.FRONTEND_BASE_URL || "/";
+    if (existingUser?.suspended) {
+      await KeycloakHelper.logoutUser(existingUser?.uid);
+      res.redirect(`${redirectUrl}suspended-user`);
+      return;
+    }
+    const prismToken = makeJWT(
+      {
+        id: existingUser.id,
+        username: existingUser.username,
+        uid: existingUser?.uid,
+        groups: userGroups
+      },
+      "60d"
+    )
+
+    res.json({ token: prismToken });
   });
 }
 
