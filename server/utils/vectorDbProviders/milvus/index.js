@@ -786,13 +786,14 @@ const Milvus = {
   curateSources: function (sources = []) {
     const documents = [];
     for (const source of sources) {
-      const { metadata = {} } = source;
+      const { metadata = {}, score } = source;
       if (Object.keys(metadata).length > 0) {
         documents.push({
           ...metadata,
           ...(source.hasOwnProperty("pageContent")
             ? { text: source.pageContent }
             : {}),
+          score: score !== undefined ? score : null
         });
       }
     }

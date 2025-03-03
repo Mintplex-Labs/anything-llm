@@ -240,7 +240,11 @@ async function chatSync({
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
 
-      console.log("rewritten question: ", effectiveQuestion)
+      effectiveQuestion = effectiveQuestion.includes("</think>") 
+        ? effectiveQuestion.split("</think>")[1].trim() 
+        : effectiveQuestion.trim();
+
+      // console.log("rewritten question: ", effectiveQuestion)
     }
 
   }
@@ -484,7 +488,7 @@ async function suggestQuestions(
     return {
       type: "textResponse",
       close: true,
-      error: null,
+      error: true,
       textResponse,
     };
   }
@@ -716,7 +720,11 @@ async function streamChat({
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
 
-      console.log("rewritten question: ", effectiveQuestion)
+      effectiveQuestion = effectiveQuestion.includes("</think>") 
+        ? effectiveQuestion.split("</think>")[1].trim() 
+        : effectiveQuestion.trim();
+
+      // console.log("rewritten question: ", effectiveQuestion)
     }
 
   }
