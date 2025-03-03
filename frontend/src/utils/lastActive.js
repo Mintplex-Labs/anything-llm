@@ -4,7 +4,7 @@ export const saveLastActive = (workspace, thread = null) => {
   const location = {
     workspace,
     thread,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   };
   localStorage.setItem(LAST_ACTIVE_KEY, JSON.stringify(location));
 };
