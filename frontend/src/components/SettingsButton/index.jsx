@@ -14,11 +14,11 @@ export default function SettingsButton() {
     return (
       <div className="flex w-fit">
         <Link
-          to={paths.home()}
+          to={paths.lastActiveChat()}
           className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
-          aria-label="Home"
+          aria-label="Back"
           data-tooltip-id="footer-item"
-          data-tooltip-content="Back to workspaces"
+          data-tooltip-content="Back to last workspace"
         >
           <ArrowUUpLeft
             className="h-5 w-5"

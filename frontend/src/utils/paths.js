@@ -1,8 +1,17 @@
 import { API_BASE } from "./constants";
+import { getLastActive } from "./lastActive";
 
 export default {
   home: () => {
     return "/";
+  },
+  lastActiveChat: () => {
+    const lastActive = getLastActive();
+    if (!lastActive?.workspace) return "/";
+    if (lastActive.thread) {
+      return `/workspace/${lastActive.workspace}/t/${lastActive.thread}`;
+    }
+    return `/workspace/${lastActive.workspace}`;
   },
   login: (noTry = false) => {
     return `/login${noTry ? "?nt=1" : ""}`;

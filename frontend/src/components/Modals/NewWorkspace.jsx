@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { X } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
@@ -8,8 +8,16 @@ import ModalWrapper from "@/components/ModalWrapper";
 const noop = () => false;
 export default function NewWorkspaceModal({ hideModal = noop }) {
   const formEl = useRef(null);
+  const inputRef = useRef(null);
   const [error, setError] = useState(null);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   const handleCreate = async (e) => {
     setError(null);
     e.preventDefault();
@@ -55,6 +63,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                     {t("common.workspaces-name")}
                   </label>
                   <input
+                    ref={inputRef}
                     name="name"
                     type="text"
                     id="name"
