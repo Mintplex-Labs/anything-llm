@@ -488,7 +488,7 @@ async function suggestQuestions(
     return {
       type: "textResponse",
       close: true,
-      error: null,
+      error: true,
       textResponse,
     };
   }

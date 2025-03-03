@@ -83,7 +83,7 @@ function chatEndpoints(app) {
           "sent_chat",
           {
             workspaceName: workspace.name,
-            chatModel: workspace?.chatModel || "System Default", 
+            chatModel: workspace?.chatModel || "System Default",
           },
           user?.id
         );
@@ -114,7 +114,7 @@ function chatEndpoints(app) {
         return response.json(result);
       } catch (e) {
         console.error(e);
-        
+
       }
     }
   );
@@ -288,7 +288,7 @@ function chatEndpoints(app) {
           "sent_chat",
           {
             workspaceName: workspace.name,
-            chatModel: workspace?.chatModel || "System Default", 
+            chatModel: workspace?.chatModel || "System Default",
           },
           user?.id
         );
@@ -460,20 +460,27 @@ function chatEndpoints(app) {
           user,
           userGroups
         );
-        const parsedSuggestions = JSON.parse(suggestions); // Convert string to JSON if needed
-        response.status(200).json(parsedSuggestions);
+        if (!suggestions?.error) {
+          const parsedSuggestions = JSON.parse(suggestions); // Convert string to JSON if needed
+          response.status(200).json(parsedSuggestions);
 
-        // response.status(200).json({ suggestions });
+          // response.status(200).json({ suggestions });
 
-        // await EventLogs.logEvent(
-        //   "suggestion_chat",
-        //   {
-        //     workspaceName: workspace.name,
-        //     chatModel: workspace?.chatModel || "System Default", 
-        //   },
-        //   user?.id
-        // );
-        // response.end();
+          await EventLogs.logEvent(
+            "suggestion_chat",
+            {
+              workspaceName: workspace.name,
+              chatModel: workspace?.chatModel || "System Default",
+            },
+            user?.id
+          );
+          response.end();
+        }
+        else {
+          response.status(200).json(suggestions.textResponse);
+        }
+
+
       } catch (e) {
         console.error(e);
         writeResponseChunk(response, {
