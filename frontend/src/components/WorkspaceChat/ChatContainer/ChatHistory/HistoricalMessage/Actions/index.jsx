@@ -17,6 +17,7 @@ const Actions = ({
   isEditing,
   role,
   metrics = {},
+  alignmentCls = "",
 }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
   const handleFeedback = async (newFeedback) => {
@@ -27,7 +28,7 @@ const Actions = ({
   };
 
   return (
-    <div className="flex w-full justify-between items-center">
+    <div className={`flex w-full justify-between items-center ${alignmentCls}`}>
       <div className="flex justify-start items-center gap-x-[8px]">
         <CopyMessage message={message} />
         <div className="md:group-hover:opacity-100 transition-all duration-300 md:opacity-0 flex justify-start items-center gap-x-[8px]">

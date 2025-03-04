@@ -10,8 +10,8 @@
     "node": ">=18.12.1"
   },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
-    "start": "NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./processSingleFile ./processLink ./utils index.js"
   },
   "dependencies": {
@@ -49,6 +49,7 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
-    "prettier": "^2.4.1"
+    "prettier": "^2.4.1",
+    "cross-env": "^7.0.3"
   }
 }
