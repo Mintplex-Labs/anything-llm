@@ -6,7 +6,7 @@ import paths from "@/utils/paths";
 import ModalWrapper from "../ModalWrapper";
 import { useParams } from "react-router-dom";
 import { DnDFileUploaderProvider } from "./ChatContainer/DnDWrapper";
-import { saveLastActive } from "@/utils/lastActive";
+import { saveLastActive, clearLastActive } from "@/utils/lastActive";
 
 export default function WorkspaceChat({ loading, workspace }) {
   const { threadSlug = null } = useParams();
@@ -23,6 +23,7 @@ export default function WorkspaceChat({ loading, workspace }) {
     async function getHistory() {
       if (loading) return;
       if (!workspace?.slug) {
+        clearLastActive();
         setLoadingHistory(false);
         return false;
       }
