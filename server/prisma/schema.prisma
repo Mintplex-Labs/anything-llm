@@ -62,6 +62,7 @@ model users {
   lastUpdatedAt               DateTime                      @default(now())
   dailyMessageLimit           Int?
   uid                         String?
+  grps                        String?
   browser_extension_api_keys  browser_extension_api_keys[]
   embed_chats                 embed_chats[]
   embed_configs               embed_configs[]
