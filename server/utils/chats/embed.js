@@ -152,7 +152,7 @@ async function streamChatWithForEmbed(
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: chatPrompt(embed.workspace),
+      systemPrompt: await chatPrompt(embed.workspace, username),
       userPrompt: message,
       contextTexts,
       chatHistory,

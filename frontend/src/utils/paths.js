@@ -120,6 +120,7 @@ export default {
     apiKeys: () => {
       return "/settings/api-keys";
     },
+    systemVariables: () => "/settings/system-variables",
     logs: () => {
       return "/settings/event-logs";
     },
