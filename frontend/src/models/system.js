@@ -736,7 +736,7 @@ const System = {
       });
   },
 
-  experimental: {
+  experimentalFeatures: {
     liveSync: LiveDocumentSync,
     agentPlugins: AgentPlugins,
   },
