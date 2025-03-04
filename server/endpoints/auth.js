@@ -158,7 +158,8 @@ function authEndpoints(app) {
       }
       setCookies(res, existingUser, userGroups);
       // redirecting to frontend app
-      res.redirect(redirectUrl);
+      // res.redirect(redirectUrl);
+      res.status(200).send("success");
     } catch (error) {
       console.log(error);
       res.status(500).send("Error while exchanging code for token");
