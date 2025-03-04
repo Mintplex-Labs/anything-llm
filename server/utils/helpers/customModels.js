@@ -496,7 +496,18 @@ async function getDeepSeekModels(apiKey = null) {
     )
     .catch((e) => {
       console.error(`DeepSeek:listModels`, e.message);
-      return [];
+      return [
+        {
+          id: "deepseek-chat",
+          name: "deepseek-chat",
+          organization: "deepseek",
+        },
+        {
+          id: "deepseek-reasoner",
+          name: "deepseek-reasoner",
+          organization: "deepseek",
+        },
+      ];
     });
 
   if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
