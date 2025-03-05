@@ -25,7 +25,6 @@ import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
-
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
@@ -36,6 +35,7 @@ import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
+import PPIOLogo from "@/media/llmprovider/ppio.png";
 
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
@@ -225,6 +225,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chat contents are visible to xAI in accordance with their terms of service.",
     ],
     logo: XAILogo,
+  },
+  ppio: {
+    name: "PPIO",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to PPIO",
+    ],
+    logo: PPIOLogo,
   },
 };
 

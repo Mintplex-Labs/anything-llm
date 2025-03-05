@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function YoutubeOptions() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -50,10 +52,20 @@ export default function YoutubeOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                    YouTube Video URL
+                    {t("connectors.youtube.URL")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    URL of the YouTube video you wish to transcribe.
+                    {t("connectors.youtube.URL_explained_start")}
+                    <a
+                      href="https://support.google.com/youtube/answer/6373554"
+                      rel="noreferrer"
+                      target="_blank"
+                      className="underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {t("connectors.youtube.URL_explained_link")}
+                    </a>
+                    {t("connectors.youtube.URL_explained_end")}
                   </p>
                 </div>
                 <input
@@ -79,8 +91,7 @@ export default function YoutubeOptions() {
             </button>
             {loading && (
               <p className="text-xs text-theme-text-secondary max-w-sm">
-                Once complete, the transcription will be available for embedding
-                into workspaces in the document picker.
+                {t("connectors.youtube.task_explained")}
               </p>
             )}
           </div>

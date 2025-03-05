@@ -9,7 +9,7 @@ const { default: slugify } = require("slugify");
 const PDFLoader = require("./PDFLoader");
 const OCRLoader = require("../../../utils/OCRLoader");
 
-async function asPdf({ fullFilePath = "", filename = "" }) {
+async function asPdf({ fullFilePath = "", filename = "", options = {} }) {
   const pdfLoader = new PDFLoader(fullFilePath, {
     splitPages: true,
   });
@@ -22,7 +22,9 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
     console.log(
       `[asPDF] No text content found for ${filename}. Will attempt OCR parse.`
     );
-    docs = await new OCRLoader().ocrPDF(fullFilePath);
+    docs = await new OCRLoader({
+      targetLanguages: options?.ocr?.langList,
+    }).ocrPDF(fullFilePath);
   }
 
   for (const doc of docs) {
