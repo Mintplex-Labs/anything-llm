@@ -38,12 +38,12 @@ const setCookies = (res, userDetails, userGroups) => {
   );
   res.cookie("valid", true, cookieConfig);
 };
-async function callBackHandler(code, redirectUrl) {
+async function callBackHandler(code, redirectUrl, kcClientId, kcClientSecret) {
   // const code = req.query.code;
   // if (!code) {
   //   return res.status(400).send("No code found");
   // }
-  const userInfo = await KeycloakHelper.getUserInfoByCode(code, redirectUrl);
+  const userInfo = await KeycloakHelper.getUserInfoByCode(code, redirectUrl, kcClientId, kcClientSecret);
 
   const keycloakGroups = userInfo?.user?.keycloakgroups || [];
   const samlGroups = userInfo?.user?.samlgroups || [];
@@ -94,12 +94,12 @@ function authEndpoints(app) {
     res.redirect(authUrl);
   });
 
-  // this route will handle the login request and redirect it to keycloak for authentication
-  app.get("/auth/chat-plugin", async (req, res) => {
+  // // this route will handle the login request and redirect it to keycloak for authentication
+  // app.get("/auth/chat-plugin", async (req, res) => {
 
-    const authUrl = KeycloakHelper.getAuthRedirectUrl(process.env.KC_REDIRECT_URL_CHAT_PLUGIN);
-    res.redirect(authUrl);
-  });
+  //   const authUrl = KeycloakHelper.getAuthRedirectUrl(process.env.KC_REDIRECT_URL_CHAT_PLUGIN);
+  //   res.redirect(authUrl);
+  // });
 
   /**
    * After keycloak finishes the authentication it will redirect to this route
@@ -116,7 +116,7 @@ function authEndpoints(app) {
       return res.status(400).send("No code found");
     }
     try {
-      const { existingUser, userGroups } = await callBackHandler(code, process.env.KC_REDIRECT_URL);
+      const { existingUser, userGroups } = await callBackHandler(code, process.env.KC_REDIRECT_URL, process.env.KC_CLIENT_ID, process.env.KC_CLIENT_SECRET);
 
       const redirectUrl = process.env.FRONTEND_BASE_URL || "/";
       if (existingUser?.suspended) {
@@ -148,7 +148,7 @@ function authEndpoints(app) {
       return res.status(400).send("No code found");
     }
     try {
-      const { existingUser, userGroups } = await callBackHandler(code, process.env.KC_REDIRECT_URL_CHAT_PLUGIN);
+      const { existingUser, userGroups } = await callBackHandler(code, process.env.KC_REDIRECT_URL_CHAT_PLUGIN, process.env.KC_CLIENT_ID_CHAT_PLUGIN, process.env.KC_CLIENT_SECRET_CHAT_PLUGIN);
       const redirectUrl = process.env.FRONTEND_BASE_URL_CHAT_PLUGIN || "/";
       if (existingUser?.suspended) {
         await KeycloakHelper.logoutUser(existingUser?.uid);
@@ -158,8 +158,7 @@ function authEndpoints(app) {
       }
       setCookies(res, existingUser, userGroups);
       // redirecting to frontend app
-      // res.redirect(redirectUrl);
-      res.status(200).send("success");
+      res.redirect(redirectUrl);
     } catch (error) {
       console.log(error);
       res.status(500).send("Error while exchanging code for token");

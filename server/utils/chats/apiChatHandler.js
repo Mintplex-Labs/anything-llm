@@ -523,13 +523,27 @@ async function suggestQuestions(
       };
   }
   
-  const messages = await LLMConnector.compressMessages(
-    {
-      systemPrompt: message,
-      userPrompt: "Please follow system prompt",
-      contextTexts: vectorSearchResults?.contextTexts,
-    }
-  );
+  // const messages = await LLMConnector.compressMessages(
+  //   {
+  //     systemPrompt: message,
+  //     userPrompt: "Please follow system prompt",
+  //     contextTexts: vectorSearchResults?.contextTexts,
+  //   }
+  // );
+    const messages = [
+      {
+        role: "system",
+        content: `${message}\n\nContext:\n${
+          vectorSearchResults?.contextTexts?.map(
+            (text, index) => `[CONTEXT ${index}]:\n${text}`
+          ).join("\n\n") || ""
+        }\n\n[END CONTEXT]`
+      },
+      {
+        role: "user",
+        content: "Please follow system prompt"
+      }
+    ];
   const textResponse = await LLMConnector.getChatCompletion(messages, {
     temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
   });
