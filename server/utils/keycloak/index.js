@@ -76,17 +76,16 @@ class KeycloakHelper {
     }
   };
 
-  static getUserInfoByCode = async (code, redirectUrl = KEYCLOAK_CONFIG.redirectUrl) => {
+  static getUserInfoByCode = async (code, redirectUrl, clientId, clientSecret) => {
     try {
       logger.info(`Getting token by Authorization code from keycloak`);
-
       const configs = await this.getConfigs(false);
       const body = querystring.stringify({
         grant_type: "authorization_code",
         code: code,
         redirect_uri: redirectUrl,
-        client_id: KEYCLOAK_CONFIG.clientId,
-        client_secret: KEYCLOAK_CONFIG.clientSecret,
+        client_id: clientId,
+        client_secret: clientSecret,
       });
       const url = `${AUTH_SERVER_URL}/token`;
       const response = await axios.post(url, body, configs);
