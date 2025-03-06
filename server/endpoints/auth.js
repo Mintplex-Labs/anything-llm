@@ -144,12 +144,18 @@ function authEndpoints(app) {
    */
   app.get("/auth/callback/chat-plugin", async (req, res) => {
     const code = req.query.code;
+    let keRedirectUrl = req.query.redirecturl 
+    ? `${process.env.KC_REDIRECT_URL_CHAT_PLUGIN}?redirecturl=${req.query.redirecturl}` 
+    : process.env.KC_REDIRECT_URL_CHAT_PLUGIN;
+    // console.log("redirect url : ", keRedirectUrl)
     if (!code) {
       return res.status(400).send("No code found");
     }
     try {
-      const { existingUser, userGroups } = await callBackHandler(code, process.env.KC_REDIRECT_URL_CHAT_PLUGIN, process.env.KC_CLIENT_ID_CHAT_PLUGIN, process.env.KC_CLIENT_SECRET_CHAT_PLUGIN);
-      const redirectUrl = process.env.FRONTEND_BASE_URL_CHAT_PLUGIN || "/";
+      const { existingUser, userGroups } = await callBackHandler(code, keRedirectUrl, process.env.KC_CLIENT_ID_CHAT_PLUGIN, process.env.KC_CLIENT_SECRET_CHAT_PLUGIN);
+      // redirectUrl = process.env.FRONTEND_BASE_URL_CHAT_PLUGIN || "/";
+      const frontEndRedirect = req.query.redirecturl || process.env.FRONTEND_BASE_URL_CHAT_PLUGIN || "/";
+
       if (existingUser?.suspended) {
         await KeycloakHelper.logoutUser(existingUser?.uid);
         // res.redirect(`${redirectUrl}suspended-user`);
@@ -158,7 +164,7 @@ function authEndpoints(app) {
       }
       setCookies(res, existingUser, userGroups);
       // redirecting to frontend app
-      res.redirect(redirectUrl);
+      res.redirect(frontEndRedirect);
     } catch (error) {
       console.log(error);
       res.status(500).send("Error while exchanging code for token");
