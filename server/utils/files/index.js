@@ -45,10 +45,15 @@ async function viewLocalFiles() {
       };
       const subfiles = fs.readdirSync(folderPath);
       const filenames = {};
+      const maxSize = 0x1fffffe8;
 
       for (const subfile of subfiles) {
         if (path.extname(subfile) !== ".json") continue;
         const filePath = path.join(folderPath, subfile);
+        
+        const stats = fs.statSync(filePath);
+        if (stats.size > maxSize) continue; // skip too large files to read
+
         const rawData = fs.readFileSync(filePath, "utf8");
         const cachefilename = `${file}/${subfile}`;
         const { pageContent, ...metadata } = JSON.parse(rawData);
