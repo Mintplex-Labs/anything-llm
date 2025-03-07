@@ -110,10 +110,10 @@ export default function Fulfillment({ setSettings, setStep }) {
               For any questions related to payment or fulfillment of services,
               please contact us at{" "}
               <a
-                href="mailto:team@mintplexlabs.com"
+                href="mailto:saal@saal.ai"
                 className="text-blue-400 hover:underline"
               >
-                team@mintplexlabs.com
+                saal@saal.ai
               </a>
               .
             </p>

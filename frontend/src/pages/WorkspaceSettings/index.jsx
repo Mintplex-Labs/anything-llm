@@ -12,6 +12,7 @@ import {
   Robot,
   User,
   Wrench,
+  Users,
 } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
@@ -20,6 +21,7 @@ import GeneralAppearance from "./GeneralAppearance";
 import ChatSettings from "./ChatSettings";
 import VectorDatabase from "./VectorDatabase";
 import Members from "./Members";
+import Groups from "./Groups";
 import WorkspaceAgentConfiguration from "./AgentConfig";
 import useUser from "@/hooks/useUser";
 import { useTranslation } from "react-i18next";
@@ -29,6 +31,7 @@ const TABS = {
   "chat-settings": ChatSettings,
   "vector-database": VectorDatabase,
   members: Members,
+  groups: Groups,
   "agent-config": WorkspaceAgentConfiguration,
 };
 
@@ -105,6 +108,12 @@ function ShowWorkspaceChat() {
             title={t("workspaces—settings.members")}
             icon={<User className="h-6 w-6" />}
             to={paths.workspace.settings.members(slug)}
+            visible={["admin", "manager"].includes(user?.role)}
+          />
+          <TabItem
+            title={t("workspaces—settings.groups")}
+            icon={<Users className="h-6 w-6" />}
+            to={paths.workspace.settings.groups(slug)}
             visible={["admin", "manager"].includes(user?.role)}
           />
           <TabItem

@@ -57,7 +57,7 @@ export default function OrderPlaced({ settings }) {
                 Documentation
               </a>
               <a
-                href="mailto:team@mintplexlabs.com"
+                href="mailto:saal@saal.ai"
                 className="text-sky-400 hover:underline hover:cursor-pointer"
               >
                 Contact support

@@ -2,7 +2,7 @@ const { EmbedChats } = require("../models/embedChats");
 const { EmbedConfig } = require("../models/embedConfig");
 const { EventLogs } = require("../models/eventLogs");
 const { reqBody, userFromSession } = require("../utils/http");
-const { validEmbedConfigId } = require("../utils/middleware/embedMiddleware");
+const { validEmbedConfigId, validEmbedConfig } = require("../utils/middleware/embedMiddleware");
 const {
   flexUserRoleValid,
   ROLES,
@@ -122,6 +122,63 @@ function embedManagementEndpoints(app) {
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/embed/:embedId",
+    [validEmbedConfig, validatedRequest],
+    async (request, response) => {
+      //   /*
+      //   #swagger.tags = ['Embed']
+      //   #swagger.description = 'Get workspace and threads for a specific embed'
+      //   #swagger.parameters['embedId'] = {
+      //     in: 'path',
+      //     description: 'UUID of the embed',
+      //     required: true,
+      //     type: 'string'
+      //   }
+      //   #swagger.responses[200] = {
+      //     content: {
+      //       "application/json": {
+      //         schema: {
+      //           type: 'object',
+      //           example: {
+      //             workspace: [
+      //             {
+      //               "id": 79,
+      //               "name": "My workspace",
+      //               "slug": "my-workspace-123"
+      //             }
+      //           ]
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      //   #swagger.responses[403] = {
+      //     schema: {
+      //       "$ref": "#/definitions/InvalidAPIKey"
+      //     }
+      //   }
+      //   #swagger.responses[404] = {
+      //     description: "Embed not found",
+      //   }
+      // */
+
+      try {
+        const embed = response.locals.embedConfig;
+        response.status(200).json({ 
+          workspace: {
+            id: embed.workspace?.id,
+            name: embed.workspace?.name,
+            slug: embed.workspace?.slug
+          }
+         });
+      } catch (e) {
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }

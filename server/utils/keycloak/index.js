@@ -10,6 +10,7 @@ const KEYCLOAK_CONFIG = {
   clientId: process.env.KC_CLIENT_ID,
   clientSecret: process.env.KC_CLIENT_SECRET,
   adminClientSecret: process.env.KC_ADMIN_CLIENT_SECRET,
+  redirectUrlChatPlugin: process.env.KC_REDIRECT_URL_CHAT_PLUGIN,
 };
 
 const AUTH_SERVER_URL = `${KEYCLOAK_CONFIG.baseUrl}/realms/${KEYCLOAK_CONFIG.realm}/protocol/openid-connect`;
@@ -75,17 +76,16 @@ class KeycloakHelper {
     }
   };
 
-  static getUserInfoByCode = async (code) => {
+  static getUserInfoByCode = async (code, redirectUrl, clientId, clientSecret) => {
     try {
       logger.info(`Getting token by Authorization code from keycloak`);
-
       const configs = await this.getConfigs(false);
       const body = querystring.stringify({
         grant_type: "authorization_code",
         code: code,
-        redirect_uri: KEYCLOAK_CONFIG.redirectUrl,
-        client_id: KEYCLOAK_CONFIG.clientId,
-        client_secret: KEYCLOAK_CONFIG.clientSecret,
+        redirect_uri: redirectUrl,
+        client_id: clientId,
+        client_secret: clientSecret,
       });
       const url = `${AUTH_SERVER_URL}/token`;
       const response = await axios.post(url, body, configs);
@@ -104,14 +104,14 @@ class KeycloakHelper {
       return false;
     }
   };
-  static getAuthRedirectUrl = () => {
+  static getAuthRedirectUrl = (redirectUrl = KEYCLOAK_CONFIG.redirectUrl) => {
     return (
       `${AUTH_SERVER_URL}/auth?` +
       querystring.stringify({
         client_id: KEYCLOAK_CONFIG.clientId,
         response_type: "code",
         scope: "openid",
-        redirect_uri: KEYCLOAK_CONFIG.redirectUrl,
+        redirect_uri: redirectUrl,
       })
     );
   };

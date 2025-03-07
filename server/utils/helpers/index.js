@@ -51,8 +51,8 @@
  */
 
 /**
-* @typedef {Object} BaseRerankerProvider - A basic reranker provider object
-* @property {Function} rerankTexts - Function to rerank the texts
+ * @typedef {Object} BaseRerankerProvider - A basic reranker provider object
+ * @property {Function} rerankTexts - Function to rerank the texts
  */
 
 /**
@@ -366,6 +366,46 @@ function toChunks(arr, size) {
   );
 }
 
+function cleanText(text) {
+  // Remove <document_metadata> section and its contents
+  return text
+    .replace(/<document_metadata>.*?<\/document_metadata>/gs, "")
+    .trim();
+}
+
+function cleanString(text) {
+  return text
+    .replace(/\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/\+/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+function findBestMatchPage(cleanText, contentWithPages) {
+  const Fuse = require("fuse.js");
+  const fuse = new Fuse(contentWithPages, {
+    keys: ["text"],
+    threshold: 0.4,
+    includeMatches: false, // Get match positions
+    findAllMatches: false, // Match substrings
+    includeScore: true,
+    ignoreLocation: true,
+  });
+
+  const result = fuse.search(cleanString(cleanText));
+
+  if (result.length > 0) {
+    const bestMatch = result[0];
+    return {
+      page: bestMatch.item.page,
+      // matchedText: bestMatch.matches[0]?.value || "",
+      // score: bestMatch.score,
+    };
+  }
+  return null;
+}
+
 module.exports = {
   getEmbeddingEngineSelection,
   maximumChunkLength,
@@ -374,4 +414,7 @@ module.exports = {
   getLLMProvider,
   toChunks,
   getRerankerProvider,
+  cleanText,
+  cleanString,
+  findBestMatchPage,
 };

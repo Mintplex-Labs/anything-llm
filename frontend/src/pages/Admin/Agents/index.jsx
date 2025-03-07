@@ -281,7 +281,7 @@ export default function AdminAgents() {
             activeSkills={agentSkills}
           />
 
-          <div className="text-theme-text-primary flex items-center gap-x-2">
+          {/* <div className="text-theme-text-primary flex items-center gap-x-2">
             <Plug size={24} />
             <p className="text-lg font-medium">Custom Skills</p>
           </div>
@@ -289,7 +289,7 @@ export default function AdminAgents() {
             skills={importedSkills}
             selectedSkill={selectedSkill}
             handleClick={setSelectedSkill}
-          />
+          /> */}
         </div>
 
         {/* Selected agent skill setting panel */}

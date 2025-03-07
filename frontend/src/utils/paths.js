@@ -43,7 +43,7 @@ export default {
     return "https://docs.anythingllm.com";
   },
   mailToMintplex: () => {
-    return "mailto:team@mintplexlabs.com";
+    return "mailto:saal@saal.ai";
   },
   hosting: () => {
     return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
@@ -65,6 +65,9 @@ export default {
       members: (slug) => {
         return `/workspace/${slug}/settings/members`;
       },
+      groups: (slug) => {
+        return `/workspace/${slug}/settings/groups`;
+      },
       agentConfig: (slug) => {
         return `/workspace/${slug}/settings/agent-config`;
       },
@@ -76,9 +79,9 @@ export default {
   apiDocs: () => {
     return `${API_BASE}/docs`;
   },
-  orderFineTune: () => {
-    return `/fine-tuning`;
-  },
+  // orderFineTune: () => {
+  //   return `/fine-tuning`;
+  // },
   settings: {
     users: () => {
       return `/settings/users`;
@@ -143,6 +146,12 @@ export default {
     },
     experimental: () => {
       return `/settings/beta-features`;
+    },
+    fileManagement: () => {
+      return `/settings/file-management`;
+    },
+    groups: () => {
+      return `/settings/groups`;
     },
   },
   communityHub: {

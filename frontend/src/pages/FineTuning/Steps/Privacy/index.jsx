@@ -124,15 +124,15 @@ export default function PrivacyHandling({ setSettings, setStep }) {
               information. If you wish to exercise these rights, please contact
               us at{" "}
               <a
-                href="mailto:team@mintplexlabs.com"
+                href="mailto:saal@saal.ai"
                 className="text-blue-400 hover:underline"
               >
-                team@mintplexlabs.com
+                saal@saal.ai
               </a>
               .
             </p>
 
-            <h2 className="text-theme-text-primary mt-4">
+            {/* <h2 className="text-theme-text-primary mt-4">
               9. California Privacy Rights
             </h2>
             <p className="text-theme-text-secondary">
@@ -170,17 +170,17 @@ export default function PrivacyHandling({ setSettings, setStep }) {
                 not to receive discriminatory treatment for exercising any of
                 your CCPA rights.
               </li>
-            </ul>
+            </ul> */}
             <p className="text-theme-text-secondary">
               <strong>Submitting a Request:</strong>
               <br />
               You may submit a request to know, delete, or correct your personal
               information by contacting us at{" "}
               <a
-                href="mailto:team@mintplexlabs.com"
+                href="mailto:saal@saal.ai"
                 className="text-blue-400 hover:underline"
               >
-                team@mintplexlabs.com
+                saal@saal.ai
               </a>
               . We will confirm your identity before processing your request and
               respond within 45 days. If more time is needed, we will inform you
@@ -201,21 +201,21 @@ export default function PrivacyHandling({ setSettings, setStep }) {
               CCPA rights.
             </p>
 
-            <h2 className="text-theme-text-primary mt-4">10. Contact Us</h2>
+            <h2 className="text-theme-text-primary mt-4">9. Contact Us</h2>
             <p className="text-theme-text-secondary">
               If you have any questions or concerns about this Privacy Policy,
               please contact us at{" "}
               <a
-                href="mailto:team@mintplexlabs.com"
+                href="mailto:saal@saal.ai"
                 className="text-blue-400 hover:underline"
               >
-                team@mintplexlabs.com
+                saal@saal.ai
               </a>
               .
             </p>
 
             <h2 className="text-theme-text-primary mt-4">
-              11. Changes to This Privacy Policy
+              10. Changes to This Privacy Policy
             </h2>
             <p className="text-theme-text-secondary">
               We may update this Privacy Policy from time to time. We will

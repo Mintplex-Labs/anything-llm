@@ -40,6 +40,8 @@ const TRANSLATIONS = {
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
     "reranker-rewriter": "Re-Ranker & Re-Writer",
+    "file-management": "File Management",
+    groups: "Groups",
   },
 
   // Page Definitions
@@ -102,6 +104,7 @@ const TRANSLATIONS = {
     vector: "Vector Database",
     members: "Members",
     agent: "Agent Configuration",
+    groups: "Groups",
   },
 
   // General Appearance

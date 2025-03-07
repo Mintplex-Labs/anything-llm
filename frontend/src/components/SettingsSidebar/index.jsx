@@ -317,6 +317,11 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin", "manager"],
             },
             {
+              btnText: t("settings.groups"),
+              href: paths.settings.groups(),
+              roles: ["admin", "manager"],
+            },
+            {
               btnText: t("settings.workspaces"),
               href: paths.settings.workspaces(),
               roles: ["admin", "manager"],
@@ -325,6 +330,12 @@ const SidebarOptions = ({ user = null, t }) => (
               hidden: !canViewChatHistory,
               btnText: t("settings.workspace-chats"),
               href: paths.settings.chats(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
+            {
+              btnText: t("settings.file-management"),
+              href: paths.settings.fileManagement(),
               flex: true,
               roles: ["admin", "manager"],
             },
@@ -339,14 +350,14 @@ const SidebarOptions = ({ user = null, t }) => (
             //     ]),
           ]}
         />
-        {/* <Option
+        <Option
           btnText={t("settings.agent-skills")}
           icon={<Robot className="h-5 w-5 flex-shrink-0" />}
           href={paths.settings.agentSkills()}
           user={user}
           flex={true}
           roles={["admin"]}
-        /> */}
+        />
         {/* <Option
           btnText="Community Hub"
           icon={<Globe className="h-5 w-5 flex-shrink-0" />}
