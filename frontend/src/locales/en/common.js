@@ -70,6 +70,7 @@ const TRANSLATIONS = {
     optional: "Optional",
     yes: "Yes",
     no: "No",
+    create: "Create",
   },
 
   // Setting Sidebar menu items.
@@ -100,6 +101,16 @@ const TRANSLATIONS = {
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
+    CommunityHub: "Community Hub",
+    "Explore-Trending": "Explore Trending",
+    "Your-Account": "Your Account",
+    "Import-Item": "Import Item",
+    OpenSettings: "Open settings",
+    JoinDiscord: "Join the AnythingLLM Discord",
+    helpDocs: "Open AnythingLLM help docs",
+    GitHubCode: "View source code on GitHub",
+    HideSidebar: "Hide Sidebar ",
+    ShowSidebar: "Show Sidebar ",
   },
 
   // Page Definitions

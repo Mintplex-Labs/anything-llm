@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { SidebarSimple } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
+
 const SIDEBAR_TOGGLE_STORAGE_KEY = "anythingllm_sidebar_toggle";
 
 /**
@@ -70,23 +72,25 @@ export function useSidebarToggle() {
 export function ToggleSidebarButton({ showSidebar, setShowSidebar }) {
   const isMac = navigator.userAgent.includes("Mac");
   const shortcut = isMac ? "⌘ + Shift + S" : "Ctrl + Shift + S";
-
+  const { t } = useTranslation();
+  const isRTL = document.documentElement.dir === "rtl";
   return (
     <>
       <button
         type="button"
-        className={`hidden md:block border-none bg-transparent outline-none ring-0 transition-left duration-500 ${showSidebar ? "left-[247px]" : "absolute top-[20px] left-[30px] z-10"}`}
+        style={isRTL ? { right: 30 } : { left: 30 }}
+        className={`hidden md:block border-none bg-transparent outline-none ring-0 transition-left duration-500 ${showSidebar ? "left-[247px]" : "absolute top-[20px] z-10"}`}
         onClick={() => setShowSidebar((prev) => !prev)}
         data-tooltip-id="sidebar-toggle"
         data-tooltip-content={
           showSidebar
-            ? `Hide Sidebar (${shortcut})`
-            : `Show Sidebar (${shortcut})`
+            ? `${t("settings.HideSidebar")}(${shortcut})`
+            : `${t("settings.ShowSidebar")}(${shortcut})`
         }
         aria-label={
           showSidebar
-            ? `Hide Sidebar (${shortcut})`
-            : `Show Sidebar (${shortcut})`
+            ? `${t("settings.HideSidebar")}(${shortcut})`
+            : `${t("settings.ShowSidebar")}(${shortcut})`
         }
       >
         <SidebarSimple

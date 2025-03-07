@@ -6,6 +6,7 @@ import "@/utils/chat/themes/github-dark.css";
 import "@/utils/chat/themes/github.css";
 
 export default function CodeSnippetModal({ embed, closeModal }) {
+  const isRTL = document.documentElement.dir === "rtl";
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
       <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
@@ -18,7 +19,7 @@ export default function CodeSnippetModal({ embed, closeModal }) {
           <button
             onClick={closeModal}
             type="button"
-            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            className={`absolute top-4  ${isRTL ? "left-4" : "right-4"} transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border`}
           >
             <X size={24} weight="bold" className="text-white" />
           </button>
