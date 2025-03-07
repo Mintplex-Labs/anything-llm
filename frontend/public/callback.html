@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+
+  <body>
+    <script type="module">
+      function getToken() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get("token");
+      }
+      const message = {
+        type: "AUTH_SUCCESS", // Define a type
+        token: getToken(),
+      };
+      window.opener.postMessage(message, "*"); // Use window.opener if it's a popup
+      setTimeout(() => {
+        window.close();
+      }, [400])
+    </script>
+  </body>
+</html>

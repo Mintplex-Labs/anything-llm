@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+
+  <body>
+    <script type="module">
+      const authUrl = `https://dev2.digixt.ae/auth/realms/Dof/protocol/openid-connect/auth?` +
+      `client_id=prism-chatbot` +
+      `&response_type=code` +  // Authorization Code Flow
+      `&redirect_uri=https://dev-ask-dof.saal.ai/api/auth/callback/chat-plugin?redirecturl=https://dev-ask-dof.saal.ai/callback.html?token=abcdefghi` +
+      `&scope=openid`;
+
+      window.location.href = authUrl;
+      // var keycloak = new Keycloak({
+      //   url: "https://dev2.digixt.ae/auth",
+      //   realm: "Dof",
+      //   clientId: "prism-teams",
+      // });
+
+      // keycloak
+      //   .init({ onLoad: "login-required" })
+      //   .then(function (auth) {
+      //     if (auth) {
+      //       window.close();
+      //       // Success
+      //     } else {
+      //       // Error
+      //     }
+      //   })
+      //   .catch(function () {
+      //     // Error
+      //   });
+    </script>
+  </body>
+</html>
