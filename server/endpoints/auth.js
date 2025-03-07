@@ -29,6 +29,7 @@ const setCookies = (res, userDetails, userGroups) => {
     maxAge: 900000,
     httpOnly: false,
     secure: false,
+    SameSite: "None",
   };
   res.cookie("token", fullAuthResponse.token, cookieConfig);
   res.cookie(
