@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import React, { memo, useState } from "react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
@@ -34,6 +34,8 @@ function combineLikeSources(sources) {
   });
   return Object.values(combined);
 }
+
+export { CitationDetailModal };
 
 export default function Citations({ sources = [] }) {
   if (sources.length === 0) return null;
@@ -102,7 +104,9 @@ function omitChunkHeader(text) {
 }
 
 function CitationDetailModal({ source, onClose }) {
-  const { references, title, chunks } = source;
+  if (!source) return null;
+  
+  const { references, title, chunks = [] } = source || {};
   const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
 
   return (
@@ -124,7 +128,7 @@ function CitationDetailModal({ source, onClose }) {
               </a>
             ) : (
               <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-                {truncate(title, 45)}
+                {truncate(title || "Unknown Source", 45)}
               </h3>
             )}
           </div>
@@ -146,9 +150,9 @@ function CitationDetailModal({ source, onClose }) {
           style={{ maxHeight: "calc(100vh - 200px)" }}
         >
           <div className="py-7 px-9 space-y-2 flex-col">
-            {chunks.map(({ text, score }, idx) => (
-              <>
-                <div key={idx} className="pt-6 text-white">
+            {chunks.map(({ text = "", score }, idx) => (
+              <React.Fragment key={idx}>
+                <div className="pt-6 text-white">
                   <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
                     <p className="text-white whitespace-pre-line">
                       {HTMLDecode(omitChunkHeader(text))}
@@ -171,7 +175,7 @@ function CitationDetailModal({ source, onClose }) {
                 {idx !== chunks.length - 1 && (
                   <hr className="border-theme-modal-border" />
                 )}
-              </>
+              </React.Fragment>
             ))}
             <div className="mb-6"></div>
           </div>

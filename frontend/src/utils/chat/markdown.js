@@ -6,6 +6,9 @@ import "./themes/github-dark.css";
 import "./themes/github.css";
 import { v4 } from "uuid";
 
+// 인용 참조 링크 패턴 (예: [1], [source 1], [doc 3] 등)
+const CITATION_LINK_REGEX = /\[(\d+|source\s+\d+|doc\s+\d+)\]/g;
+
 const markdown = markdownIt({
   html: false,
   typographer: true,
@@ -51,6 +54,77 @@ const markdown = markdownIt({
     );
   },
 });
+
+// 인용 참조 링크를 클릭 가능한 링크로 변환하는 커스텀 룰 추가
+markdown.core.ruler.push('citation_links', state => {
+  if (!state.tokens || !state.env) return;
+  
+  for (let i = 0; i < state.tokens.length; i++) {
+    if (state.tokens[i].type === 'inline') {
+      const tokens = state.tokens[i].children;
+      
+      for (let j = 0; j < tokens.length; j++) {
+        if (tokens[j].type === 'text') {
+          const text = tokens[j].content;
+          const matches = text.match(CITATION_LINK_REGEX);
+          
+          if (matches) {
+            let lastPos = 0;
+            const newTokens = [];
+            
+            text.replace(CITATION_LINK_REGEX, (match, p1, offset) => {
+              // 매치 전 텍스트 추가
+              if (offset > lastPos) {
+                const textToken = new state.Token('text', '', 0);
+                textToken.content = text.slice(lastPos, offset);
+                newTokens.push(textToken);
+              }
+              
+              // 링크 오픈 토큰
+              const linkOpenToken = new state.Token('citation_link_open', 'a', 1);
+              linkOpenToken.attrSet('href', '#');
+              linkOpenToken.attrSet('class', 'citation-link text-sky-400 hover:text-sky-300');
+              linkOpenToken.attrSet('data-citation-index', p1.replace(/\D/g, ''));
+              newTokens.push(linkOpenToken);
+              
+              // 텍스트 토큰
+              const textToken = new state.Token('text', '', 0);
+              textToken.content = match;
+              newTokens.push(textToken);
+              
+              // 링크 클로즈 토큰
+              const linkCloseToken = new state.Token('citation_link_close', 'a', -1);
+              newTokens.push(linkCloseToken);
+              
+              lastPos = offset + match.length;
+            });
+            
+            // 나머지 텍스트 추가
+            if (lastPos < text.length) {
+              const textToken = new state.Token('text', '', 0);
+              textToken.content = text.slice(lastPos);
+              newTokens.push(textToken);
+            }
+            
+            // 원래 토큰을 새 토큰들로 교체
+            tokens.splice(j, 1, ...newTokens);
+            j += newTokens.length - 1;
+          }
+        }
+      }
+    }
+  }
+});
+
+// 새로운 토큰 타입에 대한 렌더러 추가
+markdown.renderer.rules.citation_link_open = function(tokens, idx) {
+  const token = tokens[idx];
+  return `<a href="#" class="${token.attrGet('class')}" data-citation-index="${token.attrGet('data-citation-index')}">`;
+};
+
+markdown.renderer.rules.citation_link_close = function() {
+  return '</a>';
+};
 
 // Add custom renderer for strong tags to handle theme colors
 markdown.renderer.rules.strong_open = () => '<strong class="text-white">';
