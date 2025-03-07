@@ -1,17 +1,16 @@
 import DOMPurify from "dompurify";
 
-// DOMPurify 설정: 인용 링크 클릭을 허용하도록 설정
+// DOMPurify 설정
+DOMPurify.setConfig({
+  ADD_ATTR: ['target', 'rel', 'data-citation-index']
+});
+
+// 외부 링크 처리를 위한 훅
 DOMPurify.addHook("afterSanitizeAttributes", function(node) {
-  // citation-link 클래스를 가진 링크만 처리
-  if (node.tagName === 'A' && node.classList.contains('citation-link')) {
-    // data-citation-index 속성 유지
-    const citationIndex = node.getAttribute('data-citation-index');
-    if (citationIndex) {
-      // 클릭 이벤트용 커스텀 데이터 속성 설정
-      node.setAttribute('data-citation-index', citationIndex);
-      // href는 안전하게 # 으로 설정
-      node.setAttribute('href', '#');
-    }
+  // A 태그에 대해 target과 rel 속성 설정
+  if (node.tagName === 'A' && node.getAttribute('href') && !node.hasAttribute('target')) {
+    node.setAttribute('target', '_blank');
+    node.setAttribute('rel', 'noopener noreferrer');
   }
 });
 
