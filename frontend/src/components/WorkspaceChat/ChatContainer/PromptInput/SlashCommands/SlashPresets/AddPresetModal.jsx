@@ -22,7 +22,6 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
     const value = e.target.value.replace(CMD_REGEX, "");
     setCommand(value);
   };
-  const isRTL = document.documentElement.dir === "rtl";
 
   return (
     <ModalWrapper isOpen={isOpen}>
@@ -36,7 +35,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
           <button
             onClick={onClose}
             type="button"
-            className={`absolute top-4  ${isRTL ? "left-4" : "right-4"} transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border`}
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
             <X size={24} weight="bold" className="text-white" />
           </button>

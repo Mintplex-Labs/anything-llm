@@ -16,7 +16,6 @@ import SettingsButton from "../SettingsButton";
 import { isMobile } from "react-device-detect";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 
 export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
@@ -33,7 +32,6 @@ export const ICON_COMPONENTS = {
 
 export default function Footer() {
   const [footerData, setFooterData] = useState(false);
-  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchFooterData() {
@@ -59,7 +57,7 @@ export default function Footer() {
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Find us on GitHub"
               data-tooltip-id="footer-item"
-              data-tooltip-content={t("settings.GitHubCode")}
+              data-tooltip-content="View source code on GitHub"
             >
               <GithubLogo
                 weight="fill"
@@ -76,7 +74,7 @@ export default function Footer() {
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Docs"
               data-tooltip-id="footer-item"
-              data-tooltip-content={t("settings.helpDocs")}
+              data-tooltip-content="Open AnythingLLM help docs"
             >
               <BookOpen
                 weight="fill"
@@ -93,7 +91,7 @@ export default function Footer() {
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
               aria-label="Join our Discord server"
               data-tooltip-id="footer-item"
-              data-tooltip-content={t("settings.JoinDiscord")}
+              data-tooltip-content="Join the AnythingLLM Discord"
             >
               <DiscordLogo
                 weight="fill"

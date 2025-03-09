@@ -38,7 +38,6 @@ export default function BrowserExtensionApiKeys() {
   const removeApiKey = (id) => {
     setApiKeys((prevKeys) => prevKeys.filter((apiKey) => apiKey.id !== id));
   };
-  const isRTL = document.documentElement.dir === "rtl";
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
@@ -82,9 +81,7 @@ export default function BrowserExtensionApiKeys() {
             ) : error ? (
               <div className="text-red-500 mt-6">Error: {error}</div>
             ) : (
-              <table
-                className={`w-full text-sm ${isRTL ? "text-right" : "text-left"} rounded-lg min-w-[640px] border-spacing-0 md:mt-6 mt-0`}
-              >
+              <table className="w-full text-sm text-left rounded-lg min-w-[640px] border-spacing-0 md:mt-6 mt-0">
                 <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
                   <tr>
                     <th scope="col" className="px-6 py-3 rounded-tl-lg">

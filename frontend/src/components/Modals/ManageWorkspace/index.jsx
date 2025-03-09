@@ -38,7 +38,6 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   if (!workspace) return null;
 
   if (isMobile) {
-    const isRTL = document.documentElement.dir === "rtl";
     return (
       <ModalWrapper isOpen={true}>
         <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
@@ -51,7 +50,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             <button
               onClick={hideModal}
               type="button"
-              className={`absolute top-4  ${isRTL ? "left-4" : "right-4"} transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border`}
+              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
             >
               <X size={24} weight="bold" className="text-white" />
             </button>

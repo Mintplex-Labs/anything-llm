@@ -44,13 +44,10 @@ export default function Members({ workspace }) {
       />
     );
   }
-  const isRTL = document.documentElement.dir === "rtl";
 
   return (
     <div className="flex justify-between -mt-3">
-      <table
-        className={`w-full text-sm ${isRTL ? "text-right" : "text-left"} rounded-lg min-w-[640px] border-spacing-0`}
-      >
+      <table className="w-full max-w-[700px] text-sm text-left rounded-lg">
         <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white/10 border-b border-opacity-60">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">

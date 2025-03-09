@@ -102,7 +102,6 @@ export default function AgentLLMSelection({
   }, [searchQuery, selectedLLM]);
 
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
-  const isRTL = document.documentElement.dir === "rtl";
   return (
     <div className="border-b border-white/40 pb-8">
       {WARN_PERFORMANCE.includes(selectedLLM) && (
@@ -132,9 +131,7 @@ export default function AgentLLMSelection({
           />
         )}
         {searchMenuOpen ? (
-          <div
-            className={`absolute top-0 ${isRTL ? "right-0" : "left-0"} w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20`}
-          >
+          <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
             <div className="w-full flex flex-col gap-y-1">
               <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
                 <MagnifyingGlass
