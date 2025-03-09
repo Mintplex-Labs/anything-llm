@@ -93,6 +93,16 @@ const TRANSLATIONS = {
     "experimental-features": "实验功能",
     contact: "联系支持",
     "browser-extension": "浏览器扩展",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -139,6 +149,7 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "新工作区",
     placeholder: "我的工作区",
+    create: null,
   },
   "workspaces—settings": {
     general: "通用设置",
@@ -325,6 +336,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "外观",
     description: "自定义平台的外观设置。",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "自定义图标",
       description: "上传你的自定义图标，让你的聊天机器人成为你的。",
@@ -349,6 +378,16 @@ const TRANSLATIONS = {
       description: "自定义侧边栏底部显示的页脚图标。",
       icon: "图标",
       link: "链接",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {

@@ -89,6 +89,16 @@ const TRANSLATIONS = {
     "experimental-features": "ویژگی‌های آزمایشی",
     contact: "تماس با پشتیبانی",
     "browser-extension": "افزونه مرورگر",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -136,6 +146,7 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "فضای کاری جدید",
     placeholder: "فضای کاری من",
+    create: null,
   },
   "workspaces—settings": {
     general: "تنظیمات عمومی",
@@ -335,6 +346,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "ظاهر",
     description: "تنظیمات ظاهری پلتفرم خود را شخصی‌سازی کنید.",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "شخصی‌سازی لوگو",
       description: "لوگوی سفارشی خود را برای شخصی‌سازی ربات گفتگو آپلود کنید.",
@@ -361,6 +390,16 @@ const TRANSLATIONS = {
         "آیکون‌های نمایش داده شده در پایین نوار کناری را شخصی‌سازی کنید.",
       icon: "آیکون",
       link: "لینک",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {

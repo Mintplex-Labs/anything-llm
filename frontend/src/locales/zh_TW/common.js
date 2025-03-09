@@ -93,6 +93,16 @@ const TRANSLATIONS = {
     "experimental-features": "實驗性功能",
     contact: "聯絡支援",
     "browser-extension": "瀏覽器擴充功能",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -139,6 +149,7 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "新增工作區",
     placeholder: "我的工作區",
+    create: null,
   },
   "workspaces—settings": {
     general: "一般設定",
@@ -326,6 +337,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "外觀",
     description: "自訂平台的外觀設定。",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "自訂 Logo",
       description: "上傳您的自訂 Logo，讓您的對話機器人更具個人特色。",
@@ -350,6 +379,16 @@ const TRANSLATIONS = {
       description: "自訂顯示在側邊欄底端的頁尾圖示。",
       icon: "圖示",
       link: "連結",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {

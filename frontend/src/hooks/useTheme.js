@@ -1,10 +1,6 @@
 import { REFETCH_LOGO_EVENT } from "@/LogoContext";
 import { useState, useEffect } from "react";
-
-const availableThemes = {
-  default: "Default",
-  light: "Light",
-};
+import { useTranslation } from "react-i18next";
 
 /**
  * Determines the current theme of the application
@@ -14,7 +10,11 @@ export function useTheme() {
   const [theme, _setTheme] = useState(() => {
     return localStorage.getItem("theme") || "default";
   });
-
+  const { t } = useTranslation();
+  const availableThemes = {
+    default: t("appearance.themePreference.theme"),
+    light: t("appearance.themePreference.light"),
+  };
   useEffect(() => {
     if (localStorage.getItem("theme") !== null) return;
     if (!window.matchMedia) return;

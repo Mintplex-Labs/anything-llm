@@ -89,6 +89,16 @@ const TRANSLATIONS = {
     "experimental-features": "Experimentelle Funktionen",
     contact: "Support kontaktieren",
     "browser-extension": "Browser-Erweiterung",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -137,6 +147,7 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "Neuer Arbeitsbereich",
     placeholder: "Mein Arbeitsbereich",
+    create: null,
   },
   "workspaces—settings": {
     general: "Allgemeine Einstellungen",
@@ -338,6 +349,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "Erscheinungsbild",
     description: "Passen Sie die Erscheinungseinstellungen Ihrer Plattform an.",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "Logo anpassen",
       description:
@@ -365,6 +394,16 @@ const TRANSLATIONS = {
         "Passen Sie die Fußzeilen-Icons an, die am unteren Rand der Seitenleiste angezeigt werden.",
       icon: "Icon",
       link: "Link",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {

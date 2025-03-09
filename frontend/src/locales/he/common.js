@@ -89,6 +89,16 @@ const TRANSLATIONS = {
     "experimental-features": "תכונות ניסיוניות",
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -135,6 +145,7 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "סביבת עבודה חדשה",
     placeholder: "סביבת העבודה שלי",
+    create: null,
   },
   "workspaces—settings": {
     general: "הגדרות כלליות",
@@ -331,6 +342,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "מראה",
     description: "התאם אישית את הגדרות המראה של הפלטפורמה שלך.",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "התאם אישית את הלוגו",
       description:
@@ -356,6 +385,16 @@ const TRANSLATIONS = {
       description: "התאם אישית את סמלי כותרת התחתונה המוצגים בתחתית סרגל הצד.",
       icon: "סמל",
       link: "קישור",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {

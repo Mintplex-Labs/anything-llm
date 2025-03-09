@@ -89,6 +89,16 @@ const TRANSLATIONS = {
     "experimental-features": "Экспериментальные функции",
     contact: "联系支持Связаться с Поддержкой",
     "browser-extension": "Расширение браузера",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -137,6 +147,7 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "Новая Рабочая Область",
     placeholder: "Моя Рабочая Область",
+    create: null,
   },
   "workspaces—settings": {
     general: "Общие настройки",
@@ -338,6 +349,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "Внешний вид",
     description: "Настройте параметры внешнего вида вашей платформы.",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "Настроить логотип",
       description:
@@ -365,6 +394,16 @@ const TRANSLATIONS = {
         "Настройте иконки в подвале, отображаемые внизу боковой панели.",
       icon: "Иконка",
       link: "Ссылка",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {

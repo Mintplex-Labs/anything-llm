@@ -89,6 +89,16 @@ const TRANSLATIONS = {
     "experimental-features": "Fonctionnalités Expérimentales",
     contact: "Contacter le Support",
     "browser-extension": "Extension de navigateur",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -137,6 +147,7 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "Nouveau Espace de Travail",
     placeholder: "Mon Espace de Travail",
+    create: null,
   },
   "workspaces—settings": {
     general: "Paramètres généraux",
@@ -343,6 +354,24 @@ const TRANSLATIONS = {
     title: "Apparence",
     description:
       "Personnalisez les paramètres d'apparence de votre plateforme.",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "Personnaliser le logo",
       description:
@@ -370,6 +399,16 @@ const TRANSLATIONS = {
         "Personnalisez les icônes de pied de page affichées en bas de la barre latérale.",
       icon: "Icône",
       link: "Lien",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {

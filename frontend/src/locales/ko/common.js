@@ -89,6 +89,16 @@ const TRANSLATIONS = {
     "experimental-features": "실험적 기능",
     contact: "지원팀 연락",
     "browser-extension": "브라우저 확장 프로그램",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -115,6 +125,7 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "새 워크스페이스",
     placeholder: "내 워크스페이스",
+    create: null,
   },
   "workspaces—settings": {
     general: "일반 설정",
@@ -331,6 +342,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "외관",
     description: "플랫폼의 외관 설정을 수정합니다.",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "사용자 로고",
       description:
@@ -356,6 +385,16 @@ const TRANSLATIONS = {
       description: "사이드바 하단에 표시되는 아이콘을 수정합니다.",
       icon: "아이콘",
       link: "링크",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {

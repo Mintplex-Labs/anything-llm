@@ -89,6 +89,16 @@ const TRANSLATIONS = {
     "experimental-features": "Recursos Experimentais",
     contact: "Contato com Suporte",
     "browser-extension": "Extensão do navegador",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -137,6 +147,7 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "Novo Workspace",
     placeholder: "Meu Workspace",
+    create: null,
   },
   "workspaces—settings": {
     general: "Configurações Gerais",
@@ -338,6 +349,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "Aparência",
     description: "Personalize as configurações de aparência da sua plataforma.",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "Personalizar Logo",
       description:
@@ -365,6 +394,16 @@ const TRANSLATIONS = {
         "Personalize os ícones de rodapé exibidos na parte inferior da barra lateral.",
       icon: "Ícone",
       link: "Link",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {
