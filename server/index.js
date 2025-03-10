@@ -83,7 +83,8 @@ const startApp = () => {
           // Disable I-framing of entire site UI
           res.removeHeader("X-Powered-By");
           // res.setHeader("X-Frame-Options", "DENY"); 
-          res.setHeader("X-Frame-Options", "ALLOW-FROM https://teams.microsoft.com");
+          // res.setHeader("X-Frame-Options", "ALLOW-FROM https://teams.microsoft.com");
+          res.setHeader("Content-Security-Policy", "frame-ancestors https://teams.microsoft.com;")
         },
       })
     );
