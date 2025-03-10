@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script
+      type="module"
+      src="/embed/microsoft-teams.js"
+    >
+    </script>
+  </head>
+
+  <body>
+    <script type="module">
+       microsoftTeams.app.initialize().then(() => {
+        microsoftTeams.authentication.notifySuccess(document.cookie);
+        console.log("Teams SDK initialized successfully!");
+        window.close();
+      })
+      .catch((error) => {
+        console.error("Teams SDK initialization failed:", error);
+        window.close();
+      })
+    </script>
+  </body>
+</html>
