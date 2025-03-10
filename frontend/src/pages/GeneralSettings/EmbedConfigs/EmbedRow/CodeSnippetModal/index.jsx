@@ -63,7 +63,9 @@ function createScriptTagSnippet(embed, scriptHost, serverHost) {
   return `<!-- Paste this script at the bottom of your HTML before the </body> tag. -->
   <script
     data-embed-id="${embed.uuid}"
-    data-base-api-url="${serverHost}/api/embed"
+    data-base-url="${serverHost}/api"
+    data-is-team-enabled="false"
+    data-is-open-by-default="false"
     src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
   </script>
   `;
