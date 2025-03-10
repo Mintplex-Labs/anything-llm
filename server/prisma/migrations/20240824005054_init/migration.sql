@@ -1,10 +1,10 @@
 -- CreateTable
 CREATE TABLE "browser_extension_api_keys" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" BIGSERIAL PRIMARY KEY,
     "key" TEXT NOT NULL,
     "user_id" INTEGER,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "lastUpdatedAt" DATETIME NOT NULL,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUpdatedAt" TIMESTAMP NOT NULL,
     CONSTRAINT "browser_extension_api_keys_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
