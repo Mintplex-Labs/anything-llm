@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Document from "@/models/document";
+import { useTranslation } from "react-i18next";
 
 export default function NewFolderModal({ closeModal, files, setFiles }) {
+  const { t } = useTranslation();
   const [error, setError] = useState(null);
   const [folderName, setFolderName] = useState("");
 
@@ -34,7 +36,7 @@ export default function NewFolderModal({ closeModal, files, setFiles }) {
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              Create New Folder
+              {t("new_folder.folder")}
             </h3>
           </div>
           <button
@@ -53,13 +55,13 @@ export default function NewFolderModal({ closeModal, files, setFiles }) {
                   htmlFor="folderName"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Folder Name
+                  {t("new_folder.folder")}
                 </label>
                 <input
                   name="folderName"
                   type="text"
                   className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                  placeholder="Enter folder name"
+                  placeholder={t("new_folder.placeholder")}
                   required={true}
                   autoComplete="off"
                   value={folderName}
@@ -74,13 +76,13 @@ export default function NewFolderModal({ closeModal, files, setFiles }) {
                 type="button"
                 className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
-                Create Folder
+                {t("new_folder.create")}
               </button>
             </div>
           </form>

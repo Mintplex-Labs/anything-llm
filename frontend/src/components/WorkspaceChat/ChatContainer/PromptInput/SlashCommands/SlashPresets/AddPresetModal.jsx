@@ -2,8 +2,10 @@ import { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { CMD_REGEX } from ".";
+import { useTranslation } from "react-i18next";
 
 export default function AddPresetModal({ isOpen, onClose, onSave }) {
+  const { t } = useTranslation();
   const [command, setCommand] = useState("");
 
   const handleSubmit = async (e) => {
@@ -29,7 +31,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
         <div className="relative p-6 border-b rounded-t border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              Add New Preset
+              {t("preset.add")}
             </h3>
           </div>
           <button
@@ -52,7 +54,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                     htmlFor="command"
                     className="block mb-2 text-sm font-medium text-white"
                   >
-                    Command
+                    {t("preset.fields.command.title")}
                   </label>
                   <div className="flex items-center">
                     <span className="text-white text-sm mr-2 font-bold">/</span>
@@ -60,7 +62,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                       name="command"
                       type="text"
                       id="command"
-                      placeholder="your-command"
+                      placeholder={t("preset.fields.command.placeholder")}
                       value={command}
                       onChange={handleCommandChange}
                       maxLength={25}
@@ -75,13 +77,13 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                     htmlFor="prompt"
                     className="block mb-2 text-sm font-medium text-white"
                   >
-                    Prompt
+                    {t("preset.fields.prompt.title")}
                   </label>
                   <textarea
                     name="prompt"
                     id="prompt"
                     autoComplete="off"
-                    placeholder="This is the content that will be injected in front of your prompt."
+                    placeholder={t("preset.fields.prompt.placeholder")}
                     required={true}
                     className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   ></textarea>
@@ -91,13 +93,13 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                     htmlFor="description"
                     className="block mb-2 text-sm font-medium text-white"
                   >
-                    Description
+                    {t("preset.fields.description.title")}
                   </label>
                   <input
                     type="text"
                     name="description"
                     id="description"
-                    placeholder="Responds with a poem about LLMs."
+                    placeholder={t("preset.fields.description.placeholder")}
                     maxLength={80}
                     autoComplete="off"
                     required={true}
@@ -112,13 +114,13 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                 type="button"
                 className="transition-all duration-300 bg-transparent text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
-                Save
+                {t("common.save")}
               </button>
             </div>
           </form>

@@ -1,6 +1,8 @@
 import { useLanguageOptions } from "@/hooks/useLanguageOptions";
+import { useTranslation } from "react-i18next";
 
 export default function LanguagePreference() {
+  const { t } = useTranslation();
   const {
     currentLanguage,
     supportedLanguages,
@@ -12,11 +14,10 @@ export default function LanguagePreference() {
     <>
       <div className="flex flex-col gap-y-1 mt-6">
         <h2 className="text-base leading-6 font-bold text-white">
-          Display Language
+          {t("appearance.language.title")}
         </h2>
-        <p className="text-xs leading-[18px] font-base text-white/60">
-          Select the preferred language to render A-Insight's UI in, when
-          applicable.
+        <p className="text-xs leading-[18px] font-base text-white/60">        
+          {t("appearance.language.description")}
         </p>
       </div>
       <div className="flex items-center gap-x-4">

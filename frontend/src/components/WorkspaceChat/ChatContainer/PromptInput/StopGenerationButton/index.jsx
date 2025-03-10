@@ -1,7 +1,9 @@
 import { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
 
 export default function StopGenerationButton() {
+  const { t } = useTranslation();
   function emitHaltEvent() {
     window.dispatchEvent(new CustomEvent(ABORT_STREAM_EVENT));
   }
@@ -12,7 +14,7 @@ export default function StopGenerationButton() {
         type="button"
         onClick={emitHaltEvent}
         data-tooltip-id="stop-generation-button"
-        data-tooltip-content="Stop generating response"
+        data-tooltip-content={t("action.stop_regenerate")}
         className="border-none text-white/60 cursor-pointer group -mr-1.5 mt-1.5"
         aria-label="Stop generating"
       >

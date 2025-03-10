@@ -70,6 +70,8 @@ const TRANSLATIONS = {
     optional: "Optional",
     yes: "Yes",
     no: "No",
+    cancel: "Cancel",
+    updating: "Updating..."
   },
 
   // Setting Sidebar menu items.
@@ -152,6 +154,7 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "New Workspace",
     placeholder: "My Workspace",
+    save: "Save"
   },
 
   // Workspace Settings menu items
@@ -163,6 +166,16 @@ const TRANSLATIONS = {
     agent: "Agent Configuration",
   },
 
+  thread: {
+    rename: "Rename",
+    thread_rename: "What would you like to rename this thread to?",
+    delete: "Delete Thread",
+    deleted: "deleted thread",
+    delete_confirm: "Are you sure you want to delete this thread? All of its chats will be deleted. You cannot undo this.",
+    creating: "Starting Thread..",
+    add: "New Thread"
+  },
+
   // General Appearance
   general: {
     vector: {
@@ -171,6 +184,9 @@ const TRANSLATIONS = {
     },
     names: {
       description: "This will only change the display name of your workspace.",
+      placeholder: "My Workspace",
+      updating: "Updating...",
+      update: "Update workspace"
     },
     message: {
       title: "Suggested Chat Messages",
@@ -261,7 +277,7 @@ const TRANSLATIONS = {
 
   // Vector Database
   "vector-workspace": {
-    identifier: "Vector database identifier",
+    identifier: "Vector database identifier",  
     snippets: {
       title: "Max Context Snippets",
       description:
@@ -353,6 +369,8 @@ const TRANSLATIONS = {
     description:
       "These are all the recorded chats and messages that have been sent by users ordered by their creation date.",
     export: "Export",
+    clear: "Clear Chats",
+    clear_confirm: "Are you sure you want to clear all chats?\n\nThis action is irreversible.",
     table: {
       id: "Id",
       by: "Sent By",
@@ -361,12 +379,35 @@ const TRANSLATIONS = {
       response: "Response",
       at: "Sent At",
     },
+    next: "Next Page",
+    previous: "Previous Page",
+    delete: "Are you sure you want to delete this chat?\n\nThis action is irreversible."
   },
 
   // Appearance
   appearance: {
     title: "Appearance",
     description: "Customize the appearance settings of your platform.",
+    theme: {
+      title: "Theme",
+      description: "Select your preferred theme for the application.",
+      default: "Default",
+      light: "Light"
+    },
+    language: {
+      title: "Display Language",
+      description: "Select the preferred language to render A-Insight's UI in, when applicable."
+    },
+    align: {
+      title: "Message Chat Alignment",
+      description: "Select the message alignment mode when using the chat interface.",
+      left: "User and AI messages are aligned to the left (default)",
+      left_right: "User and AI messages are distributed left and right alternating each message"
+    },
+    scrollbar: {
+      title: "Show chat window scrollbar",
+      description: "Enable or disable the scrollbar in the chat window"
+    },
     logo: {
       title: "Customize Logo",
       description: "Upload your custom logo to make your chatbot yours.",
@@ -502,7 +543,6 @@ const TRANSLATIONS = {
       at: "Sent At",
     },
   },
-
   multi: {
     title: "Multi-User Mode",
     description:
@@ -513,7 +553,9 @@ const TRANSLATIONS = {
       description:
         "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Admin user can reset passwords.",
       username: "Admin account username",
+      username_placeholder: "Your admin username",
       password: "Admin account password",
+      password_placeholder: "Your admin password"
     },
     password: {
       title: "Password Protection",
@@ -525,6 +567,7 @@ const TRANSLATIONS = {
       description:
         "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Admin user can reset passwords.",
       password: "Instance password",
+      password_placeholder: "Your Instance Password"
     },
   },
 
@@ -539,6 +582,45 @@ const TRANSLATIONS = {
       user: "User",
       occurred: "Occurred At",
     },
+  },
+
+  dnd_upload: {
+    anything: "anything",
+    image: "an image",
+    file_explained_start: "Drop your file here to embed it into your",
+    file_explained_end: "workspace auto-magically.",
+    image_upload_explained_start: "Drop your image here to chat with it",
+    image_upload_explained_end: "auto-magically."
+  },
+
+  preset: {
+    reset_explained: "Clear your chat history and begin a new chat",
+    add: "Add New Preset",
+    edit: "Edit Preset",
+    fields: {
+      command: {
+        title: "Command",
+        placeholder: "your-command",
+      },
+      prompt: {
+        title: "Prompt",
+        placeholder: "This is the content that will be injected in front of your prompt."
+      },
+      description: {
+        title: "Description",
+        placeholder: "Responds with a poem about LLMs."
+      }
+    },       
+    delete: "Delete Preset",
+    deleting: "Deleting...",
+    delete_confirm: "Are you sure you want to delete this preset?"
+  },
+
+  new_folder: {
+    title: "Create New Folder",
+    folder: "Folder Name",
+    placeholder: "Enter folder name",
+    create: "Create Folder"
   },
 
   // Privacy & Data-Handling
@@ -717,6 +799,8 @@ const TRANSLATIONS = {
     },
     pinning: {
       what_pinning: "What is document pinning?",
+      pin: "Pin to workspace",
+      unpin: "Un-Pin from workspace",
       pin_explained_block1:
         "When you <b>pin</b> a document in A-Insight we will inject the entire content of the document into your prompt window for your LLM to fully comprehend.",
       pin_explained_block2:
@@ -724,6 +808,7 @@ const TRANSLATIONS = {
       pin_explained_block3:
         "If you are not getting the answers you desire from A-Insight by default then pinning is a great way to get higher quality answers in a click.",
       accept: "Okay, got it",
+      remove: "Remove document from workspace"
     },
     watching: {
       what_watching: "What does watching a document do?",
@@ -752,9 +837,38 @@ const TRANSLATIONS = {
     agents: "View all available agents you can use for chatting.",
     text_size: "Change text size.",
     microphone: "Speak your prompt.",
+    micro_alert: "A-Insight does not have access to microphone. Please enable for this site to use this feature.",
     send: "Send prompt message to workspace",
   },
-
+  action: {
+    copy: "Copy",
+    eidt: "Edit",
+    response: "Response",
+    prompt: "Prompt",
+    good: "Good response",
+    regenerate: "Regenerate response",
+    stop_regenerate: "Stop generating response",
+    save: "Save & Submit",
+    cancel: "Cancel",
+    more: "More actions",
+    fork: "Fork",
+    delete: "Delete",
+    show_citations: "Show Citations",
+    hide_citations: "Hide Citations",
+    tts: "TTS Speak message",
+    tts_stop: "Pause TTS speech of message",
+    hover_to_show: "Click to only show metrics when hovering",
+    auto_show: "Click to show metrics as soon as they are available",
+    hide_sidebar: "Hide Sidebar",
+    show_sidebar: "Show sidebar",
+    setting_page: "Open settings",
+    workspace_page: "Back to workspaces"
+  },
+  text_size: {
+    small: "Small",
+    normal: "Normal",
+    large: "Large"
+  },
   profile_settings: {
     edit_account: "Edit Account",
     profile_picture: "Profile Picture",

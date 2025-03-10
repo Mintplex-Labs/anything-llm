@@ -74,7 +74,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                 type="submit"
                 className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
-                Save
+                {t("new-workspace.save")}
               </button>
             </div>
           </form>

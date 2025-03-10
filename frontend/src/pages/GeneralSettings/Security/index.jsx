@@ -147,7 +147,7 @@ function MultiUserMode() {
                         name="username"
                         type="text"
                         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
-                        placeholder="Your admin username"
+                        placeholder={t("multi.enable.username_placeholder")}
                         minLength={2}
                         required={true}
                         autoComplete="off"
@@ -166,7 +166,7 @@ function MultiUserMode() {
                         name="password"
                         type="text"
                         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder focus:ring-blue-500"
-                        placeholder="Your admin password"
+                        placeholder={t("multi.enable.password_placeholder")}
                         minLength={8}
                         required={true}
                         autoComplete="off"
@@ -319,7 +319,7 @@ function PasswordProtection() {
                         name="password"
                         type="text"
                         className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-theme-settings-input-placeholder"
-                        placeholder="Your Instance Password"
+                        placeholder={t("multi.instance.password_placeholder")}
                         minLength={8}
                         required={true}
                         autoComplete="off"

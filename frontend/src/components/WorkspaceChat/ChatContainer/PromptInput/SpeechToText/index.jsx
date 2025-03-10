@@ -25,7 +25,7 @@ export default function SpeechToText({ sendCommand }) {
   function startSTTSession() {
     if (!isMicrophoneAvailable) {
       alert(
-        "A-Insight does not have access to microphone. Please enable for this site to use this feature."
+        t("chat_window.micro_alert")
       );
       return;
     }

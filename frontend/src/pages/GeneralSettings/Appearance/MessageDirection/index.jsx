@@ -1,22 +1,24 @@
 import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
 
 export function MessageDirection() {
+  const { t } = useTranslation();
   const { msgDirection, setMsgDirection } = useChatMessageAlignment();
 
   return (
     <div className="flex flex-col gap-y-1 mt-4">
       <h2 className="text-base leading-6 font-bold text-white">
-        Message Chat Alignment
+        {t("appearance.align.title")}
       </h2>
       <p className="text-xs leading-[18px] font-base text-white/60">
-        Select the message alignment mode when using the chat interface.
+        {t("appearance.align.description")}
       </p>
       <div className="flex flex-row flex-wrap gap-x-4 pt-1 gap-y-4 md:gap-y-0">
         <ItemDirection
           active={msgDirection === "left"}
           reverse={false}
-          msg="User and AI messages are aligned to the left (default)"
+          msg={t("appearance.align.left_explained")}
           onSelect={() => {
             setMsgDirection("left");
           }}
@@ -24,7 +26,7 @@ export function MessageDirection() {
         <ItemDirection
           active={msgDirection === "left_right"}
           reverse={true}
-          msg="User and AI messages are distributed left and right alternating each message"
+          msg={t("appearance.align.left_right_explained")}
           onSelect={() => {
             setMsgDirection("left_right");
           }}
