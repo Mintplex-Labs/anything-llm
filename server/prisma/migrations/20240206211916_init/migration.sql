@@ -1,10 +1,10 @@
 -- CreateTable
 CREATE TABLE "event_logs" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" BIGSERIAL PRIMARY KEY,
     "event" TEXT NOT NULL,
     "metadata" TEXT,
     "userId" INTEGER,
-    "occurredAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "occurredAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- CreateIndex

@@ -4,15 +4,15 @@ ALTER TABLE "workspaces" ADD COLUMN "agentProvider" TEXT;
 
 -- CreateTable
 CREATE TABLE "workspace_agent_invocations" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" BIGSERIAL PRIMARY KEY,
     "uuid" TEXT NOT NULL,
     "prompt" TEXT NOT NULL,
     "closed" BOOLEAN NOT NULL DEFAULT false,
     "user_id" INTEGER,
     "thread_id" INTEGER,
     "workspace_id" INTEGER NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "lastUpdatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUpdatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "workspace_agent_invocations_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "workspace_agent_invocations_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );

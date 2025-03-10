@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "embed_configs" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" BIGSERIAL PRIMARY KEY,
     "uuid" TEXT NOT NULL,
     "enabled" BOOLEAN NOT NULL DEFAULT false,
     "chat_mode" TEXT NOT NULL DEFAULT 'query',
@@ -13,14 +13,14 @@ CREATE TABLE "embed_configs" (
     "workspace_id" INTEGER NOT NULL,
     "createdBy" INTEGER,
     "usersId" INTEGER,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "embed_configs_workspace_id_fkey" FOREIGN KEY ("workspace_id") REFERENCES "workspaces" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "embed_configs_usersId_fkey" FOREIGN KEY ("usersId") REFERENCES "users" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "embed_chats" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" BIGSERIAL PRIMARY KEY,
     "prompt" TEXT NOT NULL,
     "response" TEXT NOT NULL,
     "session_id" TEXT NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE "embed_chats" (
     "connection_information" TEXT,
     "embed_id" INTEGER NOT NULL,
     "usersId" INTEGER,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "embed_chats_embed_id_fkey" FOREIGN KEY ("embed_id") REFERENCES "embed_configs" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "embed_chats_usersId_fkey" FOREIGN KEY ("usersId") REFERENCES "users" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
