@@ -27,9 +27,8 @@ const setCookies = (res, userDetails, userGroups) => {
   };
   const cookieConfig = {
     maxAge: 900000,
-    httpOnly: false,
-    secure: false,
-    SameSite: "None",
+    httpOnly: false,  // Secure from client-side JS access
+    secure: false,    // Required for SameSite=None
   };
   res.cookie("token", fullAuthResponse.token, cookieConfig);
   res.cookie(
@@ -165,6 +164,7 @@ function authEndpoints(app) {
       }
       setCookies(res, existingUser, userGroups);
       // redirecting to frontend app
+      // res.status(200).json({ success: true, redirectUrl: frontEndRedirect });
       res.redirect(frontEndRedirect);
     } catch (error) {
       console.log(error);
