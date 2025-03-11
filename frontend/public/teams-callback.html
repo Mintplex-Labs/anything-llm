@@ -13,7 +13,7 @@
        microsoftTeams.app.initialize().then(() => {
         microsoftTeams.authentication.notifySuccess(document.cookie);
         console.log("Teams SDK initialized successfully!");
-        window.close();
+        // window.close();
       })
       .catch((error) => {
         console.error("Teams SDK initialization failed:", error);
