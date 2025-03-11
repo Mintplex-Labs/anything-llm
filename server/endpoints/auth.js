@@ -9,7 +9,11 @@ const { ROLES } = require("../utils/middleware/multiUserProtected");
 const crypto = require("crypto");
 const { Workspace } = require("../models/workspace");
 const { KeycloakHelper } = require("../utils/keycloak");
-const ALLOWED_ENV_VARS = ["KC_BASE_URL", "KC_REALM", "KC_CLIENT_ID_CHAT_PLUGIN"]; // Define allowed env vars
+const ALLOWED_ENV_VARS = ["KC_BASE_URL", "KC_REALM", "KC_CLIENT_ID_CHAT_PLUGIN"];
+const ALLOWED_ENV_VARS_MAP = ALLOWED_ENV_VARS.reduce((acc, varName) => {
+  acc[varName.toLowerCase()] = varName; // Map lowercase name to actual env var name
+  return acc;
+}, {});
 
 const setCookies = (res, userDetails, userGroups) => {
   const fullAuthResponse = {
@@ -193,20 +197,24 @@ function authEndpoints(app) {
     res.json({ status: logoutResponse });
   });
 
-  app.get("/env/:slug", (req, res) => {
-    const requestedVar = req.params.slug;
+  app.get("/env", (req, res) => {
+    const requestedVars = req.query.vars;
 
-    if (!ALLOWED_ENV_VARS.includes(requestedVar)) {
-        return res.status(403).json({ error: "Access to this variable is not allowed" });
+    if (!requestedVars) {
+        return res.status(400).json({ error: "No variables requested. Use ?vars=VAR1,VAR2" });
     }
 
-    const value = process.env[requestedVar];
+    const requestedVarList = requestedVars.split(",").map(varName => varName.trim().toLowerCase()); // Normalize to lowercase
 
-    if (!value) {
-        return res.status(404).json({ error: "Variable not found or not set" });
-    }
+    const response = requestedVarList.reduce((acc, varName) => {
+        if (ALLOWED_ENV_VARS_MAP[varName]) {
+            const actualVarName = ALLOWED_ENV_VARS_MAP[varName]; // Get the actual case-sensitive env var name
+            acc[actualVarName] = process.env[actualVarName] || null; // If not set, return null
+        }
+        return acc;
+    }, {});
 
-    res.json({ [requestedVar]: value });
+    res.json(response);
 });
   // app.get("/auth/get-prism-token", async (req, res) => {
 
