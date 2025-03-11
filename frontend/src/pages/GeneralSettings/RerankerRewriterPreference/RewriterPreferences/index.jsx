@@ -57,7 +57,7 @@ function RewriterPreferences({
   return (
     <div className="w-full space-y-4">
       <TitleWithToggle />
-      {isRewriterEnabled && <PromptInput />}
+      {/* {isRewriterEnabled && <PromptInput />} */}
     </div>
   );
 }
