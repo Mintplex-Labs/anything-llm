@@ -51,23 +51,23 @@ export const configurableSkills = {
   //   icon: FileMagnifyingGlass,
   //   image: GenerateSaveImages,
   // },
-  "create-chart": {
-    title: "Generate charts",
-    description:
-      "Enable the default agent to generate various types of charts from data provided or given in chat.",
-    component: GenericSkillPanel,
-    skill: "create-chart",
-    icon: ChartBar,
-    image: GenerateChartsImage,
-  },
+  // "create-chart": {
+  //   title: "Generate charts",
+  //   description:
+  //     "Enable the default agent to generate various types of charts from data provided or given in chat.",
+  //   component: GenericSkillPanel,
+  //   skill: "create-chart",
+  //   icon: ChartBar,
+  //   image: GenerateChartsImage,
+  // },
   // "web-browsing": {
   //   title: "Web Search",
   //   component: AgentWebSearchSelection,
   //   skill: "web-browsing",
   // },
-  "sql-agent": {
-    title: "SQL Connector",
-    component: AgentSQLConnectorSelection,
-    skill: "sql-agent",
-  },
+  // "sql-agent": {
+  //   title: "SQL Connector",
+  //   component: AgentSQLConnectorSelection,
+  //   skill: "sql-agent",
+  // },
 };
