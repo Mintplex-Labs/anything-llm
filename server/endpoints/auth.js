@@ -9,6 +9,11 @@ const { ROLES } = require("../utils/middleware/multiUserProtected");
 const crypto = require("crypto");
 const { Workspace } = require("../models/workspace");
 const { KeycloakHelper } = require("../utils/keycloak");
+const ALLOWED_ENV_VARS = ["KC_BASE_URL", "KC_REALM", "KC_CLIENT_ID_CHAT_PLUGIN"];
+const ALLOWED_ENV_VARS_MAP = ALLOWED_ENV_VARS.reduce((acc, varName) => {
+  acc[varName.toLowerCase()] = varName; // Map lowercase name to actual env var name
+  return acc;
+}, {});
 
 const setCookies = (res, userDetails, userGroups) => {
   const fullAuthResponse = {
@@ -192,6 +197,25 @@ function authEndpoints(app) {
     res.json({ status: logoutResponse });
   });
 
+  app.get("/env", (req, res) => {
+    const requestedVars = req.query.vars;
+
+    if (!requestedVars) {
+        return res.status(400).json({ error: "No variables requested. Use ?vars=VAR1,VAR2" });
+    }
+
+    const requestedVarList = requestedVars.split(",").map(varName => varName.trim().toLowerCase()); // Normalize to lowercase
+
+    const response = requestedVarList.reduce((acc, varName) => {
+        if (ALLOWED_ENV_VARS_MAP[varName]) {
+            const actualVarName = ALLOWED_ENV_VARS_MAP[varName]; // Get the actual case-sensitive env var name
+            acc[actualVarName] = process.env[actualVarName] || null; // If not set, return null
+        }
+        return acc;
+    }, {});
+
+    res.json(response);
+});
   // app.get("/auth/get-prism-token", async (req, res) => {
 
   //   const authHeader = req.headers['authorization'];
