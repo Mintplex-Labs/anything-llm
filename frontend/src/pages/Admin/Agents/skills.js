@@ -65,9 +65,9 @@ export const configurableSkills = {
   //   component: AgentWebSearchSelection,
   //   skill: "web-browsing",
   // },
-  "sql-agent": {
-    title: "SQL Connector",
-    component: AgentSQLConnectorSelection,
-    skill: "sql-agent",
-  },
+  // "sql-agent": {
+  //   title: "SQL Connector",
+  //   component: AgentSQLConnectorSelection,
+  //   skill: "sql-agent",
+  // },
 };
