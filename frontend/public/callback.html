@@ -7,6 +7,7 @@
     <script type="module">
       const message = {
         type: "AUTH_SUCCESS", // Define a type
+        cookie: document?.cookie
       };
       window.opener.postMessage(message, "*");
       window.close();
