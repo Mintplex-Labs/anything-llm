@@ -9,6 +9,7 @@ const { ROLES } = require("../utils/middleware/multiUserProtected");
 const crypto = require("crypto");
 const { Workspace } = require("../models/workspace");
 const { KeycloakHelper } = require("../utils/keycloak");
+const ALLOWED_ENV_VARS = ["KC_BASE_URL", "KC_REALM", "KC_CLIENT_ID_CHAT_PLUGIN"]; // Define allowed env vars
 
 const setCookies = (res, userDetails, userGroups) => {
   const fullAuthResponse = {
@@ -192,6 +193,21 @@ function authEndpoints(app) {
     res.json({ status: logoutResponse });
   });
 
+  app.get("/env/:slug", (req, res) => {
+    const requestedVar = req.params.slug;
+
+    if (!ALLOWED_ENV_VARS.includes(requestedVar)) {
+        return res.status(403).json({ error: "Access to this variable is not allowed" });
+    }
+
+    const value = process.env[requestedVar];
+
+    if (!value) {
+        return res.status(404).json({ error: "Variable not found or not set" });
+    }
+
+    res.json({ [requestedVar]: value });
+});
   // app.get("/auth/get-prism-token", async (req, res) => {
 
   //   const authHeader = req.headers['authorization'];
