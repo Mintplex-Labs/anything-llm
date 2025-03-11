@@ -85,6 +85,7 @@ export default function PromptInput({
   function resetTextAreaHeight() {
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
+    textareaRef.current.dir = document.dir;
   }
 
   function checkForSlash(e) {
@@ -170,6 +171,11 @@ export default function PromptInput({
     const element = event.target;
     element.style.height = "auto";
     element.style.height = `${element.scrollHeight}px`;
+    if (element.value == "") {
+      element.dir = document.dir;
+    } else {
+      element.dir = "auto";
+    }
   }
 
   function handlePasteEvent(e) {

@@ -73,6 +73,7 @@ const HistoricalMessage = ({
 
   return (
     <div
+      dir="auto"
       key={uuid}
       onAnimationEnd={onEndAnimation}
       className={`${

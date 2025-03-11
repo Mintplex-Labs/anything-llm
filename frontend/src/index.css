@@ -991,3 +991,24 @@ does not extend the close button beyond the viewport. */
 .animate-thoughtTransition {
   animation: thoughtTransition 0.5s ease-out forwards;
 }
+
+/*RTL */
+[dir="rtl"] div.relative :nth-child(2).white-scrollbar {
+  left: auto;
+}
+
+[dir="rtl"] div.border-theme-modal-border button {
+  left: 1rem;
+  right: auto;
+}
+
+[dir="rtl"] div.duration-500 button.duration-500  {
+  right: 30px;
+  left: auto;
+}
+
+
+[dir="rtl"] div.w-screen :nth-child(2).no-scroll {
+  right: -18px;
+  left: 14px;
+}

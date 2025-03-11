@@ -1,6 +1,6 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { I18nextProvider } from "react-i18next";
+import { I18nextProvider, useTranslation } from "react-i18next";
 import { ContextWrapper } from "@/AuthContext";
 import PrivateRoute, {
   AdminRoute,
@@ -80,6 +80,17 @@ const CommunityHubImportItem = lazy(
 );
 
 export default function App() {
+  const { i18n } = useTranslation();
+  useEffect(() => {
+    if (i18n.resolvedLanguage) {
+      // Set the <html lang> attribute.
+      document.documentElement.lang = i18n.resolvedLanguage;
+
+      // Set the <html dir> attribute.
+      document.documentElement.dir = i18n.dir(i18n.resolvedLanguage);
+    }
+  }, [i18n, i18n.resolvedLanguage]);
+
   return (
     <ThemeProvider>
       <Suspense fallback={<FullScreenLoader />}>
