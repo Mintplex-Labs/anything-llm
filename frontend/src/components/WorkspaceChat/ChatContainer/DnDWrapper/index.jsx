@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
 import useUser from "@/hooks/useUser";
+import { useTranslation } from "react-i18next";
 
 export const DndUploaderContext = createContext();
 export const REMOVE_ATTACHMENT_EVENT = "ATTACHMENT_REMOVE";
@@ -209,6 +210,7 @@ export function DnDFileUploaderProvider({ workspace, children }) {
 }
 
 export default function DnDFileUploaderWrapper({ children }) {
+  const { t } = useTranslation();
   const { onDrop, ready, dragging, setDragging } =
     useContext(DndUploaderContext);
   const { getRootProps, getInputProps } = useDropzone({
@@ -235,18 +237,18 @@ export default function DnDFileUploaderWrapper({ children }) {
           <div className="flex flex-col gap-y-[14px] justify-center items-center">
             <img src={DndIcon} width={69} height={69} />
             <p className="text-white text-[24px] font-semibold">
-              Add {canUploadAll ? "anything" : "an image"}
+              {canUploadAll ? t("dnd_upload.anything") : t("dnd_upload.image")}
             </p>
             <p className="text-white text-[16px] text-center">
               {canUploadAll ? (
                 <>
-                  Drop your file here to embed it into your <br />
-                  workspace auto-magically.
+                  {t("dnd_upload.file_upload_explained_start")} <br />
+                  {t("dnd_upload.file_upload_explained_end")}
                 </>
               ) : (
                 <>
-                  Drop your image here to chat with it <br />
-                  auto-magically.
+                  {t("dnd_upload.image_upload_explained_start")} <br />
+                  {t("dnd_upload.image_upload_explained_end")}
                 </>
               )}
             </p>

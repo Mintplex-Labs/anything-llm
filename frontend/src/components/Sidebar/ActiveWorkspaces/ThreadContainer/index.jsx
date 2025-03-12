@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
 export const THREAD_RENAME_EVENT = "renameThread";
+import { useTranslation } from "react-i18next";
+
 
 export default function ThreadContainer({ workspace }) {
   const { threadSlug = null } = useParams();
@@ -157,6 +159,7 @@ export default function ThreadContainer({ workspace }) {
 }
 
 function NewThreadButton({ workspace }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const onClick = async () => {
     setLoading(true);
@@ -195,11 +198,11 @@ function NewThreadButton({ workspace }) {
 
         {loading ? (
           <p className="text-left text-white light:text-theme-text-primary text-sm">
-            Starting Thread...
+            {t("thread.creating")}
           </p>
         ) : (
           <p className="text-left text-white light:text-theme-text-primary text-sm">
-            New Thread
+            {t("thread.add")}
           </p>
         )}
       </div>

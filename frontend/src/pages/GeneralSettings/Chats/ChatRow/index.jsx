@@ -3,6 +3,7 @@ import { X, Trash } from "@phosphor-icons/react";
 import System from "@/models/system";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
+import { useTranslation } from "react-i18next";
 
 // Some LLMs may return a "valid" response that truncation fails to truncate because
 // it stored an Object as opposed to a string for the `text` field.
@@ -21,6 +22,7 @@ function parseText(jsonResponse = "") {
 }
 
 export default function ChatRow({ chat, onDelete }) {
+  const { t } = useTranslation();
   const {
     isOpen: isPromptOpen,
     openModal: openPromptModal,
@@ -35,7 +37,7 @@ export default function ChatRow({ chat, onDelete }) {
   const handleDelete = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to delete this chat?\n\nThis action is irreversible.`
+        t("recorded.delete")
       )
     )
       return false;

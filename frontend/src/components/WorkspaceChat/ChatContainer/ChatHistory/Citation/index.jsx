@@ -16,6 +16,7 @@ import {
 } from "@phosphor-icons/react";
 import ConfluenceLogo from "@/media/dataConnectors/confluence.png";
 import { toPercentString } from "@/utils/numbers";
+import { useTranslation } from "react-i18next";
 
 function combineLikeSources(sources) {
   const combined = {};
@@ -38,6 +39,7 @@ function combineLikeSources(sources) {
 export { CitationDetailModal };
 
 export default function Citations({ sources = [] }) {
+  const { t } = useTranslation();
   if (sources.length === 0) return null;
   const [open, setOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
@@ -50,7 +52,7 @@ export default function Citations({ sources = [] }) {
           open ? "pb-2" : ""
         } hover:text-white/75 hover:light:text-black/75 transition-all duration-300`}
       >
-        {open ? "Hide Citations" : "Show Citations"}
+        {open ? t("action.hide_citations") : t("action.show_citations")} 
         <CaretRight
           className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${
             open ? "rotate-90" : ""

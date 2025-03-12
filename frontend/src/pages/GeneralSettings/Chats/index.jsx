@@ -74,7 +74,7 @@ export default function WorkspaceChats() {
   const handleClearAllChats = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to clear all chats?\n\nThis action is irreversible.`
+        t("recorded.clear_confirm")
       )
     )
       return false;
@@ -167,7 +167,7 @@ export default function WorkspaceChats() {
                     className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent light:border-theme-sidebar-border border-white/40 text-white/40 light:text-theme-text-secondary rounded-lg bg-transparent hover:light:text-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                   >
                     <Trash size={18} weight="bold" />
-                    Clear Chats
+                    {t("recorded.clear")}
                   </button>
                 )}
               </div>
@@ -270,14 +270,14 @@ function ChatsContainer({
           disabled={offset === 0}
         >
           {" "}
-          Previous Page
+          {t("recorded.previous")}
         </button>
         <button
           onClick={handleNext}
           className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 light:text-theme-text-secondary light:border-theme-sidebar-border text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
           disabled={!canNext}
         >
-          Next Page
+          {t("recorded.next")}
         </button>
       </div>
     </>

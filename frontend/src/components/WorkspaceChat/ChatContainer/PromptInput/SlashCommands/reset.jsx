@@ -1,6 +1,8 @@
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
+import { useTranslation } from "react-i18next";
 
 export default function ResetCommand({ setShowing, sendCommand }) {
+  const { t } = useTranslation();
   const isActiveAgentSession = useIsAgentSessionActive();
   if (isActiveAgentSession) return null; // cannot reset during active agent chat
 
@@ -15,7 +17,7 @@ export default function ResetCommand({ setShowing, sendCommand }) {
       <div className="w-full flex-col text-left flex pointer-events-none">
         <div className="text-white text-sm font-bold">/reset</div>
         <div className="text-white text-opacity-60 text-sm">
-          Clear your chat history and begin a new chat
+          {t("preset.reset_explained")}
         </div>
       </div>
     </button>

@@ -118,7 +118,7 @@ export function SidebarMobileHeader() {
   return (
     <>
       <div
-        aria-label="Show sidebar"
+        aria-label={t("action.show_sidebar")}
         className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-white text-slate-200 shadow-lg h-16"
       >
         <button

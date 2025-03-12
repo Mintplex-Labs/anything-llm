@@ -3,6 +3,7 @@ import React, { useEffect, useState, useContext } from "react";
 const MetricsContext = React.createContext();
 const SHOW_METRICS_KEY = "anythingllm_show_chat_metrics";
 const SHOW_METRICS_EVENT = "anythingllm_show_metrics_change";
+import { useTranslation } from "react-i18next";
 
 /**
  * @param {number} duration - duration in milliseconds
@@ -92,6 +93,7 @@ export function MetricsProvider({ children }) {
  * @returns
  */
 export default function RenderMetrics({ metrics = {} }) {
+  const { t } = useTranslation();
   // Inherit the showMetricsAutomatically state from the MetricsProvider so the state is shared across all chats
   const { showMetricsAutomatically, setShowMetricsAutomatically } =
     useContext(MetricsContext);
@@ -104,8 +106,8 @@ export default function RenderMetrics({ metrics = {} }) {
       data-tooltip-id="metrics-visibility"
       data-tooltip-content={
         showMetricsAutomatically
-          ? "Click to only show metrics when hovering"
-          : "Click to show metrics as soon as they are available"
+          ? t("action.hover_to_show")
+          : t("action.auto_show")
       }
       className={`border-none flex justify-end items-center gap-x-[8px] ${showMetricsAutomatically ? "opacity-100" : "opacity-0"} md:group-hover:opacity-100 transition-all duration-300`}
     >

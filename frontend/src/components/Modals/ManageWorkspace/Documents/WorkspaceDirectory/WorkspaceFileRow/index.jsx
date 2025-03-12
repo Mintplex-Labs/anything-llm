@@ -8,6 +8,7 @@ import { ArrowUUpLeft, Eye, File, PushPin } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
+import { useTranslation } from "react-i18next";
 
 export default function WorkspaceFileRow({
   item,
@@ -121,6 +122,7 @@ export default function WorkspaceFileRow({
 }
 
 const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
+  const { t } = useTranslation();
   const [pinned, setPinned] = useState(
     item?.pinnedWorkspaces?.includes(workspace.id) || false
   );
@@ -169,7 +171,7 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
       <PushPin
         data-tooltip-id="pin-document"
         data-tooltip-content={
-          pinned ? "Un-Pin from workspace" : "Pin to workspace"
+          pinned ? t("connectors.pinning.unpin") : t("connectors.pinning.pin")
         }
         size={16}
         onClick={updatePinStatus}
@@ -247,11 +249,12 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
 });
 
 const RemoveItemFromWorkspace = ({ item, onClick }) => {
+  const { t } = useTranslation();
   return (
     <div>
       <ArrowUUpLeft
         data-tooltip-id="remove-document"
-        data-tooltip-content="Remove document from workspace"
+        data-tooltip-content={t("connectors.pinning.remove")}
         onClick={onClick}
         className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
       />
