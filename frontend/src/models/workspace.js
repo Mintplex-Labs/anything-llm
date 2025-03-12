@@ -6,6 +6,21 @@ import { v4 } from "uuid";
 import { ABORT_STREAM_EVENT } from "@/utils/chat";
 
 const Workspace = {
+  reorderWorkspaces: async function (workspaceIds = []) {
+    try {
+      const response = await fetch(`${API_BASE}/workspaces/reorder`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ workspaceIds }),
+      });
+
+      if (!response.ok) throw new Error("Failed to reorder workspaces");
+      return { success: true, error: null };
+    } catch (error) {
+      console.error("Error reordering workspaces:", error);
+      return { success: false, error: error.message };
+    }
+  },
   new: async function (data = {}) {
     const { workspace, message } = await fetch(`${API_BASE}/workspace/new`, {
       method: "POST",

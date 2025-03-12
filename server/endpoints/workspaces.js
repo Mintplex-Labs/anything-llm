@@ -335,13 +335,47 @@ function workspaceEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const workspaces = multiUserMode(response)
-          ? await Workspace.whereWithUser(user)
-          : await Workspace.where();
+          ? await Workspace.whereWithUser(user, {}, null, {
+              display_order: "asc",
+            })
+          : await Workspace.where({}, null, { display_order: "asc" });
 
         response.status(200).json({ workspaces });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspaces/reorder",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { workspaceIds = [] } = reqBody(request);
+        if (!Array.isArray(workspaceIds)) {
+          return response.status(400).json({ error: "Invalid request format" });
+        }
+
+        // Update each workspace's display order in a transaction
+        const updates = workspaceIds.map((id, index) => ({
+          id: Number(id),
+          display_order: index,
+        }));
+
+        for (const update of updates) {
+          await Workspace._update(update.id, {
+            display_order: update.display_order,
+          });
+        }
+
+        response.status(200).json({ success: true });
+      } catch (e) {
+        console.error(e.message, e);
+        response
+          .status(500)
+          .json({ error: "Failed to update workspace order" });
       }
     }
   );
