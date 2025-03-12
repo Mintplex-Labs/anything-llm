@@ -74,7 +74,7 @@ export default function MenuOption({
         <Link
           to={href}
           className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${
-            isChild ? "hover:text-white" : "text-white light:text-black"
+            isChild ? "hover:text-white" : "text-[#46C8FF] light:text-black"
           }`}
           onClick={hasChildren ? handleClick : undefined}
         >
@@ -84,7 +84,7 @@ export default function MenuOption({
               isChild ? "text-xs" : "text-sm"
             } leading-loose whitespace-nowrap overflow-hidden ml-2 ${
               isActive
-                ? "text-white font-semibold"
+                ? "text-[#46C8FF] font-semibold group-hover:w-[100px] group-hover:font-bold group-hover:text-[#46C8FF] group-hover:duration-200"
                 : "text-white light:text-black"
             } ${!icon && "pl-5"}`}
           >
