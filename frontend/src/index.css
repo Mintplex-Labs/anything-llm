@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 :root {
-  --primary-color: #46c8ff;
   /* Default theme */
   --theme-loader: #ffffff;
   --theme-bg-primary: #0e0f0f;
@@ -953,6 +952,10 @@ does not extend the close button beyond the viewport. */
 /* ----------- */
 
 /* Custom Css */
+.custom-radio-button{
+  background-color: #46c8ff;
+}
+
 .custom-bg-primary {
   background: linear-gradient(90deg, #281ba5 52.5%, #237489 100%);
 }

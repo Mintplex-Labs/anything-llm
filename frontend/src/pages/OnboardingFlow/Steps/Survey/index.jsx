@@ -162,7 +162,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
               />
               <div
                 className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${selectedOption === "job"
-                  ? "bg-[var(--primary-color)]"
+                  ? "custom-radio-button"
                   : ""
                   }`}
               ></div>
@@ -183,7 +183,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
               />
               <div
                 className={`w-4 h-4 rounded-full border-2  border-theme-sidebar-border mr-2 ${selectedOption === "personal"
-                  ? "bg-[var(--primary-color)]"
+                  ? "custom-radio-button"
                   : ""
                   }`}
               ></div>
@@ -205,7 +205,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
               />
               <div
                 className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${selectedOption === "other"
-                  ? "bg-[var(--primary-color)] "
+                  ? "custom-radio-button"
                   : ""
                   }`}
               ></div>

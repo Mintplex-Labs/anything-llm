@@ -329,7 +329,7 @@ export default function LLMPreference({
   return (
     <div>
       <form ref={formRef} onSubmit={handleSubmit} className="w-full">
-        <div className="w-full relative border-theme-chat-input-border shadow border-2 rounded-lg bg-white text-white">
+        <div className="w-full relative border-theme-chat-input-border shadow border-2 rounded-lg custom-theme-bg-tertiary text-white">
           <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
             <div className="w-full flex items-center sticky top-0">
               <MagnifyingGlass
