@@ -174,6 +174,9 @@ function FileManagementTable() {
                 Name
               </th>
               <th scope="col" className="px-6 py-3">
+                ID
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Upload Date
               </th>
               <th scope="col" className="px-6 py-3">
@@ -232,7 +235,10 @@ function FileManagementRow({ key, data = {} }) {
         className="bg-transparent text-white text-opacity-80 text-sm font-medium"
       >
         <td className="px-6 py-4 flex items-start">
-          <File className="h-5 w-5 flex-shrink-0" /> &nbsp; {data?.filename || "-"}
+          <File className="h-5 w-5 flex-shrink-0" /> &nbsp; {JSON?.parse(data?.metadata)?.title || "-"}
+        </td>
+        <td className="px-6 py-4">
+          {data?.docId || 0}
         </td>
         <td className="px-6 py-4">
           {data?.createdAt
@@ -261,7 +267,7 @@ function FileManagementRow({ key, data = {} }) {
       <ModalWrapper isOpen={!!previewDocId}>
         <DocumentContentModal
           docId={previewDocId}
-          docName={data?.filename || "-"}
+          docName={JSON?.parse(data?.metadata)?.title || "-"}
           closeModal={() => setPreviewDocId(null)}
         />
       </ModalWrapper>
