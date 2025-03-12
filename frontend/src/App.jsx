@@ -222,11 +222,11 @@ export default function App() {
                     element={<ManagerRoute Component={AdminWorkspaces} />}
                   />
                   {/* Onboarding Flow */}
-                  <Route path="/onboarding" element={<OnboardingFlow />} />
+                  {/* <Route path="/onboarding" element={<OnboardingFlow />} />
                   <Route
                     path="/onboarding/:step"
                     element={<OnboardingFlow />}
-                  />
+                  /> */}
 
                   {/* Experimental feature pages  */}
                   {/* Live Document Sync feature */}

@@ -59,7 +59,7 @@ export function OnboardingLayout({ children }) {
                 <button
                   disabled={backBtn.disabled}
                   onClick={backBtn.onClick}
-                  className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+                  className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed  disabled:hover:bg-transparent"
                 >
                   <ArrowLeft
                     className="text-white group-hover:text-black group-disabled:text-gray-500"
@@ -74,7 +74,7 @@ export function OnboardingLayout({ children }) {
                 <button
                   disabled={forwardBtn.disabled}
                   onClick={forwardBtn.onClick}
-                  className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+                  className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed  disabled:hover:bg-transparent"
                 >
                   <ArrowRight
                     className="text-white group-hover:text-black group-disabled:text-gray-500"
@@ -99,7 +99,7 @@ export function OnboardingLayout({ children }) {
           <button
             disabled={backBtn.disabled}
             onClick={backBtn.onClick}
-            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-theme-bg-secondary disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed  disabled:hover:bg-transparent"
             aria-label="Back"
           >
             <ArrowLeft
@@ -127,7 +127,7 @@ export function OnboardingLayout({ children }) {
           <button
             disabled={forwardBtn.disabled}
             onClick={forwardBtn.onClick}
-            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-theme-bg-secondary disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed  disabled:hover:bg-transparent"
             aria-label="Continue"
           >
             <ArrowRight

@@ -123,7 +123,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
   }
 
   return (
-    <div className="w-full flex justify-center bo">
+    <div className="w-full flex justify-center bo custom-dark-llm-provider-modal">
       <form onSubmit={handleSubmit} ref={formRef} className="">
         <div className="md:min-w-[400px]">
           <label
@@ -150,11 +150,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           </label>
           <div className="mt-2 gap-y-3 flex flex-col">
             <label
-              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
-                selectedOption === "job"
-                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-                  : "border-theme-sidebar-border"
-              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-theme-sidebar-border hover:border-[var(--theme-sidebar-item-workspace-active)] `}
             >
               <input
                 type="radio"
@@ -165,22 +161,17 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
-                  selectedOption === "job"
-                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
-                    : ""
-                }`}
+                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${selectedOption === "job"
+                  ? "custom-radio-button-active"
+                  : ""
+                  }`}
               ></div>
-              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+              <div className={`text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight ${selectedOption === 'job' ? "active" : ""}`}>
                 For work
               </div>
             </label>
             <label
-              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
-                selectedOption === "personal"
-                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-                  : "border-theme-sidebar-border"
-              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] border-theme-sidebar-border hover:border-[var(--theme-sidebar-item-workspace-active)]`}
             >
               <input
                 type="radio"
@@ -191,22 +182,18 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
-                  selectedOption === "personal"
-                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
-                    : ""
-                }`}
+                className={`w-4 h-4 rounded-full border-2  border-theme-sidebar-border mr-2 ${selectedOption === "personal"
+                  ? "custom-radio-button-active"
+                  : ""
+                  }`}
               ></div>
-              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+              <div className={`text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight ${selectedOption === 'personal' ? "active" : ""}`}>
                 For my personal use
               </div>
             </label>
             <label
-              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
-                selectedOption === "other"
-                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
-                  : "border-theme-sidebar-border"
-              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
+              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] border-theme-sidebar-border
+                hover:border-[var(--theme-sidebar-item-workspace-active)]`}
             >
               <input
                 type="radio"
@@ -217,20 +204,19 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
-                  selectedOption === "other"
-                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
-                    : ""
-                }`}
+                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${selectedOption === "other"
+                  ? "custom-radio-button-active"
+                  : ""
+                  }`}
               ></div>
-              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+              <div className={`text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight ${selectedOption === 'other' ? "active" : ""}`}>
                 Other
               </div>
             </label>
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 custom-dark-llm-provider-modal">
           <label htmlFor="comment" className="text-white text-base font-medium">
             Any comments for the team?{" "}
             <span className="text-neutral-400 text-base font-light">

@@ -951,6 +951,10 @@ does not extend the close button beyond the viewport. */
 /* ----------- */
 
 /* Custom Css */
+.custom-radio-button-active{
+  background-color: #46c8ff;
+}
+
 .custom-bg-primary {
   background: linear-gradient(90deg, #281ba5 52.5%, #237489 100%);
 }
@@ -1029,6 +1033,47 @@ does not extend the close button beyond the viewport. */
     border: 1px solid #0003;
   }
 }
+
+
+.custom-dark-llm-provider-modal {
+  label {
+    /* .custom-text-secondary */
+    color: #fff;
+  }
+  p {
+    /* .custom-text-secondary */
+    color: #fff;
+  }
+  button {
+    /* .custom-text-secondary */
+    color: #fff;
+  }
+  input, 
+  textarea {
+    /* .custom-theme-bg-tertiary */
+    background-color: #fff;
+    /* .custom-text-secondary */
+    color: #000;
+    /* .custom-border-secondary */
+    border: 1px solid #0003;
+  }
+  input::placeholder, 
+  textarea::placeholder {
+    color: unset;
+    opacity: 0.5;
+  }
+
+  select {
+    /* .custom-theme-bg-tertiary */
+    background-color: #fff;
+    /* .custom-text-secondary */
+    color: #000;
+    /* .custom-border-secondary */
+    border: 1px solid #0003;
+  }
+}
+
+
 .custom-react-tag-input-component {
   .rti--container {
     /* .custom-theme-bg-tertiary */

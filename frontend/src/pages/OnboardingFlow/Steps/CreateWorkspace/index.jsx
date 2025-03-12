@@ -68,7 +68,7 @@ export default function CreateWorkspace({
       <img src={illustration} alt="Create workspace" />
       <div className="flex flex-col gap-y-4 w-full max-w-[600px]">
         {" "}
-        <div className="w-full mt-4">
+        <div className="w-full mt-4 custom-dark-llm-provider-modal">
           <label
             htmlFor="name"
             className="block mb-3 text-sm font-medium text-white"
