@@ -1040,11 +1040,11 @@ does not extend the close button beyond the viewport. */
   }
   p {
     /* .custom-text-secondary */
-    color: #000;
+    color: #fff;
   }
   button {
     /* .custom-text-secondary */
-    color: #000;
+    color: #fff;
   }
   input, 
   textarea {

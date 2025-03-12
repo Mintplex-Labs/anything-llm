@@ -26,10 +26,10 @@ export default function OnboardingHome() {
   return (
     <>
       <div className="relative w-screen h-screen flex overflow-hidden bg-theme-bg-primary">
-        <div
+        {/* <div
           className="hidden md:block fixed bottom-10 left-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
           style={{ backgroundImage: `url(${srcSet.l})` }}
-        ></div>
+        ></div> */}
 
         <div
           className="hidden md:block fixed top-10 right-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
@@ -42,7 +42,7 @@ export default function OnboardingHome() {
               Welcome to
             </p>
             <img
-              src={AnythingLLMLogo}
+              src={'/prism-logo.png'}
               alt={process.env.APPLICATION_FALLBACK_NAME || "Prism"}
               className="md:h-[50px] flex-shrink-0 max-w-[300px] light:invert"
             />
