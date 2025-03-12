@@ -160,15 +160,6 @@ async function streamChatWithForEmbed(
     rawHistory
   );
 
-  function cleanResponse(text) {
-    if (!text || typeof text !== "string") return text;
-    // Store the full response for history/context
-    const fullResponse = text;
-    // Remove any think tags and their content for display
-    const cleanedText = text.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
-    return { cleanedText, fullResponse };
-  }
-
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
@@ -179,14 +170,13 @@ async function streamChatWithForEmbed(
       await LLMConnector.getChatCompletion(messages, {
         temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
-    const { cleanedText, fullResponse } = cleanResponse(textResponse);
-    completeText = fullResponse;
+    completeText = textResponse;
     metrics = performanceMetrics;
     writeResponseChunk(response, {
       uuid,
       sources: [],
       type: "textResponseChunk",
-      textResponse: cleanedText,
+      textResponse: completeText,
       close: true,
       error: false,
     });
@@ -194,12 +184,10 @@ async function streamChatWithForEmbed(
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
-    const rawResponse = await LLMConnector.handleStream(response, stream, {
+    completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
       sources: [],
     });
-    const { cleanedText, fullResponse } = cleanResponse(rawResponse);
-    completeText = fullResponse;
     metrics = stream.metrics;
   }
 
