@@ -13,7 +13,8 @@ export function enforceSubmissionSchema(form) {
   }
 
   // Always set value on nullable keys since empty or off will not send anything from form element.
-  if (!Object.prototype.hasOwnProperty.call(data, "allowlist_domains")) data.allowlist_domains = null;
+  if (!Object.prototype.hasOwnProperty.call(data, "allowlist_domains"))
+    data.allowlist_domains = null;
   if (!Object.prototype.hasOwnProperty.call(data, "allow_model_override"))
     data.allow_model_override = false;
   if (!Object.prototype.hasOwnProperty.call(data, "allow_temperature_override"))
