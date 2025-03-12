@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  --primary-color: #46c8ff;
   /* Default theme */
   --theme-loader: #ffffff;
   --theme-bg-primary: #0e0f0f;
@@ -23,6 +24,7 @@
   --theme-sidebar-subitem-hover: rgba(255, 255, 255, 0.05);
   --theme-sidebar-border: rgba(255, 255, 255, 0.1);
   --theme-sidebar-item-workspace-active: #ffffff;
+  --theme-dark-sidebar-item-workspace-active: #000;
   --theme-sidebar-item-workspace-inactive: #ffffff;
 
   --theme-sidebar-footer-icon: rgba(255, 255, 255, 0.1);
@@ -1029,6 +1031,47 @@ does not extend the close button beyond the viewport. */
     border: 1px solid #0003;
   }
 }
+
+
+.custom-dark-llm-provider-modal {
+  label {
+    /* .custom-text-secondary */
+    color: #fff;
+  }
+  p {
+    /* .custom-text-secondary */
+    color: #000;
+  }
+  button {
+    /* .custom-text-secondary */
+    color: #000;
+  }
+  input, 
+  textarea {
+    /* .custom-theme-bg-tertiary */
+    background-color: #fff;
+    /* .custom-text-secondary */
+    color: #000;
+    /* .custom-border-secondary */
+    border: 1px solid #0003;
+  }
+  input::placeholder, 
+  textarea::placeholder {
+    color: unset;
+    opacity: 0.5;
+  }
+
+  select {
+    /* .custom-theme-bg-tertiary */
+    background-color: #fff;
+    /* .custom-text-secondary */
+    color: #000;
+    /* .custom-border-secondary */
+    border: 1px solid #0003;
+  }
+}
+
+
 .custom-react-tag-input-component {
   .rti--container {
     /* .custom-theme-bg-tertiary */

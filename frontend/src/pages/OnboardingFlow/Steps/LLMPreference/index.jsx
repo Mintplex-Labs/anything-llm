@@ -329,18 +329,18 @@ export default function LLMPreference({
   return (
     <div>
       <form ref={formRef} onSubmit={handleSubmit} className="w-full">
-        <div className="w-full relative border-theme-chat-input-border shadow border-2 rounded-lg text-white">
+        <div className="w-full relative border-theme-chat-input-border shadow border-2 rounded-lg bg-white text-white">
           <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
             <div className="w-full flex items-center sticky top-0">
               <MagnifyingGlass
                 size={16}
                 weight="bold"
-                className="absolute left-4 z-30 text-theme-text-primary"
+                className="absolute left-4 z-30 custom-text-secondary"
               />
               <input
                 type="text"
                 placeholder="Search LLM providers"
-                className="bg-theme-bg-secondary placeholder:text-theme-text-secondary z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border border-theme-chat-input-border outline-none focus:outline-primary-button active:outline-primary-button outline-none text-theme-text-primary"
+                className="bg-theme-bg-secondary placeholder:custom-text-secondary z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border border-theme-chat-input-border focus:outline-primary-button active:outline-primary-button outline-none custom-text-secondary"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoComplete="off"
                 onKeyDown={(e) => {
@@ -358,6 +358,7 @@ export default function LLMPreference({
                   name={llm.name}
                   value={llm.value}
                   image={llm.logo}
+                  isDark
                   description={llm.description}
                   checked={selectedLLM === llm.value}
                   onClick={() => setSelectedLLM(llm.value)}
@@ -366,7 +367,7 @@ export default function LLMPreference({
             })}
           </div>
         </div>
-        <div className="mt-4 flex flex-col gap-y-1">
+        <div className="mt-4 flex flex-col gap-y-1 custom-dark-llm-provider-modal">
           {selectedLLM &&
             LLMS.find((llm) => llm.value === selectedLLM)?.options(settings)}
         </div>
