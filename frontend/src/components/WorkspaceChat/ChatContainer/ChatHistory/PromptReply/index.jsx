@@ -1,8 +1,8 @@
-import { memo, useRef, useEffect } from "react";
+import { memo, useRef, useEffect, useState } from "react";
 import { Warning } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
 import renderMarkdown from "@/utils/chat/markdown";
-import Citations from "../Citation";
+import Citations, { CitationDetailModal } from "../Citation";
 import {
   THOUGHT_REGEX_CLOSE,
   THOUGHT_REGEX_COMPLETE,
@@ -70,6 +70,7 @@ const PromptReply = ({
           <RenderAssistantChatContent
             key={`${uuid}-prompt-reply-content`}
             message={reply}
+            sources={sources}
           />
         </div>
         <Citations sources={sources} />
@@ -94,9 +95,57 @@ export function WorkspaceProfileImage({ workspace }) {
   return <UserIcon user={{ uid: workspace.slug }} role="assistant" />;
 }
 
-function RenderAssistantChatContent({ message }) {
+function RenderAssistantChatContent({ message, sources = [] }) {
   const contentRef = useRef("");
   const thoughtChainRef = useRef(null);
+  const [selectedSource, setSelectedSource] = useState(null);
+  const renderedContentRef = useRef(null);
+  
+  // DOM 이벤트 리스너 추가
+  useEffect(() => {
+    const handleCitationClick = (e) => {
+      // citation-link 클래스를 가진 링크 클릭 감지
+      if (e.target.closest('.citation-link')) {
+        e.preventDefault();
+        const index = parseInt(e.target.closest('.citation-link').dataset.citationIndex, 10);
+        if (sources && sources.length > 0) {
+          const sourceIndex = Math.min(index - 1, sources.length - 1);
+          if (sourceIndex >= 0 && sources[sourceIndex]) {
+            const sourceItem = sources[sourceIndex];
+            
+            // Citation 컴포넌트에서 사용하는 형식으로 변환
+            const { id, title, text, chunkSource = "", score = null } = sourceItem;
+            const formattedSource = {
+              title: title || id || "Source " + (sourceIndex + 1),
+              chunks: [{
+                id, 
+                text,
+                chunkSource, 
+                score
+              }],
+              references: 1
+            };
+            
+            setSelectedSource(formattedSource);
+          } else {
+            console.warn('인용 소스를 찾을 수 없습니다:', index, sources);
+          }
+        }
+      }
+    };
+    
+    // 컨텐츠가 렌더링된 요소에 이벤트 리스너 추가
+    const contentElement = renderedContentRef.current;
+    if (contentElement) {
+      contentElement.addEventListener('click', handleCitationClick);
+    }
+    
+    return () => {
+      if (contentElement) {
+        contentElement.removeEventListener('click', handleCitationClick);
+      }
+    };
+  }, [sources]);
 
   useEffect(() => {
     const thinking =
@@ -134,9 +183,16 @@ function RenderAssistantChatContent({ message }) {
         />
       )}
       <span
+        ref={renderedContentRef}
         className="break-words"
         dangerouslySetInnerHTML={{ __html: renderMarkdown(contentRef.current) }}
       />
+      {selectedSource && (
+        <CitationDetailModal
+          source={selectedSource}
+          onClose={() => setSelectedSource(null)}
+        />
+      )}
     </div>
   );
 }
