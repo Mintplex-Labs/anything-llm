@@ -13,13 +13,15 @@ export function enforceSubmissionSchema(form) {
   }
 
   // Always set value on nullable keys since empty or off will not send anything from form element.
-  if (!data.hasOwnProperty("allowlist_domains")) data.allowlist_domains = null;
-  if (!data.hasOwnProperty("allow_model_override"))
+  if (!Object.prototype.hasOwnProperty.call(data, "allowlist_domains")) data.allowlist_domains = null;
+  if (!Object.prototype.hasOwnProperty.call(data, "allow_model_override"))
     data.allow_model_override = false;
-  if (!data.hasOwnProperty("allow_temperature_override"))
+  if (!Object.prototype.hasOwnProperty.call(data, "allow_temperature_override"))
     data.allow_temperature_override = false;
-  if (!data.hasOwnProperty("allow_prompt_override"))
+  if (!Object.prototype.hasOwnProperty.call(data, "allow_prompt_override"))
     data.allow_prompt_override = false;
+  if (!Object.prototype.hasOwnProperty.call(data, "show_thoughts"))
+    data.show_thoughts = false;
   return data;
 }
 
@@ -83,6 +85,12 @@ export default function NewEmbedModal({ closeModal }) {
                 name="allow_prompt_override"
                 title="Enable Prompt Override"
                 hint="Allow setting of the system prompt to override the workspace default."
+              />
+              <BooleanInput
+                name="show_thoughts"
+                title="Show AI Thoughts"
+                hint="Allow users to see the AI's thought process in responses. If disabled, users will only see the thinking state. Re-copy the embed code after changing this option."
+                defaultValue={true}
               />
 
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
@@ -150,6 +158,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
         {workspaces.map((workspace) => {
           return (
             <option
+              key={workspace.id}
               selected={defaultValue === workspace.id}
               value={workspace.id}
             >
