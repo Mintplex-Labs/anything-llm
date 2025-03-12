@@ -81,7 +81,7 @@ export default function ActiveWorkspaces() {
                     <div className="w-[130px] overflow-hidden">
                       <p
                         className={`
-                        text-[14px] leading-loose whitespace-nowrap overflow-hidden ${isActive ? "text-[#46C8FF]" : "text-white"} 
+                        text-[14px] leading-loose whitespace-nowrap overflow-hidden ${isActive ? "text-[#46C8FF]" : "text-white"}
                         ${isActive ? "font-bold" : "font-medium"} truncate
                         w-full group-hover:w-[100px] group-hover:font-bold group-hover:text-[#46C8FF] group-hover:duration-200
                       `}
