@@ -16,6 +16,8 @@ const MODEL_MAP = {
     "claude-3-5-sonnet-latest": 200_000,
     "claude-3-5-sonnet-20241022": 200_000,
     "claude-3-5-sonnet-20240620": 200_000,
+    "claude-3-7-sonnet-20250219": 200_000,
+    "claude-3-7-sonnet-latest": 200_000,
   },
   cohere: {
     "command-r": 128_000,

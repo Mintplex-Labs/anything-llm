@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
+import { useTranslation } from "react-i18next";
 
 export default function WebsiteDepthOptions() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -55,10 +57,10 @@ export default function WebsiteDepthOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                    Website URL
+                    {t("connectors.website-depth.URL")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    URL of the website you want to scrape.
+                    {t("connectors.website-depth.URL_explained")}
                   </p>
                 </div>
                 <input
@@ -73,10 +75,12 @@ export default function WebsiteDepthOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">Depth</label>
+                  <label className="text-white text-sm font-bold">
+                    {" "}
+                    {t("connectors.website-depth.depth")}
+                  </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    This is the number of child-links that the worker should
-                    follow from the origin URL.
+                    {t("connectors.website-depth.depth_explained")}
                   </p>
                 </div>
                 <input
@@ -92,10 +96,10 @@ export default function WebsiteDepthOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                    Max Links
+                    {t("connectors.website-depth.max_pages")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    Maximum number of links to scrape.
+                    {t("connectors.website-depth.max_pages_explained")}
                   </p>
                 </div>
                 <input
@@ -122,8 +126,7 @@ export default function WebsiteDepthOptions() {
             </button>
             {loading && (
               <p className="text-xs text-theme-text-secondary">
-                Once complete, all scraped pages will be available for embedding
-                into workspaces in the document picker.
+                {t("connectors.website-depth.task_explained")}
               </p>
             )}
           </div>
