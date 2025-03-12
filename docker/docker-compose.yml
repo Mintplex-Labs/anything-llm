@@ -48,7 +48,6 @@ services:
       - ./pg_hba.conf:/etc/postgresql/pg_hba.conf
     command: >
       postgres -c config_file=/etc/postgresql/postgresql.conf
-      sh -c "apt update && apt install -y vim inutils-ping && exec postgres"
     networks:
       - anything-llm
 
