@@ -191,18 +191,6 @@ const TRANSLATIONS = {
           "워크스페이스 전체를 삭제합니다. 이 작업은 벡터 데이터베이스에 있는 모든 벡터 임베딩을 제거합니다.\n\n원본 소스 파일은 그대로 유지됩니다. 이 작업은 취소할 수 없습니다.",
       },
     },
-    stt: {
-      speech_to_text: {
-        title: "음성 텍스트 변환",
-        description: "A-Insight 환경에서 어떤 종류의 텍스트 음성 변환 및 음성 텍스트 변환 제공업체를 사용할지 지정할 수 있습니다. 기본적으로 이러한 서비스는 브라우저에 내장된 지원을 사용하지만 다른 서비스를 사용할 수도 있습니다.",
-        provider: "제공자"
-      },
-      text_to_speech: {
-        title: "텍스트 음성 변환 설정",
-        description: "A-Insight 환경에서 어떤 종류의 텍스트 음성 변환 제공업체를 사용할지 지정할 수 있습니다. 기본적으로 이러한 서비스는 브라우저에 내장된 지원을 사용하지만 다른 서비스를 사용할 수도 있습니다.",
-        provider: "제공자"
-      }
-    },
     chat: {
       llm: {
         title: "워크스페이스 LLM 제공자",
@@ -359,6 +347,64 @@ const TRANSLATIONS = {
       previous: "이전 페이지",
       delete: "이 채팅을 정말 삭제하시겠습니까?\n\n이 작업은 취소할 수 없습니다."
     },
+
+    stt: {
+      title: "STT(Speech-to-text) 기본 설정",
+      description: "A-Insight에서 사용할 TTS 및 STT 제공자를 지정할 수 있습니다. 기본적으로 브라우저에 내장된 기능을 사용하지만 다른 서비스를 사용할 수도 있습니다.",
+      provider: {
+        title: "제공자",
+        system_native: {
+          description: "지원되는 경우 브라우저에 내장된 STT 서비스를 사용합니다.",
+          explained: "이 제공자를 사용할 때는 별도의 설정이 필요하지 않습니다."
+        }
+      },
+      save: "변경 사항 저장",
+      saving: "저장 중...",
+      search: "STT 제공자 검색"
+    },
+    tts: {
+      title: "TTS(Text-to-speech) 설정",
+      description: "A-Insight에서 사용할 TTS 제공자를 지정할 수 있습니다. 기본적으로 브라우저에 내장된 기능을 사용하지만 다른 서비스를 선택하여 사용할 수도 있습니다.",
+      provider: {
+        title: "제공자",
+        system_native: {
+          description: "지원되는 경우 브라우저에 내장된 TTS 서비스를 사용합니다.",
+          explained: "이 제공자를 사용할 때는 별도의 설정이 필요하지 않습니다.",
+        },
+        openai: {
+          description: "OpenAI의 TTS 음성을 사용합니다.",
+          api: "API 키",
+          voice: "음성 모델"
+        },
+        elevenlabs: {
+          description: "ElevenLabs의 TTS 음성과 기술을 사용합니다.",
+          api: "API 키",
+          chat: "채팅 모델 선택"
+        },
+        pipertts: {
+          description: "브라우저에서 로컬로 TTS 모델을 비공개로 실행합니다.",
+          explained : "모든 PiperTTS 모델은 브라우저에서 로컬로 실행됩니다. 저사양 기기에서는 리소스를 많이 사용할 수 있습니다.",
+          voice: "음성 모델 선택",
+          play: "샘플 재생",
+          loading: "음성 로딩 중",
+          stop: "데모 중지"
+        },
+        openai_compatible: {
+          description: "로컬 또는 원격으로 실행되는 OpenAI 호환 TTS 서비스와 연결합니다.",        
+          base_url: "기본 URL",
+          base_url_explained: "이 URL은 TTS 응답을 생성할 OpenAI compatible TTS 서비스의 기본 URL 이어야 합니다.",
+          api: "API 키",
+          api_explained: "일부 TTS 서비스는 TTS 응답을 생성하기 위해 API 키가 필요하지만, 서비스에 키가 필요하지 않은 경우에는 선택 사항입니다.",
+          voice: "음성 모델",
+          voice_placeholder: "음성 모델 식별자",
+          voice_explained: "대부분의 TTS 서비스는 여러 음성 모델을 제공합니다. 사용하려는 음성 모델의 식별자를 입력하세요."
+        }
+      },
+      save: "변경 사항 저장",
+      saving: "저장 중...",
+      search: "TTS 제공자 검색",
+    },
+
     appearance: {
       title: "외관",
       description: "플랫폼의 외관 설정을 수정합니다.",

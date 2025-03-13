@@ -4,13 +4,14 @@ import { titleCase } from "text-case";
 import { humanFileSize } from "@/utils/numbers";
 import showToast from "@/utils/toast";
 import { CircleNotch, PauseCircle, PlayCircle } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 export default function PiperTTSOptions({ settings }) {
+  const { t } = useTranslation();
   return (
     <>
       <p className="text-sm font-base text-white text-opacity-60 mb-4">
-        All PiperTTS models will run in your browser locally. This can be
-        resource intensive on lower-end devices.
+        {t("tts.provider.pipertts.explained")}
       </p>
       <div className="flex gap-x-4 items-center">
         <PiperTTSModelSelection settings={settings} />
@@ -37,6 +38,7 @@ function voiceDisplayName(voice) {
 }
 
 function PiperTTSModelSelection({ settings }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [voices, setVoices] = useState([]);
   const [selectedVoice, setSelectedVoice] = useState(
@@ -69,7 +71,7 @@ function PiperTTSModelSelection({ settings }) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Voice Model Selection
+          {t("tts.provider.pipertts.voice")}
         </label>
         <select
           name="TTSPiperTTSVoiceModel"
@@ -89,7 +91,7 @@ function PiperTTSModelSelection({ settings }) {
     <div className="flex flex-col w-fit">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Voice Model Selection
+          {t("tts.provider.pipertts.voice")}
         </label>
         <div className="flex items-center w-fit gap-x-4 mb-2">
           <select
@@ -132,6 +134,7 @@ function PiperTTSModelSelection({ settings }) {
 }
 
 function DemoVoiceSample({ voiceId }) {
+  const { t } = useTranslation();
   const playerRef = useRef(null);
   const [speaking, setSpeaking] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -191,19 +194,19 @@ function DemoVoiceSample({ voiceId }) {
       {speaking ? (
         <>
           <PauseCircle size={20} className="flex-shrink-0" />
-          <p className="text-sm flex-shrink-0">Stop demo</p>
+          <p className="text-sm flex-shrink-0">{t("tts.provider.pipertts.stop")}</p>
         </>
       ) : (
         <>
           {loading ? (
             <>
               <CircleNotch size={20} className="animate-spin flex-shrink-0" />
-              <p className="text-sm flex-shrink-0">Loading voice</p>
+              <p className="text-sm flex-shrink-0">{t("tts.provider.pipertts.loading")}</p>
             </>
           ) : (
             <>
               <PlayCircle size={20} className="flex-shrink-0 text-white" />
-              <p className="text-white text-sm flex-shrink-0">Play sample</p>
+              <p className="text-white text-sm flex-shrink-0">{t("tts.provider.pipertts.play")}</p>
             </>
           )}
         </>
