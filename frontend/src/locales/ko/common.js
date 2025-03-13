@@ -363,7 +363,7 @@ const TRANSLATIONS = {
       search: "STT 제공자 검색"
     },
     tts: {
-      title: "TTS(Text-to-speech) 설정",
+      title: "TTS(Text-to-speech) 기본 설정",
       description: "A-Insight에서 사용할 TTS 제공자를 지정할 수 있습니다. 기본적으로 브라우저에 내장된 기능을 사용하지만 다른 서비스를 선택하여 사용할 수도 있습니다.",
       provider: {
         title: "제공자",
