@@ -384,6 +384,63 @@ const TRANSLATIONS = {
     delete: "Are you sure you want to delete this chat?\n\nThis action is irreversible."
   },
 
+  stt: {
+    title: "Speech-to-text Preference",
+    description: "Here you can specify what kind of text-to-speech and speech-to-text providers you would want to use in your A-Insight experience. By default, we use the browser's built in support for these services, but you may want to use others.",
+    provider: {
+      title: "Provider",
+      system_native: {
+        description: "Uses your browser's built in STT service if supported.",
+        explained: "There is no configuration needed for this provider."
+      }
+    },
+    save: "Save changes",
+    saving: "Saving...",
+    search: "Search speech to text providers"
+  },
+  tts: {
+    title: "Text-to-speech Preference",
+    description: "Here you can specify what kind of text-to-speech providers you would want to use in your A-Insight experience. By default, we use the browser's built in support for these services, but you may want to use others.",
+    provider: {
+      title: "Provider",
+      system_native: {
+        description: "Uses your browser's built in TTS service if supported.",
+        explained: "There is no configuration needed for this provider."
+      },
+      openai: {
+        description: "Use OpenAI's text to speech voices.",
+        api: "API Key",
+        voice: "Voice Model"
+      },
+      elevenlabs: {
+        description: "Use ElevenLabs's text to speech voices and technology.",
+        api: "API Key",
+        chat: "Chat Model Selection"
+      },
+      pipertts: {
+        description: "Run TTS models locally in your browser privately.",
+        explained : "All PiperTTS models will run in your browser locally. This can be resource intensive on lower-end devices.",
+        voice: "Voice Model Selection",
+        play: "Play sample",
+        loading: "Loading voice",
+        stop: "Stop demo"
+      },
+      openai_compatible: {
+        description: "Connect to an OpenAI compatible TTS service running locally or remotely.",
+        base_url: "Base URL",
+        base_url_explained: "This should be the base URL of the OpenAI compatible TTS service you will generate TTS responses from.",
+        api: "API Key",
+        api_explained: "Some TTS services require an API key to generate TTS responses - this is optional if your service does not require one.",
+        voice: "Voice Model",
+        voice_placeholder: "Your voice model identifier",
+        voice_explained: "Most TTS services will have several voice models available, this is the identifier for the voice model you want to use."
+      }
+    },
+    save: "Save changes",
+    saving: "Saving...",
+    search: "Search text to speech providers",
+  },
+
   // Appearance
   appearance: {
     title: "Appearance",

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
+import { useTranslation } from "react-i18next";
 
 export default function ElevenLabsOptions({ settings }) {
+  const { t } = useTranslation();
   const [inputValue, setInputValue] = useState(settings?.TTSElevenLabsKey);
   const [elevenLabsKey, setElevenLabsKey] = useState(
     settings?.TTSElevenLabsKey
@@ -11,7 +13,7 @@ export default function ElevenLabsOptions({ settings }) {
     <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          API Key
+          {t("tts.provider.elevenlabs.api")}
         </label>
         <input
           type="password"
@@ -34,6 +36,7 @@ export default function ElevenLabsOptions({ settings }) {
 }
 
 function ElevenLabsModelSelection({ apiKey, settings }) {
+  const { t } = useTranslation();
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -63,7 +66,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Chat Model Selection
+          {t("tts.provider.elevenlabs.chat")}
         </label>
         <select
           name="TTSElevenLabsVoiceModel"
@@ -81,7 +84,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
-        Chat Model Selection
+        {t("tts.provider.elevenlabs.chat")}
       </label>
       <select
         name="TTSElevenLabsVoiceModel"
