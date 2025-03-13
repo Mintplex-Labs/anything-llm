@@ -68,15 +68,6 @@ function createScriptTagSnippet(embed, scriptHost, serverHost) {
     data-is-open-by-default="false"
     src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
   </script>
-
-  <!-- Paste this script at the bottom of your TEAMS before the </body> tag. -->
-  <script
-    data-embed-id="${embed.uuid}"
-    data-base-url="${serverHost}/api"
-    data-is-team-enabled="true"
-    data-is-open-by-default="true"
-    src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
-  </script>
   `;
 }
 
