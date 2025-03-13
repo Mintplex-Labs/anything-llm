@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['sharp-pdf-image-converter'] # put your current branch to create a build. Core team only.
+    branches: ['chore/anthropic-model-endpoint'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
