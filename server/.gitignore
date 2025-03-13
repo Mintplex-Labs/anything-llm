@@ -2,6 +2,7 @@
 .env.development
 storage/assets/*
 !storage/assets/anything-llm.png
+!storage/assets/insight.png
 storage/documents/*
 storage/comkey/*
 storage/tmp/*
