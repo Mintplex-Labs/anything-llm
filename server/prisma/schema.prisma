@@ -145,6 +145,7 @@ model workspaces {
   embed_configs                embed_configs[]
   threads                      workspace_threads[]
   workspace_agent_invocations  workspace_agent_invocations[]
+  display_order                Int?                           @default(0)
 }
 
 model workspace_threads {
