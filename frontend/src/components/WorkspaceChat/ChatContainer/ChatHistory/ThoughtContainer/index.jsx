@@ -96,7 +96,8 @@ export const ThoughtChainComponent = forwardRef(
             </div>
             <div className="flex-1 min-w-0">
               <div
-                className={`overflow-hidden transition-all transform duration-300 ease-in-out origin-top ${isExpanded || autoExpand ? "max-h-[500px]" : "max-h-6"}`}
+                className={`overflow-hidden transition-all transform duration-300 ease-in-out origin-top ${isExpanded || autoExpand ? "max-h-[500px] white-scrollbar" : "max-h-6"}`}
+                style={isExpanded || autoExpand ? { marginRight: "-8px" } : {}}
               >
                 <div
                   className={`text-theme-text-secondary font-mono leading-6 ${isExpanded || autoExpand ? "-ml-[5.5px] -mt-[4px]" : "mt-[2px]"}`}

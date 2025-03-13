@@ -840,6 +840,26 @@ does not extend the close button beyond the viewport. */
   background-color: #cccccc;
 }
 
+/* 라이트 테마용 스크롤바 스타일 */
+[data-theme="light"] .white-scrollbar {
+  scrollbar-color: #4b4b4f #ffffff; /* 라이트 테마용 색상 */
+}
+
+[data-theme="light"] .white-scrollbar::-webkit-scrollbar-track {
+  background-color: #4b4b4f;
+  margin-right: 8px;
+}
+
+[data-theme="light"] .white-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #4b4b4f;
+  border-radius: 4px;
+  border: 2px solid #ffffff;
+}
+
+[data-theme="light"] .white-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #7f7f7b;
+}
+
 /* Recharts rendering styles */
 .recharts-text > * {
   fill: #fff;
