@@ -4,6 +4,15 @@ const {
 } = require("../../helpers/chat/responses");
 const { toValidNumber } = require("../../http");
 
+const extraBody = {
+  extra_body: {
+    repetition_penalty: process.env.PRISM_REPITITION_PENALTY || 1, // Always included
+    ...(process.env.PRISM_GUIDED_REGEX_ENABLED === "true" && process.env.PRISM_GUIDED_REGEX
+      ? { guided_regex: process.env.PRISM_GUIDED_REGEX }
+      : {}),
+  },
+};
+
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
     const { OpenAI: OpenAIApi } = require("openai");
@@ -97,6 +106,7 @@ class GenericOpenAiLLM {
         messages,
         temperature,
         max_tokens: this.maxTokens,
+        ...extraBody,
       })
       .catch((e) => {
         throw new Error(e.message);
@@ -114,6 +124,7 @@ class GenericOpenAiLLM {
       messages,
       temperature,
       max_tokens: this.maxTokens,
+      ...extraBody,
     });
     return streamRequest;
   }
