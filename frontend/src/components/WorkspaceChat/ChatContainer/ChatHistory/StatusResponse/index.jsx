@@ -54,7 +54,7 @@ export default function StatusResponse({
             </div>
             <div className="flex-1 min-w-0">
               <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? "max-h-[500px]" : "max-h-6"}`}
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? "" : "max-h-6"}`}
               >
                 <div className="text-theme-text-secondary font-mono leading-6">
                   {!isExpanded ? (
