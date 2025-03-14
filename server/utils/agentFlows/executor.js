@@ -26,9 +26,26 @@ class FlowExecutor {
     const deepReplace = (obj) => {
       if (typeof obj === "string") {
         return obj.replace(/\${([^}]+)}/g, (match, varName) => {
-          return this.variables[varName] !== undefined
-            ? this.variables[varName]
-            : match;
+          if (this.variables[varName] === undefined) return match;
+
+          // Convert the variable value to string
+          let value = this.variables[varName];
+          if (value === null) return '';
+
+          if (typeof value === 'object') {
+            try {
+              value = JSON.stringify(value);
+            } catch (e) {
+              value = String(value);
+            }
+          }
+
+          // If this is a URL, encode the value
+          if (obj.startsWith('http://') || obj.startsWith('https://')) {
+            return encodeURIComponent(value);
+          }
+
+          return String(value);
         });
       }
       if (Array.isArray(obj)) {

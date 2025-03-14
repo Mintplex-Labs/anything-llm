@@ -12,6 +12,8 @@ async function executeApiCall(config, context) {
   logger(`\x1b[43m[AgentFlowToolExecutor]\x1b[0m - executing API Call block`);
   introspect(`Making ${method} request to external API...`);
 
+  const decodedUrl = decodeURIComponent(url);
+
   const requestConfig = {
     method,
     headers: headers.reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {}),
@@ -38,8 +40,8 @@ async function executeApiCall(config, context) {
   }
 
   try {
-    introspect(`Sending body to ${url}: ${requestConfig?.body || "No body"}`);
-    const response = await fetch(url, requestConfig);
+    introspect(`Sending body to ${decodedUrl}: ${requestConfig?.body || "No body"}`);
+    const response = await fetch(decodedUrl, requestConfig);
     if (!response.ok) {
       introspect(`Request failed with status ${response.status}`);
       throw new Error(`HTTP error! status: ${response.status}`);
