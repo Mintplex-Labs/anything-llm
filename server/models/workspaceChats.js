@@ -11,10 +11,29 @@ const WorkspaceChats = {
     apiSessionId = null,
   }) {
     try {
+      let promptString;
+      if (typeof prompt === "string" || prompt instanceof String) {
+        promptString = prompt;
+      } else if (Array.isArray(prompt)) {
+        promptString = prompt
+          .map((x) => {
+            if (typeof x.text === "string" || x.text instanceof String) {
+              return x.text;
+            } else if (typeof x === "string" || x instanceof String) {
+              return x;
+            } else {
+              return JSON.stringify(x);
+            }
+          })
+          .join("\n\n");
+      } else {
+        promptString = JSON.stringify(prompt);
+      }
+
       const chat = await prisma.workspace_chats.create({
         data: {
           workspaceId,
-          prompt,
+          prompt: promptString,
           response: JSON.stringify(response),
           user_id: user?.id || null,
           thread_id: threadId,
