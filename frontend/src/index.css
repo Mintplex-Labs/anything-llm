@@ -1008,15 +1008,7 @@ does not extend the close button beyond the viewport. */
 }
 
 
-[dir="rtl"] div.w-screen :nth-child(2).bg-theme-bg-secondary {
+[dir="rtl"] div.w-screen :nth-child(2).no-scroll {
   right: -18px;
   left: 14px;
-}
-
-[dir="rtl"] tr {
-  text-align: right;
-}
-
-[dir="rtl"] div:has(> a[aria-label="Find us on GitHub"]) {
-  padding-left: 16px;
 }
