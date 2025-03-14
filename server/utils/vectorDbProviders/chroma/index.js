@@ -100,7 +100,8 @@ const Chroma = {
   distanceToSimilarity: function (distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
     if (distance >= 1.0) return 1;
-    if (distance < 0) return 1 - Math.abs(distance);
+    // we add a 0.1 offset to get Chroma to match performance of other vector DBs
+    if (distance < 0) return 1 - Math.abs(distance) + 0.1;
     return 1 - distance;
   },
   namespaceCount: async function (_namespace = null) {
@@ -129,12 +130,11 @@ const Chroma = {
       queryEmbeddings: queryVector,
       nResults: topN,
     });
+
     response.ids[0].forEach((_, i) => {
-      if (
-        this.distanceToSimilarity(response.distances[0][i]) <
-        similarityThreshold
-      )
-        return;
+      const similarity = this.distanceToSimilarity(response.distances[0][i]);
+
+      if (similarity < similarityThreshold) return;
 
       if (
         filterIdentifiers.includes(sourceIdentifier(response.metadatas[0][i]))
@@ -144,9 +144,10 @@ const Chroma = {
         );
         return;
       }
+
       result.contextTexts.push(response.documents[0][i]);
       result.sourceDocuments.push(response.metadatas[0][i]);
-      result.scores.push(this.distanceToSimilarity(response.distances[0][i]));
+      result.scores.push(similarity);
     });
 
     return result;
@@ -299,13 +300,18 @@ const Chroma = {
 
       if (vectors.length > 0) {
         const chunks = [];
-
         console.log("Inserting vectorized chunks into Chroma collection.");
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
-        const additionResult = await collection.add(submission);
-        if (!additionResult)
-          throw new Error("Error embedding into ChromaDB", additionResult);
+        try {
+          await collection.add(submission);
+          console.log(
+            `Successfully added ${submission.ids.length} vectors to collection ${this.normalize(namespace)}`
+          );
+        } catch (error) {
+          console.error("Error adding to ChromaDB:", error);
+          throw new Error(`Error embedding into ChromaDB: ${error.message}`);
+        }
 
         await storeVectorResult(chunks, fullFilePath);
       }
