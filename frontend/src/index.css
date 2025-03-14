@@ -1002,13 +1002,21 @@ does not extend the close button beyond the viewport. */
   right: auto;
 }
 
-[dir="rtl"] div.duration-500 button.duration-500  {
+[dir="rtl"] [data-tooltip-id="sidebar-toggle"]  {
   right: 30px;
   left: auto;
 }
 
 
-[dir="rtl"] div.w-screen :nth-child(2).no-scroll {
+[dir="rtl"] div.w-screen :nth-child(2).bg-theme-bg-secondary {
   right: -18px;
   left: 14px;
+}
+
+[dir="rtl"] tr {
+  text-align: right;
+}
+
+[dir="rtl"] div:has(> a[aria-label="Find us on GitHub"]) {
+  padding-left: 16px;
 }
