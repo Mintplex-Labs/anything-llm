@@ -12,7 +12,7 @@ export function useTheme() {
   });
   const { t } = useTranslation();
   const availableThemes = {
-    default: t("appearance.themePreference.default"),
+    default: t("appearance.themePreference.theme"),
     light: t("appearance.themePreference.light"),
   };
   useEffect(() => {
