@@ -152,7 +152,9 @@ function workspaceEndpoints(app) {
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e.message, e);
-        response.sendStatus(500).end();
+        if (!response.headersSent) {
+          response.status(500).json({ success: false, error: e.message }).end();
+        }
       }
     }
   );

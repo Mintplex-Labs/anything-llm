@@ -12,7 +12,7 @@ class CollectorApi {
     const { CommunicationKey } = require("../comKey");
     this.comkey = new CommunicationKey();
     this.endpoint = `http://0.0.0.0:${process.env.COLLECTOR_PORT || 8888}`;
-    this.requestTimeout = parseInt(process.env.REQUEST_TIMEOUT || '900000', 10); // 15분 기본값
+    this.requestTimeout = parseInt(process.env.REQUEST_TIMEOUT || '900000', 10) - 10000; // 15분 기본값
   }
 
   log(text, ...args) {
