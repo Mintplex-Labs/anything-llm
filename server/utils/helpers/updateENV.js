@@ -960,6 +960,11 @@ function dumpENV() {
 
     // OCR Language Support
     "TARGET_OCR_LANG",
+
+    // A-Insight 설정
+    "REQUEST_TIMEOUT",
+    "SHOW_ALL_CUSTOMIZATIONS",
+    "DATABASE_URL",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
