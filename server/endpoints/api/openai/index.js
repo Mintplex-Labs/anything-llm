@@ -12,6 +12,8 @@ const { EventLogs } = require("../../../models/eventLogs");
 const {
   OpenAICompatibleChat,
 } = require("../../../utils/chats/openaiCompatible");
+const path = require("path");
+const fs = require("fs");
 
 function apiOpenAICompatibleEndpoints(app) {
   if (!app) return;
@@ -207,7 +209,7 @@ function apiOpenAICompatibleEndpoints(app) {
           content: {
             "application/json": {
               example: {
-                inputs: [
+                input: [
                 "This is my first string to embed",
                 "This is my second string to embed",
                 ],
@@ -223,13 +225,19 @@ function apiOpenAICompatibleEndpoints(app) {
       }
       */
       try {
-        const { inputs = [] } = reqBody(request);
-        const validArray = inputs.every((input) => typeof input === "string");
+        const body = reqBody(request);
+        let input = body.input || [];
+
+        if (!Array.isArray(input)) {
+          input = [input];
+        }
+
+        const validArray = input.every((text) => typeof text === "string");
         if (!validArray)
           throw new Error("All inputs to be embedded must be strings.");
 
         const Embedder = getEmbeddingEngineSelection();
-        const embeddings = await Embedder.embedChunks(inputs);
+        const embeddings = await Embedder.embedChunks(input);
         const data = [];
         embeddings.forEach((embedding, index) => {
           data.push({
