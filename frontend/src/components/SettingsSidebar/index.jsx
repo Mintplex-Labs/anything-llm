@@ -372,7 +372,7 @@ const SidebarOptions = ({ user = null, t }) => (
           roles={["admin", "manager"]}
           hidden={user?.role}
         />
-        <HoldToReveal key="exp_features">
+        {/* <HoldToReveal key="exp_features">
           <Option
             btnText={t("settings.experimental-features")}
             icon={<Flask className="h-5 w-5 flex-shrink-0" />}
@@ -381,7 +381,7 @@ const SidebarOptions = ({ user = null, t }) => (
             flex={true}
             roles={["admin"]}
           />
-        </HoldToReveal>
+        </HoldToReveal> */}
       </>
     )}
   </CanViewChatHistoryProvider>
