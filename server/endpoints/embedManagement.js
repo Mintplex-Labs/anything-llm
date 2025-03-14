@@ -44,7 +44,7 @@ function embedManagementEndpoints(app) {
           { embedId: embed.id },
           user?.id
         );
-        response.status(200).json({ embed, error });
+        response.status(200).json({ data: embed, error });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
