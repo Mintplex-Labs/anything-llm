@@ -40,7 +40,9 @@ async function executeApiCall(config, context) {
   }
 
   try {
-    introspect(`Sending body to ${decodedUrl}: ${requestConfig?.body || "No body"}`);
+    introspect(
+      `Sending body to ${decodedUrl}: ${requestConfig?.body || "No body"}`
+    );
     const response = await fetch(decodedUrl, requestConfig);
     if (!response.ok) {
       introspect(`Request failed with status ${response.status}`);

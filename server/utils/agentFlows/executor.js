@@ -30,9 +30,9 @@ class FlowExecutor {
 
           // Convert the variable value to string
           let value = this.variables[varName];
-          if (value === null) return '';
+          if (value === null) return "";
 
-          if (typeof value === 'object') {
+          if (typeof value === "object") {
             try {
               value = JSON.stringify(value);
             } catch (e) {
@@ -41,7 +41,7 @@ class FlowExecutor {
           }
 
           // If this is a URL, encode the value
-          if (obj.startsWith('http://') || obj.startsWith('https://')) {
+          if (obj.startsWith("http://") || obj.startsWith("https://")) {
             return encodeURIComponent(value);
           }
 
