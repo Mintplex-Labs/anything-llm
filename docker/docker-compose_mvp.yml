@@ -22,3 +22,25 @@ services:
     network_mode: host
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: anythingllm-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ascle
+      POSTGRES_PASSWORD: ascleai12
+      POSTGRES_DB: insight
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    volumes:
+      - /home/ascle/postgresql/data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf
+    command: >
+      postgres -c config_file=/etc/postgresql/postgresql.conf
+    network_mode: host

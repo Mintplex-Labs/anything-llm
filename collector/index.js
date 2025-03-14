@@ -18,6 +18,9 @@ const { verifyPayloadIntegrity } = require("./middleware/verifyIntegrity");
 const app = express();
 const FILE_LIMIT = "3GB";
 
+// 서버 전체의 타임아웃을 환경변수에서 가져와서 설정
+const REQUEST_TIMEOUT = parseInt(process.env.REQUEST_TIMEOUT || '900000', 10); // 15분 기본값
+
 app.use(cors({ origin: true }));
 app.use(
   bodyParser.text({ limit: FILE_LIMIT }),
@@ -27,6 +30,13 @@ app.use(
     extended: true,
   })
 );
+
+// 요청 및 응답에 타임아웃 적용
+app.use((req, res, next) => {
+  req.setTimeout(REQUEST_TIMEOUT);
+  res.setTimeout(REQUEST_TIMEOUT);
+  next();
+});
 
 app.post(
   "/process",

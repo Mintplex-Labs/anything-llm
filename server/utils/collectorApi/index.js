@@ -1,4 +1,7 @@
 const { EncryptionManager } = require("../EncryptionManager");
+const http = require('http');
+const https = require('https');
+const { URL } = require('url');
 
 // When running locally will occupy the 0.0.0.0 hostname space but when deployed inside
 // of docker this endpoint is not exposed so it is only on the Docker instances internal network
@@ -9,6 +12,7 @@ class CollectorApi {
     const { CommunicationKey } = require("../comKey");
     this.comkey = new CommunicationKey();
     this.endpoint = `http://0.0.0.0:${process.env.COLLECTOR_PORT || 8888}`;
+    this.requestTimeout = parseInt(process.env.REQUEST_TIMEOUT || '900000', 10) - 10000; // 15분 기본값
   }
 
   log(text, ...args) {
@@ -53,26 +57,62 @@ class CollectorApi {
       options: this.#attachOptions(),
     });
 
-    return await fetch(`${this.endpoint}/process`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Integrity": this.comkey.sign(data),
-        "X-Payload-Signer": this.comkey.encrypt(
-          new EncryptionManager().xPayload
-        ),
-      },
-      body: data,
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Response could not be completed");
-        return res.json();
-      })
-      .then((res) => res)
-      .catch((e) => {
-        this.log(e.message);
-        return { success: false, reason: e.message, documents: [] };
+    return new Promise((resolve) => {
+      const url = new URL(`${this.endpoint}/process`);
+      const options = {
+        hostname: url.hostname,
+        port: url.port,
+        path: url.pathname,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(data),
+          'X-Integrity': this.comkey.sign(data),
+          'X-Payload-Signer': this.comkey.encrypt(
+            new EncryptionManager().xPayload
+          ),
+        },
+        timeout: this.requestTimeout, // 15분 타임아웃 설정
+      };
+
+      const req = http.request(options, (res) => {
+        let responseData = '';
+        
+        res.on('data', (chunk) => {
+          responseData += chunk;
+        });
+        
+        res.on('end', () => {
+          try {
+            if (res.statusCode < 200 || res.statusCode >= 300) {
+              this.log(`HTTP 에러 상태 코드: ${res.statusCode}`);
+              resolve({ success: false, reason: `HTTP 에러 상태 코드: ${res.statusCode}`, documents: [] });
+              return;
+            }
+            const parsedData = JSON.parse(responseData);
+            resolve(parsedData);
+          } catch (e) {
+            this.log('JSON 파싱 에러:', e.message);
+            resolve({ success: false, reason: e.message, documents: [] });
+          }
+        });
       });
+
+      req.on('error', (e) => {
+        this.log('요청 에러:', e.message);
+        resolve({ success: false, reason: e.message, documents: [] });
+      });
+
+      req.on('timeout', () => {
+        this.log('요청 타임아웃');
+        req.destroy();
+        resolve({ success: false, reason: '요청 타임아웃', documents: [] });
+      });
+
+      // 데이터 전송 및 요청 종료
+      req.write(data);
+      req.end();
+    });
   }
 
   async processLink(link = "") {
