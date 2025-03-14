@@ -12,8 +12,6 @@ const { EventLogs } = require("../../../models/eventLogs");
 const {
   OpenAICompatibleChat,
 } = require("../../../utils/chats/openaiCompatible");
-const path = require("path");
-const fs = require("fs");
 
 function apiOpenAICompatibleEndpoints(app) {
   if (!app) return;
