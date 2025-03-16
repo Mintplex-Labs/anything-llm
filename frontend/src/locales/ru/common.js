@@ -149,6 +149,11 @@ const TRANSLATIONS = {
     title: "Новая Рабочая Область",
     placeholder: "Моя Рабочая Область",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "Общие настройки",

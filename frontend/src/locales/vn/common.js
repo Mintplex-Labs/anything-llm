@@ -148,6 +148,11 @@ const TRANSLATIONS = {
     title: "Không gian làm việc mới",
     placeholder: "Không gian làm việc của tôi",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "Cài đặt chung",

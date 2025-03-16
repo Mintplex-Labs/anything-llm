@@ -151,6 +151,11 @@ const TRANSLATIONS = {
     title: "新增工作區",
     placeholder: "我的工作區",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "一般設定",

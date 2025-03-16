@@ -164,6 +164,11 @@ const TRANSLATIONS = {
     title: "New Workspace",
     placeholder: "My Workspace",
     create: "Create",
+    loadingThreads: "loading threads....",
+    default: "default",
+    StartThread: "Starting Thread...",
+    NewThread: "New Thread",
+    DeleteSelected: "Delete Selected",
   },
 
   // Workspace Settings menu items

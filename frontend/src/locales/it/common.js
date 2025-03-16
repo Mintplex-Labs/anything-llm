@@ -149,6 +149,11 @@ const TRANSLATIONS = {
     title: "Nuova area di lavoro",
     placeholder: "La mia area di lavoro",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "Impostazioni generali",

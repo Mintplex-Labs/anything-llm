@@ -148,6 +148,11 @@ const TRANSLATIONS = {
     title: "فضای کاری جدید",
     placeholder: "فضای کاری من",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "تنظیمات عمومی",

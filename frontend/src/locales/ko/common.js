@@ -127,6 +127,11 @@ const TRANSLATIONS = {
     title: "새 워크스페이스",
     placeholder: "내 워크스페이스",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "일반 설정",

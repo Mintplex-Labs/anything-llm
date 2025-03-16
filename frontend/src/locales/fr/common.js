@@ -149,6 +149,11 @@ const TRANSLATIONS = {
     title: "Nouveau Espace de Travail",
     placeholder: "Mon Espace de Travail",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "Paramètres généraux",

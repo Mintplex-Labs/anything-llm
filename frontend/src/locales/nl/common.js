@@ -149,6 +149,11 @@ const TRANSLATIONS = {
     title: "Nieuwe Werkruimte",
     placeholder: "Mijn Werkruimte",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "Algemene Instellingen",

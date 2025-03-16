@@ -156,6 +156,11 @@ const TRANSLATIONS = {
     title: "مساحة عمل جديدة",
     placeholder: "مساحتي للعمل",
     create: "قم بالإنشاء ",
+    loadingThreads: "جاري تحميل المواضيع....",
+    default: "الافتراضي",
+    StartThread: "بدء الموضوع...",
+    NewThread: "موضوع جديد",
+    DeleteSelected: "حذف المحدد",
   },
   "workspaces—settings": {
     general: "الإعدادات العامة",

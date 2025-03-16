@@ -149,6 +149,11 @@ const TRANSLATIONS = {
     title: "Neuer Arbeitsbereich",
     placeholder: "Mein Arbeitsbereich",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "Allgemeine Einstellungen",

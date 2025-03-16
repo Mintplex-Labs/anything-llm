@@ -148,6 +148,11 @@ const TRANSLATIONS = {
     title: "Yeni Çalışma Alanı",
     placeholder: "Benim Çalışma Alanım",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "Genel Ayarlar",

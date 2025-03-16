@@ -147,6 +147,11 @@ const TRANSLATIONS = {
     title: "סביבת עבודה חדשה",
     placeholder: "סביבת העבודה שלי",
     create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "הגדרות כלליות",
