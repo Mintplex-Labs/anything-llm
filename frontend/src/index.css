@@ -1034,31 +1034,34 @@ does not extend the close button beyond the viewport. */
   padding-left: 16px;
 }
 
+[dir="rtl"] .pr-2 {
+  padding-left: 0.5rem;
+}
+
+/*Arabic */
+
 [dir="rtl"][lang="ar"] {
   text-align: justify;
   text-justify: inter-word;
 }
 
-/*Amiri Font rules for Arabic*/
 @font-face {
   font-family: "Amiri";
   src: url("../public/fonts/Amiri-Regular.ttf");
   font-weight: normal;
-  font-size: 120%;
+  font-size: 1.25rem;
 }
 
 @font-face {
   font-family: "Amiri";
   src: url("../public/fonts/Amiri-Bold.ttf");
   font-weight: bold;
-  font-size: 120%;
 }
 
 @font-face {
   font-family: "Amiri";
   src: url("../public/fonts/Amiri-Italic.ttf");
   font-style: italic;
-  font-size: 120%;
 }
 
 @font-face {
@@ -1066,9 +1069,12 @@ does not extend the close button beyond the viewport. */
   src: url("../public/fonts/Amiri-BoldItalic.ttf");
   font-weight: bold;
   font-style: italic;
-  font-size: 120%;
 }
 
-[dir="rtl"] .pr-2 {
-  padding-left: 0.5rem;
+[dir="rtl"][lang="ar"] .text-\[14px\] {
+  font-size: 16px;
+}
+
+[dir="rtl"][lang="ar"] .text-base {
+  font-size: 1rem;
 }
