@@ -135,7 +135,7 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family:
+  :not(:lang(ar)){font-family:
     "plus-jakarta-sans",
     -apple-system,
     BlinkMacSystemFont,
@@ -147,7 +147,20 @@ body {
     Fira Sans,
     Droid Sans,
     Helvetica Neue,
-    sans-serif;
+    sans-serif;}
+    :lang(ar){font-family:
+      "Amiri",
+      -apple-system,
+      BlinkMacSystemFont,
+      Segoe UI,
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      Fira Sans,
+      Droid Sans,
+      Helvetica Neue,
+      sans-serif;}
   background-color: white;
 }
 
@@ -164,7 +177,7 @@ a {
   border-color: #302f30;
 }
 
-@font-face {
+ @font-face {
   font-family: "plus-jakarta-sans";
   src: url("../public/fonts/PlusJakartaSans.ttf");
   font-display: swap;
@@ -1021,7 +1034,41 @@ does not extend the close button beyond the viewport. */
   padding-left: 16px;
 }
 
-[dir="rtl"] {
+[dir="rtl"][lang="ar"] {
   text-align: justify;
   text-justify: inter-word;
+}
+
+/*Amiri Font rules for Arabic*/
+@font-face {
+  font-family: "Amiri";
+  src: url("../public/fonts/Amiri-Regular.ttf");
+  font-weight: normal;
+  font-size: 120%;
+}
+
+@font-face {
+  font-family: "Amiri";
+  src: url("../public/fonts/Amiri-Bold.ttf");
+  font-weight: bold;
+  font-size: 120%;
+}
+
+@font-face {
+  font-family: "Amiri";
+  src: url("../public/fonts/Amiri-Italic.ttf");
+  font-style: italic;
+  font-size: 120%;
+}
+
+@font-face {
+  font-family: "Amiri";
+  src: url("../public/fonts/Amiri-BoldItalic.ttf");
+  font-weight: bold;
+  font-style: italic;
+  font-size: 120%;
+}
+
+[dir="rtl"] .pr-2 {
+  padding-left: 0.5rem;
 }

@@ -742,7 +742,7 @@ const TRANSLATIONS = {
     welcome: "مرحباً بكم في مساحة عملك الجديدة.",
     get_started: "للبدء إما",
     get_started_default: "للبدء",
-    upload: "تحميل مستند",
+    upload: "حمل مستندا",
     or: "أو",
     send_chat: "أرسل محادثة.",
     send_message: "أرسل رسالة",
