@@ -94,6 +94,7 @@ const TRANSLATIONS = {
     "Your-Account": null,
     "Import-Item": null,
     OpenSettings: null,
+    ToWorkspaces: null,
     JoinDiscord: null,
     helpDocs: null,
     GitHubCode: null,

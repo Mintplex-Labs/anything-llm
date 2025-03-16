@@ -105,6 +105,7 @@ const TRANSLATIONS = {
     "Your-Account": "Your Account",
     "Import-Item": "Import Item",
     OpenSettings: "Open settings",
+    ToWorkspaces: "Back to workspaces",
     JoinDiscord: "Join the AnythingLLM Discord",
     helpDocs: "Open AnythingLLM help docs",
     GitHubCode: "View source code on GitHub",

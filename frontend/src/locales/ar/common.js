@@ -101,6 +101,7 @@ const TRANSLATIONS = {
     "Your-Account": "حسابك",
     "Import-Item": "استيراد العنصر",
     OpenSettings: "افتح الإعدادات",
+    ToWorkspaces: "العودة إلى مساحات العمل",
     JoinDiscord: "انضم إلى ديسكورد الخاص بـ إيني ثينك إلْلْمْ",
     helpDocs: "افتح مستندات المساعدة الخاصة بـ إيني ثينك إلْلْمْ",
     GitHubCode: "عرض مصدر الكود على جيثب",
