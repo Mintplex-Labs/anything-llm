@@ -27,6 +27,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
+  const [isFirstMessage, setIsFirstMessage] = useState(true);
   const { files, parseAttachments } = useContext(DndUploaderContext);
 
   // Maintain state of message from whatever is in PromptInput
@@ -50,10 +51,17 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!message || message === "") return false;
+    
+    // Add @agent prefix if it's the first message since page load and chatMode is agent
+    const messageToSend = (workspace?.chatMode === "agent" && isFirstMessage) ? `@agent ${message}` : message;
+    
+    // After first message is sent, we don't need to add @agent prefix anymore until page reload
+    setIsFirstMessage(false);
+    
     const prevChatHistory = [
       ...chatHistory,
       {
-        content: message,
+        content: messageToSend,
         role: "user",
         attachments: parseAttachments(),
       },
@@ -61,7 +69,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         content: "",
         role: "assistant",
         pending: true,
-        userMessage: message,
+        userMessage: messageToSend,
         animate: true,
       },
     ];
@@ -107,6 +115,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       return;
     }
 
+    // Add @agent prefix if it's the first message since page load and chatMode is agent
+    const commandToSend = (workspace?.chatMode === "agent" && isFirstMessage && !command.startsWith("@agent"))
+      ? `@agent ${command}` 
+      : command;
+    
+    // After first message is sent, we don't need to add @agent prefix anymore until page reload
+    setIsFirstMessage(false);
+
     let prevChatHistory;
     if (history.length > 0) {
       // use pre-determined history chain.
@@ -116,7 +132,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           content: "",
           role: "assistant",
           pending: true,
-          userMessage: command,
+          userMessage: commandToSend,
           attachments,
           animate: true,
         },
@@ -125,7 +141,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       prevChatHistory = [
         ...chatHistory,
         {
-          content: command,
+          content: commandToSend,
           role: "user",
           attachments,
         },
@@ -133,7 +149,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           content: "",
           role: "assistant",
           pending: true,
-          userMessage: command,
+          userMessage: commandToSend,
           animate: true,
         },
       ];
