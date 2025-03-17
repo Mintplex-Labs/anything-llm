@@ -439,10 +439,10 @@ const Workspace = {
       return null;
     }
   },
-  getDefaultWorkspace: async function () {
+  getDefaultWorkspace: async function (workspace_slug = DEFAULT_WORKSPACE) {
     return await prisma.workspaces.findFirst({
       where: {
-        slug: DEFAULT_WORKSPACE,
+        slug: workspace_slug,
       },
     });
   },
@@ -458,6 +458,15 @@ const Workspace = {
         console.warn("Default workspace not found. Creating...");
         defaultWorkspace = await this.createDefaultWorkspace();
       }
+
+      //add user to internal workspace
+      const internalWS = await this.getDefaultWorkspace(process.env.INTERNAL_WORKSPACE_NAME || "all-workspaces");
+      if(!internalWS) {
+        console.log("Internal workspace not found. System will not add the user to internal workspace")
+      } else {
+        await WorkspaceUser.create(userId, internalWS?.id);
+      }
+      
       return await WorkspaceUser.create(userId, defaultWorkspace?.id);
     } catch (error) {
       console.error(
