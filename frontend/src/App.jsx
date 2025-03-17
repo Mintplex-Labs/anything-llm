@@ -235,10 +235,10 @@ export default function App() {
                     element={<AdminRoute Component={LiveDocumentSyncManage} />}
                   />
 
-                  <Route
+                  {/* <Route
                     path="/fine-tuning"
                     element={<AdminRoute Component={FineTuningWalkthrough} />}
-                  />
+                  /> */}
 
                   <Route
                     path="/settings/community-hub/trending"
