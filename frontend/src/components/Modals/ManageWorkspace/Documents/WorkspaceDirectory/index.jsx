@@ -162,7 +162,11 @@ function WorkspaceDirectory({
             <div className="overflow-y-auto h-[calc(100%-40px)]">
               {files.items.some((folder) => folder.items.length > 0) ||
               movedItems.length > 0 ? (
-                <RenderFileRows files={files} movedItems={movedItems} workspace={workspace}>
+                <RenderFileRows
+                  files={files}
+                  movedItems={movedItems}
+                  workspace={workspace}
+                >
                   {({ item, folder }) => (
                     <WorkspaceFileRow
                       key={item.id}
