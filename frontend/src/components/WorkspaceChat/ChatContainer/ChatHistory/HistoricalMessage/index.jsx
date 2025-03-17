@@ -10,6 +10,7 @@ import createDOMPurify from "dompurify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
 import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
 import TTSMessage from "./Actions/TTSButton";
+import CollapsibleReply from "../PromptReply/CollapsibleReply";
 
 const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = ({
@@ -67,9 +68,8 @@ const HistoricalMessage = ({
     <div
       key={uuid}
       onAnimationEnd={onEndAnimation}
-      className={`${
-        isDeleted ? "animate-remove" : ""
-      } flex justify-center items-end w-full group bg-theme-bg-chat custom-theme-bg-secondary`}
+      className={`${isDeleted ? "animate-remove" : ""
+        } flex justify-center items-end w-full group bg-theme-bg-chat custom-theme-bg-secondary`}
     >
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
@@ -96,12 +96,20 @@ const HistoricalMessage = ({
             />
           ) : (
             <div className="overflow-x-scroll break-words no-scroll">
-              <span
-                className="flex flex-col gap-y-1"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(renderMarkdown(message)),
-                }}
-              />
+              {
+                role === 'assistant' ?
+                  (
+                    <CollapsibleReply text={message} />
+                  ) :
+                  (
+                    <span
+                      className="flex flex-col gap-y-1"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(renderMarkdown(message)),
+                      }}
+                    />
+                  )
+              }
               <ChatAttachments attachments={attachments} />
             </div>
           )}

@@ -149,9 +149,9 @@ function authEndpoints(app) {
    */
   app.get("/auth/callback/chat-plugin", async (req, res) => {
     const code = req.query.code;
-    let keRedirectUrl = req.query.redirecturl 
-    ? `${process.env.KC_REDIRECT_URL_CHAT_PLUGIN}?redirecturl=${req.query.redirecturl}` 
-    : process.env.KC_REDIRECT_URL_CHAT_PLUGIN;
+    let keRedirectUrl = req.query.redirecturl
+      ? `${process.env.KC_REDIRECT_URL_CHAT_PLUGIN}?redirecturl=${req.query.redirecturl}`
+      : process.env.KC_REDIRECT_URL_CHAT_PLUGIN;
     // console.log("redirect url : ", keRedirectUrl)
     if (!code) {
       return res.status(400).send("No code found");
@@ -198,24 +198,29 @@ function authEndpoints(app) {
   });
 
   app.get("/env", (req, res) => {
+
+
+
     const requestedVars = req.query.vars;
 
+    // return res.status(401).json({ error: "No variables requested. Use ?vars=VAR1,VAR2" });
+
     if (!requestedVars) {
-        return res.status(400).json({ error: "No variables requested. Use ?vars=VAR1,VAR2" });
+      return res.status(400).json({ error: "No variables requested. Use ?vars=VAR1,VAR2" });
     }
 
     const requestedVarList = requestedVars.split(",").map(varName => varName.trim().toLowerCase()); // Normalize to lowercase
 
     const response = requestedVarList.reduce((acc, varName) => {
-        if (ALLOWED_ENV_VARS_MAP[varName]) {
-            const actualVarName = ALLOWED_ENV_VARS_MAP[varName]; // Get the actual case-sensitive env var name
-            acc[actualVarName] = process.env[actualVarName] || null; // If not set, return null
-        }
-        return acc;
+      if (ALLOWED_ENV_VARS_MAP[varName]) {
+        const actualVarName = ALLOWED_ENV_VARS_MAP[varName]; // Get the actual case-sensitive env var name
+        acc[actualVarName] = process.env[actualVarName] || null; // If not set, return null
+      }
+      return acc;
     }, {});
 
     res.json(response);
-});
+  });
   // app.get("/auth/get-prism-token", async (req, res) => {
 
   //   const authHeader = req.headers['authorization'];
