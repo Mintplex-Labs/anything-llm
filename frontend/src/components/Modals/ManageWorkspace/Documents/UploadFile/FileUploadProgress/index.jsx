@@ -21,6 +21,8 @@ function FileUploadProgressComponent({
   const [status, setStatus] = useState("pending");
   const [error, setError] = useState("");
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const estimatedUploadTime = 200 * 1000;
 
   const fadeOut = (cb) => {
     setIsFadingOut(true);
@@ -41,29 +43,35 @@ function FileUploadProgressComponent({
       const start = Number(new Date());
       const formData = new FormData();
       formData.append("file", file, file.name);
+
       const timer = setInterval(() => {
-        setTimerMs(Number(new Date()) - start);
+        const elapsedTime = Date.now() - start;
+        setTimerMs(elapsedTime);
+
+        const calculatedProgress = Math.min((elapsedTime / estimatedUploadTime) * 90, 95);
+        setProgress(calculatedProgress);
       }, 100);
 
       // Chunk streaming not working in production so we just sit and wait
       const { response, data } = await Workspace.uploadFile(slug, formData);
+      clearInterval(timer);
+
       if (!response.ok) {
         setStatus("failed");
-        clearInterval(timer);
         onUploadError(data.error);
         setError(data.error);
+        setProgress(0);
       } else {
-        setLoading(false);
-        setLoadingMessage("");
         setStatus("complete");
-        clearInterval(timer);
+        setProgress(100);
         onUploadSuccess();
       }
 
+      setLoading(false);
+      setLoadingMessage("");
+
       // Begin fadeout timer to clear uploader queue.
-      setTimeout(() => {
-        fadeOut(() => setTimeout(() => beginFadeOut(), 300));
-      }, 5000);
+      setTimeout(() => fadeOut(() => setTimeout(() => beginFadeOut(), 300)), 5000);
     }
     !!file && !rejected && uploadFile();
   }, []);
@@ -136,13 +144,33 @@ function FileUploadProgressComponent({
           />
         )}
       </div>
-      <div className="flex flex-col">
+      {/* <div className="flex flex-col">
         <p className="text-white light:text-theme-text-primary text-xs font-medium">
           {truncate(file.name, 30)}
         </p>
         <p className="text-white/80 light:text-theme-text-secondary text-xs font-medium">
           {humanFileSize(file.size)} | {milliToHms(timerMs)}
         </p>
+        <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+          <div
+            className="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+      </div> */}
+      <div className="flex flex-col w-full">
+        <p className="text-white light:text-theme-text-primary text-xs font-medium truncate">
+          {truncate(file.name, 30)}
+        </p>
+        <p className="text-white/80 light:text-theme-text-secondary text-xs font-medium w-[120px] truncate text-left">
+          {humanFileSize(file.size)} | {milliToHms(timerMs)}
+        </p>
+        <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+          <div
+            className="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
       </div>
     </div>
   );
