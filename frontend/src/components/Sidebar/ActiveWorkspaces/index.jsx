@@ -55,7 +55,7 @@ export default function ActiveWorkspaces() {
     const reorderedWorkspaces = Array.from(workspaces);
     const [removed] = reorderedWorkspaces.splice(startIndex, 1);
     reorderedWorkspaces.splice(endIndex, 0, removed);
-
+    setWorkspaces(reorderedWorkspaces);
     const success = await Workspace.reorderWorkspaces(
       reorderedWorkspaces.map((w) => w.id)
     );
@@ -64,8 +64,6 @@ export default function ActiveWorkspaces() {
       showToast("Failed to reorder workspaces", "error");
       const workspaces = await Workspace.all();
       setWorkspaces(workspaces);
-    } else {
-      setWorkspaces(reorderedWorkspaces);
     }
   };
 
@@ -114,32 +112,26 @@ export default function ActiveWorkspaces() {
                           aria-current={isActive ? "page" : ""}
                           className={`
                             transition-all duration-[200ms]
-                            flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
+                            flex flex-grow w-[75%] gap-x-2 py-[6px] pl-[4px] pr-[6px] rounded-[4px] text-white justify-start items-center
                             bg-theme-sidebar-item-default
                             hover:bg-theme-sidebar-subitem-hover hover:font-bold
-                            ${isActive ? "bg-theme-sidebar-item-selected font-bold border-solid border-2 border-transparent light:border-blue-400" : ""}
+                            ${isActive ? "bg-theme-sidebar-item-selected font-bold light:outline-2 light:outline light:outline-blue-400 light:outline-offset-[-2px]" : ""}
                           `}
                         >
                           <div className="flex flex-row justify-between w-full items-center">
                             {user?.role !== "default" && (
                               <div
                                 {...provided.dragHandleProps}
-                                className="cursor-grab mr-1"
+                                className="cursor-grab mr-[3px]"
                               >
-                                <DotsSixVertical size={16} color="#A7A8A9" />
+                                <DotsSixVertical
+                                  size={20}
+                                  color="var(--theme-sidebar-item-workspace-active)"
+                                  weight="bold"
+                                />
                               </div>
                             )}
                             <div className="flex items-center space-x-2 overflow-hidden flex-grow">
-                              <SquaresFour
-                                weight={isActive ? "fill" : "regular"}
-                                className="flex-shrink-0"
-                                color={
-                                  isActive
-                                    ? "var(--theme-sidebar-item-workspace-active)"
-                                    : "var(--theme-sidebar-item-workspace-inactive)"
-                                }
-                                size={24}
-                              />
                               <div className="w-[130px] overflow-hidden">
                                 <p
                                   className={`
@@ -167,7 +159,7 @@ export default function ActiveWorkspaces() {
                                 >
                                   <UploadSimple
                                     className="h-[20px] w-[20px]"
-                                    weight="bold"
+                                    // weight="bold"
                                   />
                                 </button>
                                 <Link
@@ -188,7 +180,7 @@ export default function ActiveWorkspaces() {
                                         ? "#46C8FF"
                                         : undefined
                                     }
-                                    weight="bold"
+                                    // weight="bold"
                                     className="h-[20px] w-[20px]"
                                   />
                                 </Link>
