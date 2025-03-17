@@ -66,6 +66,7 @@
     "ollama": "^0.5.10",
     "openai": "4.38.5",
     "pg": "^8.11.5",
+    "pg-opengauss": "^1.4.0",
     "pinecone-client": "^1.1.0",
     "pluralize": "^8.0.0",
     "posthog-node": "^3.1.1",
@@ -82,6 +83,7 @@
   },
   "devDependencies": {
     "@inquirer/prompts": "^4.3.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-ft-flow": "^3.0.0",
@@ -95,7 +97,6 @@
     "hermes-eslint": "^0.15.0",
     "node-html-markdown": "^1.3.0",
     "nodemon": "^2.0.22",
-    "prettier": "^3.0.3",
-    "cross-env": "^7.0.3"
+    "prettier": "^3.0.3"
   }
 }
