@@ -65,7 +65,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
             </>
           ) : (
             <>
-              <b>Agent Mode</b> Automatically uses the agent for all messages without requiring @agent prefix.
+              <b>{t("chat.mode.agent.agent_mode")} </b> {t("chat.mode.agent.desc")} 
             </>
           )}
         </p>

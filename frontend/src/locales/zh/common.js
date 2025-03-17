@@ -206,6 +206,11 @@ const TRANSLATIONS = {
         only: "仅",
         "desc-end": "提供找到的文档上下文的答案。",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "聊天历史记录",

@@ -207,6 +207,11 @@ const TRANSLATIONS = {
         only: "alleen",
         "desc-end": "als documentcontext wordt gevonden.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "Chatgeschiedenis",
