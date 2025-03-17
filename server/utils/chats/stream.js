@@ -399,19 +399,19 @@ async function prismStreamChatWithWorkspace(
 
   if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     
-    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null });
+    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null }) || [];
 
-    const groupRecords = await Group.where({ groupname: { in: userGroups } });
+    const groupRecords = await Group.where({ groupname: { in: userGroups } }) || [];
     const groupIds = groupRecords.map(group => group.id);
-    let groupWorkspaces;
+    let groupWorkspaces = [];
     if (groupIds.length != 0) {
       groupWorkspaces = await WorkspaceGroup.getGroupWorkspaces({
         group_id: { in: groupIds }
-      });
+      }) || [];
     }
 
-    const userWorkspaceSlugs = userWorkspaces.map(ws => ws.workspaceSlug);
-    const groupWorkspaceSlugs = groupWorkspaces.map(ws => ws.workspaceSlug);
+    const userWorkspaceSlugs = Array.isArray(userWorkspaces) ? userWorkspaces.map(ws => ws.workspaceSlug) : [];
+    const groupWorkspaceSlugs = Array.isArray(groupWorkspaces) ? groupWorkspaces.map(ws => ws.workspaceSlug) : [];
     workspaces = [...new Set([...userWorkspaceSlugs, ...groupWorkspaceSlugs])];
     
     embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);

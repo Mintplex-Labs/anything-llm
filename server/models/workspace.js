@@ -492,9 +492,9 @@ const Workspace = {
   createInternalWorkspace: async function () {
     try {
       const slug = process.env.INTERNAL_WORKSPACE_NAME;
-      const internal_workspace = await this.get({ slug });
+      let internal_workspace = await this.get({ slug });
       if (!internal_workspace) {
-        const workspace = await prisma.workspaces.create({
+        internal_workspace = await prisma.workspaces.create({
           data: {
             name: process.env.INTERNAL_WORKSPACE_NAME,
             slug: process.env.INTERNAL_WORKSPACE_NAME,
@@ -507,6 +507,7 @@ const Workspace = {
           },
         });
       }
+      return internal_workspace
     } catch (error) {
       console.error("Something went wrong while creating internal workspace",
         error)
