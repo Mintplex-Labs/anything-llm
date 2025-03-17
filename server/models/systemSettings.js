@@ -202,7 +202,21 @@ const SystemSettings = {
       }
 
       const { Workspace } = require("./workspace");
-      await Workspace.createInternalWorkspace();
+
+      const internal_worksoace = await Workspace.createInternalWorkspace();
+      if (!internal_worksoace) {
+        logger.log("No internal workspace found. Skipping chat embed creation as it requires a system-generated workspace.");
+      } else {
+        const { EmbedConfig } = require("../models/embedConfig");
+      
+        const existingConfig = await EmbedConfig.get({ workspace_id: internal_worksoace.id });
+      
+        if (existingConfig) {
+          logger.log(`EmbedConfig already exists for workspace_id: ${internal_worksoace.id}. Skipping creation.`);
+        } else {
+          await createEmbedConfig(internal_worksoace.id);
+        }
+      }
 
       return true;
     } catch (e) {
@@ -752,6 +766,68 @@ function mergeConnections(existingConnections = [], updates = []) {
     });
 
   return updatedConnections;
-}
+};
+async function createEmbedConfig(workspaceId) {
+  try {
+    const { EmbedConfig } = require("../models/embedConfig");
+    const { EventLogs } = require("../models/eventLogs");
 
+    const { embed, message: error } = await EmbedConfig.new({
+      workspace_id: String(workspaceId),
+      chat_mode: "chat",
+      max_chats_per_day: "0",
+      max_chats_per_session: "0",
+      allowlist_domains: null,
+      allow_model_override: false,
+      allow_temperature_override: false,
+      allow_prompt_override: false,
+    });
+
+    if (error) {
+      logger.error(`Error creating EmbedConfig: ${error}`);
+      return;
+    }
+
+    logger.log(`EmbedConfig created successfully with ID: ${embed.id}`);
+    updateTeamsHtml(embed.uuid)
+
+    await EventLogs.logEvent("embed_created", { embedId: embed.id });
+  } catch (error) {
+    logger.error(`Unexpected error in createEmbedConfig: ${error.message}`);
+  }
+};
+async function updateTeamsHtml(uuid) {
+const fs = require("fs");
+const path = require("path");
+
+const teamsHtmlPath = path.join(__dirname, "../../frontend/public/teams.html"); 
+const scriptHost = process.env.TEAMS_SCRIPT_HOST || "http://localhost:3000";
+    const serverHost = process.env.TEAM_SERVER_HOST || "http://localhost:3001";
+
+    const snippet = `<!-- Paste this script at the bottom of your HTML before the </body> tag. -->
+      <script
+        data-embed-id="${uuid}"
+        data-base-url="${serverHost}/api"
+        data-is-team-enabled="true"
+        data-is-open-by-default="true"
+        src="${scriptHost}/embed/prism-chat-widget.min.js">
+      </script>`;
+
+  try {
+    // Read the current file content
+    let htmlContent = fs.readFileSync(teamsHtmlPath, "utf8");
+
+    // Replace the entire <body> tag content
+    htmlContent = htmlContent.replace(
+      /<body[^>]*>[\s\S]*<\/body>/i,  // Matches everything inside <body> tag
+      `<body>\n${snippet}\n</body>`   // Replace with the new snippet
+    );
+
+    // Write back to the file
+    fs.writeFileSync(teamsHtmlPath, htmlContent, "utf8");
+    console.log(`Script added to ${teamsHtmlPath} successfully!`);
+  } catch (error) {
+    console.error(" Error updating teams.html:", error.message);
+  }
+}
 module.exports.SystemSettings = SystemSettings;

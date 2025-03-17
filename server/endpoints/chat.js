@@ -230,7 +230,7 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        let userGroups = await userGroupsFromToken(request);
+        let userGroups = await userGroupsFromToken(request) || [];
         userGroups = userGroups.map(group => group.replace(/^\/+/, ''));
         const { message, attachments = [] } = reqBody(request);
         const workspace = response.locals.workspace;
@@ -319,7 +319,7 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        let userGroups = await userGroupsFromToken(request);
+        let userGroups = await userGroupsFromToken(request) || [];
         userGroups = userGroups.map(group => group.replace(/^\/+/, ''));
         const { message, attachments = [] } = reqBody(request);
         const workspace = response.locals.workspace;
@@ -423,7 +423,7 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        let userGroups = await userGroupsFromToken(request);
+        let userGroups = await userGroupsFromToken(request) || [];
         userGroups = userGroups.map(group => group.replace(/^\/+/, ''));
         const workspace = response.locals.workspace;
 

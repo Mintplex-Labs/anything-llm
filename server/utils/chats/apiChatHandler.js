@@ -85,6 +85,7 @@ async function chatSync({
   thread = null,
   sessionId = null,
   attachments = [],
+  userGroups
 }) {
 
   const uuid = uuidv4();
@@ -156,26 +157,27 @@ async function chatSync({
   let workspaces;
 
   // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true') {
-  if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
-    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null });
-
-    const groupRecords = await Group.where({ groupname: { in: userGroups } });
-    const groupIds = groupRecords.map(group => group.id);
-    let groupWorkspaces;
-    if (groupIds.length != 0) {
-      groupWorkspaces = await WorkspaceGroup.getGroupWorkspaces({
-        group_id: { in: groupIds }
-      });
-    }
-
-    const userWorkspaceSlugs = userWorkspaces.map(ws => ws.workspaceSlug);
-    const groupWorkspaceSlugs = groupWorkspaces.map(ws => ws.workspaceSlug);
-    workspaces = [...new Set([...userWorkspaceSlugs, ...groupWorkspaceSlugs])];
+    if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     
-    embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);
-  } else {
-    embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-  }
+      const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null }) || [];
+  
+      const groupRecords = await Group.where({ groupname: { in: userGroups } }) || [];
+      const groupIds = groupRecords.map(group => group.id);
+      let groupWorkspaces = [];
+      if (groupIds.length != 0) {
+        groupWorkspaces = await WorkspaceGroup.getGroupWorkspaces({
+          group_id: { in: groupIds }
+        }) || [];
+      }
+  
+      const userWorkspaceSlugs = Array.isArray(userWorkspaces) ? userWorkspaces.map(ws => ws.workspaceSlug) : [];
+      const groupWorkspaceSlugs = Array.isArray(groupWorkspaces) ? groupWorkspaces.map(ws => ws.workspaceSlug) : [];
+      workspaces = [...new Set([...userWorkspaceSlugs, ...groupWorkspaceSlugs])];
+      
+      embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);
+    } else {
+      embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+    }
 
 
   // User is trying to query-mode chat a workspace that has no data in it - so
@@ -577,6 +579,7 @@ async function streamChat({
   thread = null,
   sessionId = null,
   attachments = [],
+  userGroups
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
@@ -645,26 +648,27 @@ async function streamChat({
   let embeddingsCount;
   let workspaces;
   // if (process.env.MULTI_WORKSPACE_QUERY_ENABLED == 'true') {
-  if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
-    const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null });
-
-    const groupRecords = await Group.where({ groupname: { in: userGroups } });
-    const groupIds = groupRecords.map(group => group.id);
-    let groupWorkspaces;
-    if (groupIds.length != 0) {
-      groupWorkspaces = await WorkspaceGroup.getGroupWorkspaces({
-        group_id: { in: groupIds }
-      });
-    }
-
-    const userWorkspaceSlugs = userWorkspaces.map(ws => ws.workspaceSlug);
-    const groupWorkspaceSlugs = groupWorkspaces.map(ws => ws.workspaceSlug);
-    workspaces = [...new Set([...userWorkspaceSlugs, ...groupWorkspaceSlugs])];
+    if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     
-    embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);
-  } else {
-    embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-  }
+      const userWorkspaces = await WorkspaceUser.getUserWorkspaces({ user_id: user?.id || null }) || [];
+  
+      const groupRecords = await Group.where({ groupname: { in: userGroups } }) || [];
+      const groupIds = groupRecords.map(group => group.id);
+      let groupWorkspaces = [];
+      if (groupIds.length != 0) {
+        groupWorkspaces = await WorkspaceGroup.getGroupWorkspaces({
+          group_id: { in: groupIds }
+        }) || [];
+      }
+  
+      const userWorkspaceSlugs = Array.isArray(userWorkspaces) ? userWorkspaces.map(ws => ws.workspaceSlug) : [];
+      const groupWorkspaceSlugs = Array.isArray(groupWorkspaces) ? groupWorkspaces.map(ws => ws.workspaceSlug) : [];
+      workspaces = [...new Set([...userWorkspaceSlugs, ...groupWorkspaceSlugs])];
+      
+      embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);
+    } else {
+      embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+    }
 
   // const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
