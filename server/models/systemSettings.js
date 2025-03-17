@@ -427,6 +427,13 @@ const SystemSettings = {
       // AstraDB Keys
       AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
       AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
+
+      // openGauss DB Keys
+      OpenGaussHost: process.env.OPENGAUSS_HOST,
+      OpenGaussPort: process.env.OPENGAUSS_PORT,
+      OpenGaussUsername: process.env.OPENGAUSS_USERNAME,
+      OpenGaussPassword: process.env.OPENGAUSS_PASSWORD,
+      OpenGaussDatabase: process.env.OPENGAUSS_DATABASE,
     };
   },
 

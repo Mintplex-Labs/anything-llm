@@ -138,6 +138,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
+- [openGauss](https://opengauss.org)
 
 ### Technical Overview
 
