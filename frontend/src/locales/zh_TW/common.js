@@ -93,7 +93,6 @@ const TRANSLATIONS = {
     "experimental-features": "實驗性功能",
     contact: "聯絡支援",
     "browser-extension": "瀏覽器擴充功能",
-    "system-variables": "系統變量",
   },
   login: {
     "multi-user": {

@@ -56,7 +56,7 @@ const {
 } = require("../utils/middleware/chatHistoryViewable");
 const { simpleSSOEnabled } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
-const { SystemVariables } = require("../models/systemVariables");
+const { SystemPromptVariables } = require("../models/systemPromptVariables");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -1225,12 +1225,14 @@ function systemEndpoints(app) {
   );
 
   app.get(
-    "/system/variables",
+    "/system/prompt-variables",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const variables = await SystemVariables.getAllWithDynamic(user?.id);
+        const variables = await SystemPromptVariables.getAllWithDynamic(
+          user?.id
+        );
         response.status(200).json({ variables });
       } catch (error) {
         console.error("Error fetching system variables:", error.message);
@@ -1243,7 +1245,7 @@ function systemEndpoints(app) {
   );
 
   app.post(
-    "/system/variables",
+    "/system/prompt-variables",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
@@ -1257,7 +1259,7 @@ function systemEndpoints(app) {
           });
         }
 
-        const variable = await SystemVariables.create({
+        const variable = await SystemPromptVariables.create({
           key,
           value,
           description,
@@ -1280,7 +1282,7 @@ function systemEndpoints(app) {
   );
 
   app.put(
-    "/system/variables/:id",
+    "/system/prompt-variables/:id",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
@@ -1294,7 +1296,7 @@ function systemEndpoints(app) {
           });
         }
 
-        const variable = await SystemVariables.update(Number(id), {
+        const variable = await SystemPromptVariables.update(Number(id), {
           key,
           value,
           description,
@@ -1322,12 +1324,12 @@ function systemEndpoints(app) {
   );
 
   app.delete(
-    "/system/variables/:id",
+    "/system/prompt-variables/:id",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { id } = request.params;
-        const success = await SystemVariables.delete(Number(id));
+        const success = await SystemPromptVariables.delete(Number(id));
 
         if (!success) {
           return response.status(404).json({

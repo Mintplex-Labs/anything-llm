@@ -12,7 +12,7 @@ import { useModal } from "@/hooks/useModal";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-export default function SystemVariables() {
+export default function SystemPromptVariables() {
   const [variables, setVariables] = useState([]);
   const [loading, setLoading] = useState(true);
   const { isOpen, openModal, closeModal } = useModal();
@@ -24,7 +24,7 @@ export default function SystemVariables() {
   const fetchVariables = async () => {
     setLoading(true);
     try {
-      const { variables } = await System.getSystemVariables();
+      const { variables } = await System.promptVariables.getAll();
       setVariables(variables || []);
     } catch (error) {
       console.error("Error fetching variables:", error);
@@ -45,12 +45,13 @@ export default function SystemVariables() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-theme-text-primary">
-                System Variables
+                System Prompt Variables
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-              System variables are used to store configuration values that can
-              be referenced in your prompts.
+              System prompt variables are used to store configuration values
+              that can be referenced in your system prompt to enable dynamic
+              content in your prompts.
             </p>
           </div>
 

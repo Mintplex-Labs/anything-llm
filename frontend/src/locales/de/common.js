@@ -89,7 +89,6 @@ const TRANSLATIONS = {
     "experimental-features": "Experimentelle Funktionen",
     contact: "Support kontaktieren",
     "browser-extension": "Browser-Erweiterung",
-    "system-variables": "Systemvariablen",
   },
   login: {
     "multi-user": {

@@ -89,7 +89,6 @@ const TRANSLATIONS = {
     "experimental-features": "תכונות ניסיוניות",
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
-    "system-variables": "משתני מערכת",
   },
   login: {
     "multi-user": {

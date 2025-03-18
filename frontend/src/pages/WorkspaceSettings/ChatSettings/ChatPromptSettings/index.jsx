@@ -12,12 +12,12 @@ function findVariableMatches(text, variables) {
   let match;
 
   while ((match = regex.exec(text)) !== null) {
-    const isValid = variables.some(v => v.key === match[1]);
+    const isValid = variables.some((v) => v.key === match[1]);
     matches.push({
       start: match.index,
       end: match.index + match[0].length,
       value: match[0],
-      isValid
+      isValid,
     });
   }
   return matches;
@@ -41,7 +41,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   useEffect(() => {
     async function fetchVariables() {
       try {
-        const { variables } = await System.getSystemVariables();
+        const { variables } = await System.promptVariables.getAll();
         setVariables(variables || []);
       } catch (error) {
         console.error("Error fetching variables:", error);
@@ -69,8 +69,8 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
       overlay.scrollLeft = textarea.scrollLeft;
     };
 
-    textarea.addEventListener('scroll', syncScroll);
-    return () => textarea.removeEventListener('scroll', syncScroll);
+    textarea.addEventListener("scroll", syncScroll);
+    return () => textarea.removeEventListener("scroll", syncScroll);
   }, []);
 
   const updateCursorPosition = () => {
@@ -212,11 +212,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
 
     // Add any remaining text
     if (lastIndex < promptValue.length) {
-      elements.push(
-        <span key="text-end">
-          {promptValue.slice(lastIndex)}
-        </span>
-      );
+      elements.push(<span key="text-end">{promptValue.slice(lastIndex)}</span>);
     }
 
     return elements;
@@ -267,8 +263,8 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
               ref={overlayRef}
               className="absolute inset-0 text-white text-sm whitespace-pre-wrap break-words pointer-events-none p-2.5 overflow-hidden"
               style={{
-                font: 'inherit',
-                zIndex: 1
+                font: "inherit",
+                zIndex: 1,
               }}
             >
               {renderHighlightedContent()}
@@ -287,7 +283,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               style={{
-                caretColor: 'white'
+                caretColor: "white",
               }}
             />
           </div>

@@ -2,9 +2,8 @@ const prisma = require("../utils/prisma");
 const moment = require("moment");
 const { SystemSettings } = require("./systemSettings");
 
-const SystemVariables = {
-  // Static system variables that are always available
-  SYSTEM_VARIABLES: [
+const SystemPromptVariables = {
+  DEFAULT_VARIABLES: [
     {
       key: "time",
       value: () => {
@@ -31,20 +30,10 @@ const SystemVariables = {
         const currentDateTime = moment().format("YYYY-MM-DD HH:mm:ss");
         return `${currentDateTime} [Full timestamp in YYYY-MM-DD HH:mm:ss format]`;
       },
-      description: "Current date and time",
+      description: "Current date and time in YYYY-MM-DD HH:mm:ss format",
       type: "dynamic",
       multiUserRequired: false,
     },
-    // DESKTOP ONLY
-    // {
-    //   key: "os",
-    //   value: () => {
-    //     const os = require("os");
-    //     return os.platform();
-    //   },
-    //   description: "Operating system of the server",
-    //   type: "dynamic",
-    // },
     {
       key: "user.name",
       value: async (userId) => {
@@ -86,7 +75,7 @@ const SystemVariables = {
   ],
 
   getAll: async function () {
-    const dbVariables = await prisma.system_variables.findMany();
+    const dbVariables = await prisma.system_prompt_variables.findMany();
     return dbVariables;
   },
 
@@ -100,11 +89,11 @@ const SystemVariables = {
       whereClause.OR.push({ userId });
     }
 
-    const dbVariables = await prisma.system_variables.findMany({
+    const dbVariables = await prisma.system_prompt_variables.findMany({
       where: whereClause,
     });
 
-    // Convert DB variables to a format matching SYSTEM_VARIABLES
+    // Convert DB variables to a format matching DEFAULT_VARIABLES
     const formattedDbVars = dbVariables.map((v) => ({
       id: v.id,
       key: v.key,
@@ -114,8 +103,8 @@ const SystemVariables = {
       userId: v.userId,
     }));
 
-    // Filter SYSTEM_VARIABLES based on multiUserMode
-    const filteredSystemVars = this.SYSTEM_VARIABLES.filter(
+    // Filter DEFAULT_VARIABLES based on multiUserMode
+    const filteredSystemVars = this.DEFAULT_VARIABLES.filter(
       (v) => !v.multiUserRequired || multiUserMode
     );
 
@@ -130,7 +119,7 @@ const SystemVariables = {
     type = "user",
     userId = null,
   }) {
-    return await prisma.system_variables.create({
+    return await prisma.system_prompt_variables.create({
       data: {
         key,
         value,
@@ -142,7 +131,7 @@ const SystemVariables = {
   },
 
   update: async function (id, { key, value, description }) {
-    return await prisma.system_variables.update({
+    return await prisma.system_prompt_variables.update({
       where: { id },
       data: {
         key,
@@ -154,7 +143,7 @@ const SystemVariables = {
 
   delete: async function (id) {
     try {
-      await prisma.system_variables.delete({
+      await prisma.system_prompt_variables.delete({
         where: { id },
       });
       return true;
@@ -237,4 +226,4 @@ const SystemVariables = {
   },
 };
 
-module.exports = { SystemVariables };
+module.exports = { SystemPromptVariables };

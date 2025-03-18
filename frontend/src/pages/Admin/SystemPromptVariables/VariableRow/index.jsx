@@ -5,6 +5,12 @@ import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import EditVariableModal from "./EditVariableModal";
 
+/**
+ * A row component for displaying a system prompt variable
+ * @param {{id: number|null, key: string, value: string, description: string, type: string}} variable - The system prompt variable to display
+ * @param {Function} onRefresh - A function to call when the variable is refreshed
+ * @returns {JSX.Element} A JSX element for displaying the variable
+ */
 export default function VariableRow({ variable, onRefresh }) {
   const rowRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
@@ -18,7 +24,7 @@ export default function VariableRow({ variable, onRefresh }) {
       return false;
 
     try {
-      await System.deleteSystemVariable(variable.id);
+      await System.promptVariables.delete(variable.id);
       rowRef?.current?.remove();
       showToast("Variable deleted successfully", "success", { clear: true });
       if (onRefresh) onRefresh();
