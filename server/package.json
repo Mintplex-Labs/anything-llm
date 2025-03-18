@@ -55,6 +55,7 @@
     "joi": "^17.11.0",
     "joi-password-complexity": "^5.2.0",
     "js-tiktoken": "^1.0.7",
+    "json-schema-generator": "2.0.6",
     "jsonrepair": "^3.7.0",
     "jsonwebtoken": "^9.0.0",
     "langchain": "0.1.36",
