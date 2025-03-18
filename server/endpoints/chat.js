@@ -480,16 +480,13 @@ function chatEndpoints(app) {
 
         if (!suggestions?.error) {
           try {
-            const parsedSuggestions = JSON.parse(suggestions); // Convert string to JSON if needed
+            const parsedSuggestions = JSON.parse(suggestions); 
             response.status(200).json(parsedSuggestions);
           }
           catch (e) {
-            console.error("Systen did not receive valid json suggestions from LLM: ", e);
+            console.error("System did not receive valid json suggestions from LLM: ", e);
+            response.status(200).json({ suggestions });
           }
-          
-
-          response.status(200).json({  });
-
           await EventLogs.logEvent(
             "suggestion_chat",
             {
