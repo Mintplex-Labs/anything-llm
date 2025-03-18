@@ -135,7 +135,8 @@ html,
 body {
   padding: 0;
   margin: 0;
-  :not(:lang(ar)){font-family:
+  font-family:
+    "Amiri",
     "plus-jakarta-sans",
     -apple-system,
     BlinkMacSystemFont,
@@ -147,20 +148,7 @@ body {
     Fira Sans,
     Droid Sans,
     Helvetica Neue,
-    sans-serif;}
-    :lang(ar){font-family:
-      "Amiri",
-      -apple-system,
-      BlinkMacSystemFont,
-      Segoe UI,
-      Roboto,
-      Oxygen,
-      Ubuntu,
-      Cantarell,
-      Fira Sans,
-      Droid Sans,
-      Helvetica Neue,
-      sans-serif;}
+    sans-serif;
   background-color: white;
 }
 
@@ -1005,7 +993,7 @@ does not extend the close button beyond the viewport. */
   animation: thoughtTransition 0.5s ease-out forwards;
 }
 
-/*RTL */
+/*RTL **********************************************************/
 [dir="rtl"] div.relative :nth-child(2).white-scrollbar {
   left: auto;
 }
@@ -1038,9 +1026,11 @@ does not extend the close button beyond the viewport. */
   padding-left: 0.5rem;
 }
 
-/*Arabic */
+/*RTL end *****************************************************/
 
-[dir="rtl"][lang="ar"] {
+/*Arabic ******************************************************/
+
+[lang="ar"] {
   text-align: justify;
   text-justify: inter-word;
 }
@@ -1048,33 +1038,34 @@ does not extend the close button beyond the viewport. */
 @font-face {
   font-family: "Amiri";
   src: url("../public/fonts/Amiri-Regular.ttf");
+  unicode-range: U+600-65F;
   font-weight: normal;
-  font-size: 1.25rem;
+  size-adjust: 111%;
 }
 
 @font-face {
   font-family: "Amiri";
   src: url("../public/fonts/Amiri-Bold.ttf");
+  unicode-range: U+600-65F;
   font-weight: bold;
+  size-adjust: 111%;
 }
 
 @font-face {
   font-family: "Amiri";
   src: url("../public/fonts/Amiri-Italic.ttf");
+  unicode-range: U+600-65F;
   font-style: italic;
+  size-adjust: 111%;
 }
 
 @font-face {
   font-family: "Amiri";
   src: url("../public/fonts/Amiri-BoldItalic.ttf");
+  unicode-range: U+600-65F;
   font-weight: bold;
   font-style: italic;
+  size-adjust: 111%;
 }
 
-[dir="rtl"][lang="ar"] .text-\[14px\] {
-  font-size: 16px;
-}
-
-[dir="rtl"][lang="ar"] .text-base {
-  font-size: 1rem;
-}
+/*Arabic end ***************************************************/
