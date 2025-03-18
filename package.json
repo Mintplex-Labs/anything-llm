@@ -35,6 +35,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "json-schema-generator": "2.0.6",
     "langchain": "^0.3.7",
     "nodemon": "^3.1.9",
     "react": "^19.0.0",
