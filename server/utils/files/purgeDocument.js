@@ -22,6 +22,14 @@ async function purgeDocument(filename = null) {
   return;
 }
 
+/**
+ * Purge a folder and all its contents. This will also remove all vector-cache files and workspace document associations
+ * for the documents within the folder.
+ * @notice This function is not recursive. It only purges the contents of the specified folder.
+ * @notice You cannot purge the `custom-documents` folder.
+ * @param {string} folderName - The name/path of the folder to purge.
+ * @returns {Promise<void>}
+ */
 async function purgeFolder(folderName = null) {
   if (!folderName) return;
   const subFolder = normalizePath(folderName);
