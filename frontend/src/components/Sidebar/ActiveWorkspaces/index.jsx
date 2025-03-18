@@ -32,7 +32,7 @@ export default function ActiveWorkspaces() {
     async function getWorkspaces() {
       const workspaces = await Workspace.all();
       setLoading(false);
-      setWorkspaces(workspaces);
+      setWorkspaces(Workspace.orderWorkspaces(workspaces));
     }
     getWorkspaces();
   }, []);
@@ -51,25 +51,27 @@ export default function ActiveWorkspaces() {
     );
   }
 
-  const reorderWorkspaces = async (startIndex, endIndex) => {
+  /**
+   * Reorders workspaces in the UI via localstorage on client side.
+   * @param {number} startIndex - the index of the workspace to move
+   * @param {number} endIndex - the index to move the workspace to
+   */
+  function reorderWorkspaces(startIndex, endIndex) {
     const reorderedWorkspaces = Array.from(workspaces);
     const [removed] = reorderedWorkspaces.splice(startIndex, 1);
     reorderedWorkspaces.splice(endIndex, 0, removed);
     setWorkspaces(reorderedWorkspaces);
-    const success = await Workspace.reorderWorkspaces(
+    const success = Workspace.storeWorkspaceOrder(
       reorderedWorkspaces.map((w) => w.id)
     );
-
-    if (success.error) {
+    if (!success) {
       showToast("Failed to reorder workspaces", "error");
-      const workspaces = await Workspace.all();
-      setWorkspaces(workspaces);
+      Workspace.all().then((workspaces) => setWorkspaces(workspaces));
     }
-  };
+  }
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
-
     reorderWorkspaces(result.source.index, result.destination.index);
   };
 
