@@ -100,8 +100,7 @@ const Chroma = {
   distanceToSimilarity: function (distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
     if (distance >= 1.0) return 1;
-    // we add a 0.1 offset to get Chroma to match performance of other vector DBs
-    if (distance < 0) return 1 - Math.abs(distance) + 0.1;
+    if (distance < 0) return 1 - Math.abs(distance);
     return 1 - distance;
   },
   namespaceCount: async function (_namespace = null) {
@@ -133,7 +132,6 @@ const Chroma = {
 
     response.ids[0].forEach((_, i) => {
       const similarity = this.distanceToSimilarity(response.distances[0][i]);
-
       if (similarity < similarityThreshold) return;
 
       if (
@@ -201,6 +199,7 @@ const Chroma = {
           const { client } = await this.connect();
           const collection = await client.getOrCreateCollection({
             name: this.normalize(namespace),
+            // returns [-1, 1] unit vector
             metadata: { "hnsw:space": "cosine" },
           });
           const { chunks } = cacheResult;
@@ -362,18 +361,24 @@ const Chroma = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse({
-      client,
-      namespace,
-      queryVector,
-      similarityThreshold,
-      topN,
-      filterIdentifiers,
-    });
+    const { contextTexts, sourceDocuments, scores } =
+      await this.similarityResponse({
+        client,
+        namespace,
+        queryVector,
+        similarityThreshold,
+        topN,
+        filterIdentifiers,
+      });
 
-    const sources = sourceDocuments.map((metadata, i) => {
-      return { metadata: { ...metadata, text: contextTexts[i] } };
-    });
+    const sources = sourceDocuments.map((metadata, i) => ({
+      metadata: {
+        ...metadata,
+        text: contextTexts[i],
+        score: scores?.[i] || null,
+      },
+    }));
+
     return {
       contextTexts,
       sources: this.curateSources(sources),
