@@ -56,7 +56,7 @@ function createScriptTagSnippet(embed, scriptHost, serverHost) {
   // <script
   //   data-embed-id="${embed.uuid}"
   //   data-base-api-url="${serverHost}/api/embed"
-  //   src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
+  //   src="${scriptHost}/embed/prism-chat-widget.min.js">
   // </script>
   // <!-- AnythingLLM (https://anythingllm.com) -->
   // `;
@@ -66,7 +66,7 @@ function createScriptTagSnippet(embed, scriptHost, serverHost) {
     data-base-url="${serverHost}/api"
     data-is-team-enabled="false"
     data-is-open-by-default="false"
-    src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
+    src="${scriptHost}/embed/prism-chat-widget.min.js">
   </script>
   `;
 }
