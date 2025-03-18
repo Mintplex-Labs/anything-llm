@@ -29,6 +29,7 @@
     "onnxruntime-web": "^1.18.0",
     "pluralize": "^8.0.0",
     "react": "^18.2.0",
+    "react-beautiful-dnd": "13.1.1",
     "react-device-detect": "^2.2.2",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
