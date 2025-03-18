@@ -64,7 +64,11 @@ const client = new OpenAI({
   });
   console.log("Embedding created successfully:");
   console.log(`Dimensions: ${embedding.data[0].embedding.length}`);
-  console.log(`First few values: ${embedding.data[0].embedding.slice(0, 5)}`);
+  console.log(
+    `First few values:`,
+    embedding.data[0].embedding.slice(0, 5),
+    `+ ${embedding.data[0].embedding.length - 5} more`
+  );
 
   // Vector DB functionality
   console.log("Fetching /vector_stores");
