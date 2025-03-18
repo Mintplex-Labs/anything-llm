@@ -1235,10 +1235,10 @@ function systemEndpoints(app) {
         );
         response.status(200).json({ variables });
       } catch (error) {
-        console.error("Error fetching system variables:", error.message);
+        console.error("Error fetching system prompt variables:", error);
         response.status(500).json({
           success: false,
-          error: "Failed to fetch system variables",
+          error: `Failed to fetch system prompt variables: ${error.message}`,
         });
       }
     }
@@ -1250,7 +1250,7 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { key, value, description, type } = reqBody(request);
+        const { key, value, description = null } = reqBody(request);
 
         if (!key || !value) {
           return response.status(400).json({
@@ -1263,7 +1263,6 @@ function systemEndpoints(app) {
           key,
           value,
           description,
-          type: type || "user",
           userId: user?.id || null,
         });
 
@@ -1272,10 +1271,10 @@ function systemEndpoints(app) {
           variable,
         });
       } catch (error) {
-        console.error("Error creating system variable:", error.message);
+        console.error("Error creating system prompt variable:", error);
         response.status(500).json({
           success: false,
-          error: "Failed to create system variable",
+          error: `Failed to create system prompt variable: ${error.message}`,
         });
       }
     }
@@ -1287,7 +1286,7 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
-        const { key, value, description } = reqBody(request);
+        const { key, value, description = null } = reqBody(request);
 
         if (!key || !value) {
           return response.status(400).json({
@@ -1314,10 +1313,10 @@ function systemEndpoints(app) {
           variable,
         });
       } catch (error) {
-        console.error("Error updating system variable:", error.message);
+        console.error("Error updating system prompt variable:", error);
         response.status(500).json({
           success: false,
-          error: "Failed to update system variable",
+          error: `Failed to update system prompt variable: ${error.message}`,
         });
       }
     }
@@ -1334,7 +1333,7 @@ function systemEndpoints(app) {
         if (!success) {
           return response.status(404).json({
             success: false,
-            error: "Variable not found or could not be deleted",
+            error: "System prompt variable not found or could not be deleted",
           });
         }
 
@@ -1342,10 +1341,10 @@ function systemEndpoints(app) {
           success: true,
         });
       } catch (error) {
-        console.error("Error deleting system variable:", error.message);
+        console.error("Error deleting system prompt variable:", error);
         response.status(500).json({
           success: false,
-          error: "Failed to delete system variable",
+          error: `Failed to delete system prompt variable: ${error.message}`,
         });
       }
     }

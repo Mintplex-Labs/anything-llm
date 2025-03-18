@@ -9,7 +9,6 @@ export default function EditVariableModal({ variable, closeModal, onRefresh }) {
     key: variable.key,
     value: variable.value,
     description: variable.description || "",
-    type: variable.type || "user",
   });
 
   const handleInputChange = (e) => {
@@ -18,6 +17,7 @@ export default function EditVariableModal({ variable, closeModal, onRefresh }) {
   };
 
   const handleUpdate = async (e) => {
+    if (!variable.id) return;
     e.preventDefault();
     setError(null);
 
@@ -66,6 +66,8 @@ export default function EditVariableModal({ variable, closeModal, onRefresh }) {
                 </label>
                 <input
                   name="key"
+                  minLength={3}
+                  maxLength={255}
                   type="text"
                   className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="e.g., company_name"
@@ -73,9 +75,11 @@ export default function EditVariableModal({ variable, closeModal, onRefresh }) {
                   onChange={handleInputChange}
                   required={true}
                   autoComplete="off"
+                  pattern="^[a-zA-Z0-9_]+$"
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Key must be unique and will be used in prompts as {"{key}"}
+                  Key must be unique and will be used in prompts as {"{key}"}.
+                  Only letters, numbers and underscores are allowed.
                 </p>
               </div>
               <div>

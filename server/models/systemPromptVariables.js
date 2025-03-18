@@ -1,37 +1,37 @@
 const prisma = require("../utils/prisma");
 const moment = require("moment");
-const { SystemSettings } = require("./systemSettings");
 
 const SystemPromptVariables = {
+  VALID_TYPES: ["user", "system", "static"],
   DEFAULT_VARIABLES: [
     {
       key: "time",
       value: () => {
-        const currentTime = moment().format("HH:mm:ss");
-        return `${currentTime} [Current time in 24-hour HH:mm:ss format]`;
+        const currentTime = moment().format("LTS");
+        return `${currentTime}`;
       },
-      description: "Current time in HH:MM:SS format",
-      type: "dynamic",
+      description: "Current time",
+      type: "system",
       multiUserRequired: false,
     },
     {
       key: "date",
       value: () => {
-        const currentDate = moment().format("YYYY-MM-DD");
-        return `${currentDate} [Current date in YYYY-MM-DD format]`;
+        const currentDate = moment().format("LL");
+        return `${currentDate}`;
       },
-      description: "Current date in YYYY-MM-DD format",
-      type: "dynamic",
+      description: "Current date",
+      type: "system",
       multiUserRequired: false,
     },
     {
       key: "datetime",
       value: () => {
-        const currentDateTime = moment().format("YYYY-MM-DD HH:mm:ss");
-        return `${currentDateTime} [Full timestamp in YYYY-MM-DD HH:mm:ss format]`;
+        const currentDateTime = moment().format("LLLL");
+        return `${currentDateTime}`;
       },
-      description: "Current date and time in YYYY-MM-DD HH:mm:ss format",
-      type: "dynamic",
+      description: "Current date and time",
+      type: "system",
       multiUserRequired: false,
     },
     {
@@ -40,17 +40,17 @@ const SystemPromptVariables = {
         if (!userId) return "[User name]";
         try {
           const user = await prisma.users.findUnique({
-            where: { id: userId },
+            where: { id: Number(userId) },
             select: { username: true },
           });
-          return user?.username || "[User name]";
+          return user?.username || "[User name is empty or unknown]";
         } catch (error) {
           console.error("Error fetching user name:", error);
-          return "[User name]";
+          return "[User name is empty or unknown]";
         }
       },
       description: "Current user's username",
-      type: "dynamic",
+      type: "user",
       multiUserRequired: true,
     },
     {
@@ -59,41 +59,44 @@ const SystemPromptVariables = {
         if (!userId) return "[User bio]";
         try {
           const user = await prisma.users.findUnique({
-            where: { id: userId },
+            where: { id: Number(userId) },
             select: { bio: true },
           });
-          return user?.bio || "[User bio]";
+          return user?.bio || "[User bio is empty]";
         } catch (error) {
           console.error("Error fetching user bio:", error);
-          return "[User bio]";
+          return "[User bio is empty]";
         }
       },
       description: "Current user's bio information",
-      type: "dynamic",
+      type: "user",
       multiUserRequired: true,
     },
   ],
 
-  getAll: async function () {
-    const dbVariables = await prisma.system_prompt_variables.findMany();
-    return dbVariables;
+  /**
+   * Gets a system prompt variable by its key
+   * @param {string} key
+   * @returns {Promise<object>}
+   */
+  get: async function (key = null) {
+    if (!key) return null;
+    const variable = await prisma.system_prompt_variables.findUnique({
+      where: { key: String(key) },
+    });
+    return variable;
   },
 
+  /**
+   * Gets all system prompt variables with dynamic variables
+   * @param {number} userId
+   * @returns {Promise<object[]>}
+   */
   getAllWithDynamic: async function (userId = null) {
-    const multiUserMode = await SystemSettings.isMultiUserMode();
-    const whereClause = {
-      OR: [{ type: "system" }, { userId: null }],
-    };
-
-    if (userId) {
-      whereClause.OR.push({ userId });
-    }
-
     const dbVariables = await prisma.system_prompt_variables.findMany({
-      where: whereClause,
+      where: userId ? { userId: Number(userId) } : {},
     });
 
-    // Convert DB variables to a format matching DEFAULT_VARIABLES
     const formattedDbVars = dbVariables.map((v) => ({
       id: v.id,
       key: v.key,
@@ -103,48 +106,70 @@ const SystemPromptVariables = {
       userId: v.userId,
     }));
 
-    // Filter DEFAULT_VARIABLES based on multiUserMode
-    const filteredSystemVars = this.DEFAULT_VARIABLES.filter(
-      (v) => !v.multiUserRequired || multiUserMode
-    );
-
-    // Combine with dynamic system variables
+    // If userId is not provided, filter the default variables to only include non-multiUserRequired ones
+    const filteredSystemVars = !userId
+      ? this.DEFAULT_VARIABLES.filter((v) => !v.multiUserRequired)
+      : this.DEFAULT_VARIABLES;
     return [...formattedDbVars, ...filteredSystemVars];
   },
 
+  /**
+   * Creates a new system prompt variable
+   * @param {{ key: string, value: string, description: string, type: string, userId: number }} data
+   * @returns {Promise<object>}
+   */
   create: async function ({
     key,
     value,
-    description,
-    type = "user",
+    description = null,
+    type = "static",
     userId = null,
   }) {
+    await this._checkVariableKey(key, true);
     return await prisma.system_prompt_variables.create({
       data: {
-        key,
-        value,
-        description,
-        type,
-        userId,
+        key: String(key),
+        value: String(value),
+        description: description ? String(description) : null,
+        type: type ? String(type) : "static",
+        userId: userId ? Number(userId) : null,
       },
     });
   },
 
-  update: async function (id, { key, value, description }) {
+  /**
+   * Updates a system prompt variable by its DB ID
+   * @param {number} id
+   * @param {{ key: string, value: string, description: string }} data
+   * @returns {Promise<object>}
+   */
+  update: async function (id, { key, value, description = null }) {
+    if (!id || !key || !value) return null;
+    const existingRecord = await prisma.system_prompt_variables.findFirst({
+      where: { id: Number(id) },
+    });
+    if (!existingRecord) throw new Error("System prompt variable not found");
+    await this._checkVariableKey(key, false);
+
     return await prisma.system_prompt_variables.update({
-      where: { id },
+      where: { id: existingRecord.id },
       data: {
-        key,
-        value,
-        description,
+        key: String(key),
+        value: String(value),
+        description: description ? String(description) : null,
       },
     });
   },
 
-  delete: async function (id) {
+  /**
+   * Deletes a system prompt variable by its DB ID
+   * @param {number} id
+   * @returns {Promise<boolean>}
+   */
+  delete: async function (id = null) {
     try {
       await prisma.system_prompt_variables.delete({
-        where: { id },
+        where: { id: Number(id) },
       });
       return true;
     } catch (error) {
@@ -153,14 +178,17 @@ const SystemPromptVariables = {
     }
   },
 
-  // Process a string and replace all variables with their values
-  processString: async function (str, userId = null) {
+  /**
+   * Injects variables into a string based on the user ID and the variables available
+   * @param {string} str
+   * @param {number} userId
+   * @returns {Promise<string>}
+   */
+  expandSystemPromptVariables: async function (str, userId = null) {
     if (!str) return str;
 
     try {
       const allVariables = await this.getAllWithDynamic(userId);
-
-      // Replace all variables in the format {variable.key}
       let result = str;
 
       // Find all variable patterns in the string
@@ -176,30 +204,31 @@ const SystemPromptVariables = {
           const variable = allVariables.find((v) => v.key === key);
 
           if (variable && typeof variable.value === "function") {
-            try {
-              // For async functions, we need to await the result
-              const value = await variable.value(userId);
+            if (variable.value.constructor.name === "AsyncFunction") {
+              try {
+                const value = await variable.value(userId);
+                result = result.replace(match, value);
+              } catch (error) {
+                console.error(`Error processing user variable ${key}:`, error);
+                result = result.replace(match, `[User ${userProp}]`);
+              }
+            } else {
+              const value = variable.value();
               result = result.replace(match, value);
-            } catch (error) {
-              console.error(`Error processing user variable ${key}:`, error);
-              result = result.replace(match, `[User ${userProp}]`);
             }
           } else {
-            // Fallback if variable not found
             result = result.replace(match, `[User ${userProp}]`);
           }
           continue;
         }
 
-        // Handle regular variables
+        // Handle regular variables (static types)
         const variable = allVariables.find((v) => v.key === key);
-        if (!variable) {
-          continue;
-        }
+        if (!variable) continue;
 
-        // For dynamic variables, call the function to get the current value
+        // For dynamic and system variables, call the function to get the current value
         if (
-          variable.type === "dynamic" &&
+          ["dynamic", "system"].includes(variable.type) &&
           typeof variable.value === "function"
         ) {
           try {
@@ -220,9 +249,27 @@ const SystemPromptVariables = {
       }
       return result;
     } catch (error) {
-      console.error("Error in processString:", error);
-      return str; // Return original string on error
+      console.error("Error in expandSystemPromptVariables:", error);
+      return str;
     }
+  },
+
+  _checkVariableKey: async function (key = null, checkExisting = true) {
+    if (!key) throw new Error("Key is required");
+    if (typeof key !== "string") throw new Error("Key must be a string");
+    if (!/^[a-zA-Z0-9_]+$/.test(key))
+      throw new Error("Key must contain only letters, numbers and underscores");
+    if (key.length > 255)
+      throw new Error("Key must be less than 255 characters");
+    if (key.length < 3) throw new Error("Key must be at least 3 characters");
+    if (key.startsWith("user."))
+      throw new Error("Key cannot start with 'user.'");
+    if (key.startsWith("system."))
+      throw new Error("Key cannot start with 'system.'");
+    if (checkExisting && (await this.get(key)) !== null)
+      throw new Error("System prompt variable with this key already exists");
+
+    return true;
   },
 };
 

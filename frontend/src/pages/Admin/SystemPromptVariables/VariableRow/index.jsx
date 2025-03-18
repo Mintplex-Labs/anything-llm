@@ -4,6 +4,8 @@ import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import EditVariableModal from "./EditVariableModal";
+import { titleCase } from "text-case";
+import truncate from "truncate";
 
 /**
  * A row component for displaying a system prompt variable
@@ -16,6 +18,7 @@ export default function VariableRow({ variable, onRefresh }) {
   const { isOpen, openModal, closeModal } = useModal();
 
   const handleDelete = async () => {
+    if (!variable.id) return;
     if (
       !window.confirm(
         `Are you sure you want to delete the variable "${variable.key}"?\nThis action is irreversible.`
@@ -68,22 +71,20 @@ export default function VariableRow({ variable, onRefresh }) {
         <td className="px-6 py-4">
           {typeof variable.value === "function"
             ? variable.value()
-            : variable.value}
+            : truncate(variable.value, 50)}
         </td>
-        <td className="px-6 py-4">{variable.description || "-"}</td>
+        <td className="px-6 py-4">
+          {truncate(variable.description || "-", 50)}
+        </td>
         <td className="px-6 py-4">
           <span
             className={`rounded-full ${colorTheme.bg} px-2 py-0.5 text-xs leading-5 font-semibold ${colorTheme.text} shadow-sm`}
           >
-            {variable.type === "system"
-              ? "System"
-              : variable.type === "dynamic"
-                ? "Dynamic"
-                : "User"}
+            {titleCase(variable.type)}
           </span>
         </td>
         <td className="px-6 py-4 flex items-center justify-end gap-x-6">
-          {variable.type !== "dynamic" && (
+          {variable.type === "static" && (
             <>
               <button
                 onClick={openModal}
