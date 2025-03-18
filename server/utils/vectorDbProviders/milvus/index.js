@@ -189,14 +189,12 @@ const Milvus = {
     for (const workspace of workspaces) {
       const exists = await this.namespaceExists(client, workspace.slug);
 
-      if (!exists) {
-        // If any namespace doesn't exist, return false
-        return false;
+      if (exists) {
+        return true;
       }
     }
 
-    // If all namespaces exist, return true
-    return true;
+    return false; // meaning not a single workspace from provided list exists in milvus
   },
   namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");

@@ -99,14 +99,14 @@ class GenericOpenAiLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(messages = null, { temperature = 0.7 }, extra_body = extraBody) {
     const result = await this.openai.chat.completions
       .create({
         model: this.model,
         messages,
         temperature,
         max_tokens: this.maxTokens,
-        ...extraBody,
+        extra_body,
       })
       .catch((e) => {
         throw new Error(e.message);
@@ -117,14 +117,14 @@ class GenericOpenAiLLM {
     return result.choices[0].message.content;
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(messages = null, { temperature = 0.7 }, extra_body = extraBody) {
     const streamRequest = await this.openai.chat.completions.create({
       model: this.model,
       stream: true,
       messages,
       temperature,
       max_tokens: this.maxTokens,
-      ...extraBody,
+      extra_body,
     });
     return streamRequest;
   }

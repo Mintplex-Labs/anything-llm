@@ -17,6 +17,7 @@ const { WorkspaceThread } = require("../models/workspaceThread");
 const { User } = require("../models/user");
 const truncate = require("truncate");
 const { ApiChatHandler } = require("../utils/chats/apiChatHandler");
+const jsonSchemaGenerator = require("json-schema-generator");
 
 
 function chatEndpoints(app) {
@@ -438,6 +439,18 @@ function chatEndpoints(app) {
           });
           return;
         }
+
+        const jsonData = {
+          "response": [
+              "Example question 1",
+              "Example question 2",
+              "Example question 3",
+              "Example question 4"
+          ]
+      }
+      
+      const jsonSchema = jsonSchemaGenerator(jsonData);
+
         const message = `
                       Generate an array of 4 possible natural language questions that can be asked based solely on the documents, without requiring specific data such as dates in the input. Ensure all questions are general and relevant to the document
                       Avoid ambiguous terms like "recent," "specific date," or anything requiring external contextual data. Ensure the questions are varied, covering different texts or combinations of texts.
@@ -458,13 +471,24 @@ function chatEndpoints(app) {
           workspace,
           message,
           user,
-          userGroups
+          userGroups,
+          jsonSchema
         );
-        if (!suggestions?.error) {
-          const parsedSuggestions = JSON.parse(suggestions); // Convert string to JSON if needed
-          response.status(200).json(parsedSuggestions);
+        suggestions = suggestions.includes("</think>") 
+        ? suggestions.split("</think>")[1].trim() 
+        : suggestions.trim();
 
-          // response.status(200).json({ suggestions });
+        if (!suggestions?.error) {
+          try {
+            const parsedSuggestions = JSON.parse(suggestions); // Convert string to JSON if needed
+            response.status(200).json(parsedSuggestions);
+          }
+          catch (e) {
+            console.error("Systen did not receive valid json suggestions from LLM: ", e);
+          }
+          
+
+          response.status(200).json({  });
 
           await EventLogs.logEvent(
             "suggestion_chat",

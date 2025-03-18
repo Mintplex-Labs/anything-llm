@@ -447,7 +447,8 @@ async function suggestQuestions(
   workspace,
   message = null,
   user = null,
-  userGroups
+  userGroups,
+  jsonSchema
 ) {
 
   // const effectiveQuestion = message
@@ -458,7 +459,7 @@ async function suggestQuestions(
   });
 
   const VectorDb = getVectorDbClass();
-  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
+  // const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   let embeddingsCount;
   let workspaces;
 
@@ -477,14 +478,14 @@ async function suggestQuestions(
     const userWorkspaceSlugs = Array.isArray(userWorkspaces) ? userWorkspaces.map(ws => ws.workspaceSlug) : [];
     const groupWorkspaceSlugs = Array.isArray(groupWorkspaces) ? groupWorkspaces.map(ws => ws.workspaceSlug) : [];
 
-    const workspaces = [...new Set([...userWorkspaceSlugs, ...groupWorkspaceSlugs])];
+    workspaces = [...new Set([...userWorkspaceSlugs, ...groupWorkspaceSlugs])];
     
     embeddingsCount = await VectorDb.namespaceCountWithWSNames(workspaces);
   } else {
     embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
   }
 
-  if ((!hasVectorizedSpace || embeddingsCount === 0)) {
+  if (embeddingsCount === 0) {
     const textResponse =
       workspace?.queryRefusalResponse ??
       "No embedded documents found in this workspace. System cannot provide suggestions";
@@ -503,7 +504,7 @@ async function suggestQuestions(
   if (workspace.slug == process.env.INTERNAL_WORKSPACE_NAME) {
     // Perform multi workspace searches if the environment variable is 'true'
     vectorSearchResults = embeddingsCount !== 0
-      ? await performSimilaritySearches(workspace, workspaces, effectiveQuestion, LLMConnector, null, embeddingsCount, 15)
+      ? await performSimilaritySearches(workspace, workspaces, message, LLMConnector, null, embeddingsCount, 15)
       : {
         contextTexts: [],
         sources: [],
@@ -547,10 +548,15 @@ async function suggestQuestions(
         role: "user",
         content: "Please follow system prompt"
       }
-    ];
+    ]
+    const extraBody = {
+      extra_body: {
+        guided_json: JSON.stringify(jsonSchema),
+      },
+    };
   const textResponse = await LLMConnector.getChatCompletion(messages, {
     temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-  });
+  }, extraBody);
 
   return textResponse;
 }
