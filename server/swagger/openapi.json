@@ -1532,6 +1532,66 @@
         }
       }
     },
+    "/v1/document/remove-folder": {
+      "delete": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Remove a folder and all its contents from the documents storage directory.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "message": "Folder removed successfully"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Name of the folder to remove.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "my-folder"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/document/move-files": {
       "post": {
         "tags": [
@@ -3481,7 +3541,7 @@
           "content": {
             "application/json": {
               "example": {
-                "inputs": [
+                "input": [
                   "This is my first string to embed",
                   "This is my second string to embed"
                 ],

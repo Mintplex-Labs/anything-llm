@@ -14,6 +14,7 @@ const { CollectorApi } = require("../../../utils/collectorApi");
 const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
+const { purgeFolder } = require("../../../utils/files/purgeDocument");
 const documentsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../../storage/documents")
@@ -842,6 +843,65 @@ function apiDocumentEndpoints(app) {
         response.status(500).json({
           success: false,
           message: `Failed to create folder: ${e.message}`,
+        });
+      }
+    }
+  );
+
+  app.delete(
+    "/v1/document/remove-folder",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Documents']
+      #swagger.description = 'Remove a folder and all its contents from the documents storage directory.'
+      #swagger.requestBody = {
+        description: 'Name of the folder to remove.',
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  example: "my-folder"
+                }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                success: true,
+                message: "Folder removed successfully"
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const { name } = reqBody(request);
+        await purgeFolder(name);
+        response
+          .status(200)
+          .json({ success: true, message: "Folder removed successfully" });
+      } catch (e) {
+        console.error(e);
+        response.status(500).json({
+          success: false,
+          message: `Failed to remove folder: ${e.message}`,
         });
       }
     }
