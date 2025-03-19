@@ -15,12 +15,12 @@ const setLogger = require("../../../utils/logger");
 const logger = setLogger();
 
 async function extractTextFromApi(fullFilePath) {
-  const endpoint = `${process.env.PRISM_OCR_ENDPOINT}${process.env.EXTRACT_API}`;
+  const endpoint = `${process.env.PRISM_PARSER_ENDPOINT}${process.env.PRISM_PARSER_EXTRACT_API}`;
   logger.info(endpoint);
   const token = `Bearer ${process.env.PRISM_PARSER_BEARER_TOKEN}`;
   const params = new URLSearchParams({
-    output_format: process.env.OUTPUT_FORMAT,
-    use_ocr: process.env.USE_OCR,
+    output_format: process.env.PRISM_PARSER_OUTPUT_FORMAT,
+    use_ocr: process.env.PRISM_PARSER_USE_OCR,
   });
 
   const formData = new FormData();
@@ -99,7 +99,7 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
   let data;
   try {
     // Extract text using the external API
-    if (process.env.PRISM_OCR_PARSER == 'true') {
+    if (process.env.ENABLE_PRISM_PARSER == 'true') {
       logger.info(`using prism doc parser - external `);
       content = await extractTextFromApi(fullFilePath);
       data = {
