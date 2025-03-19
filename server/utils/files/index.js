@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const JSONStream = require("JSONStream");
 const { v5: uuidv5 } = require("uuid");
 const { Document } = require("../../models/documents");
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
@@ -24,8 +25,15 @@ async function fileData(filePath = null) {
   return JSON.parse(data);
 }
 
+/**
+ * Returns a directory object with the documents and subfolders in the documents folder.
+ * Will stream-parse files that exceed the FILE_SIZE_THRESHOLD to avoid memory issues on large files
+ * otherwise it will read the file into memory to grab the metadata for the file we render in the picker.
+ * @returns {Promise<{localFiles: {name: string, type: string, items: {name: string, type: string, items: {name: string, type: string}[]}[]}>>} - A promise that resolves to a directory object
+ */
 async function viewLocalFiles() {
   if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
+  const FILE_SIZE_THRESHOLD = 10 * 1024 * 1024;
   const liveSyncAvailable = await DocumentSyncQueue.enabled();
   const directory = {
     name: "documents",
@@ -49,21 +57,50 @@ async function viewLocalFiles() {
       for (const subfile of subfiles) {
         if (path.extname(subfile) !== ".json") continue;
         const filePath = path.join(folderPath, subfile);
-        const rawData = fs.readFileSync(filePath, "utf8");
         const cachefilename = `${file}/${subfile}`;
-        const { pageContent, ...metadata } = JSON.parse(rawData);
-        subdocs.items.push({
-          name: subfile,
-          type: "file",
-          ...metadata,
-          cached: await cachedVectorInformation(cachefilename, true),
-          canWatch: liveSyncAvailable
-            ? DocumentSyncQueue.canWatch(metadata)
-            : false,
-          // pinnedWorkspaces: [], // This is the list of workspaceIds that have pinned this document
-          // watched: false, // boolean to indicate if this document is watched in ANY workspace
-        });
-        filenames[cachefilename] = subfile;
+
+        try {
+          const stats = fs.statSync(filePath);
+          let metadata = {};
+          if (stats.size <= FILE_SIZE_THRESHOLD) {
+            const rawData = fs.readFileSync(filePath, "utf8");
+            metadata = JSON.parse(rawData);
+          } else {
+            console.log(
+              `Stream-parsing ${path.basename(filePath)} because it exceeds the ${FILE_SIZE_THRESHOLD} byte limit.`
+            );
+            const fileStream = fs.createReadStream(filePath, {
+              encoding: "utf8",
+            });
+            const parser = JSONStream.parse("$*");
+            metadata = await new Promise((resolve, reject) => {
+              let result = {};
+              parser.on("data", (data) => {
+                if (data.key === "pageContent") return;
+                result[data.key] = data.value;
+              });
+              parser.on("end", () => resolve(result));
+              parser.on("error", reject);
+              fileStream.pipe(parser);
+            });
+          }
+
+          subdocs.items.push({
+            name: subfile,
+            type: "file",
+            ...metadata,
+            cached: await cachedVectorInformation(cachefilename, true),
+            canWatch: liveSyncAvailable
+              ? DocumentSyncQueue.canWatch(metadata)
+              : false,
+            pinnedWorkspaces: [], // This is the list of workspaceIds that have pinned this document
+            watched: false, // boolean to indicate if this document is watched in ANY workspace
+          });
+          filenames[cachefilename] = subfile;
+        } catch (error) {
+          console.error(`Error streaming JSON from ${filePath}:`, error);
+          continue;
+        }
       }
 
       // Grab the pinned workspaces and watched documents for this folder's documents
