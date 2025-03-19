@@ -110,7 +110,8 @@ const SystemPromptVariables = {
     const filteredSystemVars = !userId
       ? this.DEFAULT_VARIABLES.filter((v) => !v.multiUserRequired)
       : this.DEFAULT_VARIABLES;
-    return [...formattedDbVars, ...filteredSystemVars];
+
+    return [...filteredSystemVars, ...formattedDbVars];
   },
 
   /**

@@ -5,28 +5,22 @@ import showToast from "@/utils/toast";
 
 export default function AddVariableModal({ closeModal, onRefresh }) {
   const [error, setError] = useState(null);
-  const [formData, setFormData] = useState({
-    key: "",
-    value: "",
-    description: "",
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleCreate = async (e) => {
     e.preventDefault();
     setError(null);
+    const formData = new FormData(e.target);
+    const newVariable = {};
+    for (const [key, value] of formData.entries())
+      newVariable[key] = value.trim();
 
-    if (!formData.key || !formData.value) {
+    if (!newVariable.key || !newVariable.value) {
       setError("Key and value are required");
       return;
     }
 
     try {
-      await System.promptVariables.create(formData);
+      await System.promptVariables.create(newVariable);
       showToast("Variable created successfully", "success", { clear: true });
       if (onRefresh) onRefresh();
       closeModal();
@@ -64,14 +58,12 @@ export default function AddVariableModal({ closeModal, onRefresh }) {
                   Key
                 </label>
                 <input
-                  minLength={3}
-                  maxLength={255}
                   name="key"
                   type="text"
+                  minLength={3}
+                  maxLength={255}
                   className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="e.g., company_name"
-                  value={formData.key}
-                  onChange={handleInputChange}
                   required={true}
                   autoComplete="off"
                   pattern="^[a-zA-Z0-9_]+$"
@@ -93,8 +85,6 @@ export default function AddVariableModal({ closeModal, onRefresh }) {
                   type="text"
                   className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="e.g., Acme Corp"
-                  value={formData.value}
-                  onChange={handleInputChange}
                   required={true}
                   autoComplete="off"
                 />
@@ -111,8 +101,6 @@ export default function AddVariableModal({ closeModal, onRefresh }) {
                   type="text"
                   className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="Optional description"
-                  value={formData.description}
-                  onChange={handleInputChange}
                   autoComplete="off"
                 />
               </div>
