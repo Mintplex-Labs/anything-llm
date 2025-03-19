@@ -33,12 +33,22 @@ export default function ChatHistory({
   const { textSizeClass } = useTextSize();
 
   useEffect(() => {
-    if (!isUserScrolling && (isAtBottom || isStreaming)) {
-      scrollToBottom(false); // Use instant scroll for auto-scrolling
-    } else if (history?.length > 0) {
-      scrollToBottom(true); // Use instant scroll for auto-scrolling
+    // Ensure chat container exists
+    if (!chatHistoryRef.current) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = chatHistoryRef.current;
+    const isAlreadyAtBottom = scrollHeight - scrollTop <= clientHeight + 5; // Allow slight margin for floating values
+
+    // If streaming or at bottom, force scroll to bottom instantly
+    if (isStreaming || (isAtBottom && !isUserScrolling)) {
+      scrollToBottom(false);
     }
-  }, [history, isAtBottom, isStreaming, isUserScrolling]);
+
+    // If history updates and the user is not scrolling, scroll smoothly
+    else if (!isUserScrolling && !isAlreadyAtBottom) {
+      scrollToBottom(true);
+    }
+  }, [history, isAtBottom, isStreaming]);
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -178,9 +188,8 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
-        showScrollbar ? "show-scrollbar" : "no-scroll"
-      } custom-text-secondary`}
+      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"
+        } custom-text-secondary`}
       id="chat-history"
       ref={chatHistoryRef}
       onScroll={handleScroll}
