@@ -7,12 +7,7 @@ import ManageWorkspace, {
 } from "../../Modals/ManageWorkspace";
 import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
-import {
-  GearSix,
-  SquaresFour,
-  UploadSimple,
-  DotsSixVertical,
-} from "@phosphor-icons/react";
+import { GearSix, UploadSimple, DotsSixVertical } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
 import { Link, useMatch } from "react-router-dom";
