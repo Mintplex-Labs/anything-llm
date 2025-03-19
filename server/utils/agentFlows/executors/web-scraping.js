@@ -1,4 +1,7 @@
 const { CollectorApi } = require("../../collectorApi");
+const { TokenManager } = require("../../helpers/tiktoken");
+const Provider = require("../../agents/aibitat/providers/ai-provider");
+const { summarizeContent } = require("../../agents/aibitat/utils/summarize");
 
 /**
  * Execute a web scraping flow step
@@ -7,8 +10,8 @@ const { CollectorApi } = require("../../collectorApi");
  * @returns {Promise<string>} Scraped content
  */
 async function executeWebScraping(config, context) {
-  const { url, captureAs = "text" } = config;
-  const { introspect, logger } = context;
+  const { url, captureAs = "text", enableSummarization = false } = config;
+  const { introspect, logger, aibitat } = context;
   logger(
     `\x1b[43m[AgentFlowToolExecutor]\x1b[0m - executing Web Scraping block`
   );
@@ -37,7 +40,37 @@ async function executeWebScraping(config, context) {
     throw new Error("There was no content to be collected or read.");
   }
 
-  return content;
+  if (!enableSummarization) {
+    logger(`Returning raw content as summarization is disabled`);
+    return content;
+  }
+
+  const tokenCount = new TokenManager(
+    aibitat.defaultProvider.model
+  ).countFromString(content);
+  const contextLimit = Provider.contextLimit(
+    aibitat.defaultProvider.provider,
+    aibitat.defaultProvider.model
+  );
+
+  if (tokenCount < contextLimit) {
+    logger(
+      `Content within token limit (${tokenCount}/${contextLimit}). Returning raw content.`
+    );
+    return content;
+  }
+
+  introspect(
+    `This page's content is way too long (${tokenCount} tokens). I will summarize it right now.`
+  );
+  const summary = await summarizeContent({
+    provider: aibitat.defaultProvider.provider,
+    model: aibitat.defaultProvider.model,
+    content,
+  });
+
+  introspect(`Successfully summarized content`);
+  return summary;
 }
 
 /**
