@@ -206,6 +206,11 @@ const TRANSLATIONS = {
         only: "only",
         "desc-end": "if document context is found.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "Chat History",
