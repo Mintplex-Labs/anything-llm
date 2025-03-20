@@ -9,7 +9,6 @@ const https = require('https');
  */
 async function rerankTexts(texts, query) {
     try {
-        console.log('jina reranker called')
         // Validate inputs
         if (!Array.isArray(texts) || texts.length === 0) {
             throw new Error('The texts parameter must be a non-empty array.');
@@ -47,6 +46,7 @@ async function rerankTexts(texts, query) {
                 res.on('end', () => {
                     try {
                         const response = JSON.parse(data);
+                        if(res.statusCode != 200) {throw new Error(`Jina Reranker response: ${statusCode}: ${response.detail}`);}
 
                         // Validate response format
                         if (!response.results || !Array.isArray(response.results)) {
@@ -74,7 +74,7 @@ async function rerankTexts(texts, query) {
             req.end();
         });
     } catch (error) {
-        console.error('Error in rerankTexts:', error.message);
+        console.error('Error in Jina Reranker API:', error.message);
         throw error;
     }
 }
