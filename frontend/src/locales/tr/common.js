@@ -89,6 +89,17 @@ const TRANSLATIONS = {
     "experimental-features": "Deneysel Özellikler",
     contact: "Destekle İletişime Geçin",
     "browser-extension": "Tarayıcı Uzantısı",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    ToWorkspaces: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -136,6 +147,12 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "Yeni Çalışma Alanı",
     placeholder: "Benim Çalışma Alanım",
+    create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "Genel Ayarlar",
@@ -337,6 +354,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "Görünüm",
     description: "Platformunuzun görünüm ayarlarını özelleştirin.",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "Logoyu Özelleştir",
       description:
@@ -364,6 +399,16 @@ const TRANSLATIONS = {
         "Kenar çubuğunun altında görüntülenen altbilgi simgelerini özelleştirin.",
       icon: "Simge",
       link: "Bağlantı",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {

@@ -89,6 +89,17 @@ const TRANSLATIONS = {
     "experimental-features": "Experimentele Functies",
     contact: "Contact Ondersteuning",
     "browser-extension": "Browser Extensie",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    ToWorkspaces: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -137,6 +148,12 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "Nieuwe Werkruimte",
     placeholder: "Mijn Werkruimte",
+    create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "Algemene Instellingen",
@@ -337,6 +354,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "Verschijning",
     description: "Pas de verschijningsinstellingen van je platform aan.",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "Logo Aanpassen",
       description: "Upload je aangepaste logo om je chatbot eigen te maken.",
@@ -363,6 +398,16 @@ const TRANSLATIONS = {
         "Pas de voettekstpictogrammen aan die onder aan de zijbalk worden weergegeven.",
       icon: "Pictogram",
       link: "Link",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {
