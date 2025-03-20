@@ -29,6 +29,7 @@ export default {
         "historical-msg-user": "#2C2F35",
         outline: "#4E5153",
         "primary-button": "var(--theme-button-primary)",
+        "cta-button": "var(--theme-button-cta)",
         secondary: "#2C2F36",
         "dark-input": "#18181B",
         "mobile-onboarding": "#2C2F35",
@@ -141,7 +142,10 @@ export default {
       },
       animation: {
         sweep: "sweep 0.5s ease-in-out",
-        "pulse-glow": "pulse-glow 1.5s infinite"
+        "pulse-glow": "pulse-glow 1.5s infinite",
+        'fade-in': 'fade-in 0.3s ease-out',
+        'slide-up': 'slide-up 0.4s ease-out forwards',
+        'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite'
       },
       keyframes: {
         sweep: {
@@ -175,6 +179,18 @@ export default {
             boxShadow: "0 0 0 rgba(255, 255, 255, 0.0)",
             backgroundColor: "rgba(255, 255, 255, 0.0)"
           }
+        },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' }
+        },
+        'slide-up': {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' }
+        },
+        'bounce-subtle': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-2px)' }
         }
       }
     }

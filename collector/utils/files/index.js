@@ -2,16 +2,62 @@ const fs = require("fs");
 const path = require("path");
 const { MimeDetector } = require("./mime");
 
+/**
+ * Checks if a file is text by checking the mime type and then falling back to buffer inspection.
+ * This way we can capture all the cases where the mime type is not known but still parseable as text
+ * without having to constantly add new mime type overrides.
+ * @param {string} filepath - The path to the file.
+ * @returns {boolean} - Returns true if the file is text, false otherwise.
+ */
 function isTextType(filepath) {
+  if (!fs.existsSync(filepath)) return false;
+  const result = isKnownTextMime(filepath);
+  if (result.valid) return true; // Known text type - return true.
+  if (result.reason !== "generic") return false; // If any other reason than generic - return false.
+  return parseableAsText(filepath); // Fallback to parsing as text via buffer inspection.
+}
+
+/**
+ * Checks if a file is known to be text by checking the mime type.
+ * @param {string} filepath - The path to the file.
+ * @returns {boolean} - Returns true if the file is known to be text, false otherwise.
+ */
+function isKnownTextMime(filepath) {
   try {
-    if (!fs.existsSync(filepath)) return false;
     const mimeLib = new MimeDetector();
     const mime = mimeLib.getType(filepath);
-    if (mimeLib.badMimes.includes(mime)) return false;
+    if (mimeLib.badMimes.includes(mime))
+      return { valid: false, reason: "bad_mime" };
 
     const type = mime.split("/")[0];
-    if (mimeLib.nonTextTypes.includes(type)) return false;
-    return true;
+    if (mimeLib.nonTextTypes.includes(type))
+      return { valid: false, reason: "non_text_mime" };
+    return { valid: true, reason: "valid_mime" };
+  } catch (e) {
+    return { valid: false, reason: "generic" };
+  }
+}
+
+/**
+ * Checks if a file is parseable as text by forcing it to be read as text in utf8 encoding.
+ * If the file looks too much like a binary file, it will return false.
+ * @param {string} filepath - The path to the file.
+ * @returns {boolean} - Returns true if the file is parseable as text, false otherwise.
+ */
+function parseableAsText(filepath) {
+  try {
+    const fd = fs.openSync(filepath, "r");
+    const buffer = Buffer.alloc(1024); // Read first 1KB of the file synchronously
+    const bytesRead = fs.readSync(fd, buffer, 0, 1024, 0);
+    fs.closeSync(fd);
+
+    const content = buffer.subarray(0, bytesRead).toString("utf8");
+    const nullCount = (content.match(/\0/g) || []).length;
+    const controlCount = (content.match(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g) || [])
+      .length;
+
+    const threshold = bytesRead * 0.1;
+    return nullCount + controlCount < threshold;
   } catch {
     return false;
   }

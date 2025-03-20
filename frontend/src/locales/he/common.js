@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "שם סביבת העבודה",
     error: "שגיאה",
@@ -9,9 +58,10 @@ const TRANSLATIONS = {
     save: "שמור שינויים",
     previous: "עמוד קודם",
     next: "עמוד הבא",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "הגדרות מופע",
     system: "הגדרות כלליות",
@@ -40,8 +90,6 @@ const TRANSLATIONS = {
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "ברוכים הבאים ל-",
@@ -64,7 +112,6 @@ const TRANSLATIONS = {
       "back-to-login": "חזרה להתחברות",
     },
   },
-
   welcomeMessage: {
     part1:
       "ברוכים הבאים ל-AnythingLLM, AnythingLLM היא כלי AI קוד פתוח מאת Mintplex Labs שהופך כל דבר לצ'אטבוט מאומן שאפשר לשאול אותו ולקיים איתו שיחה. AnythingLLM הוא תוכנה מסוג BYOK (הביא את המפתחות שלך) כך שאין מנוי, עמלה או חיובים עבור התוכנה הזו מלבד השירותים שאתה רוצה להשתמש בהם.",
@@ -72,7 +119,7 @@ const TRANSLATIONS = {
       "AnythingLLM היא הדרך הקלה ביותר לשלב מוצרים חזקים של AI כמו OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB ושירותים אחרים בחבילה אחת ללא מאמץ כדי להגדיל את הפרודוקטיביות שלך פי 100.",
     part3:
       "AnythingLLM יכול לפעול באופן מקומי לחלוטין על המחשב שלך עם מעט עלויות ביצוע שאתה אפילו לא תבחין בהן! לא נדרש GPU. התקנה בענן ובמקום היא זמינה גם כן.\nמערכת הכלים של AI הופכת חזקה יותר מדי יום. AnythingLLM הופכת את השימוש בה פשוט.",
-    githubIssue: "צור בעיה ב-Github",
+    githubIssue: "צור בעיה ב-GitHub",
     user1: "איך אני מתחיל?!",
     part4:
       "זה פשוט. כל אוסף מאורגן לדליים שאנחנו קוראים להם 'סביבות עבודה'. סביבות עבודה הן דליים של קבצים, מסמכים, תמונות, PDF וקבצים אחרים שיהפכו למשהו ש-LLM יכולות להבין ולעשות איתו שימוש בשיחה.\n\nתוכל להוסיף ולהסיר קבצים בכל עת.",
@@ -82,16 +129,13 @@ const TRANSLATIONS = {
       "AnythingLLM היא יותר מ-Dropbox חכם יותר.\n\nAnythingLLM מציעה שתי דרכים לשוחח עם הנתונים שלך:\n\n<i>שאילתה:</i> השיחות שלך יחזירו נתונים או מסקנות שנמצאות במסמכים בסביבת העבודה שלך אליה יש לה גישה. הוספת עוד מסמכים לסביבת העבודה הופכת אותה לחכמה יותר! \n\n<i>שיחה:</i> המסמכים שלך + היסטוריית השיחה הנוכחית שלך תורמות יחד לידע של LLM בו זמנית. נהדר להוספת מידע טקסטואלי בזמן אמת או תיקונים וחוסר הבנות שאולי יהיו ל-LLM.\n\nאתה יכול לעבור בין שני המצבים \n<i>אפילו באמצע שיחה!</i>",
     user3: "וואו, זה נשמע מדהים, תן לי לנסות את זה כבר!",
     part6: "תהנה!",
-    starOnGithub: "שים כוכב ב-GitHub",
+    starOnGitHub: "שים כוכב ב-GitHub",
     contact: "צור קשר עם Mintplex Labs",
   },
-
   "new-workspace": {
     title: "סביבת עבודה חדשה",
     placeholder: "סביבת העבודה שלי",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "הגדרות כלליות",
     chat: "הגדרות צ'אט",
@@ -99,8 +143,6 @@ const TRANSLATIONS = {
     members: "חברים",
     agent: "קונפיגורציה של סוכן",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "ספירת וקטורים",
@@ -135,8 +177,6 @@ const TRANSLATIONS = {
         "סביבת העבודה שלך. זה ימחק את כל הטבעות הווקטוריות בבסיס הנתונים הווקטורי שלך.\n\nקבצי המקור המקוריים יישארו ללא שינוי. פעולה זו היא בלתי הפיכה.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "ספק LLM של סביבת עבודה",
@@ -193,8 +233,6 @@ const TRANSLATIONS = {
       hint: "לרוב ה-LLM יש טווחים שונים של ערכים תקפים. התייעץ עם ספק ה-LLM שלך לקבלת מידע.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "מזהה בסיס נתונים וקטור",
     snippets: {
@@ -221,8 +259,6 @@ const TRANSLATIONS = {
       success: "בסיס הנתונים הווקטורי של סביבת העבודה איפס!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "ביצועי LLM שאינם תומכים באופן מפורש בקריאות כלים תלויים מאוד ביכולות ובדיוק של הדגם. חלק מהיכולות עשויות להיות מוגבלות או לא פונקציונליות.",
@@ -242,7 +278,6 @@ const TRANSLATIONS = {
         "דגם LLM ספציפי שייעשה בו שימוש עבור סוכן @agent של סביבת העבודה הזו.",
       wait: "-- מחכה לדגמים --",
     },
-
     skill: {
       title: "כישורי סוכן ברירת מחדל",
       description:
@@ -279,8 +314,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "שיחות סביבת עבודה",
     description:
@@ -295,8 +328,6 @@ const TRANSLATIONS = {
       at: "נשלח ב-",
     },
   },
-
-  // Appearance
   appearance: {
     title: "מראה",
     description: "התאם אישית את הגדרות המראה של הפלטפורמה שלך.",
@@ -327,8 +358,6 @@ const TRANSLATIONS = {
       link: "קישור",
     },
   },
-
-  // API Keys
   api: {
     title: "מפתחות API",
     description:
@@ -341,14 +370,12 @@ const TRANSLATIONS = {
       created: "נוצר",
     },
   },
-
   llm: {
     title: "העדפת LLM",
     description:
       "אלה אישורי ההרשאה וההגדרות עבור ספק צ'אט והטבעה LLM המועדף עליך. חשוב שאישורי ההרשאה יהיו עדכניים ונכונים אחרת AnythingLLM לא תוכל לפעול כראוי.",
     provider: "ספק LLM",
   },
-
   transcription: {
     title: "העדפת דגם תמלול",
     description:
@@ -360,7 +387,6 @@ const TRANSLATIONS = {
       "אנו ממליצים על לפחות 2GB של זיכרון RAM והעלאת קבצים <10Mb.",
     "warn-end": "הדגם המובנה יתורגם אוטומטית בפעם הראשונה שבה תשתמש בו.",
   },
-
   embedding: {
     title: "העדפת הטבעה",
     "desc-start":
@@ -373,7 +399,6 @@ const TRANSLATIONS = {
         "אין צורך בהגדרה בעת שימוש במנוע ההטבעה המקורי של AnythingLLM.",
     },
   },
-
   text: {
     title: "הגדרות חלוקת טקסט וחלוקה",
     "desc-start":
@@ -388,15 +413,12 @@ const TRANSLATIONS = {
       description: "זהו אורך הדמויות המרבי שיכול להיות נוכח בקטור יחיד.",
       recommend: "אורך מרבי של דגם ההטבעה הוא",
     },
-
     overlap: {
       title: "חפיפה של קטע טקסט",
       description:
         "זו החפיפה המרבית של הדמויות המתרחשת במהלך החלוקה בין שני קטעי טקסט סמוכים.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "בסיס נתונים וקטור",
     description:
@@ -406,8 +428,6 @@ const TRANSLATIONS = {
       description: "אין צורך בקונפיגורציה עבור LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "כלי צ'אט ניתנים להטמעה",
     description:
@@ -419,7 +439,6 @@ const TRANSLATIONS = {
       Active: "תחומים פעילים",
     },
   },
-
   "embed-chats": {
     title: "הטמעת שיחות",
     export: "ייצוא",
@@ -432,7 +451,6 @@ const TRANSLATIONS = {
       at: "נשלח ב-",
     },
   },
-
   multi: {
     title: "מצב משתמשים מרובים",
     description:
@@ -457,8 +475,6 @@ const TRANSLATIONS = {
       password: "סיסמת מופע",
     },
   },
-
-  // Event Logs
   event: {
     title: "יומני אירועים",
     description: "הצג את כל הפעולות והאירועים שקורים במופע זה לצורך ניטור.",
@@ -469,8 +485,6 @@ const TRANSLATIONS = {
       occurred: "התרחש ב-",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "פרטיות וטיפול בנתונים",
     description:
@@ -479,6 +493,183 @@ const TRANSLATIONS = {
     embedding: "העדפת הטבעה",
     vector: "בסיס נתונים וקטור",
     anonymous: "טלמטריה אנונימית מופעלת",
+  },
+  connectors: {
+    "search-placeholder": null,
+    "no-connectors": null,
+    github: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    gitlab: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_description: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      fetch_issues: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    youtube: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained_start: null,
+      URL_explained_link: null,
+      URL_explained_end: null,
+      task_explained: null,
+      language: null,
+      language_explained: null,
+      loading_languages: null,
+    },
+    "website-depth": {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      depth: null,
+      depth_explained: null,
+      max_pages: null,
+      max_pages_explained: null,
+      task_explained: null,
+    },
+    confluence: {
+      name: null,
+      description: null,
+      deployment_type: null,
+      deployment_type_explained: null,
+      base_url: null,
+      base_url_explained: null,
+      space_key: null,
+      space_key_explained: null,
+      username: null,
+      username_explained: null,
+      auth_type: null,
+      auth_type_explained: null,
+      auth_type_username: null,
+      auth_type_personal: null,
+      token: null,
+      token_explained_start: null,
+      token_explained_link: null,
+      token_desc: null,
+      pat_token: null,
+      pat_token_explained: null,
+      task_explained: null,
+    },
+    manage: {
+      documents: null,
+      "data-connectors": null,
+      "desktop-only": null,
+      dismiss: null,
+      editing: null,
+    },
+    directory: {
+      "my-documents": null,
+      "new-folder": null,
+      "search-document": null,
+      "no-documents": null,
+      "move-workspace": null,
+      name: null,
+      "delete-confirmation": null,
+      "removing-message": null,
+      "move-success": null,
+      date: null,
+      type: null,
+      no_docs: null,
+      select_all: null,
+      deselect_all: null,
+      remove_selected: null,
+      costs: null,
+      save_embed: null,
+    },
+    upload: {
+      "processor-offline": null,
+      "processor-offline-desc": null,
+      "click-upload": null,
+      "file-types": null,
+      "or-submit-link": null,
+      "placeholder-link": null,
+      fetching: null,
+      "fetch-website": null,
+      "privacy-notice": null,
+    },
+    pinning: {
+      what_pinning: null,
+      pin_explained_block1: null,
+      pin_explained_block2: null,
+      pin_explained_block3: null,
+      accept: null,
+    },
+    watching: {
+      what_watching: null,
+      watch_explained_block1: null,
+      watch_explained_block2: null,
+      watch_explained_block3_start: null,
+      watch_explained_block3_link: null,
+      watch_explained_block3_end: null,
+      accept: null,
+    },
+  },
+  chat_window: {
+    welcome: null,
+    get_started: null,
+    get_started_default: null,
+    upload: null,
+    or: null,
+    send_chat: null,
+    send_message: null,
+    attach_file: null,
+    slash: null,
+    agents: null,
+    text_size: null,
+    microphone: null,
+    send: null,
+  },
+  profile_settings: {
+    edit_account: null,
+    profile_picture: null,
+    remove_profile_picture: null,
+    username: null,
+    username_description: null,
+    new_password: null,
+    passwort_description: null,
+    cancel: null,
+    update_account: null,
+    theme: null,
+    language: null,
   },
 };
 

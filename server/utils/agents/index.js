@@ -7,6 +7,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const ImportedPlugin = require("./imported");
+const { AgentFlows } = require("../agentFlows");
 
 class AgentHandler {
   #invocationUUID;
@@ -180,8 +181,12 @@ class AgentHandler {
       case "nvidia-nim":
         if (!process.env.NVIDIA_NIM_LLM_BASE_PATH)
           throw new Error(
-            "Nvidia NIM base path must be provided to use agents."
+            "NVIDIA NIM base path must be provided to use agents."
           );
+        break;
+      case "ppio":
+        if (!process.env.PPIO_API_KEY)
+          throw new Error("PPIO API Key must be provided to use agents.");
         break;
 
       default:
@@ -245,9 +250,11 @@ class AgentHandler {
       case "xai":
         return process.env.XAI_LLM_MODEL_PREF ?? "grok-beta";
       case "novita":
-        return process.env.NOVITA_LLM_MODEL_PREF ?? "gryphe/mythomax-l2-13b";
+        return process.env.NOVITA_LLM_MODEL_PREF ?? "deepseek/deepseek-r1";
       case "nvidia-nim":
         return process.env.NVIDIA_NIM_LLM_MODEL_PREF ?? null;
+      case "ppio":
+        return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
       default:
         return null;
     }
@@ -337,26 +344,27 @@ class AgentHandler {
     for (const [param, definition] of Object.entries(config)) {
       if (
         definition.required &&
-        (!args.hasOwnProperty(param) || args[param] === null)
+        (!Object.prototype.hasOwnProperty.call(args, param) ||
+          args[param] === null)
       ) {
         this.log(
           `'${param}' required parameter for '${pluginName}' plugin is missing. Plugin may not function or crash agent.`
         );
         continue;
       }
-      callOpts[param] = args.hasOwnProperty(param)
+      callOpts[param] = Object.prototype.hasOwnProperty.call(args, param)
         ? args[param]
         : definition.default || null;
     }
     return callOpts;
   }
 
-  #attachPlugins(args) {
+  async #attachPlugins(args) {
     for (const name of this.#funcsToLoad) {
       // Load child plugin
       if (name.includes("#")) {
         const [parent, childPluginName] = name.split("#");
-        if (!AgentPlugins.hasOwnProperty(parent)) {
+        if (!Object.prototype.hasOwnProperty.call(AgentPlugins, parent)) {
           this.log(
             `${parent} is not a valid plugin. Skipping inclusion to agent cluster.`
           );
@@ -385,6 +393,24 @@ class AgentHandler {
         continue;
       }
 
+      // Load flow plugin. This is marked by `@@flow_` in the array of functions to load.
+      if (name.startsWith("@@flow_")) {
+        const uuid = name.replace("@@flow_", "");
+        const plugin = AgentFlows.loadFlowPlugin(uuid, this.aibitat);
+        if (!plugin) {
+          this.log(
+            `Flow ${uuid} not found in flows directory. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        this.aibitat.use(plugin.plugin());
+        this.log(
+          `Attached flow ${plugin.name} (${plugin.flowName}) plugin to Agent cluster`
+        );
+        continue;
+      }
+
       // Load imported plugin. This is marked by `@@` in the array of functions to load.
       // and is the @@hubID of the plugin.
       if (name.startsWith("@@")) {
@@ -407,7 +433,7 @@ class AgentHandler {
       }
 
       // Load single-stage plugin.
-      if (!AgentPlugins.hasOwnProperty(name)) {
+      if (!Object.prototype.hasOwnProperty.call(AgentPlugins, name)) {
         this.log(
           `${name} is not a valid plugin. Skipping inclusion to agent cluster.`
         );
@@ -480,7 +506,7 @@ class AgentHandler {
     await this.#loadAgents();
 
     // Attach all required plugins for functions to operate.
-    this.#attachPlugins(args);
+    await this.#attachPlugins(args);
   }
 
   startAgentCluster() {

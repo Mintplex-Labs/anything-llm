@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 // Providers which cannot use this feature for workspace<>model selection
 export const DISABLED_PROVIDERS = [
   "azure",
-  "native",
   "textgenwebui",
   "generic-openai",
   "bedrock",
@@ -26,19 +25,7 @@ const PROVIDER_DEFAULT_MODELS = {
     "learnlm-1.5-pro-experimental",
     "gemini-2.0-flash-exp",
   ],
-  anthropic: [
-    "claude-instant-1.2",
-    "claude-2.0",
-    "claude-2.1",
-    "claude-3-haiku-20240307",
-    "claude-3-sonnet-20240229",
-    "claude-3-opus-latest",
-    "claude-3-5-haiku-latest",
-    "claude-3-5-haiku-20241022",
-    "claude-3-5-sonnet-latest",
-    "claude-3-5-sonnet-20241022",
-    "claude-3-5-sonnet-20240620",
-  ],
+  anthropic: [],
   azure: [],
   lmstudio: [],
   localai: [],
@@ -47,7 +34,6 @@ const PROVIDER_DEFAULT_MODELS = {
   fireworksai: [],
   "nvidia-nim": [],
   groq: [],
-  native: [],
   cohere: [
     "command-r",
     "command-r-plus",
@@ -79,6 +65,7 @@ const groupedProviders = [
   "openai",
   "novita",
   "openrouter",
+  "ppio",
 ];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);

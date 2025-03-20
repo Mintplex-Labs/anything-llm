@@ -18,8 +18,10 @@ import { userFromStorage } from "@/utils/request";
 import useUser from "@/hooks/useUser";
 import { useTranslation, Trans } from "react-i18next";
 import Appearance from "@/models/appearance";
+import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
 export default function DefaultChatContainer() {
+  const { getMessageAlignment } = useChatMessageAlignment();
   const { showScrollbar } = Appearance.getSettings();
   const [mockMsgs, setMockMessages] = useState([]);
   const { user } = useUser();
@@ -43,7 +45,7 @@ export default function DefaultChatContainer() {
   const MESSAGES = [
     <React.Fragment key="msg1">
       <MessageContainer>
-        <MessageContent>
+        <MessageContent alignmentCls={getMessageAlignment("assistant")}>
           <UserIcon user={{ uid: "system" }} role={"assistant"} />
           <MessageText>{t("welcomeMessage.part1")}</MessageText>
         </MessageContent>
@@ -52,7 +54,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment key="msg2">
       <MessageContainer>
-        <MessageContent>
+        <MessageContent alignmentCls={getMessageAlignment("assistant")}>
           <UserIcon user={{ uid: "system" }} role={"assistant"} />
           <MessageText>{t("welcomeMessage.part2")}</MessageText>
         </MessageContent>
@@ -61,7 +63,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment key="msg3">
       <MessageContainer>
-        <MessageContent>
+        <MessageContent alignmentCls={getMessageAlignment("assistant")}>
           <UserIcon user={{ uid: "system" }} role={"assistant"} />
           <div>
             <MessageText>{t("welcomeMessage.part3")}</MessageText>
@@ -81,7 +83,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment key="msg4">
       <MessageContainer>
-        <MessageContent>
+        <MessageContent alignmentCls={getMessageAlignment("user")}>
           <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
           <MessageText>{t("welcomeMessage.user1")}</MessageText>
         </MessageContent>
@@ -90,7 +92,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment key="msg5">
       <MessageContainer>
-        <MessageContent>
+        <MessageContent alignmentCls={getMessageAlignment("assistant")}>
           <UserIcon user={{ uid: "system" }} role={"assistant"} />
           <div>
             <MessageText>{t("welcomeMessage.part4")}</MessageText>
@@ -111,7 +113,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment key="msg6">
       <MessageContainer>
-        <MessageContent>
+        <MessageContent alignmentCls={getMessageAlignment("user")}>
           <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
           <MessageText>{t("welcomeMessage.user2")}</MessageText>
         </MessageContent>
@@ -120,7 +122,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment key="msg7">
       <MessageContainer>
-        <MessageContent>
+        <MessageContent alignmentCls={getMessageAlignment("assistant")}>
           <UserIcon user={{ uid: "system" }} role={"assistant"} />
           <MessageText>
             <Trans
@@ -137,7 +139,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment key="msg8">
       <MessageContainer>
-        <MessageContent>
+        <MessageContent alignmentCls={getMessageAlignment("user")}>
           <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
           <MessageText>{t("welcomeMessage.user3")}</MessageText>
         </MessageContent>
@@ -146,7 +148,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment key="msg9">
       <MessageContainer>
-        <MessageContent>
+        <MessageContent alignmentCls={getMessageAlignment("assistant")}>
           <UserIcon user={{ uid: "system" }} role={"assistant"} />
           <div>
             <MessageText>{t("welcomeMessage.part6")}</MessageText>
@@ -159,7 +161,7 @@ export default function DefaultChatContainer() {
                 className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
               >
                 <GithubLogo className="h-4 w-4" />
-                <p>{t("welcomeMessage.starOnGithub")}</p>
+                <p>{t("welcomeMessage.starOnGitHub")}</p>
               </a>
               <a
                 href={paths.mailToMintplex()}
@@ -242,8 +244,8 @@ function MessageContainer({ children }) {
   );
 }
 
-function MessageContent({ children }) {
-  return <div className="flex gap-x-5">{children}</div>;
+function MessageContent({ children, alignmentCls = "" }) {
+  return <div className={`flex gap-x-5 ${alignmentCls}`}>{children}</div>;
 }
 
 function MessageText({ children }) {

@@ -10,7 +10,6 @@ import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
@@ -26,13 +25,14 @@ import NovitaLogo from "@/media/llmprovider/novita.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
+import PPIOLogo from "@/media/llmprovider/ppio.png";
+
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
-import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
@@ -52,16 +52,14 @@ import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
+import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
-
-const TITLE = "LLM Preference";
-const DESCRIPTION =
-  "AnythingLLM can work with many LLM providers. This will be the service which handles chatting.";
+import { useTranslation } from "react-i18next";
 
 const LLMS = [
   {
@@ -93,12 +91,12 @@ const LLMS = [
     description: "Google's largest and most capable AI model",
   },
   {
-    name: "Nvidia NIM",
+    name: "NVIDIA NIM",
     value: "nvidia-nim",
     logo: NvidiaNimLogo,
     options: (settings) => <NvidiaNimOptions settings={settings} />,
     description:
-      "Run full parameter LLMs directly on your GPU using Nvidia's inference microservice via Docker.",
+      "Run full parameter LLMs directly on your NVIDIA RTX GPU using NVIDIA NIM.",
   },
   {
     name: "HuggingFace",
@@ -219,6 +217,14 @@ const LLMS = [
     description: "Run DeepSeek's powerful LLMs.",
   },
   {
+    name: "PPIO",
+    value: "ppio",
+    logo: PPIOLogo,
+    options: (settings) => <PPIOLLMOptions settings={settings} />,
+    description:
+      "Run stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
+  },
+  {
     name: "APIpie",
     value: "apipie",
     logo: APIPieLogo,
@@ -247,14 +253,6 @@ const LLMS = [
     options: (settings) => <XAILLMOptions settings={settings} />,
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
   },
-  {
-    name: "Native",
-    value: "native",
-    logo: AnythingLLMIcon,
-    options: (settings) => <NativeLLMOptions settings={settings} />,
-    description:
-      "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
-  },
 ];
 
 export default function LLMPreference({
@@ -262,6 +260,7 @@ export default function LLMPreference({
   setForwardBtn,
   setBackBtn,
 }) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
@@ -270,6 +269,9 @@ export default function LLMPreference({
   const hiddenSubmitButtonRef = useRef(null);
   const isHosted = window.location.hostname.includes("useanything.com");
   const navigate = useNavigate();
+
+  const TITLE = t("onboarding.llm.title");
+  const DESCRIPTION = t("onboarding.llm.description");
 
   useEffect(() => {
     async function fetchKeys() {

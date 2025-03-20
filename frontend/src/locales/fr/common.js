@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "Nom des espaces de travail",
     error: "erreur",
@@ -9,9 +58,10 @@ const TRANSLATIONS = {
     save: "Enregistrer les modifications",
     previous: "Page précédente",
     next: "Page suivante",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Paramètres de l'instance",
     system: "Préférences système",
@@ -40,8 +90,6 @@ const TRANSLATIONS = {
     contact: "Contacter le Support",
     "browser-extension": "Extension de navigateur",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Bienvenue à",
@@ -65,7 +113,6 @@ const TRANSLATIONS = {
       "back-to-login": "Retour à la connexion",
     },
   },
-
   welcomeMessage: {
     part1:
       "Bienvenue sur AnythingLLM, un outil d'intelligence artificielle open-source créé par Mintplex Labs qui transforme n'importe quoi en un chatbot entraîné avec lequel vous pouvez interroger et discuter. AnythingLLM est un logiciel BYOK (apportez vos propres clés), il n'y a donc pas d'abonnement, de frais ou de charges pour ce logiciel en dehors des services que vous souhaitez utiliser.",
@@ -73,7 +120,7 @@ const TRANSLATIONS = {
       "AnythingLLM est le moyen le plus simple de regrouper des produits d'intelligence artificielle puissants tels que OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB et d'autres services dans un package soigné, sans tracas, pour augmenter votre productivité de 100x.",
     part3:
       "AnythingLLM peut fonctionner totalement localement sur votre machine avec peu d'impact, vous ne remarquerez même pas qu'il est là ! Pas besoin de GPU. L'installation en cloud et sur site est également disponible.\nL'écosystème des outils d'IA devient plus puissant chaque jour. AnythingLLM le rend facile à utiliser.",
-    githubIssue: "Créer un problème sur Github",
+    githubIssue: "Créer un problème sur GitHub",
     user1: "Comment commencer?!",
     part4:
       'C\'est simple. Toutes les collections sont organisées en compartiments que nous appelons "Workspaces". Les Workspaces sont des compartiments de fichiers, documents, images, PDFs et autres fichiers qui seront transformés en quelque chose que les LLM peuvent comprendre et utiliser dans une conversation.\n\nVous pouvez ajouter et supprimer des fichiers à tout moment.',
@@ -84,16 +131,13 @@ const TRANSLATIONS = {
       "AnythingLLM est plus qu'un Dropbox plus intelligent.\n\nAnythingLLM offre deux façons de parler avec vos données:\n\n<i>Interrogation :</i> Vos chats renverront des données ou des inférences trouvées avec les documents dans votre workspace auquel il a accès. Ajouter plus de documents au workspace le rend plus intelligent !\n\n<i>Conversationnel :</i> Vos documents et votre historique de chat en cours contribuent tous deux aux connaissances du LLM en même temps. Idéal pour ajouter des informations en temps réel basées sur du texte ou des corrections et des malentendus que le LLM pourrait avoir.\n\nVous pouvez basculer entre les deux modes <i>en plein milieu d'une conversation !</i>",
     user3: "Wow, cela semble incroyable, laissez-moi l'essayer tout de suite !",
     part6: "Amusez-vous bien !",
-    starOnGithub: "Étoile sur GitHub",
+    starOnGitHub: "Étoile sur GitHub",
     contact: "Contacter Mintplex Labs",
   },
-
   "new-workspace": {
     title: "Nouveau Espace de Travail",
     placeholder: "Mon Espace de Travail",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Paramètres généraux",
     chat: "Paramètres de chat",
@@ -101,8 +145,6 @@ const TRANSLATIONS = {
     members: "Membres",
     agent: "Configuration de l'agent",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Nombre de vecteurs",
@@ -140,8 +182,6 @@ const TRANSLATIONS = {
         "espace de travail. Cela supprimera toutes les intégrations vectorielles dans votre base de données vectorielle.\n\nLes fichiers source originaux resteront intacts. Cette action est irréversible.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Fournisseur LLM de l'espace de travail",
@@ -200,8 +240,6 @@ const TRANSLATIONS = {
       hint: "La plupart des LLM ont diverses plages acceptables de valeurs valides. Consultez votre fournisseur LLM pour cette information.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Identifiant de la base de données vectorielle",
     snippets: {
@@ -230,8 +268,6 @@ const TRANSLATIONS = {
         "La base de données vectorielle de l'espace de travail a été réinitialisée !",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "La performance des LLM qui ne supportent pas explicitement l'appel d'outils dépend fortement des capacités et de la précision du modèle. Certaines capacités peuvent être limitées ou non fonctionnelles.",
@@ -251,7 +287,6 @@ const TRANSLATIONS = {
         "Le modèle LLM spécifique qui sera utilisé pour l'agent @agent de cet espace de travail.",
       wait: "-- en attente des modèles --",
     },
-
     skill: {
       title: "Compétences par défaut de l'agent",
       description:
@@ -290,8 +325,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Chats de l'espace de travail",
     description:
@@ -306,8 +339,6 @@ const TRANSLATIONS = {
       at: "Envoyé à",
     },
   },
-
-  // Appearance
   appearance: {
     title: "Apparence",
     description:
@@ -341,8 +372,6 @@ const TRANSLATIONS = {
       link: "Lien",
     },
   },
-
-  // API Keys
   api: {
     title: "Clés API",
     description:
@@ -355,14 +384,12 @@ const TRANSLATIONS = {
       created: "Créé",
     },
   },
-
   llm: {
     title: "Préférence LLM",
     description:
       "Voici les identifiants et les paramètres de votre fournisseur LLM de chat et d'intégration préféré. Il est important que ces clés soient actuelles et correctes, sinon AnythingLLM ne fonctionnera pas correctement.",
     provider: "Fournisseur LLM",
   },
-
   transcription: {
     title: "Préférence du modèle de transcription",
     description:
@@ -375,7 +402,6 @@ const TRANSLATIONS = {
     "warn-end":
       "Le modèle intégré se téléchargera automatiquement lors de la première utilisation.",
   },
-
   embedding: {
     title: "Préférence d'intégration",
     "desc-start":
@@ -388,7 +414,6 @@ const TRANSLATIONS = {
         "Aucune configuration n'est nécessaire lors de l'utilisation du moteur d'intégration natif de AnythingLLM.",
     },
   },
-
   text: {
     title: "Préférences de division et de découpage du texte",
     "desc-start":
@@ -404,15 +429,12 @@ const TRANSLATIONS = {
         "C'est la longueur maximale de caractères pouvant être présents dans un seul vecteur.",
       recommend: "Longueur maximale du modèle d'intégration est",
     },
-
     overlap: {
       title: "Chevauchement des segments de texte",
       description:
         "C'est le chevauchement maximal de caractères qui se produit pendant le découpage entre deux segments de texte adjacents.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Base de données vectorielle",
     description:
@@ -422,8 +444,6 @@ const TRANSLATIONS = {
       description: "Aucune configuration n'est nécessaire pour LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Widgets de chat intégrables",
     description:
@@ -435,7 +455,6 @@ const TRANSLATIONS = {
       Active: "Domaines actifs",
     },
   },
-
   "embed-chats": {
     title: "Chats intégrés",
     export: "Exporter",
@@ -449,7 +468,6 @@ const TRANSLATIONS = {
       at: "Envoyé à",
     },
   },
-
   multi: {
     title: "Mode multi-utilisateurs",
     description:
@@ -474,8 +492,6 @@ const TRANSLATIONS = {
       password: "Mot de passe de l'instance",
     },
   },
-
-  // Event Logs
   event: {
     title: "Journaux d'événements",
     description:
@@ -487,8 +503,6 @@ const TRANSLATIONS = {
       occurred: "Survenu à",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Confidentialité et gestion des données",
     description:
@@ -497,6 +511,183 @@ const TRANSLATIONS = {
     embedding: "Préférence d'intégration",
     vector: "Base de données vectorielle",
     anonymous: "Télémétrie anonyme activée",
+  },
+  connectors: {
+    "search-placeholder": null,
+    "no-connectors": null,
+    github: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    gitlab: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_description: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      fetch_issues: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    youtube: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained_start: null,
+      URL_explained_link: null,
+      URL_explained_end: null,
+      task_explained: null,
+      language: null,
+      language_explained: null,
+      loading_languages: null,
+    },
+    "website-depth": {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      depth: null,
+      depth_explained: null,
+      max_pages: null,
+      max_pages_explained: null,
+      task_explained: null,
+    },
+    confluence: {
+      name: null,
+      description: null,
+      deployment_type: null,
+      deployment_type_explained: null,
+      base_url: null,
+      base_url_explained: null,
+      space_key: null,
+      space_key_explained: null,
+      username: null,
+      username_explained: null,
+      auth_type: null,
+      auth_type_explained: null,
+      auth_type_username: null,
+      auth_type_personal: null,
+      token: null,
+      token_explained_start: null,
+      token_explained_link: null,
+      token_desc: null,
+      pat_token: null,
+      pat_token_explained: null,
+      task_explained: null,
+    },
+    manage: {
+      documents: null,
+      "data-connectors": null,
+      "desktop-only": null,
+      dismiss: null,
+      editing: null,
+    },
+    directory: {
+      "my-documents": null,
+      "new-folder": null,
+      "search-document": null,
+      "no-documents": null,
+      "move-workspace": null,
+      name: null,
+      "delete-confirmation": null,
+      "removing-message": null,
+      "move-success": null,
+      date: null,
+      type: null,
+      no_docs: null,
+      select_all: null,
+      deselect_all: null,
+      remove_selected: null,
+      costs: null,
+      save_embed: null,
+    },
+    upload: {
+      "processor-offline": null,
+      "processor-offline-desc": null,
+      "click-upload": null,
+      "file-types": null,
+      "or-submit-link": null,
+      "placeholder-link": null,
+      fetching: null,
+      "fetch-website": null,
+      "privacy-notice": null,
+    },
+    pinning: {
+      what_pinning: null,
+      pin_explained_block1: null,
+      pin_explained_block2: null,
+      pin_explained_block3: null,
+      accept: null,
+    },
+    watching: {
+      what_watching: null,
+      watch_explained_block1: null,
+      watch_explained_block2: null,
+      watch_explained_block3_start: null,
+      watch_explained_block3_link: null,
+      watch_explained_block3_end: null,
+      accept: null,
+    },
+  },
+  chat_window: {
+    welcome: null,
+    get_started: null,
+    get_started_default: null,
+    upload: null,
+    or: null,
+    send_chat: null,
+    send_message: null,
+    attach_file: null,
+    slash: null,
+    agents: null,
+    text_size: null,
+    microphone: null,
+    send: null,
+  },
+  profile_settings: {
+    edit_account: null,
+    profile_picture: null,
+    remove_profile_picture: null,
+    username: null,
+    username_description: null,
+    new_password: null,
+    passwort_description: null,
+    cancel: null,
+    update_account: null,
+    theme: null,
+    language: null,
   },
 };
 

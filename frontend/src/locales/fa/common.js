@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "نام فضای کار",
     error: "خطا",
@@ -9,9 +58,10 @@ const TRANSLATIONS = {
     save: "ذخیره تغییرات",
     previous: "صفحه قبلی",
     next: "صفحه بعدی",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "تنظیمات سامانه",
     system: "تنظیمات عمومی",
@@ -40,8 +90,6 @@ const TRANSLATIONS = {
     contact: "تماس با پشتیبانی",
     "browser-extension": "افزونه مرورگر",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "خوش آمدید به",
@@ -64,7 +112,6 @@ const TRANSLATIONS = {
       "back-to-login": "بازگشت به صفحه ورود",
     },
   },
-
   welcomeMessage: {
     part1:
       "به AnythingLLM خوش آمدید. AnythingLLM یک ابزار هوش مصنوعی متن‌باز توسط Mintplex Labs است که هر چیزی را به یک ربات گفتگوی آموزش‌دیده تبدیل می‌کند که می‌توانید با آن گفتگو و پرس‌وجو کنید. AnythingLLM یک نرم‌افزار BYOK (آوردن کلیدهای خودتان) است، بنابراین هیچ اشتراک، هزینه یا مبلغی برای این نرم‌افزار خارج از سرویس‌هایی که می‌خواهید با آن استفاده کنید، وجود ندارد.",
@@ -83,16 +130,13 @@ const TRANSLATIONS = {
       "AnythingLLM بیشتر از یک دراپ‌باکس هوشمند است.\n\nAnythingLLM دو روش برای صحبت با داده‌های شما ارائه می‌دهد:\n\n<i>پرس‌وجو:</i> گفتگوهای شما داده‌ها یا استنباط‌های یافت شده در اسناد فضای کاری که به آن دسترسی دارد را برمی‌گرداند. افزودن اسناد بیشتر به فضای کاری آن را هوشمندتر می‌کند!\n\n<i>مکالمه‌ای:</i> اسناد شما + تاریخچه گفتگوی جاری شما هر دو همزمان به دانش LLM کمک می‌کنند. برای افزودن اطلاعات متنی بلادرنگ یا اصلاح اشتباهات و سوءتفاهم‌هایی که LLM ممکن است داشته باشد، عالی است.\n\nشما می‌توانید بین هر دو حالت \n<i>در وسط گفتگو!</i> جابجا شوید.",
     user3: "وای، این عالی به نظر می‌رسد، بگذارید همین حالا امتحانش کنم!",
     part6: "خوش بگذره!",
-    starOnGithub: "ستاره در گیت‌هاب",
+    starOnGitHub: "ستاره در گیت‌هاب",
     contact: "تماس با Mintplex Labs",
   },
-
   "new-workspace": {
     title: "فضای کاری جدید",
     placeholder: "فضای کاری من",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "تنظیمات عمومی",
     chat: "تنظیمات گفتگو",
@@ -100,8 +144,6 @@ const TRANSLATIONS = {
     members: "اعضا",
     agent: "پیکربندی عامل",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "تعداد بردارها",
@@ -136,8 +178,6 @@ const TRANSLATIONS = {
         "فضای کاری هستید. این کار تمام جاسازی‌های برداری را از پایگاه داده برداری شما حذف خواهد کرد.\n\nفایل‌های اصلی منبع دست نخورده باقی خواهند ماند. این عمل برگشت‌ناپذیر است.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "ارائه‌دهنده LLM فضای کاری",
@@ -195,8 +235,6 @@ const TRANSLATIONS = {
       hint: "اکثر LLMها محدوده‌های مختلفی از مقادیر معتبر را دارند. برای این اطلاعات به ارائه‌دهنده LLM خود مراجعه کنید.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "شناسه پایگاه داده برداری",
     snippets: {
@@ -223,8 +261,6 @@ const TRANSLATIONS = {
       success: "پایگاه داده برداری فضای کاری بازنشانی شد!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "عملکرد LLMهایی که به طور صریح از فراخوانی ابزار پشتیبانی نمی‌کنند، به شدت به قابلیت‌ها و دقت مدل وابسته است. برخی توانایی‌ها ممکن است محدود یا غیرفعال باشند.",
@@ -282,8 +318,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "گفتگوهای فضای کاری",
     description:
@@ -298,8 +332,6 @@ const TRANSLATIONS = {
       at: "زمان ارسال",
     },
   },
-
-  // Appearance
   appearance: {
     title: "ظاهر",
     description: "تنظیمات ظاهری پلتفرم خود را شخصی‌سازی کنید.",
@@ -331,8 +363,6 @@ const TRANSLATIONS = {
       link: "لینک",
     },
   },
-
-  // API Keys
   api: {
     title: "کلیدهای API",
     description:
@@ -345,14 +375,12 @@ const TRANSLATIONS = {
       created: "تاریخ ایجاد",
     },
   },
-
   llm: {
     title: "ترجیحات مدل زبانی",
     description:
       "این‌ها اعتبارنامه‌ها و تنظیمات ارائه‌دهنده مدل زبانی و جاسازی انتخابی شما هستند. مهم است که این کلیدها به‌روز و صحیح باشند در غیر این صورت AnythingLLM به درستی کار نخواهد کرد.",
     provider: "ارائه‌دهنده مدل زبانی",
   },
-
   transcription: {
     title: "ترجیحات مدل رونویسی",
     description:
@@ -364,7 +392,6 @@ const TRANSLATIONS = {
       "ما حداقل ۲ گیگابایت RAM و آپلود فایل‌های کمتر از ۱۰ مگابایت را توصیه می‌کنیم.",
     "warn-end": "مدل داخلی در اولین استفاده به صورت خودکار دانلود خواهد شد.",
   },
-
   embedding: {
     title: "ترجیحات جاسازی",
     "desc-start":
@@ -377,7 +404,6 @@ const TRANSLATIONS = {
         "هنگام استفاده از موتور جاسازی داخلی AnythingLLM نیازی به تنظیمات نیست.",
     },
   },
-
   text: {
     title: "تقسیم متن و تکه‌بندی",
     "desc-start":
@@ -399,8 +425,6 @@ const TRANSLATIONS = {
         "این حداکثر همپوشانی کاراکترها است که در هنگام تکه‌بندی بین دو بخش متن مجاور رخ می‌دهد.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "پایگاه داده برداری",
     description:
@@ -410,8 +434,6 @@ const TRANSLATIONS = {
       description: "برای LanceDB نیازی به پیکربندی نیست.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "جاسازی گفتگو",
     description:
@@ -423,7 +445,6 @@ const TRANSLATIONS = {
       Active: "دامنه‌های فعال",
     },
   },
-
   "embed-chats": {
     title: "گفتگوهای جاسازی شده",
     export: "خروجی‌گیری",
@@ -437,7 +458,6 @@ const TRANSLATIONS = {
       at: "زمان ارسال",
     },
   },
-
   multi: {
     title: "حالت چند کاربره",
     description:
@@ -462,8 +482,6 @@ const TRANSLATIONS = {
       password: "رمز عبور نمونه",
     },
   },
-
-  // Event Logs
   event: {
     title: "گزارش رویدادها",
     description:
@@ -475,8 +493,6 @@ const TRANSLATIONS = {
       occurred: "زمان وقوع",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "حریم خصوصی و مدیریت داده‌ها",
     description:
@@ -485,6 +501,183 @@ const TRANSLATIONS = {
     embedding: "ترجیحات جاسازی",
     vector: "پایگاه داده برداری",
     anonymous: "ارسال تله‌متری ناشناس فعال است",
+  },
+  connectors: {
+    "search-placeholder": null,
+    "no-connectors": null,
+    github: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    gitlab: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_description: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      fetch_issues: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    youtube: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained_start: null,
+      URL_explained_link: null,
+      URL_explained_end: null,
+      task_explained: null,
+      language: null,
+      language_explained: null,
+      loading_languages: null,
+    },
+    "website-depth": {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      depth: null,
+      depth_explained: null,
+      max_pages: null,
+      max_pages_explained: null,
+      task_explained: null,
+    },
+    confluence: {
+      name: null,
+      description: null,
+      deployment_type: null,
+      deployment_type_explained: null,
+      base_url: null,
+      base_url_explained: null,
+      space_key: null,
+      space_key_explained: null,
+      username: null,
+      username_explained: null,
+      auth_type: null,
+      auth_type_explained: null,
+      auth_type_username: null,
+      auth_type_personal: null,
+      token: null,
+      token_explained_start: null,
+      token_explained_link: null,
+      token_desc: null,
+      pat_token: null,
+      pat_token_explained: null,
+      task_explained: null,
+    },
+    manage: {
+      documents: null,
+      "data-connectors": null,
+      "desktop-only": null,
+      dismiss: null,
+      editing: null,
+    },
+    directory: {
+      "my-documents": null,
+      "new-folder": null,
+      "search-document": null,
+      "no-documents": null,
+      "move-workspace": null,
+      name: null,
+      "delete-confirmation": null,
+      "removing-message": null,
+      "move-success": null,
+      date: null,
+      type: null,
+      no_docs: null,
+      select_all: null,
+      deselect_all: null,
+      remove_selected: null,
+      costs: null,
+      save_embed: null,
+    },
+    upload: {
+      "processor-offline": null,
+      "processor-offline-desc": null,
+      "click-upload": null,
+      "file-types": null,
+      "or-submit-link": null,
+      "placeholder-link": null,
+      fetching: null,
+      "fetch-website": null,
+      "privacy-notice": null,
+    },
+    pinning: {
+      what_pinning: null,
+      pin_explained_block1: null,
+      pin_explained_block2: null,
+      pin_explained_block3: null,
+      accept: null,
+    },
+    watching: {
+      what_watching: null,
+      watch_explained_block1: null,
+      watch_explained_block2: null,
+      watch_explained_block3_start: null,
+      watch_explained_block3_link: null,
+      watch_explained_block3_end: null,
+      accept: null,
+    },
+  },
+  chat_window: {
+    welcome: null,
+    get_started: null,
+    get_started_default: null,
+    upload: null,
+    or: null,
+    send_chat: null,
+    send_message: null,
+    attach_file: null,
+    slash: null,
+    agents: null,
+    text_size: null,
+    microphone: null,
+    send: null,
+  },
+  profile_settings: {
+    edit_account: null,
+    profile_picture: null,
+    remove_profile_picture: null,
+    username: null,
+    username_description: null,
+    new_password: null,
+    passwort_description: null,
+    cancel: null,
+    update_account: null,
+    theme: null,
+    language: null,
   },
 };
 

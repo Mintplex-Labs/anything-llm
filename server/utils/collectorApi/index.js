@@ -20,6 +20,9 @@ class CollectorApi {
       whisperProvider: process.env.WHISPER_PROVIDER || "local",
       WhisperModelPref: process.env.WHISPER_MODEL_PREF,
       openAiKey: process.env.OPEN_AI_KEY || null,
+      ocr: {
+        langList: process.env.TARGET_OCR_LANG || "eng",
+      },
     };
   }
 
@@ -148,10 +151,10 @@ class CollectorApi {
       });
   }
 
-  async getLinkContent(link = "") {
+  async getLinkContent(link = "", captureAs = "text") {
     if (!link) return false;
 
-    const data = JSON.stringify({ link });
+    const data = JSON.stringify({ link, captureAs });
     return await fetch(`${this.endpoint}/util/get-link`, {
       method: "POST",
       headers: {

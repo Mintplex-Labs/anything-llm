@@ -825,7 +825,6 @@ function workspaceEndpoints(app) {
             : "Forked Thread",
         });
 
-        await Telemetry.sendTelemetry("thread_forked");
         await EventLogs.logEvent(
           "thread_forked",
           {

@@ -24,6 +24,7 @@ const SystemSettings = {
     "agent_search_provider",
     "agent_sql_connections",
     "default_agent_skills",
+    "disabled_agent_skills",
     "imported_agent_skills",
     "custom_app_name",
     "feature_flags",
@@ -40,6 +41,7 @@ const SystemSettings = {
     "text_splitter_chunk_overlap",
     "agent_search_provider",
     "default_agent_skills",
+    "disabled_agent_skills",
     "agent_sql_connections",
     "custom_app_name",
 
@@ -122,6 +124,15 @@ const SystemSettings = {
         return JSON.stringify(skills);
       } catch (e) {
         console.error(`Could not validate agent skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    disabled_agent_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch (e) {
+        console.error(`Could not validate disabled agent skills.`);
         return JSON.stringify([]);
       }
     },
@@ -431,6 +442,7 @@ const SystemSettings = {
       AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
       AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
+      AzureOpenAiModelType: process.env.AZURE_OPENAI_MODEL_TYPE || "default",
 
       // Anthropic Keys
       AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
@@ -459,6 +471,7 @@ const SystemSettings = {
       OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
       OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
+      OllamaLLMAuthToken: process.env.OLLAMA_AUTH_TOKEN ?? null,
 
       // Novita LLM Keys
       NovitaLLMApiKey: !!process.env.NOVITA_LLM_API_KEY,
@@ -489,10 +502,6 @@ const SystemSettings = {
       // Groq AI API Keys
       GroqApiKey: !!process.env.GROQ_API_KEY,
       GroqModelPref: process.env.GROQ_MODEL_PREF,
-
-      // Native LLM Keys
-      NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
-      NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
 
       // HuggingFace Dedicated Inference
       HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
@@ -547,10 +556,14 @@ const SystemSettings = {
       XAIApiKey: !!process.env.XAI_LLM_API_KEY,
       XAIModelPref: process.env.XAI_LLM_MODEL_PREF,
 
-      // Nvidia NIM Keys
+      // NVIDIA NIM Keys
       NvidiaNimLLMBasePath: process.env.NVIDIA_NIM_LLM_BASE_PATH,
       NvidiaNimLLMModelPref: process.env.NVIDIA_NIM_LLM_MODEL_PREF,
       NvidiaNimLLMTokenLimit: process.env.NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT,
+
+      // PPIO API keys
+      PPIOApiKey: !!process.env.PPIO_API_KEY,
+      PPIOModelPref: process.env.PPIO_MODEL_PREF,
     };
   },
 
