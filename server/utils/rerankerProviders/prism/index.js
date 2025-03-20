@@ -8,7 +8,6 @@ const fetch = require('node-fetch');
  */
 async function rerankTexts(texts, query) {
     try {
-      console.log('prism reranker called')
 
       if (!Array.isArray(texts) || texts.length === 0) {
         throw new Error('The texts parameter must be a non-empty array.');
@@ -17,44 +16,42 @@ async function rerankTexts(texts, query) {
         throw new Error('The query parameter must be a non-empty string.');
       }
   
-      // Define the payload for the reranker API
       const payload = {
-        query,
-        raw_scores: false,
-        return_text: false, // Request indices and scores instead of full text
-        texts,
-        truncate: false,
-      };
-  
+        model: process.env.RERANKER_MODEL,
+        query: query,
+        top_n: Number(process.env.RERANK_TOP_N_RESULTS),
+        documents: texts,
+    };
       // Call the Reranker API
       const response = await fetch(process.env.RERANKER_URL, {
         method: 'POST',
         headers: {
           accept: 'application/json',
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.RERANKER_API_KEY}`,
         },
         body: JSON.stringify(payload),
       });
   
       if (!response.ok) {
-        throw new Error(`Failed to fetch from Reranker API: ${response.statusText}`);
+        throw new Error(`Failed to fetch from Prism Reranker API: ${response.statusText}`);
       }
-  
+      
       // Parse JSON response
       const data = await response.json();
   
-      if (!Array.isArray(data)) {
-        throw new Error('Invalid response format from Reranker API');
-      }
-    //   console.dir(data,{depth : null})
-      // Sort results by score in descending order and take the top N
-      const topResults = data
-        .sort((a, b) => b.score - a.score)
-        .slice(0, Number(process.env.RERANK_TOP_N_RESULTS || 10)); // Default to 5 if not set
-    //   console.dir(topResults,{depth : null})
-      return topResults;
+      if (!data.results || !Array.isArray(data.results)) {
+        throw new Error('Invalid response format from Prism Reranker API');
+    }
+
+    // Transform the response to match the expected format
+    const formattedResults = data.results.map((result) => ({
+        index: result.index,
+        score: result.relevance_score, // Map relevance_score to score
+    }));
+      return formattedResults;
     } catch (error) {
-      console.error('Error in rerankTexts:', error.message);
+      console.error('Error in Prism Reranker API:', error.message);
       throw error;
     }
   }

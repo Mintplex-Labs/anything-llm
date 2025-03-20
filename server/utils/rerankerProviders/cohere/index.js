@@ -9,7 +9,6 @@ const cohere = new CohereClient({ token: process.env.RERANKER_API_KEY });
  */
 async function rerankTexts(texts, query) {
     try {
-        console.log('cohere reranker called')
 
         // Validate inputs
         if (!Array.isArray(texts) || texts.length === 0) {
@@ -34,7 +33,7 @@ async function rerankTexts(texts, query) {
         // console.log(formattedResults)
         return formattedResults;
     } catch (error) {
-        console.error('Error in rerankTexts:', error.message);
+        console.error('Error in Cohere Reranker:', error.message);
         throw error; // Rethrow the error for the caller to handle
     }
 }
