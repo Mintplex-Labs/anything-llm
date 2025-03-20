@@ -228,7 +228,7 @@ export default function PromptInput({
   function handleChange(e) {
     debouncedSaveState(-1);
     onChange(e);
-    watchForSlash(e);
+    // watchForSlash(e);
     watchForAt(e);
     adjustTextArea(e);
     setPromptInput(e.target.value);

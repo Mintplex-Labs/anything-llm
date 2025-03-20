@@ -121,9 +121,9 @@ This is to override the default border color for the select and input elements
 in the onboarding flow when the theme is not light. This only applies to the
 onboarding flow since its background is dark and is the same fill as the inputs.
 */
-[data-layout="onboarding"] > * select:not([data-theme="light"]),
-[data-layout="onboarding"] > * input:not([data-theme="light"]),
-[data-layout="onboarding"] > * textarea:not([data-theme="light"]) {
+[data-layout="onboarding"]>* select:not([data-theme="light"]),
+[data-layout="onboarding"]>* input:not([data-theme="light"]),
+[data-layout="onboarding"]>* textarea:not([data-theme="light"]) {
   border: 1px solid #ffffff;
 }
 
@@ -257,21 +257,17 @@ a {
 
 @media (prefers-color-scheme: light) {
   .fade-up-border {
-    background: linear-gradient(
-      to bottom,
-      rgba(220, 221, 223, 10%),
-      rgb(220, 221, 223) 89%
-    );
+    background: linear-gradient(to bottom,
+        rgba(220, 221, 223, 10%),
+        rgb(220, 221, 223) 89%);
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .fade-up-border {
-    background: linear-gradient(
-      to bottom,
-      rgba(41, 37, 36, 50%),
-      rgb(41 37 36) 90%
-    );
+    background: linear-gradient(to bottom,
+        rgba(41, 37, 36, 50%),
+        rgb(41 37 36) 90%);
   }
 }
 
@@ -436,7 +432,7 @@ a {
   height: 100px !important;
 }
 
-.grid-loader > circle {
+.grid-loader>circle {
   fill: #008eff;
 }
 
@@ -499,11 +495,9 @@ dialog::backdrop {
 }
 
 .login-input-gradient {
-  background: linear-gradient(
-    180deg,
-    rgba(61, 65, 71, 0.3) 0%,
-    rgba(44, 47, 53, 0.3) 100%
-  ) !important;
+  background: linear-gradient(180deg,
+      rgba(61, 65, 71, 0.3) 0%,
+      rgba(44, 47, 53, 0.3) 100%) !important;
   box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
 }
 
@@ -528,11 +522,11 @@ dialog::backdrop {
   top: 100%;
 }
 
-.user-reply > div:first-of-type {
+.user-reply>div:first-of-type {
   border: 2px solid white;
 }
 
-.reply > *:last-child::after {
+.reply>*:last-child::after {
   content: "|";
   animation: blink 1.5s steps(1) infinite;
   color: white;
@@ -609,7 +603,7 @@ dialog::backdrop {
  * ==============================================
  */
 .markdown,
-.markdown > * {
+.markdown>* {
   font-weight: 400;
 }
 
@@ -681,6 +675,7 @@ dialog::backdrop {
 }
 
 @media (max-width: 600px) {
+
   .markdown table th,
   .markdown table td {
     padding: 10px;
@@ -746,7 +741,7 @@ dialog::backdrop {
   text-decoration: underline;
 }
 
-.markdown ul li > ul {
+.markdown ul li>ul {
   padding-left: 20px;
   margin: 0px;
 }
@@ -756,7 +751,7 @@ dialog::backdrop {
   margin: 0.35rem;
 }
 
-.markdown > p > a,
+.markdown>p>a,
 .markdown p a {
   text-decoration: underline;
 }
@@ -842,7 +837,7 @@ does not extend the close button beyond the viewport. */
 }
 
 /* Recharts rendering styles */
-.recharts-text > * {
+.recharts-text>* {
   fill: #fff;
 }
 
@@ -948,69 +943,90 @@ does not extend the close button beyond the viewport. */
   --theme-settings-input-bg: #fff;
   --theme-bg-secondary: #ccc;
 }
+
 /* ----------- */
 
 /* Custom Css */
-.custom-radio-button-active{
+.custom-radio-button-active {
   background-color: #46c8ff;
 }
 
 .custom-bg-primary {
   background: linear-gradient(90deg, #281ba5 52.5%, #237489 100%);
 }
+
 .custom-theme-bg-container {
   background: linear-gradient(90deg, #281ba5 52.5%, #237489 100%);
 }
+
 .custom-button-primary {
   background: linear-gradient(90deg, #291ca6 0%, #00a5d4 100%);
 }
+
 .custom-text-primary {
   color: #fff;
 }
+
 .custom-theme-bg-sidebar-background {
   background: url("../public/sidebar-bg.png");
   background-size: cover;
   background-repeat: no-repeat;
 }
+
 .custom-theme-bg-secondary {
   background-color: #f1f6fc;
 }
+
+.custom-think-button {
+  color: #00a5d4
+}
+
 .custom-text-secondary {
   color: #000 !important;
 }
+
 .custom-border-secondary {
   border: 1px solid #0003;
 }
+
 .custom-button-secondary {
   color: #000;
   background-color: transparent;
   border-color: #000;
 }
+
 .custom-theme-bg-tertiary {
   background-color: #fff !important;
 }
+
 .custom-theme-bg-sidebar-border {
   border: 1px solid #ffffff69;
 }
+
 .custom-theme-bg-quad {
   background-color: #00a5d4;
 }
+
 .custom-theme-color-quad {
   color: #fff;
 }
+
 .custom-llm-provider-modal {
   label {
     /* .custom-text-secondary */
     color: #000;
   }
+
   p {
     /* .custom-text-secondary */
     color: #000;
   }
+
   button {
     /* .custom-text-secondary */
     color: #000;
   }
+
   input {
     /* .custom-theme-bg-tertiary */
     background-color: #fff;
@@ -1019,6 +1035,7 @@ does not extend the close button beyond the viewport. */
     /* .custom-border-secondary */
     border: 1px solid #0003;
   }
+
   input::placeholder {
     color: unset;
     opacity: 0.5;
@@ -1040,15 +1057,18 @@ does not extend the close button beyond the viewport. */
     /* .custom-text-secondary */
     color: #fff;
   }
+
   p {
     /* .custom-text-secondary */
     color: #fff;
   }
+
   button {
     /* .custom-text-secondary */
     color: #fff;
   }
-  input, 
+
+  input,
   textarea {
     /* .custom-theme-bg-tertiary */
     background-color: #fff;
@@ -1057,7 +1077,8 @@ does not extend the close button beyond the viewport. */
     /* .custom-border-secondary */
     border: 1px solid #0003;
   }
-  input::placeholder, 
+
+  input::placeholder,
   textarea::placeholder {
     color: unset;
     opacity: 0.5;
@@ -1082,17 +1103,20 @@ does not extend the close button beyond the viewport. */
     color: #000 !important;
     /* .custom-border-secondary */
     border: 1px solid #0003;
+
     .rti--input {
       /* .custom-theme-bg-tertiary */
       background-color: #fff !important;
       /* .custom-text-secondary */
       color: #000 !important;
     }
+
     .rti--input::placeholder {
       color: unset;
     }
   }
 }
+
 .custom-primary-table {
   thead {
     /* .custom-border-secondary */
@@ -1100,6 +1124,7 @@ does not extend the close button beyond the viewport. */
     border-left: 0;
     border-right: 0;
     border-top: 0;
+
     tr {
       th {
         /* .custom-text-secondary */
@@ -1107,14 +1132,17 @@ does not extend the close button beyond the viewport. */
       }
     }
   }
+
   tbody {
     tr {
+
       th,
       td {
         /* .custom-text-secondary */
         color: #000;
       }
     }
+
     button,
     a,
     p {
@@ -1123,28 +1151,37 @@ does not extend the close button beyond the viewport. */
     }
   }
 }
+
 .custom-file-row {
   color: #000;
   background-color: #f1f6fc !important;
+
   .custom-file-row-checkbox {
     border-color: #000;
+
     .custom-file-row-checkbox-selected {
       background-color: #000;
     }
   }
 }
+
 .markdown strong {
   font-weight: 600;
   color: #000;
 }
+
 select {
-  appearance: none; /* Remove default arrow */
-  -webkit-appearance: none; /* For Safari */
-  -moz-appearance: none; /* For Firefox */
+  appearance: none;
+  /* Remove default arrow */
+  -webkit-appearance: none;
+  /* For Safari */
+  -moz-appearance: none;
+  /* For Firefox */
   background: transparent;
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjMDAwMDAwIj48cGF0aCBkPSJNNDgwLTM0NCAyNDAtNTg0bDU2LTU2IDE4NCAxODQgMTg0LTE4NCA1NiA1Ni0yNDAgMjQwWiIvPjwvc3ZnPg==");
   background-repeat: no-repeat;
   background-position-x: calc(100% - 5px);
   background-position-y: 50%;
 }
+
 /* --------- */
