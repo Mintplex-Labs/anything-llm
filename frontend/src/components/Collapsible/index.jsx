@@ -7,7 +7,7 @@ export default function Collapsible({ title = "Show More", hideTitle = "Show Les
     return (
         <div className={`${!collapsed && "mb-4"} w-full`}>
             <button
-                className={`flex items-center text-[var(--theme-button-primary)] ${!collapsed && "mb-2"}`}
+                className={`flex items-center custom-think-button ${!collapsed && "mb-2"}`}
                 onClick={() => setCollapsed(!collapsed)}
             >
                 {collapsed ? title : hideTitle}
@@ -15,7 +15,7 @@ export default function Collapsible({ title = "Show More", hideTitle = "Show Les
             </button>
 
             <div
-                 className={`transition-[max-height,opacity,padding] duration-500 ease-in-out overflow-hidden bg-[var(--theme-text-primary)] rounded 
+                 className={`transition-[max-height,opacity,padding] duration-500 ease-in-out overflow-hidden custom-theme-bg-tertiary rounded 
                     ${collapsed ? 
                         "max-h-0 p-2 opacity-0" : 
                         "max-h-96 p-3 opacity-100"
