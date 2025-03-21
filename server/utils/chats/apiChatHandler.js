@@ -3,7 +3,7 @@ const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
-const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
+const { chatPrompt, sourceIdentifier, recentChatHistory, grepAllUserCommands, VALID_COMMANDS } = require("./index");
 const {
   EphemeralAgentHandler,
   EphemeralEventListener,
@@ -45,6 +45,27 @@ async function chatSync({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+
+  // Process slash commands
+  const processedMessage = await grepAllUserCommands(message);
+  if (Object.keys(VALID_COMMANDS).includes(processedMessage)) {
+    const response = await VALID_COMMANDS[processedMessage]({
+      user,
+      workspace,
+      thread,
+      sessionId,
+    });
+    return {
+      id: uuid,
+      type: "textResponse",
+      sources: [],
+      close: true,
+      error: null,
+      textResponse: response,
+      metrics: {},
+    };
+  }
+  message = processedMessage;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
@@ -335,6 +356,28 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+
+  // Check for and process slash commands
+  const processedMessage = await grepAllUserCommands(message);
+  if (Object.keys(VALID_COMMANDS).includes(processedMessage)) {
+    const commandResponse = await VALID_COMMANDS[processedMessage]({
+      user,
+      workspace,
+      thread,
+      sessionId,
+    });
+    writeResponseChunk(response, {
+      id: uuid,
+      type: "textResponse",
+      textResponse: commandResponse,
+      sources: [],
+      close: true,
+      error: null,
+      metrics: {},
+    });
+    return;
+  }
+  message = processedMessage;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
