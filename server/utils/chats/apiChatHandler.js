@@ -3,7 +3,13 @@ const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
-const { chatPrompt, sourceIdentifier, recentChatHistory, grepAllUserCommands, VALID_COMMANDS } = require("./index");
+const {
+  chatPrompt,
+  sourceIdentifier,
+  recentChatHistory,
+  grepAllUserCommands,
+  VALID_COMMANDS,
+} = require("./index");
 const {
   EphemeralAgentHandler,
   EphemeralEventListener,
