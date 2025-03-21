@@ -58,7 +58,11 @@ export function SlashCommands({ showing, setShowing, sendCommand, promptRef }) {
         >
           <ResetCommand sendCommand={sendCommand} setShowing={setShowing} />
           <EndAgentSession sendCommand={sendCommand} setShowing={setShowing} />
-          <SlashPresets sendCommand={sendCommand} setShowing={setShowing} promptRef={promptRef} />
+          <SlashPresets
+            sendCommand={sendCommand}
+            setShowing={setShowing}
+            promptRef={promptRef}
+          />
         </div>
       </div>
     </div>
