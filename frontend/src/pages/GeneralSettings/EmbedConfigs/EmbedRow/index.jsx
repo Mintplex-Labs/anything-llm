@@ -8,6 +8,7 @@ import paths from "@/utils/paths";
 import { nFormatter } from "@/utils/numbers";
 import EditEmbedModal from "./EditEmbedModal";
 import CodeSnippetModal from "./CodeSnippetModal";
+import DeleteEmbedModal from "./DeleteEmbedModal";
 
 export default function EmbedRow({ embed }) {
   const rowRef = useRef(null);
@@ -21,6 +22,11 @@ export default function EmbedRow({ embed }) {
     isOpen: isSnippetOpen,
     openModal: openSnippetModal,
     closeModal: closeSnippetModal,
+  } = useModal();
+  const {
+    isOpen: isDeleteEmbedOpen,
+    openModal: openDeleteEmbedOpen,
+    closeModal: closeDeleteEmbedOpen,
   } = useModal();
 
   const handleSuspend = async () => {
@@ -44,20 +50,10 @@ export default function EmbedRow({ embed }) {
       setEnabled(!enabled);
     }
   };
-  const handleDelete = async () => {
-    if (
-      !window.confirm(
-        `Are you sure you want to delete this embed?\nOnce deleted this embed will no longer respond to chats or be active.\n\nThis action is irreversible.`
-      )
-    )
-      return false;
-    const { success, error } = await Embed.deleteEmbed(embed.id);
-    if (!success) showToast(error, "error", { clear: true });
-    if (success) {
-      rowRef?.current?.remove();
-      showToast("Embed deleted from system.", "success", { clear: true });
-    }
-  };
+  
+  const removeRow = () => {
+    rowRef?.current?.remove();
+  }
 
   return (
     <>
@@ -105,7 +101,7 @@ export default function EmbedRow({ embed }) {
               {enabled ? "Disable" : "Enable"}
             </button>
             <button
-              onClick={handleDelete}
+              onClick={openDeleteEmbedOpen}
               className="font-medium text-red-600 dark:text-red-300 px-2 py-1 rounded-lg hover:bg-red-50 hover:dark:bg-red-800 hover:dark:bg-opacity-20"
             >
               Delete
@@ -118,6 +114,9 @@ export default function EmbedRow({ embed }) {
       </ModalWrapper>
       <ModalWrapper isOpen={isSnippetOpen}>
         <CodeSnippetModal embed={embed} closeModal={closeSnippetModal} />
+      </ModalWrapper>
+      <ModalWrapper isOpen={isDeleteEmbedOpen}>
+        <DeleteEmbedModal embed={embed} closeModal={closeDeleteEmbedOpen} onConfirm={removeRow} />
       </ModalWrapper>
     </>
   );
