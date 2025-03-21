@@ -3,6 +3,7 @@ import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import LiveDocumentSync from "./experimental/liveSync";
 import AgentPlugins from "./experimental/agentPlugins";
+import SystemPromptVariable from "./systemPromptVariable";
 
 const System = {
   cacheKeys: {
@@ -740,6 +741,7 @@ const System = {
     liveSync: LiveDocumentSync,
     agentPlugins: AgentPlugins,
   },
+  promptVariables: SystemPromptVariable,
 };
 
 export default System;
