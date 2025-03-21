@@ -35,6 +35,33 @@ async function grepCommand(message, user = null) {
   return updatedMessage;
 }
 
+async function grepAllUserCommands(message) {
+  const availableCommands = Object.keys(VALID_COMMANDS);
+
+  // Check if the message starts with any built-in command
+  for (let i = 0; i < availableCommands.length; i++) {
+    const cmd = availableCommands[i];
+    const re = new RegExp(`^(${cmd})`, "i");
+    if (re.test(message)) {
+      return cmd;
+    }
+  }
+  const allPresets = await SlashCommandPresets.where({});
+
+  // Replace all preset commands with their corresponding prompts
+  // Allows multiple commands in one message
+  let updatedMessage = message;
+  for (const preset of allPresets) {
+    const regex = new RegExp(
+      `(?:\\b\\s|^)(${preset.command})(?:\\b\\s|$)`,
+      "g"
+    );
+    updatedMessage = updatedMessage.replace(regex, preset.prompt);
+  }
+
+  return updatedMessage;
+}
+
 async function recentChatHistory({
   user = null,
   workspace,
@@ -80,5 +107,6 @@ module.exports = {
   recentChatHistory,
   chatPrompt,
   grepCommand,
+  grepAllUserCommands,
   VALID_COMMANDS,
 };
