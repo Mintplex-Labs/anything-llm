@@ -237,6 +237,7 @@ export default function PromptInput({
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
         sendCommand={sendCommand}
+        promptRef={textareaRef}
       />
       <AvailableAgents
         showing={showAgents}
