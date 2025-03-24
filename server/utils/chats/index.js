@@ -36,8 +36,7 @@ async function grepCommand(message, user = null) {
 }
 
 /**
- * @description This function will return the first command found in the message
- * and replace all preset commands with their corresponding prompts.
+ * @description This function will do recursive replacement of all slash commands with their corresponding prompts.
  * @notice This function is used for API calls and is not user-scoped. THIS FUNCTION DOES NOT SUPPORT PRESET COMMANDS.
  * @returns {Promise<string>}
  */

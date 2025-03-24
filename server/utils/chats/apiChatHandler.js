@@ -514,8 +514,6 @@ async function streamChat({
     apiSessionId: sessionId,
   });
 
-  console.log({ chatHistory });
-
   // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
   // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
   // However we limit the maximum of appended context to 80% of its overall size, mostly because if it expands beyond this
