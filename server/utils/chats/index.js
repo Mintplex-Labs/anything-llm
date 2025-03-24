@@ -35,17 +35,13 @@ async function grepCommand(message, user = null) {
   return updatedMessage;
 }
 
-async function grepAllUserCommands(message) {
-  const availableCommands = Object.keys(VALID_COMMANDS);
-
-  // Check if the message starts with any built-in command
-  for (let i = 0; i < availableCommands.length; i++) {
-    const cmd = availableCommands[i];
-    const re = new RegExp(`^(${cmd})`, "i");
-    if (re.test(message)) {
-      return cmd;
-    }
-  }
+/**
+ * @description This function will return the first command found in the message
+ * and replace all preset commands with their corresponding prompts.
+ * @notice This function is used for API calls and is not user-scoped. THIS FUNCTION DOES NOT SUPPORT PRESET COMMANDS.
+ * @returns {Promise<string>}
+ */
+async function grepAllSlashCommands(message) {
   const allPresets = await SlashCommandPresets.where({});
 
   // Replace all preset commands with their corresponding prompts
@@ -107,6 +103,6 @@ module.exports = {
   recentChatHistory,
   chatPrompt,
   grepCommand,
-  grepAllUserCommands,
+  grepAllSlashCommands,
   VALID_COMMANDS,
 };

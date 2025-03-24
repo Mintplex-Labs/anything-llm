@@ -7,8 +7,7 @@ const {
   chatPrompt,
   sourceIdentifier,
   recentChatHistory,
-  grepAllUserCommands,
-  VALID_COMMANDS,
+  grepAllSlashCommands,
 } = require("./index");
 const {
   EphemeralAgentHandler,
@@ -37,6 +36,7 @@ const { Telemetry } = require("../../models/telemetry");
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
  *  attachments: { name: string; mime: string; contentString: string }[],
+ *  reset: boolean,
  * }} parameters
  * @returns {Promise<ResponseObject>}
  */
@@ -48,29 +48,37 @@ async function chatSync({
   thread = null,
   sessionId = null,
   attachments = [],
+  reset = false,
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
 
-  // Process slash commands
-  const processedMessage = await grepAllUserCommands(message);
-  if (Object.keys(VALID_COMMANDS).includes(processedMessage)) {
-    const response = await VALID_COMMANDS[processedMessage]({
-      user,
-      workspace,
-      thread,
-      sessionId,
+  // If the user wants to reset the chat history we do so pre-flight
+  // and continue execution. If no message is provided then the user intended
+  // to reset the chat history only and we can exit early with a confirmation.
+  if (reset) {
+    await WorkspaceChats.markThreadHistoryInvalidV2({
+      workspaceId: workspace.id,
+      user_id: user?.id,
+      thread_id: thread?.id,
+      api_session_id: sessionId,
     });
-    return {
-      id: uuid,
-      type: "textResponse",
-      sources: [],
-      close: true,
-      error: null,
-      textResponse: response,
-      metrics: {},
-    };
+    if (!message?.length) {
+      return {
+        id: uuid,
+        type: "textResponse",
+        textResponse: "Chat history was reset!",
+        sources: [],
+        close: true,
+        error: null,
+        metrics: {},
+      };
+    }
   }
+
+  // Process slash commands
+  // Since preset commands are not supported in API calls, we can just process the message here
+  const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
@@ -347,6 +355,7 @@ async function chatSync({
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
  *  attachments: { name: string; mime: string; contentString: string }[],
+ *  reset: boolean,
  * }} parameters
  * @returns {Promise<VoidFunction>}
  */
@@ -359,30 +368,39 @@ async function streamChat({
   thread = null,
   sessionId = null,
   attachments = [],
+  reset = false,
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
 
-  // Check for and process slash commands
-  const processedMessage = await grepAllUserCommands(message);
-  if (Object.keys(VALID_COMMANDS).includes(processedMessage)) {
-    const commandResponse = await VALID_COMMANDS[processedMessage]({
-      user,
-      workspace,
-      thread,
-      sessionId,
+  // If the user wants to reset the chat history we do so pre-flight
+  // and continue execution. If no message is provided then the user intended
+  // to reset the chat history only and we can exit early with a confirmation.
+  if (reset) {
+    await WorkspaceChats.markThreadHistoryInvalidV2({
+      workspaceId: workspace.id,
+      user_id: user?.id,
+      thread_id: thread?.id,
+      api_session_id: sessionId,
     });
-    writeResponseChunk(response, {
-      id: uuid,
-      type: "textResponse",
-      textResponse: commandResponse,
-      sources: [],
-      close: true,
-      error: null,
-      metrics: {},
-    });
-    return;
+    if (!message?.length) {
+      writeResponseChunk(response, {
+        id: uuid,
+        type: "textResponse",
+        textResponse: "Chat history was reset!",
+        sources: [],
+        attachments: [],
+        close: true,
+        error: null,
+        metrics: {},
+      });
+      return;
+    }
   }
+
+  // Check for and process slash commands
+  // Since preset commands are not supported in API calls, we can just process the message here
+  const processedMessage = await grepAllSlashCommands(message);
   message = processedMessage;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
@@ -495,6 +513,8 @@ async function streamChat({
     messageLimit,
     apiSessionId: sessionId,
   });
+
+  console.log({ chatHistory });
 
   // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
   // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
