@@ -35,6 +35,28 @@ async function grepCommand(message, user = null) {
   return updatedMessage;
 }
 
+/**
+ * @description This function will do recursive replacement of all slash commands with their corresponding prompts.
+ * @notice This function is used for API calls and is not user-scoped. THIS FUNCTION DOES NOT SUPPORT PRESET COMMANDS.
+ * @returns {Promise<string>}
+ */
+async function grepAllSlashCommands(message) {
+  const allPresets = await SlashCommandPresets.where({});
+
+  // Replace all preset commands with their corresponding prompts
+  // Allows multiple commands in one message
+  let updatedMessage = message;
+  for (const preset of allPresets) {
+    const regex = new RegExp(
+      `(?:\\b\\s|^)(${preset.command})(?:\\b\\s|$)`,
+      "g"
+    );
+    updatedMessage = updatedMessage.replace(regex, preset.prompt);
+  }
+
+  return updatedMessage;
+}
+
 async function recentChatHistory({
   user = null,
   workspace,
@@ -80,5 +102,6 @@ module.exports = {
   recentChatHistory,
   chatPrompt,
   grepCommand,
+  grepAllSlashCommands,
   VALID_COMMANDS,
 };
