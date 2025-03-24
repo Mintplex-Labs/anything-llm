@@ -20,7 +20,7 @@ const WORKSPACE_AGENT = {
     const defaultFunctions = [
       AgentPlugins.memory.name, // RAG
       AgentPlugins.docSummarizer.name, // Doc Summary
-      AgentPlugins.webScraping.name, // Collector web-scraping
+      // AgentPlugins.webScraping.name, // Collector web-scraping
     ];
 
     return {

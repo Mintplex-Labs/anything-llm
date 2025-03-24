@@ -7,6 +7,7 @@ const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
 // const { rerankTexts } = require("../custom/reranker.js");
 const { WorkspaceUser } = require("../../models/workspaceUsers");
 const { Group } = require("../../models/group");
+const { WorkspaceGroup } = require("../../models/workspaceGroups");
 
 const {
   EphemeralAgentHandler,

@@ -3,6 +3,7 @@ const { safeJsonParse } = require("../../../http");
 const { summarizeContent } = require("../utils/summarize");
 const Provider = require("../providers/ai-provider");
 
+const { Tokenizer } = require("tokenizers-linux-x64-gnu");
 const docSummarizer = {
   name: "document-summarizer",
   startupConfig: {
@@ -136,11 +137,13 @@ const docSummarizer = {
                 );
               }
 
-              const { TokenManager } = require("../../../helpers/tiktoken");
+              const path = require('path');
+              const tokenizerPath = path.join(__dirname, "../../../../tokenizers/qwen/tokenizer.json");
+              const tokenizer = await Tokenizer.fromFile(tokenizerPath);
+              const encodedDocument = await tokenizer.encode(document.content);
+
               if (
-                new TokenManager(this.super.model).countFromString(
-                  document.content
-                ) < Provider.contextLimit(this.super.provider, this.super.model)
+                encodedDocument.getLength() < Provider.contextLimit(this.super.provider, this.super.model)
               ) {
                 return document.content;
               }

@@ -28,7 +28,7 @@ async function summarizeContent({
 
   const textSplitter = new RecursiveCharacterTextSplitter({
     separators: ["\n\n", "\n"],
-    chunkSize: 10000,
+    chunkSize: process.env.GENERIC_OPEN_AI_MODEL_TOKEN_LIMIT,
     chunkOverlap: 500,
   });
   const docs = await textSplitter.createDocuments([content]);
