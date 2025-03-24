@@ -68,9 +68,9 @@ export default {
       groups: (slug) => {
         return `/workspace/${slug}/settings/groups`;
       },
-      agentConfig: (slug) => {
-        return `/workspace/${slug}/settings/agent-config`;
-      },
+      // agentConfig: (slug) => {
+      //   return `/workspace/${slug}/settings/agent-config`;
+      // },
     },
     thread: (wsSlug, threadSlug) => {
       return `/workspace/${wsSlug}/t/${threadSlug}`;

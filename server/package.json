@@ -77,6 +77,7 @@
     "swagger-autogen": "^2.23.5",
     "swagger-ui-express": "^5.0.0",
     "truncate": "^3.0.0",
+    "tokenizers-linux-x64-gnu": "^0.13.4-rc1",
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
