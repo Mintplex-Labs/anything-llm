@@ -638,7 +638,13 @@ const System = {
       body: JSON.stringify(presetData),
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Could not create slash command preset.");
+        if (!res.ok) {
+          return res.json().then((err) => {
+            throw new Error(
+              err.message || "Could not create slash command preset."
+            );
+          });
+        }
         return res.json();
       })
       .then((res) => {
@@ -657,14 +663,21 @@ const System = {
       body: JSON.stringify(presetData),
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Could not update slash command preset.");
+        if (!res.ok) {
+          return res.json().then((err) => {
+            throw new Error(
+              err.message || "Could not update slash command preset."
+            );
+          });
+        }
         return res.json();
       })
       .then((res) => {
         return { preset: res.preset, error: null };
       })
       .catch((e) => {
-        return { preset: null, error: "Failed to update this command." };
+        console.error(e);
+        return { preset: null, error: e.message };
       });
   },
 

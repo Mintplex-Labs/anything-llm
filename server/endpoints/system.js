@@ -56,6 +56,7 @@ const {
 } = require("../utils/middleware/chatHistoryViewable");
 const { simpleSSOEnabled } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
+const { VALID_COMMANDS } = require("../utils/chats");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -1140,8 +1141,19 @@ function systemEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const { command, prompt, description } = reqBody(request);
+        const formattedCommand = SlashCommandPresets.formatCommand(
+          String(command)
+        );
+
+        if (Object.keys(VALID_COMMANDS).includes(formattedCommand)) {
+          return response.status(400).json({
+            message:
+              "Cannot create a preset with a command that matches a system command",
+          });
+        }
+
         const presetData = {
-          command: SlashCommandPresets.formatCommand(String(command)),
+          command: formattedCommand,
           prompt: String(prompt),
           description: String(description),
         };
@@ -1168,6 +1180,16 @@ function systemEndpoints(app) {
         const user = await userFromSession(request, response);
         const { slashCommandId } = request.params;
         const { command, prompt, description } = reqBody(request);
+        const formattedCommand = SlashCommandPresets.formatCommand(
+          String(command)
+        );
+
+        if (Object.keys(VALID_COMMANDS).includes(formattedCommand)) {
+          return response.status(400).json({
+            message:
+              "Cannot update a preset to use a command that matches a system command",
+          });
+        }
 
         // Valid user running owns the preset if user session is valid.
         const ownsPreset = await SlashCommandPresets.get({
@@ -1178,7 +1200,7 @@ function systemEndpoints(app) {
           return response.status(404).json({ message: "Preset not found" });
 
         const updates = {
-          command: SlashCommandPresets.formatCommand(String(command)),
+          command: formattedCommand,
           prompt: String(prompt),
           description: String(description),
         };
