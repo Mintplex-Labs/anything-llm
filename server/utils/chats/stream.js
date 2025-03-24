@@ -42,7 +42,7 @@ async function streamChatWithWorkspace(
   const isAgentChat = await grepAgents({
     uuid,
     response,
-    message,
+    message: updatedMessage,
     user,
     workspace,
     thread,
@@ -134,7 +134,7 @@ async function streamChatWithWorkspace(
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: message,
+          input: updatedMessage,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
