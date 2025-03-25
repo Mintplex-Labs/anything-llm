@@ -141,7 +141,7 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 
 Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以使用它们在本地运行AnythingLLM。请参阅下面的表格，了解如何在您喜欢的环境上部署，或自动部署。
 | Docker | AWS | GCP | Digital Ocean | Render.com |
-|----------------------------------------|----:|-----|---------------|------------|
+|----------------------------------------|----|-----|---------------|------------|
 | [![在 Docker 上部署][docker-btn]][docker-deploy] | [![在 AWS 上部署][aws-btn]][aws-deploy] | [![在 GCP 上部署][gcp-btn]][gcp-deploy] | [![在DigitalOcean上部署][do-btn]][do-deploy] | [![在 Render.com 上部署][render-btn]][render-deploy] |
 
 | Railway                                             |
