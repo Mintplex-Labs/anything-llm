@@ -89,6 +89,17 @@ const TRANSLATIONS = {
     "experimental-features": "Tính năng thử nghiệm",
     contact: "Liên hệ hỗ trợ",
     "browser-extension": "Tiện ích trình duyệt",
+    CommunityHub: null,
+    "Explore-Trending": null,
+    "Your-Account": null,
+    "Import-Item": null,
+    OpenSettings: null,
+    ToWorkspaces: null,
+    JoinDiscord: null,
+    helpDocs: null,
+    GitHubCode: null,
+    HideSidebar: null,
+    ShowSidebar: null,
   },
   login: {
     "multi-user": {
@@ -136,6 +147,12 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "Không gian làm việc mới",
     placeholder: "Không gian làm việc của tôi",
+    create: null,
+    loadingThreads: null,
+    default: null,
+    StartThread: null,
+    NewThread: null,
+    DeleteSelected: null,
   },
   "workspaces—settings": {
     general: "Cài đặt chung",
@@ -336,6 +353,24 @@ const TRANSLATIONS = {
   appearance: {
     title: "Giao diện",
     description: "Customize the appearance settings of your platform.",
+    themePreference: {
+      theme: null,
+      description: null,
+      default: null,
+      light: null,
+    },
+    languages: {
+      title: null,
+      description: null,
+    },
+    Chat: {
+      title: null,
+      description: null,
+      "scrollbar-Title": null,
+      "scrollbar-description": null,
+      "ItemDirection-left": null,
+      "ItemDirection-left_right": null,
+    },
     logo: {
       title: "Tùy chỉnh logo",
       description: "Upload your custom logo to make your chatbot yours.",
@@ -361,6 +396,16 @@ const TRANSLATIONS = {
         "Customize the footer icons displayed on the bottom of the sidebar.",
       icon: "Icon",
       link: "Link",
+    },
+    Custom: {
+      title: null,
+      description: null,
+      "tab-title": null,
+      "tab-description": null,
+      tabTitle: null,
+      "tab-favicon-title": null,
+      "tab-favicon-description": null,
+      tabFavicon: null,
     },
   },
   api: {

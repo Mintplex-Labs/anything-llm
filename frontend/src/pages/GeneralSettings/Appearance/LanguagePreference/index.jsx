@@ -1,4 +1,5 @@
 import { useLanguageOptions } from "@/hooks/useLanguageOptions";
+import { useTranslation } from "react-i18next";
 
 export default function LanguagePreference() {
   const {
@@ -7,16 +8,16 @@ export default function LanguagePreference() {
     getLanguageName,
     changeLanguage,
   } = useLanguageOptions();
+  const { t } = useTranslation();
 
   return (
     <>
       <div className="flex flex-col gap-y-1 mt-6">
         <h2 className="text-base leading-6 font-bold text-white">
-          Display Language
+          {t("appearance.languages.title")}
         </h2>
         <p className="text-xs leading-[18px] font-base text-white/60">
-          Select the preferred language to render AnythingLLM's UI in, when
-          applicable.
+          {t("appearance.languages.title")}
         </p>
       </div>
       <div className="flex items-center gap-x-4">

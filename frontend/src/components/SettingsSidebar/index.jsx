@@ -293,23 +293,23 @@ const SidebarOptions = ({ user = null, t }) => (
           roles={["admin"]}
         />
         <Option
-          btnText="Community Hub"
+          btnText={t("settings.CommunityHub")}
           icon={<Globe className="h-5 w-5 flex-shrink-0" />}
           childOptions={[
             {
-              btnText: "Explore Trending",
+              btnText: t("settings.Explore-Trending"),
               href: paths.communityHub.trending(),
               flex: true,
               roles: ["admin"],
             },
             {
-              btnText: "Your Account",
+              btnText: t("settings.Your-Account"),
               href: paths.communityHub.authentication(),
               flex: true,
               roles: ["admin"],
             },
             {
-              btnText: "Import Item",
+              btnText: t("settings.Import-Item"),
               href: paths.communityHub.importItem(),
               flex: true,
               roles: ["admin"],

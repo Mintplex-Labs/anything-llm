@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function CustomSiteSettings() {
   const [hasChanges, setHasChanges] = useState(false);
@@ -8,6 +9,7 @@ export default function CustomSiteSettings() {
     title: null,
     faviconUrl: null,
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     Admin.systemPreferences().then(({ settings }) => {
@@ -42,19 +44,20 @@ export default function CustomSiteSettings() {
       <div className="flex flex-col border-t border-white/30 pt-4 gap-y-2">
         <div className="flex flex-col gap-y-1">
           <h2 className="text-base leading-6 font-bold text-white">
-            Custom Site Settings
+            {t("appearance.Custom.title")}
           </h2>
           <p className="text-xs leading-[18px] font-base text-white/60">
-            Change the content of the browser tab for customization and
-            branding.
+            {t("appearance.Custom.description")}
           </p>
         </div>
 
         <div className="w-fit">
           <div className="flex flex-col gap-y-1">
-            <h2 className="text-sm leading-6 text-white">Tab Title</h2>
+            <h2 className="text-sm leading-6 text-white">
+              {t("appearance.Custom.tab-title")}
+            </h2>
             <p className="text-xs leading-[18px] font-base text-white/60">
-              Set a custom tab title when the app is open in a browser.
+              {t("appearance.Custom.tab-description")}
             </p>
           </div>
           <div className="flex items-center gap-x-4">
@@ -62,26 +65,25 @@ export default function CustomSiteSettings() {
               name="meta_page_title"
               type="text"
               className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[400px] placeholder:text-theme-settings-input-placeholder"
-              placeholder="AnythingLLM | Your personal LLM trained on anything"
+              placeholder={t("appearance.Custom.tabTitle")}
               autoComplete="off"
               onChange={(e) => {
                 setSettings((prev) => {
                   return { ...prev, title: e.target.value };
                 });
               }}
-              value={
-                settings.title ??
-                "AnythingLLM | Your personal LLM trained on anything"
-              }
+              value={settings.title ?? t("appearance.Custom.tabTitle")}
             />
           </div>
         </div>
 
         <div className="w-fit">
           <div className="flex flex-col gap-y-1">
-            <h2 className="text-sm leading-6 text-white">Tab Favicon</h2>
+            <h2 className="text-sm leading-6 text-white">
+              {t("appearance.Custom.tab-favicon-title")}
+            </h2>
             <p className="text-xs leading-[18px] font-base text-white/60">
-              Define a url to an image to use for your favicon
+              {t("appearance.Custom.tab-favicon-description")}
             </p>
           </div>
           <div className="flex items-center gap-x-2">
@@ -94,7 +96,7 @@ export default function CustomSiteSettings() {
               name="meta_page_favicon"
               type="url"
               className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[400px] placeholder:text-theme-settings-input-placeholder"
-              placeholder="url to your image"
+              placeholder={t("appearance.Custom.tabFavicon")}
               onChange={(e) => {
                 setSettings((prev) => {
                   return { ...prev, faviconUrl: e.target.value };

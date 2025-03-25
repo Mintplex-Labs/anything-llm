@@ -100,6 +100,17 @@ const TRANSLATIONS = {
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
+    CommunityHub: "Community Hub",
+    "Explore-Trending": "Explore Trending",
+    "Your-Account": "Your Account",
+    "Import-Item": "Import Item",
+    OpenSettings: "Open settings",
+    ToWorkspaces: "Back to workspaces",
+    JoinDiscord: "Join the AnythingLLM Discord",
+    helpDocs: "Open AnythingLLM help docs",
+    GitHubCode: "View source code on GitHub",
+    HideSidebar: "Hide Sidebar",
+    ShowSidebar: "Show Sidebar",
   },
 
   // Page Definitions
@@ -152,6 +163,12 @@ const TRANSLATIONS = {
   "new-workspace": {
     title: "New Workspace",
     placeholder: "My Workspace",
+    create: "Create",
+    loadingThreads: "loading threads....",
+    default: "default",
+    StartThread: "Starting Thread...",
+    NewThread: "New Thread",
+    DeleteSelected: "Delete Selected",
   },
 
   // Workspace Settings menu items
@@ -367,6 +384,29 @@ const TRANSLATIONS = {
   appearance: {
     title: "Appearance",
     description: "Customize the appearance settings of your platform.",
+    themePreference: {
+      theme: "Theme",
+      description: "Select your preferred theme for the application.",
+      default: "Default",
+      light: "Light",
+    },
+    languages: {
+      title: "Display Language",
+      description:
+        "Select the preferred language to render AnythingLLM's UI in, when applicable.",
+    },
+    Chat: {
+      title: "Message Chat Alignment",
+      description:
+        "Select the message alignment mode when using the chat interface.",
+      "scrollbar-Title": "Show chat window scrollbar",
+      "scrollbar-description":
+        "Enable or disable the scrollbar in the chat window",
+      "ItemDirection-left":
+        "User and AI messages are aligned to the left (default)",
+      "ItemDirection-left_right":
+        "User and AI messages are distributed left and right alternating each message",
+    },
     logo: {
       title: "Customize Logo",
       description: "Upload your custom logo to make your chatbot yours.",
@@ -392,6 +432,19 @@ const TRANSLATIONS = {
         "Customize the footer icons displayed on the bottom of the sidebar.",
       icon: "Icon",
       link: "Link",
+    },
+    Custom: {
+      title: "Custom Site Settings",
+      description:
+        "Change the content of the browser tab for customization and branding.",
+      "tab-title": "Tab Title",
+      "tab-description":
+        "Set a custom tab title when the app is open in a browser.",
+      tabTitle: "AnythingLLM | Your personal LLM trained on anything",
+      "tab-favicon-title": "Tab Favicon",
+      "tab-favicon-description":
+        "Define a url to an image to use for your favicon",
+      tabFavicon: "url to your image",
     },
   },
 
