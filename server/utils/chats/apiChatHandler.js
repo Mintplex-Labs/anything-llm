@@ -291,7 +291,7 @@ async function chatSync({
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: chatPrompt(workspace),
+      systemPrompt: await chatPrompt(workspace, user),
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -626,7 +626,7 @@ async function streamChat({
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: chatPrompt(workspace),
+      systemPrompt: await chatPrompt(workspace, user),
       userPrompt: message,
       contextTexts,
       chatHistory,
