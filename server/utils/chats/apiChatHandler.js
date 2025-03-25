@@ -3,7 +3,12 @@ const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
-const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
+const {
+  chatPrompt,
+  sourceIdentifier,
+  recentChatHistory,
+  grepAllSlashCommands,
+} = require("./index");
 const {
   EphemeralAgentHandler,
   EphemeralEventListener,
@@ -31,6 +36,7 @@ const { Telemetry } = require("../../models/telemetry");
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
  *  attachments: { name: string; mime: string; contentString: string }[],
+ *  reset: boolean,
  * }} parameters
  * @returns {Promise<ResponseObject>}
  */
@@ -42,9 +48,38 @@ async function chatSync({
   thread = null,
   sessionId = null,
   attachments = [],
+  reset = false,
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+
+  // If the user wants to reset the chat history we do so pre-flight
+  // and continue execution. If no message is provided then the user intended
+  // to reset the chat history only and we can exit early with a confirmation.
+  if (reset) {
+    await WorkspaceChats.markThreadHistoryInvalidV2({
+      workspaceId: workspace.id,
+      user_id: user?.id,
+      thread_id: thread?.id,
+      api_session_id: sessionId,
+    });
+    if (!message?.length) {
+      return {
+        id: uuid,
+        type: "textResponse",
+        textResponse: "Chat history was reset!",
+        sources: [],
+        close: true,
+        error: null,
+        metrics: {},
+      };
+    }
+  }
+
+  // Process slash commands
+  // Since preset commands are not supported in API calls, we can just process the message here
+  const processedMessage = await grepAllSlashCommands(message);
+  message = processedMessage;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
@@ -320,6 +355,7 @@ async function chatSync({
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
  *  attachments: { name: string; mime: string; contentString: string }[],
+ *  reset: boolean,
  * }} parameters
  * @returns {Promise<VoidFunction>}
  */
@@ -332,9 +368,40 @@ async function streamChat({
   thread = null,
   sessionId = null,
   attachments = [],
+  reset = false,
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+
+  // If the user wants to reset the chat history we do so pre-flight
+  // and continue execution. If no message is provided then the user intended
+  // to reset the chat history only and we can exit early with a confirmation.
+  if (reset) {
+    await WorkspaceChats.markThreadHistoryInvalidV2({
+      workspaceId: workspace.id,
+      user_id: user?.id,
+      thread_id: thread?.id,
+      api_session_id: sessionId,
+    });
+    if (!message?.length) {
+      writeResponseChunk(response, {
+        id: uuid,
+        type: "textResponse",
+        textResponse: "Chat history was reset!",
+        sources: [],
+        attachments: [],
+        close: true,
+        error: null,
+        metrics: {},
+      });
+      return;
+    }
+  }
+
+  // Check for and process slash commands
+  // Since preset commands are not supported in API calls, we can just process the message here
+  const processedMessage = await grepAllSlashCommands(message);
+  message = processedMessage;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");

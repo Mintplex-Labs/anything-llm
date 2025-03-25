@@ -351,7 +351,8 @@ function apiWorkspaceThreadEndpoints(app) {
                  mime: "image/png",
                  contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
-              ]
+              ],
+              reset: false
             }
           }
         }
@@ -386,6 +387,7 @@ function apiWorkspaceThreadEndpoints(app) {
           mode = "query",
           userId,
           attachments = [],
+          reset = false,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug });
         const thread = await WorkspaceThread.get({
@@ -405,7 +407,7 @@ function apiWorkspaceThreadEndpoints(app) {
           return;
         }
 
-        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -413,7 +415,7 @@ function apiWorkspaceThreadEndpoints(app) {
             sources: [],
             close: true,
             error: !message?.length
-              ? "message parameter cannot be empty."
+              ? "Message is empty"
               : `${mode} is not a valid mode.`,
           });
           return;
@@ -427,6 +429,7 @@ function apiWorkspaceThreadEndpoints(app) {
           user,
           thread,
           attachments,
+          reset,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
@@ -489,7 +492,8 @@ function apiWorkspaceThreadEndpoints(app) {
                  mime: "image/png",
                  contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
-              ]
+              ],
+              reset: false
             }
           }
         }
@@ -545,6 +549,7 @@ function apiWorkspaceThreadEndpoints(app) {
           mode = "query",
           userId,
           attachments = [],
+          reset = false,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug });
         const thread = await WorkspaceThread.get({
@@ -564,7 +569,7 @@ function apiWorkspaceThreadEndpoints(app) {
           return;
         }
 
-        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -594,6 +599,7 @@ function apiWorkspaceThreadEndpoints(app) {
           user,
           thread,
           attachments,
+          reset,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
