@@ -216,7 +216,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 ---
 
 版权所有 © 2025 [Mintplex Labs][profile-link]。<br />
-本项目采用[MIT](./LICENSE)许可证。
+本项目采用[MIT](https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE)许可证。
 
 <!-- LINK GROUP -->
 
