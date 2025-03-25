@@ -191,11 +191,10 @@ class AWSBedrockLLM {
       })),
       {
         role: "user",
-        content: [
-          {
-            text: userPrompt,
-          },
-        ],
+        content: this.#generateContent({
+          userPrompt: userPrompt,
+          attachments: [],
+        }),
       },
     ];
   }
