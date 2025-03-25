@@ -217,6 +217,8 @@ export default function PromptInput({
       setTimeout(() => {
         textarea.selectionStart = textarea.selectionEnd =
           start + pasteText.length;
+        adjustTextArea({ target: textarea });
+        textarea.scrollTop = textarea.scrollHeight;
       }, 0);
     }
     return;
