@@ -1252,9 +1252,7 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const variables = await SystemPromptVariables.getAllWithDynamic(
-          user?.id
-        );
+        const variables = await SystemPromptVariables.getAll(user?.id);
         response.status(200).json({ variables });
       } catch (error) {
         console.error("Error fetching system prompt variables:", error);

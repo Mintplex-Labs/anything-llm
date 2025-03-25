@@ -1,42 +1,44 @@
 const prisma = require("../utils/prisma");
 const moment = require("moment");
 
+/**
+ * @typedef {Object} SystemPromptVariable
+ * @property {number} id
+ * @property {string} key
+ * @property {string|function} value
+ * @property {string} description
+ * @property {'system'|'user'|'static'} type
+ * @property {number} userId
+ * @property {boolean} multiUserRequired
+ */
+
 const SystemPromptVariables = {
   VALID_TYPES: ["user", "system", "static"],
   DEFAULT_VARIABLES: [
     {
       key: "time",
-      value: () => {
-        const currentTime = moment().format("LTS");
-        return `${currentTime}`;
-      },
+      value: () => moment().format("LTS"),
       description: "Current time",
       type: "system",
       multiUserRequired: false,
     },
     {
       key: "date",
-      value: () => {
-        const currentDate = moment().format("LL");
-        return `${currentDate}`;
-      },
+      value: () => moment().format("LL"),
       description: "Current date",
       type: "system",
       multiUserRequired: false,
     },
     {
       key: "datetime",
-      value: () => {
-        const currentDateTime = moment().format("LLLL");
-        return `${currentDateTime}`;
-      },
+      value: () => moment().format("LLLL"),
       description: "Current date and time",
       type: "system",
       multiUserRequired: false,
     },
     {
       key: "user.name",
-      value: async (userId) => {
+      value: async (userId = null) => {
         if (!userId) return "[User name]";
         try {
           const user = await prisma.users.findUnique({
@@ -55,7 +57,7 @@ const SystemPromptVariables = {
     },
     {
       key: "user.bio",
-      value: async (userId) => {
+      value: async (userId = null) => {
         if (!userId) return "[User bio]";
         try {
           const user = await prisma.users.findUnique({
@@ -68,7 +70,7 @@ const SystemPromptVariables = {
           return "[User bio is empty]";
         }
       },
-      description: "Current user's bio information",
+      description: "Current user's bio field from their profile",
       type: "user",
       multiUserRequired: true,
     },
@@ -77,7 +79,7 @@ const SystemPromptVariables = {
   /**
    * Gets a system prompt variable by its key
    * @param {string} key
-   * @returns {Promise<object>}
+   * @returns {Promise<SystemPromptVariable>}
    */
   get: async function (key = null) {
     if (!key) return null;
@@ -88,11 +90,12 @@ const SystemPromptVariables = {
   },
 
   /**
-   * Gets all system prompt variables with dynamic variables
-   * @param {number} userId
-   * @returns {Promise<object[]>}
+   * Retrieves all system prompt variables with dynamic variables as well
+   * as user defined variables
+   * @param {number|null} userId - the user ID to filter variables by
+   * @returns {Promise<SystemPromptVariable[]>}
    */
-  getAllWithDynamic: async function (userId = null) {
+  getAll: async function (userId = null) {
     const dbVariables = await prisma.system_prompt_variables.findMany({
       where: userId ? { userId: Number(userId) } : {},
     });
@@ -117,7 +120,7 @@ const SystemPromptVariables = {
   /**
    * Creates a new system prompt variable
    * @param {{ key: string, value: string, description: string, type: string, userId: number }} data
-   * @returns {Promise<object>}
+   * @returns {Promise<SystemPromptVariable>}
    */
   create: async function ({
     key,
@@ -139,10 +142,10 @@ const SystemPromptVariables = {
   },
 
   /**
-   * Updates a system prompt variable by its DB ID
+   * Updates a system prompt variable by its unique database ID
    * @param {number} id
    * @param {{ key: string, value: string, description: string }} data
-   * @returns {Promise<object>}
+   * @returns {Promise<SystemPromptVariable>}
    */
   update: async function (id, { key, value, description = null }) {
     if (!id || !key || !value) return null;
@@ -163,7 +166,7 @@ const SystemPromptVariables = {
   },
 
   /**
-   * Deletes a system prompt variable by its DB ID
+   * Deletes a system prompt variable by its unique database ID
    * @param {number} id
    * @returns {Promise<boolean>}
    */
@@ -180,16 +183,16 @@ const SystemPromptVariables = {
   },
 
   /**
-   * Injects variables into a string based on the user ID and the variables available
-   * @param {string} str
-   * @param {number} userId
+   * Injects variables into a string based on the user ID (if provided) and the variables available
+   * @param {string} str - the input string to expand variables into
+   * @param {number|null} userId - the user ID to use for dynamic variables
    * @returns {Promise<string>}
    */
   expandSystemPromptVariables: async function (str, userId = null) {
     if (!str) return str;
 
     try {
-      const allVariables = await this.getAllWithDynamic(userId);
+      const allVariables = await this.getAll(userId);
       let result = str;
 
       // Find all variable patterns in the string
@@ -199,7 +202,7 @@ const SystemPromptVariables = {
       for (const match of matches) {
         const key = match.substring(1, match.length - 1); // Remove { and }
 
-        // Handle user.X variables specially
+        // Handle `user.X` variables with current user's data
         if (key.startsWith("user.")) {
           const userProp = key.split(".")[1];
           const variable = allVariables.find((v) => v.key === key);
@@ -229,7 +232,7 @@ const SystemPromptVariables = {
 
         // For dynamic and system variables, call the function to get the current value
         if (
-          ["dynamic", "system"].includes(variable.type) &&
+          ["system"].includes(variable.type) &&
           typeof variable.value === "function"
         ) {
           try {
@@ -255,6 +258,12 @@ const SystemPromptVariables = {
     }
   },
 
+  /**
+   * Internal function to check if a variable key is valid
+   * @param {string} key
+   * @param {boolean} checkExisting
+   * @returns {Promise<boolean>}
+   */
   _checkVariableKey: async function (key = null, checkExisting = true) {
     if (!key) throw new Error("Key is required");
     if (typeof key !== "string") throw new Error("Key must be a string");
