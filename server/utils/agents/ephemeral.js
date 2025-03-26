@@ -220,6 +220,24 @@ class EphemeralAgentHandler extends AgentHandler {
         continue;
       }
 
+      // Load flow plugin. This is marked by `@@flow_` in the array of functions to load.
+      if (name.startsWith("@@flow_")) {
+        const uuid = name.replace("@@flow_", "");
+        const plugin = AgentFlows.loadFlowPlugin(uuid, this.aibitat);
+        if (!plugin) {
+          this.log(
+            `Flow ${uuid} not found in flows directory. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        this.aibitat.use(plugin.plugin());
+        this.log(
+          `Attached flow ${plugin.name} (${plugin.flowName}) plugin to Agent cluster`
+        );
+        continue;
+      }
+
       // Load imported plugin. This is marked by `@@` in the array of functions to load.
       // and is the @@hubID of the plugin.
       if (name.startsWith("@@")) {
@@ -269,11 +287,9 @@ class EphemeralAgentHandler extends AgentHandler {
     );
 
     this.#funcsToLoad = [
-      AgentPlugins.memory.name,
-      AgentPlugins.docSummarizer.name,
-      AgentPlugins.webScraping.name,
       ...(await agentSkillsFromSystemSettings()),
-      ...(await ImportedPlugin.activeImportedPlugins()),
+      ...ImportedPlugin.activeImportedPlugins(),
+      ...AgentFlows.activeFlowPlugins(),
     ];
   }
 
@@ -339,6 +355,7 @@ class EphemeralAgentHandler extends AgentHandler {
 
 const EventEmitter = require("node:events");
 const { writeResponseChunk } = require("../helpers/chat/responses");
+const { AgentFlows } = require("../agentFlows");
 
 /**
  * This is a special EventEmitter specifically used in the Aibitat agent handler
