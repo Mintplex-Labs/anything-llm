@@ -195,13 +195,22 @@ export default function SettingsSidebar() {
           ref={sidebarRef}
           className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)] custom-theme-bg-sidebar-background custom-theme-bg-sidebar-border"
         >
-          <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
+          <div
+            className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]"
+            style={{ height: "calc(100% - 70px)", overflow: 'unset' }}
+          >
             <div className="text-theme-text-secondary text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
               {t("settings.title")}
             </div>
-            <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
-              <div className="h-auto sidebar-items">
-                <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
+            <div
+              className="relative flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll"
+              style={{
+                overflow: "unset",
+                height: "100%",
+              }}
+            >
+              <div className="h-auto sidebar-items overflow-y-scroll" style={{ height: 'calc(100% - 25px)' }}>
+                <div className="flex flex-col gap-y-2 no-scroll">
                   <SidebarOptions user={user} t={t} />
                   {/* <div className="h-[1.5px] mx-3 mt-[14px] custom-theme-bg-sidebar-border" /> */}
                   {/* <SupportEmail /> */}
