@@ -643,7 +643,7 @@ dialog::backdrop {
 .markdown table {
   width: 100%;
   border-collapse: collapse;
-  color: #bdbdbe;
+  color: #000;
   font-size: 13px;
   margin: 30px 0px;
   border-radius: 10px;
@@ -652,21 +652,21 @@ dialog::backdrop {
 }
 
 .markdown table thead {
-  color: #fff;
+  color: #000;
   text-transform: uppercase;
   font-weight: bolder;
 }
 
 .markdown hr {
   border: 0;
-  border-top: 1px solid #cdcdcd40;
+  border-top: 1px solid #ccc;
   margin: 1rem 0;
 }
 
 .markdown table th,
 .markdown table td {
   padding: 8px 15px;
-  border-bottom: 1px solid #cdcdcd2e;
+  border-bottom: 1px solid #ccc;
   text-align: left;
 }
 

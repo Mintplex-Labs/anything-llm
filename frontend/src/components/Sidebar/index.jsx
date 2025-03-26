@@ -78,10 +78,13 @@ export default function Sidebar() {
           ref={sidebarRef}
           className="relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)] custom-theme-bg-sidebar-background custom-theme-bg-sidebar-border"
         >
-          <div className="flex flex-col h-full overflow-x-hidden">
+          <div
+            className="flex flex-col h-full overflow-x-hidden"
+            style={{ height: "calc(100% - 70px)" }}
+          >
             <div className="flex-grow flex flex-col min-w-[235px]">
-              <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
-                <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
+              <div className="relative flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
+                <div className="flex flex-col gap-y-2 overflow-y-scroll no-scroll">
                   <div className="flex gap-x-2 items-center justify-between">
                     {(!user || user?.role !== "default") && (
                       <button
