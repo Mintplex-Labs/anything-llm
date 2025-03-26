@@ -43,7 +43,7 @@ export default function ThreadItem({
           isActive
             ? "border-l-2 border-b-2 border-white light:border-theme-sidebar-border z-[2]"
             : "border-l border-b border-[#6F6F71] light:border-theme-sidebar-border z-[1]"
-        } h-[50%] absolute top-0 left-2 rounded-bl-lg`}
+        } h-[50%] absolute top-0 left-3 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
       {hasNext && (
@@ -53,7 +53,7 @@ export default function ThreadItem({
             idx <= activeIdx && !isActive
               ? "border-l-2 border-white light:border-theme-sidebar-border z-[2]"
               : "border-l border-[#6F6F71] light:border-theme-sidebar-border z-[1]"
-          } h-[100%] absolute top-0 left-2`}
+          } h-[100%] absolute top-0 left-3`}
         ></div>
       )}
 

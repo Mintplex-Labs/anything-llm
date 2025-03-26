@@ -1,11 +1,13 @@
 import { API_BASE } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
+import { baseHeaders, safeJsonParse } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import WorkspaceThread from "@/models/workspaceThread";
 import { v4 } from "uuid";
 import { ABORT_STREAM_EVENT } from "@/utils/chat";
 
 const Workspace = {
+  workspaceOrderStorageKey: "anythingllm-workspace-order",
+
   new: async function (data = {}) {
     const { workspace, message } = await fetch(`${API_BASE}/workspace/new`, {
       method: "POST",
@@ -469,6 +471,43 @@ const Workspace = {
     );
     return response.ok;
   },
+
+  /**
+   * Reorders workspaces in the UI via localstorage on client side.
+   * @param {string[]} workspaceIds - array of workspace ids to reorder
+   * @returns {boolean}
+   */
+  storeWorkspaceOrder: function (workspaceIds = []) {
+    try {
+      localStorage.setItem(
+        this.workspaceOrderStorageKey,
+        JSON.stringify(workspaceIds)
+      );
+      return true;
+    } catch (error) {
+      console.error("Error reordering workspaces:", error);
+      return false;
+    }
+  },
+
+  /**
+   * Orders workspaces based on the order preference stored in localstorage
+   * @param {Array} workspaces - array of workspace JSON objects
+   * @returns {Array} - ordered workspaces
+   */
+  orderWorkspaces: function (workspaces = []) {
+    const workspaceOrderPreference =
+      safeJsonParse(localStorage.getItem(this.workspaceOrderStorageKey)) || [];
+    if (workspaceOrderPreference.length === 0) return workspaces;
+    const orderedWorkspaces = Array.from(workspaces);
+    orderedWorkspaces.sort(
+      (a, b) =>
+        workspaceOrderPreference.indexOf(a.id) -
+        workspaceOrderPreference.indexOf(b.id)
+    );
+    return orderedWorkspaces;
+  },
+
   threads: WorkspaceThread,
 };
 

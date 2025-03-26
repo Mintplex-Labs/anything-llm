@@ -16,6 +16,7 @@
     "dev:server": "cd server && yarn dev",
     "dev:collector": "cd collector && yarn dev",
     "dev:frontend": "cd frontend && yarn dev",
+    "dev:all": "npx concurrently \"yarn dev:server\" \"yarn dev:frontend\" \"yarn dev:collector\"",
     "prisma:generate": "cd server && npx prisma generate",
     "prisma:migrate": "cd server && npx prisma migrate dev --name init",
     "prisma:seed": "cd server && npx prisma db seed",
@@ -27,5 +28,8 @@
     "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
     "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs"
   },
-  "private": false
+  "private": false,
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
 }

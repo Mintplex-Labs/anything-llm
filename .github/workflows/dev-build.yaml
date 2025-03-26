@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['chore/anthropic-model-endpoint'] # put your current branch to create a build. Core team only.
+    branches: ['3157-feat-prompt-variables'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
@@ -14,7 +14,9 @@ on:
       - '.vscode/**/*'
       - '**/.env.example'
       - '.github/ISSUE_TEMPLATE/**/*'
+      - '.devcontainer/**/*'
       - 'embed/**/*' # Embed should be published to frontend (yarn build:publish) if any changes are introduced
+      - 'browser-extension/**/*' # Chrome extension is submodule
       - 'server/utils/agents/aibitat/example/**/*' # Do not push new image for local dev testing of new aibitat images.
 
 jobs:
@@ -43,6 +45,8 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          version: v0.19.0
       
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
