@@ -7,10 +7,12 @@ const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const { fetchNovitaModels } = require("../AiProviders/novita");
 const { parseLMStudioBasePath } = require("../AiProviders/lmStudio");
 const { parseNvidiaNimBasePath } = require("../AiProviders/nvidiaNim");
+const { fetchPPIOModels } = require("../AiProviders/ppio");
 const { GeminiLLM } = require("../AiProviders/gemini");
 
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
+  "anthropic",
   "localai",
   "ollama",
   "togetherai",
@@ -29,6 +31,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "novita",
   "xai",
   "gemini",
+  "ppio",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -38,10 +41,12 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
   switch (provider) {
     case "openai":
       return await openAiModels(apiKey);
+    case "anthropic":
+      return await anthropicModels(apiKey);
     case "localai":
       return await localAIModels(basePath, apiKey);
     case "ollama":
-      return await ollamaAIModels(basePath);
+      return await ollamaAIModels(basePath, apiKey);
     case "togetherai":
       return await getTogetherAiModels(apiKey);
     case "fireworksai":
@@ -74,6 +79,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getNvidiaNimModels(basePath);
     case "gemini":
       return await getGeminiModels(apiKey);
+    case "ppio":
+      return await getPPIOModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -179,6 +186,36 @@ async function openAiModels(apiKey = null) {
   if ((gpts.length > 0 || customModels.length > 0) && !!apiKey)
     process.env.OPEN_AI_KEY = apiKey;
   return { models: [...gpts, ...customModels], error: null };
+}
+
+async function anthropicModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.ANTHROPIC_API_KEY
+      : _apiKey || process.env.ANTHROPIC_API_KEY || null;
+  const AnthropicAI = require("@anthropic-ai/sdk");
+  const anthropic = new AnthropicAI({ apiKey });
+  const models = await anthropic.models
+    .list()
+    .then((results) => results.data)
+    .then((models) => {
+      return models
+        .filter((model) => model.type === "model")
+        .map((model) => {
+          return {
+            id: model.id,
+            name: model.display_name,
+          };
+        });
+    })
+    .catch((e) => {
+      console.error(`Anthropic:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.ANTHROPIC_API_KEY = apiKey;
+  return { models, error: null };
 }
 
 async function localAIModels(basePath = null, apiKey = null) {
@@ -292,7 +329,7 @@ async function getKoboldCPPModels(basePath = null) {
   }
 }
 
-async function ollamaAIModels(basePath = null) {
+async function ollamaAIModels(basePath = null, _authToken = null) {
   let url;
   try {
     let urlPath = basePath ?? process.env.OLLAMA_BASE_PATH;
@@ -304,7 +341,9 @@ async function ollamaAIModels(basePath = null) {
     return { models: [], error: "Not a valid URL." };
   }
 
-  const models = await fetch(`${url}/api/tags`)
+  const authToken = _authToken || process.env.OLLAMA_AUTH_TOKEN || null;
+  const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+  const models = await fetch(`${url}/api/tags`, { headers: headers })
     .then((res) => {
       if (!res.ok)
         throw new Error(`Could not reach Ollama server! ${res.status}`);
@@ -321,6 +360,9 @@ async function ollamaAIModels(basePath = null) {
       return [];
     });
 
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!authToken)
+    process.env.OLLAMA_AUTH_TOKEN = authToken;
   return { models, error: null };
 }
 
@@ -487,7 +529,18 @@ async function getDeepSeekModels(apiKey = null) {
     )
     .catch((e) => {
       console.error(`DeepSeek:listModels`, e.message);
-      return [];
+      return [
+        {
+          id: "deepseek-chat",
+          name: "deepseek-chat",
+          organization: "deepseek",
+        },
+        {
+          id: "deepseek-reasoner",
+          name: "deepseek-reasoner",
+          organization: "deepseek",
+        },
+      ];
     });
 
   if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
@@ -563,6 +616,19 @@ async function getGeminiModels(_apiKey = null) {
   const models = await GeminiLLM.fetchModels(apiKey);
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.GEMINI_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getPPIOModels() {
+  const ppioModels = await fetchPPIOModels();
+  if (!Object.keys(ppioModels).length === 0) return { models: [], error: null };
+  const models = Object.values(ppioModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
   return { models, error: null };
 }
 

@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { TextT } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
 
 export default function TextSizeButton() {
   const [showTextSizeMenu, setShowTextSizeMenu] = useState(false);
   const buttonRef = useRef(null);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -12,8 +14,8 @@ export default function TextSizeButton() {
         ref={buttonRef}
         id="text-size-btn"
         data-tooltip-id="tooltip-text-size-btn"
-        data-tooltip-content="Change text size"
-        aria-label="Change text size"
+        data-tooltip-content={t("chat_window.text_size")}
+        aria-label={t("chat_window.text_size")}
         onClick={() => setShowTextSizeMenu(!showTextSizeMenu)}
         className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${
           showTextSizeMenu ? "!opacity-100" : ""
