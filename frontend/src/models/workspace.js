@@ -7,6 +7,7 @@ import { ABORT_STREAM_EVENT } from "@/utils/chat";
 
 const Workspace = {
   workspaceOrderStorageKey: "anythingllm-workspace-order",
+  workspaceSearchFilterKey: "anythingllm-workspace-search-filter",
 
   new: async function (data = {}) {
     const { workspace, message } = await fetch(`${API_BASE}/workspace/new`, {
@@ -506,6 +507,34 @@ const Workspace = {
         workspaceOrderPreference.indexOf(b.id)
     );
     return orderedWorkspaces;
+  },
+
+  /**
+   * Stores the search filter term in localStorage
+   * @param {string} searchTerm - search filter term
+   * @returns {boolean} - success status
+   */
+  storeSearchFilter: function (searchTerm = "") {
+    try {
+      localStorage.setItem(this.workspaceSearchFilterKey, searchTerm);
+      return true;
+    } catch (error) {
+      console.error("Error storing workspace search filter:", error);
+      return false;
+    }
+  },
+
+  /**
+   * Retrieves the saved search filter from localStorage
+   * @returns {string} - saved search filter term or empty string
+   */
+  getSavedSearchFilter: function () {
+    try {
+      return localStorage.getItem(this.workspaceSearchFilterKey) || "";
+    } catch (error) {
+      console.error("Error retrieving workspace search filter:", error);
+      return "";
+    }
   },
 
   threads: WorkspaceThread,
