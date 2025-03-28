@@ -8,6 +8,7 @@ const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
+const MCPCompatibilityLayer = require("../MCP");
 
 class AgentHandler {
   #invocationUUID;
@@ -408,6 +409,43 @@ class AgentHandler {
         this.log(
           `Attached flow ${plugin.name} (${plugin.flowName}) plugin to Agent cluster`
         );
+        continue;
+      }
+
+      // Load MCP plugin. This is marked by `@@mcp_` in the array of functions to load.
+      // All sub-tools are loaded here and are denoted by `pluginName:toolName` as their identifier.
+      // This will replace the parent MCP server plugin with the sub-tools as child plugins so they
+      // can be called directly by the agent when invoked.
+      // Since to get to this point, the `activeMCPServers` method has already been called, we can
+      // safely assume that the MCP server is running and the tools are available/loaded.
+      if (name.startsWith("@@mcp_")) {
+        const mcpPluginName = name.replace("@@mcp_", "");
+        const plugins =
+          await new MCPCompatibilityLayer().convertServerToolsToPlugins(
+            mcpPluginName,
+            this.aibitat
+          );
+        if (!plugins) {
+          this.log(
+            `MCP ${mcpPluginName} not found in MCP server config. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        // Remove the old function from the agent functions directly
+        // and push the new ones onto the end of the array so that they are loaded properly.
+        this.aibitat.agents.get("@agent").functions = this.aibitat.agents
+          .get("@agent")
+          .functions.filter((f) => f.name !== name);
+        for (const plugin of plugins)
+          this.aibitat.agents.get("@agent").functions.push(plugin.name);
+
+        plugins.forEach((plugin) => {
+          this.aibitat.use(plugin.plugin());
+          this.log(
+            `Attached MCP::${plugin.toolName} MCP tool to Agent cluster`
+          );
+        });
         continue;
       }
 
