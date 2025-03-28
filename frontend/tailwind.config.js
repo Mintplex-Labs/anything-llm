@@ -45,6 +45,7 @@ export default {
         warn: "#854708",
         success: "#05603A",
         darker: "#F4F4F4",
+        teal: "#0BA5EC",
 
         // Generic theme colors
         theme: {

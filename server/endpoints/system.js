@@ -56,6 +56,7 @@ const {
 } = require("../utils/middleware/chatHistoryViewable");
 const { simpleSSOEnabled } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
+const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
 
 function systemEndpoints(app) {
@@ -1241,6 +1242,130 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error("Error deleting slash command preset:", error);
         response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.get(
+    "/system/prompt-variables",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const variables = await SystemPromptVariables.getAll(user?.id);
+        response.status(200).json({ variables });
+      } catch (error) {
+        console.error("Error fetching system prompt variables:", error);
+        response.status(500).json({
+          success: false,
+          error: `Failed to fetch system prompt variables: ${error.message}`,
+        });
+      }
+    }
+  );
+
+  app.post(
+    "/system/prompt-variables",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { key, value, description = null } = reqBody(request);
+
+        if (!key || !value) {
+          return response.status(400).json({
+            success: false,
+            error: "Key and value are required",
+          });
+        }
+
+        const variable = await SystemPromptVariables.create({
+          key,
+          value,
+          description,
+          userId: user?.id || null,
+        });
+
+        response.status(200).json({
+          success: true,
+          variable,
+        });
+      } catch (error) {
+        console.error("Error creating system prompt variable:", error);
+        response.status(500).json({
+          success: false,
+          error: `Failed to create system prompt variable: ${error.message}`,
+        });
+      }
+    }
+  );
+
+  app.put(
+    "/system/prompt-variables/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const { key, value, description = null } = reqBody(request);
+
+        if (!key || !value) {
+          return response.status(400).json({
+            success: false,
+            error: "Key and value are required",
+          });
+        }
+
+        const variable = await SystemPromptVariables.update(Number(id), {
+          key,
+          value,
+          description,
+        });
+
+        if (!variable) {
+          return response.status(404).json({
+            success: false,
+            error: "Variable not found",
+          });
+        }
+
+        response.status(200).json({
+          success: true,
+          variable,
+        });
+      } catch (error) {
+        console.error("Error updating system prompt variable:", error);
+        response.status(500).json({
+          success: false,
+          error: `Failed to update system prompt variable: ${error.message}`,
+        });
+      }
+    }
+  );
+
+  app.delete(
+    "/system/prompt-variables/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const success = await SystemPromptVariables.delete(Number(id));
+
+        if (!success) {
+          return response.status(404).json({
+            success: false,
+            error: "System prompt variable not found or could not be deleted",
+          });
+        }
+
+        response.status(200).json({
+          success: true,
+        });
+      } catch (error) {
+        console.error("Error deleting system prompt variable:", error);
+        response.status(500).json({
+          success: false,
+          error: `Failed to delete system prompt variable: ${error.message}`,
+        });
       }
     }
   );

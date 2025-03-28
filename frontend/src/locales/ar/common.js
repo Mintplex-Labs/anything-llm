@@ -96,6 +96,7 @@ const TRANSLATIONS = {
     "experimental-features": "الميزات التجريبية",
     contact: "اتصل بالدعم",
     "browser-extension": "ملحق المتصفح",
+    "system-prompt-variables": null,
   },
   login: {
     "multi-user": {

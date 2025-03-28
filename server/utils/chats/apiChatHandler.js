@@ -115,6 +115,7 @@ async function chatSync({
           response: {
             text: textResponse,
             sources: [],
+            attachments,
             type: chatMode,
             thoughts,
           },
@@ -155,6 +156,7 @@ async function chatSync({
       response: {
         text: textResponse,
         sources: [],
+        attachments: attachments,
         type: chatMode,
         metrics: {},
       },
@@ -267,6 +269,7 @@ async function chatSync({
       response: {
         text: textResponse,
         sources: [],
+        attachments: attachments,
         type: chatMode,
         metrics: {},
       },
@@ -291,7 +294,7 @@ async function chatSync({
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: chatPrompt(workspace),
+      systemPrompt: await chatPrompt(workspace, user),
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -324,6 +327,7 @@ async function chatSync({
     response: {
       text: textResponse,
       sources,
+      attachments,
       type: chatMode,
       metrics: performanceMetrics,
     },
@@ -437,6 +441,7 @@ async function streamChat({
           response: {
             text: textResponse,
             sources: [],
+            attachments: attachments,
             type: chatMode,
             thoughts,
           },
@@ -486,8 +491,8 @@ async function streamChat({
       response: {
         text: textResponse,
         sources: [],
+        attachments: attachments,
         type: chatMode,
-        attachments: [],
         metrics: {},
       },
       threadId: thread?.id || null,
@@ -610,8 +615,8 @@ async function streamChat({
       response: {
         text: textResponse,
         sources: [],
+        attachments: attachments,
         type: chatMode,
-        attachments: [],
         metrics: {},
       },
       threadId: thread?.id || null,
@@ -626,7 +631,7 @@ async function streamChat({
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: chatPrompt(workspace),
+      systemPrompt: await chatPrompt(workspace, user),
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -671,7 +676,13 @@ async function streamChat({
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: message,
-      response: { text: completeText, sources, type: chatMode, metrics },
+      response: {
+        text: completeText,
+        sources,
+        type: chatMode,
+        metrics,
+        attachments,
+      },
       threadId: thread?.id || null,
       apiSessionId: sessionId,
       user,
