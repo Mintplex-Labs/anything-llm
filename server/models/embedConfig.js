@@ -10,6 +10,7 @@ const EmbedConfig = {
     "allow_model_override",
     "allow_temperature_override",
     "allow_prompt_override",
+    "show_thoughts",
     "max_chats_per_day",
     "max_chats_per_session",
     "chat_mode",
@@ -38,6 +39,10 @@ const EmbedConfig = {
           allow_prompt_override: validatedCreationData(
             data?.allow_prompt_override,
             "allow_prompt_override"
+          ),
+          show_thoughts: validatedCreationData(
+            data?.show_thoughts,
+            "show_thoughts"
           ),
           max_chats_per_day: validatedCreationData(
             data?.max_chats_per_day,
@@ -183,6 +188,7 @@ const BOOLEAN_KEYS = [
   "allow_model_override",
   "allow_temperature_override",
   "allow_prompt_override",
+  "show_thoughts",
   "enabled",
 ];
 

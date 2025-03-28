@@ -52,6 +52,7 @@ https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md
 <script
   data-embed-id="${embed.uuid}"
   data-base-api-url="${serverHost}/api/embed"
+  data-show-thoughts="${embed.show_thoughts}"
   src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
 </script>
 <!-- AnythingLLM (https://anythingllm.com) -->
