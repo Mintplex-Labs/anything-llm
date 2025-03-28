@@ -214,6 +214,7 @@ class MCPHypervisor {
       mcp.close();
     }
     this.mcps = {};
+    this.mcpLoadingResults = {};
   }
 
   /**

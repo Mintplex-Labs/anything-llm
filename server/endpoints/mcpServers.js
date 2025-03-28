@@ -5,7 +5,6 @@ const {
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-// const { Telemetry } = require("../models/telemetry");
 
 function mcpServersEndpoints(app) {
   if (!app) return;
