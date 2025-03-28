@@ -19,7 +19,7 @@ const {
  * This is typically not common in our pre-built image so may not function. But this is the case anywhere MCP is used.
  *
  * AnythingLLM will take care of porting MCP servers to agent-callable functions via @agent directive.
- * @see
+ * @see MCPCompatibilityLayer.convertServerToolsToPlugins
  */
 class MCPHypervisor {
   static _instance;
@@ -31,9 +31,14 @@ class MCPHypervisor {
 
   /**
    * The MCP servers currently running.
-   * @type { { [key: string]: Client & {transport: {_process: import('child_process').ChildProcess}} } }
+   * @type { { [key: string]: Client & {transport: {_process: import('child_process').ChildProcess}, aibitatToolIds: string[]} } }
    */
   mcps = {};
+  /**
+   * The results of the MCP server loading process.
+   * @type { { [key: string]: {status: 'success' | 'failed', message: string} } }
+   */
+  mcpLoadingResults = {};
 
   constructor() {
     if (MCPHypervisor._instance) return MCPHypervisor._instance;
@@ -92,17 +97,108 @@ class MCPHypervisor {
   }
 
   /**
+   * Remove the MCP server from the config file
+   * @param {string} name - The name of the MCP server to remove
+   * @returns {boolean} - True if the MCP server was removed, false otherwise
+   */
+  removeMCPServerFromConfig(name) {
+    const servers = safeJsonParse(
+      fs.readFileSync(this.mcpServerJSONPath, "utf8"),
+      { mcpServers: {} }
+    );
+    if (!servers.mcpServers[name]) return false;
+
+    delete servers.mcpServers[name];
+    fs.writeFileSync(
+      this.mcpServerJSONPath,
+      JSON.stringify(servers, null, 2),
+      "utf8"
+    );
+    this.log(`MCP server ${name} removed from config file`);
+    return true;
+  }
+
+  /**
    * Reload the MCP servers - can be used to reload the MCP servers without restarting the server or app
+   * and will also apply changes to the config file if any where made.
    */
   async reloadMCPServers() {
-    await this.pruneMCPServers();
+    this.pruneMCPServers();
     await this.bootMCPServers();
   }
 
   /**
-   * Prune the MCP servers - pkills and forgets all MCP servers
+   * Start a single MCP server by its server name - public method
+   * @param {string} name - The name of the MCP server to start
+   * @returns {Promise<{success: boolean, error: string | null}>}
    */
-  async pruneMCPServers() {
+  async startMCPServer(name) {
+    if (this.mcps[name])
+      return { success: false, error: `MCP server ${name} already running` };
+    const config = this.mcpServerConfigs.find((s) => s.name === name);
+    if (!config)
+      return {
+        success: false,
+        error: `MCP server ${name} not found in config file`,
+      };
+
+    try {
+      await this.#startMCPServer(config);
+      this.mcpLoadingResults[name] = {
+        status: "success",
+        message: `Successfully connected to MCP server: ${name}`,
+      };
+
+      return { success: true, message: `MCP server ${name} started` };
+    } catch (e) {
+      this.log(`Failed to start single MCP server: ${name}`, {
+        error: e.message,
+        code: e.code,
+        syscall: e.syscall,
+        path: e.path,
+        stack: e.stack,
+      });
+      this.mcpLoadingResults[name] = {
+        status: "failed",
+        message: `Failed to start MCP server: ${name} [${e.code || "NO_CODE"}] ${e.message}`,
+      };
+
+      // Clean up failed connection
+      if (this.mcps[name]) {
+        this.mcps[name].close();
+        delete this.mcps[name];
+      }
+
+      return { success: false, error: e.message };
+    }
+  }
+  /**
+   * Prune a single MCP server by its server name
+   * @param {string} name - The name of the MCP server to prune
+   * @returns {boolean} - True if the MCP server was pruned, false otherwise
+   */
+  pruneMCPServer(name) {
+    if (!name || !this.mcps[name]) return true;
+
+    this.log(`Pruning MCP server: ${name}`);
+    const mcp = this.mcps[name];
+    const childProcess = mcp.transport._process;
+    if (childProcess) childProcess.kill(1);
+    mcp.transport.close();
+
+    delete this.mcps[name];
+    this.mcpLoadingResults[name] = {
+      status: "failed",
+      message: `Server was stopped manually by the administrator.`,
+    };
+    return true;
+  }
+
+  /**
+   * Prune the MCP servers - pkills and forgets all MCP servers
+   * @returns {void}
+   */
+  pruneMCPServers() {
     this.log(`Pruning ${Object.keys(this.mcps).length} MCP servers...`);
 
     for (const name of Object.keys(this.mcps)) {
@@ -121,6 +217,43 @@ class MCPHypervisor {
   }
 
   /**
+   * @private Start a single MCP server by its server definition from the JSON file
+   * @param {string} name - The name of the MCP server to start
+   * @param {Object} server - The server definition
+   * @returns {Promise<boolean>}
+   */
+  async #startMCPServer({ name, server }) {
+    if (!name) throw new Error("MCP server name is required");
+    if (!server) throw new Error("MCP server definition is required");
+    if (!server.command) throw new Error("MCP server command is required");
+    if (server.hasOwnProperty("args") && !Array.isArray(server.args))
+      throw new Error("MCP server args must be an array");
+
+    this.log(`Attempting to start MCP server: ${name}`);
+    const mcp = new Client({ name: name, version: "1.0.0" });
+    const transport = new StdioClientTransport({
+      command: server.command,
+      args: server?.args ?? [],
+    });
+
+    // Add connection event listeners
+    transport.onclose = () => this.log(`${name} - Transport closed`);
+    transport.onerror = (error) =>
+      this.log(`${name} - Transport error:`, error);
+    transport.onmessage = (message) =>
+      this.log(`${name} - Transport message:`, message);
+
+    // Connect and await the connection with a timeout
+    this.mcps[name] = mcp;
+    const connectionPromise = mcp.connect(transport);
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Connection timeout")), 30_000); // 30 second timeout
+    });
+    await Promise.race([connectionPromise, timeoutPromise]);
+    return true;
+  }
+
+  /**
    * Boot the MCP servers according to the server definitions.
    * This function will skip booting MCP servers if they are already running.
    * @returns { Promise<{ [key: string]: {status: string, message: string} }> } The results of the boot process.
@@ -128,45 +261,30 @@ class MCPHypervisor {
   async bootMCPServers() {
     if (Object.keys(this.mcps).length > 0) {
       this.log("MCP Servers already running, skipping boot.");
-      const results = {};
-      Object.keys(this.mcps).forEach((name) => {
-        results[name] = {
-          status: "success",
-          message: `Successfully connected to MCP server: ${name}`,
-        };
-      });
-      return results;
+      return this.mcpLoadingResults;
     }
 
     const serverDefinitions = this.mcpServerConfigs;
-    const results = {};
     for (const { name, server } of serverDefinitions) {
+      if (
+        server.anythingllm?.hasOwnProperty("autoStart") &&
+        server.anythingllm.autoStart === false
+      ) {
+        this.log(
+          `MCP server ${name} has anythingllm.autoStart property set to false, skipping boot!`
+        );
+        this.mcpLoadingResults[name] = {
+          status: "failed",
+          message: `MCP server ${name} has anythingllm.autoStart property set to false, boot skipped!`,
+        };
+        continue;
+      }
+
       try {
-        this.log(`Attempting to start MCP server: ${name}`);
-        const mcp = new Client({ name: name, version: "1.0.0" });
-        const transport = new StdioClientTransport({
-          command: server.command,
-          args: server?.args ?? [],
-        });
-
-        // Add connection event listeners
-        transport.onclose = () => this.log(`${name} - Transport closed`);
-        transport.onerror = (error) =>
-          this.log(`${name} - Transport error:`, error);
-        transport.onmessage = (message) =>
-          this.log(`${name} - Transport message:`, message);
-
-        // Connect and await the connection with a timeout
-        this.mcps[name] = mcp;
-        const connectionPromise = mcp.connect(transport);
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error("Connection timeout")), 30_000); // 30 second timeout
-        });
-        await Promise.race([connectionPromise, timeoutPromise]);
-
+        await this.#startMCPServer({ name, server });
         // Verify the connection is alive?
         // if (!(await mcp.ping())) throw new Error('Connection failed to establish');
-        results[name] = {
+        this.mcpLoadingResults[name] = {
           status: "success",
           message: `Successfully connected to MCP server: ${name}`,
         };
@@ -178,8 +296,7 @@ class MCPHypervisor {
           path: e.path,
           stack: e.stack, // Adding stack trace for better debugging
         });
-
-        results[name] = {
+        this.mcpLoadingResults[name] = {
           status: "failed",
           message: `Failed to start MCP server: ${name} [${e.code || "NO_CODE"}] ${e.message}`,
         };
@@ -197,7 +314,7 @@ class MCPHypervisor {
       `Successfully started ${runningServers.length} MCP servers:`,
       runningServers
     );
-    return results;
+    return this.mcpLoadingResults;
   }
 }
 
