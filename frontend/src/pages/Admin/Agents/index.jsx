@@ -70,7 +70,6 @@ export default function AdminAgents() {
         "default_agent_skills",
         "imported_agent_skills",
         "active_agent_flows",
-        "active_mcp_servers",
       ]);
       const { flows = [] } = await AgentFlows.listFlows();
 
