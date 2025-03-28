@@ -89,6 +89,7 @@ const TRANSLATIONS = {
     "experimental-features": "ویژگی‌های آزمایشی",
     contact: "تماس با پشتیبانی",
     "browser-extension": "افزونه مرورگر",
+    "system-prompt-variables": null,
   },
   login: {
     "multi-user": {

@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['chore-bump-lancedb'] # put your current branch to create a build. Core team only.
+    branches: ['3157-feat-prompt-variables'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

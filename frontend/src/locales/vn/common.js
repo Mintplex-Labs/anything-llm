@@ -89,6 +89,7 @@ const TRANSLATIONS = {
     "experimental-features": "Tính năng thử nghiệm",
     contact: "Liên hệ hỗ trợ",
     "browser-extension": "Tiện ích trình duyệt",
+    "system-prompt-variables": null,
   },
   login: {
     "multi-user": {
