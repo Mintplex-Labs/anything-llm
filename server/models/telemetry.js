@@ -17,7 +17,6 @@ const Telemetry = {
   The value is the number of seconds to debounce the event
   */
   debounced: {
-    agent_chat_started: 1800,
     sent_chat: 1800,
     agent_chat_sent: 1800,
     agent_chat_started: 1800,
