@@ -11,10 +11,7 @@ import {
   Robot,
   Hammer,
   FlowArrow,
-  BookOpenText,
-  ArrowClockwise,
 } from "@phosphor-icons/react";
-import MCPLogo from "@/media/agents/mcp-logo.svg";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
 import { FullScreenLoader } from "@/components/Preloader";
@@ -25,12 +22,11 @@ import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
 import { Tooltip } from "react-tooltip";
 import AgentFlowsList from "./AgentFlows";
 import FlowPanel from "./AgentFlows/FlowPanel";
-import MCPServersList from "./MCPServers";
+import { MCPServersList, MCPServerHeader } from "./MCPServers";
 import ServerPanel from "./MCPServers/ServerPanel";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import AgentFlows from "@/models/agentFlows";
-import MCPServers from "@/models/mcpServers";
 
 export default function AdminAgents() {
   const formEl = useRef(null);
@@ -48,8 +44,8 @@ export default function AdminAgents() {
   const [selectedFlow, setSelectedFlow] = useState(null);
   const [activeFlowIds, setActiveFlowIds] = useState([]);
 
+  // MCP Servers are lazy loaded to not block the UI thread
   const [mcpServers, setMcpServers] = useState([]);
-  const [loadingMcpServers, setLoadingMcpServers] = useState(false);
   const [selectedMcpServer, setSelectedMcpServer] = useState(null);
 
   // Alert user if they try to leave the page with unsaved changes
@@ -77,7 +73,6 @@ export default function AdminAgents() {
         "active_mcp_servers",
       ]);
       const { flows = [] } = await AgentFlows.listFlows();
-      const { servers = [] } = await MCPServers.listServers();
 
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
@@ -87,7 +82,6 @@ export default function AdminAgents() {
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
       setActiveFlowIds(_preferences.settings?.active_agent_flows ?? []);
       setAgentFlows(flows);
-      setMcpServers(servers);
       setLoading(false);
     }
     fetchSettings();
@@ -129,29 +123,6 @@ export default function AdminAgents() {
         return { ...server, running: !server.running };
       });
     });
-  };
-
-  // Refresh the list of MCP servers
-  const refreshMCPServers = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to refresh the list of MCP servers? This will restart all MCP servers and reload their tools."
-      )
-    ) {
-      setLoadingMcpServers(true);
-      MCPServers.forceReload()
-        .then(({ servers = [] }) => {
-          setSelectedMcpServer(null);
-          setMcpServers(servers);
-        })
-        .catch((err) => {
-          console.error(err);
-          showToast(`Failed to refresh MCP servers.`, "error", { clear: true });
-        })
-        .finally(() => {
-          setLoadingMcpServers(false);
-        });
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -218,6 +189,13 @@ export default function AdminAgents() {
   }
 
   // Update the click handlers to clear the other selection
+  const handleDefaultSkillClick = (skill) => {
+    setSelectedFlow(null);
+    setSelectedMcpServer(null);
+    setSelectedSkill(skill);
+    if (isMobile) setShowSkillModal(true);
+  };
+
   const handleSkillClick = (skill) => {
     setSelectedFlow(null);
     setSelectedMcpServer(null);
@@ -229,12 +207,14 @@ export default function AdminAgents() {
     setSelectedSkill(null);
     setSelectedMcpServer(null);
     setSelectedFlow(flow);
+    if (isMobile) setShowSkillModal(true);
   };
 
   const handleMCPClick = (server) => {
     setSelectedSkill(null);
     setSelectedFlow(null);
     setSelectedMcpServer(server);
+    if (isMobile) setShowSkillModal(true);
   };
 
   const handleFlowDelete = (flowId) => {
@@ -286,7 +266,10 @@ export default function AdminAgents() {
           />
 
           {/* Skill settings nav */}
-          <div hidden={showSkillModal} className="flex flex-col gap-y-[18px]">
+          <div
+            hidden={showSkillModal}
+            className="flex flex-col gap-y-[18px] overflow-y-scroll no-scroll"
+          >
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Robot size={24} />
               <p className="text-lg font-medium">Agent Skills</p>
@@ -295,11 +278,7 @@ export default function AdminAgents() {
             <SkillList
               skills={defaultSkills}
               selectedSkill={selectedSkill}
-              handleClick={(skill) => {
-                setSelectedFlow(null);
-                setSelectedSkill(skill);
-                setShowSkillModal(true);
-              }}
+              handleClick={handleDefaultSkillClick}
               activeSkills={Object.keys(defaultSkills).filter(
                 (skill) => !disabledAgentSkills.includes(skill)
               )}
@@ -308,11 +287,7 @@ export default function AdminAgents() {
             <SkillList
               skills={configurableSkills}
               selectedSkill={selectedSkill}
-              handleClick={(skill) => {
-                setSelectedFlow(null);
-                setSelectedSkill(skill);
-                setShowSkillModal(true);
-              }}
+              handleClick={handleDefaultSkillClick}
               activeSkills={agentSkills}
             />
 
@@ -341,6 +316,18 @@ export default function AdminAgents() {
               id="active_agent_flows"
               value={activeFlowIds.join(",")}
             />
+            <MCPServerHeader setMcpServers={setMcpServers}>
+              {({ loadingMcpServers }) => {
+                return (
+                  <MCPServersList
+                    isLoading={loadingMcpServers}
+                    servers={mcpServers}
+                    selectedServer={selectedMcpServer}
+                    handleClick={handleMCPClick}
+                  />
+                );
+              }}
+            </MCPServerHeader>
           </div>
 
           {/* Selected agent skill modal */}
@@ -533,40 +520,18 @@ export default function AdminAgents() {
                 handleClick={handleFlowClick}
               />
 
-              <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
-                <div className="flex items-center gap-x-2">
-                  <img src={MCPLogo} className="w-6 h-6 light:invert" />
-                  <p className="text-lg font-medium">MCP Servers</p>
-                </div>
-                <div className="flex items-center gap-x-3">
-                  <Link
-                    to="#goes-to-docs"
-                    target="_blank"
-                    className="border-none text-theme-text-secondary hover:text-cta-button"
-                  >
-                    <BookOpenText size={16} />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={refreshMCPServers}
-                    disabled={loadingMcpServers}
-                    className="border-none text-theme-text-secondary hover:text-cta-button flex items-center gap-x-1"
-                  >
-                    <ArrowClockwise
-                      size={16}
-                      className={loadingMcpServers ? "animate-spin" : ""}
+              <MCPServerHeader setMcpServers={setMcpServers}>
+                {({ loadingMcpServers }) => {
+                  return (
+                    <MCPServersList
+                      isLoading={loadingMcpServers}
+                      servers={mcpServers}
+                      selectedServer={selectedMcpServer}
+                      handleClick={handleMCPClick}
                     />
-                    <p className="text-sm">
-                      {loadingMcpServers ? "Loading..." : "Refresh"}
-                    </p>
-                  </button>
-                </div>
-              </div>
-              <MCPServersList
-                servers={mcpServers}
-                selectedServer={selectedMcpServer}
-                handleClick={handleMCPClick}
-              />
+                  );
+                }}
+              </MCPServerHeader>
             </div>
           </div>
         </div>
