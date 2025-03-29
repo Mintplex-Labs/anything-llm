@@ -1,4 +1,5 @@
 import EditingChatBubble from "@/components/EditingChatBubble";
+import Appearance from "@/models/appearance";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
@@ -9,6 +10,7 @@ export default function CustomMessages() {
   const [hasChanges, setHasChanges] = useState(false);
   const [messages, setMessages] = useState([]);
   const { t } = useTranslation();
+  const { legacyHomeScreen } = Appearance.getSettings();
 
   useEffect(() => {
     async function fetchMessages() {
@@ -53,6 +55,8 @@ export default function CustomMessages() {
     showToast("Successfully updated welcome messages.", "success");
     setHasChanges(false);
   };
+
+  if (!legacyHomeScreen) return null;
 
   return (
     <div className="mb-8">

@@ -6,6 +6,7 @@ import WorkspaceName from "./WorkspaceName";
 import SuggestedChatMessages from "./SuggestedChatMessages";
 import DeleteWorkspace from "./DeleteWorkspace";
 import WorkspacePfp from "./WorkspacePfp";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function GeneralInfo({ slug }) {
   const [workspace, setWorkspace] = useState(null);
@@ -44,29 +45,28 @@ export default function GeneralInfo({ slug }) {
 
   if (!workspace || loading) return null;
   return (
-    <>
+    <div className="w-full relative">
       <form
         ref={formEl}
         onSubmit={handleUpdate}
         className="w-1/2 flex flex-col gap-y-6"
       >
+        {hasChanges && (
+          <div className="absolute top-0 right-0">
+            <CTAButton type="submit">
+              {saving ? "Updating..." : "Update Workspace"}
+            </CTAButton>
+          </div>
+        )}
         <WorkspaceName
           key={workspace.slug}
           workspace={workspace}
           setHasChanges={setHasChanges}
         />
-        {hasChanges && (
-          <button
-            type="submit"
-            className="transition-all w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-          >
-            {saving ? "Updating..." : "Update workspace"}
-          </button>
-        )}
       </form>
       <SuggestedChatMessages slug={workspace.slug} />
       <WorkspacePfp workspace={workspace} slug={slug} />
       <DeleteWorkspace workspace={workspace} />
-    </>
+    </div>
   );
 }

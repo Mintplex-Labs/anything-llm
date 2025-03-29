@@ -1,7 +1,7 @@
 import { APPEARANCE_SETTINGS } from "@/utils/constants";
 
 const Appearance = {
-  defaultSettings: { showScrollbar: false },
+  defaultSettings: { showScrollbar: false, legacyHomeScreen: false },
   /**
    * Fetches any locally storage settings for the user
    * @returns {{showScrollbar: boolean}}

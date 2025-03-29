@@ -11,6 +11,7 @@ import CustomSiteSettings from "./CustomSiteSettings";
 import ShowScrollbar from "./ShowScrollbar";
 import ThemePreference from "./ThemePreference";
 import { MessageDirection } from "./MessageDirection";
+import LegacyHome from "./LegacyHome";
 
 export default function Appearance() {
   const { t } = useTranslation();
@@ -39,8 +40,9 @@ export default function Appearance() {
           <ShowScrollbar />
           <CustomLogo />
           <CustomAppName />
-          <CustomMessages />
           <FooterCustomization />
+          <LegacyHome />
+          <CustomMessages />
           <SupportEmail />
           <CustomSiteSettings />
         </div>
