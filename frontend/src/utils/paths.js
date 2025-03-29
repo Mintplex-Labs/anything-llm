@@ -79,7 +79,7 @@ export default {
       },
       agentBuilder: () => {
         return `/settings/agents/builder`;
-      }
+      },
     },
     thread: (wsSlug, threadSlug) => {
       return `/workspace/${wsSlug}/t/${threadSlug}`;

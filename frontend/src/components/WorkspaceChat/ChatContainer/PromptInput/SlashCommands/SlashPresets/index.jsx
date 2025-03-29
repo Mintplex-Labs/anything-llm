@@ -28,7 +28,7 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
   }, []);
 
   useEffect(() => {
-    if (window.location.hash === '#slash-commands' && !isAddModalOpen) {
+    if (window.location.hash === "#slash-commands" && !isAddModalOpen) {
       openAddModal();
     }
   }, []);

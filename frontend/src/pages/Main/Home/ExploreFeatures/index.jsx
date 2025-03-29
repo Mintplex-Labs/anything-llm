@@ -10,7 +10,7 @@ export default function ExploreFeatures() {
     if (workspaces.length > 0) {
       const firstWorkspace = workspaces[0];
       navigate(paths.workspace.chat(firstWorkspace.slug));
-      window.location.hash = '#agent';
+      window.location.hash = "#agent";
     }
   };
 
@@ -23,7 +23,7 @@ export default function ExploreFeatures() {
     if (workspaces.length > 0) {
       const firstWorkspace = workspaces[0];
       navigate(paths.workspace.chat(firstWorkspace.slug));
-      window.location.hash = '#slash-commands';
+      window.location.hash = "#slash-commands";
     }
   };
 
@@ -36,7 +36,7 @@ export default function ExploreFeatures() {
     if (workspaces.length > 0) {
       const firstWorkspace = workspaces[0];
       navigate(paths.workspace.settings.chatSettings(firstWorkspace.slug));
-      window.location.hash = '#system-prompts';
+      window.location.hash = "#system-prompts";
     }
   };
 

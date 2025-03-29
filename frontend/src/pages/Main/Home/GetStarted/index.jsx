@@ -12,7 +12,11 @@ export default function GetStarted() {
   const navigate = useNavigate();
   const { showModal } = useManageWorkspaceModal();
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-  const { showing: showingNewWsModal, showModal: showNewWsModal, hideModal: hideNewWsModal } = useNewWorkspaceModal();
+  const {
+    showing: showingNewWsModal,
+    showModal: showNewWsModal,
+    hideModal: hideNewWsModal,
+  } = useNewWorkspaceModal();
 
   const sendChat = async () => {
     const workspaces = await Workspace.all();

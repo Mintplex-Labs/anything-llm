@@ -22,7 +22,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   }, []);
 
   useEffect(() => {
-    if (window.location.hash === '#system-prompts') {
+    if (window.location.hash === "#system-prompts") {
       setIsEditing(true);
     }
   }, []);

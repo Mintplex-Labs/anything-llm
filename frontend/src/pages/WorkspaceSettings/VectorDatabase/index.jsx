@@ -54,7 +54,10 @@ export default function VectorDatabase({ workspace }) {
           <VectorCount reload={true} workspace={workspace} />
         </div>
         <VectorSearchMode workspace={workspace} setHasChanges={setHasChanges} />
-        <MaxContextSnippets workspace={workspace} setHasChanges={setHasChanges} />
+        <MaxContextSnippets
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
         <DocumentSimilarityThreshold
           workspace={workspace}
           setHasChanges={setHasChanges}

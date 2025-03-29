@@ -51,7 +51,7 @@ export function AvailableAgents({
   const agentSessionActive = useIsAgentSessionActive();
 
   useEffect(() => {
-    if (window.location.hash === '#agent' && !showing) {
+    if (window.location.hash === "#agent" && !showing) {
       setShowing(true);
       sendCommand("@agent ", false);
     }
