@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { CHECKLIST_ITEMS, ChecklistItem } from "../../checklist";
 import { X } from "@phosphor-icons/react";
 
-const CHECKLIST_HIDDEN = "anythingllm_checklist_hidden";
+const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
 
 export default function Checklist() {
   const [isHidden, setIsHidden] = useState(false);

@@ -49,6 +49,14 @@ export function AvailableAgents({
 }) {
   const formRef = useRef(null);
   const agentSessionActive = useIsAgentSessionActive();
+
+  useEffect(() => {
+    if (window.location.hash === '#agent' && !showing) {
+      setShowing(true);
+      sendCommand("@agent ", false);
+    }
+  }, [promptRef.current]);
+
   useEffect(() => {
     function listenForOutsideClick() {
       if (!showing || !formRef.current) return false;

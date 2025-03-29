@@ -1,4 +1,49 @@
+import { useNavigate } from "react-router-dom";
+import paths from "@/utils/paths";
+import Workspace from "@/models/workspace";
+
 export default function ExploreFeatures() {
+  const navigate = useNavigate();
+
+  const chatWithAgent = async () => {
+    const workspaces = await Workspace.all();
+    if (workspaces.length > 0) {
+      const firstWorkspace = workspaces[0];
+      navigate(paths.workspace.chat(firstWorkspace.slug));
+      window.location.hash = '#agent';
+    }
+  };
+
+  const buildAgentFlow = () => {
+    navigate(paths.workspace.settings.agentBuilder());
+  };
+
+  const setSlashCommand = async () => {
+    const workspaces = await Workspace.all();
+    if (workspaces.length > 0) {
+      const firstWorkspace = workspaces[0];
+      navigate(paths.workspace.chat(firstWorkspace.slug));
+      window.location.hash = '#slash-commands';
+    }
+  };
+
+  const exploreSlashCommands = () => {
+    window.location.href = paths.communityHub.viewMoreOfType("slash-commands");
+  };
+
+  const setSystemPrompt = async () => {
+    const workspaces = await Workspace.all();
+    if (workspaces.length > 0) {
+      const firstWorkspace = workspaces[0];
+      navigate(paths.workspace.settings.chatSettings(firstWorkspace.slug));
+      window.location.hash = '#system-prompts';
+    }
+  };
+
+  const exploreSystemPrompts = () => {
+    window.location.href = paths.communityHub.viewMoreOfType("system-prompts");
+  };
+
   return (
     <div>
       <h1 className="text-white uppercase text-sm font-semibold mb-6">
@@ -8,22 +53,28 @@ export default function ExploreFeatures() {
         <FeatureCard
           title="Utilize Agent Skills"
           description="Enabling powerful automation and workflow extensions for your specific needs."
-          primaryAction={<>Chat with Agent</>}
-          secondaryAction={<>Build Agent Flow</>}
+          primaryAction="Chat with Agent"
+          secondaryAction="Build Agent Flow"
+          onPrimaryAction={chatWithAgent}
+          onSecondaryAction={buildAgentFlow}
           isNew={true}
         />
         <FeatureCard
           title="Slash Commands"
           description="Enabling powerful automation and workflow extensions for your specific needs."
-          primaryAction={<>Set Slash Command</>}
-          secondaryAction={<>Explore on Hub</>}
+          primaryAction="Set Slash Command"
+          secondaryAction="Explore on Hub"
+          onPrimaryAction={setSlashCommand}
+          onSecondaryAction={exploreSlashCommands}
           isNew={true}
         />
         <FeatureCard
           title="System Prompts"
           description="Enabling powerful automation and workflow extensions for your specific needs."
-          primaryAction={<>Set up System Prompt</>}
-          secondaryAction={<>Explore on Hub</>}
+          primaryAction="Setup System Prompt"
+          secondaryAction="Explore on Hub"
+          onPrimaryAction={setSystemPrompt}
+          onSecondaryAction={exploreSystemPrompts}
           isNew={true}
         />
       </div>
@@ -36,6 +87,8 @@ function FeatureCard({
   description,
   primaryAction,
   secondaryAction,
+  onPrimaryAction,
+  onSecondaryAction,
   isNew,
 }) {
   return (
@@ -47,7 +100,10 @@ function FeatureCard({
         <p className="text-[#9F9FA0] text-sm">{description}</p>
       </div>
       <div className="flex flex-col gap-y-[10px]">
-        <button className="w-full h-[36px] bg-[#36BFFA] rounded-lg text-black text-sm font-medium flex items-center justify-center gap-x-2.5">
+        <button
+          onClick={onPrimaryAction}
+          className="w-full h-[36px] bg-[#36BFFA] rounded-lg text-black text-sm font-medium flex items-center justify-center gap-x-2.5"
+        >
           {primaryAction}
         </button>
         <div className="relative w-full">
@@ -56,7 +112,10 @@ function FeatureCard({
               New
             </div>
           )}
-          <button className="w-full h-[36px] bg-[#27282A] rounded-lg text-white text-sm font-medium flex items-center justify-center">
+          <button
+            onClick={onSecondaryAction}
+            className="w-full h-[36px] bg-[#27282A] rounded-lg text-white text-sm font-medium flex items-center justify-center"
+          >
             {secondaryAction}
           </button>
         </div>

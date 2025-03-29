@@ -109,6 +109,14 @@ export default function App() {
                     path="/workspace/:slug/t/:threadSlug"
                     element={<PrivateRoute Component={WorkspaceChat} />}
                   />
+                  <Route
+                    path="/workspace/:slug/settings/slash-commands"
+                    element={<ManagerRoute Component={WorkspaceSettings} />}
+                  />
+                  <Route
+                    path="/workspace/:slug/settings/system-prompts"
+                    element={<ManagerRoute Component={WorkspaceSettings} />}
+                  />
                   <Route path="/accept-invite/:code" element={<InvitePage />} />
 
                   {/* Admin */}

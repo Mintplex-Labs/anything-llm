@@ -26,6 +26,13 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
   useEffect(() => {
     fetchPresets();
   }, []);
+
+  useEffect(() => {
+    if (window.location.hash === '#slash-commands' && !isAddModalOpen) {
+      openAddModal();
+    }
+  }, []);
+
   if (isActiveAgentSession) return null;
 
   const fetchPresets = async () => {
@@ -42,6 +49,7 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
 
     fetchPresets();
     closeAddModal();
+    setShowing(true);
     return true;
   };
 
