@@ -23,7 +23,7 @@ const experimentalModels = [
 // and some models that are only available in the v1 API
 // generally, v1beta models have `exp` in the name, but not always
 // so we check for both against a static list as well.
-const v1BetaModels = ["gemini-1.5-pro-latest", "gemini-1.5-flash-latest"];
+const v1BetaModels = ["gemini-1.5-pro-latest", "gemini-1.5-flash-latest", "gemma-3-27b-it"];
 
 const defaultGeminiModels = [
   ...stableModels.map((model) => ({
