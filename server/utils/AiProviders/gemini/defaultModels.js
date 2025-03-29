@@ -21,15 +21,12 @@ const stableModels = [
   "gemini-2.0-flash",
   "gemini-2.0-flash-001",
   "gemini-2.0-flash-lite-001",
-  "gemini-2.0-flash-lite",
-  "embedding-001",
-  "text-embedding-004",
+  "gemini-2.0-flash-lite"
 ];
 
 const experimentalModels = [
   "chat-bison-001",
   "text-bison-001",
-  "embedding-gecko-001",
   "gemini-1.5-flash-8b-exp-0827",
   "gemini-1.5-flash-8b-exp-0924",
   "gemini-2.5-pro-exp-03-25",
@@ -44,11 +41,7 @@ const experimentalModels = [
   "gemini-2.0-flash-thinking-exp",
   "gemini-2.0-flash-thinking-exp-1219",
   "learnlm-1.5-pro-experimental",
-  "gemma-3-27b-it",
-  "gemini-embedding-exp-03-07",
-  "gemini-embedding-exp",
-  "aqa",
-  "imagen-3.0-generate-002"
+  "gemma-3-27b-it"
 ];
 
 // There are some models that are only available in the v1beta API
@@ -59,7 +52,6 @@ const experimentalModels = [
 const v1BetaModels = [
   "chat-bison-001",
   "text-bison-001",
-  "embedding-gecko-001",
   "gemini-1.5-pro-latest",
   "gemini-1.5-flash-latest",
   "gemini-1.5-flash-8b-latest",
@@ -77,11 +69,7 @@ const v1BetaModels = [
   "gemini-2.0-flash-thinking-exp",
   "gemini-2.0-flash-thinking-exp-1219",
   "learnlm-1.5-pro-experimental",
-  "gemma-3-27b-it",
-  "gemini-embedding-exp-03-07",
-  "gemini-embedding-exp",
-  "aqa",
-  "imagen-3.0-generate-002"
+  "gemma-3-27b-it"
 ];
 
 const defaultGeminiModels = [
