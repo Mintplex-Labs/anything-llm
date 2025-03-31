@@ -1,4 +1,4 @@
-import { news } from './news';
+import { news } from "./news";
 
 export default function Updates() {
   return (
@@ -27,7 +27,11 @@ function UpdateCard({ thumbnail_url, title, subtitle, source, date, goto }) {
   return (
     <a href={goto} target="_blank" rel="noopener noreferrer" className="block">
       <div className="bg-[#1C1C1C] rounded-xl p-4 flex gap-x-4 hover:bg-[#252525] transition-colors">
-        <img src={thumbnail_url} alt={title} className="w-[80px] h-[80px] rounded-lg flex-shrink-0 object-cover" />
+        <img
+          src={thumbnail_url}
+          alt={title}
+          className="w-[80px] h-[80px] rounded-lg flex-shrink-0 object-cover"
+        />
         <div className="flex flex-col gap-y-1">
           <p className="text-[#9F9FA0] text-xs">{source}</p>
           <h3 className="text-white font-medium text-sm">{title}</h3>

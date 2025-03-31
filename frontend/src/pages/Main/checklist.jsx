@@ -56,7 +56,14 @@ export const CHECKLIST_ITEMS = [
   },
 ];
 
-export function ChecklistItem({ id, title, description, action, handler, completed: defaultCompleted }) {
+export function ChecklistItem({
+  id,
+  title,
+  description,
+  action,
+  handler,
+  completed: defaultCompleted,
+}) {
   const actions = useHomePageActions();
   const [isCompleted, setIsCompleted] = React.useState(() => {
     const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
@@ -70,7 +77,10 @@ export function ChecklistItem({ id, title, description, action, handler, complet
     const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
     const completedItems = stored ? JSON.parse(stored) : {};
     completedItems[id] = true;
-    window.localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(completedItems));
+    window.localStorage.setItem(
+      CHECKLIST_STORAGE_KEY,
+      JSON.stringify(completedItems)
+    );
     setIsCompleted(true);
 
     await actions[handler]();
