@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import paths from "@/utils/paths";
 import { ArrowCircleUpRight } from "@phosphor-icons/react";
 import WelcomeBanner from "./Banner";
 import { CHECKLIST_ITEMS, ChecklistItem } from "../checklist";
+import { CHECKLIST_STORAGE_KEY } from "../Home/Checklist";
 
 const FOOTER_LINKS = [
   {
@@ -20,6 +21,16 @@ const FOOTER_LINKS = [
 ];
 
 export default function WelcomeChecklist({ onSkip }) {
+  const [completedCount, setCompletedCount] = useState(0);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
+    if (stored) {
+      const completedItems = JSON.parse(stored);
+      setCompletedCount(Object.keys(completedItems).length);
+    }
+  }, []);
+
   return (
     <div className="w-full max-w-[1200px] flex flex-col items-center gap-y-6 p-4 pt-20 md:pt-16 md:p-12">
       <WelcomeBanner />
@@ -27,8 +38,7 @@ export default function WelcomeChecklist({ onSkip }) {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-white font-semibold text-lg">Getting Started</h1>
           <p className="text-[#9F9FA0] text-xs">
-            {CHECKLIST_ITEMS.filter((item) => !item.completed).length} tasks
-            left
+            {CHECKLIST_ITEMS.length - completedCount} tasks left
           </p>
         </div>
         <div className="flex-1 flex flex-col gap-6">

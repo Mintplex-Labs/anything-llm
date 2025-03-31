@@ -3,14 +3,33 @@ import { CHECKLIST_ITEMS, ChecklistItem } from "../../checklist";
 import { X } from "@phosphor-icons/react";
 
 const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
+export const CHECKLIST_STORAGE_KEY = "anythingllm_checklist_completed";
 
 export default function Checklist() {
   const [isHidden, setIsHidden] = useState(false);
+  const [completedCount, setCompletedCount] = useState(0);
 
   useEffect(() => {
     const hidden = window.localStorage.getItem(CHECKLIST_HIDDEN);
     setIsHidden(!!hidden);
+
+    const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
+    if (stored) {
+      const completedItems = JSON.parse(stored);
+      setCompletedCount(Object.keys(completedItems).length);
+    }
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
+
+  const handleStorageChange = () => {
+    const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
+    if (stored) {
+      const completedItems = JSON.parse(stored);
+      setCompletedCount(Object.keys(completedItems).length);
+    }
+  };
 
   const handleClose = () => {
     window.localStorage.setItem(CHECKLIST_HIDDEN, "true");
@@ -25,8 +44,7 @@ export default function Checklist() {
         <h1 className="text-white font-semibold text-lg">Getting Started</h1>
         <div className="flex items-center gap-x-2">
           <p className="text-[#9F9FA0] text-xs">
-            {CHECKLIST_ITEMS.filter((item) => !item.completed).length} tasks
-            left
+            {CHECKLIST_ITEMS.length - completedCount} tasks left
           </p>
           <button
             onClick={handleClose}
@@ -37,8 +55,8 @@ export default function Checklist() {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {CHECKLIST_ITEMS.map((item, i) => (
-          <ChecklistItem key={i} {...item} />
+        {CHECKLIST_ITEMS.map((item) => (
+          <ChecklistItem key={item.id} {...item} />
         ))}
       </div>
     </div>
