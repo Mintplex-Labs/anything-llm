@@ -2280,7 +2280,8 @@
                     "mime": "image/png",
                     "contentString": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
-                ]
+                ],
+                "reset": false
               }
             }
           }
@@ -2382,7 +2383,8 @@
                     "mime": "image/png",
                     "contentString": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
-                ]
+                ],
+                "reset": false
               }
             }
           }
@@ -3143,7 +3145,8 @@
                     "mime": "image/png",
                     "contentString": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
-                ]
+                ],
+                "reset": false
               }
             }
           }
@@ -3255,7 +3258,8 @@
                     "mime": "image/png",
                     "contentString": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
-                ]
+                ],
+                "reset": false
               }
             }
           }
