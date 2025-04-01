@@ -2,11 +2,19 @@ import React, { useEffect, useState } from "react";
 import paths from "@/utils/paths";
 import { ArrowCircleUpRight } from "@phosphor-icons/react";
 import WelcomeBanner from "./Banner";
-import ManageWorkspace, { useManageWorkspaceModal } from "@/components/Modals/ManageWorkspace";
-import NewWorkspaceModal, { useNewWorkspaceModal } from "@/components/Modals/NewWorkspace";
+import ManageWorkspace, {
+  useManageWorkspaceModal,
+} from "@/components/Modals/ManageWorkspace";
+import NewWorkspaceModal, {
+  useNewWorkspaceModal,
+} from "@/components/Modals/NewWorkspace";
 import Workspace from "@/models/workspace";
 import { useNavigate } from "react-router-dom";
-import { CHECKLIST_ITEMS, ChecklistItem, CHECKLIST_STORAGE_KEY } from "../checklist";
+import {
+  CHECKLIST_ITEMS,
+  ChecklistItem,
+  CHECKLIST_STORAGE_KEY,
+} from "../checklist";
 
 const FOOTER_LINKS = [
   {
@@ -33,10 +41,8 @@ export default function WelcomeChecklist({ onSkip }) {
     hideModal: hideNewWsModal,
     showing: showingNewWsModal,
   } = useNewWorkspaceModal();
-  const {
-    showModal: showManageWsModal,
-    hideModal: hideManageWsModal,
-  } = useManageWorkspaceModal();
+  const { showModal: showManageWsModal, hideModal: hideManageWsModal } =
+    useManageWorkspaceModal();
 
   useEffect(() => {
     const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);

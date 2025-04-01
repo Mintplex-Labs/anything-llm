@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { X } from "@phosphor-icons/react";
-import ManageWorkspace, { useManageWorkspaceModal } from "@/components/Modals/ManageWorkspace";
-import NewWorkspaceModal, { useNewWorkspaceModal } from "@/components/Modals/NewWorkspace";
+import ManageWorkspace, {
+  useManageWorkspaceModal,
+} from "@/components/Modals/ManageWorkspace";
+import NewWorkspaceModal, {
+  useNewWorkspaceModal,
+} from "@/components/Modals/NewWorkspace";
 import Workspace from "@/models/workspace";
 import { useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
-import { CHECKLIST_ITEMS, ChecklistItem, CHECKLIST_STORAGE_KEY } from "../../checklist";
+import {
+  CHECKLIST_ITEMS,
+  ChecklistItem,
+  CHECKLIST_STORAGE_KEY,
+} from "../../checklist";
 
 export const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
 
@@ -20,10 +28,8 @@ export default function Checklist() {
     hideModal: hideNewWsModal,
     showing: showingNewWsModal,
   } = useNewWorkspaceModal();
-  const {
-    showModal: showManageWsModal,
-    hideModal: hideManageWsModal,
-  } = useManageWorkspaceModal();
+  const { showModal: showManageWsModal, hideModal: hideManageWsModal } =
+    useManageWorkspaceModal();
 
   useEffect(() => {
     const hidden = window.localStorage.getItem(CHECKLIST_HIDDEN);
