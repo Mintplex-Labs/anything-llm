@@ -91,7 +91,8 @@ const TRANSLATIONS = {
     "browser-extension": "Browser-Erweiterung",
     "system-prompt-variables": null,
     "user-permissions": "Benutzerberechtigungen",
-    "user-permissions-description": "Verwalten Sie die Berechtigungen für Standardbenutzer in Ihrer Instanz."
+    "user-permissions-description":
+      "Verwalten Sie die Berechtigungen für Standardbenutzer in Ihrer Instanz.",
   },
   login: {
     "multi-user": {

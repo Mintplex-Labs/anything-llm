@@ -111,17 +111,19 @@ export function AdminRoute({ Component, hideUserMenu = false }) {
 // Allows manager and admin to access the route and if in single user mode,
 // allows all users to access the route
 export function ManagerRoute({ Component }) {
-  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } = useIsAuthenticated();
+  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
+    useIsAuthenticated();
   const { user } = useUser();
   const [permissions, setPermissions] = useState({
-    default_managing_workspaces: false
+    default_managing_workspaces: false,
   });
 
   useEffect(() => {
     async function fetchPermissions() {
       const { settings } = await Admin.userPermissions();
       setPermissions({
-        default_managing_workspaces: settings?.default_managing_workspaces === true
+        default_managing_workspaces:
+          settings?.default_managing_workspaces === true,
       });
     }
     fetchPermissions();
@@ -133,7 +135,10 @@ export function ManagerRoute({ Component }) {
     return <Navigate to={paths.onboarding.home()} />;
   }
 
-  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
+  const canManageWorkspace =
+    !user ||
+    user?.role !== "default" ||
+    permissions.default_managing_workspaces;
 
   return isAuthd && (canManageWorkspace || !multiUserMode) ? (
     <UserMenu>

@@ -14,7 +14,7 @@ export default function UserPermissions() {
   const [permissions, setPermissions] = useState({
     default_managing_workspaces: false,
     default_creating_workspaces: false,
-    default_workspace_dnd_file_upload: false
+    default_workspace_dnd_file_upload: false,
   });
 
   useEffect(() => {
@@ -24,19 +24,26 @@ export default function UserPermissions() {
   const fetchSettings = async () => {
     try {
       const { settings } = await Admin.systemPreferences();
-      console.log('Received settings from backend:', settings);
-      console.log('Permission fields:', {
+      console.log("Received settings from backend:", settings);
+      console.log("Permission fields:", {
         default_managing_workspaces: settings?.default_managing_workspaces,
         default_creating_workspaces: settings?.default_creating_workspaces,
-        default_workspace_dnd_file_upload: settings?.default_workspace_dnd_file_upload
+        default_workspace_dnd_file_upload:
+          settings?.default_workspace_dnd_file_upload,
       });
       setPermissions({
-        default_managing_workspaces: Boolean(settings?.default_managing_workspaces),
-        default_creating_workspaces: Boolean(settings?.default_creating_workspaces),
-        default_workspace_dnd_file_upload: Boolean(settings?.default_workspace_dnd_file_upload)
+        default_managing_workspaces: Boolean(
+          settings?.default_managing_workspaces
+        ),
+        default_creating_workspaces: Boolean(
+          settings?.default_creating_workspaces
+        ),
+        default_workspace_dnd_file_upload: Boolean(
+          settings?.default_workspace_dnd_file_upload
+        ),
       });
     } catch (error) {
-      console.error('Error fetching settings:', error);
+      console.error("Error fetching settings:", error);
       showToast("Failed to fetch settings", "error");
     } finally {
       setLoading(false);
@@ -50,7 +57,8 @@ export default function UserPermissions() {
       await Admin.updateSystemPreferences({
         default_managing_workspaces: permissions.default_managing_workspaces,
         default_creating_workspaces: permissions.default_creating_workspaces,
-        default_workspace_dnd_file_upload: permissions.default_workspace_dnd_file_upload
+        default_workspace_dnd_file_upload:
+          permissions.default_workspace_dnd_file_upload,
       });
       showToast("Settings updated successfully", "success");
       setHasChanges(false);
@@ -62,9 +70,9 @@ export default function UserPermissions() {
   };
 
   const updateSetting = (setting, value) => {
-    setPermissions(prev => ({
+    setPermissions((prev) => ({
       ...prev,
-      [setting]: value
+      [setting]: value,
     }));
     setHasChanges(true);
   };
@@ -104,17 +112,24 @@ export default function UserPermissions() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-theme-bg-sidebar rounded-lg">
                   <div>
-                    <h3 className="text-white text-sm font-medium">Managing Workspaces</h3>
+                    <h3 className="text-white text-sm font-medium">
+                      Managing Workspaces
+                    </h3>
                     <p className="text-white text-opacity-60 text-xs mt-1">
                       Allow default users to manage existing workspaces
                     </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                  <input
+                    <input
                       type="checkbox"
                       className="sr-only peer"
                       checked={permissions.default_managing_workspaces}
-                      onChange={(e) => updateSetting("default_managing_workspaces", e.target.checked)}
+                      onChange={(e) =>
+                        updateSetting(
+                          "default_managing_workspaces",
+                          e.target.checked
+                        )
+                      }
                     />
                     <div className="w-11 h-6 bg-theme-bg-secondary peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-button/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-button"></div>
                   </label>
@@ -122,7 +137,9 @@ export default function UserPermissions() {
 
                 <div className="flex items-center justify-between p-4 bg-theme-bg-sidebar rounded-lg">
                   <div>
-                    <h3 className="text-white text-sm font-medium">Creating Workspaces</h3>
+                    <h3 className="text-white text-sm font-medium">
+                      Creating Workspaces
+                    </h3>
                     <p className="text-white text-opacity-60 text-xs mt-1">
                       Allow default users to create new workspaces
                     </p>
@@ -132,16 +149,24 @@ export default function UserPermissions() {
                       type="checkbox"
                       className="sr-only peer"
                       checked={permissions.default_creating_workspaces}
-                      onChange={(e) => updateSetting("default_creating_workspaces", e.target.checked)}
+                      onChange={(e) =>
+                        updateSetting(
+                          "default_creating_workspaces",
+                          e.target.checked
+                        )
+                      }
                     />
                     <div className="w-11 h-6 bg-theme-bg-secondary peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-button/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-button"></div>
                   </label>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-theme-bg-sidebar rounded-lg">
                   <div>
-                    <h3 className="text-white text-sm font-medium">Drag and Drop Upload in Workspace</h3>
+                    <h3 className="text-white text-sm font-medium">
+                      Drag and Drop Upload in Workspace
+                    </h3>
                     <p className="text-white text-opacity-60 text-xs mt-1">
-                      Allow default users to drag and drop files into the workspace
+                      Allow default users to drag and drop files into the
+                      workspace
                     </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -149,7 +174,12 @@ export default function UserPermissions() {
                       type="checkbox"
                       className="sr-only peer"
                       checked={permissions.default_workspace_dnd_file_upload}
-                      onChange={(e) => updateSetting("default_workspace_dnd_file_upload", e.target.checked)}
+                      onChange={(e) =>
+                        updateSetting(
+                          "default_workspace_dnd_file_upload",
+                          e.target.checked
+                        )
+                      }
                     />
                     <div className="w-11 h-6 bg-theme-bg-secondary peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-button/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-button"></div>
                   </label>

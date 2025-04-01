@@ -91,7 +91,8 @@ const TRANSLATIONS = {
     "browser-extension": "Расширение браузера",
     "system-prompt-variables": null,
     "user-permissions": "Права пользователя",
-    "user-permissions-description": "Управление правами пользователей для этого экземпляра.",
+    "user-permissions-description":
+      "Управление правами пользователей для этого экземпляра.",
   },
   login: {
     "multi-user": {

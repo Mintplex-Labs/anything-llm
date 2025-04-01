@@ -98,7 +98,8 @@ const TRANSLATIONS = {
     "browser-extension": "ملحق المتصفح",
     "system-prompt-variables": null,
     "user-permissions": "صلاحيات المستخدم oder أذونات المستخدم",
-    "user-permissions-description": "قم بإدارة صلاحيات المستخدمين العاديين في مثيلك."
+    "user-permissions-description":
+      "قم بإدارة صلاحيات المستخدمين العاديين في مثيلك.",
   },
   login: {
     "multi-user": {

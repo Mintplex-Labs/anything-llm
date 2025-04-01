@@ -27,23 +27,31 @@ export default function Sidebar() {
   const { t } = useTranslation();
   const [permissions, setPermissions] = useState({
     default_managing_workspaces: false,
-    default_creating_workspaces: false
+    default_creating_workspaces: false,
   });
 
   useEffect(() => {
     async function fetchPermissions() {
       const { settings } = await Admin.userPermissions();
-      console.log('Fetched permissions:', settings);
+      console.log("Fetched permissions:", settings);
       setPermissions({
-        default_managing_workspaces: settings?.default_managing_workspaces === true,
-        default_creating_workspaces: settings?.default_creating_workspaces === true
+        default_managing_workspaces:
+          settings?.default_managing_workspaces === true,
+        default_creating_workspaces:
+          settings?.default_creating_workspaces === true,
       });
     }
     fetchPermissions();
   }, []);
 
-  const canCreateWorkspace = !user || user?.role !== "default" || permissions.default_creating_workspaces;
-  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
+  const canCreateWorkspace =
+    !user ||
+    user?.role !== "default" ||
+    permissions.default_creating_workspaces;
+  const canManageWorkspace =
+    !user ||
+    user?.role !== "default" ||
+    permissions.default_managing_workspaces;
 
   return (
     <>
@@ -121,29 +129,37 @@ export function SidebarMobileHeader() {
   const { t } = useTranslation();
   const [permissions, setPermissions] = useState({
     default_managing_workspaces: false,
-    default_creating_workspaces: false
+    default_creating_workspaces: false,
   });
 
   useEffect(() => {
     async function fetchPermissions() {
       const { settings } = await Admin.userPermissions();
-      console.log('Fetched permissions:', settings);
+      console.log("Fetched permissions:", settings);
       setPermissions({
-        default_managing_workspaces: settings?.default_managing_workspaces === true,
-        default_creating_workspaces: settings?.default_creating_workspaces === true
+        default_managing_workspaces:
+          settings?.default_managing_workspaces === true,
+        default_creating_workspaces:
+          settings?.default_creating_workspaces === true,
       });
     }
     fetchPermissions();
   }, []);
 
-  const canCreateWorkspace = !user || user?.role !== "default" || permissions.default_creating_workspaces;
-  console.log('Debug values:', {
+  const canCreateWorkspace =
+    !user ||
+    user?.role !== "default" ||
+    permissions.default_creating_workspaces;
+  console.log("Debug values:", {
     user,
     userRole: user?.role,
     permissions,
-    canCreateWorkspace
+    canCreateWorkspace,
   });
-  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
+  const canManageWorkspace =
+    !user ||
+    user?.role !== "default" ||
+    permissions.default_managing_workspaces;
 
   useEffect(() => {
     // Darkens the rest of the screen

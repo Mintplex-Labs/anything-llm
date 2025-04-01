@@ -413,7 +413,10 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/local-files",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default]),
+    ],
     async (_, response) => {
       try {
         const localFiles = await viewLocalFiles();
@@ -1370,32 +1373,48 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/api/system/user-permissions", [validatedRequest], async (request, response) => {
-    try {
-      const settings = await SystemSettings.currentSettings();
-      response.status(200).json({
-        default_managing_workspaces: settings.default_managing_workspaces || false,
-        default_creating_workspaces: settings.default_creating_workspaces || false
-      });
-    } catch (error) {
-      console.error("Error fetching user permissions:", error);
-      response.status(500).json({ error: "Failed to fetch user permissions" });
+  app.get(
+    "/api/system/user-permissions",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const settings = await SystemSettings.currentSettings();
+        response.status(200).json({
+          default_managing_workspaces:
+            settings.default_managing_workspaces || false,
+          default_creating_workspaces:
+            settings.default_creating_workspaces || false,
+        });
+      } catch (error) {
+        console.error("Error fetching user permissions:", error);
+        response
+          .status(500)
+          .json({ error: "Failed to fetch user permissions" });
+      }
     }
-  });
+  );
 
-  app.post("/api/system/user-permissions", [validatedRequest, flexUserRoleValid([ROLES.admin])], async (request, response) => {
-    try {
-      const updates = reqBody(request);
-      await SystemSettings._updateSettings({
-        default_managing_workspaces: updates.default_managing_workspaces || false,
-        default_creating_workspaces: updates.default_creating_workspaces || false
-      });
-      response.status(200).json({ success: true });
-    } catch (error) {
-      console.error("Error updating user permissions:", error);
-      response.status(500).json({ error: "Failed to update user permissions" });
+  app.post(
+    "/api/system/user-permissions",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const updates = reqBody(request);
+        await SystemSettings._updateSettings({
+          default_managing_workspaces:
+            updates.default_managing_workspaces || false,
+          default_creating_workspaces:
+            updates.default_creating_workspaces || false,
+        });
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error("Error updating user permissions:", error);
+        response
+          .status(500)
+          .json({ error: "Failed to update user permissions" });
+      }
     }
-  });
+  );
 }
 
 module.exports = { systemEndpoints };

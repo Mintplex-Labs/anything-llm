@@ -268,7 +268,13 @@ const Admin = {
       .then((res) => res.json())
       .catch((e) => {
         console.error(e);
-        return { settings: { default_managing_workspaces: false, default_creating_workspaces: false, default_workspace_dnd_file_upload: false } };
+        return {
+          settings: {
+            default_managing_workspaces: false,
+            default_creating_workspaces: false,
+            default_workspace_dnd_file_upload: false,
+          },
+        };
       });
   },
 };

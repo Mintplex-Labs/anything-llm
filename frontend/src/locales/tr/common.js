@@ -91,7 +91,8 @@ const TRANSLATIONS = {
     "browser-extension": "Tarayıcı Uzantısı",
     "system-prompt-variables": null,
     "user-permissions": "Kullanıcı İzinleri",
-    "user-permissions-description": "Bu örneğe ait kullanıcı izinlerini yönetin.",
+    "user-permissions-description":
+      "Bu örneğe ait kullanıcı izinlerini yönetin.",
   },
   login: {
     "multi-user": {

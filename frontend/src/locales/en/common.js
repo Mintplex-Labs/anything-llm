@@ -102,7 +102,8 @@ const TRANSLATIONS = {
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
     "user-permissions": "User Permissions",
-    "user-permissions-description": "Manage user permissions for this instance.",
+    "user-permissions-description":
+      "Manage user permissions for this instance.",
   },
 
   // Page Definitions

@@ -22,9 +22,11 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
     const data = {};
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = value;
-    
+
     try {
-      const { workspace, error } = await (user?.role === "default" ? Admin.newWorkspaceAsUser(data.name) : Workspace.new(data));
+      const { workspace, error } = await (user?.role === "default"
+        ? Admin.newWorkspaceAsUser(data.name)
+        : Workspace.new(data));
       if (error) throw new Error(error);
       if (workspace) {
         window.location.href = paths.workspace.chat(workspace.slug);

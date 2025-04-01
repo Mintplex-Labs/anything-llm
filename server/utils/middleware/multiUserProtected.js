@@ -63,7 +63,7 @@ function flexUserRoleValid(allowedRoles = DEFAULT_ROLES) {
 
     const user =
       response.locals?.user ?? (await userFromSession(request, response));
-    
+
     // Check if user has the required role
     if (allowedRoles.includes(user?.role)) {
       next();

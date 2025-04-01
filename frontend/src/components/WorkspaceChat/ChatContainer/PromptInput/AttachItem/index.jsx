@@ -13,25 +13,29 @@ export default function AttachItem() {
   const { t } = useTranslation();
   const { user } = useUser();
   const [permissions, setPermissions] = useState({
-    default_workspace_dnd_file_upload: false
+    default_workspace_dnd_file_upload: false,
   });
 
   useEffect(() => {
     async function fetchPermissions() {
       try {
         const { settings } = await Admin.userPermissions();
-        console.log('Fetched permissions:', settings);
+        console.log("Fetched permissions:", settings);
         setPermissions({
-          default_workspace_dnd_file_upload: settings?.default_workspace_dnd_file_upload === true
+          default_workspace_dnd_file_upload:
+            settings?.default_workspace_dnd_file_upload === true,
         });
       } catch (error) {
-        console.error('Error fetching permissions:', error);
+        console.error("Error fetching permissions:", error);
       }
     }
     fetchPermissions();
   }, []);
 
-  const canUploadDndFile = !user || user?.role !== "default" || permissions.default_workspace_dnd_file_upload;
+  const canUploadDndFile =
+    !user ||
+    user?.role !== "default" ||
+    permissions.default_workspace_dnd_file_upload;
 
   if (!canUploadDndFile) return null;
 

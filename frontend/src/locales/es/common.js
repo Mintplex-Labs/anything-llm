@@ -91,7 +91,8 @@ const TRANSLATIONS = {
     "browser-extension": "Extensión del navegador",
     "system-prompt-variables": null,
     "user-permissions": "Permisos de usuario",
-    "user-permissions-description": "Gestionar permisos de usuario para esta instancia.",
+    "user-permissions-description":
+      "Gestionar permisos de usuario para esta instancia.",
   },
   login: {
     "multi-user": {

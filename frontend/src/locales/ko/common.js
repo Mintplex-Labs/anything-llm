@@ -91,7 +91,8 @@ const TRANSLATIONS = {
     "browser-extension": "브라우저 확장 프로그램",
     "system-prompt-variables": null,
     "user-permissions": "사용자 권한",
-    "user-permissions-description": "이 인스턴스에 대한 사용자 권한을 관리합니다.",
+    "user-permissions-description":
+      "이 인스턴스에 대한 사용자 권한을 관리합니다.",
   },
   login: {
     "multi-user": {
