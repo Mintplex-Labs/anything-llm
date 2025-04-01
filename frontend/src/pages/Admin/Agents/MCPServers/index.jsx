@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { titleCase } from "text-case";
-import { Link } from "react-router-dom";
 import { BookOpenText, ArrowClockwise } from "@phosphor-icons/react";
 import MCPLogo from "@/media/agents/mcp-logo.svg";
 import MCPServers from "@/models/mcpServers";
@@ -44,17 +43,18 @@ export function MCPServerHeader({ setMcpServers, children }) {
     <>
       <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
         <div className="flex items-center gap-x-2">
-          <img src={MCPLogo} className="w-6 h-6 light:invert" />
+          <img src={MCPLogo} className="w-6 h-6 light:invert" alt="MCP Logo" />
           <p className="text-lg font-medium">MCP Servers</p>
         </div>
         <div className="flex items-center gap-x-3">
-          <Link
-            to="#goes-to-docs"
+          <a
+            href="https://docs.anythingllm.com/mcp-compatibility/overview"
             target="_blank"
+            rel="noopener noreferrer"
             className="border-none text-theme-text-secondary hover:text-cta-button"
           >
             <BookOpenText size={16} />
-          </Link>
+          </a>
           <button
             type="button"
             onClick={refreshMCPServers}
@@ -87,8 +87,9 @@ export function MCPServersList({
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
         <p>Loading MCP Servers from configuration file...</p>
         <a
-          href="https://docs.anythingllm.com/mcp-servers/getting-started"
+          href="https://docs.anythingllm.com/mcp-compatibility/overview"
           target="_blank"
+          rel="noopener noreferrer"
           className="text-theme-text-secondary underline hover:text-cta-button"
         >
           Learn more about MCP Servers.
@@ -102,8 +103,9 @@ export function MCPServersList({
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
         <p>No MCP servers found</p>
         <a
-          href="https://docs.anythingllm.com/mcp-servers/getting-started"
+          href="https://docs.anythingllm.com/mcp-compatibility/overview"
           target="_blank"
+          rel="noopener noreferrer"
           className="text-theme-text-secondary underline hover:text-cta-button"
         >
           Learn more about MCP Servers.
