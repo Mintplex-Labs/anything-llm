@@ -90,6 +90,8 @@ const TRANSLATIONS = {
     contact: "تماس با پشتیبانی",
     "browser-extension": "افزونه مرورگر",
     "system-prompt-variables": null,
+    "user-permissions": "دسترسی کاربر",
+    "user-permissions-description": "دسترسی کاربر به فضای کاری",
   },
   login: {
     "multi-user": {

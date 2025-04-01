@@ -1,26 +1,39 @@
 import React, { useRef, useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
+import Admin from "@/models/admin";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import ModalWrapper from "@/components/ModalWrapper";
+import useUser from "@/hooks/useUser";
 
 const noop = () => false;
 export default function NewWorkspaceModal({ hideModal = noop }) {
   const formEl = useRef(null);
   const [error, setError] = useState(null);
   const { t } = useTranslation();
+  const { user } = useUser();
+  const [loading, setLoading] = useState(false);
+
   const handleCreate = async (e) => {
     setError(null);
+    setLoading(true);
     e.preventDefault();
     const data = {};
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = value;
-    const { workspace, message } = await Workspace.new(data);
-    if (!!workspace) {
-      window.location.href = paths.workspace.chat(workspace.slug);
+    
+    try {
+      const { workspace, error } = await (user?.role === "default" ? Admin.newWorkspaceAsUser(data.name) : Workspace.new(data));
+      if (error) throw new Error(error);
+      if (workspace) {
+        window.location.href = paths.workspace.chat(workspace.slug);
+      }
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
     }
-    setError(message);
   };
 
   return (
@@ -72,6 +85,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
             <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
               <button
                 type="submit"
+                disabled={loading}
                 className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
                 Save

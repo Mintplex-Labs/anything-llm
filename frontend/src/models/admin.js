@@ -128,6 +128,18 @@ const Admin = {
         return { workspace: null, error: e.message };
       });
   },
+  newWorkspaceAsUser: async (name) => {
+    return await fetch(`${API_BASE}/admin/workspaces/new-user`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ name }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { workspace: null, error: e.message };
+      });
+  },
   updateUsersInWorkspace: async (workspaceId, userIds = []) => {
     return await fetch(
       `${API_BASE}/admin/workspaces/${workspaceId}/update-users`,
@@ -244,6 +256,19 @@ const Admin = {
       .catch((e) => {
         console.error(e);
         return false;
+      });
+  },
+
+  // User Permissions
+  userPermissions: async () => {
+    return await fetch(`${API_BASE}/admin/user-permissions`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { settings: { default_managing_workspaces: false, default_creating_workspaces: false, default_workspace_dnd_file_upload: false } };
       });
   },
 };

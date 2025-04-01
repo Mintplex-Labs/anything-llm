@@ -24,6 +24,7 @@ import WorkspaceAgentConfiguration from "./AgentConfig";
 import useUser from "@/hooks/useUser";
 import { useTranslation } from "react-i18next";
 import System from "@/models/system";
+import Admin from "@/models/admin";
 
 const TABS = {
   "general-appearance": GeneralAppearance,
@@ -50,6 +51,21 @@ function ShowWorkspaceChat() {
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [permissions, setPermissions] = useState({
+    default_managing_workspaces: false
+  });
+
+  useEffect(() => {
+    async function fetchPermissions() {
+      const { settings } = await Admin.userPermissions();
+      setPermissions({
+        default_managing_workspaces: settings?.default_managing_workspaces === true
+      });
+    }
+    fetchPermissions();
+  }, []);
+
+  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
 
   useEffect(() => {
     async function getWorkspace() {
@@ -93,27 +109,32 @@ function ShowWorkspaceChat() {
             title={t("workspaces—settings.general")}
             icon={<Wrench className="h-6 w-6" />}
             to={paths.workspace.settings.generalAppearance(slug)}
+            canManageWorkspace={canManageWorkspace}
           />
           <TabItem
             title={t("workspaces—settings.chat")}
             icon={<ChatText className="h-6 w-6" />}
             to={paths.workspace.settings.chatSettings(slug)}
+            canManageWorkspace={canManageWorkspace}
           />
           <TabItem
             title={t("workspaces—settings.vector")}
             icon={<Database className="h-6 w-6" />}
             to={paths.workspace.settings.vectorDatabase(slug)}
+            canManageWorkspace={canManageWorkspace}
           />
           <TabItem
             title={t("workspaces—settings.members")}
             icon={<User className="h-6 w-6" />}
             to={paths.workspace.settings.members(slug)}
             visible={["admin", "manager"].includes(user?.role)}
+            canManageWorkspace={canManageWorkspace}
           />
           <TabItem
             title={t("workspaces—settings.agent")}
             icon={<Robot className="h-6 w-6" />}
             to={paths.workspace.settings.agentConfig(slug)}
+            canManageWorkspace={canManageWorkspace}
           />
         </div>
         <div className="px-16 py-6">
@@ -124,8 +145,15 @@ function ShowWorkspaceChat() {
   );
 }
 
-function TabItem({ title, icon, to, visible = true }) {
-  if (!visible) return null;
+function TabItem({ title, icon, to, visible = true, canManageWorkspace = false }) {
+  const { t } = useTranslation();
+  
+  // For members tab, only admins and managers can see it
+  if (title === t("workspaces—settings.members") && !visible) return null;
+  
+  // For other tabs, check canManageWorkspace
+  if (title !== t("workspaces—settings.members") && !canManageWorkspace) return null;
+  
   return (
     <NavLink
       to={to}

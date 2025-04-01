@@ -90,6 +90,8 @@ const TRANSLATIONS = {
     contact: "联系支持Связаться с Поддержкой",
     "browser-extension": "Расширение браузера",
     "system-prompt-variables": null,
+    "user-permissions": "Права пользователя",
+    "user-permissions-description": "Управление правами пользователей для этого экземпляра.",
   },
   login: {
     "multi-user": {

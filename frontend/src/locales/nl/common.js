@@ -22,7 +22,7 @@ const TRANSLATIONS = {
       title: null,
       description: null,
     },
-    userSetup: {
+    userSetup: {  
       title: null,
       description: null,
       howManyUsers: null,
@@ -90,6 +90,8 @@ const TRANSLATIONS = {
     contact: "Contact Ondersteuning",
     "browser-extension": "Browser Extensie",
     "system-prompt-variables": null,
+    "user-permissions": "Gebruikersrechten",
+    "user-permissions-description": "Gebruikersrechten beheren voor deze instantie.",
   },
   login: {
     "multi-user": {

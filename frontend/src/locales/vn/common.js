@@ -90,6 +90,8 @@ const TRANSLATIONS = {
     contact: "Liên hệ hỗ trợ",
     "browser-extension": "Tiện ích trình duyệt",
     "system-prompt-variables": null,
+    "user-permissions": "Quyền người dùng",
+    "user-permissions-description": "Quản lý quyền người dùng cho của bạn.",
   },
   login: {
     "multi-user": {

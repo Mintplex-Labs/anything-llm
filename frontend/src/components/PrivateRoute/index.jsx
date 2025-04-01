@@ -7,6 +7,8 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
 import UserMenu from "../UserMenu";
+import useUser from "@/hooks/useUser";
+import Admin from "@/models/admin";
 
 // Used only for Multi-user mode only as we permission specific pages based on auth role.
 // When in single user mode we just bypass any authchecks.
@@ -109,16 +111,31 @@ export function AdminRoute({ Component, hideUserMenu = false }) {
 // Allows manager and admin to access the route and if in single user mode,
 // allows all users to access the route
 export function ManagerRoute({ Component }) {
-  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
-    useIsAuthenticated();
+  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } = useIsAuthenticated();
+  const { user } = useUser();
+  const [permissions, setPermissions] = useState({
+    default_managing_workspaces: false
+  });
+
+  useEffect(() => {
+    async function fetchPermissions() {
+      const { settings } = await Admin.userPermissions();
+      setPermissions({
+        default_managing_workspaces: settings?.default_managing_workspaces === true
+      });
+    }
+    fetchPermissions();
+  }, []);
+
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
     return <Navigate to={paths.onboarding.home()} />;
   }
 
-  const user = userFromStorage();
-  return isAuthd && (user?.role !== "default" || !multiUserMode) ? (
+  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
+
+  return isAuthd && (canManageWorkspace || !multiUserMode) ? (
     <UserMenu>
       <Component />
     </UserMenu>

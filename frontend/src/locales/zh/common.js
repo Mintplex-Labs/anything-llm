@@ -94,6 +94,8 @@ const TRANSLATIONS = {
     contact: "联系支持",
     "browser-extension": "浏览器扩展",
     "system-prompt-variables": null,
+    "user-permissions": "用户权限",
+    "user-permissions-description": "管理此实例的用户权限。",
   },
   login: {
     "multi-user": {

@@ -14,7 +14,7 @@ import { Link, useMatch } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import showToast from "@/utils/toast";
 
-export default function ActiveWorkspaces() {
+export default function ActiveWorkspaces({ canManageWorkspace }) {
   const { slug } = useParams();
   const [loading, setLoading] = useState(true);
   const [workspaces, setWorkspaces] = useState([]);
@@ -88,7 +88,7 @@ export default function ActiveWorkspaces() {
                   key={workspace.id}
                   draggableId={workspace.id.toString()}
                   index={index}
-                  isDragDisabled={user?.role === "default"}
+                  isDragDisabled={!canManageWorkspace}
                 >
                   {(provided, snapshot) => (
                     <div
@@ -116,7 +116,7 @@ export default function ActiveWorkspaces() {
                           `}
                         >
                           <div className="flex flex-row justify-between w-full items-center">
-                            {user?.role !== "default" && (
+                            {canManageWorkspace && (
                               <div
                                 {...provided.dragHandleProps}
                                 className="cursor-grab mr-[3px]"
@@ -141,7 +141,7 @@ export default function ActiveWorkspaces() {
                                 </p>
                               </div>
                             </div>
-                            {user?.role !== "default" && (
+                            {canManageWorkspace && (
                               <div
                                 className={`flex items-center gap-x-[2px] transition-opacity duration-200 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
                               >

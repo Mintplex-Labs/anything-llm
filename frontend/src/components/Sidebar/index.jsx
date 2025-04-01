@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import { useSidebarToggle, ToggleSidebarButton } from "./SidebarToggle";
+import Admin from "@/models/admin";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -24,6 +25,25 @@ export default function Sidebar() {
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
   const { t } = useTranslation();
+  const [permissions, setPermissions] = useState({
+    default_managing_workspaces: false,
+    default_creating_workspaces: false
+  });
+
+  useEffect(() => {
+    async function fetchPermissions() {
+      const { settings } = await Admin.userPermissions();
+      console.log('Fetched permissions:', settings);
+      setPermissions({
+        default_managing_workspaces: settings?.default_managing_workspaces === true,
+        default_creating_workspaces: settings?.default_creating_workspaces === true
+      });
+    }
+    fetchPermissions();
+  }, []);
+
+  const canCreateWorkspace = !user || user?.role !== "default" || permissions.default_creating_workspaces;
+  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
 
   return (
     <>
@@ -60,7 +80,7 @@ export default function Sidebar() {
               <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
                 <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
                   <div className="flex gap-x-2 items-center justify-between">
-                    {(!user || user?.role !== "default") && (
+                    {canCreateWorkspace && (
                       <button
                         onClick={showNewWsModal}
                         className="light:bg-[#C2E7FE] light:hover:bg-[#7CD4FD] flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
@@ -72,7 +92,7 @@ export default function Sidebar() {
                       </button>
                     )}
                   </div>
-                  <ActiveWorkspaces />
+                  <ActiveWorkspaces canManageWorkspace={canManageWorkspace} />
                 </div>
               </div>
               <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-1">
@@ -99,6 +119,31 @@ export function SidebarMobileHeader() {
   } = useNewWorkspaceModal();
   const { user } = useUser();
   const { t } = useTranslation();
+  const [permissions, setPermissions] = useState({
+    default_managing_workspaces: false,
+    default_creating_workspaces: false
+  });
+
+  useEffect(() => {
+    async function fetchPermissions() {
+      const { settings } = await Admin.userPermissions();
+      console.log('Fetched permissions:', settings);
+      setPermissions({
+        default_managing_workspaces: settings?.default_managing_workspaces === true,
+        default_creating_workspaces: settings?.default_creating_workspaces === true
+      });
+    }
+    fetchPermissions();
+  }, []);
+
+  const canCreateWorkspace = !user || user?.role !== "default" || permissions.default_creating_workspaces;
+  console.log('Debug values:', {
+    user,
+    userRole: user?.role,
+    permissions,
+    canCreateWorkspace
+  });
+  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
 
   useEffect(() => {
     // Darkens the rest of the screen
@@ -178,7 +223,7 @@ export function SidebarMobileHeader() {
               <div className="h-auto md:sidebar-items">
                 <div className=" flex flex-col gap-y-4 overflow-y-scroll no-scroll pb-[60px]">
                   <div className="flex gap-x-2 items-center justify-between">
-                    {(!user || user?.role !== "default") && (
+                    {canCreateWorkspace && (
                       <button
                         onClick={showNewWsModal}
                         className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
@@ -190,7 +235,7 @@ export function SidebarMobileHeader() {
                       </button>
                     )}
                   </div>
-                  <ActiveWorkspaces />
+                  <ActiveWorkspaces canManageWorkspace={canManageWorkspace} />
                 </div>
               </div>
               <div className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">

@@ -5,6 +5,8 @@ import System from "../../../../models/system";
 import showToast from "../../../../utils/toast";
 import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
+import useUser from "../../../../hooks/useUser";
+import Admin from "../../../../models/admin";
 
 // OpenAI Cost per token
 // ref: https://openai.com/pricing#:~:text=%C2%A0/%201K%20tokens-,Embedding%20models,-Build%20advanced%20search
@@ -17,71 +19,114 @@ const MODEL_COSTS = {
 
 export default function DocumentSettings({ workspace, systemSettings }) {
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
-  const [availableDocs, setAvailableDocs] = useState([]);
+  const [availableDocs, setAvailableDocs] = useState({ items: [] });
   const [loading, setLoading] = useState(true);
-  const [workspaceDocs, setWorkspaceDocs] = useState([]);
+  const [workspaceDocs, setWorkspaceDocs] = useState({ items: [] });
   const [selectedItems, setSelectedItems] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [movedItems, setMovedItems] = useState([]);
   const [embeddingsCost, setEmbeddingsCost] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("");
+  const { user } = useUser();
+  const [permissions, setPermissions] = useState({
+    default_managing_workspaces: false
+  });
+
+  useEffect(() => {
+    async function fetchPermissions() {
+      const { settings } = await Admin.userPermissions();
+      setPermissions({
+        default_managing_workspaces: settings?.default_managing_workspaces === true
+      });
+    }
+    fetchPermissions();
+  }, []);
+
+  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
 
   async function fetchKeys(refetchWorkspace = false) {
     setLoading(true);
-    const localFiles = await System.localFiles();
-    const currentWorkspace = refetchWorkspace
-      ? await Workspace.bySlug(workspace.slug)
-      : workspace;
+    try {
+      const localFiles = await System.localFiles();
+      if (!localFiles) {
+        // If localFiles is null (unauthorized), set empty states and return
+        setAvailableDocs({ items: [] });
+        setWorkspaceDocs({ items: [] });
+        setLoading(false);
+        return;
+      }
 
-    const documentsInWorkspace =
-      currentWorkspace.documents.map((doc) => doc.docpath) || [];
+      const currentWorkspace = refetchWorkspace
+        ? await Workspace.bySlug(workspace.slug)
+        : workspace;
 
-    // Documents that are not in the workspace
-    const availableDocs = {
-      ...localFiles,
-      items: localFiles.items.map((folder) => {
-        if (folder.items && folder.type === "folder") {
-          return {
-            ...folder,
-            items: folder.items.filter(
-              (file) =>
-                file.type === "file" &&
-                !documentsInWorkspace.includes(`${folder.name}/${file.name}`)
-            ),
-          };
-        } else {
-          return folder;
-        }
-      }),
-    };
+      const documentsInWorkspace =
+        currentWorkspace.documents.map((doc) => doc.docpath) || [];
 
-    // Documents that are already in the workspace
-    const workspaceDocs = {
-      ...localFiles,
-      items: localFiles.items.map((folder) => {
-        if (folder.items && folder.type === "folder") {
-          return {
-            ...folder,
-            items: folder.items.filter(
-              (file) =>
-                file.type === "file" &&
-                documentsInWorkspace.includes(`${folder.name}/${file.name}`)
-            ),
-          };
-        } else {
-          return folder;
-        }
-      }),
-    };
+      // Documents that are not in the workspace
+      const availableDocs = {
+        ...localFiles,
+        items: localFiles.items.map((folder) => {
+          if (folder.items && folder.type === "folder") {
+            return {
+              ...folder,
+              items: folder.items.filter(
+                (file) =>
+                  file.type === "file" &&
+                  !documentsInWorkspace.includes(`${folder.name}/${file.name}`)
+              ),
+            };
+          } else {
+            return folder;
+          }
+        }),
+      };
 
-    setAvailableDocs(availableDocs);
-    setWorkspaceDocs(workspaceDocs);
-    setLoading(false);
+      // Documents that are already in the workspace
+      const workspaceDocs = {
+        ...localFiles,
+        items: localFiles.items.map((folder) => {
+          if (folder.items && folder.type === "folder") {
+            return {
+              ...folder,
+              items: folder.items.filter(
+                (file) =>
+                  file.type === "file" &&
+                  documentsInWorkspace.includes(`${folder.name}/${file.name}`)
+              ),
+            };
+          } else {
+            return folder;
+          }
+        }),
+      };
+
+      setAvailableDocs(availableDocs);
+      setWorkspaceDocs(workspaceDocs);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      // Don't show error toast for unauthorized access
+      if (error.message?.includes("401")) {
+        setAvailableDocs({ items: [] });
+        setWorkspaceDocs({ items: [] });
+      } else {
+        showToast("Error loading documents", "error");
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
-    fetchKeys(true);
-  }, []);
+    if (canManageWorkspace) {
+      fetchKeys(true);
+    } else {
+      setLoading(false);
+      // Set empty arrays for users without permission
+      setAvailableDocs({ items: [] });
+      setWorkspaceDocs({ items: [] });
+    }
+  }, [canManageWorkspace]);
 
   const updateWorkspace = async (e) => {
     e.preventDefault();

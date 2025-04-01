@@ -111,7 +111,7 @@ function workspaceEndpoints(app) {
     "/workspace/:slug/upload",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default]),
       handleFileUpload,
     ],
     async function (request, response) {
@@ -159,7 +159,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload-link",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default])],
     async (request, response) => {
       try {
         const Collector = new CollectorApi();
@@ -202,7 +202,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/update-embeddings",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -246,7 +246,7 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default])],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -289,7 +289,7 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug/reset-vector-db",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default])],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -342,6 +342,34 @@ function workspaceEndpoints(app) {
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspaces/reorder",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default])],
+    async (request, response) => {
+      try {
+        const { workspaceIds = [] } = reqBody(request);
+        if (!Array.isArray(workspaceIds)) {
+          return response.status(400).json({ error: 'Invalid request format' });
+        }
+
+        // Update each workspace's display order in a transaction
+        const updates = workspaceIds.map((id, index) => ({
+          id: Number(id),
+          display_order: index,
+        }));
+
+        for (const update of updates) {
+          await Workspace._update(update.id, { display_order: update.display_order });
+        }
+
+        response.status(200).json({ success: true });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).json({ error: 'Failed to update workspace order' });
       }
     }
   );
@@ -871,7 +899,7 @@ function workspaceEndpoints(app) {
     "/workspace/:slug/upload-and-embed",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.default]),
       handleFileUpload,
     ],
     async function (request, response) {

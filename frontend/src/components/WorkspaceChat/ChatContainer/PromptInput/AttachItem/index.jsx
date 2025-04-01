@@ -2,6 +2,8 @@ import useUser from "@/hooks/useUser";
 import { PaperclipHorizontal } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
+import Admin from "@/models/admin";
+import { useState, useEffect } from "react";
 
 /**
  * This is a simple proxy component that clicks on the DnD file uploader for the user.
@@ -10,7 +12,28 @@ import { useTranslation } from "react-i18next";
 export default function AttachItem() {
   const { t } = useTranslation();
   const { user } = useUser();
-  if (!!user && user.role === "default") return null;
+  const [permissions, setPermissions] = useState({
+    default_workspace_dnd_file_upload: false
+  });
+
+  useEffect(() => {
+    async function fetchPermissions() {
+      try {
+        const { settings } = await Admin.userPermissions();
+        console.log('Fetched permissions:', settings);
+        setPermissions({
+          default_workspace_dnd_file_upload: settings?.default_workspace_dnd_file_upload === true
+        });
+      } catch (error) {
+        console.error('Error fetching permissions:', error);
+      }
+    }
+    fetchPermissions();
+  }, []);
+
+  const canUploadDndFile = !user || user?.role !== "default" || permissions.default_workspace_dnd_file_upload;
+
+  if (!canUploadDndFile) return null;
 
   return (
     <>

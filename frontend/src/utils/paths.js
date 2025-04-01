@@ -89,6 +89,9 @@ export default {
     chats: () => {
       return "/settings/workspace-chats";
     },
+    userPermissions: () => {
+      return "/settings/user-permissions";
+    },
     llmPreference: () => {
       return "/settings/llm-preference";
     },

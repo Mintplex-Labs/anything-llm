@@ -9,6 +9,7 @@ import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 import DataConnectors from "./DataConnectors";
 import ModalWrapper from "@/components/ModalWrapper";
+import Admin from "../../../models/admin";
 
 const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
@@ -18,6 +19,21 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const [workspace, setWorkspace] = useState(null);
   const [settings, setSettings] = useState({});
   const [selectedTab, setSelectedTab] = useState("documents");
+  const [permissions, setPermissions] = useState({
+    default_managing_workspaces: false
+  });
+
+  useEffect(() => {
+    async function fetchPermissions() {
+      const { settings } = await Admin.userPermissions();
+      setPermissions({
+        default_managing_workspaces: settings?.default_managing_workspaces === true
+      });
+    }
+    fetchPermissions();
+  }, []);
+
+  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
 
   useEffect(() => {
     async function getSettings() {
@@ -94,7 +110,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             </button>
           </div>
 
-          {user?.role !== "default" && (
+          {canManageWorkspace && (
             <ModalTabSwitcher
               selectedTab={selectedTab}
               setSelectedTab={setSelectedTab}
@@ -147,9 +163,24 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
 export function useManageWorkspaceModal() {
   const { user } = useUser();
   const [showing, setShowing] = useState(false);
+  const [permissions, setPermissions] = useState({
+    default_managing_workspaces: false
+  });
+
+  useEffect(() => {
+    async function fetchPermissions() {
+      const { settings } = await Admin.userPermissions();
+      setPermissions({
+        default_managing_workspaces: settings?.default_managing_workspaces === true
+      });
+    }
+    fetchPermissions();
+  }, []);
+
+  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
 
   function showModal() {
-    if (user?.role !== "default") {
+    if (canManageWorkspace) {
       setShowing(true);
     }
   }

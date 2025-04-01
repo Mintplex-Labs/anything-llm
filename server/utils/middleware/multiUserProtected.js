@@ -6,7 +6,7 @@ const ROLES = {
   manager: "manager",
   default: "default",
 };
-const DEFAULT_ROLES = [ROLES.admin, ROLES.admin];
+const DEFAULT_ROLES = [ROLES.admin];
 
 /**
  * Explicitly check that multi user mode is enabled as well as that the
@@ -63,10 +63,28 @@ function flexUserRoleValid(allowedRoles = DEFAULT_ROLES) {
 
     const user =
       response.locals?.user ?? (await userFromSession(request, response));
+    
+    // Check if user has the required role
     if (allowedRoles.includes(user?.role)) {
       next();
       return;
     }
+
+    // For default users, check if they have the default_managing_workspaces permission
+    if (user?.role === ROLES.default) {
+      const settings = await SystemSettings.currentSettings();
+      // Check for default_managing_workspaces permission
+      if (settings?.default_managing_workspaces === true) {
+        next();
+        return;
+      }
+      // Check for default_workspace_dnd_file_upload permission
+      if (settings?.default_workspace_dnd_file_upload === true) {
+        next();
+        return;
+      }
+    }
+
     return response.sendStatus(401).end();
   };
 }

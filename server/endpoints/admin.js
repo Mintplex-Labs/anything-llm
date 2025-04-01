@@ -416,6 +416,14 @@ function adminEndpoints(app) {
     async (_, response) => {
       try {
         const embedder = getEmbeddingEngineSelection();
+        const managingWorkspacesSetting = await SystemSettings.get({ label: "default_managing_workspaces" });
+        const creatingWorkspacesSetting = await SystemSettings.get({ label: "default_creating_workspaces" });
+        const dndFileUploadSetting = await SystemSettings.get({ label: "default_workspace_dnd_file_upload" });
+        
+        console.log('Managing workspaces setting from DB:', managingWorkspacesSetting);
+        console.log('Creating workspaces setting from DB:', creatingWorkspacesSetting);
+        console.log('DND file upload setting from DB:', dndFileUploadSetting);
+
         const settings = {
           footer_data:
             (await SystemSettings.get({ label: "footer_data" }))?.value ||
@@ -462,10 +470,15 @@ function adminEndpoints(app) {
             { label: "meta_page_favicon" },
             null
           ),
+          default_managing_workspaces: managingWorkspacesSetting?.value === "true",
+          default_creating_workspaces: creatingWorkspacesSetting?.value === "true",
+          default_workspace_dnd_file_upload: dndFileUploadSetting?.value === "true",
         };
+        
+        console.log('Sending settings to frontend:', settings);
         response.status(200).json({ settings });
       } catch (e) {
-        console.error(e);
+        console.error('Error in system preferences endpoint:', e);
         response.sendStatus(500).end();
       }
     }
@@ -546,6 +559,56 @@ function adminEndpoints(app) {
           response?.locals?.user?.id
         );
         return response.status(200).end();
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // Add new endpoint for default users to fetch their permissions
+  app.get(
+    "/admin/user-permissions",
+    [validatedRequest],
+    async (_, response) => {
+      try {
+        const managingWorkspacesSetting = await SystemSettings.get({ label: "default_managing_workspaces" });
+        const creatingWorkspacesSetting = await SystemSettings.get({ label: "default_creating_workspaces" });
+        const dndFileUploadSetting = await SystemSettings.get({ label: "default_workspace_dnd_file_upload" });
+        const settings = {
+          default_managing_workspaces: managingWorkspacesSetting?.value === "true",
+          default_creating_workspaces: creatingWorkspacesSetting?.value === "true",
+          default_workspace_dnd_file_upload: dndFileUploadSetting?.value === "true"
+        };
+        
+        response.status(200).json({ settings });
+      } catch (e) {
+        console.error('Error in user permissions endpoint:', e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // Add new endpoint for default users to create workspaces
+  app.post(
+    "/admin/workspaces/new-user",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { name } = reqBody(request);
+
+        // Check if user has permission to create workspaces
+        const creatingWorkspacesSetting = await SystemSettings.get({ label: "default_creating_workspaces" });
+        const canCreateWorkspace = user.role !== "default" || creatingWorkspacesSetting?.value === "true";
+
+        if (!canCreateWorkspace) {
+          response.status(403).json({ workspace: null, error: "You do not have permission to create workspaces" });
+          return;
+        }
+
+        const { workspace, message: error } = await Workspace.new(name, user.id);
+        response.status(200).json({ workspace, error });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

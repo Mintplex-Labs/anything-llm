@@ -54,6 +54,11 @@ const SystemSettings = {
 
     // Hub settings
     "hub_api_key",
+
+    // User permissions
+    "default_managing_workspaces",
+    "default_creating_workspaces",
+    "default_workspace_dnd_file_upload"
   ],
   validations: {
     footer_data: (updates) => {
@@ -341,6 +346,11 @@ const SystemSettings = {
           } else {
             validatedValue = this.validations[key](updates[key]);
           }
+        }
+
+        // Convert boolean values to strings for storage
+        if (typeof validatedValue === 'boolean') {
+          validatedValue = validatedValue.toString();
         }
 
         updatePromises.push(

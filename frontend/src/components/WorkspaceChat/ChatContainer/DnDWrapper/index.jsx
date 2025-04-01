@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
 import useUser from "@/hooks/useUser";
+import Admin from "@/models/admin";
 
 export const DndUploaderContext = createContext();
 export const REMOVE_ATTACHMENT_EVENT = "ATTACHMENT_REMOVE";
@@ -28,6 +29,21 @@ export function DnDFileUploaderProvider({ workspace, children }) {
   const [ready, setReady] = useState(false);
   const [dragging, setDragging] = useState(false);
   const { user } = useUser();
+  const [permissions, setPermissions] = useState({
+    default_managing_workspaces: false
+  });
+
+  useEffect(() => {
+    async function fetchPermissions() {
+      const { settings } = await Admin.userPermissions();
+      setPermissions({
+        default_managing_workspaces: settings?.default_managing_workspaces === true
+      });
+    }
+    fetchPermissions();
+  }, []);
+
+  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
 
   useEffect(() => {
     System.checkDocumentProcessorOnline().then((status) => setReady(status));
@@ -110,8 +126,8 @@ export function DnDFileUploaderProvider({ workspace, children }) {
           type: "attachment",
         });
       } else {
-        // If the user is a default user, we do not want to allow them to upload files.
-        if (!!user && user.role === "default") continue;
+        // If the user is a default user without manage permission, we do not want to allow them to upload files.
+        if (!!user && user.role === "default" && !canManageWorkspace) continue;
         newAccepted.push({
           uid: v4(),
           file,
@@ -147,8 +163,8 @@ export function DnDFileUploaderProvider({ workspace, children }) {
           type: "attachment",
         });
       } else {
-        // If the user is a default user, we do not want to allow them to upload files.
-        if (!!user && user.role === "default") continue;
+        // If the user is a default user without manage permission, we do not want to allow them to upload files.
+        if (!!user && user.role === "default" && !canManageWorkspace) continue;
         newAccepted.push({
           uid: v4(),
           file,
@@ -220,7 +236,22 @@ export default function DnDFileUploaderWrapper({ children }) {
     onDragLeave: () => setDragging(false),
   });
   const { user } = useUser();
-  const canUploadAll = !user || user?.role !== "default";
+  const [permissions, setPermissions] = useState({
+    default_managing_workspaces: false
+  });
+
+  useEffect(() => {
+    async function fetchPermissions() {
+      const { settings } = await Admin.userPermissions();
+      setPermissions({
+        default_managing_workspaces: settings?.default_managing_workspaces === true
+      });
+    }
+    fetchPermissions();
+  }, []);
+
+  const canManageWorkspace = !user || user?.role !== "default" || permissions.default_managing_workspaces;
+  const canUploadAll = canManageWorkspace;
 
   return (
     <div

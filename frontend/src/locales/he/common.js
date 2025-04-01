@@ -90,6 +90,8 @@ const TRANSLATIONS = {
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
     "system-prompt-variables": null,
+    "user-permissions": "הרשאות משתמש",
+    "user-permissions-description": "ניתן להגדיר הרשאות משתמש לכל משתמש במערכת",
   },
   login: {
     "multi-user": {

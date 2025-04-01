@@ -90,6 +90,8 @@ const TRANSLATIONS = {
     contact: "Contato com Suporte",
     "browser-extension": "Extensão do navegador",
     "system-prompt-variables": null,
+    "user-permissions": "Permissões de Usuário",
+    "user-permissions-description": "Gerenciar permissões de usuário para esta instância.",
   },
   login: {
     "multi-user": {

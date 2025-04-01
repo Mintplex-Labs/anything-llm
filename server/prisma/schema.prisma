@@ -53,6 +53,9 @@ model system_settings {
   id            Int      @id @default(autoincrement())
   label         String   @unique
   value         String?
+  default_managing_workspaces   Boolean  @default(false)
+  default_creating_workspaces   Boolean  @default(false)
+  default_workspace_dnd_file_upload Boolean @default(false)
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
 }
@@ -81,6 +84,14 @@ model users {
   browser_extension_api_keys  browser_extension_api_keys[]
   temporary_auth_tokens       temporary_auth_tokens[]
   system_prompt_variables     system_prompt_variables[]
+}
+
+model default_permissions {
+  id                    Int      @id @default(autoincrement())
+  managing_workspaces   Boolean  @default(false)
+  creating_workspaces   Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  lastUpdatedAt        DateTime @default(now())
 }
 
 model recovery_codes {
