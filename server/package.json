@@ -34,6 +34,7 @@
     "@langchain/textsplitters": "0.0.0",
     "@mintplex-labs/bree": "^9.2.5",
     "@mintplex-labs/express-ws": "^5.0.7",
+    "@modelcontextprotocol/sdk": "^1.8.0",
     "@pinecone-database/pinecone": "^2.0.1",
     "@prisma/client": "5.3.1",
     "@qdrant/js-client-rest": "^1.9.0",
