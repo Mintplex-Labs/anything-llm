@@ -1,9 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
 import { HandWaving } from "@phosphor-icons/react";
-import { useHomePageActions } from "@/hooks/useHomePageActions";
+import { useState } from "react";
 
-const CHECKLIST_STORAGE_KEY = "anythingllm_checklist_completed";
+export const CHECKLIST_STORAGE_KEY = "anythingllm_checklist_completed";
 
 export const CHECKLIST_ITEMS = [
   {
@@ -56,16 +54,8 @@ export const CHECKLIST_ITEMS = [
   },
 ];
 
-export function ChecklistItem({
-  id,
-  title,
-  description,
-  action,
-  handler,
-  completed: defaultCompleted,
-}) {
-  const actions = useHomePageActions();
-  const [isCompleted, setIsCompleted] = React.useState(() => {
+export function ChecklistItem({ id, title, description, action, completed: defaultCompleted, onAction }) {
+  const [isCompleted, setIsCompleted] = useState(() => {
     const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
     if (!stored) return defaultCompleted;
     const completedItems = JSON.parse(stored);
@@ -77,13 +67,9 @@ export function ChecklistItem({
     const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
     const completedItems = stored ? JSON.parse(stored) : {};
     completedItems[id] = true;
-    window.localStorage.setItem(
-      CHECKLIST_STORAGE_KEY,
-      JSON.stringify(completedItems)
-    );
+    window.localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(completedItems));
     setIsCompleted(true);
-
-    await actions[handler]();
+    await onAction();
   };
 
   return (
@@ -110,12 +96,3 @@ export function ChecklistItem({
     </div>
   );
 }
-
-ChecklistItem.propTypes = {
-  id: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-  action: PropTypes.string.isRequired,
-  handler: PropTypes.string.isRequired,
-  completed: PropTypes.bool.isRequired,
-};
