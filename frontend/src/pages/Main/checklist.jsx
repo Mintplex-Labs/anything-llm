@@ -1,5 +1,7 @@
 import { HandWaving } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import useUser from "@/hooks/useUser";
+import System from "@/models/system";
 
 export const CHECKLIST_STORAGE_KEY = "anythingllm_checklist_completed";
 
@@ -11,6 +13,7 @@ export const CHECKLIST_ITEMS = [
     action: "Create",
     handler: "createWorkspace",
     completed: false,
+    roles: ["admin", "manager"],
   },
   {
     id: "send_chat",
@@ -19,6 +22,7 @@ export const CHECKLIST_ITEMS = [
     action: "Chat",
     handler: "sendChat",
     completed: false,
+    roles: ["admin", "manager", "default"],
   },
   {
     id: "embed_document",
@@ -27,6 +31,7 @@ export const CHECKLIST_ITEMS = [
     action: "Embed",
     handler: "embedDocument",
     completed: false,
+    roles: ["admin", "manager"],
   },
   {
     id: "setup_system_prompt",
@@ -35,6 +40,7 @@ export const CHECKLIST_ITEMS = [
     action: "Set Up",
     handler: "setSystemPrompt",
     completed: false,
+    roles: ["admin", "manager"],
   },
   {
     id: "define_slash_command",
@@ -43,6 +49,7 @@ export const CHECKLIST_ITEMS = [
     action: "Define",
     handler: "setSlashCommand",
     completed: false,
+    roles: ["admin", "manager", "default"],
   },
   {
     id: "visit_community",
@@ -51,6 +58,7 @@ export const CHECKLIST_ITEMS = [
     action: "Browse",
     handler: "visitCommunityHub",
     completed: false,
+    roles: ["admin", "manager", "default"],
   },
 ];
 
@@ -105,4 +113,28 @@ export function ChecklistItem({
       )}
     </div>
   );
+}
+
+export function useChecklistItems() {
+  const [items, setItems] = useState([]);
+  const { user } = useUser();
+
+  useEffect(() => {
+    async function checkMultiUserMode() {
+      const isMultiUser = await System.isMultiUserMode();
+
+      if (!isMultiUser) {
+        setItems(CHECKLIST_ITEMS);
+        return;
+      }
+
+      const filteredItems = CHECKLIST_ITEMS.filter(
+        (item) => !item.roles || item.roles.includes(user?.role)
+      );
+      setItems(filteredItems);
+    }
+    checkMultiUserMode();
+  }, [user?.role]);
+
+  return items;
 }

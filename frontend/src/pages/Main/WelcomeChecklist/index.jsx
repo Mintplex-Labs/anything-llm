@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { ArrowCircleUpRight } from "@phosphor-icons/react";
 import WelcomeBanner from "./Banner";
@@ -11,9 +11,9 @@ import NewWorkspaceModal, {
 import Workspace from "@/models/workspace";
 import { useNavigate } from "react-router-dom";
 import {
-  CHECKLIST_ITEMS,
   ChecklistItem,
   CHECKLIST_STORAGE_KEY,
+  useChecklistItems,
 } from "../checklist";
 
 const FOOTER_LINKS = [
@@ -35,6 +35,7 @@ export default function WelcomeChecklist({ onSkip }) {
   const [completedCount, setCompletedCount] = useState(0);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const navigate = useNavigate();
+  const checklistItems = useChecklistItems();
 
   const {
     showModal: showNewWsModal,
@@ -102,14 +103,16 @@ export default function WelcomeChecklist({ onSkip }) {
       <div className="w-full max-w-[680px] min-h-[450px] flex flex-col rounded-[24px] border border-white/20 py-8 px-9">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-white font-semibold text-lg">Getting Started</h1>
-          {CHECKLIST_ITEMS.length - completedCount > 0 && (
-            <p className="text-[#9F9FA0] text-xs">
-              {CHECKLIST_ITEMS.length - completedCount} tasks left
-            </p>
-          )}
+          <div className="flex items-center gap-x-2">
+            {checklistItems.length - completedCount > 0 && (
+              <p className="text-[#9F9FA0] text-xs">
+                {checklistItems.length - completedCount} tasks left
+              </p>
+            )}
+          </div>
         </div>
         <div className="flex-1 flex flex-col gap-6">
-          {CHECKLIST_ITEMS.map((item) => (
+          {checklistItems.map((item) => (
             <ChecklistItem
               key={item.id}
               {...item}

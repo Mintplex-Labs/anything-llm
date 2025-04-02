@@ -10,9 +10,9 @@ import Workspace from "@/models/workspace";
 import { useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import {
-  CHECKLIST_ITEMS,
   ChecklistItem,
   CHECKLIST_STORAGE_KEY,
+  useChecklistItems,
 } from "../../checklist";
 
 export const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
@@ -22,6 +22,7 @@ export default function Checklist() {
   const [completedCount, setCompletedCount] = useState(0);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const navigate = useNavigate();
+  const checklistItems = useChecklistItems();
 
   const {
     showModal: showNewWsModal,
@@ -99,9 +100,9 @@ export default function Checklist() {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-white font-semibold text-lg">Getting Started</h1>
           <div className="flex items-center gap-x-2">
-            {CHECKLIST_ITEMS.length - completedCount > 0 && (
+            {checklistItems.length - completedCount > 0 && (
               <p className="text-[#9F9FA0] text-xs">
-                {CHECKLIST_ITEMS.length - completedCount} tasks left
+                {checklistItems.length - completedCount} tasks left
               </p>
             )}
             <button
@@ -113,7 +114,7 @@ export default function Checklist() {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {CHECKLIST_ITEMS.map((item) => (
+          {checklistItems.map((item) => (
             <ChecklistItem
               key={item.id}
               {...item}

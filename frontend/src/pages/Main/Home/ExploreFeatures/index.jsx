@@ -1,9 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import Workspace from "@/models/workspace";
+import { useState, useEffect } from "react";
+import useUser from "@/hooks/useUser";
+import System from "@/models/system";
 
 export default function ExploreFeatures() {
   const navigate = useNavigate();
+  const [isMultiUser, setIsMultiUser] = useState(false);
+  const { user } = useUser();
+  const isDefaultUser = isMultiUser && user?.role === "default";
+
+  useEffect(() => {
+    System.isMultiUserMode().then(setIsMultiUser);
+  }, []);
 
   const chatWithAgent = async () => {
     const workspaces = await Workspace.all();
@@ -54,7 +64,7 @@ export default function ExploreFeatures() {
           title="Utilize Agent Skills"
           description="Enabling powerful automation and workflow extensions for your specific needs."
           primaryAction="Chat with Agent"
-          secondaryAction="Build Agent Flow"
+          secondaryAction={!isDefaultUser ? "Build Agent Flow" : null}
           onPrimaryAction={chatWithAgent}
           onSecondaryAction={buildAgentFlow}
           isNew={true}
@@ -68,15 +78,17 @@ export default function ExploreFeatures() {
           onSecondaryAction={exploreSlashCommands}
           isNew={true}
         />
-        <FeatureCard
-          title="System Prompts"
-          description="Enabling powerful automation and workflow extensions for your specific needs."
-          primaryAction="Setup System Prompt"
-          secondaryAction="Explore on Hub"
-          onPrimaryAction={setSystemPrompt}
-          onSecondaryAction={exploreSystemPrompts}
-          isNew={true}
-        />
+        {!isDefaultUser && (
+          <FeatureCard
+            title="System Prompts"
+            description="Enabling powerful automation and workflow extensions for your specific needs."
+            primaryAction="Setup System Prompt"
+            secondaryAction="Explore on Hub"
+            onPrimaryAction={setSystemPrompt}
+            onSecondaryAction={exploreSystemPrompts}
+            isNew={true}
+          />
+        )}
       </div>
     </div>
   );
@@ -106,19 +118,21 @@ function FeatureCard({
         >
           {primaryAction}
         </button>
-        <div className="relative w-full">
-          {isNew && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 border border-[#3F3F42] px-2 font-semibold rounded-md text-[10px] text-white">
-              New
-            </div>
-          )}
-          <button
-            onClick={onSecondaryAction}
-            className="w-full h-[36px] bg-[#27282A] rounded-lg text-white text-sm font-medium flex items-center justify-center"
-          >
-            {secondaryAction}
-          </button>
-        </div>
+        {secondaryAction && (
+          <div className="relative w-full">
+            {isNew && (
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 border border-[#3F3F42] px-2 font-semibold rounded-md text-[10px] text-white">
+                New
+              </div>
+            )}
+            <button
+              onClick={onSecondaryAction}
+              className="w-full h-[36px] bg-[#27282A] rounded-lg text-white text-sm font-medium flex items-center justify-center"
+            >
+              {secondaryAction}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

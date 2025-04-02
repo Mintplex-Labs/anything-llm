@@ -4,19 +4,27 @@ import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import { useManageWorkspaceModal } from "@/components/Modals/ManageWorkspace";
 import ManageWorkspace from "@/components/Modals/ManageWorkspace";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNewWorkspaceModal } from "@/components/Modals/NewWorkspace";
 import NewWorkspaceModal from "@/components/Modals/NewWorkspace";
+import useUser from "@/hooks/useUser";
+import System from "@/models/system";
 
 export default function GetStarted() {
   const navigate = useNavigate();
   const { showModal } = useManageWorkspaceModal();
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [isMultiUser, setIsMultiUser] = useState(false);
+  const { user } = useUser();
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
+
+  useEffect(() => {
+    System.isMultiUserMode().then(setIsMultiUser);
+  }, []);
 
   const sendChat = async () => {
     const workspaces = await Workspace.all();
@@ -39,6 +47,8 @@ export default function GetStarted() {
     showNewWsModal();
   };
 
+  const isDefaultUser = isMultiUser && user?.role === "default";
+
   return (
     <div>
       <h1 className="text-white uppercase text-sm font-semibold mb-6">
@@ -52,20 +62,24 @@ export default function GetStarted() {
           <ChatCenteredDots size={16} />
           Send Chat
         </button>
-        <button
-          onClick={embedDocument}
-          className="h-[45px] bg-[#27282A] rounded-lg text-white flex items-center justify-center gap-x-2.5"
-        >
-          <FileArrowDown size={16} />
-          Embed a Document
-        </button>
-        <button
-          onClick={createWorkspace}
-          className="h-[45px] bg-[#27282A] rounded-lg text-white flex items-center justify-center gap-x-2.5"
-        >
-          <Plus size={16} />
-          Create Workspace
-        </button>
+        {!isDefaultUser && (
+          <>
+            <button
+              onClick={embedDocument}
+              className="h-[45px] bg-[#27282A] rounded-lg text-white flex items-center justify-center gap-x-2.5"
+            >
+              <FileArrowDown size={16} />
+              Embed a Document
+            </button>
+            <button
+              onClick={createWorkspace}
+              className="h-[45px] bg-[#27282A] rounded-lg text-white flex items-center justify-center gap-x-2.5"
+            >
+              <Plus size={16} />
+              Create Workspace
+            </button>
+          </>
+        )}
       </div>
 
       {selectedWorkspace && (
