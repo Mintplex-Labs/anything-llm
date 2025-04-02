@@ -3,7 +3,7 @@ import { news } from "./news";
 export default function Updates() {
   return (
     <div>
-      <h1 className="text-white uppercase text-sm font-semibold mb-6">
+      <h1 className="text-white uppercase text-sm font-semibold mb-4">
         Updates
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

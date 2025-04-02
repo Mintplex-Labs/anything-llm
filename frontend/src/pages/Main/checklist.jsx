@@ -1,4 +1,3 @@
-import { HandWaving } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import useUser from "@/hooks/useUser";
 import System from "@/models/system";
@@ -65,7 +64,6 @@ export const CHECKLIST_ITEMS = [
 export function ChecklistItem({
   id,
   title,
-  description,
   action,
   completed: defaultCompleted,
   onAction,
@@ -77,37 +75,37 @@ export function ChecklistItem({
     return completedItems[id] || defaultCompleted;
   });
 
-  const handleComplete = async (e) => {
+  const handleClick = async (e) => {
     e.preventDefault();
-    const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
-    const completedItems = stored ? JSON.parse(stored) : {};
-    completedItems[id] = true;
-    window.localStorage.setItem(
-      CHECKLIST_STORAGE_KEY,
-      JSON.stringify(completedItems)
-    );
-    setIsCompleted(true);
+    if (!isCompleted) {
+      const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
+      const completedItems = stored ? JSON.parse(stored) : {};
+      completedItems[id] = true;
+      window.localStorage.setItem(
+        CHECKLIST_STORAGE_KEY,
+        JSON.stringify(completedItems)
+      );
+      setIsCompleted(true);
+    }
     await onAction();
   };
 
   return (
     <div
-      className="flex items-center gap-x-4 hover:opacity-80 transition-colors cursor-pointer"
-      onClick={!isCompleted ? handleComplete : undefined}
+      className="flex items-center gap-x-4 transition-colors cursor-pointer bg-[#3E3C3E] rounded-lg p-3 group"
+      onClick={handleClick}
     >
-      <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-        <HandWaving size={24} className="text-white" />
-      </div>
       <div className="flex-1">
-        <h3 className="text-white text-sm">{title}</h3>
-        <p className="text-[#9F9FA0] text-xs">{description}</p>
+        <h3 className="text-white text-sm font-medium group-hover:text-[#36BFFA] transition-colors duration-200">
+          {title}
+        </h3>
       </div>
       {isCompleted ? (
         <div className="w-3.5 h-3.5 rounded-full border border-white flex items-center justify-center">
           <div className="w-2 h-2 bg-[#6CE9A6] rounded-full" />
         </div>
       ) : (
-        <button className="w-[78px] h-9 rounded-md bg-[#36BFFA] text-black font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center">
+        <button className="w-[64px] h-[24px] rounded-md border border-[#36BFFA] text-[#36BFFA] font-semibold text-xs transition-all duration-200 flex items-center justify-center hover:bg-[#36BFFA]/20 hover:border-[#36BFFA]/80">
           {action}
         </button>
       )}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import GetStarted from "./GetStarted";
+import QuickLinks from "./QuickLinks";
 import ExploreFeatures from "./ExploreFeatures";
 import Updates from "./Updates";
 import Resources from "./Resources";
@@ -42,7 +42,7 @@ export default function Home() {
           ) : (
             <div className="w-full max-w-[1200px] flex flex-col gap-y-[50px] p-4 pt-16 md:p-12">
               <Checklist />
-              <GetStarted />
+              <QuickLinks />
               <ExploreFeatures />
               <Updates />
               <Resources />

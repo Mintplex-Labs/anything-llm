@@ -56,7 +56,7 @@ export default function ExploreFeatures() {
 
   return (
     <div>
-      <h1 className="text-white uppercase text-sm font-semibold mb-6">
+      <h1 className="text-white uppercase text-sm font-semibold mb-4">
         Explore our features
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -114,7 +114,7 @@ function FeatureCard({
       <div className="flex flex-col gap-y-[10px]">
         <button
           onClick={onPrimaryAction}
-          className="w-full h-[36px] bg-[#36BFFA] rounded-lg text-black text-sm font-medium flex items-center justify-center gap-x-2.5"
+          className="w-full h-[36px] bg-white rounded-lg text-black text-sm font-medium flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-white/90"
         >
           {primaryAction}
         </button>
@@ -127,7 +127,7 @@ function FeatureCard({
             )}
             <button
               onClick={onSecondaryAction}
-              className="w-full h-[36px] bg-[#27282A] rounded-lg text-white text-sm font-medium flex items-center justify-center"
+              className="w-full h-[36px] bg-[#27282A] rounded-lg text-white text-sm font-medium flex items-center justify-center transition-all duration-200 hover:bg-[#36BFFA]/10 hover:text-[#36BFFA]"
             >
               {secondaryAction}
             </button>
