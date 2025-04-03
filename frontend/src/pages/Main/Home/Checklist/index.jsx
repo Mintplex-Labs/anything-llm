@@ -49,7 +49,10 @@ export default function Checklist() {
         delete completedItems["create_workspace"];
       }
 
-      window.localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(completedItems));
+      window.localStorage.setItem(
+        CHECKLIST_STORAGE_KEY,
+        JSON.stringify(completedItems)
+      );
       setCompletedCount(Object.keys(completedItems).length);
     };
 
