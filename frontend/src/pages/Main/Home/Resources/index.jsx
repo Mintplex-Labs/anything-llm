@@ -1,3 +1,4 @@
+import paths from "@/utils/paths";
 import { ArrowCircleUpRight } from "@phosphor-icons/react";
 
 export default function Resources() {
@@ -8,21 +9,18 @@ export default function Resources() {
       </h1>
       <div className="flex gap-x-6">
         <a
-          href="#"
+          target="_blank"
+          rel="noopener noreferrer "
+          href={paths.docs()}
           className="text-theme-home-text text-sm flex items-center gap-x-2 hover:opacity-70"
         >
           Docs
           <ArrowCircleUpRight weight="fill" size={16} />
         </a>
         <a
-          href="#"
-          className="text-theme-home-text text-sm flex items-center gap-x-2 hover:opacity-70"
-        >
-          Tutorials
-          <ArrowCircleUpRight weight="fill" size={16} />
-        </a>
-        <a
-          href="#"
+          href={paths.github()}
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-theme-home-text text-sm flex items-center gap-x-2 hover:opacity-70"
         >
           Github
