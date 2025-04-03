@@ -180,11 +180,11 @@ export default function Checklist() {
     <div>
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-x-3">
-          <h1 className="text-white uppercase text-sm font-semibold">
+          <h1 className="text-theme-home-text uppercase text-sm font-semibold">
             Getting Started
           </h1>
           {checklistItems.length - completedCount > 0 && (
-            <p className="text-[#9F9FA0] text-xs">
+            <p className="text-theme-home-text-secondary text-xs">
               {checklistItems.length - completedCount} tasks left
             </p>
           )}
@@ -193,14 +193,14 @@ export default function Checklist() {
         <div className="flex items-center gap-x-2">
           <button
             onClick={handleClose}
-            className="text-white bg-[#1B1B1E] px-2 py-1 rounded-lg hover:bg-white/10 transition-colors text-xs"
+            className="text-theme-home-text bg-theme-home-bg-button px-2 py-1 rounded-lg hover:bg-white/10 transition-colors text-xs"
           >
             close
           </button>
         </div>
       </div>
 
-      <div className="rounded-lg border border-white/20 p-4 lg:p-6 -mb-6 bg-[#211F22]">
+      <div className="rounded-lg border border-theme-home-border p-4 lg:p-6 -mb-6 bg-theme-home-bg-card">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {checklistItems.map((item) => (
             <ChecklistItem

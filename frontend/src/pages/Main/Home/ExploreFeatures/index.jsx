@@ -57,7 +57,7 @@ export default function ExploreFeatures() {
 
   return (
     <div>
-      <h1 className="text-white uppercase text-sm font-semibold mb-4">
+      <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
         Explore our features
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -107,30 +107,30 @@ function FeatureCard({
   isNew,
 }) {
   return (
-    <div className="border border-white/20 rounded-lg py-4 px-5 flex flex-col gap-y-4">
+    <div className="border border-theme-home-border rounded-lg py-4 px-5 flex flex-col gap-y-4">
       <div className="flex flex-col gap-y-2">
-        <h2 className="text-white font-semibold flex items-center gap-x-2">
+        <h2 className="text-theme-home-text font-semibold flex items-center gap-x-2">
           {title}
         </h2>
-        <p className="text-[#9F9FA0] text-sm">{description}</p>
+        <p className="text-theme-home-text-secondary text-sm">{description}</p>
       </div>
       <div className="flex flex-col gap-y-[10px]">
         <button
           onClick={onPrimaryAction}
-          className="w-full h-[36px] bg-white rounded-lg text-black text-sm font-medium flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-white/90"
+          className="w-full h-[36px] bg-white light:bg-theme-home-button-primary rounded-lg text-black text-sm font-medium flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-white/90 light:hover:bg-theme-home-button-primary-hover"
         >
           {primaryAction}
         </button>
         {secondaryAction && (
           <div className="relative w-full">
             {isNew && (
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 border border-[#3F3F42] px-2 font-semibold rounded-md text-[10px] text-white">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 border border-theme-home-border px-2 font-semibold rounded-md text-[10px] text-theme-home-text">
                 New
               </div>
             )}
             <button
               onClick={onSecondaryAction}
-              className="w-full h-[36px] bg-[#27282A] rounded-lg text-white text-sm font-medium flex items-center justify-center transition-all duration-200 hover:bg-[#36BFFA]/10 hover:text-[#36BFFA]"
+              className="w-full h-[36px] bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text text-sm font-medium flex items-center justify-center transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
             >
               {secondaryAction}
             </button>

@@ -96,20 +96,20 @@ export function ChecklistItem({
 
   return (
     <div
-      className="flex items-center gap-x-4 transition-colors cursor-pointer bg-[#3E3C3E] rounded-lg p-3 group"
+      className="flex items-center gap-x-4 transition-colors cursor-pointer bg-theme-checklist-item-bg rounded-lg p-3 group"
       onClick={handleClick}
     >
       <div className="flex-1">
-        <h3 className="text-white text-sm font-medium group-hover:text-[#36BFFA] transition-colors duration-200">
+        <h3 className="text-theme-checklist-item-text text-sm font-medium group-hover:text-theme-checklist-item-hover transition-colors duration-200">
           {title}
         </h3>
       </div>
       {isCompleted ? (
-        <div className="w-3.5 h-3.5 rounded-full border border-white flex items-center justify-center">
-          <div className="w-2 h-2 bg-[#6CE9A6] rounded-full" />
+        <div className="w-3.5 h-3.5 rounded-full border border-theme-checklist-checkbox-border flex items-center justify-center">
+          <div className="w-2 h-2 bg-theme-checklist-checkbox-fill rounded-full" />
         </div>
       ) : (
-        <button className="w-[64px] h-[24px] rounded-md border border-[#36BFFA] text-[#36BFFA] font-semibold text-xs transition-all duration-200 flex items-center justify-center hover:bg-[#36BFFA]/20 hover:border-[#36BFFA]/80">
+        <button className="w-[64px] h-[24px] rounded-md border border-theme-checklist-button-border text-theme-checklist-button-text font-semibold text-xs transition-all duration-200 flex items-center justify-center hover:bg-theme-checklist-button-hover-bg hover:border-theme-checklist-button-hover-border">
           {action}
         </button>
       )}

@@ -51,13 +51,13 @@ export default function QuickLinks() {
 
   return (
     <div>
-      <h1 className="text-white uppercase text-sm font-semibold mb-4">
+      <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
         Quick Links
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <button
           onClick={sendChat}
-          className="h-[45px] bg-[#36BFFA] rounded-lg text-black flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-[#36BFFA]/90"
+          className="h-[45px] bg-theme-home-button-primary rounded-lg text-black flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-primary-hover"
         >
           <ChatCenteredDots size={16} />
           Send Chat
@@ -66,14 +66,14 @@ export default function QuickLinks() {
           <>
             <button
               onClick={embedDocument}
-              className="h-[45px] bg-[#27282A] rounded-lg text-white flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-[#36BFFA]/10 hover:text-[#36BFFA]"
+              className="h-[45px] bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
             >
               <FileArrowDown size={16} />
               Embed a Document
             </button>
             <button
               onClick={createWorkspace}
-              className="h-[45px] bg-[#27282A] rounded-lg text-white flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-[#36BFFA]/10 hover:text-[#36BFFA]"
+              className="h-[45px] bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
             >
               <Plus size={16} />
               Create Workspace

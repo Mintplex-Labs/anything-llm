@@ -3,7 +3,7 @@ import { news } from "./news";
 export default function Updates() {
   return (
     <div>
-      <h1 className="text-white uppercase text-sm font-semibold mb-4">
+      <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
         Updates
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -26,18 +26,20 @@ export default function Updates() {
 function UpdateCard({ thumbnail_url, title, subtitle, source, date, goto }) {
   return (
     <a href={goto} target="_blank" rel="noopener noreferrer" className="block">
-      <div className="bg-[#1C1C1C] rounded-xl p-4 flex gap-x-4 hover:bg-[#252525] transition-colors">
+      <div className="light:border light:border-theme-home-border bg-theme-home-update-card-bg rounded-xl p-4 flex gap-x-4 hover:bg-theme-home-update-card-hover transition-colors">
         <img
           src={thumbnail_url}
           alt={title}
           className="w-[80px] h-[80px] rounded-lg flex-shrink-0 object-cover"
         />
         <div className="flex flex-col gap-y-1">
-          <p className="text-[#9F9FA0] text-xs">{source}</p>
-          <h3 className="text-white font-medium text-sm">{title}</h3>
-          <p className="text-[#9F9FA0] text-xs line-clamp-2">{subtitle}</p>
-          <div className="flex items-center gap-x-4 text-xs text-[#9F9FA0]">
-            <span className="text-[#53B1FD]">{source}</span>
+          <p className="text-theme-home-text-secondary text-xs">{source}</p>
+          <h3 className="text-theme-home-text font-medium text-sm">{title}</h3>
+          <p className="text-theme-home-text-secondary text-xs line-clamp-2">
+            {subtitle}
+          </p>
+          <div className="flex items-center gap-x-4 text-xs text-theme-home-text-secondary">
+            <span className="text-theme-home-update-source">{source}</span>
             <span>{date}</span>
           </div>
         </div>
