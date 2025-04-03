@@ -136,9 +136,9 @@ async function streamChatWithWorkspace(
       effectiveQuestion = await LLMConnector.getChatCompletion(rewriteRequest, {
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
-      effectiveQuestion = effectiveQuestion.includes("</think>") 
-        ? effectiveQuestion.split("</think>")[1].trim() 
-        : effectiveQuestion.trim();
+      // effectiveQuestion = effectiveQuestion.includes("</think>") 
+      //   ? effectiveQuestion.split("</think>")[1].trim() 
+      //   : effectiveQuestion.trim();
       // console.log("Rewritten question: ", effectiveQuestion)
     }
 
@@ -484,9 +484,9 @@ async function prismStreamChatWithWorkspace(
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
 
-      effectiveQuestion = effectiveQuestion.includes("</think>") 
-        ? effectiveQuestion.split("</think>")[1].trim() 
-        : effectiveQuestion.trim();
+      // effectiveQuestion = effectiveQuestion.includes("</think>") 
+      //   ? effectiveQuestion.split("</think>")[1].trim() 
+      //   : effectiveQuestion.trim();
 
       // console.log("Rewritten question: ", effectiveQuestion)
     }

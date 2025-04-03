@@ -450,22 +450,26 @@ function chatEndpoints(app) {
       }
       
       const jsonSchema = jsonSchemaGenerator(jsonData);
+      const language = request.query.language || "english";
 
-        const message = `
-                      Generate an array of 4 possible natural language questions that can be asked based solely on the documents, without requiring specific data such as dates in the input. Ensure all questions are general and relevant to the document
-                      Avoid ambiguous terms like "recent," "specific date," or anything requiring external contextual data. Ensure the questions are varied, covering different texts or combinations of texts.
-                      Use same lanuage as input text to generate questions.
-                      Return the JSON as follows without extra formatting such as newline and escaped quotes:
-                      {
-                          "response": [
-                              "Example question 1",
-                              "Example question 2",
-                              "Example question 3",
-                              "Example question 4"
-                          ]
-                      }
-                      Avoid adding extra formatting, newlines, or escaped quotes in the output. Ensure all questions are relevant to the document structure and avoid unrelated topics or ambiguous questions.
-                      `;
+      const message = `
+      Based on the following context, generate an array of 4 possible natural language questions that can be asked. The questions should be directly relevant to the content of the chunks and should not require external context or specific data such as dates. Ensure the questions are varied, cover different aspects of the chunks, and are specific to the information provided.
+
+      Guidelines:
+      - Avoid ambiguous terms like "recent," "specific date," or anything requiring external contextual data.
+      - Ensure all questions are general but specific to the content of the chunks.
+      - Please generate questions in ${language} language.
+      - Return the JSON as follows without extra formatting such as newlines or escaped quotes:
+      {
+          "response": [
+              "Question 1",
+              "Question 2",
+              "Question 3",
+              "Question 4"
+          ]
+      }
+      - Avoid adding extra formatting, newlines, or escaped quotes in the output. Ensure all questions are relevant to the document structure and avoid unrelated topics or ambiguous questions.
+    `;
 
         suggestions = await ApiChatHandler.suggestQuestions(
           workspace,
@@ -474,9 +478,9 @@ function chatEndpoints(app) {
           userGroups,
           jsonSchema
         );
-        suggestions = suggestions.includes("</think>") 
-        ? suggestions.split("</think>")[1].trim() 
-        : suggestions.trim();
+        // suggestions = suggestions.includes("</think>") 
+        // ? suggestions.split("</think>")[1].trim() 
+        // : suggestions.trim();
 
         if (!suggestions?.error) {
           try {

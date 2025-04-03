@@ -244,9 +244,9 @@ async function chatSync({
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
 
-      effectiveQuestion = effectiveQuestion.includes("</think>") 
-        ? effectiveQuestion.split("</think>")[1].trim() 
-        : effectiveQuestion.trim();
+      // effectiveQuestion = effectiveQuestion.includes("</think>") 
+      //   ? effectiveQuestion.split("</think>")[1].trim() 
+      //   : effectiveQuestion.trim();
 
       // console.log("rewritten question: ", effectiveQuestion)
     }
@@ -747,9 +747,9 @@ async function streamChat({
         temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
       });
 
-      effectiveQuestion = effectiveQuestion.includes("</think>") 
-        ? effectiveQuestion.split("</think>")[1].trim() 
-        : effectiveQuestion.trim();
+      // effectiveQuestion = effectiveQuestion.includes("</think>") 
+      //   ? effectiveQuestion.split("</think>")[1].trim() 
+      //   : effectiveQuestion.trim();
 
       // console.log("rewritten question: ", effectiveQuestion)
     }
