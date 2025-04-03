@@ -205,14 +205,14 @@ const SystemSettings = {
 
       const internal_worksoace = await Workspace.createInternalWorkspace();
       if (!internal_worksoace) {
-        logger.log("No internal workspace found. Skipping chat embed creation as it requires a system-generated workspace.");
+        logger.info("No internal workspace found. Skipping chat embed creation as it requires a system-generated workspace.");
       } else {
         const { EmbedConfig } = require("../models/embedConfig");
       
         const existingConfig = await EmbedConfig.get({ workspace_id: internal_worksoace.id });
       
         if (existingConfig) {
-          logger.log(`EmbedConfig already exists for workspace_id: ${internal_worksoace.id}. Skipping creation.`);
+          logger.info(`EmbedConfig already exists for workspace_id: ${internal_worksoace.id}. Skipping creation.`);
         } else {
           await createEmbedConfig(internal_worksoace.id);
         }
@@ -788,7 +788,7 @@ async function createEmbedConfig(workspaceId) {
       return;
     }
 
-    logger.log(`EmbedConfig created successfully with ID: ${embed.id}`);
+    logger.info(`EmbedConfig created successfully with ID: ${embed.id}`);
     updateTeamsHtml(embed.uuid)
 
     await EventLogs.logEvent("embed_created", { embedId: embed.id });
