@@ -10,6 +10,7 @@ export default function ExploreFeatures() {
   const [isMultiUser, setIsMultiUser] = useState(false);
   const { user } = useUser();
   const isDefaultUser = isMultiUser && user?.role === "default";
+  const isManager = isMultiUser && user?.role === "manager";
 
   useEffect(() => {
     System.isMultiUserMode().then(setIsMultiUser);
@@ -64,7 +65,9 @@ export default function ExploreFeatures() {
           title="Utilize Agent Skills"
           description="Enabling powerful automation and workflow extensions for your specific needs."
           primaryAction="Chat with Agent"
-          secondaryAction={!isDefaultUser ? "Build Agent Flow" : null}
+          secondaryAction={
+            !isDefaultUser && !isManager ? "Build Agent Flow" : null
+          }
           onPrimaryAction={chatWithAgent}
           onSecondaryAction={buildAgentFlow}
           isNew={true}

@@ -14,6 +14,7 @@ import {
   CHECKLIST_STORAGE_KEY,
   useChecklistItems,
 } from "../../checklist";
+import useUser from "@/hooks/useUser";
 
 export const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
 
@@ -23,6 +24,7 @@ export default function Checklist() {
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const navigate = useNavigate();
   const checklistItems = useChecklistItems();
+  const { user } = useUser();
 
   const {
     showModal: showNewWsModal,
@@ -36,36 +38,22 @@ export default function Checklist() {
     const hidden = window.localStorage.getItem(CHECKLIST_HIDDEN);
     setIsHidden(!!hidden);
 
-    const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
-    if (stored) {
-      const completedItems = JSON.parse(stored);
-      setCompletedCount(Object.keys(completedItems).length);
-    }
-  }, []);
-
-  useEffect(() => {
-    const checkWorkspaceExists = async () => {
-      const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
-      if (stored) {
-        const completedItems = JSON.parse(stored);
-        if (completedItems["create-workspace"]) return;
-      }
-
+    const checkWorkspaceAndUpdateCount = async () => {
       const workspaces = await Workspace.all();
+      const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY) || "{}";
+      const completedItems = JSON.parse(stored);
+
       if (workspaces.length > 0) {
-        const stored =
-          window.localStorage.getItem(CHECKLIST_STORAGE_KEY) || "{}";
-        const completedItems = JSON.parse(stored);
-        completedItems["create-workspace"] = true;
-        window.localStorage.setItem(
-          CHECKLIST_STORAGE_KEY,
-          JSON.stringify(completedItems)
-        );
-        updateCompletedCount();
+        completedItems["create_workspace"] = true;
+      } else if (completedItems["create_workspace"]) {
+        delete completedItems["create_workspace"];
       }
+
+      window.localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(completedItems));
+      setCompletedCount(Object.keys(completedItems).length);
     };
 
-    checkWorkspaceExists();
+    checkWorkspaceAndUpdateCount();
   }, []);
 
   const handleClose = () => {
@@ -73,24 +61,24 @@ export default function Checklist() {
     setIsHidden(true);
   };
 
-  const updateCompletedCount = () => {
-    const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
-    if (stored) {
-      const completedItems = JSON.parse(stored);
-      setCompletedCount(Object.keys(completedItems).length);
-    }
-  };
-
   const handlers = {
     sendChat: async () => {
       const workspaces = await Workspace.all();
       if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before starting a chat.",
-          "warning",
-          { clear: true }
-        );
-        showNewWsModal();
+        if (user?.role === "default") {
+          showToast(
+            "Please contact your system administrator to create a workspace for you.",
+            "warning",
+            { clear: true }
+          );
+        } else {
+          showToast(
+            "Please create a workspace before starting a chat.",
+            "warning",
+            { clear: true }
+          );
+          showNewWsModal();
+        }
         return false;
       }
       navigate(paths.workspace.chat(workspaces[0].slug));
@@ -99,12 +87,20 @@ export default function Checklist() {
     embedDocument: async () => {
       const workspaces = await Workspace.all();
       if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before embedding documents.",
-          "warning",
-          { clear: true }
-        );
-        showNewWsModal();
+        if (user?.role === "default") {
+          showToast(
+            "Please contact your system administrator to create a workspace for you.",
+            "warning",
+            { clear: true }
+          );
+        } else {
+          showToast(
+            "Please create a workspace before embedding documents.",
+            "warning",
+            { clear: true }
+          );
+          showNewWsModal();
+        }
         return false;
       }
       setSelectedWorkspace(workspaces[0]);
@@ -112,18 +108,34 @@ export default function Checklist() {
       return true;
     },
     createWorkspace: () => {
+      if (user?.role === "default") {
+        showToast(
+          "Please contact your system administrator to create a workspace for you.",
+          "warning",
+          { clear: true }
+        );
+        return false;
+      }
       showNewWsModal();
       return true;
     },
     setSlashCommand: async () => {
       const workspaces = await Workspace.all();
       if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before setting up slash commands.",
-          "warning",
-          { clear: true }
-        );
-        showNewWsModal();
+        if (user?.role === "default") {
+          showToast(
+            "Please contact your system administrator to create a workspace for you.",
+            "warning",
+            { clear: true }
+          );
+        } else {
+          showToast(
+            "Please create a workspace before setting up slash commands.",
+            "warning",
+            { clear: true }
+          );
+          showNewWsModal();
+        }
         return false;
       }
       navigate(paths.workspace.chat(workspaces[0].slug));
@@ -133,12 +145,20 @@ export default function Checklist() {
     setSystemPrompt: async () => {
       const workspaces = await Workspace.all();
       if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before setting up system prompts.",
-          "warning",
-          { clear: true }
-        );
-        showNewWsModal();
+        if (user?.role === "default") {
+          showToast(
+            "Please contact your system administrator to create a workspace for you.",
+            "warning",
+            { clear: true }
+          );
+        } else {
+          showToast(
+            "Please create a workspace before setting up system prompts.",
+            "warning",
+            { clear: true }
+          );
+          showNewWsModal();
+        }
         return false;
       }
       navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));

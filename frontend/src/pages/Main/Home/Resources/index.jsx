@@ -3,7 +3,7 @@ import { ArrowCircleUpRight } from "@phosphor-icons/react";
 export default function Resources() {
   return (
     <div>
-      <h1 className="text-white uppercase text-sm font-semibold mb-6">
+      <h1 className="text-white uppercase text-sm font-semibold mb-4">
         Resources
       </h1>
       <div className="flex gap-x-6">
