@@ -78,16 +78,20 @@ export function ChecklistItem({
   const handleClick = async (e) => {
     e.preventDefault();
     if (!isCompleted) {
-      const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
-      const completedItems = stored ? JSON.parse(stored) : {};
-      completedItems[id] = true;
-      window.localStorage.setItem(
-        CHECKLIST_STORAGE_KEY,
-        JSON.stringify(completedItems)
-      );
-      setIsCompleted(true);
+      const shouldComplete = await onAction();
+      if (shouldComplete) {
+        const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
+        const completedItems = stored ? JSON.parse(stored) : {};
+        completedItems[id] = true;
+        window.localStorage.setItem(
+          CHECKLIST_STORAGE_KEY,
+          JSON.stringify(completedItems)
+        );
+        setIsCompleted(true);
+      }
+    } else {
+      await onAction();
     }
-    await onAction();
   };
 
   return (

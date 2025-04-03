@@ -8,6 +8,7 @@ import NewWorkspaceModal, {
 import Workspace from "@/models/workspace";
 import { useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
+import showToast from "@/utils/toast";
 import {
   ChecklistItem,
   CHECKLIST_STORAGE_KEY,
@@ -42,6 +43,31 @@ export default function Checklist() {
     }
   }, []);
 
+  useEffect(() => {
+    const checkWorkspaceExists = async () => {
+      const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
+      if (stored) {
+        const completedItems = JSON.parse(stored);
+        if (completedItems["create-workspace"]) return;
+      }
+
+      const workspaces = await Workspace.all();
+      if (workspaces.length > 0) {
+        const stored =
+          window.localStorage.getItem(CHECKLIST_STORAGE_KEY) || "{}";
+        const completedItems = JSON.parse(stored);
+        completedItems["create-workspace"] = true;
+        window.localStorage.setItem(
+          CHECKLIST_STORAGE_KEY,
+          JSON.stringify(completedItems)
+        );
+        updateCompletedCount();
+      }
+    };
+
+    checkWorkspaceExists();
+  }, []);
+
   const handleClose = () => {
     window.localStorage.setItem(CHECKLIST_HIDDEN, "true");
     setIsHidden(true);
@@ -58,36 +84,70 @@ export default function Checklist() {
   const handlers = {
     sendChat: async () => {
       const workspaces = await Workspace.all();
-      if (workspaces.length > 0) {
-        navigate(paths.workspace.chat(workspaces[0].slug));
+      if (workspaces.length === 0) {
+        showToast(
+          "Please create a workspace before starting a chat.",
+          "warning",
+          { clear: true }
+        );
+        showNewWsModal();
+        return false;
       }
+      navigate(paths.workspace.chat(workspaces[0].slug));
+      return true;
     },
     embedDocument: async () => {
       const workspaces = await Workspace.all();
-      if (workspaces.length > 0) {
-        setSelectedWorkspace(workspaces[0]);
-        showManageWsModal();
+      if (workspaces.length === 0) {
+        showToast(
+          "Please create a workspace before embedding documents.",
+          "warning",
+          { clear: true }
+        );
+        showNewWsModal();
+        return false;
       }
+      setSelectedWorkspace(workspaces[0]);
+      showManageWsModal();
+      return true;
     },
     createWorkspace: () => {
       showNewWsModal();
+      return true;
     },
     setSlashCommand: async () => {
       const workspaces = await Workspace.all();
-      if (workspaces.length > 0) {
-        navigate(paths.workspace.chat(workspaces[0].slug));
-        window.location.hash = "#slash-commands";
+      if (workspaces.length === 0) {
+        showToast(
+          "Please create a workspace before setting up slash commands.",
+          "warning",
+          { clear: true }
+        );
+        showNewWsModal();
+        return false;
       }
+      navigate(paths.workspace.chat(workspaces[0].slug));
+      window.location.hash = "#slash-commands";
+      return true;
     },
     setSystemPrompt: async () => {
       const workspaces = await Workspace.all();
-      if (workspaces.length > 0) {
-        navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));
-        window.location.hash = "#system-prompts";
+      if (workspaces.length === 0) {
+        showToast(
+          "Please create a workspace before setting up system prompts.",
+          "warning",
+          { clear: true }
+        );
+        showNewWsModal();
+        return false;
       }
+      navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));
+      window.location.hash = "#system-prompts";
+      return true;
     },
     visitCommunityHub: () => {
       window.location.href = paths.communityHub.website();
+      return true;
     },
   };
 
@@ -123,10 +183,7 @@ export default function Checklist() {
             <ChecklistItem
               key={item.id}
               {...item}
-              onAction={() => {
-                handlers[item.handler]();
-                updateCompletedCount();
-              }}
+              onAction={() => handlers[item.handler]()}
             />
           ))}
         </div>
