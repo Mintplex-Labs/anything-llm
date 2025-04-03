@@ -13,7 +13,7 @@ const { EventLogs } = require("./eventLogs");
  */
 
 const User = {
-  usernameRegex: new RegExp(/^[a-z0-9_-]+$/),
+  usernameRegex: new RegExp(/^[a-z0-9_\-.]+$/),
   writable: [
     // Used for generic updates so we can validate keys in request body
     "username",
