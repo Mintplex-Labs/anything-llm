@@ -148,7 +148,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 | --------------------------------------------------- |
 | [![在Railway上部署][railway-btn]][railway-deploy] |
 
-[其他方案：不使用Docker配置AnythingLLM实例 →](./BARE_METAL.md)
+[其他方案：不使用Docker配置AnythingLLM实例 →](../BARE_METAL.md)
 
 ## 如何设置开发环境
 
@@ -158,9 +158,9 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 - `yarn dev:frontend` 在本地启动前端（从仓库的根目录）。
 - `yarn dev:collector` 然后运行文档收集器（从仓库的根目录）。
 
-[了解文档](./server/storage/documents/DOCUMENTS.md)
+[了解文档](../server/storage/documents/DOCUMENTS.md)
 
-[了解向量缓存](./server/storage/vector-cache/VECTOR_CACHE.md)
+[了解向量缓存](../server/storage/vector-cache/VECTOR_CACHE.md)
 
 ## 如何贡献
 
