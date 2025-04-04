@@ -14,10 +14,7 @@ export default function ExploreFeatures() {
     }
   };
 
-  const buildAgentFlow = () => {
-    navigate(paths.workspace.settings.agentBuilder());
-  };
-
+  const buildAgentFlow = () => navigate(paths.agents.builder());
   const setSlashCommand = async () => {
     const workspaces = await Workspace.all();
     if (workspaces.length > 0) {

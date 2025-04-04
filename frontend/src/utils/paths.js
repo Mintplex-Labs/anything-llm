@@ -68,18 +68,6 @@ export default {
       agentConfig: (slug) => {
         return `/workspace/${slug}/settings/agent-config`;
       },
-      slashCommands: (slug) => {
-        return `/workspace/${slug}/settings/slash-commands`;
-      },
-      systemPrompts: (slug) => {
-        return `/workspace/${slug}/settings/system-prompts`;
-      },
-      communityHub: () => {
-        return `/settings/community-hub/trending`;
-      },
-      agentBuilder: () => {
-        return `/settings/agents/builder`;
-      },
     },
     thread: (wsSlug, threadSlug) => {
       return `/workspace/${wsSlug}/t/${threadSlug}`;
