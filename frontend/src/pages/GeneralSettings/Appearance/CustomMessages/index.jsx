@@ -10,7 +10,6 @@ export default function CustomMessages() {
   const [hasChanges, setHasChanges] = useState(false);
   const [messages, setMessages] = useState([]);
   const { t } = useTranslation();
-  const { legacyHomeScreen } = Appearance.getSettings();
 
   useEffect(() => {
     async function fetchMessages() {
@@ -55,8 +54,6 @@ export default function CustomMessages() {
     showToast("Successfully updated welcome messages.", "success");
     setHasChanges(false);
   };
-
-  if (!legacyHomeScreen) return null;
 
   return (
     <div className="mb-8">

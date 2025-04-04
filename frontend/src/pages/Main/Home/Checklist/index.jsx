@@ -9,14 +9,9 @@ import Workspace from "@/models/workspace";
 import { useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-import {
-  ChecklistItem,
-  CHECKLIST_STORAGE_KEY,
-  useChecklistItems,
-} from "../../checklist";
+import { ChecklistItem, useChecklistItems } from "./ChecklistItem";
+import { CHECKLIST_HIDDEN, CHECKLIST_STORAGE_KEY } from "./constants";
 import useUser from "@/hooks/useUser";
-
-export const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
 
 export default function Checklist() {
   const [isHidden, setIsHidden] = useState(false);
@@ -64,6 +59,7 @@ export default function Checklist() {
     setIsHidden(true);
   };
 
+  // TODO: Refactor this - this will re-render many times.
   const handlers = {
     sendChat: async () => {
       const workspaces = await Workspace.all();
