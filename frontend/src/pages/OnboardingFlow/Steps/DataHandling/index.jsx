@@ -36,6 +36,7 @@ import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
+import OpenGaussLogo from "@/media/vectordbs/openGauss.png";
 
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
@@ -294,6 +295,13 @@ export const VECTOR_DB_PRIVACY = {
       "Your vectors and document text are stored privately on this instance of AnythingLLM",
     ],
     logo: LanceDbLogo,
+  },
+  openGauss: {
+    name: "openGauss",
+    description: [
+      "Your vectors and document text are stored on this openGauss instance (cloud or self-hosted)",
+    ],
+    logo: OpenGaussLogo,
   },
 };
 
