@@ -70,6 +70,7 @@ const DataConnector = {
       branch,
       ignorePaths = [],
       fetchIssues = false,
+      fetchWikis = false,
     }) {
       return await fetch(`${API_BASE}/ext/gitlab/repo`, {
         method: "POST",
@@ -80,6 +81,7 @@ const DataConnector = {
           branch,
           ignorePaths,
           fetchIssues,
+          fetchWikis,
         }),
       })
         .then((res) => res.json())
