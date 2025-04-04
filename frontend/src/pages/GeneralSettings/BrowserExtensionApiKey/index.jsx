@@ -81,21 +81,21 @@ export default function BrowserExtensionApiKeys() {
             ) : error ? (
               <div className="text-red-500 mt-6">Error: {error}</div>
             ) : (
-              <table className="w-full text-sm text-left rounded-lg min-w-[640px] border-spacing-0 md:mt-6 mt-0">
+              <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0 md:mt-6 mt-0">
                 <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
                   <tr>
-                    <th scope="col" className="px-6 py-3 rounded-tl-lg">
+                    <th scope="col" className="px-6 py-2 rounded-tl-lg">
                       Extension Connection String
                     </th>
                     {isMultiUser && (
-                      <th scope="col" className="px-6 py-3">
+                      <th scope="col" className="px-6 py-2">
                         Created By
                       </th>
                     )}
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-6 py-2">
                       Created At
                     </th>
-                    <th scope="col" className="px-6 py-3 rounded-tr-lg">
+                    <th scope="col" className="px-6 py-2 rounded-tr-lg">
                       Actions
                     </th>
                   </tr>

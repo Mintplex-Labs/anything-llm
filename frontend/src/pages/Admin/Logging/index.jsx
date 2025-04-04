@@ -120,7 +120,7 @@ function LogsContainer({
 
   return (
     <>
-      <table className="w-full text-sm text-left rounded-lg min-w-[640px] border-spacing-0">
+      <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
         <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">

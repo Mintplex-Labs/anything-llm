@@ -35,8 +35,8 @@ export default function ChatRow({ chat, onDelete }) {
 
   return (
     <>
-      <tr className="bg-transparent text-white text-opacity-80 text-sm font-medium">
-        <td className="px-6 py-4 font-medium whitespace-nowrap text-white">
+      <tr className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10">
+        <td className="px-6 font-medium whitespace-nowrap text-white">
           <a
             href={paths.settings.embedSetup()}
             target="_blank"
@@ -49,32 +49,29 @@ export default function ChatRow({ chat, onDelete }) {
         </td>
         <td
           onClick={openConnectionDetailsModal}
-          className="px-6 py-4 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          className="px-6 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
         >
           <div className="flex flex-col">
             <p>{truncate(chat.session_id, 20)}</p>
-            <ConnectionDetails
-              connection_information={chat.connection_information}
-            />
           </div>
         </td>
         <td
           onClick={openPromptModal}
-          className="px-6 py-4 border-transparent cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          className="px-6 border-transparent cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
         >
           {truncate(chat.prompt, 40)}
         </td>
         <td
           onClick={openResponseModal}
-          className="px-6 py-4 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          className="px-6 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
         >
           {truncate(JSON.parse(chat.response)?.text, 40)}
         </td>
-        <td className="px-6 py-4">{chat.createdAt}</td>
-        <td className="px-6 py-4 flex items-center gap-x-6">
+        <td className="px-6">{chat.createdAt}</td>
+        <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
             onClick={handleDelete}
-            className="border-none font-medium px-2 py-1 rounded-lg text-theme-text-primary hover:text-red-500"
+            className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
           >
             <Trash className="h-5 w-5" />
           </button>
