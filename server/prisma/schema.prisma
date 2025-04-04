@@ -235,7 +235,7 @@ model embed_configs {
   allow_model_override       Boolean       @default(false)
   allow_temperature_override Boolean       @default(false)
   allow_prompt_override      Boolean       @default(false)
-  show_thoughts              Boolean       @default(true)
+  show_thoughts              Boolean?      @default(true)
   max_chats_per_day          Int?
   max_chats_per_session      Int?
   workspace_id               Int
