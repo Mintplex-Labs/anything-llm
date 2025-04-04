@@ -179,11 +179,13 @@ class AgentFlows {
       description: `Execute agent flow: ${flow.name}`,
       plugin: (_runtimeArgs = {}) => ({
         name: `flow_${uuid}`,
-        description: flow.description || `Execute agent flow: ${flow.name}`,
+        description:
+          flow.config.description || `Execute agent flow: ${flow.name}`,
         setup: (aibitat) => {
           aibitat.function({
             name: `flow_${uuid}`,
-            description: flow.description || `Execute agent flow: ${flow.name}`,
+            description:
+              flow.config.description || `Execute agent flow: ${flow.name}`,
             parameters: {
               type: "object",
               properties: variables.reduce((acc, v) => {
