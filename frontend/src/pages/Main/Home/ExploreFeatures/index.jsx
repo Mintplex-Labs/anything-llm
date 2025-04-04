@@ -1,20 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import Workspace from "@/models/workspace";
-import { useState, useEffect } from "react";
-import useUser from "@/hooks/useUser";
-import System from "@/models/system";
 
 export default function ExploreFeatures() {
   const navigate = useNavigate();
-  const [isMultiUser, setIsMultiUser] = useState(false);
-  const { user } = useUser();
-  const isDefaultUser = isMultiUser && user?.role === "default";
-  const isManager = isMultiUser && user?.role === "manager";
-
-  useEffect(() => {
-    System.isMultiUserMode().then(setIsMultiUser);
-  }, []);
 
   const chatWithAgent = async () => {
     const workspaces = await Workspace.all();
@@ -39,7 +28,7 @@ export default function ExploreFeatures() {
   };
 
   const exploreSlashCommands = () => {
-    window.location.href = paths.communityHub.viewMoreOfType("slash-commands");
+    window.open(paths.communityHub.viewMoreOfType("slash-commands"), "_blank");
   };
 
   const setSystemPrompt = async () => {
@@ -51,47 +40,43 @@ export default function ExploreFeatures() {
     }
   };
 
-  const exploreSystemPrompts = () => {
-    window.location.href = paths.communityHub.viewMoreOfType("system-prompts");
+  const managePromptVariables = () => {
+    navigate(paths.settings.systemPromptVariables());
   };
 
   return (
     <div>
       <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
-        Explore our features
+        Explore more features
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <FeatureCard
-          title="Utilize Agent Skills"
-          description="Enabling powerful automation and workflow extensions for your specific needs."
-          primaryAction="Chat with Agent"
-          secondaryAction={
-            !isDefaultUser && !isManager ? "Build Agent Flow" : null
-          }
+          title="Custom AI Agents"
+          description="Enable powerful automation and workflow extensions for your specific needs with no code."
+          primaryAction="Chat using @agent"
+          secondaryAction="Build an agent flow"
           onPrimaryAction={chatWithAgent}
           onSecondaryAction={buildAgentFlow}
           isNew={true}
         />
         <FeatureCard
           title="Slash Commands"
-          description="Enabling powerful automation and workflow extensions for your specific needs."
-          primaryAction="Set Slash Command"
+          description="Save time and inject prompts using custom slash commands."
+          primaryAction="Create a Slash Command"
           secondaryAction="Explore on Hub"
           onPrimaryAction={setSlashCommand}
           onSecondaryAction={exploreSlashCommands}
+          isNew={false}
+        />
+        <FeatureCard
+          title="System Prompts"
+          description="Modify the system prompt to customize the AI replies of a workspace."
+          primaryAction="Modify a System Prompt"
+          secondaryAction="Manage prompt variables"
+          onPrimaryAction={setSystemPrompt}
+          onSecondaryAction={managePromptVariables}
           isNew={true}
         />
-        {!isDefaultUser && (
-          <FeatureCard
-            title="System Prompts"
-            description="Enabling powerful automation and workflow extensions for your specific needs."
-            primaryAction="Setup System Prompt"
-            secondaryAction="Explore on Hub"
-            onPrimaryAction={setSystemPrompt}
-            onSecondaryAction={exploreSystemPrompts}
-            isNew={true}
-          />
-        )}
       </div>
     </div>
   );
@@ -107,7 +92,7 @@ function FeatureCard({
   isNew,
 }) {
   return (
-    <div className="border border-theme-home-border rounded-lg py-4 px-5 flex flex-col gap-y-4">
+    <div className="border border-theme-home-border rounded-lg py-4 px-5 flex flex-col justify-between gap-y-4">
       <div className="flex flex-col gap-y-2">
         <h2 className="text-theme-home-text font-semibold flex items-center gap-x-2">
           {title}

@@ -27,10 +27,14 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
     fetchPresets();
   }, []);
 
+  /*
+   * @checklist-item
+   * If the URL has the #slash-commands hash, open the add modal for the user
+   * automatically when the component mounts.
+   */
   useEffect(() => {
-    if (window.location.hash === "#slash-commands" && !isAddModalOpen) {
+    if (window.location.hash === "#slash-commands" && !isAddModalOpen)
       openAddModal();
-    }
   }, []);
 
   if (isActiveAgentSession) return null;
@@ -49,7 +53,6 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
 
     fetchPresets();
     closeAddModal();
-    setShowing(true);
     return true;
   };
 

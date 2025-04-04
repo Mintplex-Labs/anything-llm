@@ -1,5 +1,4 @@
 import EditingChatBubble from "@/components/EditingChatBubble";
-import Appearance from "@/models/appearance";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";

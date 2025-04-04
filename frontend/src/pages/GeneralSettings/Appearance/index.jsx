@@ -39,8 +39,8 @@ export default function Appearance() {
           <ShowScrollbar />
           <CustomLogo />
           <CustomAppName />
-          <FooterCustomization />
           <CustomMessages />
+          <FooterCustomization />
           <SupportEmail />
           <CustomSiteSettings />
         </div>

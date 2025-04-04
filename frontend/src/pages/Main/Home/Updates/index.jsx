@@ -1,10 +1,13 @@
-import { news } from "./news";
+import { useEffect, useState } from "react";
 
 export default function Updates() {
+  const { isLoading, news } = useNewsItems();
+  if (isLoading) return null;
+
   return (
     <div>
       <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
-        Updates
+        Updates & Announcements
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {news.map((item) => (
@@ -46,4 +49,28 @@ function UpdateCard({ thumbnail_url, title, subtitle, source, date, goto }) {
       </div>
     </a>
   );
+}
+
+import { dummyNews } from "./news";
+function useNewsItems() {
+  const [news, setNews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchRemoteNews() {
+      try {
+        // Should be a System.getNews() call here - this should also cache the news
+        // for at least 72 hours
+        await new Promise((resolve) => setTimeout(resolve, 5000)); // Dummy delay to simulate the loading
+        setNews(dummyNews);
+      } catch (error) {
+        console.error("Error fetching remote news:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchRemoteNews();
+  }, []);
+
+  return { news, isLoading };
 }

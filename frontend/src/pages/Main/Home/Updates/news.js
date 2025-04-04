@@ -1,6 +1,6 @@
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 
-export const news = [
+export const dummyNews = [
   {
     id: 1,
     thumbnail_url: AnythingLLMIcon,
