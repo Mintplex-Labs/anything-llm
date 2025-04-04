@@ -5,6 +5,14 @@ const { FlowExecutor } = require("./executor");
 const { normalizePath } = require("../files");
 const { safeJsonParse } = require("../http");
 
+/**
+ * @typedef {Object} LoadedFlow
+ * @property {string} name - The name of the flow
+ * @property {string} uuid - The UUID of the flow
+ * @property {Object} config - The flow configuration details
+ * @property {string} config.description - The description of the flow
+ * @property {Array<{type: string, config: Object, [key: string]: any}>} config.steps - The steps of the flow. Each step has at least a type and config
+ */
 class AgentFlows {
   static flowsDir = process.env.STORAGE_DIR
     ? path.join(process.env.STORAGE_DIR, "plugins", "agent-flows")
@@ -55,7 +63,7 @@ class AgentFlows {
   /**
    * Load a flow configuration by UUID
    * @param {string} uuid - The UUID of the flow to load
-   * @returns {Object|null} Flow configuration or null if not found
+   * @returns {LoadedFlow|null} Flow configuration or null if not found
    */
   static loadFlow(uuid) {
     try {
