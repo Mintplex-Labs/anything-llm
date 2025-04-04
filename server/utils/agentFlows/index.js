@@ -13,6 +13,7 @@ const { safeJsonParse } = require("../http");
  * @property {string} config.description - The description of the flow
  * @property {Array<{type: string, config: Object, [key: string]: any}>} config.steps - The steps of the flow. Each step has at least a type and config
  */
+
 class AgentFlows {
   static flowsDir = process.env.STORAGE_DIR
     ? path.join(process.env.STORAGE_DIR, "plugins", "agent-flows")
