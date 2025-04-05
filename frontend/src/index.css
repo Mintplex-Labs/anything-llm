@@ -48,6 +48,31 @@
   --theme-file-row-selected-even: rgba(14, 165, 233, 0.2);
   --theme-file-row-selected-odd: rgba(14, 165, 233, 0.1);
   --theme-file-picker-hover: rgb(14 165 233 / 0.2);
+
+  --theme-home-text: #ffffff;
+  --theme-home-text-secondary: #9f9fa0;
+  --theme-home-bg-card: #211f22;
+  --theme-home-bg-button: #1b1b1e;
+  --theme-home-border: rgba(255, 255, 255, 0.2);
+  --theme-home-button-primary: #36bffa;
+  --theme-home-button-primary-hover: rgba(54, 191, 250, 0.9);
+  --theme-home-button-secondary: #27282a;
+  --theme-home-button-secondary-hover: rgba(54, 191, 250, 0.1);
+  --theme-home-button-secondary-text: #ffffff;
+  --theme-home-button-secondary-hover-text: #36bffa;
+  --theme-home-update-card-bg: #1c1c1c;
+  --theme-home-update-card-hover: #252525;
+  --theme-home-update-source: #53b1fd;
+
+  --theme-checklist-item-bg: #3e3c3e;
+  --theme-checklist-item-text: #ffffff;
+  --theme-checklist-item-hover: #36bffa;
+  --theme-checklist-checkbox-border: #ffffff;
+  --theme-checklist-checkbox-fill: #6ce9a6;
+  --theme-checklist-button-border: #36bffa;
+  --theme-checklist-button-text: #36bffa;
+  --theme-checklist-button-hover-bg: rgba(54, 191, 250, 0.2);
+  --theme-checklist-button-hover-border: rgba(54, 191, 250, 0.8);
 }
 
 [data-theme="light"] {
@@ -101,6 +126,31 @@
   --theme-file-row-selected-even: #0ba5ec;
   --theme-file-row-selected-odd: #0ba5ec;
   --theme-file-picker-hover: #e2e7ee;
+
+  --theme-home-text: #0e0f0f;
+  --theme-home-text-secondary: #6b7280;
+  --theme-home-bg-card: #ffffff;
+  --theme-home-bg-button: #f3f4f6;
+  --theme-home-border: rgba(0, 0, 0, 0.1);
+  --theme-home-button-primary: #36bffa;
+  --theme-home-button-primary-hover: rgba(54, 191, 250, 0.9);
+  --theme-home-button-secondary: #f3f4f6;
+  --theme-home-button-secondary-hover: #e5e7eb;
+  --theme-home-button-secondary-text: #374151;
+  --theme-home-button-secondary-hover-text: #0ba5ec;
+  --theme-home-update-card-bg: #f9fafb;
+  --theme-home-update-card-hover: #f3f4f6;
+  --theme-home-update-source: #0284c7;
+
+  --theme-checklist-item-bg: #f3f4f6;
+  --theme-checklist-item-text: #111827;
+  --theme-checklist-item-hover: #0ba5ec;
+  --theme-checklist-checkbox-border: #6b7280;
+  --theme-checklist-checkbox-fill: #059669;
+  --theme-checklist-button-border: #0ba5ec;
+  --theme-checklist-button-text: #0ba5ec;
+  --theme-checklist-button-hover-bg: rgba(11, 165, 236, 0.1);
+  --theme-checklist-button-hover-border: rgba(11, 165, 236, 0.8);
 }
 
 [data-theme="light"] .text-white {
