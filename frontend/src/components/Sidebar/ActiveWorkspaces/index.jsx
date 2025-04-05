@@ -32,6 +32,27 @@ export default function ActiveWorkspaces() {
     getWorkspaces();
   }, []);
 
+  useEffect(() => {
+    if (!loading && slug) {
+      setTimeout(() => {
+        const activeWorkspace = document.querySelector(
+          `[data-workspace-slug="${slug}"]`
+        );
+        if (activeWorkspace) {
+          const scrollContainer = activeWorkspace.closest(".overflow-y-auto");
+          if (scrollContainer) {
+            const containerHeight = scrollContainer.clientHeight;
+            const elementOffset = activeWorkspace.offsetTop;
+            scrollContainer.scrollTo({
+              top: Math.max(0, elementOffset - containerHeight * 0.3),
+              behavior: "smooth",
+            });
+          }
+        }
+      }, 100);
+    }
+  }, [loading, slug, workspaces]);
+
   if (loading) {
     return (
       <Skeleton.default
