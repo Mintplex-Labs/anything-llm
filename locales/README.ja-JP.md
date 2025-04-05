@@ -136,7 +136,7 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 - `server`: すべてのインタラクションを処理し、すべてのベクトルDB管理およびLLMインタラクションを行うNodeJS expressサーバー。
 - `collector`: UIからドキュメントを処理および解析するNodeJS expressサーバー。
 - `docker`: Dockerの指示およびビルドプロセス + ソースからのビルド情報。
-- `embed`: [埋め込みウィジェット](./embed/README.md)の生成に特化したコード。
+- `embed`: [埋め込みウィジェット](../embed/README.md)の生成に特化したコード。
 
 ## 🛳 セルフホスティング
 
@@ -149,7 +149,7 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 | --------------------------------------------------- |
 | [![Railway上でデプロイ][railway-btn]][railway-deploy] |
 
-[Dockerを使用せずに本番環境のAnythingLLMインスタンスを設定する →](./BARE_METAL.md)
+[Dockerを使用せずに本番環境のAnythingLLMインスタンスを設定する →](../BARE_METAL.md)
 
 ## 開発環境のセットアップ方法
 
@@ -159,9 +159,9 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 - `yarn dev:frontend` ローカルでフロントエンドを起動します（リポジトリのルートから）。
 - `yarn dev:collector` ドキュメントコレクターを実行します（リポジトリのルートから）。
 
-[ドキュメントについて学ぶ](./server/storage/documents/DOCUMENTS.md)
+[ドキュメントについて学ぶ](../server/storage/documents/DOCUMENTS.md)
 
-[ベクトルキャッシュについて学ぶ](./server/storage/vector-cache/VECTOR_CACHE.md)
+[ベクトルキャッシュについて学ぶ](../server/storage/vector-cache/VECTOR_CACHE.md)
 
 ## 貢献する方法
 
