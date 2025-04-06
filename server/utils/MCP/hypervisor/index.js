@@ -235,6 +235,7 @@ class MCPHypervisor {
     const transport = new StdioClientTransport({
       command: server.command,
       args: server?.args ?? [],
+      ...(server?.env ? { env: server.env } : {}),
     });
 
     // Add connection event listeners
