@@ -4,33 +4,33 @@ import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import { useManageWorkspaceModal } from "@/components/Modals/ManageWorkspace";
 import ManageWorkspace from "@/components/Modals/ManageWorkspace";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNewWorkspaceModal } from "@/components/Modals/NewWorkspace";
 import NewWorkspaceModal from "@/components/Modals/NewWorkspace";
-import useUser from "@/hooks/useUser";
-import System from "@/models/system";
+import showToast from "@/utils/toast";
 
 export default function QuickLinks() {
   const navigate = useNavigate();
   const { showModal } = useManageWorkspaceModal();
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-  const [isMultiUser, setIsMultiUser] = useState(false);
-  const { user } = useUser();
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
 
-  useEffect(() => {
-    System.isMultiUserMode().then(setIsMultiUser);
-  }, []);
-
   const sendChat = async () => {
     const workspaces = await Workspace.all();
     if (workspaces.length > 0) {
       const firstWorkspace = workspaces[0];
       navigate(paths.workspace.chat(firstWorkspace.slug));
+    } else {
+      showToast(
+        "Please create a workspace before starting a chat.",
+        "warning",
+        { clear: true }
+      );
+      showNewWsModal();
     }
   };
 
@@ -40,14 +40,19 @@ export default function QuickLinks() {
       const firstWorkspace = workspaces[0];
       setSelectedWorkspace(firstWorkspace);
       showModal();
+    } else {
+      showToast(
+        "Please create a workspace before embedding documents.",
+        "warning",
+        { clear: true }
+      );
+      showNewWsModal();
     }
   };
 
   const createWorkspace = () => {
     showNewWsModal();
   };
-
-  const isDefaultUser = isMultiUser && user?.role === "default";
 
   return (
     <div>
@@ -62,24 +67,20 @@ export default function QuickLinks() {
           <ChatCenteredDots size={16} />
           Send Chat
         </button>
-        {!isDefaultUser && (
-          <>
-            <button
-              onClick={embedDocument}
-              className="h-[45px] bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
-            >
-              <FileArrowDown size={16} />
-              Embed a Document
-            </button>
-            <button
-              onClick={createWorkspace}
-              className="h-[45px] bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
-            >
-              <Plus size={16} />
-              Create Workspace
-            </button>
-          </>
-        )}
+        <button
+          onClick={embedDocument}
+          className="h-[45px] bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
+        >
+          <FileArrowDown size={16} />
+          Embed a Document
+        </button>
+        <button
+          onClick={createWorkspace}
+          className="h-[45px] bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
+        >
+          <Plus size={16} />
+          Create Workspace
+        </button>
       </div>
 
       {selectedWorkspace && (
