@@ -15,8 +15,9 @@ const experimentalModels = [
   "gemini-exp-1114",
   "gemini-exp-1121",
   "gemini-exp-1206",
-  "learnlm-1.5-pro-experimental",
+  "learnllm-1.5-pro-experimental",
   "gemini-2.0-flash-exp",
+  "gemini-2.5-pro-preview-03-25",
 ];
 
 // There are some models that are only available in the v1beta API
