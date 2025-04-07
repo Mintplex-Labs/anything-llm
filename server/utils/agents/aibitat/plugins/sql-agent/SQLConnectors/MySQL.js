@@ -1,5 +1,5 @@
 const mysql = require("mysql2/promise");
-const UrlPattern = require("url-pattern");
+const { ConnectionStringParser } = require("./utils");
 
 class MySQLConnector {
   #connected = false;
@@ -15,9 +15,9 @@ class MySQLConnector {
   }
 
   #parseDatabase() {
-    const connectionPattern = new UrlPattern("mysql\\://*@*/:database*");
-    const match = connectionPattern.match(this.connectionString);
-    return match?.database;
+    const connectionParser = new ConnectionStringParser({ scheme: "mysql" });
+    const parsed = connectionParser.parse(this.connectionString);
+    return parsed?.endpoint;
   }
 
   async connect() {
