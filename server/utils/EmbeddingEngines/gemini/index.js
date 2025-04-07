@@ -2,6 +2,8 @@ class GeminiEmbedder {
   constructor() {
     if (!process.env.GEMINI_EMBEDDING_API_KEY)
       throw new Error("No Gemini API key was set.");
+
+    // TODO: Deprecate this and use OpenAI interface instead - after which, remove the @google/generative-ai dependency
     const { GoogleGenerativeAI } = require("@google/generative-ai");
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_EMBEDDING_API_KEY);
     this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-004";
