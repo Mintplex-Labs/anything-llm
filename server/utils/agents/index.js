@@ -115,10 +115,6 @@ class AgentHandler {
             "LocalAI must have a valid base path to use for the api."
           );
         break;
-      case "gemini":
-        if (!process.env.GEMINI_API_KEY)
-          throw new Error("Gemini API key must be provided to use agents.");
-        break;
       case "openrouter":
         if (!process.env.OPENROUTER_API_KEY)
           throw new Error("OpenRouter API key must be provided to use agents.");
@@ -189,6 +185,10 @@ class AgentHandler {
         if (!process.env.PPIO_API_KEY)
           throw new Error("PPIO API Key must be provided to use agents.");
         break;
+      case "gemini":
+        if (!process.env.GEMINI_API_KEY)
+          throw new Error("Gemini API key must be provided to use agents.");
+        break;
 
       default:
         throw new Error(
@@ -224,8 +224,6 @@ class AgentHandler {
         return null;
       case "koboldcpp":
         return process.env.KOBOLD_CPP_MODEL_PREF ?? null;
-      case "gemini":
-        return process.env.GEMINI_MODEL_PREF ?? "gemini-pro";
       case "localai":
         return process.env.LOCAL_AI_MODEL_PREF ?? null;
       case "openrouter":
@@ -256,6 +254,8 @@ class AgentHandler {
         return process.env.NVIDIA_NIM_LLM_MODEL_PREF ?? null;
       case "ppio":
         return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
+      case "gemini":
+        return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
       default:
         return null;
     }
