@@ -1,7 +1,5 @@
 const { MODEL_MAP } = require("../modelMap");
 
-// Google Gemini API , list models : https://generativelanguage.googleapis.com/(v1|v1beta)/models?key=$(APIKey)
-// 20250330 update
 const stableModels = [
   // %STABLE_MODELS% - updated 2025-04-07T20:29:49.276Z
   "gemini-1.5-pro-001",
