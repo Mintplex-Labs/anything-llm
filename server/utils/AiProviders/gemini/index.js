@@ -28,21 +28,11 @@ class GeminiLLM {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     this.model =
       modelPreference || process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro";
+
+    const isExperimental = this.isExperimentalModel(this.model);
     this.gemini = genAI.getGenerativeModel(
       { model: this.model },
-      {
-        apiVersion:
-          /**
-           * There are some models that are only available in the v1beta API
-           * and some models that are only available in the v1 API
-           * generally, v1beta models have `exp` in the name, but not always
-           * so we check for both against a static list as well.
-           * @see {v1BetaModels}
-           */
-          this.model.includes("exp") || v1BetaModels.includes(this.model)
-            ? "v1beta"
-            : "v1",
-      }
+      { apiVersion: isExperimental ? "v1beta" : "v1" }
     );
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
@@ -59,7 +49,7 @@ class GeminiLLM {
     this.cacheModelPath = path.resolve(cacheFolder, "models.json");
     this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
     this.#log(
-      `Initialized with model: ${this.model} (${this.promptWindowLimit()})`
+      `Initialized with model: ${this.model} ${isExperimental ? "[Experimental v1beta]" : "[Stable v1]"} - ctx: ${this.promptWindowLimit()}`
     );
   }
 
@@ -71,7 +61,7 @@ class GeminiLLM {
   // from the current date. If it is, then we will refetch the API so that all the models are up
   // to date.
   static cacheIsStale() {
-    const MAX_STALE = 6.048e8; // 1 Week in MS
+    const MAX_STALE = 8.64e7; // 1 day in MS
     if (!fs.existsSync(path.resolve(cacheFolder, ".cached_at"))) return true;
     const now = Number(new Date());
     const timestampMs = Number(
@@ -169,6 +159,28 @@ class GeminiLLM {
   }
 
   /**
+   * Checks if a model is experimental by reading from the cache if available, otherwise it will perform
+   * a blind check against the v1BetaModels list - which is manually maintained and updated.
+   * @param {string} modelName - The name of the model to check
+   * @returns {boolean} A boolean indicating if the model is experimental
+   */
+  isExperimentalModel(modelName) {
+    if (
+      fs.existsSync(cacheFolder) &&
+      fs.existsSync(path.resolve(cacheFolder, "models.json"))
+    ) {
+      const models = safeJsonParse(
+        fs.readFileSync(path.resolve(cacheFolder, "models.json"))
+      );
+      const model = models.find((model) => model.id === modelName);
+      if (!model) return false;
+      return model.experimental;
+    }
+
+    return modelName.includes("exp") || v1BetaModels.includes(modelName);
+  }
+
+  /**
    * Fetches Gemini models from the Google Generative AI API
    * @param {string} apiKey - The API key to use for the request
    * @param {number} limit - The maximum number of models to fetch
@@ -186,63 +198,125 @@ class GeminiLLM {
       );
     }
 
-    const url = new URL(
-      "https://generativelanguage.googleapis.com/v1beta/models"
-    );
-    url.searchParams.set("pageSize", limit);
-    url.searchParams.set("key", apiKey);
-    if (pageToken) url.searchParams.set("pageToken", pageToken);
-    let success = false;
+    const stableModels = [];
+    const allModels = [];
 
-    const models = await fetch(url.toString(), {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) throw new Error(data.error.message);
-        return data.models ?? [];
+    // Fetch from v1
+    try {
+      const url = new URL(
+        "https://generativelanguage.googleapis.com/v1/models"
+      );
+      url.searchParams.set("pageSize", limit);
+      url.searchParams.set("key", apiKey);
+      if (pageToken) url.searchParams.set("pageToken", pageToken);
+      await fetch(url.toString(), {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       })
-      .then((models) => {
-        success = true;
-        return models
-          .filter(
-            (model) => !model.displayName.toLowerCase().includes("tuning")
-          )
-          .filter((model) =>
-            model.supportedGenerationMethods.includes("generateContent")
-          ) //  Only generateContent is supported
-          .map((model) => {
-            return {
-              id: model.name.split("/").pop(),
-              name: model.displayName,
-              contextWindow: model.inputTokenLimit,
-              experimental: model.name.includes("exp"),
-            };
-          });
-      })
-      .catch((e) => {
-        console.error(`Gemini:getGeminiModels`, e.message);
-        success = false;
-        return defaultGeminiModels;
-      });
-
-    if (success) {
-      console.log(
-        `\x1b[32m[GeminiLLM]\x1b[0m Writing cached models API response to disk.`
-      );
-      if (!fs.existsSync(cacheFolder))
-        fs.mkdirSync(cacheFolder, { recursive: true });
-      fs.writeFileSync(
-        path.resolve(cacheFolder, "models.json"),
-        JSON.stringify(models)
-      );
-      fs.writeFileSync(
-        path.resolve(cacheFolder, ".cached_at"),
-        new Date().getTime().toString()
-      );
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) throw new Error(data.error.message);
+          return data.models ?? [];
+        })
+        .then((models) => {
+          return models
+            .filter(
+              (model) => !model.displayName?.toLowerCase()?.includes("tuning")
+            ) // remove tuning models
+            .filter(
+              (model) =>
+                !model.description?.toLowerCase()?.includes("deprecated")
+            ) // remove deprecated models (in comment)
+            .filter((model) =>
+              //  Only generateContent is supported
+              model.supportedGenerationMethods.includes("generateContent")
+            )
+            .map((model) => {
+              stableModels.push(model.name);
+              allModels.push({
+                id: model.name.split("/").pop(),
+                name: model.displayName,
+                contextWindow: model.inputTokenLimit,
+                experimental: false,
+              });
+            });
+        })
+        .catch((e) => {
+          console.error(`Gemini:getGeminiModelsV1`, e.message);
+          return;
+        });
+    } catch (e) {
+      console.error(`Gemini:getGeminiModelsV1`, e.message);
     }
-    return models;
+
+    // Fetch from v1beta
+    try {
+      const url = new URL(
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      );
+      url.searchParams.set("pageSize", limit);
+      url.searchParams.set("key", apiKey);
+      if (pageToken) url.searchParams.set("pageToken", pageToken);
+      await fetch(url.toString(), {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) throw new Error(data.error.message);
+          return data.models ?? [];
+        })
+        .then((models) => {
+          return models
+            .filter((model) => !stableModels.includes(model.name)) // remove stable models that are already in the v1 list
+            .filter(
+              (model) => !model.displayName?.toLowerCase()?.includes("tuning")
+            ) // remove tuning models
+            .filter(
+              (model) =>
+                !model.description?.toLowerCase()?.includes("deprecated")
+            ) // remove deprecated models (in comment)
+            .filter((model) =>
+              //  Only generateContent is supported
+              model.supportedGenerationMethods.includes("generateContent")
+            )
+            .map((model) => {
+              allModels.push({
+                id: model.name.split("/").pop(),
+                name: model.displayName,
+                contextWindow: model.inputTokenLimit,
+                experimental: true,
+              });
+            });
+        })
+        .catch((e) => {
+          console.error(`Gemini:getGeminiModelsV1beta`, e.message);
+          return;
+        });
+    } catch (e) {
+      console.error(`Gemini:getGeminiModelsV1beta`, e.message);
+    }
+
+    if (allModels.length === 0) {
+      console.error(`Gemini:getGeminiModels - No models found`);
+      return defaultGeminiModels;
+    }
+
+    console.log(
+      `\x1b[32m[GeminiLLM]\x1b[0m Writing cached models API response to disk.`
+    );
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    fs.writeFileSync(
+      path.resolve(cacheFolder, "models.json"),
+      JSON.stringify(allModels)
+    );
+    fs.writeFileSync(
+      path.resolve(cacheFolder, ".cached_at"),
+      new Date().getTime().toString()
+    );
+
+    return allModels;
   }
 
   /**
