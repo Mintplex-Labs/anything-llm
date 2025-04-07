@@ -9,15 +9,18 @@ import Workspace from "@/models/workspace";
 import { useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-import { ChecklistItem, useChecklistItems } from "./ChecklistItem";
-import { CHECKLIST_HIDDEN, CHECKLIST_STORAGE_KEY } from "./constants";
+import { ChecklistItem } from "./ChecklistItem";
+import {
+  CHECKLIST_HIDDEN,
+  CHECKLIST_STORAGE_KEY,
+  CHECKLIST_ITEMS,
+} from "./constants";
 
 export default function Checklist() {
   const [isHidden, setIsHidden] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const navigate = useNavigate();
-  const checklistItems = useChecklistItems();
 
   const {
     showModal: showNewWsModal,
@@ -137,9 +140,9 @@ export default function Checklist() {
           <h1 className="text-theme-home-text uppercase text-sm font-semibold">
             Getting Started
           </h1>
-          {checklistItems.length - completedCount > 0 && (
+          {CHECKLIST_ITEMS.length - completedCount > 0 && (
             <p className="text-theme-home-text-secondary text-xs">
-              {checklistItems.length - completedCount} tasks left
+              {CHECKLIST_ITEMS.length - completedCount} tasks left
             </p>
           )}
         </div>
@@ -156,7 +159,7 @@ export default function Checklist() {
 
       <div className="rounded-lg border border-theme-home-border p-4 lg:p-6 -mb-6 bg-theme-home-bg-card">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {checklistItems.map((item) => (
+          {CHECKLIST_ITEMS.map((item) => (
             <ChecklistItem
               key={item.id}
               {...item}

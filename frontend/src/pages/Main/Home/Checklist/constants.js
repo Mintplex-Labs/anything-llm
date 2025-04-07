@@ -8,7 +8,6 @@ export const CHECKLIST_ITEMS = [
     action: "Create",
     handler: "createWorkspace",
     completed: false,
-    roles: ["admin", "manager"],
   },
   {
     id: "send_chat",
@@ -17,7 +16,6 @@ export const CHECKLIST_ITEMS = [
     action: "Chat",
     handler: "sendChat",
     completed: false,
-    roles: ["admin", "manager", "default"],
   },
   {
     id: "embed_document",
@@ -26,7 +24,6 @@ export const CHECKLIST_ITEMS = [
     action: "Embed",
     handler: "embedDocument",
     completed: false,
-    roles: ["admin", "manager"],
   },
   {
     id: "setup_system_prompt",
@@ -35,7 +32,6 @@ export const CHECKLIST_ITEMS = [
     action: "Set Up",
     handler: "setSystemPrompt",
     completed: false,
-    roles: ["admin", "manager"],
   },
   {
     id: "define_slash_command",
@@ -44,7 +40,6 @@ export const CHECKLIST_ITEMS = [
     action: "Define",
     handler: "setSlashCommand",
     completed: false,
-    roles: ["admin", "manager", "default"],
   },
   {
     id: "visit_community",
@@ -53,6 +48,5 @@ export const CHECKLIST_ITEMS = [
     action: "Browse",
     handler: "visitCommunityHub",
     completed: false,
-    roles: ["admin", "manager", "default"],
   },
 ];

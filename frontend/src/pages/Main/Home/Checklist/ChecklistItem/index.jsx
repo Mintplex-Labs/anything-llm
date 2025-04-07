@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
-import useUser from "@/hooks/useUser";
-import System from "@/models/system";
-import { CHECKLIST_ITEMS, CHECKLIST_STORAGE_KEY } from "../constants";
+import { useState } from "react";
+import { CHECKLIST_STORAGE_KEY } from "../constants";
 
 export function ChecklistItem({
   id,
@@ -57,28 +55,4 @@ export function ChecklistItem({
       )}
     </div>
   );
-}
-
-export function useChecklistItems() {
-  const [items, setItems] = useState([]);
-  const { user } = useUser();
-
-  useEffect(() => {
-    async function checkMultiUserMode() {
-      const isMultiUser = await System.isMultiUserMode();
-
-      if (!isMultiUser) {
-        setItems(CHECKLIST_ITEMS);
-        return;
-      }
-
-      const filteredItems = CHECKLIST_ITEMS.filter(
-        (item) => !item.roles || item.roles.includes(user?.role)
-      );
-      setItems(filteredItems);
-    }
-    checkMultiUserMode();
-  }, [user?.role]);
-
-  return items;
 }
