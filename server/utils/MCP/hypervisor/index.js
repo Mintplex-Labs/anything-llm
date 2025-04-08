@@ -60,8 +60,7 @@ class MCPHypervisor {
             `../../../storage/plugins/anythingllm_mcp_servers.json`
           )
         : path.resolve(
-            process.env.STORAGE_DIR ??
-              path.resolve(__dirname, `../../../storage`),
+            process.env.STORAGE_DIR,
             `plugins/anythingllm_mcp_servers.json`
           );
 
