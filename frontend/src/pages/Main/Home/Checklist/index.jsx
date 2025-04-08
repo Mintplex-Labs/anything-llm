@@ -106,8 +106,8 @@ export default function Checklist() {
         showNewWsModal();
         return false;
       }
-      navigate(paths.workspace.chat(workspaces[0].slug));
       window.location.hash = "#slash-commands";
+      navigate(paths.workspace.chat(workspaces[0].slug));
       return true;
     },
     setSystemPrompt: async () => {
@@ -121,12 +121,12 @@ export default function Checklist() {
         showNewWsModal();
         return false;
       }
-      navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));
       window.location.hash = "#system-prompts";
+      navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));
       return true;
     },
     visitCommunityHub: () => {
-      window.location.href = paths.communityHub.website();
+      window.open(paths.communityHub.website(), "_blank");
       return true;
     },
   };
