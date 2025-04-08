@@ -30,10 +30,10 @@ const ENABLED_PROVIDERS = [
   "apipie",
   "xai",
   "nvidia-nim",
+  "gemini",
   // TODO: More agent support.
   // "cohere",         // Has tool calling and will need to build explicit support
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
-  // "gemini",         // Too rate limited and broken in several ways to use for agents.
 ];
 const WARN_PERFORMANCE = [
   "lmstudio",

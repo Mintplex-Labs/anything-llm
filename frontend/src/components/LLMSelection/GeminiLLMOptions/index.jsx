@@ -29,6 +29,11 @@ export default function GeminiLLMOptions({ settings }) {
         {!settings?.credentialsOnly && (
           <>
             <GeminiModelSelection apiKey={geminiApiKey} settings={settings} />
+            {/* 
+            
+            Safety setting is not supported for Gemini yet due to the openai compatible Gemini API.
+            We are not using the generativeAPI endpoint and therefore cannot set the safety threshold.
+
             <div className="flex flex-col w-60">
               <label className="text-white text-sm font-semibold block mb-3">
                 Safety Setting
@@ -48,7 +53,7 @@ export default function GeminiLLMOptions({ settings }) {
                 </option>
                 <option value="BLOCK_LOW_AND_ABOVE">Block most</option>
               </select>
-            </div>
+            </div> */}
           </>
         )}
       </div>
