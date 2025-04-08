@@ -58,48 +58,50 @@ export default function BrowserExtensionApiKeyRow({
   return (
     <tr
       ref={rowRef}
-      className="bg-transparent text-white text-opacity-80 text-sm font-medium"
+      className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10"
     >
-      <td scope="row" className="px-6 py-4 whitespace-nowrap flex items-center">
-        <span className="mr-2 font-mono">{connectionString}</span>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={handleCopy}
-            data-tooltip-id="copy-connection-text"
-            data-tooltip-content="Copy connection string"
-            className="border-none text-theme-text-primary hover:text-theme-text-secondary transition-colors duration-200 p-1 rounded"
-          >
-            {copied ? (
-              <Check className="h-5 w-5 text-green-500" />
-            ) : (
-              <Copy className="h-5 w-5" />
-            )}
-          </button>
+      <td scope="row" className="px-6 py-2 whitespace-nowrap">
+        <div className="flex items-center">
+          <span className="mr-2 font-mono">{connectionString}</span>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handleCopy}
+              data-tooltip-id="copy-connection-text"
+              data-tooltip-content="Copy connection string"
+              className="border-none text-theme-text-primary hover:text-theme-text-secondary transition-colors duration-200 p-1 rounded"
+            >
+              {copied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </button>
 
-          <button
-            onClick={handleConnect}
-            data-tooltip-id="auto-connection"
-            data-tooltip-content="Automatically connect to extension"
-            className="border-none text-theme-text-primary hover:text-theme-text-secondary transition-colors duration-200 p-1 rounded"
-          >
-            <Plug className="h-5 w-5" />
-          </button>
+            <button
+              onClick={handleConnect}
+              data-tooltip-id="auto-connection"
+              data-tooltip-content="Automatically connect to extension"
+              className="border-none text-theme-text-primary hover:text-theme-text-secondary transition-colors duration-200 p-1 rounded"
+            >
+              <Plug className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </td>
       {isMultiUser && (
-        <td className="px-6 py-4">
+        <td className="px-6 py-2">
           {apiKey.user ? apiKey.user.username : "N/A"}
         </td>
       )}
-      <td className="px-6 py-4">
+      <td className="px-6 py-2">
         {new Date(apiKey.createdAt).toLocaleString()}
       </td>
-      <td className="px-6 py-4">
+      <td className="px-6 py-2">
         <button
           onClick={handleRevoke}
-          className="border-none font-medium px-2 py-1 rounded-lg text-theme-text-primary hover:text-red-500"
+          className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
         >
-          <Trash className="h-5 w-5" />
+          <Trash className="h-4 w-4" />
         </button>
       </td>
     </tr>

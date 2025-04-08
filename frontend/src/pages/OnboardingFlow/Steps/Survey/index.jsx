@@ -261,7 +261,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           <button
             type="button"
             onClick={skipSurvey}
-            className="text-white text-base font-medium text-opacity-30 hover:text-opacity-100 mt-8"
+            className="text-white text-base font-medium text-opacity-30 hover:text-opacity-100 hover:text-teal mt-8"
           >
             {t("onboarding.survey.skip")}
           </button>

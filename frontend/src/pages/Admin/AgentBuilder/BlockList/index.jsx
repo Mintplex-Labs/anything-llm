@@ -225,7 +225,7 @@ export default function BlockList({
                             e.stopPropagation();
                             moveBlock(index, index - 1);
                           }}
-                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                           data-tooltip-id="block-action"
                           data-tooltip-content="Move block up"
                         >
@@ -238,7 +238,7 @@ export default function BlockList({
                             e.stopPropagation();
                             moveBlock(index, index + 1);
                           }}
-                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                           data-tooltip-id="block-action"
                           data-tooltip-content="Move block down"
                         >
@@ -250,7 +250,7 @@ export default function BlockList({
                           e.stopPropagation();
                           removeBlock(block.id);
                         }}
-                        className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
                         data-tooltip-id="block-action"
                         data-tooltip-content="Delete block"
                       >

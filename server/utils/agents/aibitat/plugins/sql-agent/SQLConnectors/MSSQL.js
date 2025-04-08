@@ -1,5 +1,5 @@
 const mssql = require("mssql");
-const UrlPattern = require("url-pattern");
+const { ConnectionStringParser } = require("./utils");
 
 class MSSQLConnector {
   #connected = false;
@@ -34,18 +34,17 @@ class MSSQLConnector {
   }
 
   #parseDatabase() {
-    const connectionPattern = new UrlPattern(
-      "mssql\\://:username\\::password@*\\::port/:database*"
-    );
-    const match = connectionPattern.match(this.connectionString);
-    this.database_id = match?.database;
+    const connectionParser = new ConnectionStringParser({ scheme: "mssql" });
+    const parsed = connectionParser.parse(this.connectionString);
+
+    this.database_id = parsed?.endpoint;
     this.connectionConfig = {
       ...this.connectionConfig,
-      user: match?.username,
-      password: match?.password,
-      database: match?.database,
-      server: match?._[0],
-      port: match?.port ? Number(match.port) : null,
+      user: parsed?.username,
+      password: parsed?.password,
+      database: parsed?.endpoint,
+      server: parsed?.hosts[0]?.host,
+      port: parsed?.hosts[0]?.port,
     };
   }
 
