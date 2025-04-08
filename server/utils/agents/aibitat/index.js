@@ -491,9 +491,7 @@ Only return the role.
     // and remove the @ from the response
     const { result } = await provider.complete(messages);
     const name = result?.replace(/^@/g, "");
-    if (this.agents.get(name)) {
-      return name;
-    }
+    if (this.agents.get(name)) return name;
 
     // if the name is not in the nodes, return a random node
     return availableNodes[Math.floor(Math.random() * availableNodes.length)];

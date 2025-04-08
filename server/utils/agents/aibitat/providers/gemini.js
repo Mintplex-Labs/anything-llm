@@ -5,6 +5,7 @@ const UnTooled = require("./helpers/untooled.js");
 const {
   NO_SYSTEM_PROMPT_MODELS,
 } = require("../../../AiProviders/gemini/index.js");
+const { APIError } = require("../error.js");
 
 /**
  * The agent provider for the Gemini provider.
@@ -131,7 +132,11 @@ class GeminiProvider extends InheritMultiple([Provider, UnTooled]) {
         cost: 0,
       };
     } catch (error) {
-      throw error;
+      throw new APIError(
+        error?.message
+          ? `${this.constructor.name} encountered an error while executing the request: ${error.message}`
+          : "There was an error with the Gemini provider executing the request"
+      );
     }
   }
 
