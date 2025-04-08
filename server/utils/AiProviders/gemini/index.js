@@ -99,53 +99,6 @@ class GeminiLLM {
     );
   }
 
-  /**
-   * This would validate the safety threshold for the model and set it during request runtime.
-   * The openai compatible Gemini API does not support this and applies the default safety settings.
-   *
-   * Due to limitations with the gemini API + the need to move Gemini compatibility to OpenAI so we can have it more portable
-   * throughout the app, we are not using the generativeAPI endpoint and therefore cannot set the safety threshold.
-   *
-   * @deprecated
-   * Fetches the safety threshold for the model.
-   * @returns {string} The safety threshold for the model.
-   */
-  // #fetchSafetyThreshold() {
-  //   const threshold =
-  //     process.env.GEMINI_SAFETY_SETTING ?? "BLOCK_MEDIUM_AND_ABOVE";
-  //   const safetyThresholds = [
-  //     "BLOCK_NONE",
-  //     "BLOCK_ONLY_HIGH",
-  //     "BLOCK_MEDIUM_AND_ABOVE",
-  //     "BLOCK_LOW_AND_ABOVE",
-  //   ];
-  //   return safetyThresholds.includes(threshold)
-  //     ? threshold
-  //     : "BLOCK_MEDIUM_AND_ABOVE";
-  // }
-
-  /**
-   * @deprecated
-   * @see {#fetchSafetyThreshold}
-   */
-  // #safetySettings() {
-  //   return [
-  //     {
-  //       category: "HARM_CATEGORY_HATE_SPEECH",
-  //       threshold: this.safetyThreshold,
-  //     },
-  //     {
-  //       category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-  //       threshold: this.safetyThreshold,
-  //     },
-  //     { category: "HARM_CATEGORY_HARASSMENT", threshold: this.safetyThreshold },
-  //     {
-  //       category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-  //       threshold: this.safetyThreshold,
-  //     },
-  //   ];
-  // }
-
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
