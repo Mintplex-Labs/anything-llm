@@ -17,6 +17,7 @@ import {
 } from "./constants";
 
 export default function Checklist() {
+  const [loading, setLoading] = useState(true);
   const [isHidden, setIsHidden] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
@@ -32,28 +33,35 @@ export default function Checklist() {
     useManageWorkspaceModal();
 
   useEffect(() => {
-    const hidden = window.localStorage.getItem(CHECKLIST_HIDDEN);
-    setIsHidden(!!hidden);
+    try {
+      const hidden = window.localStorage.getItem(CHECKLIST_HIDDEN);
+      setIsHidden(!!hidden);
 
-    const checkWorkspaceAndUpdateCount = async () => {
-      const workspaces = await Workspace.all();
-      const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY) || "{}";
-      const completedItems = JSON.parse(stored);
+      const checkWorkspaceAndUpdateCount = async () => {
+        const workspaces = await Workspace.all();
+        const stored =
+          window.localStorage.getItem(CHECKLIST_STORAGE_KEY) || "{}";
+        const completedItems = JSON.parse(stored);
 
-      if (workspaces.length > 0) {
-        completedItems["create_workspace"] = true;
-      } else if (completedItems["create_workspace"]) {
-        delete completedItems["create_workspace"];
-      }
+        if (workspaces.length > 0) {
+          completedItems["create_workspace"] = true;
+        } else if (completedItems["create_workspace"]) {
+          delete completedItems["create_workspace"];
+        }
 
-      window.localStorage.setItem(
-        CHECKLIST_STORAGE_KEY,
-        JSON.stringify(completedItems)
-      );
-      setCompletedCount(Object.keys(completedItems).length);
-    };
+        window.localStorage.setItem(
+          CHECKLIST_STORAGE_KEY,
+          JSON.stringify(completedItems)
+        );
+        setCompletedCount(Object.keys(completedItems).length);
+      };
 
-    checkWorkspaceAndUpdateCount();
+      checkWorkspaceAndUpdateCount();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const handleClose = () => {
@@ -131,7 +139,7 @@ export default function Checklist() {
       return true;
     },
   };
-  if (isHidden) return null;
+  if (isHidden || loading) return null;
 
   return (
     <div
