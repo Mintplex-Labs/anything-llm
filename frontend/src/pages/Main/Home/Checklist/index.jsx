@@ -15,11 +15,13 @@ import {
   CHECKLIST_STORAGE_KEY,
   CHECKLIST_ITEMS,
 } from "./constants";
+import ConfettiExplosion from "react-confetti-explosion";
 
 export default function Checklist() {
   const [loading, setLoading] = useState(true);
   const [isHidden, setIsHidden] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const navigate = useNavigate();
   const containerRef = useRef(null);
@@ -54,6 +56,9 @@ export default function Checklist() {
           JSON.stringify(completedItems)
         );
         setCompletedCount(Object.keys(completedItems).length);
+        setIsCompleted(
+          Object.keys(completedItems).length === CHECKLIST_ITEMS.length
+        );
       };
 
       checkWorkspaceAndUpdateCount();
@@ -63,6 +68,14 @@ export default function Checklist() {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (isCompleted) {
+      setTimeout(() => {
+        handleClose();
+      }, 5_000);
+    }
+  }, [isCompleted]);
 
   const handleClose = () => {
     window.localStorage.setItem(CHECKLIST_HIDDEN, "true");
@@ -144,9 +157,29 @@ export default function Checklist() {
   return (
     <div
       ref={containerRef}
-      className="transition-height duration-300 h-[100%] overflow-y-hidden"
+      className="transition-height duration-300 h-[100%] overflow-y-hidden relative"
     >
-      <div className="rounded-lg p-4 lg:p-6 bg-theme-home-bg-card">
+      <div
+        className={`${isCompleted ? "checklist-completed" : "hidden"} absolute top-0 left-0 w-full h-full p-2 z-10 transition-all duration-300`}
+      >
+        {isCompleted && (
+          <div className="flex w-full items-center justify-center">
+            <ConfettiExplosion force={0.25} duration={3000} />
+          </div>
+        )}
+        <div
+          style={{}}
+          className="bg-[rgba(54,70,61,0.5)] light:bg-[rgba(216,243,234,0.5)] w-full h-full flex items-center justify-center bg-theme-checklist-item-completed-bg/50 rounded-lg"
+        >
+          <p className="text-theme-checklist-item-completed-text text-lg font-bold">
+            You're on your way to becoming an AnythingLLM expert!
+          </p>
+        </div>
+      </div>
+
+      <div
+        className={`rounded-lg p-4 lg:p-6 bg-theme-home-bg-card relative ${isCompleted ? "blur-sm" : ""}`}
+      >
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-x-3">
             <h1 className="text-theme-home-text uppercase text-sm font-semibold">

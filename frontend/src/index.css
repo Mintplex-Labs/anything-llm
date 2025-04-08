@@ -1047,3 +1047,8 @@ does not extend the close button beyond the viewport. */
 .animate-thoughtTransition {
   animation: thoughtTransition 0.5s ease-out forwards;
 }
+
+.checklist-completed {
+  -webkit-animation: fadein 0.3s linear forwards;
+  animation: fadein 0.3s linear forwards;
+}
