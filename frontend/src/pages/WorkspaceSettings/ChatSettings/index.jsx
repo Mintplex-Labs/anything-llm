@@ -9,6 +9,7 @@ import ChatTemperatureSettings from "./ChatTemperatureSettings";
 import ChatModeSelection from "./ChatModeSelection";
 import WorkspaceLLMSelection from "./WorkspaceLLMSelection";
 import ChatQueryRefusalResponse from "./ChatQueryRefusalResponse";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function ChatSettings({ workspace }) {
   const [settings, setSettings] = useState({});
@@ -45,13 +46,20 @@ export default function ChatSettings({ workspace }) {
 
   if (!workspace) return null;
   return (
-    <div id="workspace-chat-settings-container">
+    <div id="workspace-chat-settings-container" className="relative">
       <form
         ref={formEl}
         onSubmit={handleUpdate}
         id="chat-settings-form"
         className="w-1/2 flex flex-col gap-y-6"
       >
+        {hasChanges && (
+          <div className="absolute top-0 right-0">
+            <CTAButton type="submit">
+              {saving ? "Updating..." : "Update Workspace"}
+            </CTAButton>
+          </div>
+        )}
         <WorkspaceLLMSelection
           settings={settings}
           workspace={workspace}
@@ -78,15 +86,6 @@ export default function ChatSettings({ workspace }) {
           workspace={workspace}
           setHasChanges={setHasChanges}
         />
-        {hasChanges && (
-          <button
-            type="submit"
-            form="chat-settings-form"
-            className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-          >
-            {saving ? "Updating..." : "Update workspace"}
-          </button>
-        )}
       </form>
     </div>
   );

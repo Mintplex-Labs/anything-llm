@@ -1,39 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
 import { FullScreenLoader } from "@/components/Preloader";
 import Home from "./Home";
 import DefaultChatContainer from "@/components/DefaultChat";
 import { isMobile } from "react-device-detect";
-import Sidebar from "@/components/Sidebar";
-import System from "@/models/system";
+import Sidebar, { SidebarMobileHeader } from "@/components/Sidebar";
+import { userFromStorage } from "@/utils/request";
 
 export default function Main() {
   const { loading, requiresAuth, mode } = usePasswordModal();
-  const [ismultiUser, setIsMultiUser] = useState(false);
-
-  useEffect(() => {
-    async function checkMultiUserMode() {
-      const isMultiUser = await System.isMultiUserMode();
-      setIsMultiUser(isMultiUser);
-    }
-    checkMultiUserMode();
-  }, []);
 
   if (loading) return <FullScreenLoader />;
-  if (requiresAuth !== false) {
+  if (requiresAuth !== false)
     return <>{requiresAuth !== null && <PasswordModal mode={mode} />}</>;
-  }
 
+  const user = userFromStorage();
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
-      {ismultiUser ? (
-        <>
-          {!isMobile && <Sidebar />}
-          <DefaultChatContainer />
-        </>
-      ) : (
-        <Home />
-      )}
+      {!isMobile ? <Sidebar /> : <SidebarMobileHeader />}
+      {!!user && user?.role !== "admin" ? <DefaultChatContainer /> : <Home />}
     </div>
   );
 }

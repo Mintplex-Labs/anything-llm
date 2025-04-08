@@ -10,7 +10,6 @@ import {
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import truncate from "truncate";
 
 const THREAD_CALLOUT_DETAIL_WIDTH = 26;
 export default function ThreadItem({
@@ -92,15 +91,15 @@ export default function ThreadItem({
             href={
               window.location.pathname === linkTo || ctrlPressed ? "#" : linkTo
             }
-            className="w-full pl-2 py-1"
+            className="w-full pl-2 py-1 overflow-hidden"
             aria-current={isActive ? "page" : ""}
           >
             <p
-              className={`text-left text-sm ${
+              className={`text-left text-sm truncate max-w-[165px] ${
                 isActive ? "font-medium text-white" : "text-theme-text-primary"
               }`}
             >
-              {truncate(thread.name, 25)}
+              {thread.name}
             </p>
           </a>
         )}

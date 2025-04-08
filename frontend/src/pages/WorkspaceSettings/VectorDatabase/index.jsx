@@ -8,6 +8,7 @@ import DocumentSimilarityThreshold from "./DocumentSimilarityThreshold";
 import ResetDatabase from "./ResetDatabase";
 import VectorCount from "./VectorCount";
 import VectorSearchMode from "./VectorSearchMode";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function VectorDatabase({ workspace }) {
   const [hasChanges, setHasChanges] = useState(false);
@@ -35,30 +36,34 @@ export default function VectorDatabase({ workspace }) {
 
   if (!workspace) return null;
   return (
-    <form
-      ref={formEl}
-      onSubmit={handleUpdate}
-      className="w-1/2 flex flex-col gap-y-6"
-    >
-      <div className="flex items-start gap-x-5">
-        <VectorDBIdentifier workspace={workspace} />
-        <VectorCount reload={true} workspace={workspace} />
-      </div>
-      <VectorSearchMode workspace={workspace} setHasChanges={setHasChanges} />
-      <MaxContextSnippets workspace={workspace} setHasChanges={setHasChanges} />
-      <DocumentSimilarityThreshold
-        workspace={workspace}
-        setHasChanges={setHasChanges}
-      />
-      <ResetDatabase workspace={workspace} />
-      {hasChanges && (
-        <button
-          type="submit"
-          className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-        >
-          {saving ? "Updating..." : "Update workspace"}
-        </button>
-      )}
-    </form>
+    <div className="w-full relative">
+      <form
+        ref={formEl}
+        onSubmit={handleUpdate}
+        className="w-1/2 flex flex-col gap-y-6"
+      >
+        {hasChanges && (
+          <div className="absolute top-0 right-0">
+            <CTAButton type="submit">
+              {saving ? "Updating..." : "Update Workspace"}
+            </CTAButton>
+          </div>
+        )}
+        <div className="flex items-start gap-x-5">
+          <VectorDBIdentifier workspace={workspace} />
+          <VectorCount reload={true} workspace={workspace} />
+        </div>
+        <VectorSearchMode workspace={workspace} setHasChanges={setHasChanges} />
+        <MaxContextSnippets
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+        <DocumentSimilarityThreshold
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+        <ResetDatabase workspace={workspace} />
+      </form>
+    </div>
   );
 }
