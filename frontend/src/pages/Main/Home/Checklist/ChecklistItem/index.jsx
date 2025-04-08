@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CHECKLIST_STORAGE_KEY } from "../constants";
+import { Check } from "@phosphor-icons/react";
 
 export function ChecklistItem({
   id,
@@ -7,6 +8,7 @@ export function ChecklistItem({
   action,
   completed: defaultCompleted,
   onAction,
+  icon: Icon,
 }) {
   const [isCompleted, setIsCompleted] = useState(() => {
     const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
@@ -36,20 +38,36 @@ export function ChecklistItem({
 
   return (
     <div
-      className="flex items-center gap-x-4 transition-colors cursor-pointer bg-theme-checklist-item-bg rounded-lg p-3 group"
+      className={`flex items-center gap-x-4 transition-colors cursor-pointer rounded-lg p-3 group ${
+        isCompleted ? "bg-[#36463D]" : "bg-[#203C48]"
+      }`}
       onClick={handleClick}
     >
+      {Icon && (
+        <div className="flex-shrink-0">
+          <Icon
+            size={18}
+            className={isCompleted ? "text-[#A6F4C5]" : "text-[#B9E6FE]"}
+          />
+        </div>
+      )}
       <div className="flex-1">
-        <h3 className="text-theme-checklist-item-text text-sm font-medium group-hover:text-theme-checklist-item-hover transition-colors duration-200">
+        <h3
+          className={`text-sm font-medium transition-colors duration-200 ${
+            isCompleted
+              ? "text-[#A6F4C5] line-through"
+              : "text-[#B9E6FE] group-hover:text-white/90"
+          }`}
+        >
           {title}
         </h3>
       </div>
       {isCompleted ? (
-        <div className="w-3.5 h-3.5 rounded-full border border-theme-checklist-checkbox-border flex items-center justify-center">
-          <div className="w-2 h-2 bg-theme-checklist-checkbox-fill rounded-full" />
+        <div className="w-5 h-5 rounded-full bg-[#A6F4C5] flex items-center justify-center">
+          <Check size={14} weight="bold" className="text-[#36463D]" />
         </div>
       ) : (
-        <button className="w-[64px] h-[24px] rounded-md border border-theme-checklist-button-border text-theme-checklist-button-text font-semibold text-xs transition-all duration-200 flex items-center justify-center hover:bg-theme-checklist-button-hover-bg hover:border-theme-checklist-button-hover-border">
+        <button className="w-[64px] h-[24px] rounded-md bg-white/10 text-white font-semibold text-xs transition-all duration-200 flex items-center justify-center hover:bg-white/10">
           {action}
         </button>
       )}

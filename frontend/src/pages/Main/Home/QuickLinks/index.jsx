@@ -62,7 +62,7 @@ export default function QuickLinks() {
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <button
           onClick={sendChat}
-          className="h-[45px] bg-theme-home-button-primary rounded-lg text-black flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-primary-hover"
+          className="h-[45px] bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
         >
           <ChatCenteredDots size={16} />
           Send Chat

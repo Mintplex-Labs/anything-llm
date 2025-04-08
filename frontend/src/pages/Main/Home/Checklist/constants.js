@@ -1,3 +1,12 @@
+import {
+  SquaresFour,
+  ChatDots,
+  Files,
+  ChatCenteredText,
+  UsersThree,
+} from "@phosphor-icons/react";
+import SlashCommandIcon from "./ChecklistItem/icons/SlashCommand";
+
 export const CHECKLIST_STORAGE_KEY = "anythingllm_checklist_completed";
 export const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
 export const CHECKLIST_ITEMS = [
@@ -7,6 +16,7 @@ export const CHECKLIST_ITEMS = [
     description: "Create your first workspace to get started",
     action: "Create",
     handler: "createWorkspace",
+    icon: SquaresFour,
     completed: false,
   },
   {
@@ -15,6 +25,7 @@ export const CHECKLIST_ITEMS = [
     description: "Start a conversation with your AI assistant",
     action: "Chat",
     handler: "sendChat",
+    icon: ChatDots,
     completed: false,
   },
   {
@@ -23,6 +34,7 @@ export const CHECKLIST_ITEMS = [
     description: "Add your first document to your workspace",
     action: "Embed",
     handler: "embedDocument",
+    icon: Files,
     completed: false,
   },
   {
@@ -31,6 +43,7 @@ export const CHECKLIST_ITEMS = [
     description: "Configure your AI assistant's behavior",
     action: "Set Up",
     handler: "setSystemPrompt",
+    icon: ChatCenteredText,
     completed: false,
   },
   {
@@ -39,6 +52,7 @@ export const CHECKLIST_ITEMS = [
     description: "Create custom commands for your assistant",
     action: "Define",
     handler: "setSlashCommand",
+    icon: SlashCommandIcon,
     completed: false,
   },
   {
@@ -47,6 +61,7 @@ export const CHECKLIST_ITEMS = [
     description: "Explore community resources and templates",
     action: "Browse",
     handler: "visitCommunityHub",
+    icon: UsersThree,
     completed: false,
   },
 ];

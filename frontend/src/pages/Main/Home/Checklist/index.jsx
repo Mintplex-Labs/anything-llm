@@ -135,29 +135,28 @@ export default function Checklist() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-x-3">
-          <h1 className="text-theme-home-text uppercase text-sm font-semibold">
-            Getting Started
-          </h1>
-          {CHECKLIST_ITEMS.length - completedCount > 0 && (
-            <p className="text-theme-home-text-secondary text-xs">
-              {CHECKLIST_ITEMS.length - completedCount} tasks left
-            </p>
-          )}
-        </div>
+      <div className="rounded-lg p-4 lg:p-6 -mb-6 bg-theme-home-bg-card">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-x-3">
+            <h1 className="text-theme-home-text uppercase text-sm font-semibold">
+              Getting Started
+            </h1>
+            {CHECKLIST_ITEMS.length - completedCount > 0 && (
+              <p className="text-theme-home-text-secondary text-xs">
+                {CHECKLIST_ITEMS.length - completedCount} tasks left
+              </p>
+            )}
+          </div>
 
-        <div className="flex items-center gap-x-2">
-          <button
-            onClick={handleClose}
-            className="text-theme-home-text bg-theme-home-bg-button px-2 py-1 rounded-lg hover:bg-white/10 transition-colors text-xs"
-          >
-            close
-          </button>
+          <div className="flex items-center gap-x-2">
+            <button
+              onClick={handleClose}
+              className="text-theme-home-text bg-theme-home-bg-button px-2 py-1 rounded-xl hover:bg-white/10 transition-colors text-xs"
+            >
+              close
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="rounded-lg border border-theme-home-border p-4 lg:p-6 -mb-6 bg-theme-home-bg-card">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {CHECKLIST_ITEMS.map((item) => (
             <ChecklistItem
