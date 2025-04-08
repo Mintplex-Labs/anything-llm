@@ -29,7 +29,7 @@ export default function Updates() {
 function UpdateCard({ thumbnail_url, title, subtitle, source, date, goto }) {
   return (
     <a href={goto} target="_blank" rel="noopener noreferrer" className="block">
-      <div className="light:border light:border-theme-home-border bg-theme-home-update-card-bg rounded-xl p-4 flex gap-x-4 hover:bg-theme-home-update-card-hover transition-colors">
+      <div className="bg-theme-home-update-card-bg rounded-xl p-4 flex gap-x-4 hover:bg-theme-home-update-card-hover transition-colors">
         <img
           src={thumbnail_url}
           alt={title}

@@ -64,11 +64,14 @@
   --theme-home-update-card-hover: #252525;
   --theme-home-update-source: #53b1fd;
 
-  --theme-checklist-item-bg: #3e3c3e;
-  --theme-checklist-item-text: #ffffff;
+  --theme-checklist-item-bg: #203c48;
+  --theme-checklist-item-text: #b9e6fe;
+  --theme-checklist-item-completed-bg: #36463d;
+  --theme-checklist-item-completed-text: #a6f4c5;
+  --theme-checklist-checkbox-fill: #a6f4c5;
+  --theme-checklist-checkbox-text: #36463d;
   --theme-checklist-item-hover: #36bffa;
   --theme-checklist-checkbox-border: #ffffff;
-  --theme-checklist-checkbox-fill: #6ce9a6;
   --theme-checklist-button-border: #36bffa;
   --theme-checklist-button-text: #36bffa;
   --theme-checklist-button-hover-bg: rgba(54, 191, 250, 0.2);
@@ -128,25 +131,28 @@
   --theme-file-picker-hover: #e2e7ee;
 
   --theme-home-text: #0e0f0f;
-  --theme-home-text-secondary: #6b7280;
-  --theme-home-bg-card: #ffffff;
+  --theme-home-text-secondary: #3f3f42;
+  --theme-home-bg-card: #edf2fa;
   --theme-home-bg-button: #f3f4f6;
   --theme-home-border: rgba(0, 0, 0, 0.1);
   --theme-home-button-primary: #36bffa;
   --theme-home-button-primary-hover: rgba(54, 191, 250, 0.9);
-  --theme-home-button-secondary: #f3f4f6;
+  --theme-home-button-secondary: #dbe8fe;
   --theme-home-button-secondary-hover: #e5e7eb;
-  --theme-home-button-secondary-text: #374151;
+  --theme-home-button-secondary-text: #293056;
   --theme-home-button-secondary-hover-text: #0ba5ec;
-  --theme-home-update-card-bg: #f9fafb;
+  --theme-home-update-card-bg: #edf2fa;
   --theme-home-update-card-hover: #f3f4f6;
   --theme-home-update-source: #0284c7;
 
-  --theme-checklist-item-bg: #f3f4f6;
-  --theme-checklist-item-text: #111827;
+  --theme-checklist-item-bg: #c8e8fa;
+  --theme-checklist-item-text: #0d3851;
+  --theme-checklist-item-completed-bg: #d8f3ea;
+  --theme-checklist-item-completed-text: #039855;
+  --theme-checklist-checkbox-fill: #6ce9a6;
+  --theme-checklist-checkbox-text: #ffffff;
   --theme-checklist-item-hover: #0ba5ec;
   --theme-checklist-checkbox-border: #6b7280;
-  --theme-checklist-checkbox-fill: #059669;
   --theme-checklist-button-border: #0ba5ec;
   --theme-checklist-button-text: #0ba5ec;
   --theme-checklist-button-hover-bg: rgba(11, 165, 236, 0.1);

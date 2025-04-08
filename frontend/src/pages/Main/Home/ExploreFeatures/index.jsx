@@ -99,14 +99,14 @@ function FeatureCard({
       <div className="flex flex-col gap-y-[10px]">
         <button
           onClick={onPrimaryAction}
-          className="w-full h-[36px] bg-white light:bg-theme-home-button-primary rounded-lg text-black text-sm font-medium flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-white/90 light:hover:bg-theme-home-button-primary-hover"
+          className="w-full h-[36px] border border-white/20 light:border-black/20 text-white rounded-lg text-theme-home-button-primary-text text-sm font-medium flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
         >
           {primaryAction}
         </button>
         {secondaryAction && (
           <div className="relative w-full">
             {isNew && (
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 border border-theme-home-border px-2 font-semibold rounded-md text-[10px] text-theme-home-text">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 px-2 font-semibold rounded-md text-[10px] text-theme-checklist-item-text bg-theme-checklist-item-bg light:bg-white/60">
                 New
               </div>
             )}
