@@ -39,7 +39,9 @@ export function ChecklistItem({
   return (
     <div
       className={`flex items-center gap-x-4 transition-colors cursor-pointer rounded-lg p-3 group ${
-        isCompleted ? "bg-[#36463D]" : "bg-[#203C48]"
+        isCompleted
+          ? "bg-theme-checklist-item-completed-bg"
+          : "bg-theme-checklist-item-bg"
       }`}
       onClick={handleClick}
     >
@@ -47,7 +49,11 @@ export function ChecklistItem({
         <div className="flex-shrink-0">
           <Icon
             size={18}
-            className={isCompleted ? "text-[#A6F4C5]" : "text-[#B9E6FE]"}
+            className={
+              isCompleted
+                ? "text-theme-checklist-item-completed-text"
+                : "text-theme-checklist-item-text"
+            }
           />
         </div>
       )}
@@ -55,19 +61,23 @@ export function ChecklistItem({
         <h3
           className={`text-sm font-medium transition-colors duration-200 ${
             isCompleted
-              ? "text-[#A6F4C5] line-through"
-              : "text-[#B9E6FE] group-hover:text-white/90"
+              ? "text-theme-checklist-item-completed-text line-through"
+              : "text-theme-checklist-item-text group-hover:text-theme-checklist-item-hover light:group-hover:text-theme-checklist-item-text-secondary"
           }`}
         >
           {title}
         </h3>
       </div>
       {isCompleted ? (
-        <div className="w-5 h-5 rounded-full bg-[#A6F4C5] flex items-center justify-center">
-          <Check size={14} weight="bold" className="text-[#36463D]" />
+        <div className="w-5 h-5 rounded-full bg-theme-checklist-checkbox-fill flex items-center justify-center">
+          <Check
+            size={14}
+            weight="bold"
+            className="text-theme-checklist-checkbox-text"
+          />
         </div>
       ) : (
-        <button className="w-[64px] h-[24px] rounded-md bg-white/10 text-white font-semibold text-xs transition-all duration-200 flex items-center justify-center hover:bg-white/10">
+        <button className="w-[64px] h-[24px] rounded-md bg-white/10 light:bg-white/70 text-theme-checklist-item-text font-semibold text-xs transition-all duration-200 flex items-center justify-center hover:bg-white/20 light:hover:bg-white/60">
           {action}
         </button>
       )}

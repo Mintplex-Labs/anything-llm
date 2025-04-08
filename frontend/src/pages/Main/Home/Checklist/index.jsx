@@ -151,7 +151,7 @@ export default function Checklist() {
           <div className="flex items-center gap-x-2">
             <button
               onClick={handleClose}
-              className="text-theme-home-text bg-theme-home-bg-button px-2 py-1 rounded-xl hover:bg-white/10 transition-colors text-xs"
+              className="text-theme-home-text-secondary bg-theme-home-bg-button px-3 py-1 rounded-xl hover:bg-white/10 transition-colors text-xs light:bg-black-100"
             >
               close
             </button>

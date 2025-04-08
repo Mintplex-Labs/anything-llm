@@ -118,9 +118,12 @@ export default {
           checklist: {
             "item-bg": 'var(--theme-checklist-item-bg)',
             "item-text": 'var(--theme-checklist-item-text)',
+            "item-completed-bg": 'var(--theme-checklist-item-completed-bg)',
+            "item-completed-text": 'var(--theme-checklist-item-completed-text)',
             "item-hover": 'var(--theme-checklist-item-hover)',
             "checkbox-border": 'var(--theme-checklist-checkbox-border)',
             "checkbox-fill": 'var(--theme-checklist-checkbox-fill)',
+            "checkbox-text": 'var(--theme-checklist-checkbox-text)',
             "button-border": 'var(--theme-checklist-button-border)',
             "button-text": 'var(--theme-checklist-button-text)',
             "button-hover-bg": 'var(--theme-checklist-button-hover-bg)',
