@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "@/components/Modals/ManageWorkspace";
@@ -21,6 +21,7 @@ export default function Checklist() {
   const [completedCount, setCompletedCount] = useState(0);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const navigate = useNavigate();
+  const containerRef = useRef(null);
 
   const {
     showModal: showNewWsModal,
@@ -57,7 +58,7 @@ export default function Checklist() {
 
   const handleClose = () => {
     window.localStorage.setItem(CHECKLIST_HIDDEN, "true");
-    setIsHidden(true);
+    if (containerRef?.current) containerRef.current.style.height = "0px";
   };
 
   // TODO: Refactor this - this will re-render many times.
@@ -130,12 +131,14 @@ export default function Checklist() {
       return true;
     },
   };
-
   if (isHidden) return null;
 
   return (
-    <div>
-      <div className="rounded-lg p-4 lg:p-6 -mb-6 bg-theme-home-bg-card">
+    <div
+      ref={containerRef}
+      className="transition-height duration-300 h-[100%] overflow-y-hidden"
+    >
+      <div className="rounded-lg p-4 lg:p-6 bg-theme-home-bg-card">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-x-3">
             <h1 className="text-theme-home-text uppercase text-sm font-semibold">
