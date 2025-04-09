@@ -10,6 +10,7 @@ const setupTelemetry = require("../telemetry");
 // - openssl rsa -passin pass:gsahdg -in server.pass.key -out server.key
 // - rm server.pass.key
 // - openssl req -new -key server.key -out server.csr
+// - openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 // Update .env keys with the correct values and boot. These are temporary and not real SSL certs - only use for local.
 // Test with https://localhost:3001/api/ping
 // build and copy frontend to server/public with correct API_BASE and start server in prod model and all should be ok
