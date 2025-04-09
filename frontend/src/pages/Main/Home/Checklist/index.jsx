@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "@/components/Modals/ManageWorkspace";
@@ -18,6 +24,8 @@ import {
 } from "./constants";
 import ConfettiExplosion from "react-confetti-explosion";
 import { safeJsonParse } from "@/utils/request";
+
+const MemoizedChecklistItem = React.memo(ChecklistItem);
 
 export default function Checklist() {
   const [loading, setLoading] = useState(true);
@@ -42,14 +50,22 @@ export default function Checklist() {
       try {
         const hidden = window.localStorage.getItem(CHECKLIST_HIDDEN);
         setIsHidden(!!hidden);
+        // If the checklist is hidden, don't bother evaluating it.
+        if (hidden) return;
 
+        // If the checklist is completed then dont continue and just show the completed state.
+        const checklist = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
+        const existingChecklist = checklist ? safeJsonParse(checklist, {}) : {};
+        const isCompleted =
+          Object.keys(existingChecklist).length === CHECKLIST_ITEMS.length;
+        setIsCompleted(isCompleted);
+        if (isCompleted) return;
+
+        // Otherwise, we can fetch workspaces for our checklist tasks as well
+        // as determine if the create_workspace task is completed for pre-checking.
         const workspaces = await Workspace.all();
         setWorkspaces(workspaces);
         if (workspaces.length > 0) {
-          const checklist = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
-          const existingChecklist = checklist
-            ? safeJsonParse(checklist, {})
-            : {};
           existingChecklist["create_workspace"] = true;
           window.localStorage.setItem(
             CHECKLIST_STORAGE_KEY,
@@ -88,7 +104,7 @@ export default function Checklist() {
     }
   }, [isCompleted]);
 
-  function evaluateChecklist() {
+  const evaluateChecklist = useCallback(() => {
     try {
       const checklist = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
       if (!checklist) return;
@@ -100,79 +116,82 @@ export default function Checklist() {
     } catch (error) {
       console.error(error);
     }
-  }
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     window.localStorage.setItem(CHECKLIST_HIDDEN, "true");
     if (containerRef?.current) containerRef.current.style.height = "0px";
-  };
+  }, []);
 
-  // TODO: Refactor this - this will re-render many times.
-  const handlers = {
-    createWorkspace: () => {
-      showNewWsModal();
-      return true;
-    },
-    sendChat: async () => {
-      if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before starting a chat.",
-          "warning",
-          { clear: true }
-        );
+  const handlers = useMemo(
+    () => ({
+      createWorkspace: () => {
         showNewWsModal();
-        return false;
-      }
-      navigate(paths.workspace.chat(workspaces[0].slug));
-      return true;
-    },
-    embedDocument: () => {
-      if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before embedding documents.",
-          "warning",
-          { clear: true }
-        );
-        showNewWsModal();
-        return false;
-      }
-      setSelectedWorkspace(workspaces[0]);
-      showManageWsModal();
-      return true;
-    },
-    setSlashCommand: () => {
-      if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before setting up slash commands.",
-          "warning",
-          { clear: true }
-        );
-        showNewWsModal();
-        return false;
-      }
-      navigate(paths.workspace.chat(workspaces[0].slug));
-      window.location.hash = "#slash-commands";
-      return true;
-    },
-    setSystemPrompt: () => {
-      if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before setting up system prompts.",
-          "warning",
-          { clear: true }
-        );
-        showNewWsModal();
-        return false;
-      }
-      navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));
-      window.location.hash = "#system-prompts";
-      return true;
-    },
-    visitCommunityHub: () => {
-      window.open(paths.communityHub.website(), "_blank");
-      return true;
-    },
-  };
+        return true;
+      },
+      sendChat: async () => {
+        if (workspaces.length === 0) {
+          showToast(
+            "Please create a workspace before starting a chat.",
+            "warning",
+            { clear: true }
+          );
+          showNewWsModal();
+          return false;
+        }
+        navigate(paths.workspace.chat(workspaces[0].slug));
+        return true;
+      },
+      embedDocument: () => {
+        if (workspaces.length === 0) {
+          showToast(
+            "Please create a workspace before embedding documents.",
+            "warning",
+            { clear: true }
+          );
+          showNewWsModal();
+          return false;
+        }
+        setSelectedWorkspace(workspaces[0]);
+        showManageWsModal();
+        return true;
+      },
+      setSlashCommand: () => {
+        if (workspaces.length === 0) {
+          showToast(
+            "Please create a workspace before setting up slash commands.",
+            "warning",
+            { clear: true }
+          );
+          showNewWsModal();
+          return false;
+        }
+        navigate(paths.workspace.chat(workspaces[0].slug));
+        window.location.hash = "#slash-commands";
+        return true;
+      },
+      setSystemPrompt: () => {
+        if (workspaces.length === 0) {
+          showToast(
+            "Please create a workspace before setting up system prompts.",
+            "warning",
+            { clear: true }
+          );
+          showNewWsModal();
+          return false;
+        }
+        navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));
+        window.location.hash = "#system-prompts";
+        return true;
+      },
+      visitCommunityHub: () => {
+        window.open(paths.communityHub.website(), "_blank");
+        return true;
+      },
+    }),
+    [workspaces, navigate, showNewWsModal, showManageWsModal]
+  );
+
   if (isHidden || loading) return null;
 
   return (
@@ -224,7 +243,7 @@ export default function Checklist() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {CHECKLIST_ITEMS.map((item) => (
-            <ChecklistItem
+            <MemoizedChecklistItem
               key={item.id}
               {...item}
               onAction={() => handlers[item.handler]()}
