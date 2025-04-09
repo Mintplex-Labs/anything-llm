@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['3000-mcp-compatibility'] # put your current branch to create a build. Core team only.
+    branches: ['3536-feat-new-chat-home-page'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
