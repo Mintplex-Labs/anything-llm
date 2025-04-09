@@ -128,8 +128,8 @@ export default function Checklist() {
         showNewWsModal();
         return false;
       }
-      window.location.hash = "#slash-commands";
       navigate(paths.workspace.chat(workspaces[0].slug));
+      window.location.hash = "#slash-commands";
       return true;
     },
     setSystemPrompt: async () => {
@@ -143,8 +143,8 @@ export default function Checklist() {
         showNewWsModal();
         return false;
       }
-      window.location.hash = "#system-prompts";
       navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));
+      window.location.hash = "#system-prompts";
       return true;
     },
     visitCommunityHub: () => {
