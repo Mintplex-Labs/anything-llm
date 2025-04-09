@@ -14,8 +14,10 @@ import {
   CHECKLIST_HIDDEN,
   CHECKLIST_STORAGE_KEY,
   CHECKLIST_ITEMS,
+  CHECKLIST_UPDATED_EVENT,
 } from "./constants";
 import ConfettiExplosion from "react-confetti-explosion";
+import { safeJsonParse } from "@/utils/request";
 
 export default function Checklist() {
   const [loading, setLoading] = useState(true);
@@ -23,9 +25,10 @@ export default function Checklist() {
   const [completedCount, setCompletedCount] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [workspaces, setWorkspaces] = useState([]);
+
   const navigate = useNavigate();
   const containerRef = useRef(null);
-
   const {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
@@ -35,38 +38,46 @@ export default function Checklist() {
     useManageWorkspaceModal();
 
   useEffect(() => {
-    try {
-      const hidden = window.localStorage.getItem(CHECKLIST_HIDDEN);
-      setIsHidden(!!hidden);
+    async function initialize() {
+      try {
+        const hidden = window.localStorage.getItem(CHECKLIST_HIDDEN);
+        setIsHidden(!!hidden);
 
-      const checkWorkspaceAndUpdateCount = async () => {
         const workspaces = await Workspace.all();
-        const stored =
-          window.localStorage.getItem(CHECKLIST_STORAGE_KEY) || "{}";
-        const completedItems = JSON.parse(stored);
-
+        setWorkspaces(workspaces);
         if (workspaces.length > 0) {
-          completedItems["create_workspace"] = true;
-        } else if (completedItems["create_workspace"]) {
-          delete completedItems["create_workspace"];
+          const checklist = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
+          const existingChecklist = checklist
+            ? safeJsonParse(checklist, {})
+            : {};
+          existingChecklist["create_workspace"] = true;
+          window.localStorage.setItem(
+            CHECKLIST_STORAGE_KEY,
+            JSON.stringify(existingChecklist)
+          );
         }
 
-        window.localStorage.setItem(
-          CHECKLIST_STORAGE_KEY,
-          JSON.stringify(completedItems)
-        );
-        setCompletedCount(Object.keys(completedItems).length);
-        setIsCompleted(
-          Object.keys(completedItems).length === CHECKLIST_ITEMS.length
-        );
-      };
-
-      checkWorkspaceAndUpdateCount();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+        evaluateChecklist(); // Evaluate checklist on mount.
+        window.addEventListener(CHECKLIST_UPDATED_EVENT, evaluateChecklist);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     }
+
+    initialize();
+    return () => {
+      window.removeEventListener(CHECKLIST_UPDATED_EVENT, evaluateChecklist);
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchWorkspaces = async () => {
+      const workspaces = await Workspace.all();
+      setWorkspaces(workspaces);
+    };
+    fetchWorkspaces();
   }, []);
 
   useEffect(() => {
@@ -77,6 +88,20 @@ export default function Checklist() {
     }
   }, [isCompleted]);
 
+  function evaluateChecklist() {
+    try {
+      const checklist = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
+      if (!checklist) return;
+      const completedItems = safeJsonParse(checklist, {});
+      setCompletedCount(Object.keys(completedItems).length);
+      setIsCompleted(
+        Object.keys(completedItems).length === CHECKLIST_ITEMS.length
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const handleClose = () => {
     window.localStorage.setItem(CHECKLIST_HIDDEN, "true");
     if (containerRef?.current) containerRef.current.style.height = "0px";
@@ -84,8 +109,11 @@ export default function Checklist() {
 
   // TODO: Refactor this - this will re-render many times.
   const handlers = {
+    createWorkspace: () => {
+      showNewWsModal();
+      return true;
+    },
     sendChat: async () => {
-      const workspaces = await Workspace.all();
       if (workspaces.length === 0) {
         showToast(
           "Please create a workspace before starting a chat.",
@@ -98,8 +126,7 @@ export default function Checklist() {
       navigate(paths.workspace.chat(workspaces[0].slug));
       return true;
     },
-    embedDocument: async () => {
-      const workspaces = await Workspace.all();
+    embedDocument: () => {
       if (workspaces.length === 0) {
         showToast(
           "Please create a workspace before embedding documents.",
@@ -113,12 +140,7 @@ export default function Checklist() {
       showManageWsModal();
       return true;
     },
-    createWorkspace: () => {
-      showNewWsModal();
-      return true;
-    },
-    setSlashCommand: async () => {
-      const workspaces = await Workspace.all();
+    setSlashCommand: () => {
       if (workspaces.length === 0) {
         showToast(
           "Please create a workspace before setting up slash commands.",
@@ -132,8 +154,7 @@ export default function Checklist() {
       navigate(paths.workspace.chat(workspaces[0].slug));
       return true;
     },
-    setSystemPrompt: async () => {
-      const workspaces = await Workspace.all();
+    setSystemPrompt: () => {
       if (workspaces.length === 0) {
         showToast(
           "Please create a workspace before setting up system prompts.",

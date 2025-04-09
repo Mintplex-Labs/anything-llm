@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { CHECKLIST_STORAGE_KEY } from "../constants";
+import { CHECKLIST_STORAGE_KEY, CHECKLIST_UPDATED_EVENT } from "../constants";
 import { Check } from "@phosphor-icons/react";
+import { safeJsonParse } from "@/utils/request";
 
 export function ChecklistItem({
   id,
@@ -13,7 +14,7 @@ export function ChecklistItem({
   const [isCompleted, setIsCompleted] = useState(() => {
     const stored = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
     if (!stored) return defaultCompleted;
-    const completedItems = JSON.parse(stored);
+    const completedItems = safeJsonParse(stored, {});
     return completedItems[id] || defaultCompleted;
   });
 
@@ -30,6 +31,7 @@ export function ChecklistItem({
           JSON.stringify(completedItems)
         );
         setIsCompleted(true);
+        window.dispatchEvent(new CustomEvent(CHECKLIST_UPDATED_EVENT));
       }
     } else {
       await onAction();

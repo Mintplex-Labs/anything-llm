@@ -7,6 +7,7 @@ import {
 } from "@phosphor-icons/react";
 import SlashCommandIcon from "./ChecklistItem/icons/SlashCommand";
 
+export const CHECKLIST_UPDATED_EVENT = "anythingllm_checklist_updated";
 export const CHECKLIST_STORAGE_KEY = "anythingllm_checklist_completed";
 export const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
 export const CHECKLIST_ITEMS = [
