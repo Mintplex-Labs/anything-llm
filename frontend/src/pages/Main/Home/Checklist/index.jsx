@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "@/components/Modals/ManageWorkspace";
@@ -13,9 +7,8 @@ import NewWorkspaceModal, {
 } from "@/components/Modals/NewWorkspace";
 import Workspace from "@/models/workspace";
 import { useNavigate } from "react-router-dom";
-import paths from "@/utils/paths";
-import showToast from "@/utils/toast";
 import { ChecklistItem } from "./ChecklistItem";
+import showToast from "@/utils/toast";
 import {
   CHECKLIST_HIDDEN,
   CHECKLIST_STORAGE_KEY,
@@ -26,7 +19,6 @@ import ConfettiExplosion from "react-confetti-explosion";
 import { safeJsonParse } from "@/utils/request";
 
 const MemoizedChecklistItem = React.memo(ChecklistItem);
-
 export default function Checklist() {
   const [loading, setLoading] = useState(true);
   const [isHidden, setIsHidden] = useState(false);
@@ -34,7 +26,6 @@ export default function Checklist() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const [workspaces, setWorkspaces] = useState([]);
-
   const navigate = useNavigate();
   const containerRef = useRef(null);
   const {
@@ -44,6 +35,28 @@ export default function Checklist() {
   } = useNewWorkspaceModal();
   const { showModal: showManageWsModal, hideModal: hideManageWsModal } =
     useManageWorkspaceModal();
+
+  const createItemHandler = useCallback(
+    (item) => {
+      return () =>
+        item.handler({
+          workspaces,
+          navigate,
+          setSelectedWorkspace,
+          showManageWsModal,
+          showToast,
+          showNewWsModal,
+        });
+    },
+    [
+      workspaces,
+      navigate,
+      setSelectedWorkspace,
+      showManageWsModal,
+      showToast,
+      showNewWsModal,
+    ]
+  );
 
   useEffect(() => {
     async function initialize() {
@@ -122,76 +135,6 @@ export default function Checklist() {
     window.localStorage.setItem(CHECKLIST_HIDDEN, "true");
     if (containerRef?.current) containerRef.current.style.height = "0px";
   }, []);
-
-  const handlers = useMemo(
-    () => ({
-      createWorkspace: () => {
-        showNewWsModal();
-        return true;
-      },
-      sendChat: async () => {
-        if (workspaces.length === 0) {
-          showToast(
-            "Please create a workspace before starting a chat.",
-            "warning",
-            { clear: true }
-          );
-          showNewWsModal();
-          return false;
-        }
-        navigate(paths.workspace.chat(workspaces[0].slug));
-        return true;
-      },
-      embedDocument: () => {
-        if (workspaces.length === 0) {
-          showToast(
-            "Please create a workspace before embedding documents.",
-            "warning",
-            { clear: true }
-          );
-          showNewWsModal();
-          return false;
-        }
-        setSelectedWorkspace(workspaces[0]);
-        showManageWsModal();
-        return true;
-      },
-      setSlashCommand: () => {
-        if (workspaces.length === 0) {
-          showToast(
-            "Please create a workspace before setting up slash commands.",
-            "warning",
-            { clear: true }
-          );
-          showNewWsModal();
-          return false;
-        }
-        navigate(paths.workspace.chat(workspaces[0].slug));
-        window.location.hash = "#slash-commands";
-        return true;
-      },
-      setSystemPrompt: () => {
-        if (workspaces.length === 0) {
-          showToast(
-            "Please create a workspace before setting up system prompts.",
-            "warning",
-            { clear: true }
-          );
-          showNewWsModal();
-          return false;
-        }
-        navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));
-        window.location.hash = "#system-prompts";
-        return true;
-      },
-      visitCommunityHub: () => {
-        window.open(paths.communityHub.website(), "_blank");
-        return true;
-      },
-    }),
-    [workspaces, navigate, showNewWsModal, showManageWsModal]
-  );
-
   if (isHidden || loading) return null;
 
   return (
@@ -245,8 +188,12 @@ export default function Checklist() {
           {CHECKLIST_ITEMS.map((item) => (
             <MemoizedChecklistItem
               key={item.id}
-              {...item}
-              onAction={() => handlers[item.handler]()}
+              id={item.id}
+              title={item.title}
+              action={item.action}
+              icon={item.icon}
+              completed={item.completed}
+              onAction={createItemHandler(item)}
             />
           ))}
         </div>
