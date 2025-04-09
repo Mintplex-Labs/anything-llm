@@ -49,7 +49,7 @@ export default function ExploreFeatures() {
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <FeatureCard
           title="Custom AI Agents"
-          description="Enable powerful automation and workflow extensions for your specific needs with no code."
+          description="Build powerful AI Agents and automations with no code."
           primaryAction="Chat using @agent"
           secondaryAction="Build an agent flow"
           onPrimaryAction={chatWithAgent}
