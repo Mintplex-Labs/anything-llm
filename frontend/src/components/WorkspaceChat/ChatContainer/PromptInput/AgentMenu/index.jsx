@@ -49,6 +49,16 @@ export function AvailableAgents({
 }) {
   const formRef = useRef(null);
   const agentSessionActive = useIsAgentSessionActive();
+
+  /*
+   * @checklist-item
+   * If the URL has the #agent hash, open the agent menu for the user
+   * automatically when the component mounts.
+   */
+  useEffect(() => {
+    if (window.location.hash === "#agent" && !showing) handleAgentClick();
+  }, [promptRef.current]);
+
   useEffect(() => {
     function listenForOutsideClick() {
       if (!showing || !formRef.current) return false;
@@ -64,6 +74,12 @@ export function AvailableAgents({
     setShowing(false);
   };
 
+  const handleAgentClick = () => {
+    setShowing(false);
+    sendCommand("@agent ", false);
+    promptRef?.current?.focus();
+  };
+
   if (agentSessionActive) return null;
   return (
     <>
@@ -74,11 +90,7 @@ export function AvailableAgents({
             className="w-[600px] p-2 bg-theme-action-menu-bg rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"
           >
             <button
-              onClick={() => {
-                setShowing(false);
-                sendCommand("@agent ", false);
-                promptRef?.current?.focus();
-              }}
+              onClick={handleAgentClick}
               className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start group"
             >
               <div className="w-full flex-col text-left flex pointer-events-none">

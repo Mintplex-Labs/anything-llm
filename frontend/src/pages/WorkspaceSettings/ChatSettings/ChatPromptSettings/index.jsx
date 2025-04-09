@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { chatPrompt } from "@/utils/chat";
 import { useTranslation } from "react-i18next";
 import SystemPromptVariable from "@/models/systemPromptVariable";
@@ -11,6 +11,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const [availableVariables, setAvailableVariables] = useState([]);
   const [prompt, setPrompt] = useState(chatPrompt(workspace));
   const [isEditing, setIsEditing] = useState(false);
+  const promptRef = useRef(null);
 
   useEffect(() => {
     async function setupVariableHighlighting() {
@@ -19,6 +20,18 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
     }
     setupVariableHighlighting();
   }, []);
+
+  useEffect(() => {
+    if (window.location.hash === "#system-prompts") {
+      setIsEditing(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isEditing && promptRef.current) {
+      promptRef.current.focus();
+    }
+  }, [isEditing]);
 
   return (
     <div>
@@ -73,6 +86,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
         </span>
         {isEditing ? (
           <textarea
+            ref={promptRef}
             autoFocus={true}
             rows={5}
             onFocus={(e) => {
