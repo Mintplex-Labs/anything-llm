@@ -23,7 +23,7 @@ export default function Resources() {
           rel="noopener noreferrer"
           className="text-theme-home-text text-sm flex items-center gap-x-2 hover:opacity-70"
         >
-          Github
+          Star on Github
           <ArrowCircleUpRight weight="fill" size={16} />
         </a>
       </div>
