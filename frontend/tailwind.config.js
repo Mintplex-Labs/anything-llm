@@ -117,6 +117,7 @@ export default {
           },
           checklist: {
             "item-bg": 'var(--theme-checklist-item-bg)',
+            "item-bg-hover": 'var(--theme-checklist-item-bg-hover)',
             "item-text": 'var(--theme-checklist-item-text)',
             "item-completed-bg": 'var(--theme-checklist-item-completed-bg)',
             "item-completed-text": 'var(--theme-checklist-item-completed-text)',

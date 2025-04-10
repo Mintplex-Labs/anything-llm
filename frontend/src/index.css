@@ -65,6 +65,7 @@
   --theme-home-update-source: #53b1fd;
 
   --theme-checklist-item-bg: #203c48;
+  --theme-checklist-item-bg-hover: #255D75;
   --theme-checklist-item-text: #b9e6fe;
   --theme-checklist-item-completed-bg: #36463d;
   --theme-checklist-item-completed-text: #a6f4c5;
@@ -145,7 +146,8 @@
   --theme-home-update-card-hover: #f3f4f6;
   --theme-home-update-source: #0284c7;
 
-  --theme-checklist-item-bg: #c8e8fa;
+  --theme-checklist-item-bg: #C7E2EE;
+  --theme-checklist-item-bg-hover: #A3D9F1;
   --theme-checklist-item-text: #0d3851;
   --theme-checklist-item-completed-bg: #d8f3ea;
   --theme-checklist-item-completed-text: #039855;
