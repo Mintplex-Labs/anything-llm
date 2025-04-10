@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 
 let timeout;
 const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
-export default function SpeechToText({ sendCommand }) {
+export default function SpeechToText({ sendSTTCommand }) {
   const {
     transcript,
     listening,
@@ -40,7 +40,7 @@ export default function SpeechToText({ sendCommand }) {
   function endSTTSession() {
     SpeechRecognition.stopListening();
     if (transcript.length > 0) {
-      sendCommand(transcript, true);
+      sendSTTCommand(transcript);
     }
 
     resetTranscript();
@@ -83,7 +83,6 @@ export default function SpeechToText({ sendCommand }) {
 
   useEffect(() => {
     if (transcript?.length > 0 && listening) {
-      sendCommand(transcript, false);
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         endSTTSession();
