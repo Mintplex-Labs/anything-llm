@@ -65,6 +65,7 @@
   --theme-home-update-source: #53b1fd;
 
   --theme-checklist-item-bg: #203c48;
+  --theme-checklist-item-bg-hover: #255d75;
   --theme-checklist-item-text: #b9e6fe;
   --theme-checklist-item-completed-bg: #36463d;
   --theme-checklist-item-completed-text: #a6f4c5;
@@ -76,6 +77,9 @@
   --theme-checklist-button-text: #36bffa;
   --theme-checklist-button-hover-bg: rgba(54, 191, 250, 0.2);
   --theme-checklist-button-hover-border: rgba(54, 191, 250, 0.8);
+
+  --theme-home-button-secondary-border: #acc1e6;
+  --theme-home-button-secondary-border-hover: #293056;
 }
 
 [data-theme="light"] {
@@ -131,21 +135,22 @@
   --theme-file-picker-hover: #e2e7ee;
 
   --theme-home-text: #0e0f0f;
-  --theme-home-text-secondary: #3f3f42;
+  --theme-home-text-secondary: #6f6f71;
   --theme-home-bg-card: #edf2fa;
   --theme-home-bg-button: #f3f4f6;
   --theme-home-border: rgba(0, 0, 0, 0.1);
   --theme-home-button-primary: #36bffa;
   --theme-home-button-primary-hover: rgba(54, 191, 250, 0.9);
   --theme-home-button-secondary: #dbe8fe;
-  --theme-home-button-secondary-hover: #e5e7eb;
+  --theme-home-button-secondary-hover: #b0c8f1;
   --theme-home-button-secondary-text: #293056;
-  --theme-home-button-secondary-hover-text: #0ba5ec;
+  --theme-home-button-secondary-hover-text: #293056;
   --theme-home-update-card-bg: #edf2fa;
   --theme-home-update-card-hover: #f3f4f6;
   --theme-home-update-source: #0284c7;
 
-  --theme-checklist-item-bg: #c8e8fa;
+  --theme-checklist-item-bg: #c7e2ee;
+  --theme-checklist-item-bg-hover: #a3d9f1;
   --theme-checklist-item-text: #0d3851;
   --theme-checklist-item-completed-bg: #d8f3ea;
   --theme-checklist-item-completed-text: #039855;
