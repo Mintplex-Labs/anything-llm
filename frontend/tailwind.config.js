@@ -111,6 +111,8 @@ export default {
             "button-secondary-hover": 'var(--theme-home-button-secondary-hover)',
             "button-secondary-text": 'var(--theme-home-button-secondary-text)',
             "button-secondary-hover-text": 'var(--theme-home-button-secondary-hover-text)',
+            "button-secondary-border": 'var(--theme-home-button-secondary-border)',
+            "button-secondary-border-hover": 'var(--theme-home-button-secondary-border-hover)',
             "update-card-bg": 'var(--theme-home-update-card-bg)',
             "update-card-hover": 'var(--theme-home-update-card-hover)',
             "update-source": 'var(--theme-home-update-source)',
