@@ -51,6 +51,24 @@ class OpenRouterLLM {
     this.log("Initialized with model:", this.model);
   }
 
+  /**
+   * Enriches the token by replacing citation placeholders with actual links.
+   * @param {string} token - The token text.
+   * @param {string[]} citations - An array of citation URLs.
+   * @returns {string} - The enriched token text.
+   */
+  enrichToken(token, citations) {
+    if (Array.isArray(citations) && citations.length !== 0) {
+      return token.replace(/\[(\d+)\]/g, (match, index) => {
+        const citationIndex = parseInt(index) - 1;
+        return citations[citationIndex]
+          ? `[[${index}](${citations[citationIndex]})]`
+          : match;
+      });
+    }
+    return token;
+  }
+
   log(text, ...args) {
     console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
@@ -284,6 +302,7 @@ class OpenRouterLLM {
       let fullText = "";
       let reasoningText = "";
       let lastChunkTime = null; // null when first token is still not received.
+      let citations = []; // Array of links
 
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
@@ -309,6 +328,7 @@ class OpenRouterLLM {
 
         const now = Number(new Date());
         const diffMs = now - lastChunkTime;
+
         if (diffMs >= timeoutThresholdMs) {
           console.log(
             `OpenRouter stream did not self-close and has been stale for >${timeoutThresholdMs}ms. Closing response stream.`
@@ -337,9 +357,16 @@ class OpenRouterLLM {
           const reasoningToken = message?.delta?.reasoning;
           lastChunkTime = Number(new Date());
 
+          // Capture citations if present
+          if (Array.isArray(chunk.citations) && chunk.citations.length !== 0) {
+            citations = chunk.citations;
+          }
+
           // Reasoning models will always return the reasoning text before the token text.
           // can be null or ''
           if (reasoningToken) {
+            // Enrich token with citations
+            const enrichedReasoningToken = this.enrichToken(reasoningToken, citations);
             // If the reasoning text is empty (''), we need to initialize it
             // and send the first chunk of reasoning text.
             if (reasoningText.length === 0) {
@@ -347,11 +374,11 @@ class OpenRouterLLM {
                 uuid,
                 sources: [],
                 type: "textResponseChunk",
-                textResponse: `<think>${reasoningToken}`,
+                textResponse: `<think>${enrichedReasoningToken}`,
                 close: false,
                 error: false,
               });
-              reasoningText += `<think>${reasoningToken}`;
+              reasoningText += `<think>${enrichedReasoningToken}`;
               continue;
             } else {
               // If the reasoning text is not empty, we need to append the reasoning text
@@ -360,11 +387,11 @@ class OpenRouterLLM {
                 uuid,
                 sources: [],
                 type: "textResponseChunk",
-                textResponse: reasoningToken,
+                textResponse: enrichedReasoningToken,
                 close: false,
                 error: false,
               });
-              reasoningText += reasoningToken;
+              reasoningText += enrichedReasoningToken;
             }
           }
 
@@ -384,18 +411,39 @@ class OpenRouterLLM {
           }
 
           if (token) {
-            fullText += token;
+            // Enrich token with citations
+            const enrichedToken = this.enrichToken(token, citations);
+
+            fullText += enrichedToken;
+
             writeResponseChunk(response, {
               uuid,
               sources: [],
               type: "textResponseChunk",
-              textResponse: token,
+              textResponse: enrichedToken,
               close: false,
               error: false,
             });
           }
 
           if (message.finish_reason !== null) {
+            if (citations) { // append nicely formatted citations to the response text
+              const citationsText = '\n\n'
+                .concat(citations.map((url, index) => `${index + 1} - [${url}](${url})`)
+                .join('\n\n'));
+
+              fullText += citationsText;
+
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: citationsText,
+                close: false,
+                error: false,
+              });
+            }
+
             writeResponseChunk(response, {
               uuid,
               sources,
