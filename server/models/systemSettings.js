@@ -406,6 +406,9 @@ const SystemSettings = {
       ChromaEndpoint: process.env.CHROMA_ENDPOINT,
       ChromaApiHeader: process.env.CHROMA_API_HEADER,
       ChromaApiKey: !!process.env.CHROMA_API_KEY,
+      ChromaCloud: process.env.CHROMA_CLOUD,
+      ChromaTenantId: process.env.CHROMA_TENANT_ID,
+      ChromaDatabaseName: process.env.CHROMA_DATABASE_NAME,
 
       // Weaviate DB Keys
       WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
