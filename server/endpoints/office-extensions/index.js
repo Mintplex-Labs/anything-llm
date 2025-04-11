@@ -1,5 +1,17 @@
 const fs = require("fs");
 const path = require("path");
+const officeExtensionsFolder =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../storage/plugins/office-extensions`)
+    : path.resolve(
+        process.env.STORAGE_DIR ??
+          path.resolve(__dirname, `../../storage/plugins/office-extensions`),
+        `office-extensions`
+      );
+
+function log(text, ...args) {
+  console.log(`\x1b[34m[OfficeExtensionsLoader]\x1b[0m`, text, ...args);
+}
 
 /**
  * Builds the endpoints for the office extensions
@@ -7,21 +19,23 @@ const path = require("path");
  */
 function officeExtensionEndpoints(app) {
   if (!app) return;
-
-  // const officeExtensionsFolder = process.env.NODE_ENV === "development"
-  //   ? path.resolve(__dirname, "../../storage/plugins/office-extensions")
-  //   : path.resolve(__dirname, "../../office-extensions");
-  const officeExtensionsFolder = path.resolve(__dirname, "../../storage/plugins/office-extensions");
-  if (!fs.existsSync(officeExtensionsFolder)) {
-    console.log(`No office extensions found ${officeExtensionsFolder}`);
-    return;
-  }
+  if (!fs.existsSync(officeExtensionsFolder))
+    return log(`No office extensions found ${officeExtensionsFolder}`);
 
   for (const folder of fs.readdirSync(officeExtensionsFolder)) {
-    const extensionEntryPoint = path.resolve(officeExtensionsFolder, folder, 'index.js');
-    const hasSupportingFiles = fs.existsSync(path.resolve(officeExtensionsFolder, folder, 'plugin'));
+    if (fs.lstatSync(path.resolve(officeExtensionsFolder, folder)).isFile())
+      continue;
+
+    const extensionEntryPoint = path.resolve(
+      officeExtensionsFolder,
+      folder,
+      "index.js"
+    );
+    const hasSupportingFiles = fs.existsSync(
+      path.resolve(officeExtensionsFolder, folder, "plugin")
+    );
     if (!fs.existsSync(extensionEntryPoint) || !hasSupportingFiles) {
-      console.log(`Skipping office extension - ${folder} - missing files`, {
+      log(`Skipping office extension - ${folder} - missing files`, {
         missingIndexFile: !fs.existsSync(extensionEntryPoint),
         missingPluginFolder: !hasSupportingFiles,
       });
@@ -29,14 +43,14 @@ function officeExtensionEndpoints(app) {
     }
 
     try {
-      console.log(`Loading office extension - ${folder}`);
-      const rootDir = path.resolve(__dirname, '../..');
+      log(`Loading office extension - ${folder}`);
+      const rootDir = path.resolve(__dirname, "../..");
       const MSOfficeExtension = require(extensionEntryPoint);
       const officeExtension = new MSOfficeExtension({ rootDir });
       officeExtension.buildEndpoints(app);
     } catch (error) {
-      console.error(`Error loading office extension - ${folder}. Aborted`);
-      console.error(error);
+      log(`Error loading office extension - ${folder}. Aborted`);
+      log(error);
     }
   }
 }
