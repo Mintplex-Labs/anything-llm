@@ -69,15 +69,13 @@ export default function CustomLogo() {
   const { t } = useTranslation();
 
   return (
-    <div className="mt-6 mb-8">
-      <div className="flex flex-col gap-y-1">
-        <h2 className="text-base leading-6 font-bold text-theme-text-primary">
-          {t("appearance.logo.title")}
-        </h2>
-        <p className="text-xs leading-[18px] font-base text-theme-text-secondary">
-          {t("appearance.logo.description")}
-        </p>
-      </div>
+    <div className="flex flex-col gap-y-0.5 my-4">
+      <h2 className="text-sm leading-6 font-semibold text-white">
+        {t("appearance.logo.title")}
+      </h2>
+      <p className="text-xs text-white/60">
+        {t("appearance.logo.description")}
+      </p>
       {isDefaultLogo ? (
         <div className="flex md:flex-row flex-col items-center">
           <div className="flex flex-row gap-x-8">

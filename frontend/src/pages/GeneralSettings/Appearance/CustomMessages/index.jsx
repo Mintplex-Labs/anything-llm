@@ -55,16 +55,14 @@ export default function CustomMessages() {
   };
 
   return (
-    <div className="mb-8">
-      <div className="flex flex-col gap-y-1">
-        <h2 className="text-base leading-6 font-bold text-white">
-          {t("appearance.message.title")}
-        </h2>
-        <p className="text-xs leading-[18px] font-base text-white/60">
-          {t("appearance.message.description")}
-        </p>
-      </div>
-      <div className="mt-3 flex flex-col gap-y-6 bg-theme-settings-input-bg rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px]">
+    <div className="flex flex-col gap-y-0.5 my-4">
+      <h2 className="text-sm leading-6 font-semibold text-white">
+        {t("appearance.message.title")}
+      </h2>
+      <p className="text-xs text-white/60">
+        {t("appearance.message.description")}
+      </p>
+      <div className="mt-2 flex flex-col gap-y-6 bg-theme-settings-input-bg rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px]">
         {messages.map((message, index) => (
           <div key={index} className="flex flex-col gap-y-2">
             {message.user && (
@@ -121,7 +119,7 @@ export default function CustomMessages() {
         </div>
       </div>
       {hasChanges && (
-        <div className="flex justify-start pt-6">
+        <div className="flex justify-start pt-2">
           <button
             className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             onClick={handleMessageSave}
