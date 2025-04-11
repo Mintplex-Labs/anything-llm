@@ -52,7 +52,10 @@ export default function SupportEmail() {
 
   if (loading || !user?.role) return null;
   return (
-    <form className="flex flex-col gap-y-0.5 mt-4" onSubmit={updateSupportEmail}>
+    <form
+      className="flex flex-col gap-y-0.5 mt-4"
+      onSubmit={updateSupportEmail}
+    >
       <h2 className="text-sm leading-6 font-semibold text-white">
         Support Email
       </h2>

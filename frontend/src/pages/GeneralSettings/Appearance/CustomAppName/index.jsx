@@ -57,7 +57,10 @@ export default function CustomAppName() {
   if (!canCustomize || loading) return null;
 
   return (
-    <form className="flex flex-col gap-y-0.5 mt-4" onSubmit={updateCustomAppName}>
+    <form
+      className="flex flex-col gap-y-0.5 mt-4"
+      onSubmit={updateCustomAppName}
+    >
       <h2 className="text-sm leading-6 font-semibold text-white">
         Custom App Name
       </h2>

@@ -43,12 +43,13 @@ export default function CustomSiteSettings() {
         Custom Site Settings
       </h2>
       <p className="text-xs text-white/60">
-        Change the content of the browser tab for customization and
-        branding.
+        Change the content of the browser tab for customization and branding.
       </p>
 
       <div className="w-fit">
-        <h2 className="text-sm leading-6 font-medium text-white mt-2">Tab Title</h2>
+        <h2 className="text-sm leading-6 font-medium text-white mt-2">
+          Tab Title
+        </h2>
         <p className="text-xs text-white/60">
           Set a custom tab title when the app is open in a browser.
         </p>
@@ -73,7 +74,9 @@ export default function CustomSiteSettings() {
       </div>
 
       <div className="w-fit">
-        <h2 className="text-sm leading-6 font-medium text-white mt-2">Tab Favicon</h2>
+        <h2 className="text-sm leading-6 font-medium text-white mt-2">
+          Tab Favicon
+        </h2>
         <p className="text-xs text-white/60">
           Define a url to an image to use for your favicon
         </p>
