@@ -22,6 +22,8 @@ const User = {
     "role",
     "suspended",
     "dailyMessageLimit",
+    "documentUploadLimit",
+    "canUploadDocuments",
     "bio",
   ],
   validations: {
@@ -55,6 +57,19 @@ const User = {
       }
       return limit;
     },
+    documentUploadLimit: (documentUploadLimit = 10) => {
+      if (documentUploadLimit === null) return null;
+      const limit = Number(documentUploadLimit);
+      if (isNaN(limit) || limit < 1) {
+        throw new Error(
+          "Document upload limit must be null or a number greater than or equal to 1"
+        );
+      }
+      return limit;
+    },
+    canUploadDocuments: (canUpload = false) => {
+      return Boolean(canUpload);
+    },
     bio: (bio = "") => {
       if (!bio || typeof bio !== "string") return "";
       if (bio.length > 1000)
@@ -68,7 +83,10 @@ const User = {
       case "suspended":
         return Number(Boolean(value));
       case "dailyMessageLimit":
+      case "documentUploadLimit":
         return value === null ? null : Number(value);
+      case "canUploadDocuments":
+        return Boolean(value);
       default:
         return String(value);
     }
@@ -322,6 +340,32 @@ const User = {
     });
 
     return currentChatCount < user.dailyMessageLimit;
+  },
+
+  /**
+   * Check if a user can upload documents based on their permissions and document upload limit.
+   * Admin and Manager roles can always upload documents regardless of the canUploadDocuments flag.
+   * @param {User} user The user object record.
+   * @returns {Promise<boolean>} True if the user can upload documents, false otherwise.
+   */
+  canUploadDocument: async function (user) {
+    const { ROLES } = require("../utils/middleware/multiUserProtected");
+    if (!user) return false;
+    
+    // Admin and Manager can always upload
+    if (user.role === ROLES.admin || user.role === ROLES.manager) return true;
+    
+    // For regular users, check the permission flag
+    if (!user.canUploadDocuments) return false;
+    
+    // If no upload limit is set, check only the permission flag
+    if (user.documentUploadLimit === null) return true;
+    
+    // Check against the document upload limit
+    const { Document } = require("./documents");
+    const currentDocumentCount = await Document.countByUser(user.id);
+    
+    return currentDocumentCount < user.documentUploadLimit;
   },
 };
 

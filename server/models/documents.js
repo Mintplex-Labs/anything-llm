@@ -99,6 +99,7 @@ const Document = {
         docpath: path,
         workspaceId: workspace.id,
         metadata: JSON.stringify(metadata),
+        uploadedBy: userId ? Number(userId) : null,
       };
 
       const { vectorized, error } = await VectorDb.addDocumentToNamespace(
@@ -195,6 +196,20 @@ const Document = {
       return count;
     } catch (error) {
       console.error("FAILED TO COUNT DOCUMENTS.", error.message);
+      return 0;
+    }
+  },
+  
+  countByUser: async function (userId) {
+    if (!userId) return 0;
+    
+    try {
+      const count = await prisma.workspace_documents.count({
+        where: { uploadedBy: Number(userId) },
+      });
+      return count;
+    } catch (error) {
+      console.error("FAILED TO COUNT USER DOCUMENTS.", error.message);
       return 0;
     }
   },

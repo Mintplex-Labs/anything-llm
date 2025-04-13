@@ -1,0 +1,4 @@
+services:
+  anything-llm:
+    environment:
+      - MULTI_USER_MODE=true

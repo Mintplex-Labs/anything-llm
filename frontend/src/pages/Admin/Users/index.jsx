@@ -113,16 +113,19 @@ function UsersContainer() {
 const ROLE_HINT = {
   default: [
     "Can only send chats with workspaces they are added to by admin or managers.",
+    "Can upload documents if granted permission by an admin or manager.",
     "Cannot modify any settings at all.",
   ],
   manager: [
     "Can view, create, and delete any workspaces and modify workspace-specific settings.",
     "Can create, update and invite new users to the instance.",
+    "Can upload documents to any workspace.",
     "Cannot modify LLM, vectorDB, embedding, or other connections.",
   ],
   admin: [
     "Highest user level privilege.",
     "Can see and do everything across the system.",
+    "Can upload documents to any workspace.",
   ],
 };
 
@@ -176,6 +179,60 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
         <div className="mt-4">
           <label className="text-white text-sm font-semibold block mb-4">
             Message limit per day
+          </label>
+          <div className="relative mt-2">
+            <input
+              type="number"
+              onScroll={(e) => e.target.blur()}
+              onChange={(e) => {
+                updateState({
+                  enabled: true,
+                  limit: Number(e?.target?.value || 0),
+                });
+              }}
+              value={limit}
+              min={1}
+              className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function DocumentUploadPermission({ enabled, limit, updateState, role }) {
+  if (role === "admin" || role === "manager") return null;
+  return (
+    <div className="mt-4 mb-8">
+      <div className="flex flex-col gap-y-1">
+        <div className="flex items-center gap-x-2">
+          <h2 className="text-base leading-6 font-bold text-white">
+            Can upload documents
+          </h2>
+          <label className="relative inline-flex cursor-pointer items-center">
+            <input
+              type="checkbox"
+              checked={enabled}
+              onChange={(e) => {
+                updateState((prev) => ({
+                  ...prev,
+                  enabled: e.target.checked,
+                }));
+              }}
+              className="peer sr-only"
+            />
+            <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+          </label>
+        </div>
+        <p className="text-xs leading-[18px] font-base text-white/60">
+          Allow this user to upload documents to workspaces they have access to.
+        </p>
+      </div>
+      {enabled && (
+        <div className="mt-4">
+          <label className="text-white text-sm font-semibold block mb-4">
+            Document upload limit
           </label>
           <div className="relative mt-2">
             <input

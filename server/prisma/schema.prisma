@@ -32,10 +32,14 @@ model workspace_documents {
   metadata             String?
   pinned               Boolean?              @default(false)
   watched              Boolean?              @default(false)
+  uploadedBy           Int?
   createdAt            DateTime              @default(now())
   lastUpdatedAt        DateTime              @default(now())
   workspace            workspaces            @relation(fields: [workspaceId], references: [id])
+  user                 users?                @relation("UploadedDocuments", fields: [uploadedBy], references: [id], onDelete: SetNull)
   document_sync_queues document_sync_queues?
+  
+  @@index([uploadedBy])
 }
 
 model invites {
@@ -68,6 +72,8 @@ model users {
   createdAt                   DateTime                      @default(now())
   lastUpdatedAt               DateTime                      @default(now())
   dailyMessageLimit           Int?
+  documentUploadLimit         Int?                          @default(10)
+  canUploadDocuments          Boolean                       @default(false)
   bio                         String?                       @default("")
   workspace_chats             workspace_chats[]
   workspace_users             workspace_users[]
@@ -81,6 +87,7 @@ model users {
   browser_extension_api_keys  browser_extension_api_keys[]
   temporary_auth_tokens       temporary_auth_tokens[]
   system_prompt_variables     system_prompt_variables[]
+  uploaded_documents          workspace_documents[]         @relation("UploadedDocuments")
 }
 
 model recovery_codes {

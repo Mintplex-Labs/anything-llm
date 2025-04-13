@@ -106,6 +106,38 @@ async function validateMultiUserRequest(request, response, next) {
   next();
 }
 
+/**
+ * Check if the authenticated user has permission to upload documents.
+ * This middleware should be used after validatedRequest.
+ * @returns {function}
+ */
+async function canUploadDocuments(request, response, next) {
+  const multiUserMode = response.locals?.multiUserMode;
+  if (!multiUserMode) {
+    next();
+    return;
+  }
+
+  const user = response.locals?.user;
+  if (!user) {
+    return response.status(401).json({
+      success: false,
+      error: "Authentication required",
+    });
+  }
+
+  const canUpload = await User.canUploadDocument(user);
+  if (!canUpload) {
+    return response.status(403).json({
+      success: false,
+      error: "You don't have permission to upload documents or have reached your upload limit",
+    });
+  }
+
+  next();
+}
+
 module.exports = {
   validatedRequest,
+  canUploadDocuments,
 };

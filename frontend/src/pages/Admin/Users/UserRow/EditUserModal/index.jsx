@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
-import { MessageLimitInput, RoleHintDisplay } from "../..";
+import { DocumentUploadPermission, MessageLimitInput, RoleHintDisplay } from "../..";
 import { AUTH_USER } from "@/utils/constants";
 
 export default function EditUserModal({ currentUser, user, closeModal }) {
@@ -10,6 +10,10 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
   const [messageLimit, setMessageLimit] = useState({
     enabled: user.dailyMessageLimit !== null,
     limit: user.dailyMessageLimit || 10,
+  });
+  const [documentUpload, setDocumentUpload] = useState({
+    enabled: user.canUploadDocuments || false,
+    limit: user.documentUploadLimit || 10,
   });
 
   const handleUpdate = async (e) => {
@@ -25,6 +29,14 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
       data.dailyMessageLimit = messageLimit.limit;
     } else {
       data.dailyMessageLimit = null;
+    }
+    
+    // Document upload permissions
+    data.canUploadDocuments = documentUpload.enabled;
+    if (documentUpload.enabled) {
+      data.documentUploadLimit = documentUpload.limit;
+    } else {
+      data.documentUploadLimit = null;
     }
 
     const { success, error } = await Admin.updateUser(user.id, data);
@@ -146,6 +158,12 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 enabled={messageLimit.enabled}
                 limit={messageLimit.limit}
                 updateState={setMessageLimit}
+              />
+              <DocumentUploadPermission
+                role={role}
+                enabled={documentUpload.enabled}
+                limit={documentUpload.limit}
+                updateState={setDocumentUpload}
               />
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
             </div>
