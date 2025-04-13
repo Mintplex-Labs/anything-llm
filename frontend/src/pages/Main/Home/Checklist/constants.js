@@ -9,9 +9,10 @@ import SlashCommandIcon from "./ChecklistItem/icons/SlashCommand";
 import paths from "@/utils/paths";
 const noop = () => {};
 
-export const CHECKLIST_UPDATED_EVENT = "anythingllm_checklist_updated";
-export const CHECKLIST_STORAGE_KEY = "anythingllm_checklist_completed";
-export const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
+export const CHECKLIST_HEADERS = { title: "Getting started", subtitle: null };
+export const CHECKLIST_UPDATED_EVENT = "razorpay_agent_space_checklist_updated";
+export const CHECKLIST_STORAGE_KEY = "razorpay_agent_space_checklist_completed";
+export const CHECKLIST_HIDDEN = "razorpay_agent_space_checklist_dismissed";
 
 /**
  * @typedef {Object} ChecklistItemHandlerParams

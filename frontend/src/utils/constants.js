@@ -1,14 +1,14 @@
 export const API_BASE = import.meta.env.VITE_API_BASE || "/api";
 export const ONBOARDING_SURVEY_URL = "https://onboarding.anythingllm.com";
 
-export const AUTH_USER = "anythingllm_user";
-export const AUTH_TOKEN = "anythingllm_authToken";
-export const AUTH_TIMESTAMP = "anythingllm_authTimestamp";
-export const COMPLETE_QUESTIONNAIRE = "anythingllm_completed_questionnaire";
-export const SEEN_DOC_PIN_ALERT = "anythingllm_pinned_document_alert";
-export const SEEN_WATCH_ALERT = "anythingllm_watched_document_alert";
+export const AUTH_USER = "razorpay_agent_space_user";
+export const AUTH_TOKEN = "razorpay_agent_space_authToken";
+export const AUTH_TIMESTAMP = "razorpay_agent_space_authTimestamp";
+export const COMPLETE_QUESTIONNAIRE = "razorpay_agent_space_completed_questionnaire";
+export const SEEN_DOC_PIN_ALERT = "razorpay_agent_space_pinned_document_alert";
+export const SEEN_WATCH_ALERT = "razorpay_agent_space_watched_document_alert";
 
-export const APPEARANCE_SETTINGS = "anythingllm_appearance_settings";
+export const APPEARANCE_SETTINGS = "razorpay_agent_space_appearance_settings";
 
 export const OLLAMA_COMMON_URLS = [
   "http://127.0.0.1:11434",

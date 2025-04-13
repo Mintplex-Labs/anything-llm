@@ -150,13 +150,18 @@ export default function Checklist() {
             <ConfettiExplosion force={0.25} duration={3000} />
           </div>
         )}
-        <div
-          style={{}}
-          className="bg-[rgba(54,70,61,0.5)] light:bg-[rgba(216,243,234,0.5)] w-full h-full flex items-center justify-center bg-theme-checklist-item-completed-bg/50 rounded-lg"
-        >
-          <p className="text-theme-checklist-item-completed-text text-lg font-bold">
-            You're on your way to becoming an AnythingLLM expert!
-          </p>
+        <div className="border-t dark:border-slate-600 border-slate-200 pt-4">
+          <div className="flex flex-row items-start gap-4 w-full">
+            <div className="w-full break-words text-sm text-slate-900 dark:text-slate-200 font-medium">
+              You're on your way to becoming a Razorpay Agent Space expert!
+            </div>
+            <button
+              onClick={handleClose}
+              className="mt-0 text-xs text-slate-500"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
       </div>
 

@@ -17,7 +17,6 @@ export default function Home() {
           <Checklist />
           <QuickLinks />
           <ExploreFeatures />
-          <Updates />
           <Resources />
         </div>
       </div>
