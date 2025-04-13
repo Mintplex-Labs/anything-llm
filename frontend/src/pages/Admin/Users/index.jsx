@@ -201,7 +201,12 @@ export function MessageLimitInput({ enabled, limit, updateState, role }) {
   );
 }
 
-export function DocumentUploadPermission({ enabled, limit, updateState, role }) {
+export function DocumentUploadPermission({
+  enabled,
+  limit,
+  updateState,
+  role,
+}) {
   if (role === "admin" || role === "manager") return null;
   return (
     <div className="mt-4 mb-8">

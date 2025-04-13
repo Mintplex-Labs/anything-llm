@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
-import { DocumentUploadPermission, MessageLimitInput, RoleHintDisplay } from "../..";
+import {
+  DocumentUploadPermission,
+  MessageLimitInput,
+  RoleHintDisplay,
+} from "../..";
 import { AUTH_USER } from "@/utils/constants";
 
 export default function EditUserModal({ currentUser, user, closeModal }) {
@@ -30,7 +34,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
     } else {
       data.dailyMessageLimit = null;
     }
-    
+
     // Document upload permissions
     data.canUploadDocuments = documentUpload.enabled;
     if (documentUpload.enabled) {

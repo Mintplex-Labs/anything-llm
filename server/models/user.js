@@ -351,20 +351,20 @@ const User = {
   canUploadDocument: async function (user) {
     const { ROLES } = require("../utils/middleware/multiUserProtected");
     if (!user) return false;
-    
+
     // Admin and Manager can always upload
     if (user.role === ROLES.admin || user.role === ROLES.manager) return true;
-    
+
     // For regular users, check the permission flag
     if (!user.canUploadDocuments) return false;
-    
+
     // If no upload limit is set, check only the permission flag
     if (user.documentUploadLimit === null) return true;
-    
+
     // Check against the document upload limit
     const { Document } = require("./documents");
     const currentDocumentCount = await Document.countByUser(user.id);
-    
+
     return currentDocumentCount < user.documentUploadLimit;
   },
 };

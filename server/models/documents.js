@@ -199,10 +199,10 @@ const Document = {
       return 0;
     }
   },
-  
+
   countByUser: async function (userId) {
     if (!userId) return 0;
-    
+
     try {
       const count = await prisma.workspace_documents.count({
         where: { uploadedBy: Number(userId) },

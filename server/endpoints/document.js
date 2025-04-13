@@ -5,7 +5,10 @@ const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
-const { validatedRequest, canUploadDocuments } = require("../utils/middleware/validatedRequest");
+const {
+  validatedRequest,
+  canUploadDocuments,
+} = require("../utils/middleware/validatedRequest");
 const fs = require("fs");
 const path = require("path");
 

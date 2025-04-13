@@ -38,10 +38,12 @@ When enabling document upload for a regular user, you can set a quota to limit t
 The document upload permission system consists of:
 
 1. Database fields in the User model:
+
    - `canUploadDocuments` (boolean): Permission flag
    - `documentUploadLimit` (integer): Maximum number of documents this user can upload
 
 2. Middleware to enforce permissions:
+
    - `canUploadDocuments` middleware checks both the permission flag and quota
 
 3. Tracking of document ownership:
@@ -51,6 +53,7 @@ The document upload permission system consists of:
 ### API Endpoints
 
 The document upload permission is enforced on all document-related endpoints:
+
 - `/workspace/:slug/upload-and-embed`
 - `/workspace/:slug/upload`
 - `/workspace/:slug/upload-link`

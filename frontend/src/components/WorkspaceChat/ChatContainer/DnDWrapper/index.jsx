@@ -111,7 +111,8 @@ export function DnDFileUploaderProvider({ workspace, children }) {
         });
       } else {
         // If the user is a default user without upload permission, we do not want to allow them to upload files.
-        if (!!user && user.role === "default" && !user.canUploadDocuments) continue;
+        if (!!user && user.role === "default" && !user.canUploadDocuments)
+          continue;
         newAccepted.push({
           uid: v4(),
           file,
@@ -148,7 +149,8 @@ export function DnDFileUploaderProvider({ workspace, children }) {
         });
       } else {
         // If the user is a default user without upload permission, we do not want to allow them to upload files.
-        if (!!user && user.role === "default" && !user.canUploadDocuments) continue;
+        if (!!user && user.role === "default" && !user.canUploadDocuments)
+          continue;
         newAccepted.push({
           uid: v4(),
           file,
@@ -220,7 +222,8 @@ export default function DnDFileUploaderWrapper({ children }) {
     onDragLeave: () => setDragging(false),
   });
   const { user } = useUser();
-  const canUploadAll = !user || user?.role !== "default" || user?.canUploadDocuments;
+  const canUploadAll =
+    !user || user?.role !== "default" || user?.canUploadDocuments;
 
   return (
     <div

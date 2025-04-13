@@ -130,7 +130,8 @@ async function canUploadDocuments(request, response, next) {
   if (!canUpload) {
     return response.status(403).json({
       success: false,
-      error: "You don't have permission to upload documents or have reached your upload limit",
+      error:
+        "You don't have permission to upload documents or have reached your upload limit",
     });
   }
 

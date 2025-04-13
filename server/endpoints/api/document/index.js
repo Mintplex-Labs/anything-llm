@@ -1,6 +1,8 @@
 const { Telemetry } = require("../../../models/telemetry");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
-const { canUploadDocuments } = require("../../../utils/middleware/validatedRequest");
+const {
+  canUploadDocuments,
+} = require("../../../utils/middleware/validatedRequest");
 const { handleAPIFileUpload } = require("../../../utils/files/multer");
 const {
   viewLocalFiles,
