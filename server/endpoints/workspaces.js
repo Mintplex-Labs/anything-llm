@@ -13,7 +13,7 @@ const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { getVectorDbClass } = require("../utils/helpers");
 const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
-const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const { validatedRequest, canUploadDocuments } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
 const {
   flexUserRoleValid,
@@ -111,7 +111,7 @@ function workspaceEndpoints(app) {
     "/workspace/:slug/upload",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      canUploadDocuments,
       handleFileUpload,
     ],
     async function (request, response) {
@@ -159,7 +159,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload-link",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, canUploadDocuments],
     async (request, response) => {
       try {
         const Collector = new CollectorApi();
@@ -202,7 +202,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/update-embeddings",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, canUploadDocuments],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -871,7 +871,7 @@ function workspaceEndpoints(app) {
     "/workspace/:slug/upload-and-embed",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      canUploadDocuments,
       handleFileUpload,
     ],
     async function (request, response) {
@@ -949,7 +949,7 @@ function workspaceEndpoints(app) {
     "/workspace/:slug/remove-and-unembed",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      canUploadDocuments,
       handleFileUpload,
     ],
     async function (request, response) {
