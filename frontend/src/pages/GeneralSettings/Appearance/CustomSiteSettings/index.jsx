@@ -35,86 +35,82 @@ export default function CustomSiteSettings() {
 
   return (
     <form
-      className="mb-6"
+      className="flex flex-col gap-y-0.5 my-4 border-t border-white border-opacity-20 light:border-black/20 pt-6"
       onChange={() => setHasChanges(true)}
       onSubmit={handleSiteSettingUpdate}
     >
-      <div className="flex flex-col border-t border-white/30 pt-4 gap-y-2">
-        <div className="flex flex-col gap-y-1">
-          <h2 className="text-base leading-6 font-bold text-white">
-            Custom Site Settings
-          </h2>
-          <p className="text-xs leading-[18px] font-base text-white/60">
-            Change the content of the browser tab for customization and
-            branding.
-          </p>
-        </div>
+      <h2 className="text-sm leading-6 font-semibold text-white">
+        Custom Site Settings
+      </h2>
+      <p className="text-xs text-white/60">
+        Change the content of the browser tab for customization and branding.
+      </p>
 
-        <div className="w-fit">
-          <div className="flex flex-col gap-y-1">
-            <h2 className="text-sm leading-6 text-white">Tab Title</h2>
-            <p className="text-xs leading-[18px] font-base text-white/60">
-              Set a custom tab title when the app is open in a browser.
-            </p>
-          </div>
-          <div className="flex items-center gap-x-4">
-            <input
-              name="meta_page_title"
-              type="text"
-              className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[400px] placeholder:text-theme-settings-input-placeholder"
-              placeholder="AnythingLLM | Your personal LLM trained on anything"
-              autoComplete="off"
-              onChange={(e) => {
-                setSettings((prev) => {
-                  return { ...prev, title: e.target.value };
-                });
-              }}
-              value={
-                settings.title ??
-                "AnythingLLM | Your personal LLM trained on anything"
-              }
-            />
-          </div>
+      <div className="w-fit">
+        <h2 className="text-sm leading-6 font-medium text-white mt-2">
+          Tab Title
+        </h2>
+        <p className="text-xs text-white/60">
+          Set a custom tab title when the app is open in a browser.
+        </p>
+        <div className="flex items-center gap-x-4">
+          <input
+            name="meta_page_title"
+            type="text"
+            className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
+            placeholder="AnythingLLM | Your personal LLM trained on anything"
+            autoComplete="off"
+            onChange={(e) => {
+              setSettings((prev) => {
+                return { ...prev, title: e.target.value };
+              });
+            }}
+            value={
+              settings.title ??
+              "AnythingLLM | Your personal LLM trained on anything"
+            }
+          />
         </div>
-
-        <div className="w-fit">
-          <div className="flex flex-col gap-y-1">
-            <h2 className="text-sm leading-6 text-white">Tab Favicon</h2>
-            <p className="text-xs leading-[18px] font-base text-white/60">
-              Define a url to an image to use for your favicon
-            </p>
-          </div>
-          <div className="flex items-center gap-x-2">
-            <img
-              src={settings.faviconUrl ?? "/favicon.png"}
-              onError={(e) => (e.target.src = "/favicon.png")}
-              className="h-10 w-10 rounded-lg mt-2.5"
-            />
-            <input
-              name="meta_page_favicon"
-              type="url"
-              className="border-none bg-theme-settings-input-bg mt-3 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 max-w-[400px] placeholder:text-theme-settings-input-placeholder"
-              placeholder="url to your image"
-              onChange={(e) => {
-                setSettings((prev) => {
-                  return { ...prev, faviconUrl: e.target.value };
-                });
-              }}
-              autoComplete="off"
-              value={settings.faviconUrl ?? ""}
-            />
-          </div>
-        </div>
-
-        {hasChanges && (
-          <button
-            type="submit"
-            className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-          >
-            Save
-          </button>
-        )}
       </div>
+
+      <div className="w-fit">
+        <h2 className="text-sm leading-6 font-medium text-white mt-2">
+          Tab Favicon
+        </h2>
+        <p className="text-xs text-white/60">
+          Define a url to an image to use for your favicon
+        </p>
+        <div className="flex items-center gap-x-2">
+          <img
+            src={settings.faviconUrl ?? "/favicon.png"}
+            onError={(e) => (e.target.src = "/favicon.png")}
+            className="h-10 w-10 rounded-lg mt-2"
+            alt="Site favicon"
+          />
+          <input
+            name="meta_page_favicon"
+            type="url"
+            className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
+            placeholder="url to your image"
+            onChange={(e) => {
+              setSettings((prev) => {
+                return { ...prev, faviconUrl: e.target.value };
+              });
+            }}
+            autoComplete="off"
+            value={settings.faviconUrl ?? ""}
+          />
+        </div>
+      </div>
+
+      {hasChanges && (
+        <button
+          type="submit"
+          className="transition-all mt-2 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+        >
+          Save
+        </button>
+      )}
     </form>
   );
 }
