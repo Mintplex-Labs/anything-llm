@@ -2,12 +2,18 @@ import AgentWebSearchSelection from "./WebSearchSelection";
 import AgentSQLConnectorSelection from "./SQLConnectorSelection";
 import GenericSkillPanel from "./GenericSkillPanel";
 import DefaultSkillPanel from "./DefaultSkillPanel";
+import AgentSlackConnectorSelection from "./SlackConnectorSelection";
+import AgentJiraConnectorSelection from "./JiraConnectorSelection";
+import AgentTechspecGeneratorSelection from "./TechspecGeneratorSelection";
 import {
   Brain,
   File,
   Browser,
   ChartBar,
   FileMagnifyingGlass,
+  SlackLogo,
+  ListChecks,
+  FileDoc,
 } from "@phosphor-icons/react";
 import RAGImage from "@/media/agents/rag-memory.png";
 import SummarizeImage from "@/media/agents/view-summarize.png";
@@ -72,5 +78,22 @@ export const configurableSkills = {
     title: "SQL Connector",
     component: AgentSQLConnectorSelection,
     skill: "sql-agent",
+  },
+  "slack-agent": {
+    title: "Slack Connector",
+    component: AgentSlackConnectorSelection,
+    skill: "slack-agent",
+  },
+  "jira-agent": {
+    title: "Jira Connector",
+    component: AgentJiraConnectorSelection,
+    skill: "jira-agent",
+  },
+  "techspec-generator": {
+    title: "Techspec Generator",
+    description: "Generate technical specifications in customizable formats from your embedded documents and knowledge base.",
+    component: AgentTechspecGeneratorSelection,
+    skill: "techspec-generator",
+    icon: FileDoc,
   },
 };

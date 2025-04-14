@@ -7,6 +7,8 @@ const { chatHistory } = require("./chat-history.js");
 const { memory } = require("./memory.js");
 const { rechart } = require("./rechart.js");
 const { sqlAgent } = require("./sql-agent/index.js");
+const { slackAgent } = require("./slack-agent");
+const { jiraAgent } = require("./jira-agent");
 
 module.exports = {
   webScraping,
@@ -18,6 +20,8 @@ module.exports = {
   memory,
   rechart,
   sqlAgent,
+  slackAgent,
+  jiraAgent,
 
   // Plugin name aliases so they can be pulled by slug as well.
   [webScraping.name]: webScraping,
@@ -29,4 +33,6 @@ module.exports = {
   [memory.name]: memory,
   [rechart.name]: rechart,
   [sqlAgent.name]: sqlAgent,
+  [slackAgent.name]: slackAgent,
+  [jiraAgent.name]: jiraAgent,
 };

@@ -11,8 +11,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@mintplex-labs/piper-tts-web": "^1.0.4",
+    "@mui/material": "^7.0.2",
     "@phosphor-icons/react": "^2.1.7",
     "@tremor/react": "^3.15.1",
     "dompurify": "^3.0.8",
@@ -26,6 +29,7 @@
     "lodash.debounce": "^4.0.8",
     "markdown-it": "^13.0.1",
     "moment": "^2.30.1",
+    "notistack": "^3.0.2",
     "onnxruntime-web": "^1.18.0",
     "pluralize": "^8.0.0",
     "react": "^18.2.0",
@@ -37,6 +41,7 @@
     "react-highlight-words": "^0.21.0",
     "react-i18next": "^14.1.1",
     "react-loading-skeleton": "^3.1.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^6.3.0",
     "react-speech-recognition": "^3.10.0",
     "react-tag-input-component": "^2.0.2",
@@ -44,6 +49,9 @@
     "react-tooltip": "^5.25.2",
     "recharts": "^2.12.5",
     "recharts-to-png": "^2.3.1",
+    "redux": "^5.0.1",
+    "redux-thunk": "^3.1.0",
+    "swr": "^2.3.3",
     "text-case": "^1.0.9",
     "truncate": "^3.0.0",
     "uuid": "^9.0.0"
