@@ -55,9 +55,6 @@ export default function ChatSettings({ workspace }) {
         id="chat-settings-form"
         className="w-1/2 flex flex-col gap-y-6"
       >
-<<<<<<< HEAD
-        {user?.role !== "manager" && (
-=======
         {hasChanges && (
           <div className="absolute top-0 right-0">
             <CTAButton type="submit">
@@ -65,7 +62,7 @@ export default function ChatSettings({ workspace }) {
             </CTAButton>
           </div>
         )}
->>>>>>> upstream/master
+        {user?.role !== "manager" && (
         <WorkspaceLLMSelection
           settings={settings}
           workspace={workspace}
