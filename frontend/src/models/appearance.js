@@ -1,10 +1,10 @@
 import { APPEARANCE_SETTINGS } from "@/utils/constants";
 
 const Appearance = {
-  defaultSettings: { showScrollbar: false },
+  defaultSettings: { showScrollbar: false, autoSubmit: true },
   /**
    * Fetches any locally storage settings for the user
-   * @returns {{showScrollbar: boolean}}
+   * @returns {{showScrollbar: boolean, autoSubmit: boolean}}
    */
   getSettings: () => {
     try {

@@ -11,6 +11,7 @@ import CustomSiteSettings from "./CustomSiteSettings";
 import ShowScrollbar from "./ShowScrollbar";
 import ThemePreference from "./ThemePreference";
 import { MessageDirection } from "./MessageDirection";
+import AutoSubmit from "./AutoSubmit";
 
 export default function Appearance() {
   const { t } = useTranslation();
@@ -37,6 +38,7 @@ export default function Appearance() {
           <LanguagePreference />
           <MessageDirection />
           <ShowScrollbar />
+          <AutoSubmit />
           <CustomLogo />
           <CustomAppName />
           <CustomMessages />

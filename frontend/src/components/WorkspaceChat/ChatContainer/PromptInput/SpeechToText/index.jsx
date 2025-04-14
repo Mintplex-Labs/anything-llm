@@ -7,6 +7,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { PROMPT_INPUT_EVENT } from "../../PromptInput";
 import { useTranslation } from "react-i18next";
+import Appearance from "@/models/appearance";
 
 let timeout;
 const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
@@ -85,9 +86,13 @@ export default function SpeechToText({ sendCommand }) {
     if (transcript?.length > 0 && listening) {
       sendCommand(transcript, false);
       clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        endSTTSession();
-      }, SILENCE_INTERVAL);
+      const settings = Appearance.getSettings();
+      console.log("settings", settings.autoSubmit);
+      if (settings.autoSubmit) {
+        timeout = setTimeout(() => {
+          endSTTSession();
+        }, SILENCE_INTERVAL);
+      }
     }
   }, [transcript, listening]);
 
