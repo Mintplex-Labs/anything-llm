@@ -30,6 +30,8 @@
   },
   "private": false,
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "@azure/msal-browser": "^3.20.0",
+    "@azure/msal-react": "^2.0.22"
   }
 }

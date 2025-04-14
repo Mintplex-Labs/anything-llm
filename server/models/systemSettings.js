@@ -41,7 +41,8 @@ const SystemSettings = {
     "text_splitter_chunk_overlap",
     "agent_search_provider",
     "default_agent_skills",
-    "disabled_agent_skills",
+    "users_can_login_with_google",
+    "allowed_domain",
     "agent_sql_connections",
     "custom_app_name",
 
@@ -215,6 +216,15 @@ const SystemSettings = {
       GenericOpenAiEmbeddingMaxConcurrentChunks:
         process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
       GeminiEmbeddingApiKey: !!process.env.GEMINI_EMBEDDING_API_KEY,
+
+      // --------------------------------------------------------
+      // Social Providers
+      // --------------------------------------------------------
+      GoogleAuthClientId:
+        (await this.get({ label: "users_can_login_with_google" }))?.value ===
+        "true"
+          ? process.env.GOOGLE_AUTH_CLIENT_ID
+          : null,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs

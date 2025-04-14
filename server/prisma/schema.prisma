@@ -61,6 +61,7 @@ model users {
   id                          Int                           @id @default(autoincrement())
   username                    String?                       @unique
   password                    String
+  use_social_provider         Boolean                       @default(false)
   pfpFilename                 String?
   role                        String                        @default("default")
   suspended                   Int                           @default(0)
