@@ -370,7 +370,8 @@ const TRANSLATIONS = {
     description: "Customize the appearance settings of your platform.",
     auto_submit: {
       title: "Auto-submit speech input",
-      description: "Automatically submit speech input after a period of silence",
+      description:
+        "Automatically submit speech input after a period of silence",
     },
     logo: {
       title: "Customize Logo",
