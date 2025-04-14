@@ -327,6 +327,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "外觀",
     description: "自訂平台的外觀設定。",
+    auto_submit: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "自訂 Logo",
       description: "上傳您的自訂 Logo，讓您的對話機器人更具個人特色。",

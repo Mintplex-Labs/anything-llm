@@ -346,6 +346,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "Udseende",
     description: "Tilpas platformens udseendeindstillinger.",
+    auto_submit: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "Tilpas logo",
       description: "Upload dit tilpassede logo for at gøre din chatbot unik.",

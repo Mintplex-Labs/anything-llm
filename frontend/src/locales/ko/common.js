@@ -332,6 +332,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "외관",
     description: "플랫폼의 외관 설정을 수정합니다.",
+    auto_submit: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "사용자 로고",
       description:

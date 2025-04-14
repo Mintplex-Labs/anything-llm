@@ -338,6 +338,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "Görünüm",
     description: "Platformunuzun görünüm ayarlarını özelleştirin.",
+    auto_submit: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "Logoyu Özelleştir",
       description:

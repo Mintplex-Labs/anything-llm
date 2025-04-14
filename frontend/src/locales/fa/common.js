@@ -336,6 +336,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "ظاهر",
     description: "تنظیمات ظاهری پلتفرم خود را شخصی‌سازی کنید.",
+    auto_submit: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "شخصی‌سازی لوگو",
       description: "لوگوی سفارشی خود را برای شخصی‌سازی ربات گفتگو آپلود کنید.",

@@ -342,6 +342,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "Apariencia",
     description: "Personaliza la configuración de apariencia de tu plataforma.",
+    auto_submit: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "Personalizar logotipo",
       description:

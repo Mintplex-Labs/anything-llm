@@ -344,6 +344,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "مظهر",
     description: "تخصيص إعدادات مظهر منصتك.",
+    auto_submit: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "تخصيص الشعار",
       description: "قم بتحميل شعارك المخصص لجعل روبوت المحادثة خاصا بك .",

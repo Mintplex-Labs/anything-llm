@@ -337,6 +337,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "Giao diện",
     description: "Customize the appearance settings of your platform.",
+    auto_submit: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "Tùy chỉnh logo",
       description: "Upload your custom logo to make your chatbot yours.",

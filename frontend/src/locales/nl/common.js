@@ -338,6 +338,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "Verschijning",
     description: "Pas de verschijningsinstellingen van je platform aan.",
+    auto_submit: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "Logo Aanpassen",
       description: "Upload je aangepaste logo om je chatbot eigen te maken.",
