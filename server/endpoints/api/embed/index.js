@@ -1,6 +1,8 @@
 const { EmbedConfig } = require("../../../models/embedConfig");
 const { EmbedChats } = require("../../../models/embedChats");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const { reqBody } = require("../../../utils/http");
+const { Workspace } = require("../../../models/workspace");
 
 function apiEmbedEndpoints(app) {
   if (!app) return;
@@ -40,7 +42,7 @@ function apiEmbedEndpoints(app) {
                     },
                     "chat_count": 10
                   }
-                ] 
+                ]
               }
             }
           }
@@ -124,21 +126,10 @@ function apiEmbedEndpoints(app) {
     */
       try {
         const { embedUuid } = request.params;
-        const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
-        if (!embed) {
-          return response.status(404).json({ error: "Embed not found" });
-        }
-
-        const chats = await EmbedChats.where({ embed_id: embed.id });
-        const formattedChats = chats.map((chat) => ({
-          id: chat.id,
-          session_id: chat.session_id,
-          prompt: chat.prompt,
-          response: chat.response,
-          createdAt: chat.createdAt,
-        }));
-
-        response.status(200).json({ chats: formattedChats });
+        const chats = await EmbedChats.where({
+          embed_config: { uuid: String(embedUuid) },
+        });
+        response.status(200).json({ chats });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -195,30 +186,218 @@ function apiEmbedEndpoints(app) {
     */
       try {
         const { embedUuid, sessionUuid } = request.params;
-        const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
-        if (!embed) {
-          return response.status(404).json({ error: "Embed not found" });
-        }
-
         const chats = await EmbedChats.where({
-          embed_id: embed.id,
+          embed_config: { uuid: String(embedUuid) },
           session_id: String(sessionUuid),
         });
+        response.status(200).json({ chats });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 
-        if (!chats || chats.length === 0) {
-          return response
-            .status(404)
-            .json({ error: "No chats found for this session" });
+  app.post("/v1/embed/new", [validApiKey], async (request, response) => {
+    /*
+      #swagger.tags = ['Embed']
+      #swagger.description = 'Create a new embed configuration'
+      #swagger.requestBody = {
+        description: 'JSON object containing embed configuration details',
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                "workspace_slug": "workspace-slug-1",
+                "chat_mode": "chat",
+                "allowlist_domains": ["example.com"],
+                "allow_model_override": false,
+                "allow_temperature_override": false,
+                "allow_prompt_override": false,
+                "max_chats_per_day": 100,
+                "max_chats_per_session": 10
+              }
+            }
+          }
         }
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                "embed": {
+                  "id": 1,
+                  "uuid": "embed-uuid-1",
+                  "enabled": true,
+                  "chat_mode": "chat",
+                  "allowlist_domains": ["example.com"],
+                  "allow_model_override": false,
+                  "allow_temperature_override": false,
+                  "allow_prompt_override": false,
+                  "max_chats_per_day": 100,
+                  "max_chats_per_session": 10,
+                  "createdAt": "2023-04-01T12:00:00Z",
+                  "workspace_slug": "workspace-slug-1"
+                },
+                "error": null
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[404] = {
+        description: "Workspace not found"
+      }
+    */
+    try {
+      const data = reqBody(request);
 
-        const formattedChats = chats.map((chat) => ({
-          id: chat.id,
-          prompt: chat.prompt,
-          response: chat.response,
-          createdAt: chat.createdAt,
-        }));
+      if (!data.workspace_slug)
+        return response
+          .status(400)
+          .json({ error: "Workspace slug is required" });
+      const workspace = await Workspace.get({
+        slug: String(data.workspace_slug),
+      });
 
-        response.status(200).json({ chats: formattedChats });
+      if (!workspace)
+        return response.status(404).json({ error: "Workspace not found" });
+
+      const { embed, message: error } = await EmbedConfig.new({
+        ...data,
+        workspace_id: workspace.id,
+      });
+
+      response.status(200).json({ embed, error });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.post("/v1/embed/:embedUuid", [validApiKey], async (request, response) => {
+    /*
+      #swagger.tags = ['Embed']
+      #swagger.description = 'Update an existing embed configuration'
+      #swagger.parameters['embedUuid'] = {
+        in: 'path',
+        description: 'UUID of the embed to update',
+        required: true,
+        type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'JSON object containing embed configuration updates',
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                "enabled": true,
+                "chat_mode": "chat",
+                "allowlist_domains": ["example.com"],
+                "allow_model_override": false,
+                "allow_temperature_override": false,
+                "allow_prompt_override": false,
+                "max_chats_per_day": 100,
+                "max_chats_per_session": 10
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                "success": true,
+                "error": null
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[404] = {
+        description: "Embed not found"
+      }
+    */
+    try {
+      const { embedUuid } = request.params;
+      const data = reqBody(request);
+
+      const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
+      if (!embed) {
+        return response.status(404).json({ error: "Embed not found" });
+      }
+
+      const { success, error } = await EmbedConfig.update(embed.id, data);
+      response.status(200).json({ success, error });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.delete(
+    "/v1/embed/:embedUuid",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Embed']
+      #swagger.description = 'Delete an existing embed configuration'
+      #swagger.parameters['embedUuid'] = {
+        in: 'path',
+        description: 'UUID of the embed to delete',
+        required: true,
+        type: 'string'
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                "success": true,
+                "error": null
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[404] = {
+        description: "Embed not found"
+      }
+    */
+      try {
+        const { embedUuid } = request.params;
+        const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
+        if (!embed)
+          return response.status(404).json({ error: "Embed not found" });
+        const success = await EmbedConfig.delete({ id: embed.id });
+        response
+          .status(200)
+          .json({ success, error: success ? null : "Failed to delete embed" });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

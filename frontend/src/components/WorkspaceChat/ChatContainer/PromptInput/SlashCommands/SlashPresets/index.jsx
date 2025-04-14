@@ -8,7 +8,7 @@ import { DotsThree, Plus } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 
 export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
-export default function SlashPresets({ setShowing, sendCommand }) {
+export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
   const isActiveAgentSession = useIsAgentSessionActive();
   const {
     isOpen: isAddModalOpen,
@@ -26,6 +26,17 @@ export default function SlashPresets({ setShowing, sendCommand }) {
   useEffect(() => {
     fetchPresets();
   }, []);
+
+  /*
+   * @checklist-item
+   * If the URL has the #slash-commands hash, open the add modal for the user
+   * automatically when the component mounts.
+   */
+  useEffect(() => {
+    if (window.location.hash === "#slash-commands" && !isAddModalOpen)
+      openAddModal();
+  }, []);
+
   if (isActiveAgentSession) return null;
 
   const fetchPresets = async () => {
@@ -84,6 +95,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
           onClick={() => {
             setShowing(false);
             sendCommand(`${preset.command} `, false);
+            promptRef?.current?.focus();
           }}
           className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start"
         >

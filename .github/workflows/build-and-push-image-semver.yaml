@@ -35,8 +35,15 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
+      # Since Docker Buildx v20.1 - segfaults occur on arm64 with ubuntu-latest.
+      # So we pin to v0.19.0 for now until the issue is resolved for runners via QEMU.
+      # Alternatively, we can move to ARM runners and remove the QEMU setup, but this previously
+      # has issues (see comment at the top)
+      # https://github.com/NVIDIA/cuda-quantum/pull/2651#issue-2870353124
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          version: v0.19.0
       
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a

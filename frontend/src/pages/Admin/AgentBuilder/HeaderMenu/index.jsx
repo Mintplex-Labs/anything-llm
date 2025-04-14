@@ -1,4 +1,4 @@
-import { CaretDown, CaretUp, Plus } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, Plus, CaretLeft } from "@phosphor-icons/react";
 import AnythingInfinityLogo from "@/media/logo/anything-llm-infinity.png";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,72 +32,83 @@ export default function HeaderMenu({
   }, []);
 
   return (
-    <div className="absolute top-4 left-4 right-4">
-      <div className="flex justify-between items-center max-w-[1700px] mx-auto">
-        <div
-          className="flex items-center bg-theme-settings-input-bg rounded-md border border-white/10 pointer-events-auto"
-          ref={dropdownRef}
-        >
+    <div className="absolute top-[calc(40px+16px)] left-4 right-4">
+      <div className="flex justify-between items-start max-w-[1700px] mx-auto">
+        <div className="flex items-center gap-x-2">
           <button
             onClick={() => navigate(paths.settings.agentSkills())}
-            className="border-y-none border-l-none flex items-center gap-x-2 px-4 py-2 border-r border-white/10 hover:bg-theme-action-menu-bg transition-colors duration-300"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-theme-settings-input-bg border border-white/10 hover:bg-theme-action-menu-bg transition-colors duration-300"
           >
-            <img
-              src={AnythingInfinityLogo}
-              alt="logo"
-              className="w-[20px] light:invert"
+            <CaretLeft
+              weight="bold"
+              className="w-5 h-5 text-theme-text-primary"
             />
-            <span className="text-theme-text-primary text-sm uppercase tracking-widest">
-              Builder
-            </span>
           </button>
-          <div className="relative">
+          <div
+            className="flex items-center bg-theme-settings-input-bg rounded-md border border-white/10 pointer-events-auto"
+            ref={dropdownRef}
+          >
             <button
-              disabled={!hasOtherFlows}
-              className="border-none flex items-center justify-between gap-x-1 text-theme-text-primary text-sm px-4 py-2 enabled:hover:bg-theme-action-menu-bg transition-colors duration-300 min-w-[200px] max-w-[300px]"
-              onClick={() => {
-                if (!agentName && !hasOtherFlows) {
-                  const agentNameInput = document.getElementById(
-                    "agent-flow-name-input"
-                  );
-                  if (agentNameInput) agentNameInput.focus();
-                  return;
-                }
-                setShowDropdown(!showDropdown);
-              }}
+              onClick={() => navigate(paths.settings.agentSkills())}
+              className="!border-t-transparent !border-l-transparent !border-b-transparent flex items-center gap-x-2 px-4 py-2 border-r border-white/10 hover:bg-theme-action-menu-bg transition-colors duration-300"
             >
-              <span
-                className={`text-sm font-medium truncate ${!!agentName ? "text-theme-text-primary " : "text-theme-text-secondary"}`}
-              >
-                {agentName || "Untitled Flow"}
+              <img
+                src={AnythingInfinityLogo}
+                alt="logo"
+                className="w-[20px] light:invert"
+              />
+              <span className="text-theme-text-primary text-sm uppercase tracking-widest">
+                Builder
               </span>
-              {hasOtherFlows && (
-                <div className="flex flex-col ml-2 shrink-0">
-                  <CaretUp size={10} />
-                  <CaretDown size={10} />
+            </button>
+            <div className="relative">
+              <button
+                disabled={!hasOtherFlows}
+                className="border-none flex items-center justify-between gap-x-1 text-theme-text-primary text-sm px-4 py-2 enabled:hover:bg-theme-action-menu-bg transition-colors duration-300 min-w-[200px] max-w-[300px]"
+                onClick={() => {
+                  if (!agentName && !hasOtherFlows) {
+                    const agentNameInput = document.getElementById(
+                      "agent-flow-name-input"
+                    );
+                    if (agentNameInput) agentNameInput.focus();
+                    return;
+                  }
+                  setShowDropdown(!showDropdown);
+                }}
+              >
+                <span
+                  className={`text-sm font-medium truncate ${!!agentName ? "text-theme-text-primary " : "text-theme-text-secondary"}`}
+                >
+                  {agentName || "Untitled Flow"}
+                </span>
+                {hasOtherFlows && (
+                  <div className="flex flex-col ml-2 shrink-0">
+                    <CaretUp size={10} />
+                    <CaretDown size={10} />
+                  </div>
+                )}
+              </button>
+              {showDropdown && (
+                <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] max-w-[350px] bg-theme-settings-input-bg border border-white/10 rounded-md shadow-lg z-50 animate-fadeUpIn">
+                  {availableFlows
+                    .filter((flow) => flow.uuid !== flowId)
+                    .map((flow) => (
+                      <button
+                        key={flow?.uuid || Math.random()}
+                        onClick={() => {
+                          navigate(paths.agents.editAgent(flow.uuid));
+                          setShowDropdown(false);
+                        }}
+                        className="border-none w-full text-left px-2 py-1 text-sm text-theme-text-primary hover:bg-theme-action-menu-bg transition-colors duration-300"
+                      >
+                        <span className="block truncate">
+                          {flow?.name || "Untitled Flow"}
+                        </span>
+                      </button>
+                    ))}
                 </div>
               )}
-            </button>
-            {showDropdown && (
-              <div className="absolute top-full left-0 mt-1 w-full min-w-[200px] max-w-[350px] bg-theme-settings-input-bg border border-white/10 rounded-md shadow-lg z-50 animate-fadeUpIn">
-                {availableFlows
-                  .filter((flow) => flow.uuid !== flowId)
-                  .map((flow) => (
-                    <button
-                      key={flow?.uuid || Math.random()}
-                      onClick={() => {
-                        navigate(paths.agents.editAgent(flow.uuid));
-                        setShowDropdown(false);
-                      }}
-                      className="border-none w-full text-left px-2 py-1 text-sm text-theme-text-primary hover:bg-theme-action-menu-bg transition-colors duration-300"
-                    >
-                      <span className="block truncate">
-                        {flow?.name || "Untitled Flow"}
-                      </span>
-                    </button>
-                  ))}
-              </div>
-            )}
+            </div>
           </div>
         </div>
 
@@ -112,7 +123,7 @@ export default function HeaderMenu({
             </button>
             <button
               onClick={onSaveFlow}
-              className="border-none bg-primary-button hover:opacity-80 text-black px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2"
+              className="border-none bg-primary-button hover:opacity-80 text-black light:text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2"
             >
               Save
             </button>

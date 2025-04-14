@@ -62,17 +62,10 @@ export default function NewUserModal({ closeModal }) {
                   minLength={2}
                   required={true}
                   autoComplete="off"
-                  pattern="^[a-z0-9_-]+$"
-                  onInvalid={(e) =>
-                    e.target.setCustomValidity(
-                      "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
-                    )
-                  }
-                  onChange={(e) => e.target.setCustomValidity("")}
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Username must only contain lowercase letters, numbers,
-                  underscores, and hyphens with no spaces
+                  Username must only contain lowercase letters, periods,
+                  numbers, underscores, and hyphens with no spaces
                 </p>
               </div>
               <div>
@@ -94,6 +87,21 @@ export default function NewUserModal({ closeModal }) {
                 <p className="mt-2 text-xs text-white/60">
                   Password must be at least 8 characters long
                 </p>
+              </div>
+              <div>
+                <label
+                  htmlFor="bio"
+                  className="block mb-2 text-sm font-medium text-white"
+                >
+                  Bio
+                </label>
+                <textarea
+                  name="bio"
+                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                  placeholder="User's bio"
+                  autoComplete="off"
+                  rows={3}
+                />
               </div>
               <div>
                 <label

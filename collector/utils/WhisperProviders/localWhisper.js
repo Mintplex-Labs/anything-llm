@@ -153,9 +153,9 @@ class LocalWhisper {
     try {
       // Convert ESM to CommonJS via import so we can load this library.
       const pipeline = (...args) =>
-        import("@xenova/transformers").then(({ pipeline }) =>
-          pipeline(...args)
-        );
+        import("@xenova/transformers").then(({ pipeline }) => {
+          return pipeline(...args);
+        });
       return await pipeline("automatic-speech-recognition", this.model, {
         cache_dir: this.cacheDir,
         ...(!fs.existsSync(this.modelPath)
@@ -173,16 +173,22 @@ class LocalWhisper {
           : {}),
       });
     } catch (error) {
-      this.#log("Failed to load the native whisper model:", error);
-      throw error;
+      let errMsg = error.message;
+      if (errMsg.includes("Could not locate file")) {
+        errMsg =
+          "The native whisper model failed to download from the huggingface.co CDN. Your internet connection may be unstable or blocked by Huggingface.co - you will need to download the model manually and place it in the storage/models folder to use local Whisper transcription.";
+      }
+
+      this.#log(
+        `Failed to load the native whisper model: ${errMsg}`,
+        error.stack
+      );
+      throw new Error(errMsg);
     }
   }
 
   async processFile(fullFilePath, filename) {
     try {
-      const transcriberPromise = new Promise((resolve) =>
-        this.client().then((client) => resolve(client))
-      );
       const audioDataPromise = new Promise((resolve) =>
         this.#convertToWavAudioData(fullFilePath).then((audioData) =>
           resolve(audioData)
@@ -190,7 +196,7 @@ class LocalWhisper {
       );
       const [audioData, transcriber] = await Promise.all([
         audioDataPromise,
-        transcriberPromise,
+        this.client(),
       ]);
 
       if (!audioData) {

@@ -163,6 +163,22 @@ class Provider {
           apiKey: process.env.NOVITA_LLM_API_KEY ?? null,
           ...config,
         });
+      case "ppio":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.ppinfra.com/v3/openai",
+          },
+          apiKey: process.env.PPIO_API_KEY ?? null,
+          ...config,
+        });
+      case "gemini":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+          },
+          apiKey: process.env.GEMINI_API_KEY ?? null,
+          ...config,
+        });
 
       // OSS Model Runners
       // case "anythingllm_ollama":

@@ -138,41 +138,6 @@ export default function EmbedChats() {
               <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
                 {t("embed-chats.description")}
               </p>
-              <div className="relative">
-                <button
-                  ref={openMenuButton}
-                  onClick={toggleMenu}
-                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-white text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
-                >
-                  <Download size={18} weight="bold" />
-                  {t("embed-chats.export")}
-                  <CaretDown size={18} weight="bold" />
-                </button>
-                <div
-                  ref={menuRef}
-                  className={`${
-                    showMenu ? "slide-down" : "slide-up hidden"
-                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary mt-2 shadow-md`}
-                >
-                  <div className="py-2">
-                    {Object.entries(exportOptions).map(([key, data]) => (
-                      <button
-                        key={key}
-                        onClick={() => {
-                          handleDumpChats(key);
-                          setShowMenu(false);
-                        }}
-                        className="w-full text-left px-4 py-2 text-white text-sm hover:bg-[#3D4147]"
-                      >
-                        {data.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="overflow-x-auto mt-6">
-              <ChatsContainer />
             </div>
             <div className="overflow-x-auto mt-6">
               <ChatsContainer />
@@ -229,7 +194,7 @@ function ChatsContainer() {
 
   return (
     <>
-      <table className="w-full text-sm text-left rounded-lg min-w-[640px] border-spacing-0">
+      <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
         <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">

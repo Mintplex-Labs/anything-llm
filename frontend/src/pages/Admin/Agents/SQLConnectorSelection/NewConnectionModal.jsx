@@ -356,6 +356,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 <p className="text-theme-text-secondary text-sm">
                   {assembleConnectionString({ engine, ...config })}
                 </p>
+              </div>
             </div>
             <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border px-7 pb-6">
               <button

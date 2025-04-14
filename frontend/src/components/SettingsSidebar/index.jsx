@@ -355,6 +355,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
+              btnText: t("settings.system-prompt-variables"),
+              href: paths.settings.systemPromptVariables(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
               btnText: t("settings.browser-extension"),
               href: paths.settings.browserExtension(),
               flex: true,

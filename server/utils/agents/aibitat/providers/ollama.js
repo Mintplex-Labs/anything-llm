@@ -16,7 +16,13 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
     } = config;
 
     super();
-    this._client = new Ollama({ host: process.env.OLLAMA_BASE_PATH });
+    const headers = process.env.OLLAMA_AUTH_TOKEN
+      ? { Authorization: `Bearer ${process.env.OLLAMA_AUTH_TOKEN}` }
+      : {};
+    this._client = new Ollama({
+      host: process.env.OLLAMA_BASE_PATH,
+      headers: headers,
+    });
     this.model = model;
     this.verbose = true;
   }
@@ -43,7 +49,7 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @param functions
    * @returns The completion.
    */
-  async complete(messages, functions = null) {
+  async complete(messages, functions = []) {
     try {
       let completion;
       if (functions.length > 0) {

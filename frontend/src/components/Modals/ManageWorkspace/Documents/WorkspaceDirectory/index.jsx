@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import { Tooltip } from "react-tooltip";
 import { safeJsonParse } from "@/utils/request";
+import { useTranslation } from "react-i18next";
 
 function WorkspaceDirectory({
   workspace,
@@ -25,6 +26,7 @@ function WorkspaceDirectory({
   embeddingCosts,
   movedItems,
 }) {
+  const { t } = useTranslation();
   const [selectedItems, setSelectedItems] = useState({});
 
   const toggleSelection = (item) => {
@@ -160,7 +162,11 @@ function WorkspaceDirectory({
             <div className="overflow-y-auto h-[calc(100%-40px)]">
               {files.items.some((folder) => folder.items.length > 0) ||
               movedItems.length > 0 ? (
-                <RenderFileRows files={files} movedItems={movedItems}>
+                <RenderFileRows
+                  files={files}
+                  movedItems={movedItems}
+                  workspace={workspace}
+                >
                   {({ item, folder }) => (
                     <WorkspaceFileRow
                       key={item.id}
@@ -182,7 +188,7 @@ function WorkspaceDirectory({
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <p className="text-white text-opacity-40 text-sm font-medium">
-                    No Documents
+                    {t("connectors.directory.no_docs")}
                   </p>
                 </div>
               )}
@@ -201,14 +207,14 @@ function WorkspaceDirectory({
                         (sum, folder) => sum + folder.items.length,
                         0
                       )
-                        ? "Deselect All"
-                        : "Select All"}
+                        ? t("connectors.directory.deselect_all")
+                        : t("connectors.directory.select_all")}
                     </button>
                     <button
                       onClick={removeSelectedItems}
                       className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
-                      Remove Selected
+                      {t("connectors.directory.remove_selected")}
                     </button>
                   </div>
                 </div>
@@ -229,7 +235,7 @@ function WorkspaceDirectory({
                     }`}
               </p>
               <p className="mt-2 text-xs italic" hidden={embeddingCosts === 0}>
-                *One time cost for embeddings
+                {t("new-workspace.costs")}
               </p>
             </div>
 
@@ -237,7 +243,7 @@ function WorkspaceDirectory({
               onClick={(e) => handleSaveChanges(e)}
               className="border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
-              Save and Embed
+              {t("connectors.directory.save_embed")}
             </button>
           </div>
         )}
@@ -250,6 +256,7 @@ function WorkspaceDirectory({
 }
 
 const PinAlert = memo(() => {
+  const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
   function dismissAlert() {
     setShowAlert(false);
@@ -277,26 +284,27 @@ const PinAlert = memo(() => {
               weight="regular"
             />
             <h3 className="text-xl font-semibold text-white">
-              What is document pinning?
+              {t("connectors.pinning.what_pinning")}
             </h3>
           </div>
         </div>
         <div className="py-7 px-9 space-y-2 flex-col">
           <div className="w-full text-white text-md flex flex-col gap-y-2">
             <p>
-              When you <b>pin</b> a document in AnythingLLM we will inject the
-              entire content of the document into your prompt window for your
-              LLM to fully comprehend.
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: t("connectors.pinning.pin_explained_block1"),
+                }}
+              />
             </p>
             <p>
-              This works best with <b>large-context models</b> or small files
-              that are critical to its knowledge-base.
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: t("connectors.pinning.pin_explained_block2"),
+                }}
+              />
             </p>
-            <p>
-              If you are not getting the answers you desire from AnythingLLM by
-              default then pinning is a great way to get higher quality answers
-              in a click.
-            </p>
+            <p>{t("connectors.pinning.pin_explained_block3")}</p>
           </div>
         </div>
         <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
@@ -304,7 +312,7 @@ const PinAlert = memo(() => {
             onClick={dismissAlert}
             className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
-            Okay, got it
+            {t("connectors.pinning.accept")}
           </button>
         </div>
       </div>
@@ -313,6 +321,7 @@ const PinAlert = memo(() => {
 });
 
 const DocumentWatchAlert = memo(() => {
+  const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
   function dismissAlert() {
     setShowAlert(false);
@@ -340,31 +349,29 @@ const DocumentWatchAlert = memo(() => {
               weight="regular"
             />
             <h3 className="text-xl font-semibold text-white">
-              What does watching a document do?
+              {t("connectors.watching.what_watching")}
             </h3>
           </div>
         </div>
         <div className="py-7 px-9 space-y-2 flex-col">
           <div className="w-full text-white text-md flex flex-col gap-y-2">
             <p>
-              When you <b>watch</b> a document in AnythingLLM we will{" "}
-              <i>automatically</i> sync your document content from it's original
-              source on regular intervals. This will automatically update the
-              content in every workspace where this file is managed.
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: t("connectors.watching.watch_explained_block1"),
+                }}
+              />
             </p>
+            <p>{t("connectors.watching.watch_explained_block2")}</p>
             <p>
-              This feature currently supports online-based content and will not
-              be available for manually uploaded documents.
-            </p>
-            <p>
-              You can manage what documents are watched from the{" "}
+              {t("connectors.watching.watch_explained_block3_start")}
               <Link
                 to={paths.experimental.liveDocumentSync.manage()}
                 className="text-blue-600 underline"
               >
-                File manager
-              </Link>{" "}
-              admin view.
+                {t("connectors.watching.watch_explained_block3_link")}
+              </Link>
+              {t("connectors.watching.watch_explained_block3_end")}
             </p>
           </div>
         </div>
@@ -373,7 +380,7 @@ const DocumentWatchAlert = memo(() => {
             onClick={dismissAlert}
             className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
-            Okay, got it
+            {t("connectors.watching.accept")}
           </button>
         </div>
       </div>
@@ -381,12 +388,19 @@ const DocumentWatchAlert = memo(() => {
   );
 });
 
-function RenderFileRows({ files, movedItems, children }) {
+function RenderFileRows({ files, movedItems, children, workspace }) {
   function sortMovedItemsAndFiles(a, b) {
     const aIsMovedItem = movedItems.some((movedItem) => movedItem.id === a.id);
     const bIsMovedItem = movedItems.some((movedItem) => movedItem.id === b.id);
     if (aIsMovedItem && !bIsMovedItem) return -1;
     if (!aIsMovedItem && bIsMovedItem) return 1;
+
+    // Sort pinned items to the top
+    const aIsPinned = a.pinnedWorkspaces?.includes(workspace.id);
+    const bIsPinned = b.pinnedWorkspaces?.includes(workspace.id);
+    if (aIsPinned && !bIsPinned) return -1;
+    if (!aIsPinned && bIsPinned) return 1;
+
     return 0;
   }
 

@@ -223,13 +223,23 @@ function apiOpenAICompatibleEndpoints(app) {
       }
       */
       try {
-        const { inputs = [] } = reqBody(request);
-        const validArray = inputs.every((input) => typeof input === "string");
-        if (!validArray)
-          throw new Error("All inputs to be embedded must be strings.");
+        const body = reqBody(request);
+        // Support input or "inputs" (for backwards compatibility) as an array of strings or a single string
+        // TODO: "inputs" key support will eventually be fully removed.
+        let input = body?.input || body?.inputs || [];
+        // if input is not an array, make it an array and force to string content
+        if (!Array.isArray(input)) input = [String(input)];
+
+        if (Array.isArray(input)) {
+          if (input.length === 0)
+            throw new Error("Input array cannot be empty.");
+          const validArray = input.every((text) => typeof text === "string");
+          if (!validArray)
+            throw new Error("All inputs to be embedded must be strings.");
+        }
 
         const Embedder = getEmbeddingEngineSelection();
-        const embeddings = await Embedder.embedChunks(inputs);
+        const embeddings = await Embedder.embedChunks(input);
         const data = [];
         embeddings.forEach((embedding, index) => {
           data.push({

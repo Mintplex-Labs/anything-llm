@@ -22,7 +22,9 @@ class AnthropicLLM {
     });
     this.anthropic = anthropic;
     this.model =
-      modelPreference || process.env.ANTHROPIC_MODEL_PREF || "claude-2.0";
+      modelPreference ||
+      process.env.ANTHROPIC_MODEL_PREF ||
+      "claude-3-5-sonnet-20241022";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -31,6 +33,11 @@ class AnthropicLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.log(`Initialized with ${this.model}`);
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
   streamingEnabled() {
@@ -45,21 +52,8 @@ class AnthropicLLM {
     return MODEL_MAP.anthropic[this.model] ?? 100_000;
   }
 
-  isValidChatCompletionModel(modelName = "") {
-    const validModels = [
-      "claude-instant-1.2",
-      "claude-2.0",
-      "claude-2.1",
-      "claude-3-haiku-20240307",
-      "claude-3-sonnet-20240229",
-      "claude-3-opus-latest",
-      "claude-3-5-haiku-latest",
-      "claude-3-5-haiku-20241022",
-      "claude-3-5-sonnet-latest",
-      "claude-3-5-sonnet-20241022",
-      "claude-3-5-sonnet-20240620",
-    ];
-    return validModels.includes(modelName);
+  isValidChatCompletionModel(_modelName = "") {
+    return true;
   }
 
   /**
@@ -109,11 +103,6 @@ class AnthropicLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Anthropic chat: ${this.model} is not valid for chat completion!`
-      );
-
     try {
       const result = await LLMPerformanceMonitor.measureAsyncFunction(
         this.anthropic.messages.create({
@@ -144,11 +133,6 @@ class AnthropicLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Anthropic chat: ${this.model} is not valid for chat completion!`
-      );
-
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       this.anthropic.messages.stream({
         model: this.model,

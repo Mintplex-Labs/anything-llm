@@ -491,9 +491,7 @@ Only return the role.
     // and remove the @ from the response
     const { result } = await provider.complete(messages);
     const name = result?.replace(/^@/g, "");
-    if (this.agents.get(name)) {
-      return name;
-    }
+    if (this.agents.get(name)) return name;
 
     // if the name is not in the nodes, return a random node
     return availableNodes[Math.floor(Math.random() * availableNodes.length)];
@@ -795,10 +793,13 @@ ${this.getHistory({ to: route.to })
         return new Providers.XAIProvider({ model: config.model });
       case "novita":
         return new Providers.NovitaProvider({ model: config.model });
-
+      case "ppio":
+        return new Providers.PPIOProvider({ model: config.model });
+      case "gemini":
+        return new Providers.GeminiProvider({ model: config.model });
       default:
         throw new Error(
-          `Unknown provider: ${config.provider}. Please use "openai"`
+          `Unknown provider: ${config.provider}. Please use a valid provider.`
         );
     }
   }

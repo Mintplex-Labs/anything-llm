@@ -5,6 +5,15 @@ const { FlowExecutor } = require("./executor");
 const { normalizePath } = require("../files");
 const { safeJsonParse } = require("../http");
 
+/**
+ * @typedef {Object} LoadedFlow
+ * @property {string} name - The name of the flow
+ * @property {string} uuid - The UUID of the flow
+ * @property {Object} config - The flow configuration details
+ * @property {string} config.description - The description of the flow
+ * @property {Array<{type: string, config: Object, [key: string]: any}>} config.steps - The steps of the flow. Each step has at least a type and config
+ */
+
 class AgentFlows {
   static flowsDir = process.env.STORAGE_DIR
     ? path.join(process.env.STORAGE_DIR, "plugins", "agent-flows")
@@ -55,7 +64,7 @@ class AgentFlows {
   /**
    * Load a flow configuration by UUID
    * @param {string} uuid - The UUID of the flow to load
-   * @returns {Object|null} Flow configuration or null if not found
+   * @returns {LoadedFlow|null} Flow configuration or null if not found
    */
   static loadFlow(uuid) {
     try {
@@ -141,25 +150,14 @@ class AgentFlows {
    * Execute a flow by UUID
    * @param {string} uuid - The UUID of the flow to execute
    * @param {Object} variables - Initial variables for the flow
-   * @param {Function} introspectFn - Function to introspect the flow
-   * @param {Function} loggerFn - Function to log the flow
+   * @param {Object} aibitat - The aibitat instance from the agent handler
    * @returns {Promise<Object>} Result of flow execution
    */
-  static async executeFlow(
-    uuid,
-    variables = {},
-    introspectFn = null,
-    loggerFn = null
-  ) {
+  static async executeFlow(uuid, variables = {}, aibitat = null) {
     const flow = AgentFlows.loadFlow(uuid);
     if (!flow) throw new Error(`Flow ${uuid} not found`);
     const flowExecutor = new FlowExecutor();
-    return await flowExecutor.executeFlow(
-      flow,
-      variables,
-      introspectFn,
-      loggerFn
-    );
+    return await flowExecutor.executeFlow(flow, variables, aibitat);
   }
 
   /**
@@ -190,11 +188,13 @@ class AgentFlows {
       description: `Execute agent flow: ${flow.name}`,
       plugin: (_runtimeArgs = {}) => ({
         name: `flow_${uuid}`,
-        description: flow.description || `Execute agent flow: ${flow.name}`,
+        description:
+          flow.config.description || `Execute agent flow: ${flow.name}`,
         setup: (aibitat) => {
           aibitat.function({
             name: `flow_${uuid}`,
-            description: flow.description || `Execute agent flow: ${flow.name}`,
+            description:
+              flow.config.description || `Execute agent flow: ${flow.name}`,
             parameters: {
               type: "object",
               properties: variables.reduce((acc, v) => {
@@ -210,12 +210,7 @@ class AgentFlows {
             },
             handler: async (args) => {
               aibitat.introspect(`Executing flow: ${flow.name}`);
-              const result = await AgentFlows.executeFlow(
-                uuid,
-                args,
-                aibitat.introspect,
-                aibitat.handlerProps.log
-              );
+              const result = await AgentFlows.executeFlow(uuid, args, aibitat);
               if (!result.success) {
                 aibitat.introspect(
                   `Flow failed: ${result.results[0]?.error || "Unknown error"}`
