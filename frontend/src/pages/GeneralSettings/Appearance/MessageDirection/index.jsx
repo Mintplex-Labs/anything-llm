@@ -5,11 +5,11 @@ export function MessageDirection() {
   const { msgDirection, setMsgDirection } = useChatMessageAlignment();
 
   return (
-    <div className="flex flex-col gap-y-1 mt-4">
-      <h2 className="text-base leading-6 font-bold text-white">
+    <div className="flex flex-col gap-y-0.5 my-4">
+      <h2 className="text-sm leading-6 font-semibold text-white">
         Message Chat Alignment
       </h2>
-      <p className="text-xs leading-[18px] font-base text-white/60">
+      <p className="text-xs text-white/60">
         Select the message alignment mode when using the chat interface.
       </p>
       <div className="flex flex-row flex-wrap gap-x-4 pt-1 gap-y-4 md:gap-y-0">
