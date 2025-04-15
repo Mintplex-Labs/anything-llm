@@ -17,11 +17,19 @@ const INVALID_OCTETS = [192, 172, 10, 127];
 /**
  * If an ip address is passed in the user is attempting to collector some internal service running on internal/private IP.
  * This is not a security feature and simply just prevents the user from accidentally entering invalid IP addresses.
+ * Can be bypassed via COLLECTOR_ALLOW_ANY_IP environment variable.
  * @param {URL} param0
  * @param {URL['hostname']} param0.hostname
  * @returns {boolean}
  */
 function isInvalidIp({ hostname }) {
+  if (!!process.env.COLLECTOR_ALLOW_ANY_IP) {
+    console.log(
+      "\x1b[33mURL IP limitations bypassed via ENV - skipping checks!\x1b[0m"
+    );
+    return false;
+  }
+
   const IPRegex = new RegExp(
     /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gi
   );
@@ -40,6 +48,14 @@ function isInvalidIp({ hostname }) {
   return INVALID_OCTETS.includes(Number(octetOne));
 }
 
+/**
+ * Validates a URL
+ * - Checks the URL forms a valid URL
+ * - Checks the URL is at least HTTP(S)
+ * - Checks the URL is not an internal IP - can be bypassed via COLLECTOR_ALLOW_ANY_IP
+ * @param {string} url
+ * @returns {boolean}
+ */
 function validURL(url) {
   try {
     const destination = new URL(url);
