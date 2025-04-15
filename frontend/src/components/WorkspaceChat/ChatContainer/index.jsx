@@ -31,6 +31,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [speaking, setSpeaking] = useState(false);
   const lastMessageRef = useRef(null);
+  const hasSentMessage = useRef(false);
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -53,6 +54,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!message || message === "") return false;
+    hasSentMessage.current = true;
     const prevChatHistory = [
       ...chatHistory,
       {
@@ -272,6 +274,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   useEffect(() => {
     if (!autoSpeak) return;
     if (!chatHistory.length) return;
+    if (!hasSentMessage.current) return;
 
     const lastMessage = chatHistory[chatHistory.length - 1];
     if (!lastMessage) return;
