@@ -4,5 +4,3 @@ yarn-error.log
 !yarn.lock
 outputs
 scripts
-.env.development
-.env
