@@ -8,6 +8,14 @@ export default function NativeTTSMessage({ message }) {
     setSupported("speechSynthesis" in window);
   }, []);
 
+  // Keep state in sync with speechSynthesis state
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSpeaking(window.speechSynthesis.speaking);
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
   function endSpeechUtterance() {
     window.speechSynthesis?.cancel();
     setSpeaking(false);

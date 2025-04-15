@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, { PROMPT_INPUT_EVENT } from "./PromptInput";
@@ -28,6 +28,9 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
+  const [autoSpeak, setAutoSpeak] = useState(true);
+  const [speaking, setSpeaking] = useState(false);
+  const lastMessageRef = useRef(null);
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -261,6 +264,27 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     }
     handleWSS();
   }, [socketId]);
+
+  function endSpeechUtterance() {
+    window.speechSynthesis?.cancel();
+  }
+
+  useEffect(() => {
+    if (!autoSpeak) return;
+    if (!chatHistory.length) return;
+
+    const lastMessage = chatHistory[chatHistory.length - 1];
+    if (!lastMessage) return;
+    if (lastMessage.role !== "assistant") return;
+    if (!lastMessage.content || lastMessage.content === "") return;
+    if (!lastMessage.chatId) return;
+    if (lastMessage.uuid === lastMessageRef.current) return;
+
+    lastMessageRef.current = lastMessage.uuid;
+    const utterance = new SpeechSynthesisUtterance(lastMessage.content);
+    utterance.addEventListener("end", endSpeechUtterance);
+    window.speechSynthesis.speak(utterance);
+  }, [chatHistory, autoSpeak]);
 
   return (
     <div
