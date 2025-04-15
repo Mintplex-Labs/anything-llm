@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['3536-feat-new-chat-home-page'] # put your current branch to create a build. Core team only.
+    branches: ['buildx-bump'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
@@ -45,13 +45,13 @@ jobs:
         id: dockerhub
 
       # Uncomment this + add linux/arm64 to platforms if you want to build for arm64 as well
-      # - name: Set up QEMU
-      #   uses: docker/setup-qemu-action@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          version: v0.19.0
+          version: v0.22.0
       
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -78,8 +78,8 @@ jobs:
           push: true
           sbom: true
           provenance: mode=max
-          platforms: linux/amd64
-          # platforms: linux/amd64,linux/arm64
+          # platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
