@@ -35,7 +35,7 @@ const BLOCK_TYPES = {
 
 const BLOCK_INFO = {
   [BLOCK_TYPES.FLOW_INFO]: {
-    label: "Flow Infomation",
+    label: "Flow Information",
     icon: <Info className="w-5 h-5 text-theme-text-primary" />,
     description: "Basic flow information",
     defaultConfig: {
