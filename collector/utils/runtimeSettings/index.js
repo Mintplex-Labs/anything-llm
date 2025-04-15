@@ -10,6 +10,10 @@ const { reqBody } = require("../http");
  * We do this so that the collector and backend can share the same ENV variables
  * but only pass the relevant settings to the collector per-request and be able to
  * access them across the collector via a single instance of RuntimeSettings.
+ *
+ * TODO: We may want to set all options passed from backend to collector here,
+ * but for now - we are only setting the runtime settings specifically for backwards
+ * compatibility with existing CollectorApi usage.
  */
 class RuntimeSettings {
   static _instance = null;

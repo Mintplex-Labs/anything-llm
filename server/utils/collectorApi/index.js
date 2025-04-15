@@ -1,5 +1,14 @@
 const { EncryptionManager } = require("../EncryptionManager");
 
+/**
+ * @typedef {Object} CollectorOptions
+ * @property {string} whisperProvider - The provider to use for whisper, defaults to "local"
+ * @property {string} WhisperModelPref - The model to use for whisper if set.
+ * @property {string} openAiKey - The API key to use for OpenAI interfacing, mostly passed to OAI Whisper provider.
+ * @property {Object} ocr - The OCR options
+ * @property {{allowAnyIp: "true"|null|undefined}} runtimeSettings - The runtime settings that are passed to the collector. Persisted across requests.
+ */
+
 // When running locally will occupy the 0.0.0.0 hostname space but when deployed inside
 // of docker this endpoint is not exposed so it is only on the Docker instances internal network
 // so no additional security is needed on the endpoint directly. Auth is done however by the express
@@ -15,6 +24,10 @@ class CollectorApi {
     console.log(`\x1b[36m[CollectorApi]\x1b[0m ${text}`, ...args);
   }
 
+  /**
+   * Attach options to the request passed to the collector API
+   * @returns {CollectorOptions}
+   */
   #attachOptions() {
     return {
       whisperProvider: process.env.WHISPER_PROVIDER || "local",
@@ -48,6 +61,12 @@ class CollectorApi {
       });
   }
 
+  /**
+   * Process a document
+   * - Will append the options to the request body
+   * @param {string} filename - The filename of the document to process
+   * @returns {Promise<Object>} - The response from the collector API
+   */
   async processDocument(filename = "") {
     if (!filename) return false;
 
@@ -78,6 +97,12 @@ class CollectorApi {
       });
   }
 
+  /**
+   * Process a link
+   * - Will append the options to the request body
+   * @param {string} link - The link to process
+   * @returns {Promise<Object>} - The response from the collector API
+   */
   async processLink(link = "") {
     if (!link) return false;
 
@@ -104,6 +129,13 @@ class CollectorApi {
       });
   }
 
+  /**
+   * Process raw text as a document for the collector
+   * - Will append the options to the request body
+   * @param {string} textContent - The text to process
+   * @param {Object} metadata - The metadata to process
+   * @returns {Promise<Object>} - The response from the collector API
+   */
   async processRawText(textContent = "", metadata = {}) {
     const data = JSON.stringify({
       textContent,
@@ -158,6 +190,13 @@ class CollectorApi {
       });
   }
 
+  /**
+   * Get the content of a link only in a specific format
+   * - Will append the options to the request body
+   * @param {string} link - The link to get the content of
+   * @param {"text"|"html"} captureAs - The format to capture the content as
+   * @returns {Promise<Object>} - The response from the collector API
+   */
   async getLinkContent(link = "", captureAs = "text") {
     if (!link) return false;
 
