@@ -23,6 +23,9 @@ class CollectorApi {
       ocr: {
         langList: process.env.TARGET_OCR_LANG || "eng",
       },
+      runtimeSettings: {
+        allowAnyIp: process.env.COLLECTOR_ALLOW_ANY_IP ?? "false",
+      },
     };
   }
 
@@ -78,7 +81,7 @@ class CollectorApi {
   async processLink(link = "") {
     if (!link) return false;
 
-    const data = JSON.stringify({ link });
+    const data = JSON.stringify({ link, options: this.#attachOptions() });
     return await fetch(`${this.endpoint}/process-link`, {
       method: "POST",
       headers: {
@@ -102,7 +105,11 @@ class CollectorApi {
   }
 
   async processRawText(textContent = "", metadata = {}) {
-    const data = JSON.stringify({ textContent, metadata });
+    const data = JSON.stringify({
+      textContent,
+      metadata,
+      options: this.#attachOptions(),
+    });
     return await fetch(`${this.endpoint}/process-raw-text`, {
       method: "POST",
       headers: {
@@ -154,7 +161,11 @@ class CollectorApi {
   async getLinkContent(link = "", captureAs = "text") {
     if (!link) return false;
 
-    const data = JSON.stringify({ link, captureAs });
+    const data = JSON.stringify({
+      link,
+      captureAs,
+      options: this.#attachOptions(),
+    });
     return await fetch(`${this.endpoint}/util/get-link`, {
       method: "POST",
       headers: {

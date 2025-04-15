@@ -1,3 +1,4 @@
+const RuntimeSettings = require("../runtimeSettings");
 /**  ATTN: SECURITY RESEARCHERS
  * To Security researchers about to submit an SSRF report CVE - please don't.
  * We are aware that the code below is does not defend against any of the thousands of ways
@@ -13,6 +14,7 @@
 
 const VALID_PROTOCOLS = ["https:", "http:"];
 const INVALID_OCTETS = [192, 172, 10, 127];
+const runtimeSettings = new RuntimeSettings();
 
 /**
  * If an ip address is passed in the user is attempting to collector some internal service running on internal/private IP.
@@ -23,7 +25,7 @@ const INVALID_OCTETS = [192, 172, 10, 127];
  * @returns {boolean}
  */
 function isInvalidIp({ hostname }) {
-  if (!!process.env.COLLECTOR_ALLOW_ANY_IP) {
+  if (runtimeSettings.get("allowAnyIp")) {
     console.log(
       "\x1b[33mURL IP limitations bypassed via ENV - skipping checks!\x1b[0m"
     );
