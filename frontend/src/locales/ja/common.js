@@ -33,8 +33,7 @@ const TRANSLATIONS = {
       title: "データ処理とプライバシー",
       description:
         "個人データに関して透明性とコントロールを提供することをお約束します。",
-      settingsHint:
-        "これらの設定は、設定画面でいつでも再構成できます。",
+      settingsHint: "これらの設定は、設定画面でいつでも再構成できます。",
     },
     survey: {
       title: "AnythingLLMへようこそ",
@@ -127,7 +126,7 @@ const TRANSLATIONS = {
       "back-to-login": "ログイン画面に戻る",
     },
   },
-  
+
   welcomeMessage: {
     part1:
       "AnythingLLMへようこそ。AnythingLLMはMintplex LabsによるオープンソースのAIツールで、あらゆるものをトレーニングされたチャットボットに変換し、クエリやチャットが可能です。AnythingLLMはBYOK（Bring-Your-Own-Keys）ソフトウェアであり、このソフトウェアを使用するためのサブスクリプション、料金、または費用はありません。",
@@ -175,7 +174,8 @@ const TRANSLATIONS = {
     },
     message: {
       title: "提案されたチャットメッセージ",
-      description: "ワークスペースユーザーに提案されるメッセージをカスタマイズします。",
+      description:
+        "ワークスペースユーザーに提案されるメッセージをカスタマイズします。",
       add: "新しいメッセージを追加",
       save: "メッセージを保存",
       heading: "説明してください",
@@ -183,7 +183,8 @@ const TRANSLATIONS = {
     },
     pfp: {
       title: "アシスタントのプロフィール画像",
-      description: "このワークスペースのアシスタントのプロフィール画像をカスタマイズします。",
+      description:
+        "このワークスペースのアシスタントのプロフィール画像をカスタマイズします。",
       image: "ワークスペース画像",
       remove: "ワークスペース画像を削除",
     },
@@ -230,8 +231,7 @@ const TRANSLATIONS = {
     },
     history: {
       title: "チャット履歴",
-      "desc-start":
-        "応答の短期記憶に含まれる過去のチャット数。",
+      "desc-start": "応答の短期記憶に含まれる過去のチャット数。",
       recommend: "推奨値: 20",
       "desc-end":
         "45以上にすると、メッセージサイズによっては継続的なチャット失敗が発生する可能性があります。",
@@ -250,12 +250,10 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "LLM温度",
-      "desc-start":
-        "この設定はLLMの応答の創造性を制御します。",
+      "desc-start": "この設定はLLMの応答の創造性を制御します。",
       "desc-end":
         "数値が高いほど創造的になりますが、高すぎると一部のモデルでは一貫性のない応答になる場合があります。",
-      hint:
-        "多くのLLMには有効な値の範囲があります。詳細はLLMプロバイダーの情報を参照してください。",
+      hint: "多くのLLMには有効な値の範囲があります。詳細はLLMプロバイダーの情報を参照してください。",
     },
   },
 
@@ -282,10 +280,8 @@ const TRANSLATIONS = {
       resetting: "ベクターをクリア中...",
       confirm:
         "このワークスペースのベクターデータベースをリセットしようとしています。これにより、現在埋め込まれているすべてのベクターが削除されます。\n\n元のソースファイルはそのまま残ります。この操作は元に戻せません。",
-      error:
-        "ワークスペースのベクターデータベースをリセットできませんでした！",
-      success:
-        "ワークスペースのベクターデータベースがリセットされました！",
+      error: "ワークスペースのベクターデータベースをリセットできませんでした！",
+      success: "ワークスペースのベクターデータベースがリセットされました！",
     },
   },
 
@@ -391,7 +387,8 @@ const TRANSLATIONS = {
     },
     icons: {
       title: "カスタムフッターアイコン",
-      description: "サイドバー下部に表示されるフッターアイコンをカスタマイズします。",
+      description:
+        "サイドバー下部に表示されるフッターアイコンをカスタマイズします。",
       icon: "アイコン",
       link: "リンク",
     },
@@ -427,8 +424,7 @@ const TRANSLATIONS = {
       "RAMやCPUが限られたマシンでローカルのWhisperモデルを使用すると、メディアファイルの処理中にAnythingLLMが停止する可能性があります。",
     "warn-recommend":
       "少なくとも2GBのRAMが推奨され、ファイルサイズは10Mb未満であることをお勧めします。",
-    "warn-end":
-      "組み込みモデルは初回使用時に自動的にダウンロードされます。",
+    "warn-end": "組み込みモデルは初回使用時に自動的にダウンロードされます。",
   },
 
   embedding: {
@@ -455,15 +451,13 @@ const TRANSLATIONS = {
     "warn-end": "、既存のドキュメントには適用されません。",
     size: {
       title: "テキストチャンクサイズ",
-      description:
-        "1つのベクトルに含まれる最大の文字数です。",
+      description: "1つのベクトルに含まれる最大の文字数です。",
       recommend: "埋め込みモデルの最大長は",
     },
 
     overlap: {
       title: "テキストチャンクの重複",
-      description:
-        "隣接するテキストチャンク間に発生する最大の重複文字数です。",
+      description: "隣接するテキストチャンク間に発生する最大の重複文字数です。",
     },
   },
 
@@ -565,15 +559,13 @@ const TRANSLATIONS = {
       URL_explained: "収集したいGitHubリポジトリのURLです。",
       token: "GitHubアクセストークン",
       optional: "任意",
-      token_explained:
-        "レート制限を回避するためのアクセストークンです。",
+      token_explained: "レート制限を回避するためのアクセストークンです。",
       token_explained_start: "アクセストークンがない場合、",
       token_explained_link1: "パーソナルアクセストークン",
       token_explained_middle:
         "がないと、GitHub APIのレート制限により収集できるファイル数が制限される場合があります。 ",
       token_explained_link2: "一時的なアクセストークンを作成",
-      token_explained_end:
-        "してこの問題を回避できます。",
+      token_explained_end: "してこの問題を回避できます。",
       ignores: "無視するファイル",
       git_ignore:
         ".gitignore形式で収集時に無視したいファイルをリストしてください。エンターキーで各エントリを保存します。",
@@ -595,17 +587,14 @@ const TRANSLATIONS = {
       URL_explained: "収集したいGitLabリポジトリのURLです。",
       token: "GitLabアクセストークン",
       optional: "任意",
-      token_explained:
-        "レート制限を回避するためのアクセストークンです。",
-      token_description:
-        "GitLab APIから取得する追加エンティティを選択します。",
+      token_explained: "レート制限を回避するためのアクセストークンです。",
+      token_description: "GitLab APIから取得する追加エンティティを選択します。",
       token_explained_start: "アクセストークンがない場合、",
       token_explained_link1: "パーソナルアクセストークン",
       token_explained_middle:
         "がないと、GitLab APIのレート制限により収集できるファイル数が制限される場合があります。 ",
       token_explained_link2: "一時的なアクセストークンを作成",
-      token_explained_end:
-        "してこの問題を回避できます。",
+      token_explained_end: "してこの問題を回避できます。",
       fetch_issues: "Issueをドキュメントとして取得",
       ignores: "無視するファイル",
       git_ignore:
@@ -622,8 +611,7 @@ const TRANSLATIONS = {
     },
     youtube: {
       name: "YouTube文字起こし",
-      description:
-        "YouTube動画の文字起こしをリンクからインポートできます。",
+      description: "YouTube動画の文字起こしをリンクからインポートできます。",
       URL: "YouTube動画URL",
       URL_explained_start:
         "文字起こしを取得したいYouTube動画のURLを入力してください。動画には",
@@ -632,8 +620,7 @@ const TRANSLATIONS = {
       task_explained:
         "完了後、文字起こしがドキュメントピッカーからワークスペースに埋め込めるようになります。",
       language: "文字起こしの言語",
-      language_explained:
-        "取得したい文字起こしの言語を選択してください。",
+      language_explained: "取得したい文字起こしの言語を選択してください。",
       loading_languages: "-- 利用可能な言語を読み込み中 --",
     },
     "website-depth": {
@@ -642,8 +629,7 @@ const TRANSLATIONS = {
       URL: "ウェブサイトURL",
       URL_explained: "取得したいウェブサイトのURLです。",
       depth: "クロール深度",
-      depth_explained:
-        "元のURLからたどる子リンクの数です。",
+      depth_explained: "元のURLからたどる子リンクの数です。",
       max_pages: "最大ページ数",
       max_pages_explained: "取得する最大リンク数です。",
       task_explained:
@@ -738,8 +724,7 @@ const TRANSLATIONS = {
         "AnythingLLMでドキュメントを<b>ウォッチ</b>すると、元のソースから定期的に内容が<i>自動的に</i>同期されます。管理しているすべてのワークスペースで内容が自動更新されます。",
       watch_explained_block2:
         "この機能は現在オンラインベースのコンテンツのみ対応しており、手動アップロードしたドキュメントには利用できません。",
-      watch_explained_block3_start:
-        "ウォッチしているドキュメントの管理は",
+      watch_explained_block3_start: "ウォッチしているドキュメントの管理は",
       watch_explained_block3_link: "ファイルマネージャー",
       watch_explained_block3_end: "管理画面から行えます。",
       accept: "わかりました",
