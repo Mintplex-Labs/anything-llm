@@ -52,21 +52,29 @@ class OpenRouterLLM {
   }
 
   /**
-   * Enriches the token by replacing citation placeholders with actual links.
-   * @param {string} token - The token text.
-   * @param {string[]} citations - An array of citation URLs.
-   * @returns {string} - The enriched token text.
+   * Returns true if the model is a Perplexity model.
+   * OpenRouter has support for a lot of models and we have some special handling for Perplexity models
+   * that support in-line citations.
+   * @returns {boolean}
    */
-  enrichToken(token, citations) {
-    if (Array.isArray(citations) && citations.length !== 0) {
-      return token.replace(/\[(\d+)\]/g, (match, index) => {
-        const citationIndex = parseInt(index) - 1;
-        return citations[citationIndex]
-          ? `[[${index}](${citations[citationIndex]})]`
-          : match;
-      });
-    }
-    return token;
+  get isPerplexityModel() {
+    return this.model.startsWith("perplexity/");
+  }
+
+  /**
+   * Generic formatting of a token for the following use cases:
+   * - Perplexity models that return inline citations in the token text
+   * @param {{token: string, citations: string[]}} options - The token text and citations.
+   * @returns {string} - The formatted token text.
+   */
+  enrichToken({ token, citations = [] }) {
+    if (!Array.isArray(citations) || citations.length === 0) return token;
+    return token.replace(/\[(\d+)\]/g, (match, index) => {
+      const citationIndex = parseInt(index) - 1;
+      return citations[citationIndex]
+        ? `[[${index}](${citations[citationIndex]})]`
+        : match;
+    });
   }
 
   log(text, ...args) {
@@ -302,7 +310,9 @@ class OpenRouterLLM {
       let fullText = "";
       let reasoningText = "";
       let lastChunkTime = null; // null when first token is still not received.
-      let citations = []; // Array of links
+      let pplxCitations = []; // Array of inline citations for Perplexity models (if applicable)
+      let isPerplexity = this.isPerplexityModel;
+      console.log(isPerplexity);
 
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
@@ -357,16 +367,22 @@ class OpenRouterLLM {
           const reasoningToken = message?.delta?.reasoning;
           lastChunkTime = Number(new Date());
 
-          // Capture citations if present
-          if (Array.isArray(chunk.citations) && chunk.citations.length !== 0) {
-            citations = chunk.citations;
-          }
+          // Some models will return citations (e.g. Perplexity) - we should preserve them for inline citations if applicable.
+          if (
+            isPerplexity &&
+            Array.isArray(chunk?.citations) &&
+            chunk?.citations?.length !== 0
+          )
+            pplxCitations.push(...chunk.citations);
 
           // Reasoning models will always return the reasoning text before the token text.
           // can be null or ''
           if (reasoningToken) {
-            // Enrich token with citations
-            const enrichedReasoningToken = this.enrichToken(reasoningToken, citations);
+            const formattedReasoningToken = this.enrichToken({
+              token: reasoningToken,
+              citations: pplxCitations,
+            });
+
             // If the reasoning text is empty (''), we need to initialize it
             // and send the first chunk of reasoning text.
             if (reasoningText.length === 0) {
@@ -374,11 +390,11 @@ class OpenRouterLLM {
                 uuid,
                 sources: [],
                 type: "textResponseChunk",
-                textResponse: `<think>${enrichedReasoningToken}`,
+                textResponse: `<think>${formattedReasoningToken}`,
                 close: false,
                 error: false,
               });
-              reasoningText += `<think>${enrichedReasoningToken}`;
+              reasoningText += `<think>${formattedReasoningToken}`;
               continue;
             } else {
               // If the reasoning text is not empty, we need to append the reasoning text
@@ -387,11 +403,11 @@ class OpenRouterLLM {
                 uuid,
                 sources: [],
                 type: "textResponseChunk",
-                textResponse: enrichedReasoningToken,
+                textResponse: formattedReasoningToken,
                 close: false,
                 error: false,
               });
-              reasoningText += enrichedReasoningToken;
+              reasoningText += formattedReasoningToken;
             }
           }
 
@@ -411,39 +427,22 @@ class OpenRouterLLM {
           }
 
           if (token) {
-            // Enrich token with citations
-            const enrichedToken = this.enrichToken(token, citations);
-
-            fullText += enrichedToken;
-
+            const formattedToken = this.enrichToken({
+              token,
+              citations: pplxCitations,
+            });
+            fullText += formattedToken;
             writeResponseChunk(response, {
               uuid,
               sources: [],
               type: "textResponseChunk",
-              textResponse: enrichedToken,
+              textResponse: formattedToken,
               close: false,
               error: false,
             });
           }
 
           if (message.finish_reason !== null) {
-            if (citations) { // append nicely formatted citations to the response text
-              const citationsText = '\n\n'
-                .concat(citations.map((url, index) => `${index + 1} - [${url}](${url})`)
-                .join('\n\n'));
-
-              fullText += citationsText;
-
-              writeResponseChunk(response, {
-                uuid,
-                sources: [],
-                type: "textResponseChunk",
-                textResponse: citationsText,
-                close: false,
-                error: false,
-              });
-            }
-
             writeResponseChunk(response, {
               uuid,
               sources,
