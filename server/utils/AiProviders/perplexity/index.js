@@ -139,16 +139,20 @@ class PerplexityLLM {
     return measuredStreamRequest;
   }
 
+  /**
+   * Enrich a token with citations if available for in-line citations.
+   * @param {string} token - The token to enrich.
+   * @param {Array} citations - The citations to enrich the token with.
+   * @returns {string} The enriched token.
+   */
   enrichToken(token, citations) {
-    if (Array.isArray(citations) && citations.length !== 0) {
-      return token.replace(/\[(\d+)\]/g, (match, index) => {
-        const citationIndex = parseInt(index) - 1;
-        return citations[citationIndex]
-          ? `[[${index}](${citations[citationIndex]})]`
-          : match;
-      });
-    }
-    return token;
+    if (!Array.isArray(citations) || citations.length === 0) return token;
+    return token.replace(/\[(\d+)\]/g, (match, index) => {
+      const citationIndex = parseInt(index) - 1;
+      return citations[citationIndex]
+        ? `[[${index}](${citations[citationIndex]})]`
+        : match;
+    });
   }
 
   handleStream(response, stream, responseProps) {
