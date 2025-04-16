@@ -11,6 +11,7 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
+const { checkChunkRelevance } = require("../helpers/chat/relevanceCheck");
 
 const VALID_CHAT_MODE = ["chat", "query"];
 
@@ -177,6 +178,37 @@ async function streamChatWithWorkspace(
   // TLDR; reduces GitHub issues for "LLM citing document that has no answer in it" while keep answers highly accurate.
   contextTexts = [...contextTexts, ...filledSources.contextTexts];
   sources = [...sources, ...vectorSearchResults.sources];
+
+  // After retrieving context texts and sources, add relevance check
+  if (contextTexts.length > 0) {
+    try {
+      console.log("\n[Semantic Search] Query:", message);
+      console.log(`[Semantic Search] Found ${contextTexts.length} chunks:`);
+      contextTexts.forEach((chunk, index) => {
+        console.log(`\n[Semantic Search] Chunk ${index + 1}:`);
+        console.log(chunk);
+      });
+
+      // Perform relevance check on the chunks
+      const relevantChunks = await checkChunkRelevance(message, contextTexts, workspace);
+
+      // Update context texts and sources to only include relevant chunks
+      if (relevantChunks.length < contextTexts.length) {
+        const relevantIndices = new Set();
+        contextTexts.forEach((chunk, index) => {
+          if (relevantChunks.includes(chunk)) {
+            relevantIndices.add(index);
+          }
+        });
+
+        contextTexts = relevantChunks;
+        sources = sources.filter((_, index) => relevantIndices.has(index));
+      }
+    } catch (error) {
+      console.error("Error during relevance check:", error);
+      // Continue with original chunks if relevance check fails
+    }
+  }
 
   // If in query mode and no context chunks are found from search, backfill, or pins -  do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early
