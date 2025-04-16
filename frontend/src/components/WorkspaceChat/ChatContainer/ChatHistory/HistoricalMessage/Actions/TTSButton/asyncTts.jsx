@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { SpeakerHigh, PauseCircle, CircleNotch } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
+import { TTS_EVENTS } from "./useTTS";
 
 export default function AsyncTTSMessage({ slug, chatId }) {
   const playerRef = useRef(null);
@@ -18,6 +19,7 @@ export default function AsyncTTSMessage({ slug, chatId }) {
     try {
       if (!audioSrc) {
         setLoading(true);
+        console.log("slug", slug, "chatId", chatId);
         Workspace.ttsMessage(slug, chatId)
           .then((audioBlob) => {
             if (!audioBlob)
@@ -49,7 +51,41 @@ export default function AsyncTTSMessage({ slug, chatId }) {
       });
     }
     setupPlayer();
-  }, []);
+
+    // Add event listeners for TTS events
+    const handlePlaying = (event) => {
+      if (event.detail.chatId === chatId && event.detail.slug === slug) {
+        setSpeaking(true);
+      }
+    };
+
+    const handleStopped = (event) => {
+      if (event.detail.chatId === chatId && event.detail.slug === slug) {
+        setSpeaking(false);
+        if (playerRef.current) {
+          playerRef.current.pause();
+          playerRef.current.currentTime = 0;
+        }
+      }
+    };
+
+    const handleLoading = (event) => {
+      console.log("LOADING EVENT", event.detail.chatId, event.detail.slug);
+      if (event.detail.chatId === chatId && event.detail.slug === slug) {
+        setLoading(true);
+      }
+    };
+
+    window.addEventListener(TTS_EVENTS.PLAYING, handlePlaying);
+    window.addEventListener(TTS_EVENTS.STOPPED, handleStopped);
+    window.addEventListener(TTS_EVENTS.LOADING, handleLoading);
+
+    return () => {
+      window.removeEventListener(TTS_EVENTS.PLAYING, handlePlaying);
+      window.removeEventListener(TTS_EVENTS.STOPPED, handleStopped);
+      window.removeEventListener(TTS_EVENTS.LOADING, handleLoading);
+    };
+  }, [chatId, slug]);
 
   if (!chatId) return null;
   return (
@@ -85,3 +121,4 @@ export default function AsyncTTSMessage({ slug, chatId }) {
     </div>
   );
 }
+
