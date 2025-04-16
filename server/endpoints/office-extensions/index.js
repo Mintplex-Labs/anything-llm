@@ -4,10 +4,10 @@ const officeExtensionsFolder =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/plugins/office-extensions`)
     : path.resolve(
-        process.env.STORAGE_DIR ??
-          path.resolve(__dirname, `../../storage/plugins/office-extensions`),
-        `office-extensions`
-      );
+      process.env.STORAGE_DIR ?? path.resolve(__dirname, `../../storage`),
+      "plugins",
+      "office-extensions"
+    );
 
 function log(text, ...args) {
   console.log(`\x1b[34m[OfficeExtensionsLoader]\x1b[0m`, text, ...args);
