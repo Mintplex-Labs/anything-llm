@@ -19,10 +19,6 @@ class GitHubRepoLoader {
   constructor(args = {}) {
     this.ready = false;
     this.repo = this.#processRepoUrl(args?.repo);
-    console.log({
-      arg: args?.repo,
-      repo: this.repo,
-    });
     this.branch = args?.branch;
     this.accessToken = args?.accessToken || null;
     this.ignorePaths = args?.ignorePaths || [];
