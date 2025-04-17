@@ -58,7 +58,8 @@ export function AvailableAgents({
    * automatically when the component mounts.
    */
   useEffect(() => {
-    if (searchParams.get("action") === "agent" && !showing) handleAgentClick();
+    if (searchParams.get("action") === "set-agent-chat" && !showing)
+      handleAgentClick();
   }, [promptRef.current]);
 
   useEffect(() => {

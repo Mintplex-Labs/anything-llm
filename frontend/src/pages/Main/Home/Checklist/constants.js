@@ -120,7 +120,9 @@ export const CHECKLIST_ITEMS = [
         return false;
       }
       navigate(
-        `${paths.workspace.settings.chatSettings(workspaces[0].slug)}?action=system-prompts`
+        paths.workspace.settings.chatSettings(workspaces[0].slug, {
+          search: { action: "focus-system-prompt" },
+        })
       );
       return true;
     },
@@ -147,7 +149,9 @@ export const CHECKLIST_ITEMS = [
         return false;
       }
       navigate(
-        `${paths.workspace.chat(workspaces[0].slug)}?action=slash-commands`
+        paths.workspace.chat(workspaces[0].slug, {
+          search: { action: "open-new-slash-command-modal" },
+        })
       );
       return true;
     },

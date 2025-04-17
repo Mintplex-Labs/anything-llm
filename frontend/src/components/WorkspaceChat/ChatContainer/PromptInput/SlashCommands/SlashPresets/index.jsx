@@ -35,7 +35,10 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
    * automatically when the component mounts.
    */
   useEffect(() => {
-    if (searchParams.get("action") === "slash-commands" && !isAddModalOpen)
+    if (
+      searchParams.get("action") === "open-new-slash-command-modal" &&
+      !isAddModalOpen
+    )
       openAddModal();
   }, []);
 

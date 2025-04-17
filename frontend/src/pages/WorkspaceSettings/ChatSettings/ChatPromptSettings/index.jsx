@@ -23,9 +23,8 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   }, []);
 
   useEffect(() => {
-    if (searchParams.get("action") === "system-prompts") {
+    if (searchParams.get("action") === "focus-system-prompt")
       setIsEditing(true);
-    }
   }, [searchParams]);
 
   useEffect(() => {
