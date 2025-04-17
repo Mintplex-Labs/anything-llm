@@ -6,6 +6,7 @@ import { useModal } from "@/hooks/useModal";
 import System from "@/models/system";
 import { DotsThree, Plus } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
+import { useParams } from "react-router-dom";
 
 export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
 export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
@@ -22,6 +23,7 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
   } = useModal();
   const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
+  const { param } = useParams();
 
   useEffect(() => {
     fetchPresets();
@@ -29,12 +31,11 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
 
   /*
    * @checklist-item
-   * If the URL has the #slash-commands hash, open the add modal for the user
+   * If the URL has the slash-commands param, open the add modal for the user
    * automatically when the component mounts.
    */
   useEffect(() => {
-    if (window.location.hash === "#slash-commands" && !isAddModalOpen)
-      openAddModal();
+    if (param === "slash-commands" && !isAddModalOpen) openAddModal();
   }, []);
 
   if (isActiveAgentSession) return null;

@@ -9,8 +9,7 @@ export default function ExploreFeatures() {
     const workspaces = await Workspace.all();
     if (workspaces.length > 0) {
       const firstWorkspace = workspaces[0];
-      navigate(paths.workspace.chat(firstWorkspace.slug));
-      window.location.hash = "#agent";
+      navigate(`${paths.workspace.chat(firstWorkspace.slug)}/agent`);
     }
   };
 
@@ -19,8 +18,7 @@ export default function ExploreFeatures() {
     const workspaces = await Workspace.all();
     if (workspaces.length > 0) {
       const firstWorkspace = workspaces[0];
-      navigate(paths.workspace.chat(firstWorkspace.slug));
-      window.location.hash = "#slash-commands";
+      navigate(`${paths.workspace.chat(firstWorkspace.slug)}/slash-commands`);
     }
   };
 
@@ -32,8 +30,9 @@ export default function ExploreFeatures() {
     const workspaces = await Workspace.all();
     if (workspaces.length > 0) {
       const firstWorkspace = workspaces[0];
-      navigate(paths.workspace.settings.chatSettings(firstWorkspace.slug));
-      window.location.hash = "#system-prompts";
+      navigate(
+        `${paths.workspace.settings.chatSettings(firstWorkspace.slug)}/system-prompts`
+      );
     }
   };
 

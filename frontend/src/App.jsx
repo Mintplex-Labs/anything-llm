@@ -96,13 +96,20 @@ export default function App() {
                     path="/sso/simple"
                     element={<SimpleSSOPassthrough />}
                   />
-
                   <Route
                     path="/workspace/:slug/settings/:tab"
                     element={<ManagerRoute Component={WorkspaceSettings} />}
                   />
                   <Route
                     path="/workspace/:slug"
+                    element={<PrivateRoute Component={WorkspaceChat} />}
+                  />
+                  <Route
+                    path="/workspace/:slug/settings/:tab/:param"
+                    element={<ManagerRoute Component={WorkspaceSettings} />}
+                  />
+                  <Route
+                    path="/workspace/:slug/:param"
                     element={<PrivateRoute Component={WorkspaceChat} />}
                   />
                   <Route
