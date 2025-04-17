@@ -105,14 +105,6 @@ export default function App() {
                     element={<PrivateRoute Component={WorkspaceChat} />}
                   />
                   <Route
-                    path="/workspace/:slug/settings/:tab/:param"
-                    element={<ManagerRoute Component={WorkspaceSettings} />}
-                  />
-                  <Route
-                    path="/workspace/:slug/:param"
-                    element={<PrivateRoute Component={WorkspaceChat} />}
-                  />
-                  <Route
                     path="/workspace/:slug/t/:threadSlug"
                     element={<PrivateRoute Component={WorkspaceChat} />}
                   />

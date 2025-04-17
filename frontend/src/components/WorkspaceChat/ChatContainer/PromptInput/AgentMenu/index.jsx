@@ -3,7 +3,7 @@ import { Tooltip } from "react-tooltip";
 import { At } from "@phosphor-icons/react";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 export default function AvailableAgentsButton({ showing, setShowAgents }) {
   const { t } = useTranslation();
@@ -50,7 +50,7 @@ export function AvailableAgents({
 }) {
   const formRef = useRef(null);
   const agentSessionActive = useIsAgentSessionActive();
-  const { param } = useParams();
+  const [searchParams] = useSearchParams();
 
   /*
    * @checklist-item
@@ -58,7 +58,7 @@ export function AvailableAgents({
    * automatically when the component mounts.
    */
   useEffect(() => {
-    if (param === "agent" && !showing) handleAgentClick();
+    if (searchParams.get("action") === "agent" && !showing) handleAgentClick();
   }, [promptRef.current]);
 
   useEffect(() => {

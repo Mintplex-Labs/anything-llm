@@ -120,7 +120,7 @@ export const CHECKLIST_ITEMS = [
         return false;
       }
       navigate(
-        `${paths.workspace.settings.chatSettings(workspaces[0].slug)}/system-prompts`
+        `${paths.workspace.settings.chatSettings(workspaces[0].slug)}?action=system-prompts`
       );
       return true;
     },
@@ -146,7 +146,9 @@ export const CHECKLIST_ITEMS = [
         showNewWsModal();
         return false;
       }
-      navigate(`${paths.workspace.chat(workspaces[0].slug)}/slash-commands`);
+      navigate(
+        `${paths.workspace.chat(workspaces[0].slug)}?action=slash-commands`
+      );
       return true;
     },
     icon: SlashCommandIcon,

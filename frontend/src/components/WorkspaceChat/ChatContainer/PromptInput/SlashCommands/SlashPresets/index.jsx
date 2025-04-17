@@ -6,7 +6,7 @@ import { useModal } from "@/hooks/useModal";
 import System from "@/models/system";
 import { DotsThree, Plus } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
 export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
@@ -23,7 +23,7 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
   } = useModal();
   const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
-  const { param } = useParams();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     fetchPresets();
@@ -35,7 +35,8 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
    * automatically when the component mounts.
    */
   useEffect(() => {
-    if (param === "slash-commands" && !isAddModalOpen) openAddModal();
+    if (searchParams.get("action") === "slash-commands" && !isAddModalOpen)
+      openAddModal();
   }, []);
 
   if (isActiveAgentSession) return null;
