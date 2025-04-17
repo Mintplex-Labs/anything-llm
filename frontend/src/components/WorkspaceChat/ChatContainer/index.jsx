@@ -19,7 +19,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
-import { useTTS } from "./ChatHistory/HistoricalMessage/Actions/TTSButton/useTTS";
+import { useTTS } from "@/contexts/TTSProvider";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -30,11 +30,9 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
   const [autoSpeak, setAutoSpeak] = useState(true);
-  const [speaking, setSpeaking] = useState(false);
   const lastMessageRef = useRef(null);
   const hasSentMessage = useRef(false);
-
-  const { speak, stop } = useTTS();
+  const { speak } = useTTS();
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -270,10 +268,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     handleWSS();
   }, [socketId]);
 
-  function endSpeechUtterance() {
-    window.speechSynthesis?.cancel();
-  }
-
+  // Auto-speak last message if enabled
   useEffect(() => {
     if (!autoSpeak) return;
     if (!chatHistory.length) return;

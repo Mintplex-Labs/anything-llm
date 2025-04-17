@@ -1,25 +1,13 @@
-import { useEffect, useState } from "react";
+import React from "react";
 import NativeTTSMessage from "./native";
 import AsyncTTSMessage from "./asyncTts";
 import PiperTTSMessage from "./piperTTS";
-import System from "@/models/system";
+import { useTTS } from "@/contexts/TTSProvider";
 
 export default function TTSMessage({ slug, chatId, message }) {
-  const [settings, setSettings] = useState({});
-  const [provider, setProvider] = useState("native");
-  const [loading, setLoading] = useState(true);
+  const { provider, settings } = useTTS();
 
-  useEffect(() => {
-    async function getSettings() {
-      const _settings = await System.keys();
-      setProvider(_settings?.TextToSpeechProvider ?? "native");
-      setSettings(_settings);
-      setLoading(false);
-    }
-    getSettings();
-  }, []);
-
-  if (!chatId || loading) return null;
+  if (!chatId) return null;
 
   switch (provider) {
     case "openai":
