@@ -96,6 +96,7 @@ export default function App() {
                     path="/sso/simple"
                     element={<SimpleSSOPassthrough />}
                   />
+
                   <Route
                     path="/workspace/:slug/settings/:tab"
                     element={<ManagerRoute Component={WorkspaceSettings} />}
