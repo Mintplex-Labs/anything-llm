@@ -958,6 +958,9 @@ function dumpENV() {
 
     // OCR Language Support
     "TARGET_OCR_LANG",
+
+    // Collector API common ENV - allows bypassing URL validation checks
+    "COLLECTOR_ALLOW_ANY_IP",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

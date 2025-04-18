@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['na'] # put your current branch to create a build. Core team only.
+    branches: ['3625-bypass-ip-check'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
