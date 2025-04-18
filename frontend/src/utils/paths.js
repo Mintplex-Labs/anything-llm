@@ -125,8 +125,11 @@ export default {
     security: () => {
       return "/settings/security";
     },
-    appearance: () => {
-      return "/settings/appearance";
+    interface: () => {
+      return "/settings/interface";
+    },
+    branding: () => {
+      return "/settings/branding";
     },
     agentSkills: () => {
       return "/settings/agents";

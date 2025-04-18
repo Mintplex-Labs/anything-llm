@@ -1,13 +1,17 @@
 import { useTheme } from "@/hooks/useTheme";
+import { useTranslation } from "react-i18next";
 
 export default function ThemePreference() {
+  const { t } = useTranslation();
   const { theme, setTheme, availableThemes } = useTheme();
 
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
-      <h2 className="text-sm leading-6 font-semibold text-white">Theme</h2>
+      <h2 className="text-sm leading-6 font-semibold text-white">
+        {t("customization.items.theme.title")}
+      </h2>
       <p className="text-xs text-white/60">
-        Select your preferred theme for the application.
+        {t("customization.items.theme.description")}
       </p>
       <div className="flex items-center gap-x-4">
         <select

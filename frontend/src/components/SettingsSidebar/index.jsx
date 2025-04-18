@@ -319,10 +319,21 @@ const SidebarOptions = ({ user = null, t }) => (
         <Option
           btnText={t("settings.customization")}
           icon={<PencilSimpleLine className="h-5 w-5 flex-shrink-0" />}
-          href={paths.settings.appearance()}
           user={user}
-          flex={true}
-          roles={["admin", "manager"]}
+          childOptions={[
+            {
+              btnText: t("settings.interface"),
+              href: paths.settings.interface(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
+            {
+              btnText: t("settings.branding"),
+              href: paths.settings.branding(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
+          ]}
         />
         <Option
           btnText={t("settings.tools")}
