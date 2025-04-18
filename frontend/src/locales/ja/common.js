@@ -1,4 +1,4 @@
-// @ts-nocheck
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -70,8 +70,6 @@ const TRANSLATIONS = {
     yes: "はい",
     no: "いいえ",
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "インスタンス設定",
     system: "一般設定",
@@ -100,9 +98,9 @@ const TRANSLATIONS = {
     "experimental-features": "実験的機能",
     contact: "サポートに連絡",
     "browser-extension": "ブラウザ拡張",
+    interface: null,
+    branding: null,
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "ようこそ",
@@ -126,7 +124,6 @@ const TRANSLATIONS = {
       "back-to-login": "ログイン画面に戻る",
     },
   },
-
   welcomeMessage: {
     part1:
       "AnythingLLMへようこそ。AnythingLLMはMintplex LabsによるオープンソースのAIツールで、あらゆるものをトレーニングされたチャットボットに変換し、クエリやチャットが可能です。AnythingLLMはBYOK（Bring-Your-Own-Keys）ソフトウェアであり、このソフトウェアを使用するためのサブスクリプション、料金、または費用はありません。",
@@ -148,13 +145,10 @@ const TRANSLATIONS = {
     starOnGitHub: "GitHubでスターを付ける",
     contact: "Mintplex Labsに連絡",
   },
-
   "new-workspace": {
     title: "新しいワークスペース",
     placeholder: "マイワークスペース",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "一般設定",
     chat: "チャット設定",
@@ -162,8 +156,6 @@ const TRANSLATIONS = {
     members: "メンバー",
     agent: "エージェント構成",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "ベクター数",
@@ -199,8 +191,6 @@ const TRANSLATIONS = {
         "ワークスペース。この操作により、ベクターデータベース内のすべてのベクター埋め込みが削除されます。\n\n元のソースファイルはそのまま残ります。この操作は元に戻せません。",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "ワークスペースLLMプロバイダー",
@@ -256,8 +246,6 @@ const TRANSLATIONS = {
       hint: "多くのLLMには有効な値の範囲があります。詳細はLLMプロバイダーの情報を参照してください。",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "ベクターデータベース識別子",
     snippets: {
@@ -284,8 +272,6 @@ const TRANSLATIONS = {
       success: "ワークスペースのベクターデータベースがリセットされました！",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "ツール呼び出しに対応していないLLMの性能は、モデルの能力や精度に大きく依存します。一部の機能が制限されたり、正しく動作しない場合があります。",
@@ -305,7 +291,6 @@ const TRANSLATIONS = {
         "このワークスペースの@agentエージェントで使用するLLMモデルを指定します。",
       wait: "-- モデルを読み込み中 --",
     },
-
     skill: {
       title: "デフォルトエージェントのスキル",
       description:
@@ -344,8 +329,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "ワークスペースチャット履歴",
     description:
@@ -360,49 +343,6 @@ const TRANSLATIONS = {
       at: "送信日時",
     },
   },
-
-  // Appearance
-  appearance: {
-    title: "外観",
-    description: "プラットフォームの外観設定をカスタマイズします。",
-    auto_submit: {
-      title: null,
-      description: null,
-    },
-    auto_speak: {
-      title: null,
-      description: null,
-    },
-    logo: {
-      title: "ロゴのカスタマイズ",
-      description:
-        "独自のロゴをアップロードして、チャットボットの個性を表現しましょう。",
-      add: "カスタムロゴを追加",
-      recommended: "推奨サイズ: 800 x 200",
-      remove: "削除",
-      replace: "差し替え",
-    },
-    message: {
-      title: "メッセージのカスタマイズ",
-      description: "ユーザーに表示される自動メッセージをカスタマイズします。",
-      new: "新規",
-      system: "システム",
-      user: "ユーザー",
-      message: "メッセージ",
-      assistant: "AnythingLLMチャットアシスタント",
-      "double-click": "ダブルクリックで編集",
-      save: "メッセージを保存",
-    },
-    icons: {
-      title: "カスタムフッターアイコン",
-      description:
-        "サイドバー下部に表示されるフッターアイコンをカスタマイズします。",
-      icon: "アイコン",
-      link: "リンク",
-    },
-  },
-
-  // API Keys
   api: {
     title: "APIキー",
     description:
@@ -415,14 +355,12 @@ const TRANSLATIONS = {
       created: "作成日",
     },
   },
-
   llm: {
     title: "LLMの設定",
     description:
       "これは、お好みのLLMチャットおよび埋め込みプロバイダー用の認証情報と設定です。これらのキーが最新かつ正確でない場合、AnythingLLMは正しく動作しません。",
     provider: "LLMプロバイダー",
   },
-
   transcription: {
     title: "文字起こしモデルの設定",
     description:
@@ -434,7 +372,6 @@ const TRANSLATIONS = {
       "少なくとも2GBのRAMが推奨され、ファイルサイズは10Mb未満であることをお勧めします。",
     "warn-end": "組み込みモデルは初回使用時に自動的にダウンロードされます。",
   },
-
   embedding: {
     title: "埋め込み設定",
     "desc-start":
@@ -447,7 +384,6 @@ const TRANSLATIONS = {
         "AnythingLLMのネイティブ埋め込みエンジンを使用する場合、特に設定は必要ありません。",
     },
   },
-
   text: {
     title: "テキスト分割とチャンク化の設定",
     "desc-start":
@@ -462,14 +398,11 @@ const TRANSLATIONS = {
       description: "1つのベクトルに含まれる最大の文字数です。",
       recommend: "埋め込みモデルの最大長は",
     },
-
     overlap: {
       title: "テキストチャンクの重複",
       description: "隣接するテキストチャンク間に発生する最大の重複文字数です。",
     },
   },
-
-  // Vector Database
   vector: {
     title: "ベクターデータベース設定",
     description:
@@ -479,8 +412,6 @@ const TRANSLATIONS = {
       description: "LanceDBの場合、特に設定は必要ありません。",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "埋め込みチャットウィジェット",
     description:
@@ -492,7 +423,6 @@ const TRANSLATIONS = {
       Active: "有効なドメイン",
     },
   },
-
   "embed-chats": {
     title: "埋め込みチャット履歴",
     export: "エクスポート",
@@ -506,7 +436,6 @@ const TRANSLATIONS = {
       at: "送信日時",
     },
   },
-
   multi: {
     title: "マルチユーザーモード",
     description:
@@ -531,8 +460,6 @@ const TRANSLATIONS = {
       password: "インスタンスパスワード",
     },
   },
-
-  // Event Logs
   event: {
     title: "イベントログ",
     description:
@@ -544,8 +471,6 @@ const TRANSLATIONS = {
       occurred: "発生日時",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "プライバシーとデータ処理",
     description:
@@ -555,7 +480,6 @@ const TRANSLATIONS = {
     vector: "ベクターデータベース",
     anonymous: "匿名テレメトリが有効",
   },
-
   connectors: {
     "search-placeholder": "データコネクタを検索",
     "no-connectors": "データコネクタが見つかりません。",
@@ -671,7 +595,6 @@ const TRANSLATIONS = {
       task_explained:
         "完了後、ページ内容がドキュメントピッカーからワークスペースに埋め込めるようになります。",
     },
-
     manage: {
       documents: "ドキュメント",
       "data-connectors": "データコネクタ",
@@ -738,7 +661,6 @@ const TRANSLATIONS = {
       accept: "わかりました",
     },
   },
-
   chat_window: {
     welcome: "新しいワークスペースへようこそ。",
     get_started: "まずはじめに、",
@@ -754,7 +676,6 @@ const TRANSLATIONS = {
     microphone: "プロンプトを音声入力",
     send: "ワークスペースにプロンプトメッセージを送信",
   },
-
   profile_settings: {
     edit_account: "アカウントを編集",
     profile_picture: "プロフィール画像",
@@ -768,6 +689,79 @@ const TRANSLATIONS = {
     update_account: "アカウントを更新",
     theme: "テーマ設定",
     language: "優先言語",
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
   },
 };
 
