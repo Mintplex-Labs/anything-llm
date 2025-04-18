@@ -625,6 +625,18 @@ const KEY_MAPPING = {
     envKey: "PPIO_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // Kluster Settings
+  KlusterApiKey: {
+    envKey: "KLUSTER_API_KEY",
+    checks: [isNotEmpty],
+  },
+  KlusterMaxTokens: {
+    envKey: "KLUSTER_MAX_TOKENS",
+    checks: [nonZero],
+  },
+
+  kluster: null, // Remove the old format
 };
 
 function isNotEmpty(input = "") {
@@ -732,6 +744,7 @@ function supportedLLM(input = "") {
     "xai",
     "nvidia-nim",
     "ppio",
+    "kluster",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
