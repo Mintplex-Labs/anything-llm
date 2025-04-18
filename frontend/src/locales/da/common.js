@@ -99,6 +99,8 @@ const TRANSLATIONS = {
     contact: "Kontakt support",
     "browser-extension": "Browserudvidelse",
     "system-prompt-variables": null,
+    interface: null,
+    branding: null,
   },
   login: {
     "multi-user": {
@@ -341,36 +343,6 @@ const TRANSLATIONS = {
       prompt: "Prompt",
       response: "Svar",
       at: "Sendt kl.",
-    },
-  },
-  appearance: {
-    title: "Udseende",
-    description: "Tilpas platformens udseendeindstillinger.",
-    logo: {
-      title: "Tilpas logo",
-      description: "Upload dit tilpassede logo for at gøre din chatbot unik.",
-      add: "Tilføj et tilpasset logo",
-      recommended: "Anbefalet størrelse: 800 x 200",
-      remove: "Fjern",
-      replace: "Erstat",
-    },
-    message: {
-      title: "Tilpas beskeder",
-      description:
-        "Tilpas de automatiske beskeder, der vises for dine brugere.",
-      new: "Ny",
-      system: "system",
-      user: "bruger",
-      message: "besked",
-      assistant: "AnythingLLM Chat-assistent",
-      "double-click": "Dobbeltklik for at redigere...",
-      save: "Gem beskeder",
-    },
-    icons: {
-      title: "Tilpassede sidefodsikoner",
-      description: "Tilpas sidefodens ikoner, der vises nederst i sidebjælken.",
-      icon: "Ikon",
-      link: "Link",
     },
   },
   api: {
@@ -725,6 +697,79 @@ const TRANSLATIONS = {
     update_account: "Opdater konto",
     theme: "Tema-præference",
     language: "Foretrukket sprog",
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
   },
 };
 

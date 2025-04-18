@@ -98,6 +98,8 @@ const TRANSLATIONS = {
     contact: "Связаться с Поддержкой",
     "browser-extension": "Расширение браузера",
     "system-prompt-variables": "Переменные системного запроса",
+    interface: null,
+    branding: null,
   },
   login: {
     "multi-user": {
@@ -342,38 +344,6 @@ const TRANSLATIONS = {
       prompt: "Подсказка",
       response: "Ответ",
       at: "Отправлено в",
-    },
-  },
-  appearance: {
-    title: "Внешний вид",
-    description: "Настройте параметры внешнего вида вашей платформы.",
-    logo: {
-      title: "Настроить логотип",
-      description:
-        "Загрузите свой логотип, чтобы персонализировать ваш чат-бот.",
-      add: "Добавить пользовательский логотип",
-      recommended: "Рекомендуемый размер: 800 x 200",
-      remove: "Удалить",
-      replace: "Заменить",
-    },
-    message: {
-      title: "Настроить сообщения",
-      description:
-        "Настройте автоматические сообщения, отображаемые вашим пользователям.",
-      new: "Новое",
-      system: "система",
-      user: "пользователь",
-      message: "сообщение",
-      assistant: "Чат-ассистент AnythingLLM",
-      "double-click": "Дважды щелкните, чтобы редактировать...",
-      save: "Сохранить сообщения",
-    },
-    icons: {
-      title: "Пользовательские иконки в подвале",
-      description:
-        "Настройте иконки в подвале, отображаемые внизу боковой панели.",
-      icon: "Иконка",
-      link: "Ссылка",
     },
   },
   api: {
@@ -634,7 +604,6 @@ const TRANSLATIONS = {
       task_explained:
         "После завершения содержимое страницы будет доступно для внедрения в рабочие пространства через выбор документов.",
     },
-
     manage: {
       documents: "Документы",
       "data-connectors": "Коннекторы данных",
@@ -716,7 +685,6 @@ const TRANSLATIONS = {
     microphone: "Произнесите ваш запрос.",
     send: "Отправить запрос в рабочее пространство",
   },
-
   profile_settings: {
     edit_account: "Редактировать учётную запись",
     profile_picture: "Изображение профиля",
@@ -730,6 +698,79 @@ const TRANSLATIONS = {
     update_account: "Обновить учётную запись",
     theme: "Предпочтения темы",
     language: "Предпочитаемый язык",
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
   },
 };
 
