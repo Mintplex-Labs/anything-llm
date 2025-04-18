@@ -55,12 +55,6 @@ export default function Updates() {
   );
 }
 
-function getSource(goto) {
-  if (!goto) return null;
-  const url = new URL(goto);
-  return url.hostname;
-}
-
 function isExternal(goto) {
   if (!goto) return false;
   const url = new URL(goto);
@@ -76,7 +70,6 @@ function AnnouncementCard({
   goto = "#",
 }) {
   const placeHolderImage = randomPlaceholder();
-  const source = getSource(goto);
   const isExternalLink = isExternal(goto);
 
   return (
@@ -95,16 +88,6 @@ function AnnouncementCard({
           className="w-[80px] h-[80px] rounded-lg flex-shrink-0 object-cover"
         />
         <div className="flex flex-col gap-y-1">
-          <div className="flex items-center gap-x-[1px]">
-            <p className="text-theme-home-text-secondary text-xs">{source}</p>
-            {isExternalLink && (
-              <ArrowSquareOut
-                size={12}
-                weight="bold"
-                className="text-theme-home-text-secondary mb-[1.5px]"
-              />
-            )}
-          </div>
           <h3 className="text-theme-home-text font-medium text-sm">{title}</h3>
           <p className="text-theme-home-text-secondary text-xs line-clamp-2">
             {subtitle}

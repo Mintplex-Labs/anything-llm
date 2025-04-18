@@ -218,6 +218,25 @@ class MCPHypervisor {
   }
 
   /**
+   * Build the MCP server environment variables key - will add back the default environment variables that are required for MCP to function
+   * in the docker context (eg: PATH and NODE_PATH) since when any env is provided to the MCP server it is not merged.
+   * @param {Object} server - The server definition
+   * @returns {{env: { [key: string]: string } | {}}} - The environment variables
+   */
+  #buildMCPServerENV(server) {
+    if (!server?.env || Object.keys(server.env).length === 0) return {};
+    if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return server.env;
+
+    return {
+      env: {
+        NODE_PATH: "/usr/bin/node",
+        PATH: "/usr/bin/node:/usr/local/bin:/usr/bin:/bin",
+        ...server.env, // allow overrides
+      },
+    };
+  }
+
+  /**
    * @private Start a single MCP server by its server definition from the JSON file
    * @param {string} name - The name of the MCP server to start
    * @param {Object} server - The server definition
@@ -235,7 +254,7 @@ class MCPHypervisor {
     const transport = new StdioClientTransport({
       command: server.command,
       args: server?.args ?? [],
-      ...(server?.env ? { env: server.env } : {}),
+      ...this.#buildMCPServerENV(server),
     });
 
     // Add connection event listeners

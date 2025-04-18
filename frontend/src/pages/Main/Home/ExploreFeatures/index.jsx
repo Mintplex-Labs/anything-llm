@@ -9,8 +9,11 @@ export default function ExploreFeatures() {
     const workspaces = await Workspace.all();
     if (workspaces.length > 0) {
       const firstWorkspace = workspaces[0];
-      navigate(paths.workspace.chat(firstWorkspace.slug));
-      window.location.hash = "#agent";
+      navigate(
+        paths.workspace.chat(firstWorkspace.slug, {
+          search: { action: "set-agent-chat" },
+        })
+      );
     }
   };
 
@@ -19,8 +22,11 @@ export default function ExploreFeatures() {
     const workspaces = await Workspace.all();
     if (workspaces.length > 0) {
       const firstWorkspace = workspaces[0];
-      navigate(paths.workspace.chat(firstWorkspace.slug));
-      window.location.hash = "#slash-commands";
+      navigate(
+        paths.workspace.chat(firstWorkspace.slug, {
+          search: { action: "open-new-slash-command-modal" },
+        })
+      );
     }
   };
 
@@ -32,8 +38,11 @@ export default function ExploreFeatures() {
     const workspaces = await Workspace.all();
     if (workspaces.length > 0) {
       const firstWorkspace = workspaces[0];
-      navigate(paths.workspace.settings.chatSettings(firstWorkspace.slug));
-      window.location.hash = "#system-prompts";
+      navigate(
+        paths.workspace.settings.chatSettings(firstWorkspace.slug, {
+          search: { action: "focus-system-prompt" },
+        })
+      );
     }
   };
 
