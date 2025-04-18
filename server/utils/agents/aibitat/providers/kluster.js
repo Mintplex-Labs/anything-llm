@@ -83,4 +83,4 @@ class KlusterProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 }
 
-module.exports = KlusterProvider; 
+module.exports = KlusterProvider;

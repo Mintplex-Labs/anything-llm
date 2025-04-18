@@ -1,8 +1,13 @@
 const KlusterProvider = require("../agents/aibitat/providers/kluster");
 const { BaseLLM } = require("./base");
 const { MODEL_MAP } = require("./modelMap");
-const { handleDefaultStreamResponseV2, formatChatHistory } = require("../helpers/chat/responses");
-const { LLMPerformanceMonitor } = require("../helpers/chat/LLMPerformanceMonitor");
+const {
+  handleDefaultStreamResponseV2,
+  formatChatHistory,
+} = require("../helpers/chat/responses");
+const {
+  LLMPerformanceMonitor,
+} = require("../helpers/chat/LLMPerformanceMonitor");
 const { messageArrayCompressor } = require("../helpers/chat");
 
 class KlusterLLM extends BaseLLM {
@@ -15,7 +20,7 @@ class KlusterLLM extends BaseLLM {
     "deepseek-ai/DeepSeek-R1",
     "deepseek-ai/DeepSeek-V3-0324",
     "google/gemma-3-27b-it",
-    "Qwen/Qwen2.5-VL-7B-Instruct"
+    "Qwen/Qwen2.5-VL-7B-Instruct",
   ];
 
   constructor(embedder, model = null) {
@@ -107,9 +112,9 @@ class KlusterLLM extends BaseLLM {
   }
 
   async streamGetChatCompletion(messages = [], { temperature = 0.7 } = {}) {
-    const stream = await this.provider.complete(messages, [], { 
+    const stream = await this.provider.complete(messages, [], {
       stream: true,
-      temperature 
+      temperature,
     });
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       stream,
@@ -129,4 +134,4 @@ class KlusterLLM extends BaseLLM {
 
 module.exports = {
   KlusterLLM,
-}; 
+};

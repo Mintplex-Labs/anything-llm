@@ -124,7 +124,7 @@ const MODEL_MAP = {
     "deepseek-ai/DeepSeek-R1": 8192,
     "deepseek-ai/DeepSeek-V3-0324": 8192,
     "google/gemma-3-27b-it": 8192,
-    "Qwen/Qwen2.5-VL-7B-Instruct": 8192
+    "Qwen/Qwen2.5-VL-7B-Instruct": 8192,
   },
 };
 

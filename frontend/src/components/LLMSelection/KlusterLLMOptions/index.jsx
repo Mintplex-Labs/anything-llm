@@ -4,7 +4,9 @@ import { Tooltip } from "react-tooltip";
 
 export default function KlusterLLMOptions({ settings }) {
   const [apiKey, setApiKey] = useState(settings?.KlusterApiKey || "");
-  const [maxTokens, setMaxTokens] = useState(settings?.KlusterMaxTokens || 1024);
+  const [maxTokens, setMaxTokens] = useState(
+    settings?.KlusterMaxTokens || 1024
+  );
 
   return (
     <div className="flex flex-col gap-y-1">
@@ -51,4 +53,4 @@ export default function KlusterLLMOptions({ settings }) {
       </div>
     </div>
   );
-} 
+}

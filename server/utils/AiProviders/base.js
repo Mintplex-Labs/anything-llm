@@ -24,4 +24,4 @@ class BaseLLM {
 
 module.exports = {
   BaseLLM,
-}; 
+};
