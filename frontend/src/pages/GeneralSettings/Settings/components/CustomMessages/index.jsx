@@ -22,12 +22,18 @@ export default function CustomMessages() {
     if (type === "user") {
       setMessages([
         ...messages,
-        { user: t("appearance.message.double-click"), response: "" },
+        {
+          user: t("customization.items.welcome-messages.double-click"),
+          response: "",
+        },
       ]);
     } else {
       setMessages([
         ...messages,
-        { user: "", response: t("appearance.message.double-click") },
+        {
+          user: "",
+          response: t("customization.items.welcome-messages.double-click"),
+        },
       ]);
     }
   };
