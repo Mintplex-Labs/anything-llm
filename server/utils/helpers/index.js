@@ -200,6 +200,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return new PPIOLLM(embedder, model);
+    case "kluster":
+      const { KlusterLLM } = require("../AiProviders/kluster");
+      return new KlusterLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -344,6 +347,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return PPIOLLM;
+    case "kluster":
+      const { KlusterLLM } = require("../AiProviders/kluster");
+      return KlusterLLM;
     default:
       return null;
   }

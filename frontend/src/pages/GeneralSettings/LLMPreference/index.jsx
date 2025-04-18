@@ -31,6 +31,7 @@ import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
+import KlusterLogo from "@/media/llmprovider/kluster.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -59,6 +60,7 @@ import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
+import KlusterLLMOptions from "@/components/LLMSelection/KlusterLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -299,6 +301,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <XAILLMOptions settings={settings} />,
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
     requiredConfig: ["XAIApiKey", "XAIModelPref"],
+  },
+  {
+    name: "Kluster.ai",
+    value: "kluster",
+    logo: KlusterLogo,
+    options: (settings) => <KlusterLLMOptions settings={settings} />,
+    description: "Run powerful open-source models from Kluster.ai",
+    requiredConfig: ["KlusterApiKey"],
   },
 ];
 

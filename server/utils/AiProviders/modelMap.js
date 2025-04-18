@@ -116,6 +116,16 @@ const MODEL_MAP = {
   xai: {
     "grok-beta": 131072,
   },
+  kluster: {
+    "klusterai/Meta-Llama-3.3-70B-Instruct-Turbo": 8192,
+    "klusterai/Meta-Llama-3.1-8B-Instruct-Turbo": 8192,
+    "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8": 8192,
+    "meta-llama/Llama-4-Scout-17B-16E-Instruct": 8192,
+    "deepseek-ai/DeepSeek-R1": 8192,
+    "deepseek-ai/DeepSeek-V3-0324": 8192,
+    "google/gemma-3-27b-it": 8192,
+    "Qwen/Qwen2.5-VL-7B-Instruct": 8192
+  },
 };
 
 module.exports = { MODEL_MAP };
