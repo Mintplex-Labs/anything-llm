@@ -257,19 +257,6 @@ class MCPHypervisor {
       ...this.#buildMCPServerENV(server),
     });
 
-    console.log(
-      "boot_args",
-      JSON.stringify(
-        {
-          command: server.command,
-          args: server?.args ?? [],
-          ...this.#buildMCPServerENV(server),
-        },
-        null,
-        2
-      )
-    );
-
     // Add connection event listeners
     transport.onclose = () => this.log(`${name} - Transport closed`);
     transport.onerror = (error) =>
