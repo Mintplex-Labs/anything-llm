@@ -365,6 +365,14 @@ const TRANSLATIONS = {
   appearance: {
     title: "外観",
     description: "プラットフォームの外観設定をカスタマイズします。",
+    auto_submit: {
+      title: null,
+      description: null,
+    },
+    auto_speak: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "ロゴのカスタマイズ",
       description:

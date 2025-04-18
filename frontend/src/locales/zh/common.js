@@ -330,6 +330,10 @@ const TRANSLATIONS = {
       title: null,
       description: null,
     },
+    auto_speak: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "自定义图标",
       description: "上传你的自定义图标，让你的聊天机器人成为你的。",

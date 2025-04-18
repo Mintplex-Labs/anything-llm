@@ -348,6 +348,10 @@ const TRANSLATIONS = {
       title: null,
       description: null,
     },
+    auto_speak: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "تخصيص الشعار",
       description: "قم بتحميل شعارك المخصص لجعل روبوت المحادثة خاصا بك .",

@@ -340,6 +340,10 @@ const TRANSLATIONS = {
       title: null,
       description: null,
     },
+    auto_speak: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "شخصی‌سازی لوگو",
       description: "لوگوی سفارشی خود را برای شخصی‌سازی ربات گفتگو آپلود کنید.",

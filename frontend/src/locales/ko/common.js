@@ -336,6 +336,10 @@ const TRANSLATIONS = {
       title: null,
       description: null,
     },
+    auto_speak: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "사용자 로고",
       description:

@@ -331,6 +331,10 @@ const TRANSLATIONS = {
       title: null,
       description: null,
     },
+    auto_speak: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "自訂 Logo",
       description: "上傳您的自訂 Logo，讓您的對話機器人更具個人特色。",

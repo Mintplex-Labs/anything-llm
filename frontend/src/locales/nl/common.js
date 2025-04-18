@@ -342,6 +342,10 @@ const TRANSLATIONS = {
       title: null,
       description: null,
     },
+    auto_speak: {
+      title: null,
+      description: null,
+    },
     logo: {
       title: "Logo Aanpassen",
       description: "Upload je aangepaste logo om je chatbot eigen te maken.",
