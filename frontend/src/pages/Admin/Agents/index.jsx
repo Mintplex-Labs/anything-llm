@@ -315,7 +315,10 @@ export default function AdminAgents() {
               id="active_agent_flows"
               value={activeFlowIds.join(",")}
             />
-            <MCPServerHeader setMcpServers={setMcpServers}>
+            <MCPServerHeader
+              setMcpServers={setMcpServers}
+              setSelectedMcpServer={setSelectedMcpServer}
+            >
               {({ loadingMcpServers }) => {
                 return (
                   <MCPServersList
@@ -519,7 +522,10 @@ export default function AdminAgents() {
                 handleClick={handleFlowClick}
               />
 
-              <MCPServerHeader setMcpServers={setMcpServers}>
+              <MCPServerHeader
+                setMcpServers={setMcpServers}
+                setSelectedMcpServer={setSelectedMcpServer}
+              >
                 {({ loadingMcpServers }) => {
                   return (
                     <MCPServersList

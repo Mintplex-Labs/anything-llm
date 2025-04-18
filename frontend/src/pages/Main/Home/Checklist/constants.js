@@ -119,8 +119,11 @@ export const CHECKLIST_ITEMS = [
         showNewWsModal();
         return false;
       }
-      navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));
-      window.location.hash = "#system-prompts";
+      navigate(
+        paths.workspace.settings.chatSettings(workspaces[0].slug, {
+          search: { action: "focus-system-prompt" },
+        })
+      );
       return true;
     },
     icon: ChatCenteredText,
@@ -145,8 +148,11 @@ export const CHECKLIST_ITEMS = [
         showNewWsModal();
         return false;
       }
-      navigate(paths.workspace.chat(workspaces[0].slug));
-      window.location.hash = "#slash-commands";
+      navigate(
+        paths.workspace.chat(workspaces[0].slug, {
+          search: { action: "open-new-slash-command-modal" },
+        })
+      );
       return true;
     },
     icon: SlashCommandIcon,
