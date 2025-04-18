@@ -1,18 +1,14 @@
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import FooterCustomization from "./FooterCustomization";
-import SupportEmail from "./SupportEmail";
-import CustomLogo from "./CustomLogo";
-import CustomMessages from "./CustomMessages";
+import FooterCustomization from "../components/FooterCustomization";
+import SupportEmail from "../components/SupportEmail";
+import CustomLogo from "../components/CustomLogo";
+import CustomMessages from "../components/CustomMessages";
 import { useTranslation } from "react-i18next";
-import CustomAppName from "./CustomAppName";
-import LanguagePreference from "./LanguagePreference";
-import CustomSiteSettings from "./CustomSiteSettings";
-import ShowScrollbar from "./ShowScrollbar";
-import ThemePreference from "./ThemePreference";
-import { MessageDirection } from "./MessageDirection";
+import CustomAppName from "../components/CustomAppName";
+import CustomSiteSettings from "../components/CustomSiteSettings";
 
-export default function Appearance() {
+export default function BrandingSettings() {
   const { t } = useTranslation();
 
   return (
@@ -26,19 +22,15 @@ export default function Appearance() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
             <div className="items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                {t("appearance.title")}
+                {t("customization.branding.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              {t("appearance.description")}
+              {t("customization.branding.description")}
             </p>
           </div>
-          <ThemePreference />
-          <LanguagePreference />
-          <MessageDirection />
-          <ShowScrollbar />
-          <CustomLogo />
           <CustomAppName />
+          <CustomLogo />
           <CustomMessages />
           <FooterCustomization />
           <SupportEmail />

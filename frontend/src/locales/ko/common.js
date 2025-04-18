@@ -90,6 +90,8 @@ const TRANSLATIONS = {
     contact: "지원팀 연락",
     "browser-extension": "브라우저 확장 프로그램",
     "system-prompt-variables": null,
+    interface: null,
+    branding: null,
   },
   login: {
     "multi-user": {
@@ -327,36 +329,6 @@ const TRANSLATIONS = {
       prompt: "프롬프트",
       response: "응답",
       at: "보낸 시각",
-    },
-  },
-  appearance: {
-    title: "외관",
-    description: "플랫폼의 외관 설정을 수정합니다.",
-    logo: {
-      title: "사용자 로고",
-      description:
-        "사용자의 로고를 업로드하여 챗봇을 자신의 것으로 만드십시오.",
-      add: "사용자 로고 추가",
-      recommended: "추천 크기: 800 x 200",
-      remove: "제거",
-      replace: "교체",
-    },
-    message: {
-      title: "사용자 메시지",
-      description: "사용자에게 표시되는 자동 메시지를 작성합니다.",
-      new: "새로운",
-      system: "시스템",
-      user: "사용자",
-      message: "메시지",
-      assistant: "AnythingLLM 채팅 어시스턴트",
-      "double-click": "더블 클릭하여 편집...",
-      save: "메시지 저장",
-    },
-    icons: {
-      title: "맞춤형 바닥글 아이콘",
-      description: "사이드바 하단에 표시되는 아이콘을 수정합니다.",
-      icon: "아이콘",
-      link: "링크",
     },
   },
   api: {
@@ -671,6 +643,79 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
   },
 };
 

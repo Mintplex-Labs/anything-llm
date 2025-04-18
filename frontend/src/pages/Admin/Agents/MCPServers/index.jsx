@@ -3,8 +3,13 @@ import { titleCase } from "text-case";
 import { BookOpenText, ArrowClockwise } from "@phosphor-icons/react";
 import MCPLogo from "@/media/agents/mcp-logo.svg";
 import MCPServers from "@/models/mcpServers";
+import showToast from "@/utils/toast";
 
-export function MCPServerHeader({ setMcpServers, children }) {
+export function MCPServerHeader({
+  setMcpServers,
+  setSelectedMcpServer,
+  children,
+}) {
   const [loadingMcpServers, setLoadingMcpServers] = useState(false);
   useEffect(() => {
     async function fetchMCPServers() {
