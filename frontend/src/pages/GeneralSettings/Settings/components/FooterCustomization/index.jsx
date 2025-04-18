@@ -52,14 +52,14 @@ export default function FooterCustomization() {
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
       <h2 className="text-sm leading-6 font-semibold text-white">
-        {t("appearance.icons.title")}
+        {t("customization.items.sidebar-footer.title")}
       </h2>
       <p className="text-xs text-white/60">
-        {t("appearance.icons.description")}
+        {t("customization.items.sidebar-footer.description")}
       </p>
       <div className="mt-2 flex gap-x-3 font-medium text-white text-sm">
-        <div>{t("appearance.icons.icon")}</div>
-        <div>{t("appearance.icons.link")}</div>
+        <div>{t("customization.items.sidebar-footer.icon")}</div>
+        <div>{t("customization.items.sidebar-footer.link")}</div>
       </div>
       <div className="mt-2 flex flex-col gap-y-[10px]">
         {footerIcons.map((icon, index) => (

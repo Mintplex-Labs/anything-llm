@@ -97,6 +97,8 @@ const TRANSLATIONS = {
     contact: "اتصل بالدعم",
     "browser-extension": "ملحق المتصفح",
     "system-prompt-variables": null,
+    interface: null,
+    branding: null,
   },
   login: {
     "multi-user": {
@@ -339,35 +341,6 @@ const TRANSLATIONS = {
       prompt: "نداء",
       response: "استجابة",
       at: "أرسلت في",
-    },
-  },
-  appearance: {
-    title: "مظهر",
-    description: "تخصيص إعدادات مظهر منصتك.",
-    logo: {
-      title: "تخصيص الشعار",
-      description: "قم بتحميل شعارك المخصص لجعل روبوت المحادثة خاصا بك .",
-      add: "أضف شعارًا مخصصًا",
-      recommended: "الحجم الموصى به: 800 × 200",
-      remove: "قم بإزالة",
-      replace: "قم باستبدال",
-    },
-    message: {
-      title: "تخصيص الرسائل",
-      description: "قم بتخصيص الرسائل التلقائية التي يتم عرضها لمستعمليك.",
-      new: "جديد",
-      system: "نظام",
-      user: "مستعمل",
-      message: "رسالة",
-      assistant: "مساعد الدردشة لِـ إني ثينك إلْلْم",
-      "double-click": "انقر نقراً مزدوجاً للتحرير...",
-      save: "حفظ الرسائل",
-    },
-    icons: {
-      title: "أيقونات التذييل المخصصة",
-      description: "تخصيص أيقونات التذييل المعروضة في أسفل الشريط الجانبي.",
-      icon: "أيقونة",
-      link: "رابط",
     },
   },
   api: {
@@ -685,6 +658,79 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
   },
 };
 

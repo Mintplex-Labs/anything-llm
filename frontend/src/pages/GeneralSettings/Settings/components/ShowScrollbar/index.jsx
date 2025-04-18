@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Appearance from "@/models/appearance";
+import { useTranslation } from "react-i18next";
 
 export default function ShowScrollbar() {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [showScrollbar, setShowScrollbar] = useState(false);
 
@@ -29,10 +31,10 @@ export default function ShowScrollbar() {
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
       <h2 className="text-sm leading-6 font-semibold text-white">
-        Show chat window scrollbar
+        {t("customization.items.show-scrollbar.title")}
       </h2>
       <p className="text-xs text-white/60">
-        Enable or disable the scrollbar in the chat window
+        {t("customization.items.show-scrollbar.description")}
       </p>
       <div className="flex items-center gap-x-4">
         <label className="relative inline-flex cursor-pointer items-center">

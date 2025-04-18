@@ -27,9 +27,13 @@ const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
 const AdminAgents = lazy(() => import("@/pages/Admin/Agents"));
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
-const GeneralAppearance = lazy(
-  () => import("@/pages/GeneralSettings/Appearance")
+const InterfaceSettings = lazy(
+  () => import("@/pages/GeneralSettings/Settings/Interface")
 );
+const BrandingSettings = lazy(
+  () => import("@/pages/GeneralSettings/Settings/Branding")
+);
+
 const GeneralApiKeys = lazy(() => import("@/pages/GeneralSettings/ApiKeys"));
 const GeneralLLMPreference = lazy(
   () => import("@/pages/GeneralSettings/LLMPreference")
@@ -186,8 +190,12 @@ export default function App() {
                     element={<AdminRoute Component={PrivacyAndData} />}
                   />
                   <Route
-                    path="/settings/appearance"
-                    element={<ManagerRoute Component={GeneralAppearance} />}
+                    path="/settings/interface"
+                    element={<ManagerRoute Component={InterfaceSettings} />}
+                  />
+                  <Route
+                    path="/settings/branding"
+                    element={<ManagerRoute Component={BrandingSettings} />}
                   />
                   <Route
                     path="/settings/beta-features"
