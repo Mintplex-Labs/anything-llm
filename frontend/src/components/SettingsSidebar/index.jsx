@@ -333,6 +333,12 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin", "manager"],
             },
+            {
+              btnText: t("settings.chat"),
+              href: paths.settings.chat(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
           ]}
         />
         <Option

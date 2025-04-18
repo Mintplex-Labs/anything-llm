@@ -96,6 +96,7 @@ const TRANSLATIONS = {
     "system-prompt-variables": null,
     interface: null,
     branding: null,
+    chat: null,
   },
   login: {
     "multi-user": {
@@ -643,6 +644,18 @@ const TRANSLATIONS = {
     branding: {
       title: null,
       description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
     },
     items: {
       theme: {

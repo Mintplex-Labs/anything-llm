@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, { PROMPT_INPUT_EVENT } from "./PromptInput";
@@ -19,6 +19,8 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
+import { useTTS } from "@/contexts/TTSProvider";
+import Appearance from "@/models/appearance";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -28,6 +30,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
+  const autoSpeak = Appearance.getSettings().autoSpeak;
+  const lastMessageRef = useRef(null);
+  const hasSentMessage = useRef(false);
+  const { speak } = useTTS();
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -50,6 +56,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!message || message === "") return false;
+    hasSentMessage.current = true;
     const prevChatHistory = [
       ...chatHistory,
       {
@@ -261,6 +268,23 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     }
     handleWSS();
   }, [socketId]);
+
+  // Auto-speak last message if enabled
+  useEffect(() => {
+    if (!autoSpeak) return;
+    if (!chatHistory.length) return;
+    if (!hasSentMessage.current) return;
+
+    const lastMessage = chatHistory[chatHistory.length - 1];
+    if (!lastMessage) return;
+    if (lastMessage.role !== "assistant") return;
+    if (!lastMessage.content || lastMessage.content === "") return;
+    if (!lastMessage.chatId) return;
+    if (lastMessage.uuid === lastMessageRef.current) return;
+
+    lastMessageRef.current = lastMessage.uuid;
+    speak(lastMessage.content, lastMessage.chatId, workspace.slug);
+  }, [chatHistory, autoSpeak]);
 
   return (
     <div
