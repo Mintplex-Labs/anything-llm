@@ -12,6 +12,7 @@ import ShowScrollbar from "./ShowScrollbar";
 import ThemePreference from "./ThemePreference";
 import { MessageDirection } from "./MessageDirection";
 import AutoSubmit from "./AutoSubmit";
+import AutoSpeak from "./AutoSpeak";
 
 export default function Appearance() {
   const { t } = useTranslation();
@@ -39,6 +40,7 @@ export default function Appearance() {
           <MessageDirection />
           <ShowScrollbar />
           <AutoSubmit />
+          <AutoSpeak />
           <CustomLogo />
           <CustomAppName />
           <CustomMessages />

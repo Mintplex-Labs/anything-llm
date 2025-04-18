@@ -180,10 +180,11 @@ export default function AccountModal({ user, hideModal }) {
                   defaultValue={user.bio}
                 />
               </div>
-              <div className="flex flex-row gap-x-8">
+              <div className="grid grid-cols-2 gap-6">
                 <ThemePreference />
                 <LanguagePreference />
                 <AutoSubmitPreference />
+                <AutoSpeakPreference />
               </div>
             </div>
             <div className="flex justify-between items-center border-t border-theme-modal-border pt-4 p-6">
@@ -307,6 +308,49 @@ function AutoSubmitPreference() {
       </div>
       <p className="mt-2 text-xs text-white/60 max-w-[200px]">
         {t("appearance.auto_submit.description")}
+      </p>
+    </div>
+  );
+}
+
+function AutoSpeakPreference() {
+  const [autoSpeak, setAutoSpeak] = useState(true);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    const settings = Appearance.getSettings();
+    setAutoSpeak(settings.autoSpeak ?? true);
+  }, []);
+
+  const handleChange = (e) => {
+    const newValue = e.target.checked;
+    setAutoSpeak(newValue);
+    Appearance.updateSettings({ autoSpeak: newValue });
+  };
+
+  return (
+    <div>
+      <label
+        htmlFor="autoSpeak"
+        className="block mb-2 text-sm font-medium text-white"
+      >
+        {t("appearance.auto_speak.title")}
+      </label>
+      <div className="flex items-center gap-x-4">
+        <label className="relative inline-flex cursor-pointer items-center">
+          <input
+            id="autoSpeak"
+            type="checkbox"
+            name="autoSpeak"
+            checked={autoSpeak}
+            onChange={handleChange}
+            className="peer sr-only"
+          />
+          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+        </label>
+      </div>
+      <p className="mt-2 text-xs text-white/60 max-w-[200px]">
+        {t("appearance.auto_speak.description")}
       </p>
     </div>
   );

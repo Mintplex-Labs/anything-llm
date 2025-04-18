@@ -92,7 +92,10 @@ export default function App() {
               <I18nextProvider i18n={i18n}>
                 <TTSProvider>
                   <Routes>
-                    <Route path="/" element={<PrivateRoute Component={Main} />} />
+                    <Route
+                      path="/"
+                      element={<PrivateRoute Component={Main} />}
+                    />
                     <Route path="/login" element={<Login />} />
                     <Route
                       path="/sso/simple"
@@ -111,7 +114,10 @@ export default function App() {
                       path="/workspace/:slug/t/:threadSlug"
                       element={<PrivateRoute Component={WorkspaceChat} />}
                     />
-                    <Route path="/accept-invite/:code" element={<InvitePage />} />
+                    <Route
+                      path="/accept-invite/:code"
+                      element={<InvitePage />}
+                    />
 
                     {/* Admin */}
                     <Route
@@ -121,12 +127,16 @@ export default function App() {
                     <Route
                       path="/settings/transcription-preference"
                       element={
-                        <AdminRoute Component={GeneralTranscriptionPreference} />
+                        <AdminRoute
+                          Component={GeneralTranscriptionPreference}
+                        />
                       }
                     />
                     <Route
                       path="/settings/audio-preference"
-                      element={<AdminRoute Component={GeneralAudioPreference} />}
+                      element={
+                        <AdminRoute Component={GeneralAudioPreference} />
+                      }
                     />
                     <Route
                       path="/settings/embedding-preference"
@@ -137,7 +147,9 @@ export default function App() {
                     <Route
                       path="/settings/text-splitter-preference"
                       element={
-                        <AdminRoute Component={EmbeddingTextSplitterPreference} />
+                        <AdminRoute
+                          Component={EmbeddingTextSplitterPreference}
+                        />
                       }
                     />
                     <Route
@@ -236,7 +248,9 @@ export default function App() {
                     {/* Live Document Sync feature */}
                     <Route
                       path="/settings/beta-features/live-document-sync/manage"
-                      element={<AdminRoute Component={LiveDocumentSyncManage} />}
+                      element={
+                        <AdminRoute Component={LiveDocumentSyncManage} />
+                      }
                     />
 
                     <Route
@@ -251,7 +265,9 @@ export default function App() {
                     />
                     <Route
                       path="/settings/community-hub/import-item"
-                      element={<AdminRoute Component={CommunityHubImportItem} />}
+                      element={
+                        <AdminRoute Component={CommunityHubImportItem} />
+                      }
                     />
                   </Routes>
                   <ToastContainer />

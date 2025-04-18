@@ -87,7 +87,6 @@ export default function SpeechToText({ sendCommand }) {
       sendCommand(transcript, false);
       clearTimeout(timeout);
       const settings = Appearance.getSettings();
-      console.log("settings", settings.autoSubmit);
       if (settings.autoSubmit) {
         timeout = setTimeout(() => {
           endSTTSession();

@@ -373,6 +373,10 @@ const TRANSLATIONS = {
       description:
         "Automatically submit speech input after a period of silence",
     },
+    auto_speak: {
+      title: "Auto-speak responses",
+      description: "Automatically speak responses from the AI",
+    },
     logo: {
       title: "Customize Logo",
       description: "Upload your custom logo to make your chatbot yours.",

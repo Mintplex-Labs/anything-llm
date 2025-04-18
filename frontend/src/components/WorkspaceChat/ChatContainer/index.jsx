@@ -20,6 +20,7 @@ import SpeechRecognition, {
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 import { useTTS } from "@/contexts/TTSProvider";
+import Appearance from "@/models/appearance";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -29,7 +30,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
   const { files, parseAttachments } = useContext(DndUploaderContext);
-  const [autoSpeak, setAutoSpeak] = useState(true);
+  const autoSpeak = Appearance.getSettings().autoSpeak;
   const lastMessageRef = useRef(null);
   const hasSentMessage = useRef(false);
   const { speak } = useTTS();

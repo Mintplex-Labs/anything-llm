@@ -137,7 +137,7 @@ export function TTSProvider({ children }) {
         stop,
         provider,
         settings,
-        speak
+        speak,
       }}
     >
       {children}
