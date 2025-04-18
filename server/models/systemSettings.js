@@ -241,6 +241,8 @@ const SystemSettings = {
       // TTS/STT  Selection Settings & Configs
       // - Currently the only 3rd party is OpenAI or the native browser-built in
       // --------------------------------------------------------
+      SpeechToTextAutoSubmit: process.env.STT_AUTO_SUBMIT || "true",
+
       TextToSpeechProvider: process.env.TTS_PROVIDER || "native",
       TTSOpenAIKey: !!process.env.TTS_OPEN_AI_KEY,
       TTSOpenAIVoiceModel: process.env.TTS_OPEN_AI_VOICE_MODEL,

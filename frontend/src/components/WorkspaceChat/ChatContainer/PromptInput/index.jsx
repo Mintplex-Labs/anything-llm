@@ -17,6 +17,7 @@ import AttachmentManager from "./Attachments";
 import AttachItem from "./AttachItem";
 import { PASTE_ATTACHMENT_EVENT } from "../DnDWrapper";
 import useTextSize from "@/hooks/useTextSize";
+import System from "@/models/system";
 import { useTranslation } from "react-i18next";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
@@ -39,6 +40,7 @@ export default function PromptInput({
   const undoStack = useRef([]);
   const redoStack = useRef([]);
   const { textSizeClass } = useTextSize();
+  const [speechToTextAutoSubmit, setSpeechToTextAutoSubmit] = useState(true);
 
   /**
    * To prevent too many re-renders we remotely listen for updates from the parent
@@ -61,6 +63,14 @@ export default function PromptInput({
     if (!isStreaming && textareaRef.current) textareaRef.current.focus();
     resetTextAreaHeight();
   }, [isStreaming]);
+
+  useEffect(() => {
+    async function getSettings() {
+      const _settings = await System.keys();
+      setSpeechToTextAutoSubmit(_settings?.SpeechToTextAutoSubmit === "true");
+    }
+    getSettings();
+  }, []);
 
   /**
    * Save the current state before changes
@@ -202,24 +212,34 @@ export default function PromptInput({
 
     const pasteText = e.clipboardData.getData("text/plain");
     if (pasteText) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const newPromptInput =
-        promptInput.substring(0, start) +
-        pasteText +
-        promptInput.substring(end);
-      setPromptInput(newPromptInput);
-      onChange({ target: { value: newPromptInput } });
-
-      // Set the cursor position after the pasted text
-      // we need to use setTimeout to prevent the cursor from being set to the end of the text
-      setTimeout(() => {
-        textarea.selectionStart = textarea.selectionEnd =
-          start + pasteText.length;
-      }, 0);
+      addToInputPrompt(pasteText);
     }
     return;
+  }
+
+  function addToInputPrompt(text) {
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const newPromptInput =
+      promptInput.substring(0, start) + text + promptInput.substring(end);
+    setPromptInput(newPromptInput);
+    onChange({ target: { value: newPromptInput } });
+
+    // Set the cursor position after the pasted text
+    // we need to use setTimeout to prevent the cursor from being set to the end of the text
+    setTimeout(() => {
+      textarea.selectionStart = textarea.selectionEnd =
+        start + text.length;
+    }, 0);
+  }
+
+  function sendSTTCommand(text) {
+    if (speechToTextAutoSubmit) {
+      sendCommand(text, true);
+    } else {
+      addToInputPrompt(text);
+    }
   }
 
   function handleChange(e) {
@@ -313,7 +333,7 @@ export default function PromptInput({
                 <TextSizeButton />
               </div>
               <div className="flex gap-x-2">
-                <SpeechToText sendCommand={sendCommand} />
+                <SpeechToText sendSTTCommand={sendSTTCommand} />
               </div>
             </div>
           </div>
