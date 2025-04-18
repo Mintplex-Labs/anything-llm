@@ -131,6 +131,9 @@ export default {
     branding: () => {
       return "/settings/branding";
     },
+    chat: () => {
+      return "/settings/chat";
+    },
     agentSkills: () => {
       return "/settings/agents";
     },

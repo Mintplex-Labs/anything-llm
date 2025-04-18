@@ -2,20 +2,20 @@ import React, { useState, useEffect } from "react";
 import Appearance from "@/models/appearance";
 import { useTranslation } from "react-i18next";
 
-export default function AutoSubmit() {
+export default function AutoSpeak() {
   const [saving, setSaving] = useState(false);
-  const [autoSubmit, setAutoSubmit] = useState(true);
+  const [autoSpeak, setAutoSpeak] = useState(true);
   const { t } = useTranslation();
 
   const handleChange = async (e) => {
     const newValue = e.target.checked;
-    setAutoSubmit(newValue);
+    setAutoSpeak(newValue);
     setSaving(true);
     try {
-      Appearance.updateSettings({ autoSubmit: newValue });
+      Appearance.updateSettings({ autoSpeak: newValue });
     } catch (error) {
       console.error("Failed to update appearance settings:", error);
-      setAutoSubmit(!newValue);
+      setAutoSpeak(!newValue);
     }
     setSaving(false);
   };
@@ -23,7 +23,7 @@ export default function AutoSubmit() {
   useEffect(() => {
     function fetchSettings() {
       const settings = Appearance.getSettings();
-      setAutoSubmit(settings.autoSubmit ?? true);
+      setAutoSpeak(settings.autoSpeak ?? true);
     }
     fetchSettings();
   }, []);
@@ -31,19 +31,19 @@ export default function AutoSubmit() {
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
       <h2 className="text-sm leading-6 font-semibold text-white">
-        {t("appearance.auto_submit.title")}
+        {t("customization.chat.auto_speak.title")}
       </h2>
       <p className="text-xs text-white/60">
-        {t("appearance.auto_submit.description")}
+        {t("customization.chat.auto_speak.description")}
       </p>
       <div className="flex items-center gap-x-4">
         <label className="relative inline-flex cursor-pointer items-center">
           <input
-            id="auto_submit"
+            id="auto_speak"
             type="checkbox"
-            name="auto_submit"
+            name="auto_speak"
             value="yes"
-            checked={autoSubmit}
+            checked={autoSpeak}
             onChange={handleChange}
             disabled={saving}
             className="peer sr-only"
