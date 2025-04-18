@@ -449,37 +449,6 @@ const TRANSLATIONS = {
     },
   },
 
-  // appearance: {
-  //   title: "Appearance",
-  //   description: "Customize the appearance settings of your platform.",
-  //   logo: {
-  //     title: "Customize Logo",
-  //     description: "Upload your custom logo to make your chatbot yours.",
-  //     add: "Add a custom logo",
-  //     recommended: "Recommended size: 800 x 200",
-  //     remove: "Remove",
-  //     replace: "Replace",
-  //   },
-  //   message: {
-  //     title: "Customize Messages",
-  //     description: "Customize the automatic messages displayed to your users.",
-  //     new: "New",
-  //     system: "system",
-  //     user: "user",
-  //     message: "message",
-  //     assistant: "AnythingLLM Chat Assistant",
-  //     "double-click": "Double click to edit...",
-  //     save: "Save Messages",
-  //   },
-  //   icons: {
-  //     title: "Custom Footer Icons",
-  //     description:
-  //       "Customize the footer icons displayed on the bottom of the sidebar.",
-  //     icon: "Icon",
-  //     link: "Link",
-  //   },
-  // },
-
   // API Keys
   api: {
     title: "API Keys",
