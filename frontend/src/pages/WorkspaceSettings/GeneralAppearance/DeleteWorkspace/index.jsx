@@ -4,6 +4,7 @@ import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import showToast from "@/utils/toast";
+import { clearLastActive } from "@/utils/lastActive";
 
 export default function DeleteWorkspace({ workspace }) {
   const { slug } = useParams();
@@ -27,6 +28,8 @@ export default function DeleteWorkspace({ workspace }) {
       setDeleting(false);
       return;
     }
+
+    clearLastActive();
 
     workspace.slug === slug
       ? (window.location = paths.home())
