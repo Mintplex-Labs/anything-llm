@@ -1,4 +1,4 @@
-const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
+const AzureOpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
@@ -11,12 +11,16 @@ class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(_config = {}) {
     super();
-    const client = new OpenAIClient(
-      process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
+    const apiVersion = "2024-12-01-preview";
+    const client = new AzureOpenAI(
+      {
+        apiKey: process.env.AZURE_OPENAI_KEY || process.env.Azure_OPENAI_API_KEY,
+        endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+        apiVersion,
+      }
     );
     this._client = client;
-    this.model = process.env.OPEN_MODEL_PREF ?? "gpt-3.5-turbo";
+    this.model = process.env.OPEN_MODEL_PREF ?? "gpt-4o-mini";
     this.verbose = true;
   }
 
@@ -25,8 +29,10 @@ class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
-    return await this.client
-      .getChatCompletions(this.model, messages, {
+    return await this.client.chat.completions
+      .create({
+        model: this.model,
+        messages,
         temperature: 0,
       })
       .then((result) => {
@@ -75,10 +81,10 @@ class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         this.providerLog(
           "Will assume chat completion without tool call inputs."
         );
-        const response = await this.client.getChatCompletions(
-          this.model,
-          this.cleanMsgs(messages),
+        const response = await this.client.chat.completions.create(
           {
+            model: this.model,
+            messages: this.cleanMsgs(messages),
             temperature: 0.7,
           }
         );

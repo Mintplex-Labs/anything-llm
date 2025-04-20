@@ -10,21 +10,21 @@ const {
 
 class AzureOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
+    const { AzureOpenAI } = require("openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
     this.apiVersion = "2024-12-01-preview";
-    this.openai = new OpenAIClient(
-      process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY),
+    this.openai = new AzureOpenAI(
       {
+        apiKey: process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY,
         apiVersion: this.apiVersion,
+        endpoint: process.env.AZURE_OPENAI_ENDPOINT
       }
     );
-    this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
+    this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;    
     this.isOTypeModel =
       process.env.AZURE_OPENAI_MODEL_TYPE === "reasoning" || false;
     this.limits = {
@@ -139,7 +139,9 @@ class AzureOpenAiLLM {
       );
 
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
-      this.openai.getChatCompletions(this.model, messages, {
+      this.openai.chat.completions.create({
+        messages,
+        model: this.model,
         ...(this.isOTypeModel ? {} : { temperature }),
       })
     );
@@ -153,10 +155,10 @@ class AzureOpenAiLLM {
     return {
       textResponse: result.output.choices[0].message.content,
       metrics: {
-        prompt_tokens: result.output.usage.promptTokens || 0,
-        completion_tokens: result.output.usage.completionTokens || 0,
-        total_tokens: result.output.usage.totalTokens || 0,
-        outputTps: result.output.usage.completionTokens / result.duration,
+        prompt_tokens: result.output.usage.prompt_tokens || 0,
+        completion_tokens: result.output.usage.completion_tokens || 0,
+        total_tokens: result.output.usage.total_tokens || 0,
+        outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
       },
     };
@@ -169,9 +171,12 @@ class AzureOpenAiLLM {
       );
 
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      await this.openai.streamChatCompletions(this.model, messages, {
+      await this.openai.chat.completions.create({
+        messages,
+        model: this.model,
         ...(this.isOTypeModel ? {} : { temperature }),
         n: 1,
+        stream: true,
       }),
       messages
     );
@@ -207,10 +212,9 @@ class AzureOpenAiLLM {
       };
       response.on("close", handleAbort);
 
-      for await (const event of stream) {
-        for (const choice of event.choices) {
-          const delta = choice.delta?.content;
-          if (!delta) continue;
+      for await (const chunk of stream) {
+        if (chunk.choices && chunk.choices[0]?.delta?.content) {
+          const delta = chunk.choices[0].delta.content;
           fullText += delta;
           usage.completion_tokens++;
 

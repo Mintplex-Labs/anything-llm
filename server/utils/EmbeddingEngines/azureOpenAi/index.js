@@ -2,15 +2,19 @@ const { toChunks } = require("../../helpers");
 
 class AzureOpenAiEmbedder {
   constructor() {
-    const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
+    const { AzureOpenAI } = require("openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
-    const openai = new OpenAIClient(
-      process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
+    this.apiVersion = "2024-12-01-preview";
+    const openai = new AzureOpenAI(
+      {
+        apiKey: process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY,
+        endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+        apiVersion: this.apiVersion,
+      }
     );
     this.openai = openai;
 
@@ -44,8 +48,11 @@ class AzureOpenAiEmbedder {
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
-          this.openai
-            .getEmbeddings(textEmbeddingModel, chunk)
+          this.openai.embeddings
+            .create({
+              model: textEmbeddingModel,
+              input: chunk,
+            })
             .then((res) => {
               resolve({ data: res.data, error: null });
             })
