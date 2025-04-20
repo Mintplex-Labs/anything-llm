@@ -1,6 +1,7 @@
 const AIbitat = require("./aibitat");
 const AgentPlugins = require("./aibitat/plugins");
 const ImportedPlugin = require("./imported");
+const MCPCompatibilityLayer = require("../MCP");
 const { AgentFlows } = require("../agentFlows");
 const { httpSocket } = require("./aibitat/plugins/http-socket.js");
 const { WorkspaceChats } = require("../../models/workspaceChats");
@@ -394,7 +395,6 @@ class EphemeralAgentHandler extends AgentHandler {
 
 const EventEmitter = require("node:events");
 const { writeResponseChunk } = require("../helpers/chat/responses");
-const MCPCompatibilityLayer = require("../MCP");
 
 /**
  * This is a special EventEmitter specifically used in the Aibitat agent handler
