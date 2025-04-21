@@ -72,7 +72,6 @@ export default function DrupalWikiOptions() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline"
-                      onClick={(e) => e.stopPropagation()}
                     >
                       Drupal Wiki
                     </a>
@@ -137,15 +136,14 @@ export default function DrupalWikiOptions() {
                       className="max-w-xs z-99"
                       clickable={true}
                     >
-                      <p className="text-sm">
+                      <p className="text-sm font-light text-theme-text-primary">
                         You need to provide an API token for authentication. See
-                        the our&nbsp;
+                        the Drupal Wiki&nbsp;
                         <a
                           href="https://help.drupal-wiki.com/node/605#2-Zugriffs-Token-generieren"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="underline"
-                          onClick={(e) => e.stopPropagation()}
                         >
                           manual
                         </a>

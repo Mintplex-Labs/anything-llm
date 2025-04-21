@@ -186,7 +186,7 @@ class DrupalWiki {
         : 0;
     const data = {
       id: targetUUID,
-      url: page.url,
+      url: `drupalwiki://${page.url}`,
       title: page.title,
       docAuthor: this.baseUrl,
       description: page.title,

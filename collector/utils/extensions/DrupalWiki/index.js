@@ -6,6 +6,7 @@
  */
 
 const { DrupalWiki } = require("./DrupalWiki");
+const { validBaseUrl } = require("../../../utils/http");
 
 async function loadAndStoreSpaces(
   { baseUrl = null, spaceIds = null, accessToken = null },
@@ -92,20 +93,6 @@ async function loadPage({ baseUrl, pageId, accessToken }) {
       reason: `Failed (re)-fetching DrupalWiki page ${pageId} form ${baseUrl}}`,
       content: null,
     };
-  }
-}
-
-/**
- * Validates if the provided baseUrl is a valid URL at all.
- * @param {string} baseUrl
- * @returns {boolean}
- */
-function validBaseUrl(baseUrl) {
-  try {
-    new URL(baseUrl);
-    return true;
-  } catch (e) {
-    return false;
   }
 }
 
