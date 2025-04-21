@@ -2,14 +2,14 @@ import React from "react";
 import { SpeakerHigh, PauseCircle, CircleNotch } from "@phosphor-icons/react";
 import { useTTS } from "@/contexts/TTSProvider";
 
-export default function PiperTTS({ voiceId = null, message }) {
+export default function PiperTTS({ voiceId = null, message, chatId, slug }) {
   const { isPlaying, isLoading, togglePlay } = useTTS();
 
   return (
     <div className="mt-3 relative">
       <button
         type="button"
-        onClick={() => togglePlay(message, null, null, voiceId)}
+        onClick={() => togglePlay(message, chatId, slug, voiceId)}
         disabled={isLoading}
         data-tooltip-id="message-to-speech"
         data-tooltip-content={

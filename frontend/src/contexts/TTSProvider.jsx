@@ -13,6 +13,9 @@ export function TTSProvider({ children }) {
   const audioRef = useRef(null);
   const audioSrcRef = useRef(null);
   const piperClientRef = useRef(null);
+  const blobCache = useRef(new Map());
+
+  const audioBlobCacheKey = (chatId, message) => `${chatId}-${message}`;
 
   useEffect(() => {
     async function getSettings() {
@@ -28,8 +31,23 @@ export function TTSProvider({ children }) {
 
     try {
       setIsLoading(true);
+      const cacheKey = audioBlobCacheKey(chatId, message);
+      const cachedBlob = blobCache.current.get(cacheKey);
+
+      if (cachedBlob) {
+        audioSrcRef.current = cachedBlob;
+        if (audioRef.current) {
+          audioRef.current.src = cachedBlob;
+          audioRef.current.play();
+        }
+        return;
+      }
+
       const audioBlob = await Workspace.ttsMessage(slug, chatId);
       if (!audioBlob) throw new Error("Failed to load TTS message response.");
+
+      // Store generated blob
+      blobCache.current.set(cacheKey, audioBlob);
 
       audioSrcRef.current = audioBlob;
       if (audioRef.current) {
@@ -43,13 +61,29 @@ export function TTSProvider({ children }) {
     }
   };
 
-  const playPiperAudio = async (message, voiceId) => {
+  const playPiperAudio = async (message, voiceId, chatId) => {
     try {
       setIsLoading(true);
+      const cacheKey = audioBlobCacheKey(chatId, message);
+      const cachedBlob = blobCache.current.get(cacheKey);
+
+      if (cachedBlob) {
+        audioSrcRef.current = cachedBlob;
+        if (audioRef.current) {
+          audioRef.current.src = cachedBlob;
+          audioRef.current.play();
+        }
+        return;
+      }
+
       if (!piperClientRef.current) {
         piperClientRef.current = new PiperTTSClient({ voiceId });
       }
       const blobUrl = await piperClientRef.current.getAudioBlobForText(message);
+
+      // Store generated blob
+      blobCache.current.set(cacheKey, blobUrl);
+
       audioSrcRef.current = blobUrl;
       if (audioRef.current) {
         audioRef.current.src = blobUrl;
@@ -72,7 +106,7 @@ export function TTSProvider({ children }) {
         break;
       }
       case "piper_local":
-        playPiperAudio(message, voiceId);
+        playPiperAudio(message, voiceId, chatId);
         break;
       case "openai":
       case "generic-openai":

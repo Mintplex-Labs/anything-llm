@@ -19,6 +19,8 @@ export default function TTSMessage({ slug, chatId, message }) {
         <PiperTTSMessage
           voiceId={settings?.TTSPiperTTSVoiceModel}
           message={message}
+          chatId={chatId}
+          slug={slug}
         />
       );
     default:
