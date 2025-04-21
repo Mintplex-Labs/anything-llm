@@ -17,14 +17,12 @@ class AzureOpenAiLLM {
       throw new Error("No Azure API key was set.");
 
     this.apiVersion = "2024-12-01-preview";
-    this.openai = new AzureOpenAI(
-      {
-        apiKey: process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY,
-        apiVersion: this.apiVersion,
-        endpoint: process.env.AZURE_OPENAI_ENDPOINT
-      }
-    );
-    this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;    
+    this.openai = new AzureOpenAI({
+      apiKey: process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY,
+      apiVersion: this.apiVersion,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+    });
+    this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
     this.isOTypeModel =
       process.env.AZURE_OPENAI_MODEL_TYPE === "reasoning" || false;
     this.limits = {

@@ -9,13 +9,11 @@ class AzureOpenAiEmbedder {
       throw new Error("No Azure API key was set.");
 
     this.apiVersion = "2024-12-01-preview";
-    const openai = new AzureOpenAI(
-      {
-        apiKey: process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY,
-        endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-        apiVersion: this.apiVersion,
-      }
-    );
+    const openai = new AzureOpenAI({
+      apiKey: process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      apiVersion: this.apiVersion,
+    });
     this.openai = openai;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits

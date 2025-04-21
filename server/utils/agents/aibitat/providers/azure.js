@@ -12,13 +12,11 @@ class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   constructor(_config = {}) {
     super();
     const apiVersion = "2024-12-01-preview";
-    const client = new AzureOpenAI(
-      {
-        apiKey: process.env.AZURE_OPENAI_KEY || process.env.Azure_OPENAI_API_KEY,
-        endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-        apiVersion,
-      }
-    );
+    const client = new AzureOpenAI({
+      apiKey: process.env.AZURE_OPENAI_KEY || process.env.Azure_OPENAI_API_KEY,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      apiVersion,
+    });
     this._client = client;
     this.model = process.env.OPEN_MODEL_PREF ?? "gpt-4o-mini";
     this.verbose = true;
@@ -81,13 +79,11 @@ class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         this.providerLog(
           "Will assume chat completion without tool call inputs."
         );
-        const response = await this.client.chat.completions.create(
-          {
-            model: this.model,
-            messages: this.cleanMsgs(messages),
-            temperature: 0.7,
-          }
-        );
+        const response = await this.client.chat.completions.create({
+          model: this.model,
+          messages: this.cleanMsgs(messages),
+          temperature: 0.7,
+        });
         completion = response.choices[0].message;
       }
 
