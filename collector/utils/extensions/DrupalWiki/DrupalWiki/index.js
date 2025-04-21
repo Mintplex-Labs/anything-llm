@@ -11,6 +11,8 @@ const { sanitizeFileName, writeToServerDocuments } = require("../../../files");
 const { default: slugify } = require("slugify");
 const path = require("path");
 const fs = require("fs");
+const { processSingleFile } = require("../../../../processSingleFile");
+const { WATCH_DIRECTORY, SUPPORTED_FILETYPE_CONVERTERS } = require("../../../constants");
 
 class Page {
   /**
@@ -64,6 +66,7 @@ class DrupalWiki {
         // Pages with an empty body will lead to embedding issues / exceptions
         if (page.processedBody.trim() !== "") {
           this.#storePage(page, encryptionWorker);
+          await this.#downloadAndProcessAttachments(page.id);
         } else {
           console.log(`Skipping page (${page.id}) since it has no content`);
         }
@@ -274,6 +277,42 @@ class DrupalWiki {
     const plainBody = plainTextContent.replace(/\n{3,}/g, "\n\n");
     // add the link to the document
     return `Link/URL: ${url}\n\n${plainBody}`;
+  }
+
+  async #downloadAndProcessAttachments(pageId) {
+    try {
+      const data = await this._doFetch(
+        `${this.baseUrl}/api/rest/scope/api/attachment?pageId=${pageId}&size=2000`
+      );
+
+      const extensionsList = Object.keys(SUPPORTED_FILETYPE_CONVERTERS);
+      for (const attachment of data.content || data) {
+        const { fileName, id: attachId } = attachment;
+        const lowerName = fileName.toLowerCase();
+        if (
+          !extensionsList.some((ext) => lowerName.endsWith(ext))
+        ) {
+          continue;
+        }
+
+        const downloadUrl = `${this.baseUrl}/api/rest/scope/api/attachment/${attachId}/download`;
+        const attachmentResponse = await fetch(downloadUrl, {
+          headers: this.#getHeaders(),
+        });
+        if (!attachmentResponse.ok) {
+          console.log(`Skipping attachment: ${fileName} - Download failed`);
+          continue;
+        }
+
+        const buffer = await attachmentResponse.arrayBuffer();
+        const localFilePath = `${WATCH_DIRECTORY}/${fileName}`;
+        require("fs").writeFileSync(localFilePath, Buffer.from(buffer));
+
+        await processSingleFile(fileName);
+      }
+    } catch (err) {
+      console.error(`Fetching/processing attachments failed:`, err);
+    }
   }
 }
 
