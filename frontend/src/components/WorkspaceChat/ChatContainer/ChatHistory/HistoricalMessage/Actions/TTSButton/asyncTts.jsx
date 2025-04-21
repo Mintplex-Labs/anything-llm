@@ -1,14 +1,14 @@
 import { SpeakerHigh, PauseCircle, CircleNotch } from "@phosphor-icons/react";
 import { useTTS } from "@/contexts/TTSProvider";
 
-export default function AsyncTTSMessage({ slug, chatId }) {
+export default function AsyncTTSMessage({ slug, chatId, message }) {
   const { isPlaying, isLoading, togglePlay } = useTTS();
 
   if (!chatId) return null;
   return (
     <div className="mt-3 relative">
       <button
-        onClick={() => togglePlay(null, chatId, slug)}
+        onClick={() => togglePlay(message, chatId, slug)}
         data-tooltip-id="message-to-speech"
         data-tooltip-content={
           isPlaying ? "Pause TTS speech of message" : "TTS Speak message"

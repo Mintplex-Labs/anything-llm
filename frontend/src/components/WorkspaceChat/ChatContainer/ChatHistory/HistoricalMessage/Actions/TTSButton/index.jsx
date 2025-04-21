@@ -13,7 +13,7 @@ export default function TTSMessage({ slug, chatId, message }) {
     case "openai":
     case "generic-openai":
     case "elevenlabs":
-      return <AsyncTTSMessage slug={slug} chatId={chatId} />;
+      return <AsyncTTSMessage slug={slug} chatId={chatId} message={message} />;
     case "piper_local":
       return (
         <PiperTTSMessage
