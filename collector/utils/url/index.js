@@ -27,7 +27,7 @@ const runtimeSettings = new RuntimeSettings();
 function isInvalidIp({ hostname }) {
   if (runtimeSettings.get("allowAnyIp")) {
     console.log(
-      "\x1b[33mURL IP limitations bypassed via ENV - skipping checks!\x1b[0m"
+      "\x1b[33mURL IP local address restrictions have been disabled by administrator!\x1b[0m"
     );
     return false;
   }
