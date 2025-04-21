@@ -909,6 +909,10 @@
                     "type": "string",
                     "format": "binary",
                     "description": "The file to upload"
+                  },
+                  "addToWorkspaces": {
+                    "type": "string",
+                    "description": "comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2"
                   }
                 }
               }
@@ -1010,6 +1014,10 @@
                     "type": "string",
                     "format": "binary",
                     "description": "The file to upload"
+                  },
+                  "addToWorkspaces": {
+                    "type": "string",
+                    "description": "comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2"
                   }
                 }
               }
@@ -1023,7 +1031,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding.",
+        "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.",
         "parameters": [],
         "responses": {
           "200": {
@@ -1076,14 +1084,15 @@
           }
         },
         "requestBody": {
-          "description": "Link of web address to be scraped.",
+          "description": "Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "example": {
-                  "link": "https://anythingllm.com"
+                  "link": "https://anythingllm.com",
+                  "addToWorkspaces": "workspace1,workspace2"
                 }
               }
             }
@@ -1160,6 +1169,7 @@
                 "type": "object",
                 "example": {
                   "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
+                  "addToWorkspaces": "workspace1,workspace2",
                   "metadata": {
                     "title": "This key is required. See in /server/endpoints/api/document/index.js:287",
                     "keyOne": "valueOne",

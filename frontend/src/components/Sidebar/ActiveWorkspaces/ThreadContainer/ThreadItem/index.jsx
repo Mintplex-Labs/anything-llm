@@ -95,7 +95,7 @@ export default function ThreadItem({
             aria-current={isActive ? "page" : ""}
           >
             <p
-              className={`text-left text-sm truncate max-w-[165px] ${
+              className={`text-left text-sm truncate max-w-[150px] ${
                 isActive ? "font-medium text-white" : "text-theme-text-primary"
               }`}
             >
