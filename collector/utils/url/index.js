@@ -1,3 +1,4 @@
+const RuntimeSettings = require("../runtimeSettings");
 /**  ATTN: SECURITY RESEARCHERS
  * To Security researchers about to submit an SSRF report CVE - please don't.
  * We are aware that the code below is does not defend against any of the thousands of ways
@@ -13,15 +14,24 @@
 
 const VALID_PROTOCOLS = ["https:", "http:"];
 const INVALID_OCTETS = [192, 172, 10, 127];
+const runtimeSettings = new RuntimeSettings();
 
 /**
  * If an ip address is passed in the user is attempting to collector some internal service running on internal/private IP.
  * This is not a security feature and simply just prevents the user from accidentally entering invalid IP addresses.
+ * Can be bypassed via COLLECTOR_ALLOW_ANY_IP environment variable.
  * @param {URL} param0
  * @param {URL['hostname']} param0.hostname
  * @returns {boolean}
  */
 function isInvalidIp({ hostname }) {
+  if (runtimeSettings.get("allowAnyIp")) {
+    console.log(
+      "\x1b[33mURL IP local address restrictions have been disabled by administrator!\x1b[0m"
+    );
+    return false;
+  }
+
   const IPRegex = new RegExp(
     /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gi
   );
@@ -40,6 +50,14 @@ function isInvalidIp({ hostname }) {
   return INVALID_OCTETS.includes(Number(octetOne));
 }
 
+/**
+ * Validates a URL
+ * - Checks the URL forms a valid URL
+ * - Checks the URL is at least HTTP(S)
+ * - Checks the URL is not an internal IP - can be bypassed via COLLECTOR_ALLOW_ANY_IP
+ * @param {string} url
+ * @returns {boolean}
+ */
 function validURL(url) {
   try {
     const destination = new URL(url);
