@@ -322,7 +322,11 @@ function apiDocumentEndpoints(app) {
               type: 'object',
               example: {
                 "link": "https://anythingllm.com",
-                "addToWorkspaces": "workspace1,workspace2"
+                "addToWorkspaces": "workspace1,workspace2",
+                "headers": {
+                  "Authorization": "Bearer token123",
+                  "Custom-Header": "value"
+                }
               }
             }
           }
@@ -365,7 +369,7 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const Collector = new CollectorApi();
-        const { link, addToWorkspaces = "" } = reqBody(request);
+        const { link, addToWorkspaces = "", headers = {} } = reqBody(request);
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -379,8 +383,10 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        const { success, reason, documents } =
-          await Collector.processLink(link);
+        const { success, reason, documents } = await Collector.processLink(
+          link,
+          headers
+        );
         if (!success) {
           response
             .status(500)

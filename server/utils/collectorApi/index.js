@@ -101,12 +101,18 @@ class CollectorApi {
    * Process a link
    * - Will append the options to the request body
    * @param {string} link - The link to process
+   * @param {Object} headers - Custom headers to use when making the request
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async processLink(link = "") {
+  async processLink(link = "", headers = {}) {
     if (!link) return false;
 
-    const data = JSON.stringify({ link, options: this.#attachOptions() });
+    const data = JSON.stringify({
+      link,
+      headers,
+      options: this.#attachOptions(),
+    });
+
     return await fetch(`${this.endpoint}/process-link`, {
       method: "POST",
       headers: {

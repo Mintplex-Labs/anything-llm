@@ -11,15 +11,17 @@ const { default: slugify } = require("slugify");
  * @param {string} link - The URL to scrape
  * @param {('html' | 'text')} captureAs - The format to capture the page content as
  * @param {boolean} processAsDocument - Whether to process the content as a document or return the content directly
+ * @param {Object} headers - Custom headers to use when making the request
  * @returns {Promise<Object>} - The content of the page
  */
 async function scrapeGenericUrl(
   link,
   captureAs = "text",
-  processAsDocument = true
+  processAsDocument = true,
+  headers = {}
 ) {
   console.log(`-- Working URL ${link} => (${captureAs}) --`);
-  const content = await getPageContent(link, captureAs);
+  const content = await getPageContent(link, captureAs, headers);
 
   if (!content.length) {
     console.error(`Resulting URL content was empty at ${link}.`);
@@ -67,9 +69,10 @@ async function scrapeGenericUrl(
  * Get the content of a page
  * @param {string} link - The URL to get the content of
  * @param {('html' | 'text')} captureAs - The format to capture the page content as
+ * @param {Object} headers - Custom headers to use when making the request
  * @returns {Promise<string>} - The content of the page
  */
-async function getPageContent(link, captureAs = "text") {
+async function getPageContent(link, captureAs = "text", headers = {}) {
   try {
     let pageContents = [];
     const loader = new PuppeteerWebBaseLoader(link, {
@@ -81,6 +84,9 @@ async function getPageContent(link, captureAs = "text") {
         waitUntil: "networkidle2",
       },
       async evaluate(page, browser) {
+        if (Object.keys(headers).length > 0) {
+          await page.setExtraHTTPHeaders(headers);
+        }
         const result = await page.evaluate((captureAs) => {
           if (captureAs === "text") return document.body.innerText;
           if (captureAs === "html") return document.documentElement.innerHTML;
@@ -112,6 +118,7 @@ async function getPageContent(link, captureAs = "text") {
         "Content-Type": "text/plain",
         "User-Agent":
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36,gzip(gfe)",
+        ...headers,
       },
     }).then((res) => res.text());
     return pageText;
