@@ -12,7 +12,10 @@ const { default: slugify } = require("slugify");
 const path = require("path");
 const fs = require("fs");
 const { processSingleFile } = require("../../../../processSingleFile");
-const { WATCH_DIRECTORY, SUPPORTED_FILETYPE_CONVERTERS } = require("../../../constants");
+const {
+  WATCH_DIRECTORY,
+  SUPPORTED_FILETYPE_CONVERTERS,
+} = require("../../../constants");
 
 class Page {
   /**
@@ -289,9 +292,7 @@ class DrupalWiki {
       for (const attachment of data.content || data) {
         const { fileName, id: attachId } = attachment;
         const lowerName = fileName.toLowerCase();
-        if (
-          !extensionsList.some((ext) => lowerName.endsWith(ext))
-        ) {
+        if (!extensionsList.some((ext) => lowerName.endsWith(ext))) {
           continue;
         }
 
