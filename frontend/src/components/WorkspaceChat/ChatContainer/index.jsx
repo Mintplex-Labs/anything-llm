@@ -35,6 +35,27 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const hasSentMessage = useRef(false);
   const { speak } = useTTS();
 
+  const canAutoSpeakMessage = (
+    chatHistory,
+    autoSpeak,
+    hasSentMessage,
+    lastMessageRef
+  ) => {
+    if (!autoSpeak) return false;
+    if (!chatHistory.length) return false;
+    if (!hasSentMessage) return false;
+
+    const lastMessage = chatHistory[chatHistory.length - 1];
+    if (!lastMessage) return false;
+    if (lastMessage.role !== "assistant") return false;
+    if (!lastMessage.content || lastMessage.content === "") return false;
+    if (!lastMessage.chatId) return false;
+    if (lastMessage.uuid === lastMessageRef.current) return false;
+
+    lastMessageRef.current = lastMessage.uuid;
+    return lastMessage;
+  };
+
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
@@ -271,19 +292,15 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
   // Auto-speak last message if enabled
   useEffect(() => {
-    if (!autoSpeak) return;
-    if (!chatHistory.length) return;
-    if (!hasSentMessage.current) return;
+    const message = canAutoSpeakMessage(
+      chatHistory,
+      autoSpeak,
+      hasSentMessage.current,
+      lastMessageRef
+    );
+    if (!message) return;
 
-    const lastMessage = chatHistory[chatHistory.length - 1];
-    if (!lastMessage) return;
-    if (lastMessage.role !== "assistant") return;
-    if (!lastMessage.content || lastMessage.content === "") return;
-    if (!lastMessage.chatId) return;
-    if (lastMessage.uuid === lastMessageRef.current) return;
-
-    lastMessageRef.current = lastMessage.uuid;
-    speak(lastMessage.content, lastMessage.chatId, workspace.slug);
+    speak(message.content, message.chatId, workspace.slug);
   }, [chatHistory, autoSpeak]);
 
   return (

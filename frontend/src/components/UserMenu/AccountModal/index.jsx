@@ -180,11 +180,15 @@ export default function AccountModal({ user, hideModal }) {
                   defaultValue={user.bio}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-6">
-                <ThemePreference />
-                <LanguagePreference />
-                <AutoSubmitPreference />
-                <AutoSpeakPreference />
+              <div className="flex gap-x-16">
+                <div className="flex flex-col gap-y-6">
+                  <ThemePreference />
+                  <LanguagePreference />
+                </div>
+                <div className="flex flex-col gap-y-6">
+                  <AutoSubmitPreference />
+                  <AutoSpeakPreference />
+                </div>
               </div>
             </div>
             <div className="flex justify-between items-center border-t border-theme-modal-border pt-4 p-6">
@@ -291,7 +295,7 @@ function AutoSubmitPreference() {
         htmlFor="autoSubmit"
         className="block mb-2 text-sm font-medium text-white"
       >
-        {t("appearance.auto_submit.title")}
+        {t("customization.chat.auto_submit.title")}
       </label>
       <div className="flex items-center gap-x-4">
         <label className="relative inline-flex cursor-pointer items-center">
@@ -307,7 +311,7 @@ function AutoSubmitPreference() {
         </label>
       </div>
       <p className="mt-2 text-xs text-white/60 max-w-[200px]">
-        {t("appearance.auto_submit.description")}
+        {t("customization.chat.auto_submit.description")}
       </p>
     </div>
   );
@@ -326,6 +330,10 @@ function AutoSpeakPreference() {
     const newValue = e.target.checked;
     setAutoSpeak(newValue);
     Appearance.updateSettings({ autoSpeak: newValue });
+    showToast("Auto-speak preference updated", "success");
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   };
 
   return (
@@ -334,7 +342,7 @@ function AutoSpeakPreference() {
         htmlFor="autoSpeak"
         className="block mb-2 text-sm font-medium text-white"
       >
-        {t("appearance.auto_speak.title")}
+        {t("customization.chat.auto_speak.title")}
       </label>
       <div className="flex items-center gap-x-4">
         <label className="relative inline-flex cursor-pointer items-center">
@@ -350,7 +358,7 @@ function AutoSpeakPreference() {
         </label>
       </div>
       <p className="mt-2 text-xs text-white/60 max-w-[200px]">
-        {t("appearance.auto_speak.description")}
+        {t("customization.chat.auto_speak.description")}
       </p>
     </div>
   );
