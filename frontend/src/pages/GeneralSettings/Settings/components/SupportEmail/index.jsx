@@ -1,87 +1,84 @@
+import useUser from "@/hooks/useUser";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
-export default function CustomAppName() {
+export default function SupportEmail() {
+  const { user } = useUser();
   const [loading, setLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
-  const [customAppName, setCustomAppName] = useState("");
-  const [originalAppName, setOriginalAppName] = useState("");
-  const [canCustomize, setCanCustomize] = useState(false);
+  const [supportEmail, setSupportEmail] = useState("");
+  const [originalEmail, setOriginalEmail] = useState("");
+  const { t } = useTranslation();
 
   useEffect(() => {
-    const fetchInitialParams = async () => {
-      const settings = await System.keys();
-      if (!settings?.MultiUserMode && !settings?.RequiresAuth) {
-        setCanCustomize(false);
-        return false;
-      }
-
-      const { appName } = await System.fetchCustomAppName();
-      setCustomAppName(appName || "");
-      setOriginalAppName(appName || "");
-      setCanCustomize(true);
+    const fetchSupportEmail = async () => {
+      const supportEmail = await System.fetchSupportEmail();
+      setSupportEmail(supportEmail.email || "");
+      setOriginalEmail(supportEmail.email || "");
       setLoading(false);
     };
-    fetchInitialParams();
+    fetchSupportEmail();
   }, []);
 
-  const updateCustomAppName = async (e, newValue = null) => {
+  const updateSupportEmail = async (e, newValue = null) => {
     e.preventDefault();
-    let custom_app_name = newValue;
+    let support_email = newValue;
     if (newValue === null) {
       const form = new FormData(e.target);
-      custom_app_name = form.get("customAppName");
+      support_email = form.get("supportEmail");
     }
+
     const { success, error } = await Admin.updateSystemPreferences({
-      custom_app_name,
+      support_email,
     });
+
     if (!success) {
-      showToast(`Failed to update custom app name: ${error}`, "error");
+      showToast(`Failed to update support email: ${error}`, "error");
       return;
     } else {
-      showToast("Successfully updated custom app name.", "success");
-      window.localStorage.removeItem(System.cacheKeys.customAppName);
-      setCustomAppName(custom_app_name);
-      setOriginalAppName(custom_app_name);
+      showToast("Successfully updated support email.", "success");
+      window.localStorage.removeItem(System.cacheKeys.supportEmail);
+      setSupportEmail(support_email);
+      setOriginalEmail(support_email);
       setHasChanges(false);
     }
   };
 
   const handleChange = (e) => {
-    setCustomAppName(e.target.value);
+    setSupportEmail(e.target.value);
     setHasChanges(true);
   };
 
-  if (!canCustomize || loading) return null;
-
+  if (loading || !user?.role) return null;
   return (
     <form
       className="flex flex-col gap-y-0.5 mt-4"
-      onSubmit={updateCustomAppName}
+      onSubmit={updateSupportEmail}
     >
       <h2 className="text-sm leading-6 font-semibold text-white">
-        Custom App Name
+        {t("customization.items.support-email.title")}
       </h2>
       <p className="text-xs text-white/60">
-        Set a custom app name that is displayed on the login page.
+        {t("customization.items.support-email.description")}
       </p>
       <div className="flex items-center gap-x-4">
         <input
-          name="customAppName"
-          type="text"
+          name="supportEmail"
+          type="email"
           className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
-          placeholder="AnythingLLM"
+          placeholder="support@mycompany.com"
           required={true}
           autoComplete="off"
           onChange={handleChange}
-          value={customAppName}
+          value={supportEmail}
         />
-        {originalAppName !== "" && (
+        {originalEmail !== "" && (
           <button
             type="button"
-            onClick={(e) => updateCustomAppName(e, "")}
+            onClick={(e) => updateSupportEmail(e, "")}
             className="text-white text-base font-medium hover:text-opacity-60"
           >
             Clear

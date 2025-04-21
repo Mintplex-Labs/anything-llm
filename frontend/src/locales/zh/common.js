@@ -94,6 +94,8 @@ const TRANSLATIONS = {
     contact: "联系支持",
     "browser-extension": "浏览器扩展",
     "system-prompt-variables": null,
+    interface: null,
+    branding: null,
   },
   login: {
     "multi-user": {
@@ -321,35 +323,6 @@ const TRANSLATIONS = {
       prompt: "提示",
       response: "响应",
       at: "发送时间",
-    },
-  },
-  appearance: {
-    title: "外观",
-    description: "自定义平台的外观设置。",
-    logo: {
-      title: "自定义图标",
-      description: "上传你的自定义图标，让你的聊天机器人成为你的。",
-      add: "添加自定义图标",
-      recommended: "建议尺寸：800 x 200",
-      remove: "移除",
-      replace: "替换",
-    },
-    message: {
-      title: "自定义消息",
-      description: "自定义向用户显示的自动消息。",
-      new: "新建",
-      system: "系统",
-      user: "用户",
-      message: "消息",
-      assistant: "AnythingLLM 聊天助手",
-      "double-click": "双击以编辑...",
-      save: "保存消息",
-    },
-    icons: {
-      title: "自定义页脚图标",
-      description: "自定义侧边栏底部显示的页脚图标。",
-      icon: "图标",
-      link: "链接",
     },
   },
   api: {
@@ -658,6 +631,79 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
   },
 };
 

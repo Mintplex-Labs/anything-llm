@@ -90,6 +90,8 @@ const TRANSLATIONS = {
     contact: "Destekle İletişime Geçin",
     "browser-extension": "Tarayıcı Uzantısı",
     "system-prompt-variables": null,
+    interface: null,
+    branding: null,
   },
   login: {
     "multi-user": {
@@ -333,38 +335,6 @@ const TRANSLATIONS = {
       prompt: "Komut (Prompt)",
       response: "Yanıt",
       at: "Gönderilme Zamanı",
-    },
-  },
-  appearance: {
-    title: "Görünüm",
-    description: "Platformunuzun görünüm ayarlarını özelleştirin.",
-    logo: {
-      title: "Logoyu Özelleştir",
-      description:
-        "Özel bir logo yükleyerek chatbot'unuzu kendinize ait hale getirin.",
-      add: "Özel bir logo ekle",
-      recommended: "Önerilen boyut: 800 x 200",
-      remove: "Kaldır",
-      replace: "Değiştir",
-    },
-    message: {
-      title: "Mesajları Özelleştir",
-      description:
-        "Kullanıcılarınıza gösterilen otomatik mesajları özelleştirin.",
-      new: "Yeni",
-      system: "sistem",
-      user: "kullanıcı",
-      message: "mesaj",
-      assistant: "AnythingLLM Sohbet Asistanı",
-      "double-click": "Düzenlemek için çift tıklayın...",
-      save: "Mesajları Kaydet",
-    },
-    icons: {
-      title: "Özel Altbilgi Simgeleri",
-      description:
-        "Kenar çubuğunun altında görüntülenen altbilgi simgelerini özelleştirin.",
-      icon: "Simge",
-      link: "Bağlantı",
     },
   },
   api: {
@@ -683,6 +653,79 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
   },
 };
 

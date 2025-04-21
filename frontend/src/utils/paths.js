@@ -1,5 +1,16 @@
 import { API_BASE } from "./constants";
 
+function applyOptions(path, options = {}) {
+  let updatedPath = path;
+  if (!options || Object.keys(options).length === 0) return updatedPath;
+
+  if (options.search) {
+    const searchParams = new URLSearchParams(options.search);
+    updatedPath += `?${searchParams.toString()}`;
+  }
+  return updatedPath;
+}
+
 export default {
   home: () => {
     return "/";
@@ -49,15 +60,18 @@ export default {
     return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
   },
   workspace: {
-    chat: (slug) => {
-      return `/workspace/${slug}`;
+    chat: (slug, options = {}) => {
+      return applyOptions(`/workspace/${slug}`, options);
     },
     settings: {
       generalAppearance: (slug) => {
         return `/workspace/${slug}/settings/general-appearance`;
       },
-      chatSettings: (slug) => {
-        return `/workspace/${slug}/settings/chat-settings`;
+      chatSettings: function (slug, options = {}) {
+        return applyOptions(
+          `/workspace/${slug}/settings/chat-settings`,
+          options
+        );
       },
       vectorDatabase: (slug) => {
         return `/workspace/${slug}/settings/vector-database`;
@@ -111,8 +125,11 @@ export default {
     security: () => {
       return "/settings/security";
     },
-    appearance: () => {
-      return "/settings/appearance";
+    interface: () => {
+      return "/settings/interface";
+    },
+    branding: () => {
+      return "/settings/branding";
     },
     agentSkills: () => {
       return "/settings/agents";

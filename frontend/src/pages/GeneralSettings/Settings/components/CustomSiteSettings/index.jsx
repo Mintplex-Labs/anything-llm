@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function CustomSiteSettings() {
+  const { t } = useTranslation();
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState({
     title: null,
@@ -40,18 +42,18 @@ export default function CustomSiteSettings() {
       onSubmit={handleSiteSettingUpdate}
     >
       <h2 className="text-sm leading-6 font-semibold text-white">
-        Custom Site Settings
+        {t("customization.items.browser-appearance.title")}
       </h2>
       <p className="text-xs text-white/60">
-        Change the content of the browser tab for customization and branding.
+        {t("customization.items.browser-appearance.description")}
       </p>
 
       <div className="w-fit">
         <h2 className="text-sm leading-6 font-medium text-white mt-2">
-          Tab Title
+          {t("customization.items.browser-appearance.tab.title")}
         </h2>
         <p className="text-xs text-white/60">
-          Set a custom tab title when the app is open in a browser.
+          {t("customization.items.browser-appearance.tab.description")}
         </p>
         <div className="flex items-center gap-x-4">
           <input
@@ -75,10 +77,10 @@ export default function CustomSiteSettings() {
 
       <div className="w-fit">
         <h2 className="text-sm leading-6 font-medium text-white mt-2">
-          Tab Favicon
+          {t("customization.items.browser-appearance.favicon.title")}
         </h2>
         <p className="text-xs text-white/60">
-          Define a url to an image to use for your favicon
+          {t("customization.items.browser-appearance.favicon.description")}
         </p>
         <div className="flex items-center gap-x-2">
           <img

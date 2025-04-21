@@ -18,7 +18,7 @@ class GitHubRepoLoader {
    */
   constructor(args = {}) {
     this.ready = false;
-    this.repo = args?.repo;
+    this.repo = this.#processRepoUrl(args?.repo);
     this.branch = args?.branch;
     this.accessToken = args?.accessToken || null;
     this.ignorePaths = args?.ignorePaths || [];
@@ -28,6 +28,36 @@ class GitHubRepoLoader {
     this.branches = [];
   }
 
+  /**
+   * Processes a repository URL to ensure it is in the correct format
+   * - remove the .git suffix if present
+   * - ensure the url is valid
+   * @param {string} repoUrl - The repository URL to process.
+   * @returns {string|null} The processed repository URL, or null if the URL is invalid.
+   */
+  #processRepoUrl(repoUrl) {
+    if (!repoUrl) return repoUrl;
+    try {
+      const url = new URL(repoUrl);
+      if (url.pathname.endsWith(".git"))
+        url.pathname = url.pathname.slice(0, -4);
+      return url.toString();
+    } catch (e) {
+      console.error(
+        `[GitHub Loader]: Error processing repository URL ${this.repo}: ${e.message}`
+      );
+      return repoUrl;
+    }
+  }
+
+  /**
+   * Validates the GitHub URL format.
+   * - ensure the url is valid
+   * - ensure the hostname is github.com
+   * - ensure the pathname is in the format of github.com/{author}/{project}
+   * - sets the author and project properties of class instance
+   * @returns {boolean} True if the URL is valid, false otherwise.
+   */
   #validGithubUrl() {
     try {
       const url = new URL(this.repo);
