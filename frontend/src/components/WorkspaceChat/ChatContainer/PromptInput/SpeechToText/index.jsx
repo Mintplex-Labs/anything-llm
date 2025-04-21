@@ -7,9 +7,17 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { PROMPT_INPUT_EVENT } from "../../PromptInput";
 import { useTranslation } from "react-i18next";
+import Appearance from "@/models/appearance";
 
 let timeout;
 const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
+
+/**
+ * Speech-to-text input component for the chat window.
+ * @param {Object} props - The component props
+ * @param {(textToAppend: string, autoSubmit: boolean) => void} props.sendCommand - The function to send the command
+ * @returns {React.ReactElement} The SpeechToText component
+ */
 export default function SpeechToText({ sendCommand }) {
   const {
     transcript,
@@ -40,7 +48,7 @@ export default function SpeechToText({ sendCommand }) {
   function endSTTSession() {
     SpeechRecognition.stopListening();
     if (transcript.length > 0) {
-      sendCommand(transcript, true);
+      sendCommand(transcript, Appearance.get("autoSubmitSttInput"));
     }
 
     resetTranscript();
