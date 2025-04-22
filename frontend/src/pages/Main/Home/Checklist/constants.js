@@ -36,8 +36,11 @@ export const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
  * @property {boolean} completed
  */
 
-/** @type {ChecklistItem[]} */
-export const CHECKLIST_ITEMS = [
+/**
+ * Function to generate the checklist items
+ * @returns {ChecklistItem[]}
+ */
+export const CHECKLIST_ITEMS = () => [
   {
     id: "create_workspace",
     title: t("main-page.checklist.tasks.create_workspace.title"),

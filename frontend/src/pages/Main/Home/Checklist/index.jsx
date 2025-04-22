@@ -72,7 +72,7 @@ export default function Checklist() {
         const checklist = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
         const existingChecklist = checklist ? safeJsonParse(checklist, {}) : {};
         const isCompleted =
-          Object.keys(existingChecklist).length === CHECKLIST_ITEMS.length;
+          Object.keys(existingChecklist).length === CHECKLIST_ITEMS().length;
         setIsCompleted(isCompleted);
         if (isCompleted) return;
 
@@ -126,7 +126,7 @@ export default function Checklist() {
       const completedItems = safeJsonParse(checklist, {});
       setCompletedCount(Object.keys(completedItems).length);
       setIsCompleted(
-        Object.keys(completedItems).length === CHECKLIST_ITEMS.length
+        Object.keys(completedItems).length === CHECKLIST_ITEMS().length
       );
     } catch (error) {
       console.error(error);
@@ -170,9 +170,9 @@ export default function Checklist() {
             <h1 className="text-theme-home-text uppercase text-sm font-semibold">
               {t("main-page.checklist.title")}
             </h1>
-            {CHECKLIST_ITEMS.length - completedCount > 0 && (
+            {CHECKLIST_ITEMS().length - completedCount > 0 && (
               <p className="text-theme-home-text-secondary text-xs">
-                {CHECKLIST_ITEMS.length - completedCount}{" "}
+                {CHECKLIST_ITEMS().length - completedCount}{" "}
                 {t("main-page.checklist.tasksLeft")}
               </p>
             )}
@@ -188,7 +188,7 @@ export default function Checklist() {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {CHECKLIST_ITEMS.map((item) => (
+          {CHECKLIST_ITEMS().map((item) => (
             <MemoizedChecklistItem
               key={item.id}
               id={item.id}
