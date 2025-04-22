@@ -101,15 +101,15 @@ class CollectorApi {
    * Process a link
    * - Will append the options to the request body
    * @param {string} link - The link to process
-   * @param {Object} headers - Custom headers to use when making the request
+   * @param {{[key: string]: string}} scraperHeaders - Custom headers to apply to the web-scraping request URL
    * @returns {Promise<Object>} - The response from the collector API
    */
-  async processLink(link = "", headers = {}) {
+  async processLink(link = "", scraperHeaders = {}) {
     if (!link) return false;
 
     const data = JSON.stringify({
       link,
-      headers,
+      scraperHeaders,
       options: this.#attachOptions(),
     });
 

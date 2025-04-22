@@ -323,9 +323,9 @@ function apiDocumentEndpoints(app) {
               example: {
                 "link": "https://anythingllm.com",
                 "addToWorkspaces": "workspace1,workspace2",
-                "headers": {
+                "scraperHeaders": {
                   "Authorization": "Bearer token123",
-                  "Custom-Header": "value"
+                  "My-Custom-Header": "value"
                 }
               }
             }
@@ -369,7 +369,11 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const Collector = new CollectorApi();
-        const { link, addToWorkspaces = "", headers = {} } = reqBody(request);
+        const {
+          link,
+          addToWorkspaces = "",
+          scraperHeaders = {},
+        } = reqBody(request);
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -385,7 +389,7 @@ function apiDocumentEndpoints(app) {
 
         const { success, reason, documents } = await Collector.processLink(
           link,
-          headers
+          scraperHeaders
         );
         if (!success) {
           response

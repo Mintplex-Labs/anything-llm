@@ -1093,9 +1093,9 @@
                 "example": {
                   "link": "https://anythingllm.com",
                   "addToWorkspaces": "workspace1,workspace2",
-                  "headers": {
+                  "scraperHeaders": {
                     "Authorization": "Bearer token123",
-                    "Custom-Header": "value"
+                    "My-Custom-Header": "value"
                   }
                 }
               }
