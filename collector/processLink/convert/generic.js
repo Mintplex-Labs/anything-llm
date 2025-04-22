@@ -84,9 +84,6 @@ async function getPageContent(link, captureAs = "text", headers = {}) {
         waitUntil: "networkidle2",
       },
       async evaluate(page, browser) {
-        if (Object.keys(headers).length > 0) {
-          await page.setExtraHTTPHeaders(headers);
-        }
         const result = await page.evaluate((captureAs) => {
           if (captureAs === "text") return document.body.innerText;
           if (captureAs === "html") return document.documentElement.innerHTML;
@@ -96,6 +93,34 @@ async function getPageContent(link, captureAs = "text", headers = {}) {
         return result;
       },
     });
+
+    // Override scrape method if headers are available
+    if (Object.keys(headers).length > 0) {
+      loader.scrape = async function() {
+        const { launch } = await PuppeteerWebBaseLoader.imports();
+        const browser = await launch({
+          headless: "new",
+          defaultViewport: null,
+          ignoreDefaultArgs: ["--disable-extensions"],
+          ...this.options?.launchOptions,
+        });
+        const page = await browser.newPage();
+        await page.setExtraHTTPHeaders(headers);
+
+        await page.goto(this.webPath, {
+          timeout: 180000,
+          waitUntil: "networkidle2",
+          ...this.options?.gotoOptions,
+        });
+
+        const bodyHTML = this.options?.evaluate
+          ? await this.options.evaluate(page, browser)
+          : await page.evaluate(() => document.body.innerHTML);
+
+        await browser.close();
+        return bodyHTML;
+      };
+    }
 
     const docs = await loader.load();
 
