@@ -73,19 +73,24 @@ async function scrapeGenericUrl({
 /**
  * Validate the headers object
  * - Keys & Values must be strings and not empty
- * - Delete any keys from the object that are not strings or empty
+ * - Assemble a new object with only the valid keys and values
  * @param {{[key: string]: string}} headers - The headers object to validate
  * @returns {{[key: string]: string}} - The validated headers object
  */
 function validatedHeaders(headers = {}) {
-  if (Object.keys(headers).length === 0) return {};
-  let validHeaders = {};
-  for (const key of Object.keys(headers)) {
-    if (!key || typeof headers[key] !== "string") continue;
-    if (!headers[key] || typeof headers[key] !== "string") continue;
-    validHeaders[key] = headers[key];
+  try {
+    if (Object.keys(headers).length === 0) return {};
+    let validHeaders = {};
+    for (const key of Object.keys(headers)) {
+      if (!key?.trim()) continue;
+      if (typeof headers[key] !== "string" || !headers[key]?.trim()) continue;
+      validHeaders[key] = headers[key].trim();
+    }
+    return validHeaders;
+  } catch (error) {
+    console.error("Error validating headers", error);
+    return {};
   }
-  return validHeaders;
 }
 
 /**
