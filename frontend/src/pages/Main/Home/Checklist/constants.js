@@ -64,7 +64,7 @@ export const CHECKLIST_ITEMS = () => [
       showNewWsModal = noop,
     }) => {
       if (workspaces.length === 0) {
-        showToast(t("main-page.checklist.noWorkspaceError"), "warning", {
+        showToast(t("main-page.noWorkspaceError"), "warning", {
           clear: true,
         });
         showNewWsModal();
@@ -88,7 +88,8 @@ export const CHECKLIST_ITEMS = () => [
       showNewWsModal = noop,
     }) => {
       if (workspaces.length === 0) {
-        showToast(t("main-page.checklist.noWorkspaceError"), "warning", {
+        debugger;
+        showToast(t("main-page.noWorkspaceError"), "warning", {
           clear: true,
         });
         showNewWsModal();
@@ -112,7 +113,7 @@ export const CHECKLIST_ITEMS = () => [
       showToast = noop,
     }) => {
       if (workspaces.length === 0) {
-        showToast(t("main-page.checklist.noWorkspaceError"), "warning", {
+        showToast(t("main-page.noWorkspaceError"), "warning", {
           clear: true,
         });
         showNewWsModal();
@@ -141,11 +142,7 @@ export const CHECKLIST_ITEMS = () => [
       showToast = noop,
     }) => {
       if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before setting up slash commands.",
-          "warning",
-          { clear: true }
-        );
+        showToast(t("main-page.noWorkspaceError"), "warning", { clear: true });
         showNewWsModal();
         return false;
       }

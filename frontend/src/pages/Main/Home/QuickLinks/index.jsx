@@ -27,11 +27,9 @@ export default function QuickLinks() {
       const firstWorkspace = workspaces[0];
       navigate(paths.workspace.chat(firstWorkspace.slug));
     } else {
-      showToast(
-        "Please create a workspace before starting a chat.",
-        "warning",
-        { clear: true }
-      );
+      showToast(t("main-page.noWorkspaceError"), "warning", {
+        clear: true,
+      });
       showNewWsModal();
     }
   };
@@ -43,7 +41,7 @@ export default function QuickLinks() {
       setSelectedWorkspace(firstWorkspace);
       showModal();
     } else {
-      showToast(t("main-page.quickLinks.noWorkspaceError"), "warning", {
+      showToast(t("main-page.noWorkspaceError"), "warning", {
         clear: true,
       });
       showNewWsModal();
