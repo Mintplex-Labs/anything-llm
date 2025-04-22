@@ -4,7 +4,7 @@ const Appearance = {
   defaultSettings: {
     showScrollbar: false,
     autoSubmitSttInput: true,
-    autoPlayAssistantTtsResponse: true,
+    autoPlayAssistantTtsResponse: false,
   },
 
   /**
