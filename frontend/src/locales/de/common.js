@@ -770,82 +770,89 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError: null,
+    noWorkspaceError:
+      "Bitte erstellen Sie einen Arbeitsbereich, bevor Sie einen Chat beginnen.",
     checklist: {
-      title: null,
-      tasksLeft: null,
-      completed: null,
-      dismiss: null,
+      title: "Erste Schritte",
+      tasksLeft: "Aufgaben übrig",
+      completed: "Sie sind auf dem Weg, ein AnythingLLM-Experte zu werden!",
+      dismiss: "schließen",
       tasks: {
         create_workspace: {
-          title: null,
-          description: null,
-          action: null,
+          title: "Einen Arbeitsbereich erstellen",
+          description:
+            "Erstellen Sie Ihren ersten Arbeitsbereich, um zu beginnen",
+          action: "Erstellen",
         },
         send_chat: {
-          title: null,
-          description: null,
-          action: null,
+          title: "Einen Chat senden",
+          description: "Starten Sie ein Gespräch mit Ihrem KI-Assistenten",
+          action: "Chat",
         },
         embed_document: {
-          title: null,
-          description: null,
-          action: null,
+          title: "Ein Dokument einbetten",
+          description:
+            "Fügen Sie Ihr erstes Dokument zu Ihrem Arbeitsbereich hinzu",
+          action: "Einbetten",
         },
         setup_system_prompt: {
-          title: null,
-          description: null,
-          action: null,
+          title: "Ein System-Prompt einrichten",
+          description: "Konfigurieren Sie das Verhalten Ihres KI-Assistenten",
+          action: "Einrichten",
         },
         define_slash_command: {
-          title: null,
-          description: null,
-          action: null,
+          title: "Einen Slash-Befehl definieren",
+          description:
+            "Erstellen Sie benutzerdefinierte Befehle für Ihren Assistenten",
+          action: "Definieren",
         },
         visit_community: {
-          title: null,
-          description: null,
-          action: null,
+          title: "Community Hub besuchen",
+          description: "Entdecken Sie Community-Ressourcen und Vorlagen",
+          action: "Stöbern",
         },
       },
     },
     quickLinks: {
-      title: null,
-      sendChat: null,
-      embedDocument: null,
-      createWorkspace: null,
+      title: "Schnellzugriffe",
+      sendChat: "Chat senden",
+      embedDocument: "Dokument einbetten",
+      createWorkspace: "Arbeitsbereich erstellen",
     },
     exploreMore: {
-      title: null,
+      title: "Weitere Funktionen erkunden",
       features: {
         customAgents: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
+          title: "Benutzerdefinierte KI-Agenten",
+          description:
+            "Erstellen Sie leistungsstarke KI-Agenten und Automatisierungen ohne Code.",
+          primaryAction: "Chatten mit @agent",
+          secondaryAction: "Einen Agenten-Flow erstellen",
         },
         slashCommands: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
+          title: "Slash-Befehle",
+          description:
+            "Sparen Sie Zeit und fügen Sie Eingabeaufforderungen mit benutzerdefinierten Slash-Befehlen ein.",
+          primaryAction: "Einen Slash-Befehl erstellen",
+          secondaryAction: "Im Hub erkunden",
         },
         systemPrompts: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
+          title: "System-Eingabeaufforderungen",
+          description:
+            "Ändern Sie die System-Eingabeaufforderung, um die KI-Antworten eines Arbeitsbereichs anzupassen.",
+          primaryAction: "Eine System-Eingabeaufforderung ändern",
+          secondaryAction: "Eingabevariablen verwalten",
         },
       },
     },
     announcements: {
-      title: null,
+      title: "Updates & Ankündigungen",
     },
     resources: {
-      title: null,
+      title: "Ressourcen",
       links: {
-        docs: null,
-        star: null,
+        docs: "Dokumentation",
+        star: "Auf Github mit Stern versehen",
       },
     },
   },
