@@ -96,7 +96,7 @@ async function getPageContent(link, captureAs = "text", headers = {}) {
 
     // Override scrape method if headers are available
     if (Object.keys(headers).length > 0) {
-      loader.scrape = async function() {
+      loader.scrape = async function () {
         const { launch } = await PuppeteerWebBaseLoader.imports();
         const browser = await launch({
           headless: "new",
