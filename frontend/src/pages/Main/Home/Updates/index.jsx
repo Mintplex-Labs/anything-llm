@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { safeJsonParse } from "@/utils/request";
-import { ArrowSquareOut } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import PlaceholderOne from "@/media/announcements/placeholder-1.png";
 import PlaceholderTwo from "@/media/announcements/placeholder-2.png";
 import PlaceholderThree from "@/media/announcements/placeholder-3.png";
+import { useTranslation } from "react-i18next";
 
 /**
  * @typedef {Object} NewsItem
@@ -30,13 +30,14 @@ function randomPlaceholder() {
 }
 
 export default function Updates() {
+  const { t } = useTranslation();
   const { isLoading, news } = useNewsItems();
   if (isLoading || !news?.length) return null;
 
   return (
     <div>
       <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
-        Updates & Announcements
+        {t("main-page.announcements.title")}
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {news.map((item, index) => (

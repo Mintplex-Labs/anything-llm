@@ -705,6 +705,86 @@ const TRANSLATIONS = {
       },
     },
   },
+  "main-page": {
+    noWorkspaceError: "请在开始聊天前创建一个工作区。",
+    checklist: {
+      title: "入门指南",
+      tasksLeft: "剩余任务",
+      completed: "你正在成为AnythingLLM专家的路上！",
+      dismiss: "关闭",
+      tasks: {
+        create_workspace: {
+          title: "创建工作区",
+          description: "创建你的第一个工作区以开始使用",
+          action: "创建",
+        },
+        send_chat: {
+          title: "发送聊天",
+          description: "开始与你的AI助手对话",
+          action: "聊天",
+        },
+        embed_document: {
+          title: "嵌入文档",
+          description: "添加你的第一个文档到工作区",
+          action: "嵌入",
+        },
+        setup_system_prompt: {
+          title: "设置系统提示",
+          description: "配置你的AI助手的行为",
+          action: "设置",
+        },
+        define_slash_command: {
+          title: "定义斜杠命令",
+          description: "为你的助手创建自定义命令",
+          action: "定义",
+        },
+        visit_community: {
+          title: "访问社区中心",
+          description: "探索社区资源和模板",
+          action: "浏览",
+        },
+      },
+    },
+    quickLinks: {
+      title: "快捷链接",
+      sendChat: "发送聊天",
+      embedDocument: "嵌入文档",
+      createWorkspace: "创建工作区",
+    },
+    exploreMore: {
+      title: "探索更多功能",
+      features: {
+        customAgents: {
+          title: "自定义AI代理",
+          description: "无需编程即可构建强大的AI代理和自动化流程。",
+          primaryAction: "使用@agent聊天",
+          secondaryAction: "构建代理流程",
+        },
+        slashCommands: {
+          title: "斜杠命令",
+          description: "使用自定义斜杠命令节省时间并注入提示。",
+          primaryAction: "创建斜杠命令",
+          secondaryAction: "在中心探索",
+        },
+        systemPrompts: {
+          title: "系统提示",
+          description: "修改系统提示以自定义工作区的AI回复。",
+          primaryAction: "修改系统提示",
+          secondaryAction: "管理提示变量",
+        },
+      },
+    },
+    announcements: {
+      title: "更新与公告",
+    },
+    resources: {
+      title: "资源",
+      links: {
+        docs: "文档",
+        star: "在Github上加星标",
+      },
+    },
+  },
 };
 
 export default TRANSLATIONS;
