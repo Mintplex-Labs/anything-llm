@@ -134,6 +134,9 @@ export default {
     agentSkills: () => {
       return "/settings/agents";
     },
+    chat: () => {
+      return "/settings/chat";
+    },
     apiKeys: () => {
       return "/settings/api-keys";
     },
