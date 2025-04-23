@@ -40,3 +40,6 @@ steps:
 
 images:
   - 'gcr.io/$PROJECT_ID/anythingllm'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
