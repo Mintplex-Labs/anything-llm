@@ -10,14 +10,14 @@ steps:
 
   - name: 'gcr.io/cloud-builders/docker'
     args:
-    [
-      'build',
-      '--no-cache',
-      '--progress=auto',
-      '-t', 'gcr.io/$PROJECT_ID/anythingllm',
-      '-f', 'docker/Dockerfile',  # 指定 Dockerfile 路徑
-      '.'
-    ]
+      [
+        'build',
+        '--no-cache',
+        '--progress=auto',
+        '-t', 'gcr.io/$PROJECT_ID/anythingllm',
+        '-f', 'docker/Dockerfile',  # 指定 Dockerfile 路徑
+        '.'
+      ]
 
 
     env:
