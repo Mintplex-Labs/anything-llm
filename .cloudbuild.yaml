@@ -15,11 +15,11 @@ steps:
         '--no-cache',
         '--progress=auto',
         '-t', 'gcr.io/$PROJECT_ID/anythingllm',
-        '-f', 'docker/Dockerfile',  # 指定 Dockerfile 路徑
+        '-f', 'Dockerfile',  # 指定 Dockerfile 路徑
         '.'
       ]
 
-
+    dir: docker 
     env:
       - 'DOCKER_BUILDKIT=1'
 
