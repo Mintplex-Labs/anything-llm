@@ -19,7 +19,6 @@ steps:
         '.'
       ]
 
-    dir: docker 
     env:
       - 'DOCKER_BUILDKIT=1'
 
