@@ -164,18 +164,28 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="flex gap-x-2 items-center hover:bg-theme-file-picker-hover p-[2px] rounded ml-2"
+      onClick={updatePinStatus}
+      className="flex items-center ml-2 cursor-pointer"
+      data-tooltip-id="pin-document"
+      data-tooltip-content={
+        pinned ? "Un-pin from workspace" : "Pin to workspace"
+      }
     >
-      <PushPin
-        data-tooltip-id="pin-document"
-        data-tooltip-content={
-          pinned ? "Un-Pin from workspace" : "Pin to workspace"
-        }
-        size={16}
-        onClick={updatePinStatus}
-        weight={hover || pinned ? "fill" : "regular"}
-        className="outline-none text-base font-bold flex-shrink-0 cursor-pointer"
-      />
+      {pinned ? (
+        <div
+          className={`bg-theme-settings-input-active rounded-3xl whitespace-nowrap ${hover ? "bg-red-500/20" : ""}`}
+        >
+          <p className={`text-xs px-2 py-0.5 ${hover ? "text-red-500" : ""}`}>
+            {hover ? "Un-pin" : "Pinned"}
+          </p>
+        </div>
+      ) : (
+        <PushPin
+          size={16}
+          weight="regular"
+          className="outline-none text-base font-bold flex-shrink-0"
+        />
+      )}
     </div>
   );
 });

@@ -8,8 +8,8 @@ const { safeJsonParse } = require("../../http");
  */
 async function executeApiCall(config, context) {
   const { url, method, headers = [], body, bodyType, formData } = config;
-  const { introspect } = context;
-
+  const { introspect, logger } = context;
+  logger(`\x1b[43m[AgentFlowToolExecutor]\x1b[0m - executing API Call block`);
   introspect(`Making ${method} request to external API...`);
 
   const requestConfig = {

@@ -30,6 +30,7 @@ import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
+import PPIOLogo from "@/media/llmprovider/ppio.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -57,6 +58,7 @@ import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
+import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -245,6 +247,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <DeepSeekOptions settings={settings} />,
     description: "Run DeepSeek's powerful LLMs.",
     requiredConfig: ["DeepSeekApiKey"],
+  },
+  {
+    name: "PPIO",
+    value: "ppio",
+    logo: PPIOLogo,
+    options: (settings) => <PPIOLLMOptions settings={settings} />,
+    description:
+      "Run stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
+    requiredConfig: ["PPIOApiKey"],
   },
   {
     name: "AWS Bedrock",

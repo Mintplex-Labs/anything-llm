@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { DotsThreeOutline, LinkSimple } from "@phosphor-icons/react";
+import { DotsThreeOutline, LinkSimple, Trash } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -63,11 +63,11 @@ export default function EmbedRow({ embed }) {
     <>
       <tr
         ref={rowRef}
-        className="bg-transparent text-white text-opacity-80 text-sm"
+        className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10"
       >
         <th
           scope="row"
-          className="px-6 py-4 whitespace-nowrap flex item-center gap-x-1"
+          className="px-6 whitespace-nowrap flex item-center gap-x-1"
         >
           <a
             href={paths.workspace.chat(embed.workspace.slug)}
@@ -78,39 +78,37 @@ export default function EmbedRow({ embed }) {
             <LinkSimple className="mr-2 w-5 h-5" /> {embed.workspace.name}
           </a>
         </th>
-        <th scope="row" className="px-6 py-4 whitespace-nowrap">
+        <th scope="row" className="px-6 whitespace-nowrap">
           {nFormatter(embed._count.embed_chats)}
         </th>
-        <th scope="row" className="px-6 py-4 whitespace-nowrap">
+        <th scope="row" className="px-6 whitespace-nowrap">
           <ActiveDomains domainList={embed.allowlist_domains} />
         </th>
-        <td className="px-6 py-4 flex items-center gap-x-6">
+        <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
             onClick={openSettingsModal}
-            className="font-medium text-white text-opacity-80 rounded-lg hover:text-white hover:light:text-gray-500 px-2 py-1 hover:text-opacity-60 hover:bg-white hover:bg-opacity-10"
+            className="text-xs font-medium text-white text-opacity-80 rounded-lg hover:text-white hover:light:text-gray-500 px-2 py-1 hover:text-opacity-60 hover:bg-white hover:bg-opacity-10"
           >
             <DotsThreeOutline weight="fill" className="h-5 w-5" />
           </button>
-          <>
-            <button
-              onClick={openSnippetModal}
-              className="font-medium text-blue-600 dark:text-blue-300 px-2 py-1 rounded-lg hover:bg-blue-50 hover:dark:bg-blue-800 hover:dark:bg-opacity-20"
-            >
-              Show Code
-            </button>
-            <button
-              onClick={handleSuspend}
-              className="font-medium text-orange-600 dark:text-orange-300 px-2 py-1 rounded-lg hover:bg-orange-50 hover:dark:bg-orange-800 hover:dark:bg-opacity-20"
-            >
-              {enabled ? "Disable" : "Enable"}
-            </button>
-            <button
-              onClick={handleDelete}
-              className="font-medium text-red-600 dark:text-red-300 px-2 py-1 rounded-lg hover:bg-red-50 hover:dark:bg-red-800 hover:dark:bg-opacity-20"
-            >
-              Delete
-            </button>
-          </>
+          <button
+            onClick={openSnippetModal}
+            className="text-xs font-medium text-blue-600 dark:text-blue-300 px-2 py-1 rounded-lg hover:bg-blue-50 hover:dark:bg-blue-800 hover:dark:bg-opacity-20"
+          >
+            Show Code
+          </button>
+          <button
+            onClick={handleSuspend}
+            className="text-xs font-medium text-orange-600 dark:text-orange-300 px-2 py-1 rounded-lg hover:bg-orange-50 hover:dark:bg-orange-800 hover:dark:bg-opacity-20"
+          >
+            {enabled ? "Disable" : "Enable"}
+          </button>
+          <button
+            onClick={handleDelete}
+            className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
+          >
+            <Trash className="h-5 w-5" />
+          </button>
         </td>
       </tr>
       <ModalWrapper isOpen={isSettingsOpen}>
@@ -129,8 +127,12 @@ function ActiveDomains({ domainList }) {
     const domains = JSON.parse(domainList);
     return (
       <div className="flex flex-col gap-y-2">
-        {domains.map((domain) => {
-          return <p className="font-mono !font-normal">{domain}</p>;
+        {domains.map((domain, index) => {
+          return (
+            <p key={index} className="font-mono !font-normal">
+              {domain}
+            </p>
+          );
         })}
       </div>
     );
