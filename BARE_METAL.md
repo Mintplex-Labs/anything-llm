@@ -14,9 +14,10 @@ Here you can find the scripts and known working process to run AnythingLLM outsi
 
 - NodeJS v18
 - Yarn
+- 
 
 
-## Getting started
+## Getting started  
 
 1. Clone the repo into your server as the user who the application will run as.
 `git clone git@github.com:Mintplex-Labs/anything-llm.git`
