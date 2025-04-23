@@ -14,7 +14,7 @@ Here you can find the scripts and known working process to run AnythingLLM outsi
 
 - NodeJS v18
 - Yarn
-- 
+- DOcker
 
 
 ## Getting started  
