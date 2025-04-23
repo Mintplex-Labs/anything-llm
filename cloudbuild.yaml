@@ -10,17 +10,15 @@ steps:
 
   - name: 'gcr.io/cloud-builders/docker'
     args:
-      [
-        'build',
-        '--no-cache',
-        '--progress=auto',
-        '-t', 'gcr.io/$PROJECT_ID/anythingllm',
-        '-f', 'Dockerfile',  # 指定 Dockerfile 路徑
-        '.'
-      ]
-
+       - 'build'
+       - '--no-cache'
+       - '--progress=auto'
+       - '-t'
+       - 'gcr.io/$PROJECT_ID/anythingllm'
+       - '..'  # 注意：build context 是整個專案，因為 Dockerfile 在 docker/
+ 
     env:
-      - 'DOCKER_BUILDKIT=1'
+       - 'DOCKER_BUILDKIT=1'
 
   - name: 'gcr.io/cloud-builders/docker'
     args: [ 'push', 'gcr.io/$PROJECT_ID/anythingllm' ]
