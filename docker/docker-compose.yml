@@ -1,4 +1,4 @@
-name: anythingllm
+version: "3.8"
 
 networks:
   anything-llm:
