@@ -11,8 +11,8 @@ services:
       context: ../.
       dockerfile: ./docker/Dockerfile
       args:
-        ARG_UID: ${UID:-1000}
-        ARG_GID: ${GID:-1000}
+        ARG_UID: 1000
+        ARG_GID: 1000
     cap_add:
       - SYS_ADMIN
     volumes:
