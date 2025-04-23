@@ -6,16 +6,17 @@ steps:
       - |
         cd docker
         cp .env.example .env
-        chmod +x setup.sh
 
   - name: 'gcr.io/cloud-builders/docker'
     args:
-       - 'build'
-       - '--no-cache'
-       - '--progress=auto'
-       - '-t'
-       - 'gcr.io/$PROJECT_ID/anythingllm'
-       - '..'  # 注意：build context 是整個專案，因為 Dockerfile 在 docker/
+      - 'build'
+      - '--no-cache'
+      - '--progress=auto'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/anythingllm'
+      - '-f'
+      - 'docker/Dockerfile'   # 指定 Dockerfile 路徑
+      - '.'                   # 設定 build context 是根目錄（與 .cloudbuild.yaml 同層）
  
     env:
        - 'DOCKER_BUILDKIT=1'
