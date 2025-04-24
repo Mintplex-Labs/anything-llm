@@ -41,22 +41,30 @@ const DEFAULT_CONTEXT_WINDOW_TOKENS = 8191;
  * @returns {string | null} The validated image format (e.g., "jpeg") or null if invalid/unsupported.
  */
 function getImageFormatFromMime(mimeType) {
-  if (!mimeType || typeof mimeType !== 'string') {
-    console.warn(`[AWSBedrock] Invalid or missing MIME type provided for attachment.`);
+  if (!mimeType || typeof mimeType !== "string") {
+    console.warn(
+      `[AWSBedrock] Invalid or missing MIME type provided for attachment.`
+    );
     return null;
   }
-  const parts = mimeType.toLowerCase().split('/');
-  if (parts.length !== 2 || parts[0] !== 'image') {
-    console.warn(`[AWSBedrock] Invalid MIME type format: "${mimeType}". Expected "image/...".`);
+  const parts = mimeType.toLowerCase().split("/");
+  if (parts.length !== 2 || parts[0] !== "image") {
+    console.warn(
+      `[AWSBedrock] Invalid MIME type format: "${mimeType}". Expected "image/...".`
+    );
     return null;
   }
 
   let format = parts[1];
-  if (format === 'jpg') format = 'jpeg'; // Normalize jpg to jpeg
+  if (format === "jpg") format = "jpeg"; // Normalize jpg to jpeg
 
   if (!SUPPORTED_BEDROCK_IMAGE_FORMATS.includes(format)) {
-     console.warn(`[AWSBedrock] Unsupported image format: "${format}" from MIME type "${mimeType}". Supported formats: ${SUPPORTED_BEDROCK_IMAGE_FORMATS.join(', ')}.`);
-     return null;
+    console.warn(
+      `[AWSBedrock] Unsupported image format: "${format}" from MIME type "${mimeType}". Supported formats: ${SUPPORTED_BEDROCK_IMAGE_FORMATS.join(
+        ", "
+      )}.`
+    );
+    return null;
   }
   return format;
 }
@@ -77,14 +85,17 @@ function base64ToUint8Array(base64String) {
     }
     return bytes;
   } catch (e) {
-    console.error(`[AWSBedrock] Error decoding base64 string with atob: ${e.message}`);
-    if (e.name === 'InvalidCharacterError') {
-        console.error("[AWSBedrock] Base64 decoding failed. Ensure input string is valid base64 and does not contain a data URI prefix.");
+    console.error(
+      `[AWSBedrock] Error decoding base64 string with atob: ${e.message}`
+    );
+    if (e.name === "InvalidCharacterError") {
+      console.error(
+        "[AWSBedrock] Base64 decoding failed. Ensure input string is valid base64 and does not contain a data URI prefix."
+      );
     }
     return null;
   }
 }
-
 
 // --- AWSBedrockLLM Class ---
 
@@ -110,29 +121,35 @@ class AWSBedrockLLM {
   constructor(embedder = null, modelPreference = null) {
     // --- Environment Variable Validation ---
     const requiredEnvVars = [
-        'AWS_BEDROCK_LLM_ACCESS_KEY_ID',
-        'AWS_BEDROCK_LLM_ACCESS_KEY',
-        'AWS_BEDROCK_LLM_REGION',
-        'AWS_BEDROCK_LLM_MODEL_PREFERENCE' // Model preference is effectively required
+      "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
+      "AWS_BEDROCK_LLM_ACCESS_KEY",
+      "AWS_BEDROCK_LLM_REGION",
+      "AWS_BEDROCK_LLM_MODEL_PREFERENCE", // Model preference is effectively required
     ];
     for (const envVar of requiredEnvVars) {
-        if (!process.env[envVar]) {
-            throw new Error(`Required environment variable ${envVar} is not set.`);
-        }
+      if (!process.env[envVar]) {
+        throw new Error(`Required environment variable ${envVar} is not set.`);
+      }
     }
-    if (process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD === "sessionToken" && !process.env.AWS_BEDROCK_LLM_SESSION_TOKEN) {
-      throw new Error("AWS_BEDROCK_LLM_SESSION_TOKEN is not set for sessionToken authentication method.");
+    if (
+      process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD === "sessionToken" &&
+      !process.env.AWS_BEDROCK_LLM_SESSION_TOKEN
+    ) {
+      throw new Error(
+        "AWS_BEDROCK_LLM_SESSION_TOKEN is not set for sessionToken authentication method."
+      );
     }
 
     // --- Model and Limits Setup ---
-    this.model = modelPreference || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
+    this.model =
+      modelPreference || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
     // Get the total context window limit (used for input management)
     const contextWindowLimit = this.promptWindowLimit();
     // Define approximate limits for different parts of the prompt based on the context window
     this.limits = {
       history: Math.floor(contextWindowLimit * 0.15),
       system: Math.floor(contextWindowLimit * 0.15),
-      user: Math.floor(contextWindowLimit * 0.70), // Allow user prompt + context to take the bulk
+      user: Math.floor(contextWindowLimit * 0.7), // Allow user prompt + context to take the bulk
     };
 
     // --- AWS SDK Client Configuration ---
@@ -151,7 +168,9 @@ class AWSBedrockLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7; // Default sampling temperature
 
-    this.#log(`Initialized with model: ${this.model}. Auth: ${this.authMethod}. Context Window: ${contextWindowLimit}.`);
+    this.#log(
+      `Initialized with model: ${this.model}. Auth: ${this.authMethod}. Context Window: ${contextWindowLimit}.`
+    );
   }
 
   /**
@@ -186,7 +205,7 @@ class AWSBedrockLLM {
    * @param  {...any} args - Additional arguments to log.
    * @private
    */
-   #log(text, ...args) {
+  #log(text, ...args) {
     console.log(`\x1b[32m[AWSBedrock]\x1b[0m ${text}`, ...args);
   }
 
@@ -214,8 +233,12 @@ class AWSBedrockLLM {
 
     const numericLimit = Number(limit);
     if (isNaN(numericLimit) || numericLimit <= 0) {
-      console.error(`[AWSBedrock ERROR] Invalid AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT found: "${limitSourceValue}". Must be a positive number.`);
-      throw new Error(`Invalid AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT set in environment: "${limitSourceValue}"`);
+      console.error(
+        `[AWSBedrock ERROR] Invalid AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT found: "${limitSourceValue}". Must be a positive number.`
+      );
+      throw new Error(
+        `Invalid AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT set in environment: "${limitSourceValue}"`
+      );
     }
     // Note: Does not use MODEL_MAP for Bedrock context window. Relies on the specific Bedrock env var.
     return numericLimit;
@@ -237,21 +260,22 @@ class AWSBedrockLLM {
    * @returns {number} The maximum output tokens limit for API calls.
    */
   getMaxOutputTokens() {
-      const outputLimitSource = process.env.AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS;
-      let outputLimit = DEFAULT_MAX_OUTPUT_TOKENS; // Start with the class default
+    const outputLimitSource = process.env.AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS;
+    let outputLimit = DEFAULT_MAX_OUTPUT_TOKENS; // Start with the class default
 
-      if (outputLimitSource) {
-          const numericOutputLimit = Number(outputLimitSource);
-          // Validate the environment variable value
-          if (!isNaN(numericOutputLimit) && numericOutputLimit > 0) {
-              outputLimit = numericOutputLimit;
-          } else {
-              this.#log(`Invalid AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS value "${outputLimitSource}". Using default ${DEFAULT_MAX_OUTPUT_TOKENS}.`);
-          }
+    if (outputLimitSource) {
+      const numericOutputLimit = Number(outputLimitSource);
+      // Validate the environment variable value
+      if (!isNaN(numericOutputLimit) && numericOutputLimit > 0) {
+        outputLimit = numericOutputLimit;
+      } else {
+        this.#log(
+          `Invalid AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS value "${outputLimitSource}". Using default ${DEFAULT_MAX_OUTPUT_TOKENS}.`
+        );
       }
-      return outputLimit;
+    }
+    return outputLimit;
   }
-
 
   /**
    * Checks if the configured model is valid for chat completion (basic check for Bedrock).
@@ -276,49 +300,63 @@ class AWSBedrockLLM {
     const content = [];
 
     // Add text block if prompt is not empty
-    if (userPrompt && typeof userPrompt === 'string' && userPrompt.trim().length > 0) {
-        content.push({ text: userPrompt });
+    if (
+      userPrompt &&
+      typeof userPrompt === "string" &&
+      userPrompt.trim().length > 0
+    ) {
+      content.push({ text: userPrompt });
     }
 
     // Process valid attachments
     if (Array.isArray(attachments)) {
-        for (const attachment of attachments) {
-             if (!attachment || typeof attachment.mime !== 'string' || typeof attachment.contentString !== 'string') {
-                this.#log("Skipping invalid attachment object.", attachment);
-                continue;
-            }
-
-            // Strip data URI prefix (e.g., "data:image/png;base64,")
-            let base64Data = attachment.contentString;
-            const dataUriPrefixMatch = base64Data.match(/^data:image\/\w+;base64,/);
-            if (dataUriPrefixMatch) {
-                base64Data = base64Data.substring(dataUriPrefixMatch[0].length);
-            }
-
-            const format = getImageFormatFromMime(attachment.mime);
-            if (format) {
-                 const imageBytes = base64ToUint8Array(base64Data);
-                 if (imageBytes) {
-                     // Add the image block in the required Bedrock format
-                     content.push({
-                         image: {
-                             format: format,
-                             source: { bytes: imageBytes }
-                         }
-                     });
-                 } else {
-                      this.#log(`Skipping attachment with mime ${attachment.mime} due to base64 decoding error.`);
-                 }
-            } else {
-                 this.#log(`Skipping attachment with unsupported/invalid MIME type: ${attachment.mime}`);
-            }
+      for (const attachment of attachments) {
+        if (
+          !attachment ||
+          typeof attachment.mime !== "string" ||
+          typeof attachment.contentString !== "string"
+        ) {
+          this.#log("Skipping invalid attachment object.", attachment);
+          continue;
         }
+
+        // Strip data URI prefix (e.g., "data:image/png;base64,")
+        let base64Data = attachment.contentString;
+        const dataUriPrefixMatch = base64Data.match(/^data:image\/\w+;base64,/);
+        if (dataUriPrefixMatch) {
+          base64Data = base64Data.substring(dataUriPrefixMatch[0].length);
+        }
+
+        const format = getImageFormatFromMime(attachment.mime);
+        if (format) {
+          const imageBytes = base64ToUint8Array(base64Data);
+          if (imageBytes) {
+            // Add the image block in the required Bedrock format
+            content.push({
+              image: {
+                format: format,
+                source: { bytes: imageBytes },
+              },
+            });
+          } else {
+            this.#log(
+              `Skipping attachment with mime ${attachment.mime} due to base64 decoding error.`
+            );
+          }
+        } else {
+          this.#log(
+            `Skipping attachment with unsupported/invalid MIME type: ${attachment.mime}`
+          );
+        }
+      }
     }
 
     // Ensure content array is never empty (Bedrock requires at least one block)
     if (content.length === 0) {
-        this.#log("Warning: #generateContent resulted in an empty content array. Adding empty text block as fallback.");
-        content.push({ text: "" });
+      this.#log(
+        "Warning: #generateContent resulted in an empty content array. Adding empty text block as fallback."
+      );
+      content.push({ text: "" });
     }
 
     return content;
@@ -341,23 +379,32 @@ class AWSBedrockLLM {
     userPrompt = "",
     attachments = [],
   }) {
-    const systemMessageContent = `${systemPrompt}${this.#appendContext(contextTexts)}`;
+    const systemMessageContent = `${systemPrompt}${this.#appendContext(
+      contextTexts
+    )}`;
     let messages = [];
 
     // Handle system prompt (either real or simulated)
     if (this.noSystemPromptModels.includes(this.model)) {
-       if (systemMessageContent.trim().length > 0) {
-           this.#log(`Model ${this.model} doesn't support system prompts; simulating.`);
-           messages.push(
-              { role: "user", content: this.#generateContent({ userPrompt: systemMessageContent }) }, // No attachments in simulated system prompt
-              { role: "assistant", content: [{ text: "Okay." }] }
-           );
-       }
+      if (systemMessageContent.trim().length > 0) {
+        this.#log(
+          `Model ${this.model} doesn't support system prompts; simulating.`
+        );
+        messages.push(
+          {
+            role: "user",
+            content: this.#generateContent({
+              userPrompt: systemMessageContent,
+            }),
+          }, // No attachments in simulated system prompt
+          { role: "assistant", content: [{ text: "Okay." }] }
+        );
+      }
     } else if (systemMessageContent.trim().length > 0) {
-        messages.push({
-            role: "system",
-            content: this.#generateContent({ userPrompt: systemMessageContent }) // No attachments in system prompt
-        });
+      messages.push({
+        role: "system",
+        content: this.#generateContent({ userPrompt: systemMessageContent }), // No attachments in system prompt
+      });
     }
 
     // Add chat history
@@ -373,11 +420,11 @@ class AWSBedrockLLM {
 
     // Add final user prompt
     messages.push({
-        role: "user",
-        content: this.#generateContent({
-            userPrompt: userPrompt,
-            attachments: Array.isArray(attachments) ? attachments : [],
-        }),
+      role: "user",
+      content: this.#generateContent({
+        userPrompt: userPrompt,
+        attachments: Array.isArray(attachments) ? attachments : [],
+      }),
     });
 
     return messages;
@@ -389,20 +436,22 @@ class AWSBedrockLLM {
    * @returns {string} The text response, potentially with reasoning prepended.
    * @private
    */
-   #parseReasoningFromResponse({ content = [] }) {
+  #parseReasoningFromResponse({ content = [] }) {
     if (!Array.isArray(content)) return "";
-    const textBlock = content.find(block => block.text !== undefined);
+    const textBlock = content.find((block) => block.text !== undefined);
     let textResponse = textBlock?.text || "";
-    const reasoningBlock = content.find(block => block.reasoningContent?.reasoningText?.text);
+    const reasoningBlock = content.find(
+      (block) => block.reasoningContent?.reasoningText?.text
+    );
     if (reasoningBlock) {
-      const reasoningText = reasoningBlock.reasoningContent.reasoningText.text.trim();
+      const reasoningText =
+        reasoningBlock.reasoningContent.reasoningText.text.trim();
       if (reasoningText.length > 0) {
         textResponse = `<think>${reasoningText}</think>${textResponse}`;
       }
     }
     return textResponse;
   }
-
 
   /**
    * Sends a request for chat completion (non-streaming).
@@ -414,7 +463,9 @@ class AWSBedrockLLM {
    */
   async getChatCompletion(messages = null, { temperature }) {
     if (!Array.isArray(messages) || messages.length === 0) {
-       throw new Error("AWSBedrock::getChatCompletion requires a non-empty messages array.");
+      throw new Error(
+        "AWSBedrock::getChatCompletion requires a non-empty messages array."
+      );
     }
 
     const hasSystem = messages[0]?.role === "system";
@@ -436,10 +487,18 @@ class AWSBedrockLLM {
           })
         )
         .catch((e) => {
-          this.#log(`Bedrock Converse API Error (getChatCompletion): ${e.message}`, e);
-           if (e.name === 'ValidationException' && e.message.includes('maximum tokens')) {
-               throw new Error(`AWSBedrock::getChatCompletion failed. Model ${this.model} rejected maxTokens value of ${maxTokensToSend}. Check model documentation for its maximum output token limit and set AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS if needed. Original error: ${e.message}`);
-           }
+          this.#log(
+            `Bedrock Converse API Error (getChatCompletion): ${e.message}`,
+            e
+          );
+          if (
+            e.name === "ValidationException" &&
+            e.message.includes("maximum tokens")
+          ) {
+            throw new Error(
+              `AWSBedrock::getChatCompletion failed. Model ${this.model} rejected maxTokens value of ${maxTokensToSend}. Check model documentation for its maximum output token limit and set AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS if needed. Original error: ${e.message}`
+            );
+          }
           throw new Error(`AWSBedrock::getChatCompletion failed. ${e.message}`);
         }),
       messages,
@@ -448,13 +507,17 @@ class AWSBedrockLLM {
 
     const response = result.output;
     if (!response?.output?.message) {
-       this.#log("Bedrock response missing expected output.message structure.", response);
-       return null;
+      this.#log(
+        "Bedrock response missing expected output.message structure.",
+        response
+      );
+      return null;
     }
 
     const latencyMs = response?.metrics?.latencyMs;
     const outputTokens = response?.usage?.outputTokens;
-    const outputTps = (latencyMs > 0 && outputTokens) ? (outputTokens / (latencyMs / 1000)) : 0;
+    const outputTps =
+      latencyMs > 0 && outputTokens ? outputTokens / (latencyMs / 1000) : 0;
 
     return {
       textResponse: this.#parseReasoningFromResponse(response.output.message),
@@ -477,8 +540,10 @@ class AWSBedrockLLM {
    * @throws {Error} If the API call setup fails or validation errors occur.
    */
   async streamGetChatCompletion(messages = null, { temperature }) {
-     if (!Array.isArray(messages) || messages.length === 0) {
-       throw new Error("AWSBedrock::streamGetChatCompletion requires a non-empty messages array.");
+    if (!Array.isArray(messages) || messages.length === 0) {
+      throw new Error(
+        "AWSBedrock::streamGetChatCompletion requires a non-empty messages array."
+      );
     }
 
     const hasSystem = messages[0]?.role === "system";
@@ -487,36 +552,45 @@ class AWSBedrockLLM {
     const maxTokensToSend = this.getMaxOutputTokens();
 
     try {
-        // Attempt to initiate the stream
-        const stream = await this.bedrockClient.send(
-            new ConverseStreamCommand({
-              modelId: this.model,
-              messages: history,
-              inferenceConfig: {
-                  maxTokens: maxTokensToSend,
-                  temperature: temperature ?? this.defaultTemp,
-              },
-              system: systemBlock,
-            })
-          );
+      // Attempt to initiate the stream
+      const stream = await this.bedrockClient.send(
+        new ConverseStreamCommand({
+          modelId: this.model,
+          messages: history,
+          inferenceConfig: {
+            maxTokens: maxTokensToSend,
+            temperature: temperature ?? this.defaultTemp,
+          },
+          system: systemBlock,
+        })
+      );
 
-        // If successful, wrap the stream with performance monitoring
-        const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-            stream,
-            messages,
-            false // Indicate it's not a function call measurement
-        );
-        return measuredStreamRequest;
-
+      // If successful, wrap the stream with performance monitoring
+      const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+        stream,
+        messages,
+        false // Indicate it's not a function call measurement
+      );
+      return measuredStreamRequest;
     } catch (e) {
-        // Catch errors during the initial .send() call (e.g., validation errors)
-        this.#log(`Bedrock Converse API Error (streamGetChatCompletion setup): ${e.message}`, e);
-        if (e.name === 'ValidationException' && e.message.includes('maximum tokens')) {
-            // Provide specific error context for max token issues
-            throw new Error(`AWSBedrock::streamGetChatCompletion failed during setup. Model ${this.model} rejected maxTokens value of ${maxTokensToSend}. Check model documentation for its maximum output token limit and set AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS if needed. Original error: ${e.message}`);
-        }
-        // Re-throw other setup errors
-        throw new Error(`AWSBedrock::streamGetChatCompletion failed during setup. ${e.message}`);
+      // Catch errors during the initial .send() call (e.g., validation errors)
+      this.#log(
+        `Bedrock Converse API Error (streamGetChatCompletion setup): ${e.message}`,
+        e
+      );
+      if (
+        e.name === "ValidationException" &&
+        e.message.includes("maximum tokens")
+      ) {
+        // Provide specific error context for max token issues
+        throw new Error(
+          `AWSBedrock::streamGetChatCompletion failed during setup. Model ${this.model} rejected maxTokens value of ${maxTokensToSend}. Check model documentation for its maximum output token limit and set AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS if needed. Original error: ${e.message}`
+        );
+      }
+      // Re-throw other setup errors
+      throw new Error(
+        `AWSBedrock::streamGetChatCompletion failed during setup. ${e.message}`
+      );
     }
   }
 
@@ -530,7 +604,7 @@ class AWSBedrockLLM {
    * @param {Array} [responseProps.sources=[]] - Source documents used (if any).
    * @returns {Promise<string>} A promise that resolves with the complete text response when the stream ends.
    */
-   handleStream(response, stream, responseProps) {
+  handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
     let hasUsageMetrics = false;
     let usage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
@@ -550,100 +624,179 @@ class AWSBedrockLLM {
       try {
         // Process stream chunks
         for await (const chunk of stream.stream) {
-          if (!chunk) { this.#log("Stream returned null/undefined chunk."); continue; }
+          if (!chunk) {
+            this.#log("Stream returned null/undefined chunk.");
+            continue;
+          }
           const action = Object.keys(chunk)[0];
 
           switch (action) {
             case "metadata": // Contains usage metrics at the end
               if (chunk.metadata?.usage) {
-                 hasUsageMetrics = true;
-                 usage = { // Overwrite with final metrics
-                     prompt_tokens: chunk.metadata.usage.inputTokens ?? 0,
-                     completion_tokens: chunk.metadata.usage.outputTokens ?? 0,
-                     total_tokens: chunk.metadata.usage.totalTokens ?? 0,
-                 };
+                hasUsageMetrics = true;
+                usage = {
+                  // Overwrite with final metrics
+                  prompt_tokens: chunk.metadata.usage.inputTokens ?? 0,
+                  completion_tokens: chunk.metadata.usage.outputTokens ?? 0,
+                  total_tokens: chunk.metadata.usage.totalTokens ?? 0,
+                };
               }
               break;
-            case "contentBlockDelta": { // Contains text or reasoning deltas
+            case "contentBlockDelta": {
+              // Contains text or reasoning deltas
               const delta = chunk.contentBlockDelta?.delta;
               if (!delta) break;
               const token = delta.text;
               const reasoningToken = delta.reasoningContent?.text;
 
-              if (reasoningToken) { // Handle reasoning text
-                if (reasoningText.length === 0) { // Start of reasoning block
+              if (reasoningToken) {
+                // Handle reasoning text
+                if (reasoningText.length === 0) {
+                  // Start of reasoning block
                   const startTag = "<think>";
-                  writeResponseChunk(response, { uuid, sources, type: "textResponseChunk", textResponse: startTag + reasoningToken, close: false, error: false });
+                  writeResponseChunk(response, {
+                    uuid,
+                    sources,
+                    type: "textResponseChunk",
+                    textResponse: startTag + reasoningToken,
+                    close: false,
+                    error: false,
+                  });
                   reasoningText += startTag + reasoningToken;
-                } else { // Continuation of reasoning block
-                   writeResponseChunk(response, { uuid, sources, type: "textResponseChunk", textResponse: reasoningToken, close: false, error: false });
-                   reasoningText += reasoningToken;
+                } else {
+                  // Continuation of reasoning block
+                  writeResponseChunk(response, {
+                    uuid,
+                    sources,
+                    type: "textResponseChunk",
+                    textResponse: reasoningToken,
+                    close: false,
+                    error: false,
+                  });
+                  reasoningText += reasoningToken;
                 }
-              } else if (token) { // Handle regular text
-                  if (reasoningText.length > 0) { // If reasoning was just output, close the tag
-                      const endTag = "</think>";
-                      writeResponseChunk(response, { uuid, sources, type: "textResponseChunk", textResponse: endTag, close: false, error: false });
-                      fullText += reasoningText + endTag; // Add completed reasoning to final text
-                      reasoningText = ""; // Reset reasoning buffer
-                  }
-                  fullText += token; // Append regular text
-                  if (!hasUsageMetrics) usage.completion_tokens++; // Estimate usage if no metrics yet
-                  writeResponseChunk(response, { uuid, sources, type: "textResponseChunk", textResponse: token, close: false, error: false });
+              } else if (token) {
+                // Handle regular text
+                if (reasoningText.length > 0) {
+                  // If reasoning was just output, close the tag
+                  const endTag = "</think>";
+                  writeResponseChunk(response, {
+                    uuid,
+                    sources,
+                    type: "textResponseChunk",
+                    textResponse: endTag,
+                    close: false,
+                    error: false,
+                  });
+                  fullText += reasoningText + endTag; // Add completed reasoning to final text
+                  reasoningText = ""; // Reset reasoning buffer
+                }
+                fullText += token; // Append regular text
+                if (!hasUsageMetrics) usage.completion_tokens++; // Estimate usage if no metrics yet
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: token,
+                  close: false,
+                  error: false,
+                });
               }
               break;
             }
             case "messageStop": // End of message event
-              if (chunk.messageStop?.usage) { // Check for final metrics here too
-                  hasUsageMetrics = true;
-                  usage = { // Overwrite with final metrics if available
-                    prompt_tokens: chunk.messageStop.usage.inputTokens ?? usage.prompt_tokens,
-                    completion_tokens: chunk.messageStop.usage.outputTokens ?? usage.completion_tokens,
-                    total_tokens: chunk.messageStop.usage.totalTokens ?? usage.total_tokens,
-                  };
+              if (chunk.messageStop?.usage) {
+                // Check for final metrics here too
+                hasUsageMetrics = true;
+                usage = {
+                  // Overwrite with final metrics if available
+                  prompt_tokens:
+                    chunk.messageStop.usage.inputTokens ?? usage.prompt_tokens,
+                  completion_tokens:
+                    chunk.messageStop.usage.outputTokens ??
+                    usage.completion_tokens,
+                  total_tokens:
+                    chunk.messageStop.usage.totalTokens ?? usage.total_tokens,
+                };
               }
               // Ensure reasoning tag is closed if message stops mid-reasoning
               if (reasoningText.length > 0) {
-                  const endTag = "</think>";
-                  writeResponseChunk(response, { uuid, sources, type: "textResponseChunk", textResponse: endTag, close: false, error: false });
-                  fullText += reasoningText + endTag;
-                  reasoningText = "";
+                const endTag = "</think>";
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: endTag,
+                  close: false,
+                  error: false,
+                });
+                fullText += reasoningText + endTag;
+                reasoningText = "";
               }
               break;
             // Ignore other event types for now
-            case "messageStart": case "contentBlockStart": case "contentBlockStop": break;
-            default: this.#log(`Unhandled stream action: ${action}`, chunk);
+            case "messageStart":
+            case "contentBlockStart":
+            case "contentBlockStop":
+              break;
+            default:
+              this.#log(`Unhandled stream action: ${action}`, chunk);
           }
         } // End for await loop
 
         // Final cleanup for reasoning tag in case stream ended abruptly
-         if (reasoningText.length > 0 && !fullText.endsWith("</think>")) {
-            const endTag = "</think>";
-            if (!response.writableEnded) {
-                writeResponseChunk(response, { uuid, sources, type: "textResponseChunk", textResponse: endTag, close: false, error: false });
-            }
-            fullText += reasoningText + endTag;
-         }
+        if (reasoningText.length > 0 && !fullText.endsWith("</think>")) {
+          const endTag = "</think>";
+          if (!response.writableEnded) {
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: endTag,
+              close: false,
+              error: false,
+            });
+          }
+          fullText += reasoningText + endTag;
+        }
 
         // Send final closing chunk to signal end of stream
         if (!response.writableEnded) {
-            writeResponseChunk(response, { uuid, sources, type: "textResponseChunk", textResponse: "", close: true, error: false });
+          writeResponseChunk(response, {
+            uuid,
+            sources,
+            type: "textResponseChunk",
+            textResponse: "",
+            close: true,
+            error: false,
+          });
         }
-
       } catch (error) {
         // Handle errors during stream processing
-        this.#log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${error.message}`, error);
+        this.#log(
+          `\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${error.message}`,
+          error
+        );
         if (response && !response.writableEnded) {
-           writeResponseChunk(response, { uuid, type: "abort", textResponse: null, sources, close: true, error: `AWSBedrock:streaming - error. ${error?.message ?? "Unknown error"}` });
+          writeResponseChunk(response, {
+            uuid,
+            type: "abort",
+            textResponse: null,
+            sources,
+            close: true,
+            error: `AWSBedrock:streaming - error. ${
+              error?.message ?? "Unknown error"
+            }`,
+          });
         }
       } finally {
-          // Cleanup: Always remove listener and finalize measurement
-          response.removeListener("close", handleAbort);
-          stream?.endMeasurement(usage); // Log final usage metrics
-          resolve(fullText); // Resolve with the accumulated text
+        // Cleanup: Always remove listener and finalize measurement
+        response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage); // Log final usage metrics
+        resolve(fullText); // Resolve with the accumulated text
       }
     });
   }
-
 
   /**
    * Embeds a single text input using the configured embedder.
@@ -653,13 +806,15 @@ class AWSBedrockLLM {
    */
   async embedTextInput(textInput) {
     if (!this.embedder?.embedTextInput) {
-        throw new Error("Embedder is not configured or does not support embedTextInput.");
+      throw new Error(
+        "Embedder is not configured or does not support embedTextInput."
+      );
     }
     try {
-        return await this.embedder.embedTextInput(textInput);
-    } catch(e) {
-        this.#log(`EmbedTextInput Error: ${e.message}`, e)
-        throw e; // Re-throw after logging
+      return await this.embedder.embedTextInput(textInput);
+    } catch (e) {
+      this.#log(`EmbedTextInput Error: ${e.message}`, e);
+      throw e; // Re-throw after logging
     }
   }
 
@@ -670,15 +825,17 @@ class AWSBedrockLLM {
    * @throws {Error} If the embedder is not configured or fails.
    */
   async embedChunks(textChunks = []) {
-     if (!this.embedder?.embedChunks) {
-        throw new Error("Embedder is not configured or does not support embedChunks.");
-     }
-     try {
-        return await this.embedder.embedChunks(textChunks);
-     } catch(e) {
-        this.#log(`EmbedChunks Error: ${e.message}`, e)
-        throw e; // Re-throw after logging
-     }
+    if (!this.embedder?.embedChunks) {
+      throw new Error(
+        "Embedder is not configured or does not support embedChunks."
+      );
+    }
+    try {
+      return await this.embedder.embedChunks(textChunks);
+    } catch (e) {
+      this.#log(`EmbedChunks Error: ${e.message}`, e);
+      throw e; // Re-throw after logging
+    }
   }
 
   /**
@@ -690,7 +847,7 @@ class AWSBedrockLLM {
   async compressMessages(promptArgs = {}, rawHistory = []) {
     const { messageArrayCompressor } = require("../../helpers/chat");
     if (!messageArrayCompressor) {
-        throw new Error("Message compressor helper not found.");
+      throw new Error("Message compressor helper not found.");
     }
     // Construct the message array first
     const messageArray = this.constructPrompt(promptArgs);
