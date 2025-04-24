@@ -731,6 +731,91 @@ const TRANSLATIONS = {
       },
     },
   },
+  "main-page": {
+    noWorkspaceError:
+      "Por favor, crea un espacio de trabajo antes de iniciar un chat.",
+    checklist: {
+      title: "Comenzando",
+      tasksLeft: "tareas restantes",
+      completed:
+        "¡Estás en camino de convertirte en un experto en AnythingLLM!",
+      dismiss: "cerrar",
+      tasks: {
+        create_workspace: {
+          title: "Crear un espacio de trabajo",
+          description: "Crea tu primer espacio de trabajo para comenzar",
+          action: "Crear",
+        },
+        send_chat: {
+          title: "Enviar un chat",
+          description: "Inicia una conversación con tu asistente de IA",
+          action: "Chatear",
+        },
+        embed_document: {
+          title: "Incrustar un documento",
+          description: "Añade tu primer documento a tu espacio de trabajo",
+          action: "Incrustar",
+        },
+        setup_system_prompt: {
+          title: "Configurar un prompt del sistema",
+          description: "Configura el comportamiento de tu asistente de IA",
+          action: "Configurar",
+        },
+        define_slash_command: {
+          title: "Definir un comando de barra",
+          description: "Crea comandos personalizados para tu asistente",
+          action: "Definir",
+        },
+        visit_community: {
+          title: "Visitar el Centro de la Comunidad",
+          description: "Explora recursos y plantillas de la comunidad",
+          action: "Explorar",
+        },
+      },
+    },
+    quickLinks: {
+      title: "Enlaces Rápidos",
+      sendChat: "Enviar Chat",
+      embedDocument: "Incrustar un Documento",
+      createWorkspace: "Crear Espacio de Trabajo",
+    },
+    exploreMore: {
+      title: "Explora más características",
+      features: {
+        customAgents: {
+          title: "Agentes de IA Personalizados",
+          description:
+            "Crea poderosos agentes de IA y automatizaciones sin código.",
+          primaryAction: "Chatear usando @agente",
+          secondaryAction: "Crear un flujo de agente",
+        },
+        slashCommands: {
+          title: "Comandos de Barra",
+          description:
+            "Ahorra tiempo e inyecta prompts utilizando comandos de barra personalizados.",
+          primaryAction: "Crear un Comando de Barra",
+          secondaryAction: "Explorar en el Hub",
+        },
+        systemPrompts: {
+          title: "Prompts del Sistema",
+          description:
+            "Modifica el prompt del sistema para personalizar las respuestas de IA de un espacio de trabajo.",
+          primaryAction: "Modificar un Prompt del Sistema",
+          secondaryAction: "Gestionar variables de prompt",
+        },
+      },
+    },
+    announcements: {
+      title: "Actualizaciones y Anuncios",
+    },
+    resources: {
+      title: "Recursos",
+      links: {
+        docs: "Documentación",
+        star: "Destacar en Github",
+      },
+    },
+  },
 };
 
 export default TRANSLATIONS;
