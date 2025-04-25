@@ -108,11 +108,16 @@ export default function NewJiraConnection({ isOpen, closeModal, onSubmit }) {
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
                 <p className="text-sm text-white/60">
-                  Add connection information for your Jira instance to allow the agent to interact with issues and projects.
+                  Add connection information for your Jira instance to allow the
+                  agent to interact with issues and projects.
                 </p>
                 <div className="flex items-center justify-center mb-4">
                   <div className="bg-blue-600 p-2 rounded-md">
-                    <ListChecks size={48} weight="fill" className="text-white" />
+                    <ListChecks
+                      size={48}
+                      weight="fill"
+                      className="text-white"
+                    />
                   </div>
                 </div>
 
@@ -175,7 +180,8 @@ export default function NewJiraConnection({ isOpen, closeModal, onSubmit }) {
                     spellCheck={false}
                   />
                   <p className="mt-1 text-xs text-white/60">
-                    Create a token at Atlassian account settings → Security → Create and manage API tokens
+                    Create a token at Atlassian account settings → Security →
+                    Create and manage API tokens
                   </p>
                 </div>
 
@@ -191,7 +197,9 @@ export default function NewJiraConnection({ isOpen, closeModal, onSubmit }) {
                     placeholder="Auto-generated from URL if left blank"
                     autoComplete="off"
                     spellCheck={false}
-                    onChange={e => setConfig({...config, instance_id: e.target.value})}
+                    onChange={(e) =>
+                      setConfig({ ...config, instance_id: e.target.value })
+                    }
                   />
                 </div>
               </div>

@@ -23,7 +23,9 @@ export default function JiraConnection({ connection, onRemove }) {
       </div>
       <div className="flex w-full items-center justify-between">
         <div className="flex flex-col">
-          <div className="text-sm font-semibold text-white">{instance_name}</div>
+          <div className="text-sm font-semibold text-white">
+            {instance_name}
+          </div>
           <div className="mt-1 text-xs text-description">{instance_url}</div>
         </div>
         <button

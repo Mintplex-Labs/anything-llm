@@ -76,10 +76,15 @@ export default function NewSlackConnection({ isOpen, closeModal, onSubmit }) {
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
                 <p className="text-sm text-white/60">
-                  Add the connection information for your Slack workspace so the agent can interact with it.
+                  Add the connection information for your Slack workspace so the
+                  agent can interact with it.
                 </p>
                 <div className="flex items-center justify-center mb-4">
-                  <SlackLogo size={48} weight="fill" className="text-[#4A154B]" />
+                  <SlackLogo
+                    size={48}
+                    weight="fill"
+                    className="text-[#4A154B]"
+                  />
                 </div>
 
                 <div className="flex flex-col w-full">
@@ -126,7 +131,8 @@ export default function NewSlackConnection({ isOpen, closeModal, onSubmit }) {
                     spellCheck={false}
                   />
                   <p className="mt-1 text-xs text-white/60">
-                    Bot tokens start with 'xoxb-'. You can find this in the Slack API dashboard.
+                    Bot tokens start with 'xoxb-'. You can find this in the
+                    Slack API dashboard.
                   </p>
                 </div>
 

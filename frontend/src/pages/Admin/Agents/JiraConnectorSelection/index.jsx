@@ -19,7 +19,10 @@ export default function AgentJiraConnectorSelection({
   useEffect(() => {
     Admin.systemPreferencesByFields(["agent_jira_connections"])
       .then((res) => {
-        console.log("Retrieved Jira connections:", res?.settings?.agent_jira_connections);
+        console.log(
+          "Retrieved Jira connections:",
+          res?.settings?.agent_jira_connections
+        );
         setConnections(res?.settings?.agent_jira_connections ?? []);
       })
       .catch(() => setConnections([]));
@@ -27,11 +30,16 @@ export default function AgentJiraConnectorSelection({
 
   // Immediately persist connections when they change
   useEffect(() => {
-    if (connections.length > 0 || connections.some(conn => conn.action === "remove")) {
+    if (
+      connections.length > 0 ||
+      connections.some((conn) => conn.action === "remove")
+    ) {
       // Only update if we have connections or if we're removing connections
-      const persistedConnections = connections.filter(conn => conn.action !== "remove");
+      const persistedConnections = connections.filter(
+        (conn) => conn.action !== "remove"
+      );
       const data = {
-        agent_jira_connections: JSON.stringify(persistedConnections)
+        agent_jira_connections: JSON.stringify(persistedConnections),
       };
 
       // Save to backend immediately
@@ -41,7 +49,7 @@ export default function AgentJiraConnectorSelection({
           // After successful save, remove any connections marked for removal
           setConnections(persistedConnections);
         })
-        .catch(err => console.error("Failed to save Jira connections:", err));
+        .catch((err) => console.error("Failed to save Jira connections:", err));
 
       // Mark form as having changes
       setHasChanges(true);
@@ -49,16 +57,14 @@ export default function AgentJiraConnectorSelection({
   }, [connections, setHasChanges]);
 
   const handleAddConnection = (newInstance) => {
-    setConnections(prev => [...prev, { ...newInstance }]);
+    setConnections((prev) => [...prev, { ...newInstance }]);
   };
 
   const handleRemoveConnection = (instanceId) => {
     // Mark for removal first
-    setConnections(prev =>
-      prev.map(conn =>
-        conn.instance_id === instanceId
-          ? { ...conn, action: "remove" }
-          : conn
+    setConnections((prev) =>
+      prev.map((conn) =>
+        conn.instance_id === instanceId ? { ...conn, action: "remove" } : conn
       )
     );
   };
@@ -91,14 +97,17 @@ export default function AgentJiraConnectorSelection({
             </label>
           </div>
           <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
-            Enable your agent to interact with Jira issues, search for tickets, create new issues, and update existing ones.
+            Enable your agent to interact with Jira issues, search for tickets,
+            create new issues, and update existing ones.
           </p>
           {enabled && (
             <>
               <input
                 name="system::agent_jira_connections"
                 type="hidden"
-                value={JSON.stringify(connections.filter(conn => conn.action !== "remove"))}
+                value={JSON.stringify(
+                  connections.filter((conn) => conn.action !== "remove")
+                )}
               />
 
               <div className="flex flex-col mt-2 gap-y-2">

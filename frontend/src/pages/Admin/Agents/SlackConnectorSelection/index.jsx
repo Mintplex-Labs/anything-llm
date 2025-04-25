@@ -19,7 +19,10 @@ export default function AgentSlackConnectorSelection({
   useEffect(() => {
     Admin.systemPreferencesByFields(["agent_slack_connections"])
       .then((res) => {
-        console.log("Retrieved slack connections:", res?.settings?.agent_slack_connections);
+        console.log(
+          "Retrieved slack connections:",
+          res?.settings?.agent_slack_connections
+        );
         setConnections(res?.settings?.agent_slack_connections ?? []);
       })
       .catch(() => setConnections([]));
@@ -27,11 +30,16 @@ export default function AgentSlackConnectorSelection({
 
   // Immediately persist connections when they change
   useEffect(() => {
-    if (connections.length > 0 || connections.some(conn => conn.action === "remove")) {
+    if (
+      connections.length > 0 ||
+      connections.some((conn) => conn.action === "remove")
+    ) {
       // Only update if we have connections or if we're removing connections
-      const persistedConnections = connections.filter(conn => conn.action !== "remove");
+      const persistedConnections = connections.filter(
+        (conn) => conn.action !== "remove"
+      );
       const data = {
-        agent_slack_connections: JSON.stringify(persistedConnections)
+        agent_slack_connections: JSON.stringify(persistedConnections),
       };
 
       // Save to backend immediately
@@ -41,7 +49,9 @@ export default function AgentSlackConnectorSelection({
           // After successful save, remove any connections marked for removal
           setConnections(persistedConnections);
         })
-        .catch(err => console.error("Failed to save slack connections:", err));
+        .catch((err) =>
+          console.error("Failed to save slack connections:", err)
+        );
 
       // Mark form as having changes
       setHasChanges(true);
@@ -49,16 +59,14 @@ export default function AgentSlackConnectorSelection({
   }, [connections, setHasChanges]);
 
   const handleAddConnection = (newWorkspace) => {
-    setConnections(prev => [...prev, { ...newWorkspace }]);
+    setConnections((prev) => [...prev, { ...newWorkspace }]);
   };
 
   const handleRemoveConnection = (workspaceId) => {
     // Mark for removal first
-    setConnections(prev =>
-      prev.map(conn =>
-        conn.workspace_id === workspaceId
-          ? { ...conn, action: "remove" }
-          : conn
+    setConnections((prev) =>
+      prev.map((conn) =>
+        conn.workspace_id === workspaceId ? { ...conn, action: "remove" } : conn
       )
     );
   };
@@ -91,7 +99,8 @@ export default function AgentSlackConnectorSelection({
             </label>
           </div>
           <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
-            Enable your agent to send messages to Slack channels and interact with Slack users.
+            Enable your agent to send messages to Slack channels and interact
+            with Slack users.
           </p>
           {enabled && (
             <>
@@ -99,7 +108,9 @@ export default function AgentSlackConnectorSelection({
               <input
                 name="system::agent_slack_connections"
                 type="hidden"
-                value={JSON.stringify(connections.filter(conn => conn.action !== "remove"))}
+                value={JSON.stringify(
+                  connections.filter((conn) => conn.action !== "remove")
+                )}
               />
 
               <div className="flex flex-col mt-2 gap-y-2">
