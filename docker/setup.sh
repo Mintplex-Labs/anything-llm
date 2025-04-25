@@ -4,7 +4,7 @@
 set -e
 
 echo "🛠 啟動 Docker BuildKit 並建構映像..."
-DOCKER_BUILDKIT=1 docker-compose build --no-cache --progress=auto
+docker-compose build --no-cache --progress=auto
 
 echo "🚀 啟動 AnythingLLM Docker 容器（背景執行）..."
 docker-compose up -d
