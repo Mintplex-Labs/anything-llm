@@ -6,7 +6,6 @@ import NewWorkspaceModal, {
 import ActiveWorkspaces from "./ActiveWorkspaces";
 import useLogo from "@/hooks/useLogo";
 import useUser from "@/hooks/useUser";
-import Footer from "../Footer";
 import SettingsButton from "../SettingsButton";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
@@ -74,9 +73,6 @@ export default function Sidebar() {
                   </div>
                   <ActiveWorkspaces />
                 </div>
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-1">
-                <Footer />
               </div>
             </div>
           </div>
@@ -192,9 +188,6 @@ export function SidebarMobileHeader() {
                   </div>
                   <ActiveWorkspaces />
                 </div>
-              </div>
-              <div className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
-                <Footer />
               </div>
             </div>
           </div>

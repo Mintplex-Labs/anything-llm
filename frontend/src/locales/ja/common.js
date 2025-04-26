@@ -278,17 +278,17 @@ const TRANSLATIONS = {
     provider: {
       title: "ワークスペースエージェントのLLMプロバイダー",
       description:
-        "このワークスペースの@agentエージェントで使用するLLMプロバイダーとモデルを指定します。",
+        "このワークスペースの@agentで使用するLLMプロバイダーとモデルを指定します。",
     },
     mode: {
       chat: {
         title: "ワークスペースエージェントのチャットモデル",
         description:
-          "このワークスペースの@agentエージェントで使用するチャットモデルを指定します。",
+          "このワークスペースの@agentで使用するチャットモデルを指定します。",
       },
       title: "ワークスペースエージェントのモデル",
       description:
-        "このワークスペースの@agentエージェントで使用するLLMモデルを指定します。",
+        "このワークスペースの@agentで使用するLLMモデルを指定します。",
       wait: "-- モデルを読み込み中 --",
     },
     skill: {
@@ -816,7 +816,7 @@ const TRANSLATIONS = {
         customAgents: {
           title: "カスタムAIエージェント",
           description: "コードなしで強力なAIエージェントと自動化を構築。",
-          primaryAction: "@エージェントを使用してチャット",
+          primaryAction: "@agentを使用してチャット",
           secondaryAction: "エージェントフローを構築",
         },
         slashCommands: {
