@@ -24,11 +24,11 @@ export default function CreateWorkspace({
   }, []);
 
   useEffect(() => {
-    if (workspaceName.length > 0) {
-      setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
-    } else {
-      setForwardBtn({ showing: true, disabled: true, onClick: handleForward });
-    }
+    setForwardBtn({
+      showing: true,
+      disabled: workspaceName.length === 0,
+      onClick: handleForward,
+    });
   }, [workspaceName]);
 
   const handleCreate = async (e) => {
@@ -39,14 +39,11 @@ export default function CreateWorkspace({
       onboardingComplete: true,
     });
     if (!!workspace) {
-      showToast(
-        "Workspace created successfully! Taking you to home...",
-        "success"
-      );
+      showToast("已成功建立工作區！即將跳轉...", "success");
       await new Promise((resolve) => setTimeout(resolve, 1000));
       navigate(paths.home());
     } else {
-      showToast(`Failed to create workspace: ${error}`, "error");
+      showToast(`⚠️ 建立失敗：${error}`, "error");
     }
   };
 
@@ -61,29 +58,41 @@ export default function CreateWorkspace({
   return (
     <form
       onSubmit={handleCreate}
-      className="w-full flex items-center justify-center flex-col gap-y-2"
+      className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-white to-blue-50 px-6 py-12 rounded-xl shadow-md"
     >
-      <img src={illustration} alt="Create workspace" />
+      <h2 className="text-3xl font-bold text-blue-700 mb-2">
+        🎉 歡迎使用鋼鐵材料 AI 助手
+      </h2>
+      <p className="text-base text-gray-600 mb-6">
+        請為您的第一個工作區命名，我們將協助您快速開始使用。
+      </p>
+
+      <img
+        src={illustration}
+        alt="Create workspace"
+        className="w-28 h-28 mb-6 rounded-full shadow"
+      />
+
       <div className="flex flex-col gap-y-4 w-full max-w-[600px]">
-        {" "}
-        <div className="w-full mt-4">
+        <div className="w-full">
           <label
             htmlFor="name"
-            className="block mb-3 text-sm font-medium text-white"
+            className="block mb-2 text-base font-medium text-blue-800"
           >
-            {t("common.workspaces-name")}
+            工作區名稱
           </label>
           <input
             name="name"
             type="text"
-            className="border-none bg-theme-settings-input-bg text-white focus:outline-primary-button active:outline-primary-button placeholder:text-theme-settings-input-placeholder outline-none text-sm rounded-lg block w-full p-2.5"
-            placeholder="My Workspace"
+            className="w-full px-4 py-2 border border-blue-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-gray-400 text-sm"
+            placeholder="請輸入工作區名稱"
             required={true}
             autoComplete="off"
             onChange={(e) => setWorkspaceName(e.target.value)}
           />
         </div>
       </div>
+
       <button
         type="submit"
         ref={createWorkspaceRef}
