@@ -6,7 +6,6 @@ import RGroupImgLight from "./r_group-light.png";
 import AnythingLLMLogo from "@/media/logo/anything-llm.png";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/hooks/useTheme";
-import { useTranslation } from "react-i18next";
 
 const IMG_SRCSET = {
   light: {
@@ -22,41 +21,47 @@ const IMG_SRCSET = {
 export default function OnboardingHome() {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const { t } = useTranslation();
   const srcSet = IMG_SRCSET?.[theme] || IMG_SRCSET.default;
 
   return (
-    <>
-      <div className="relative w-screen h-screen flex overflow-hidden bg-theme-bg-primary">
-        <div
-          className="hidden md:block fixed bottom-10 left-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
-          style={{ backgroundImage: `url(${srcSet.l})` }}
-        ></div>
+    <div className="relative w-screen h-screen flex overflow-hidden bg-white text-[#003A63]">
+      {/* 左圖 */}
+      <div
+        className="hidden md:block fixed bottom-10 left-10 w-[300px] h-[300px] bg-no-repeat bg-contain"
+        style={{ backgroundImage: `url(${srcSet.l})` }}
+      ></div>
 
-        <div
-          className="hidden md:block fixed top-10 right-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
+      {/* 右圖 */}
+      // <div
+          className="hidden md:block fixed top-10 right-10 w-[300px] h-[300px] bg-no-repeat bg-contain"
           style={{ backgroundImage: `url(${srcSet.r})` }}
-        ></div>
+      ></div>
 
-        <div className="relative flex justify-center items-center m-auto">
-          <div className="flex flex-col justify-center items-center">
-            <p className="text-theme-text-primary font-thin text-[24px]">
-              {t("onboarding.home.title")}
-            </p>
-            <img
-              src={AnythingLLMLogo}
-              alt="AnythingLLM"
-              className="md:h-[50px] flex-shrink-0 max-w-[300px] light:invert"
-            />
-            <button
-              onClick={() => navigate(paths.onboarding.llmPreference())}
-              className="border-[2px] border-theme-text-primary animate-pulse light:animate-none w-full md:max-w-[350px] md:min-w-[300px] text-center py-3 bg-theme-button-primary hover:bg-theme-bg-secondary text-theme-text-primary font-semibold text-sm my-10 rounded-md "
-            >
-              {t("onboarding.home.getStarted")}
-            </button>
-          </div>
+      {/* 中央內容 */}
+      <div className="relative flex justify-center items-center m-auto px-6 text-center">
+        <div className="flex flex-col items-center gap-4 max-w-xl">
+          <img
+            src={AnythingLLMLogo}
+            alt="鋼鐵材料 AI 助手"
+            className="h-[60px] mb-2"
+          />
+
+          <h1 className="text-3xl font-bold text-[#0074A2]">
+            歡迎使用華新麗華 AI 助手
+          </h1>
+          <p className="text-gray-600">
+            可比對 ASTM / JIS / EN
+            鋼材標準，協助您快速找到合適鋼種與相關資料。
+          </p>
+
+          <button
+            onClick={() => navigate(paths.onboarding.createWorkspace())}
+            className="mt-6 px-6 py-3 bg-[#0074A2] text-white rounded-lg hover:bg-[#005d84] transition text-lg font-semibold"
+          >
+            開始建立工作區
+          </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
