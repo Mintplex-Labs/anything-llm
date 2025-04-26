@@ -5,6 +5,7 @@ import Updates from "./Updates";
 import Resources from "./Resources";
 import Checklist from "./Checklist";
 import { isMobile } from "react-device-detect";
+import WelcomePane from "@/components/WelcomePane"; 
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
       className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-container w-full h-full"
     >
+      <WelcomePane />
     </div>
   );
 }
