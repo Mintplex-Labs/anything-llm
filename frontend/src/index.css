@@ -83,86 +83,87 @@
 }
 
 [data-theme="light"] {
-  --theme-loader: #000000;
+  --theme-loader: #4b4b4b;
 
-  --theme-bg-primary: #ffffff;
-  --theme-bg-secondary: #ffffff;
-  --theme-bg-sidebar: #edf2fa;
-  --theme-bg-container: #f9fbfd;
+  --theme-bg-primary: #f3f4f6;
+  --theme-bg-secondary: #e5e7eb;
+  --theme-bg-sidebar: #d1d5db;
+  --theme-bg-container: #e5e7eb;
 
-  --theme-bg-chat: #ffffff;
-  --theme-bg-chat-input: #eaeaea;
-  --theme-text-primary: #0e0f0f;
-  --theme-text-secondary: #7a7d7e;
-  --theme-sidebar-item-default: #ffffff;
-  --theme-sidebar-item-selected: #ffffff;
-  --theme-sidebar-item-hover: #c8efff;
+  --theme-bg-chat: #f9fafb;
+  --theme-bg-chat-input: #d1d5db;
+  --theme-text-primary: #1f2937;
+  --theme-text-secondary: #6b7280;
+  --theme-sidebar-item-default: #e5e7eb;
+  --theme-sidebar-item-selected: #cbd5e1;
+  --theme-sidebar-item-hover: #dbeafe;
 
-  --theme-sidebar-item-text-inactive: #7a7d7e;
-  --theme-sidebar-item-text-active: #184558;
+  --theme-sidebar-item-text-inactive: #6b7280;
+  --theme-sidebar-item-text-active: #111827;
 
-  --theme-sidebar-item-workspace-active: #000000;
-  --theme-sidebar-item-workspace-inactive: #7a7d7e;
+  --theme-sidebar-item-workspace-active: #1f2937;
+  --theme-sidebar-item-workspace-inactive: #6b7280;
 
   --theme-sidebar-subitem-default: transparent;
-  --theme-sidebar-subitem-selected: #e2e7ee;
-  --theme-sidebar-thread-selected: #ffffff;
-  --theme-sidebar-subitem-hover: #e2e7ee;
-  --theme-sidebar-border: #d3d4d4;
+  --theme-sidebar-subitem-selected: #cbd5e1;
+  --theme-sidebar-thread-selected: #e5e7eb;
+  --theme-sidebar-subitem-hover: #e2e8f0;
+  --theme-sidebar-border: #cbd5e1;
 
-  --theme-sidebar-footer-icon: #ffffff;
-  --theme-sidebar-footer-icon-fill: #6e6f6f;
-  --theme-sidebar-footer-icon-hover: #d8d6d6;
+  --theme-sidebar-footer-icon: #1f2937;
+  --theme-sidebar-footer-icon-fill: #4b5563;
+  --theme-sidebar-footer-icon-hover: #9ca3af;
 
-  --theme-chat-input-border: #cccccc;
-  --theme-action-menu-bg: #eaeaea;
-  --theme-action-menu-item-hover: rgba(0, 0, 0, 0.1);
-  --theme-settings-input-bg: #f5f5f5;
-  --theme-settings-input-placeholder: rgba(0, 0, 0, 0.5);
-  --theme-settings-input-active: rgb(0 0 0 / 0.2);
-  --theme-settings-input-text: #0e0f0f;
-  --theme-modal-border: #d3d3d3;
+  --theme-chat-input-border: #9ca3af;
+  --theme-action-menu-bg: #d1d5db;
+  --theme-action-menu-item-hover: rgba(0, 0, 0, 0.05);
+  --theme-settings-input-bg: #f3f4f6;
+  --theme-settings-input-placeholder: rgba(0, 0, 0, 0.4);
+  --theme-settings-input-active: rgba(0, 0, 0, 0.2);
+  --theme-settings-input-text: #1f2937;
+  --theme-modal-border: #d1d5db;
 
-  --theme-button-primary: #0ba5ec;
-  --theme-button-primary-hover: #dedede;
+  --theme-button-primary: #9ca3af;
+  --theme-button-primary-hover: #6b7280;
 
-  --theme-button-cta: #7cd4fd;
+  --theme-button-cta: #4b5563;
 
-  --theme-file-row-even: #f5f5f5;
-  --theme-file-row-odd: #e9e9e9;
-  --theme-file-row-selected-even: #0ba5ec;
-  --theme-file-row-selected-odd: #0ba5ec;
-  --theme-file-picker-hover: #e2e7ee;
+  --theme-file-row-even: #f3f4f6;
+  --theme-file-row-odd: #e5e7eb;
+  --theme-file-row-selected-even: #9ca3af;
+  --theme-file-row-selected-odd: #9ca3af;
+  --theme-file-picker-hover: #d1d5db;
 
-  --theme-home-text: #0e0f0f;
-  --theme-home-text-secondary: #6f6f71;
-  --theme-home-bg-card: #edf2fa;
+  --theme-home-text: #1f2937;
+  --theme-home-text-secondary: #6b7280;
+  --theme-home-bg-card: #e5e7eb;
   --theme-home-bg-button: #f3f4f6;
-  --theme-home-border: rgba(0, 0, 0, 0.1);
-  --theme-home-button-primary: #36bffa;
-  --theme-home-button-primary-hover: rgba(54, 191, 250, 0.9);
-  --theme-home-button-secondary: #dbe8fe;
-  --theme-home-button-secondary-hover: #b0c8f1;
-  --theme-home-button-secondary-text: #293056;
-  --theme-home-button-secondary-hover-text: #293056;
-  --theme-home-update-card-bg: #edf2fa;
+  --theme-home-border: rgba(0, 0, 0, 0.05);
+  --theme-home-button-primary: #6b7280;
+  --theme-home-button-primary-hover: rgba(107, 114, 128, 0.9);
+  --theme-home-button-secondary: #d1d5db;
+  --theme-home-button-secondary-hover: #9ca3af;
+  --theme-home-button-secondary-text: #1f2937;
+  --theme-home-button-secondary-hover-text: #1f2937;
+  --theme-home-update-card-bg: #e5e7eb;
   --theme-home-update-card-hover: #f3f4f6;
-  --theme-home-update-source: #0284c7;
+  --theme-home-update-source: #4b5563;
 
-  --theme-checklist-item-bg: #c7e2ee;
-  --theme-checklist-item-bg-hover: #a3d9f1;
-  --theme-checklist-item-text: #0d3851;
-  --theme-checklist-item-completed-bg: #d8f3ea;
-  --theme-checklist-item-completed-text: #039855;
-  --theme-checklist-checkbox-fill: #6ce9a6;
+  --theme-checklist-item-bg: #dbeafe;
+  --theme-checklist-item-bg-hover: #bfdbfe;
+  --theme-checklist-item-text: #1e40af;
+  --theme-checklist-item-completed-bg: #e0f2fe;
+  --theme-checklist-item-completed-text: #0369a1;
+  --theme-checklist-checkbox-fill: #60a5fa;
   --theme-checklist-checkbox-text: #ffffff;
-  --theme-checklist-item-hover: #0ba5ec;
+  --theme-checklist-item-hover: #93c5fd;
   --theme-checklist-checkbox-border: #6b7280;
-  --theme-checklist-button-border: #0ba5ec;
-  --theme-checklist-button-text: #0ba5ec;
-  --theme-checklist-button-hover-bg: rgba(11, 165, 236, 0.1);
-  --theme-checklist-button-hover-border: rgba(11, 165, 236, 0.8);
+  --theme-checklist-button-border: #3b82f6;
+  --theme-checklist-button-text: #3b82f6;
+  --theme-checklist-button-hover-bg: rgba(59, 130, 246, 0.1);
+  --theme-checklist-button-hover-border: rgba(59, 130, 246, 0.8);
 }
+
 
 [data-theme="light"] .text-white {
   color: var(--theme-text-primary);
