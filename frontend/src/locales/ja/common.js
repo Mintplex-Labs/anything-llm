@@ -278,17 +278,17 @@ const TRANSLATIONS = {
     provider: {
       title: "ワークスペースエージェントのLLMプロバイダー",
       description:
-        "このワークスペースの@agentエージェントで使用するLLMプロバイダーとモデルを指定します。",
+        "このワークスペースの@agentで使用するLLMプロバイダーとモデルを指定します。",
     },
     mode: {
       chat: {
         title: "ワークスペースエージェントのチャットモデル",
         description:
-          "このワークスペースの@agentエージェントで使用するチャットモデルを指定します。",
+          "このワークスペースの@agentで使用するチャットモデルを指定します。",
       },
       title: "ワークスペースエージェントのモデル",
       description:
-        "このワークスペースの@agentエージェントで使用するLLMモデルを指定します。",
+        "このワークスペースの@agentで使用するLLMモデルを指定します。",
       wait: "-- モデルを読み込み中 --",
     },
     skill: {
@@ -760,6 +760,89 @@ const TRANSLATIONS = {
         description: null,
         icon: null,
         link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError:
+      "チャットを開始する前にワークスペースを作成してください。",
+    checklist: {
+      title: "はじめに",
+      tasksLeft: "残りのタスク",
+      completed: "AnythingLLMの達人への道を進んでいます！",
+      dismiss: "閉じる",
+      tasks: {
+        create_workspace: {
+          title: "ワークスペースを作成する",
+          description: "始めるには最初のワークスペースを作成してください",
+          action: "作成",
+        },
+        send_chat: {
+          title: "チャットを送信する",
+          description: "AIアシスタントとの会話を開始する",
+          action: "チャット",
+        },
+        embed_document: {
+          title: "ドキュメントを埋め込む",
+          description: "ワークスペースに最初のドキュメントを追加する",
+          action: "埋め込む",
+        },
+        setup_system_prompt: {
+          title: "システムプロンプトを設定する",
+          description: "AIアシスタントの動作を設定する",
+          action: "設定",
+        },
+        define_slash_command: {
+          title: "スラッシュコマンドを定義する",
+          description: "アシスタント用のカスタムコマンドを作成する",
+          action: "定義",
+        },
+        visit_community: {
+          title: "コミュニティハブを訪問する",
+          description: "コミュニティリソースとテンプレートを探索する",
+          action: "閲覧",
+        },
+      },
+    },
+    quickLinks: {
+      title: "クイックリンク",
+      sendChat: "チャットを送信",
+      embedDocument: "ドキュメントを埋め込む",
+      createWorkspace: "ワークスペースを作成",
+    },
+    exploreMore: {
+      title: "その他の機能を探索",
+      features: {
+        customAgents: {
+          title: "カスタムAIエージェント",
+          description: "コードなしで強力なAIエージェントと自動化を構築。",
+          primaryAction: "@agentを使用してチャット",
+          secondaryAction: "エージェントフローを構築",
+        },
+        slashCommands: {
+          title: "スラッシュコマンド",
+          description:
+            "カスタムスラッシュコマンドで時間を節約しプロンプトを挿入。",
+          primaryAction: "スラッシュコマンドを作成",
+          secondaryAction: "ハブで探索",
+        },
+        systemPrompts: {
+          title: "システムプロンプト",
+          description:
+            "システムプロンプトを変更してワークスペースのAI返答をカスタマイズ。",
+          primaryAction: "システムプロンプトを変更",
+          secondaryAction: "プロンプト変数を管理",
+        },
+      },
+    },
+    announcements: {
+      title: "更新とお知らせ",
+    },
+    resources: {
+      title: "リソース",
+      links: {
+        docs: "ドキュメント",
+        star: "Githubでスター",
       },
     },
   },

@@ -1092,7 +1092,11 @@
                 "type": "object",
                 "example": {
                   "link": "https://anythingllm.com",
-                  "addToWorkspaces": "workspace1,workspace2"
+                  "addToWorkspaces": "workspace1,workspace2",
+                  "scraperHeaders": {
+                    "Authorization": "Bearer token123",
+                    "My-Custom-Header": "value"
+                  }
                 }
               }
             }
