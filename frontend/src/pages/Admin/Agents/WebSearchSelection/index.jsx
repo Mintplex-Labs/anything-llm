@@ -74,8 +74,7 @@ const SEARCH_PROVIDERS = [
     value: "bing-search",
     logo: BingSearchIcon,
     options: (settings) => <BingSearchOptions settings={settings} />,
-    description:
-      "Web search powered by the Bing Search API ($35 per 1K transactions).",
+    description: "Web search powered by the Bing Search API (paid service).",
   },
   {
     name: "Serply.io",
