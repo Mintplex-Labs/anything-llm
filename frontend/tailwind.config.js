@@ -60,6 +60,7 @@ export default {
           text: {
             primary: 'var(--theme-text-primary)',
             secondary: 'var(--theme-text-secondary)',
+            selected: 'var(--theme-text-selected)',
           },
           sidebar: {
             item: {

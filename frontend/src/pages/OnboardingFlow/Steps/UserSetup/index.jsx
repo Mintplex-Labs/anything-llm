@@ -65,9 +65,9 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
             onClick={() => setSelectedOption("just_me")}
             className={`${
               selectedOption === "just_me"
-                ? "text-sky-400 border-sky-400/70"
+                ? "text-theme-text-selected border-theme-text-selected border-opacity-70"
                 : "text-theme-text-primary border-theme-sidebar-border"
-            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-theme-text-selected hover:border-opacity-70 hover:text-theme-text-selected transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">
               {t("onboarding.userSetup.justMe")}
@@ -77,9 +77,9 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
             onClick={() => setSelectedOption("my_team")}
             className={`${
               selectedOption === "my_team"
-                ? "text-sky-400 border-sky-400/70"
+                ? "text-theme-text-selected border-theme-text-selected border-opacity-70"
                 : "text-theme-text-primary border-theme-sidebar-border"
-            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-theme-text-selected hover:border-opacity-70 hover:text-theme-text-selected transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">
               {t("onboarding.userSetup.myTeam")}
@@ -176,9 +176,9 @@ const JustMe = ({
             onClick={handleYes}
             className={`${
               enablePassword && itemSelected
-                ? "text-sky-400 border-sky-400/70"
+                ? "text-theme-text-selected border-theme-text-selected border-opacity-70"
                 : "text-theme-text-primary border-theme-sidebar-border"
-            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-theme-text-selected hover:border-opacity-70 hover:text-theme-text-selected transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">
               {t("common.yes")}
@@ -188,9 +188,9 @@ const JustMe = ({
             onClick={handleNo}
             className={`${
               !enablePassword && itemSelected
-                ? "text-sky-400 border-sky-400/70"
+                ? "text-theme-text-selected border-theme-text-selected border-opacity-70"
                 : "text-theme-text-primary border-theme-sidebar-border"
-            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-sky-400/70 hover:text-sky-400 transition-all duration-300`}
+            } min-w-[230px] h-11 p-4 rounded-[10px] border-2  justify-center items-center gap-[100px] inline-flex hover:border-theme-text-selected hover:border-opacity-70 hover:text-theme-text-selected transition-all duration-300`}
           >
             <div className="text-center text-sm font-bold">
               {t("common.no")}
@@ -208,7 +208,7 @@ const JustMe = ({
             <input
               name="password"
               type="password"
-              className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-secondary"
+              className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-theme-text-selected active:outline-theme-text-selected outline-none placeholder:text-theme-text-secondary"
               placeholder="Your admin password"
               minLength={6}
               required={true}
@@ -284,12 +284,12 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                   htmlFor="name"
                   className="block mb-3 text-sm font-medium text-white"
                 >
-                  {t("common.adminUsername")}
+                  {t("onboarding.userSetup.adminUsername")}
                 </label>
                 <input
                   name="username"
                   type="text"
-                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-theme-text-selected active:outline-theme-text-selected placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin username"
                   minLength={6}
                   required={true}
@@ -310,7 +310,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                 <input
                   name="password"
                   type="password"
-                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-primary-button active:outline-primary-button placeholder:text-theme-text-secondary outline-none"
+                  className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg block w-full p-2.5 focus:outline-theme-text-selected active:outline-theme-text-selected placeholder:text-theme-text-secondary outline-none"
                   placeholder="Your admin password"
                   minLength={8}
                   required={true}
