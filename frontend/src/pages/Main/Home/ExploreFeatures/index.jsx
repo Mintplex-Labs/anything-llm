@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import paths from "@/utils/paths";
 import Workspace from "@/models/workspace";
+import { useTranslation } from "react-i18next";
 
 export default function ExploreFeatures() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const chatWithAgent = async () => {
@@ -53,32 +55,50 @@ export default function ExploreFeatures() {
   return (
     <div>
       <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
-        Explore more features
+        {t("main-page.exploreMore.title")}
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <FeatureCard
-          title="Custom AI Agents"
-          description="Build powerful AI Agents and automations with no code."
-          primaryAction="Chat using @agent"
-          secondaryAction="Build an agent flow"
+          title={t("main-page.exploreMore.features.customAgents.title")}
+          description={t(
+            "main-page.exploreMore.features.customAgents.description"
+          )}
+          primaryAction={t(
+            "main-page.exploreMore.features.customAgents.primaryAction"
+          )}
+          secondaryAction={t(
+            "main-page.exploreMore.features.customAgents.secondaryAction"
+          )}
           onPrimaryAction={chatWithAgent}
           onSecondaryAction={buildAgentFlow}
           isNew={true}
         />
         <FeatureCard
-          title="Slash Commands"
-          description="Save time and inject prompts using custom slash commands."
-          primaryAction="Create a Slash Command"
-          secondaryAction="Explore on Hub"
+          title={t("main-page.exploreMore.features.slashCommands.title")}
+          description={t(
+            "main-page.exploreMore.features.slashCommands.description"
+          )}
+          primaryAction={t(
+            "main-page.exploreMore.features.slashCommands.primaryAction"
+          )}
+          secondaryAction={t(
+            "main-page.exploreMore.features.slashCommands.secondaryAction"
+          )}
           onPrimaryAction={setSlashCommand}
           onSecondaryAction={exploreSlashCommands}
           isNew={false}
         />
         <FeatureCard
-          title="System Prompts"
-          description="Modify the system prompt to customize the AI replies of a workspace."
-          primaryAction="Modify a System Prompt"
-          secondaryAction="Manage prompt variables"
+          title={t("main-page.exploreMore.features.systemPrompts.title")}
+          description={t(
+            "main-page.exploreMore.features.systemPrompts.description"
+          )}
+          primaryAction={t(
+            "main-page.exploreMore.features.systemPrompts.primaryAction"
+          )}
+          secondaryAction={t(
+            "main-page.exploreMore.features.systemPrompts.secondaryAction"
+          )}
           onPrimaryAction={setSystemPrompt}
           onSecondaryAction={managePromptVariables}
           isNew={true}
