@@ -34,6 +34,10 @@ const BrandingSettings = lazy(
   () => import("@/pages/GeneralSettings/Settings/Branding")
 );
 
+const ChatSettings = lazy(
+  () => import("@/pages/GeneralSettings/Settings/Chat")
+);
+
 const GeneralApiKeys = lazy(() => import("@/pages/GeneralSettings/ApiKeys"));
 const GeneralLLMPreference = lazy(
   () => import("@/pages/GeneralSettings/LLMPreference")
@@ -196,6 +200,10 @@ export default function App() {
                   <Route
                     path="/settings/branding"
                     element={<ManagerRoute Component={BrandingSettings} />}
+                  />
+                  <Route
+                    path="/settings/chat"
+                    element={<ManagerRoute Component={ChatSettings} />}
                   />
                   <Route
                     path="/settings/beta-features"
