@@ -210,14 +210,13 @@ export function BingSearchOptions({ settings }) {
         </li>
         <li>Create a new Azure account or sign in with an existing one.</li>
         <li>
-          Navigate to the "Create a resource" section and search for "Bing
-          Search v7".
+          Navigate to the "Create a resource" section and search for "Grounding with Bing Search".
         </li>
         <li>
-          Select the "Bing Search v7" resource and create a new subscription.
+          Select the "Grounding with Bing Search" resource and create a new subscription.
         </li>
         <li>
-          Choose the pricing tier that suits your needs (free tier available).
+          Choose the pricing tier that suits your needs (free tier not available).
         </li>
         <li>Obtain the API key for your Bing Web Search subscription.</li>
       </ol>
