@@ -56,6 +56,7 @@ export default function AsyncTTSMessage({ slug, chatId }) {
     <div className="mt-3 relative">
       <button
         onClick={speakMessage}
+        data-auto-play-chat-id={chatId}
         data-tooltip-id="message-to-speech"
         data-tooltip-content={
           speaking ? "Pause TTS speech of message" : "TTS Speak message"

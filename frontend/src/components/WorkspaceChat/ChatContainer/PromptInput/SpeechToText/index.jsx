@@ -7,9 +7,17 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { PROMPT_INPUT_EVENT } from "../../PromptInput";
 import { useTranslation } from "react-i18next";
+import Appearance from "@/models/appearance";
 
 let timeout;
 const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
+
+/**
+ * Speech-to-text input component for the chat window.
+ * @param {Object} props - The component props
+ * @param {(textToAppend: string, autoSubmit: boolean) => void} props.sendCommand - The function to send the command
+ * @returns {React.ReactElement} The SpeechToText component
+ */
 export default function SpeechToText({ sendCommand }) {
   const {
     transcript,
@@ -40,7 +48,7 @@ export default function SpeechToText({ sendCommand }) {
   function endSTTSession() {
     SpeechRecognition.stopListening();
     if (transcript.length > 0) {
-      sendCommand(transcript, true);
+      sendCommand(transcript, Appearance.get("autoSubmitSttInput"));
     }
 
     resetTranscript();
@@ -49,6 +57,7 @@ export default function SpeechToText({ sendCommand }) {
 
   const handleKeyPress = useCallback(
     (event) => {
+      // CTRL + m on Mac and Windows to toggle STT listening
       if (event.ctrlKey && event.keyCode === 77) {
         if (listening) {
           endSTTSession();
@@ -96,7 +105,7 @@ export default function SpeechToText({ sendCommand }) {
     <div
       id="text-size-btn"
       data-tooltip-id="tooltip-text-size-btn"
-      data-tooltip-content={t("chat_window.microphone")}
+      data-tooltip-content={`${t("chat_window.microphone")} (CTRL + M)`}
       aria-label={t("chat_window.microphone")}
       onClick={listening ? endSTTSession : startSTTSession}
       className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer ${

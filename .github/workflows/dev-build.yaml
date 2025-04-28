@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['3698-main-screen-localization'] # put your current branch to create a build. Core team only.
+    branches: ['2237-auto-stt-submit-preference'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

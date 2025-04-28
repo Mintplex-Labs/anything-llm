@@ -83,6 +83,7 @@ const TRANSLATIONS = {
     customization: "Customization",
     interface: "UI Preferences",
     branding: "Branding & Whitelabeling",
+    chat: "Chat",
     "api-keys": "Developer API",
     llm: "LLM",
     transcription: "Transcription",
@@ -458,6 +459,19 @@ const TRANSLATIONS = {
       title: "Branding & Whitelabeling",
       description:
         "White-label your AnythingLLM instance with custom branding.",
+    },
+    chat: {
+      title: "Chat",
+      description: "Set your chat preferences for AnythingLLM.",
+      auto_submit: {
+        title: "Auto-Submit Speech Input",
+        description:
+          "Automatically submit speech input after a period of silence",
+      },
+      auto_speak: {
+        title: "Auto-Speak Responses",
+        description: "Automatically speak responses from the AI",
+      },
     },
     items: {
       theme: {
