@@ -14,6 +14,10 @@ class AzureOpenAiEmbedder {
       endpoint: process.env.AZURE_OPENAI_ENDPOINT,
       apiVersion: this.apiVersion,
     });
+
+    // We cannot assume the model fallback since the model is based on the deployment name
+    // and not the model name - so this will throw on embedding if the model is not defined.
+    this.model = process.env.EMBEDDING_MODEL_PREF;
     this.openai = openai;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
@@ -24,6 +28,10 @@ class AzureOpenAiEmbedder {
     this.embeddingMaxChunkLength = 2048;
   }
 
+  log(text, ...args) {
+    console.log(`\x1b[36m[AzureOpenAiEmbedder]\x1b[0m ${text}`, ...args);
+  }
+
   async embedTextInput(textInput) {
     const result = await this.embedChunks(
       Array.isArray(textInput) ? textInput : [textInput]
@@ -32,13 +40,9 @@ class AzureOpenAiEmbedder {
   }
 
   async embedChunks(textChunks = []) {
-    const textEmbeddingModel =
-      process.env.EMBEDDING_MODEL_PREF || "text-embedding-ada-002";
-    if (!textEmbeddingModel)
-      throw new Error(
-        "No EMBEDDING_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an embedding model."
-      );
+    if (!this.model) throw new Error("No Embedding Model preference defined.");
 
+    this.log(`Embedding ${textChunks.length} chunks...`);
     // Because there is a limit on how many chunks can be sent at once to Azure OpenAI
     // we concurrently execute each max batch of text chunks possible.
     // Refer to constructor maxConcurrentChunks for more info.
@@ -48,7 +52,7 @@ class AzureOpenAiEmbedder {
         new Promise((resolve) => {
           this.openai.embeddings
             .create({
-              model: textEmbeddingModel,
+              model: this.model,
               input: chunk,
             })
             .then((res) => {
