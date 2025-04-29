@@ -92,6 +92,7 @@ const TRANSLATIONS = {
     "system-prompt-variables": null,
     interface: null,
     branding: null,
+    chat: null,
   },
   login: {
     "multi-user": {
@@ -705,6 +706,18 @@ const TRANSLATIONS = {
       title: null,
       description: null,
     },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+    },
     items: {
       theme: {
         title: null,
@@ -766,6 +779,93 @@ const TRANSLATIONS = {
         description: null,
         icon: null,
         link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError:
+      "Bitte erstellen Sie einen Arbeitsbereich, bevor Sie einen Chat beginnen.",
+    checklist: {
+      title: "Erste Schritte",
+      tasksLeft: "Aufgaben übrig",
+      completed: "Sie sind auf dem Weg, ein AnythingLLM-Experte zu werden!",
+      dismiss: "schließen",
+      tasks: {
+        create_workspace: {
+          title: "Einen Arbeitsbereich erstellen",
+          description:
+            "Erstellen Sie Ihren ersten Arbeitsbereich, um zu beginnen",
+          action: "Erstellen",
+        },
+        send_chat: {
+          title: "Einen Chat senden",
+          description: "Starten Sie ein Gespräch mit Ihrem KI-Assistenten",
+          action: "Chat",
+        },
+        embed_document: {
+          title: "Ein Dokument einbetten",
+          description:
+            "Fügen Sie Ihr erstes Dokument zu Ihrem Arbeitsbereich hinzu",
+          action: "Einbetten",
+        },
+        setup_system_prompt: {
+          title: "Ein System-Prompt einrichten",
+          description: "Konfigurieren Sie das Verhalten Ihres KI-Assistenten",
+          action: "Einrichten",
+        },
+        define_slash_command: {
+          title: "Einen Slash-Befehl definieren",
+          description:
+            "Erstellen Sie benutzerdefinierte Befehle für Ihren Assistenten",
+          action: "Definieren",
+        },
+        visit_community: {
+          title: "Community Hub besuchen",
+          description: "Entdecken Sie Community-Ressourcen und Vorlagen",
+          action: "Stöbern",
+        },
+      },
+    },
+    quickLinks: {
+      title: "Schnellzugriffe",
+      sendChat: "Chat senden",
+      embedDocument: "Dokument einbetten",
+      createWorkspace: "Arbeitsbereich erstellen",
+    },
+    exploreMore: {
+      title: "Weitere Funktionen erkunden",
+      features: {
+        customAgents: {
+          title: "Benutzerdefinierte KI-Agenten",
+          description:
+            "Erstellen Sie leistungsstarke KI-Agenten und Automatisierungen ohne Code.",
+          primaryAction: "Chatten mit @agent",
+          secondaryAction: "Einen Agenten-Flow erstellen",
+        },
+        slashCommands: {
+          title: "Slash-Befehle",
+          description:
+            "Sparen Sie Zeit und fügen Sie Eingabeaufforderungen mit benutzerdefinierten Slash-Befehlen ein.",
+          primaryAction: "Einen Slash-Befehl erstellen",
+          secondaryAction: "Im Hub erkunden",
+        },
+        systemPrompts: {
+          title: "System-Eingabeaufforderungen",
+          description:
+            "Ändern Sie die System-Eingabeaufforderung, um die KI-Antworten eines Arbeitsbereichs anzupassen.",
+          primaryAction: "Eine System-Eingabeaufforderung ändern",
+          secondaryAction: "Eingabevariablen verwalten",
+        },
+      },
+    },
+    announcements: {
+      title: "Updates & Ankündigungen",
+    },
+    resources: {
+      title: "Ressourcen",
+      links: {
+        docs: "Dokumentation",
+        star: "Auf Github mit Stern versehen",
       },
     },
   },

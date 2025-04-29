@@ -6,8 +6,13 @@ import paths from "@/utils/paths";
 import ModalWrapper from "../ModalWrapper";
 import { useParams } from "react-router-dom";
 import { DnDFileUploaderProvider } from "./ChatContainer/DnDWrapper";
+import {
+  TTSProvider,
+  useWatchForAutoPlayAssistantTTSResponse,
+} from "../contexts/TTSProvider";
 
 export default function WorkspaceChat({ loading, workspace }) {
+  useWatchForAutoPlayAssistantTTSResponse();
   const { threadSlug = null } = useParams();
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
@@ -64,9 +69,11 @@ export default function WorkspaceChat({ loading, workspace }) {
 
   setEventDelegatorForCodeSnippets();
   return (
-    <DnDFileUploaderProvider workspace={workspace}>
-      <ChatContainer workspace={workspace} knownHistory={history} />
-    </DnDFileUploaderProvider>
+    <TTSProvider>
+      <DnDFileUploaderProvider workspace={workspace}>
+        <ChatContainer workspace={workspace} knownHistory={history} />
+      </DnDFileUploaderProvider>
+    </TTSProvider>
   );
 }
 
