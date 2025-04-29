@@ -478,7 +478,7 @@ const KEY_MAPPING = {
   DisableTelemetry: {
     envKey: "DISABLE_TELEMETRY",
     checks: [],
-    postUpdate: [
+    preUpdate: [
       (_, __, nextValue) => {
         if (nextValue === "true") Telemetry.sendTelemetry("telemetry_disabled");
       },
@@ -882,7 +882,12 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   const newValues = {};
 
   for (const key of ENV_KEYS) {
-    const { envKey, checks, postUpdate = [] } = KEY_MAPPING[key];
+    const {
+      envKey,
+      checks,
+      preUpdate = [],
+      postUpdate = [],
+    } = KEY_MAPPING[key];
     const prevValue = process.env[envKey];
     const nextValue = newENVs[key];
 
@@ -891,6 +896,9 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
       error += errors.join("\n");
       break;
     }
+
+    for (const preUpdateFunc of preUpdate)
+      await preUpdateFunc(key, prevValue, nextValue);
 
     newValues[key] = nextValue;
     process.env[envKey] = nextValue;
