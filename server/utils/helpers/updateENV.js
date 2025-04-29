@@ -1,3 +1,4 @@
+const { Telemetry } = require("../../models/telemetry");
 const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
 
 const KEY_MAPPING = {
@@ -477,6 +478,11 @@ const KEY_MAPPING = {
   DisableTelemetry: {
     envKey: "DISABLE_TELEMETRY",
     checks: [],
+    postUpdate: [
+      (_, __, nextValue) => {
+        if (nextValue === "true") Telemetry.sendTelemetry("telemetry_disabled");
+      },
+    ],
   },
 
   // Agent Integration ENVs
