@@ -655,6 +655,21 @@ function systemEndpoints(app) {
     }
   });
 
+  app.get("/system/sso-button", async (_, response) => {
+    try {
+      const ssoButton =
+        (
+          await SystemSettings.get({
+            label: "sso_url",
+          })
+        )?.value ?? null;
+      response.status(200).json({ ssoButton: ssoButton });
+    } catch (error) {
+      console.error("Error fetching custom app name:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get(
     "/system/pfp/:id",
     [validatedRequest, flexUserRoleValid([ROLES.all])],

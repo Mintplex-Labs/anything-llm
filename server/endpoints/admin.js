@@ -383,6 +383,9 @@ function adminEndpoints(app) {
             case "custom_app_name":
               requestedSettings[label] = setting?.value || null;
               break;
+            case "sso_url":
+              requestedSettings[label] = setting?.value || null;
+              break;
             case "feature_flags":
               requestedSettings[label] =
                 (await SystemSettings.getFeatureFlags()) || {};
@@ -452,6 +455,9 @@ function adminEndpoints(app) {
           imported_agent_skills: ImportedPlugin.listImportedPlugins(),
           custom_app_name:
             (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
+            null,
+          sso_url:
+            (await SystemSettings.get({ label: "sso_url" }))?.value ||
             null,
           feature_flags: (await SystemSettings.getFeatureFlags()) || {},
           meta_page_title: await SystemSettings.getValueOrFallback(

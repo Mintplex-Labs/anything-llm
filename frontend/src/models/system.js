@@ -10,6 +10,7 @@ const System = {
     footerIcons: "anythingllm_footer_links",
     supportEmail: "anythingllm_support_email",
     customAppName: "anythingllm_custom_app_name",
+    SSOButton: "anythingllm_sso_url",
     canViewChatHistory: "anythingllm_can_view_chat_history",
   },
   ping: async function () {
@@ -309,6 +310,37 @@ const System = {
       JSON.stringify({ email: supportEmail, lastFetched: Date.now() })
     );
     return { email: supportEmail, error: null };
+  },
+
+  fetchssoButton: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.ssoButton);
+    const { url, lastFetched } = cache
+      ? safeJsonParse(cache, { url: "", lastFetched: 0 })
+      : { url: "", lastFetched: 0 };
+
+    if (!!url && Date.now() - lastFetched < 3_600_000)
+      return { url: url, error: null };
+
+    const { ssoButton, error } = await fetch(
+      `${API_BASE}/system/sso-button`,
+      {
+        method: "GET",
+        cache: "no-cache",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { url: "", error: e.message };
+      });
+
+    if (!ssoButton || !!error) return { url: "", error: null };
+    window.localStorage.setItem(
+      this.cacheKeys.ssoButton,
+      JSON.stringify({ url: ssoButton, lastFetched: Date.now() })
+    );
+    return { url: ssoButton, error: null };
   },
 
   fetchCustomAppName: async function () {

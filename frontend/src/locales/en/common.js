@@ -487,6 +487,11 @@ const TRANSLATIONS = {
         description:
           "Set the support email address that should be accessible by users when they need help.",
       },
+      "sso-button": {
+        title: "Single Sign On (SSO) URL",
+        description:
+          "Set the SSO URL that should redirect users on the login page.",
+      },
       "app-name": {
         title: "Name",
         description:

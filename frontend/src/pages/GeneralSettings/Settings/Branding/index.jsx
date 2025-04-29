@@ -7,6 +7,7 @@ import CustomMessages from "../components/CustomMessages";
 import { useTranslation } from "react-i18next";
 import CustomAppName from "../components/CustomAppName";
 import CustomSiteSettings from "../components/CustomSiteSettings";
+import SSOButton from "../components/SSOButton";
 
 export default function BrandingSettings() {
   const { t } = useTranslation();
@@ -34,6 +35,7 @@ export default function BrandingSettings() {
           <CustomMessages />
           <FooterCustomization />
           <SupportEmail />
+          <SSOButton />
           <CustomSiteSettings />
         </div>
       </div>
