@@ -1,12 +1,11 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
+  formatChatHistory,
+  handleDefaultStreamResponseV2,
+} = require("../../helpers/chat/responses");
+const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
-const {
-  writeResponseChunk,
-  clientAbortedHandler,
-  formatChatHistory,
-} = require("../../helpers/chat/responses");
 
 class AzureOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -182,63 +181,8 @@ class AzureOpenAiLLM {
     return measuredStreamRequest;
   }
 
-  /**
-   * Handles the stream response from the AzureOpenAI API.
-   * Azure does not return the usage metrics in the stream response, but 1msg = 1token
-   * so we can estimate the completion tokens by counting the number of messages.
-   * @param {Object} response - the response object
-   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream - the stream response from the AzureOpenAI API w/tracking
-   * @param {Object} responseProps - the response properties
-   * @returns {Promise<string>}
-   */
   handleStream(response, stream, responseProps) {
-    const { uuid = uuidv4(), sources = [] } = responseProps;
-
-    return new Promise(async (resolve) => {
-      let fullText = "";
-      let usage = {
-        completion_tokens: 0,
-      };
-
-      // Establish listener to early-abort a streaming response
-      // in case things go sideways or the user does not like the response.
-      // We preserve the generated text but continue as if chat was completed
-      // to preserve previously generated content.
-      const handleAbort = () => {
-        stream?.endMeasurement(usage);
-        clientAbortedHandler(resolve, fullText);
-      };
-      response.on("close", handleAbort);
-
-      for await (const chunk of stream) {
-        if (chunk.choices && chunk.choices[0]?.delta?.content) {
-          const delta = chunk.choices[0].delta.content;
-          fullText += delta;
-          usage.completion_tokens++;
-
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: delta,
-            close: false,
-            error: false,
-          });
-        }
-      }
-
-      writeResponseChunk(response, {
-        uuid,
-        sources,
-        type: "textResponseChunk",
-        textResponse: "",
-        close: true,
-        error: false,
-      });
-      response.removeListener("close", handleAbort);
-      stream?.endMeasurement(usage);
-      resolve(fullText);
-    });
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
