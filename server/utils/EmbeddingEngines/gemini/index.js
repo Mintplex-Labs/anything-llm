@@ -2,7 +2,8 @@ const { toChunks } = require("../../helpers");
 
 class GeminiEmbedder {
   constructor() {
-    if (!process.env.GEMINI_EMBEDDING_API_KEY) throw new Error("No Gemini API key was set.");
+    if (!process.env.GEMINI_EMBEDDING_API_KEY)
+      throw new Error("No Gemini API key was set.");
 
     const { OpenAI: OpenAIApi } = require("openai");
     this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-004";
