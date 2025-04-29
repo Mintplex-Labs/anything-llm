@@ -1194,11 +1194,6 @@
   resolved "https://registry.npmjs.org/@google/generative-ai/-/generative-ai-0.1.3.tgz"
   integrity sha512-Cm4uJX1sKarpm1mje/MiOIinM7zdUUrQp/5/qGPAgznbdd/B9zup5ehT6c1qGqycFcSopTA1J1HpqHS5kJR8hQ==
 
-"@google/generative-ai@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.npmjs.org/@google/generative-ai/-/generative-ai-0.7.1.tgz"
-  integrity sha512-WTjMLLYL/xfA5BW6xAycRPiAX7FNHKAxrid/ayqC1QMam0KAK0NbMeS9Lubw80gVg5xFMLE+H7pw4wdNzTOlxw==
-
 "@graphql-typed-document-node/core@^3.1.1":
   version "3.2.0"
   resolved "https://registry.npmjs.org/@graphql-typed-document-node/core/-/core-3.2.0.tgz"
