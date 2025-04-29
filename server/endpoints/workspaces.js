@@ -34,6 +34,7 @@ const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
+const { getModelTag } = require("./utils");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -56,6 +57,7 @@ function workspaceEndpoints(app) {
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "lancedb",
             TTSSelection: process.env.TTS_PROVIDER || "native",
+            LLMModel: getModelTag(),
           },
           user?.id
         );

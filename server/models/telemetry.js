@@ -21,6 +21,12 @@ const Telemetry = {
     agent_chat_sent: 1800,
     agent_chat_started: 1800,
     agent_tool_call: 1800,
+
+    // Document mgmt events
+    document_uploaded: 30,
+    documents_embedded_in_workspace: 30,
+    link_uploaded: 30,
+    raw_document_uploaded: 30,
   },
 
   id: async function () {
