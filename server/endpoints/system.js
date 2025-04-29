@@ -913,7 +913,6 @@ function systemEndpoints(app) {
         }
 
         const { apiKey, error } = await ApiKey.create();
-        await Telemetry.sendTelemetry("api_key_created");
         await EventLogs.logEvent(
           "api_key_created",
           {},
