@@ -10,7 +10,7 @@ class AzureOpenAiEmbedder {
 
     this.apiVersion = "2024-12-01-preview";
     const openai = new AzureOpenAI({
-      apiKey: process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY,
+      apiKey: process.env.AZURE_OPENAI_KEY,
       endpoint: process.env.AZURE_OPENAI_ENDPOINT,
       apiVersion: this.apiVersion,
     });

@@ -18,7 +18,7 @@ class AzureOpenAiLLM {
 
     this.apiVersion = "2024-12-01-preview";
     this.openai = new AzureOpenAI({
-      apiKey: process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY,
+      apiKey: process.env.AZURE_OPENAI_KEY,
       apiVersion: this.apiVersion,
       endpoint: process.env.AZURE_OPENAI_ENDPOINT,
     });
