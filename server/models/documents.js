@@ -4,6 +4,7 @@ const prisma = require("../utils/prisma");
 const { Telemetry } = require("./telemetry");
 const { EventLogs } = require("./eventLogs");
 const { safeJsonParse } = require("../utils/http");
+const { getModelTag } = require("../endpoints/utils");
 
 const Document = {
   writable: ["pinned", "watched", "lastUpdatedAt"],
@@ -130,6 +131,7 @@ const Document = {
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "lancedb",
       TTSSelection: process.env.TTS_PROVIDER || "native",
+      LLMModel: getModelTag(),
     });
     await EventLogs.logEvent(
       "workspace_documents_added",
@@ -169,12 +171,6 @@ const Document = {
       }
     }
 
-    await Telemetry.sendTelemetry("documents_removed_in_workspace", {
-      LLMSelection: process.env.LLM_PROVIDER || "openai",
-      Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-      VectorDbSelection: process.env.VECTOR_DB || "lancedb",
-      TTSSelection: process.env.TTS_PROVIDER || "native",
-    });
     await EventLogs.logEvent(
       "workspace_documents_removed",
       {
