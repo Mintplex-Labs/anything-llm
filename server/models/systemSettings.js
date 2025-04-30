@@ -38,7 +38,7 @@ const SystemSettings = {
     "footer_data",
     "support_email",
     "sso_url",
-    
+
     "text_splitter_chunk_size",
     "text_splitter_chunk_overlap",
     "agent_search_provider",

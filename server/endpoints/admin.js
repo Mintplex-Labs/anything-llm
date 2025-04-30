@@ -457,8 +457,7 @@ function adminEndpoints(app) {
             (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
             null,
           sso_url:
-            (await SystemSettings.get({ label: "sso_url" }))?.value ||
-            null,
+            (await SystemSettings.get({ label: "sso_url" }))?.value || null,
           feature_flags: (await SystemSettings.getFeatureFlags()) || {},
           meta_page_title: await SystemSettings.getValueOrFallback(
             { label: "meta_page_title" },

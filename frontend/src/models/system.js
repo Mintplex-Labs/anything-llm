@@ -321,14 +321,11 @@ const System = {
     if (!!url && Date.now() - lastFetched < 3_600_000)
       return { url: url, error: null };
 
-    const { ssoButton, error } = await fetch(
-      `${API_BASE}/system/sso-button`,
-      {
-        method: "GET",
-        cache: "no-cache",
-        headers: baseHeaders(),
-      }
-    )
+    const { ssoButton, error } = await fetch(`${API_BASE}/system/sso-button`, {
+      method: "GET",
+      cache: "no-cache",
+      headers: baseHeaders(),
+    })
       .then((res) => res.json())
       .catch((e) => {
         console.log(e);

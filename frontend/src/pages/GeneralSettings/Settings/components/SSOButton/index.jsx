@@ -55,10 +55,7 @@ export default function SSOButton() {
 
   if (!canCustomize || loading) return null;
   return (
-    <form
-      className="flex flex-col gap-y-0.5 mt-4"
-      onSubmit={updatessoButton}
-    >
+    <form className="flex flex-col gap-y-0.5 mt-4" onSubmit={updatessoButton}>
       <h2 className="text-sm leading-6 font-semibold text-white">
         {t("customization.items.sso-button.title")}
       </h2>
