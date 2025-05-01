@@ -253,7 +253,9 @@ class MCPHypervisor {
     if (!server) throw new Error("MCP server definition is required");
     const serverType = server.hasOwnProperty("command")
       ? "stdio"
-      : server.hasOwnProperty("url") ? "http" : null;
+      : server.hasOwnProperty("url")
+        ? "http"
+        : null;
     if (!serverType) throw new Error("MCP server command or url is required");
     switch (serverType) {
       case "stdio":
@@ -262,17 +264,24 @@ class MCPHypervisor {
         break;
       case "http":
         // If the type is not defined, then sse transport type will be used by default.
-        if (server.hasOwnProperty("type") && server.type !== "sse" && server.type !== "streamable")
+        if (
+          server.hasOwnProperty("type") &&
+          server.type !== "sse" &&
+          server.type !== "streamable"
+        )
           throw new Error("MCP server type must have sse or streamable value.");
     }
 
     this.log(`Attempting to start MCP server: ${name}`);
     const mcp = new Client({ name: name, version: "1.0.0" });
-    const transport = serverType === "stdio" ? new StdioClientTransport({
-      command: server.command,
-      args: server?.args ?? [],
-      ...this.#buildMCPServerENV(server),
-    }) : this.createHttpTransport(server);
+    const transport =
+      serverType === "stdio"
+        ? new StdioClientTransport({
+            command: server.command,
+            args: server?.args ?? [],
+            ...this.#buildMCPServerENV(server),
+          })
+        : this.createHttpTransport(server);
 
     // Add connection event listeners
     transport.onclose = () => this.log(`${name} - Transport closed`);
@@ -367,14 +376,14 @@ class MCPHypervisor {
       case "streamable":
         return new StreamableHTTPClientTransport(url, {
           requestInit: {
-            headers: server.headers
-          }
+            headers: server.headers,
+          },
         });
       default:
         return new SSEClientTransport(url, {
           requestInit: {
-            headers: server.headers
-          }
+            headers: server.headers,
+          },
         });
     }
   }
