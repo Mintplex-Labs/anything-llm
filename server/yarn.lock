@@ -1599,10 +1599,10 @@
   dependencies:
     ws "^7.5.10"
 
-"@modelcontextprotocol/sdk@^1.10.2":
-  version "1.10.2"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.10.2.tgz#50cdfbf0b6fbea23420388a7b00e64c13adabac8"
-  integrity sha512-rb6AMp2DR4SN+kc6L1ta2NCpApyA9WYNx3CrTSZvGxq9wH71bRur+zRqPfg0vQ9mjywR7qZdX2RGHOPq3ss+tA==
+"@modelcontextprotocol/sdk@^1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.11.0.tgz#9f1762efe6f3365f0bf3b019cc9bd1629d19bc50"
+  integrity sha512-k/1pb70eD638anoi0e8wUGAlbMJXyvdV4p62Ko+EZ7eBe1xMx8Uhak1R5DgfoofsK5IBBnRwsYGTaLZl+6/+RQ==
   dependencies:
     content-type "^1.0.5"
     cors "^2.8.5"
