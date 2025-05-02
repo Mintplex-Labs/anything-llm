@@ -22,13 +22,18 @@ export const THOUGHT_REGEX_COMPLETE = new RegExp(
 );
 const THOUGHT_PREVIEW_LENGTH = isMobile ? 25 : 50;
 
-function contentIsNotEmpty(content) {
+/**
+ * Checks if the content has readable content.
+ * @param {string} content - The content to check.
+ * @returns {boolean} - Whether the content has readable content.
+ */
+function contentIsNotEmpty(content = "") {
   return (
     content
-      .trim()
-      .replace(THOUGHT_REGEX_OPEN, "")
-      .replace(THOUGHT_REGEX_CLOSE, "")
-      .replace(/[\n\s]/g, "").length > 0
+      ?.trim()
+      ?.replace(THOUGHT_REGEX_OPEN, "")
+      ?.replace(THOUGHT_REGEX_CLOSE, "")
+      ?.replace(/[\n\s]/g, "")?.length > 0
   );
 }
 
