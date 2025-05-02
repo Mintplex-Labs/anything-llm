@@ -8,7 +8,8 @@ const TRANSLATIONS = {
       useCasePersonal: "Uso pessoal",
       useCaseOther: "Outro",
       comment: "Onde ouviu sobre AnythingLLM pela primeira vez",
-      commentPlaceholder: "Reddit, Twitter, GitHub, YouTube, etc. - Conte para nós como você nos encontrou!",
+      commentPlaceholder:
+        "Reddit, Twitter, GitHub, YouTube, etc. - Conte para nós como você nos encontrou!",
       skip: "Ignorar pesquisa",
       thankYou: "Obrigado pelo seu feedback",
       title: "Bem-vindo a AnythingLLM",
@@ -20,7 +21,8 @@ const TRANSLATIONS = {
     },
     llm: {
       title: "Preferências LLM",
-      description: "AnythingLLM consegue trabalhar com diversos provedores LLM. Este é o serviço que lida com conversas.",
+      description:
+        "AnythingLLM consegue trabalhar com diversos provedores LLM. Este é o serviço que lida com conversas.",
     },
     userSetup: {
       title: "Configuração de usuário",
@@ -31,12 +33,15 @@ const TRANSLATIONS = {
       instancePassword: "Senha da Instância",
       setPassword: "Gostaria de definir uma senha?",
       passwordReq: "A sua senha deve conter pelo menos 8 caracteres",
-      passwordWarn: "É importante que salve a senha porque não existe método de recuperação",
+      passwordWarn:
+        "É importante que salve a senha porque não existe método de recuperação",
       adminUsername: "Utilizador da conta de administrador",
-      adminUsernameReq: "Utilizador deve conter pelo menos 6 caracteres, letras minúsculas, números, \"uderscore\", e hífen sem espaços",
+      adminUsernameReq:
+        'Utilizador deve conter pelo menos 6 caracteres, letras minúsculas, números, "uderscore", e hífen sem espaços',
       adminPassword: "Senha da conta de administrador",
       adminPasswordReq: "Senha deve conter pelo menos 8 caracteres",
-      teamHint: "Por padrão, você será o único administrador. Após o \"onboarding\", você poderá criar e convidar outros usuários ou administradores. Não perca sua senha, pois somente administradores podem redefini-la.",
+      teamHint:
+        'Por padrão, você será o único administrador. Após o "onboarding", você poderá criar e convidar outros usuários ou administradores. Não perca sua senha, pois somente administradores podem redefini-la.',
     },
     data: {
       title: "Gestão de dados e privacidade",
@@ -47,8 +52,7 @@ const TRANSLATIONS = {
     },
     workspace: {
       title: "Crie seu primeiro workspace",
-      description:
-        "Crie seu primeiro workspace e comece a usar o AnythingLLM.",
+      description: "Crie seu primeiro workspace e comece a usar o AnythingLLM.",
     },
   },
   common: {
