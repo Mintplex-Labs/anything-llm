@@ -13,6 +13,10 @@ const {
 } = require("@modelcontextprotocol/sdk/client/streamableHttp.js");
 
 /**
+ * @typedef {'stdio' | 'http' | 'sse'} MCPServerTypes
+ */
+
+/**
  * @class MCPHypervisor
  * @description A class that manages MCP servers found in the storage/plugins/anythingllm_mcp_servers.json file.
  * This class is responsible for booting, stopping, and reloading MCP servers - it is the user responsiblity for the MCP server definitions
@@ -243,6 +247,81 @@ class MCPHypervisor {
   }
 
   /**
+   * Parse the server type from the server definition
+   * @param {Object} server - The server definition
+   * @returns {MCPServerTypes | null} - The server type
+   */
+  #parseServerType(server) {
+    if (server.hasOwnProperty("command")) return "stdio";
+    if (server.hasOwnProperty("url")) return "http";
+    return "sse";
+  }
+
+  /**
+   * Validate the server definition by type
+   * - Will throw an error if the server definition is invalid
+   * @param {Object} server - The server definition
+   * @param {MCPServerTypes} type - The server type
+   * @returns {void}
+   */
+  #validateServerDefinitionByType(server, type) {
+    if (type === "stdio") {
+      if (server.hasOwnProperty("args") && !Array.isArray(server.args))
+        throw new Error("MCP server args must be an array");
+    }
+
+    if (type === "http") {
+      if (!["sse", "streamable"].includes(server?.type))
+        throw new Error("MCP server type must have sse or streamable value.");
+    }
+
+    if (type === "sse") return;
+    return;
+  }
+
+  /**
+   * Setup the server transport by type and server definition
+   * @param {Object} server - The server definition
+   * @param {MCPServerTypes} type - The server type
+   * @returns {StdioClientTransport | StreamableHTTPClientTransport | SSEClientTransport} - The server transport
+   */
+  #setupServerTransport(server, type) {
+    // if not stdio then it is http or sse
+    if (type !== "stdio") return this.createHttpTransport(server);
+
+    return new StdioClientTransport({
+      command: server.command,
+      args: server?.args ?? [],
+      ...this.#buildMCPServerENV(server),
+    });
+  }
+
+  /**
+   * Create MCP client transport for http MCP server.
+   * @param {Object} server - The server definition
+   * @returns {StreamableHTTPClientTransport | SSEClientTransport} - The server transport
+   */
+  createHttpTransport(server) {
+    const url = new URL(server.url);
+
+    // If the server block has a type property then use that to determine the transport type
+    switch (server.type) {
+      case "streamable":
+        return new StreamableHTTPClientTransport(url, {
+          requestInit: {
+            headers: server.headers,
+          },
+        });
+      default:
+        return new SSEClientTransport(url, {
+          requestInit: {
+            headers: server.headers,
+          },
+        });
+    }
+  }
+
+  /**
    * @private Start a single MCP server by its server definition from the JSON file
    * @param {string} name - The name of the MCP server to start
    * @param {Object} server - The server definition
@@ -251,37 +330,13 @@ class MCPHypervisor {
   async #startMCPServer({ name, server }) {
     if (!name) throw new Error("MCP server name is required");
     if (!server) throw new Error("MCP server definition is required");
-    const serverType = server.hasOwnProperty("command")
-      ? "stdio"
-      : server.hasOwnProperty("url")
-        ? "http"
-        : null;
+    const serverType = this.#parseServerType(server);
     if (!serverType) throw new Error("MCP server command or url is required");
-    switch (serverType) {
-      case "stdio":
-        if (server.hasOwnProperty("args") && !Array.isArray(server.args))
-          throw new Error("MCP server args must be an array");
-        break;
-      case "http":
-        // If the type is not defined, then sse transport type will be used by default.
-        if (
-          server.hasOwnProperty("type") &&
-          server.type !== "sse" &&
-          server.type !== "streamable"
-        )
-          throw new Error("MCP server type must have sse or streamable value.");
-    }
 
+    this.#validateServerDefinitionByType(server, serverType);
     this.log(`Attempting to start MCP server: ${name}`);
     const mcp = new Client({ name: name, version: "1.0.0" });
-    const transport =
-      serverType === "stdio"
-        ? new StdioClientTransport({
-            command: server.command,
-            args: server?.args ?? [],
-            ...this.#buildMCPServerENV(server),
-          })
-        : this.createHttpTransport(server);
+    const transport = this.#setupServerTransport(server, serverType);
 
     // Add connection event listeners
     transport.onclose = () => this.log(`${name} - Transport closed`);
@@ -362,30 +417,6 @@ class MCPHypervisor {
       runningServers
     );
     return this.mcpLoadingResults;
-  }
-
-  /**
-   * Create MCP client transport for http MCP server.
-   * @param server
-   * @returns {*}
-   */
-  createHttpTransport(server) {
-    const url = new URL(server.url);
-
-    switch (server.type) {
-      case "streamable":
-        return new StreamableHTTPClientTransport(url, {
-          requestInit: {
-            headers: server.headers,
-          },
-        });
-      default:
-        return new SSEClientTransport(url, {
-          requestInit: {
-            headers: server.headers,
-          },
-        });
-    }
   }
 }
 
