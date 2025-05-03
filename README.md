@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/mintplex-labs-anything-llm-badge.png)](https://mseep.ai/app/mintplex-labs-anything-llm)
+
 <a name="readme-top"></a>
 
 <p align="center">
