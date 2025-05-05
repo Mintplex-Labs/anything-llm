@@ -1,3 +1,18 @@
+const DEFAULT_MODELS = [
+  {
+    id: "embedding-001",
+    name: "Embedding 001",
+  },
+  {
+    id: "text-embedding-004",
+    name: "Text Embedding 004",
+  },
+  {
+    id: "gemini-embedding-exp-03-07",
+    name: "Gemini Embedding Exp 03 07",
+  },
+];
+
 export default function GeminiOptions({ settings }) {
   return (
     <div className="w-full flex flex-col gap-y-4">
@@ -27,14 +42,14 @@ export default function GeminiOptions({ settings }) {
             className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
             <optgroup label="Available embedding models">
-              {["text-embedding-004"].map((model) => {
+              {DEFAULT_MODELS.map((model) => {
                 return (
                   <option
-                    key={model}
-                    value={model}
-                    selected={settings?.EmbeddingModelPref === model}
+                    key={model.id}
+                    value={model.id}
+                    selected={settings?.EmbeddingModelPref === model.id}
                   >
-                    {model}
+                    {model.name}
                   </option>
                 );
               })}
