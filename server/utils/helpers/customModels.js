@@ -160,7 +160,9 @@ async function openAiModels(apiKey = null) {
         !model.id.includes("instruct") &&
         !model.id.includes("audio") &&
         !model.id.includes("realtime") &&
-        !model.id.includes("image")
+        !model.id.includes("image") &&
+        !model.id.includes("moderation") &&
+        !model.id.includes("transcribe")
     )
     .map((model) => {
       return {
