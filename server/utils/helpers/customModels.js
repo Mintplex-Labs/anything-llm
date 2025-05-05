@@ -159,7 +159,8 @@ async function openAiModels(apiKey = null) {
         !model.id.includes("vision") &&
         !model.id.includes("instruct") &&
         !model.id.includes("audio") &&
-        !model.id.includes("realtime")
+        !model.id.includes("realtime") &&
+        !model.id.includes("image")
     )
     .map((model) => {
       return {
