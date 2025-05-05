@@ -27,7 +27,7 @@ export default function GeminiOptions({ settings }) {
             className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
             <optgroup label="Available embedding models">
-              {["text-embedding-004"].map((model) => {
+              {["text-embedding-004", "gemini-embedding-exp-03-07"].map((model) => {
                 return (
                   <option
                     key={model}
