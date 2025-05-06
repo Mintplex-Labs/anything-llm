@@ -37,7 +37,13 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
 
   return (
     <>
-      {showPromptHistory && <ChatPromptHistory />}
+      <ChatPromptHistory
+        workspaceSlug={workspace.slug}
+        show={showPromptHistory}
+        onRestore={() => {
+          setPrompt(prompt);
+        }}
+      />
       <div>
         <div className="flex flex-col">
           <div className="flex items-center justify-between">
