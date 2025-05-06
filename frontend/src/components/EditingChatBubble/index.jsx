@@ -21,7 +21,9 @@ export default function EditingChatBubble({
       <p
         className={`text-xs text-white light:text-black/80 ${isUser ? "text-right" : ""}`}
       >
-        {isUser ? t("common.user") : t("appearance.message.assistant")}
+        {isUser
+          ? t("common.user")
+          : t("customization.items.welcome-messages.assistant")}
       </p>
       <div
         className={`relative flex w-full mt-2 items-start ${

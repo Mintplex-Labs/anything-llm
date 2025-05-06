@@ -22,9 +22,16 @@ export default function KoboldCPPOptions({ settings }) {
   const [tokenLimit, setTokenLimit] = useState(
     settings?.KoboldCPPTokenLimit || 4096
   );
+  const [maxTokens, setMaxTokens] = useState(
+    settings?.KoboldCPPMaxTokens || 2048
+  );
 
   const handleTokenLimitChange = (e) => {
     setTokenLimit(Number(e.target.value));
+  };
+
+  const handleMaxTokensChange = (e) => {
+    setMaxTokens(Number(e.target.value));
   };
 
   return (
@@ -52,6 +59,26 @@ export default function KoboldCPPOptions({ settings }) {
           />
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
             Maximum number of tokens for context and response.
+          </p>
+        </div>
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-2">
+            Max response tokens
+          </label>
+          <input
+            type="number"
+            name="KoboldCPPMaxTokens"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="2048"
+            min={1}
+            value={maxTokens}
+            onChange={handleMaxTokensChange}
+            onScroll={(e) => e.target.blur()}
+            required={true}
+            autoComplete="off"
+          />
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+            Maximum number of tokens for the response.
           </p>
         </div>
       </div>

@@ -183,6 +183,7 @@ class OpenAiLLM {
       messages
       // runPromptTokenCalculation: true - We manually count the tokens because OpenAI does not provide them in the stream
       // since we are not using the OpenAI API version that supports this `stream_options` param.
+      // TODO: implement this once we upgrade to the OpenAI API version that supports this param.
     );
 
     return measuredStreamRequest;

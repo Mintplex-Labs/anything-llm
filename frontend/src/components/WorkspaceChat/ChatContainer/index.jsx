@@ -95,6 +95,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       .catch((e) => console.error(e));
   };
 
+  /**
+   * Send a command to the LLM prompt input.
+   * @param {string} command - The command to send to the LLM
+   * @param {boolean} submit - Whether the command was submitted (default: false)
+   * @param {Object[]} history - The history of the chat
+   * @param {Object[]} attachments - The attachments to send to the LLM
+   * @returns {boolean} - Whether the command was sent successfully
+   */
   const sendCommand = async (
     command,
     submit = false,

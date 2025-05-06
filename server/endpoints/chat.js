@@ -16,6 +16,7 @@ const { writeResponseChunk } = require("../utils/helpers/chat/responses");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const { User } = require("../models/user");
 const truncate = require("truncate");
+const { getModelTag } = require("./utils");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -75,6 +76,7 @@ function chatEndpoints(app) {
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           multiModal: Array.isArray(attachments) && attachments?.length !== 0,
           TTSSelection: process.env.TTS_PROVIDER || "native",
+          LLMModel: getModelTag(),
         });
 
         await EventLogs.logEvent(
@@ -179,6 +181,7 @@ function chatEndpoints(app) {
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           multiModal: Array.isArray(attachments) && attachments?.length !== 0,
           TTSSelection: process.env.TTS_PROVIDER || "native",
+          LLMModel: getModelTag(),
         });
 
         await EventLogs.logEvent(

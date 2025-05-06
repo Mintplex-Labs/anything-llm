@@ -73,7 +73,7 @@ export default function ChatModelSelection({
           </optgroup>
         )}
         {Array.isArray(customModels) && customModels.length > 0 && (
-          <optgroup label="Custom models">
+          <optgroup label="Discovered models">
             {customModels.map((model) => {
               return (
                 <option

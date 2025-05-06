@@ -1,7 +1,7 @@
 # How to setup a local (or cloud) QDrant Vector Database
 
 [Get a QDrant Cloud instance](https://cloud.qdrant.io/).
-[Set up QDrant locally on Docker](https://github.com/qdrant/qdrant/blob/master/QUICK_START.md).
+[Set up QDrant locally on Docker](https://github.com/qdrant/qdrant/blob/master/docs/QUICK_START.md).
 
 Fill out the variables in the "Vector Database" tab of settings. Select Qdrant as your provider and fill out the appropriate fields
 with the information from either of the above steps.
