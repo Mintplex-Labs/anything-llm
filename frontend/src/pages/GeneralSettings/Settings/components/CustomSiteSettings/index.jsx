@@ -41,17 +41,17 @@ export default function CustomSiteSettings() {
       onChange={() => setHasChanges(true)}
       onSubmit={handleSiteSettingUpdate}
     >
-      <h2 className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-white">
         {t("customization.items.browser-appearance.title")}
-      </h2>
+      </p>
       <p className="text-xs text-white/60">
         {t("customization.items.browser-appearance.description")}
       </p>
 
       <div className="w-fit">
-        <h2 className="text-sm leading-6 font-medium text-white mt-2">
+        <p className="text-sm leading-6 font-medium text-white mt-2">
           {t("customization.items.browser-appearance.tab.title")}
-        </h2>
+        </p>
         <p className="text-xs text-white/60">
           {t("customization.items.browser-appearance.tab.description")}
         </p>
@@ -76,9 +76,9 @@ export default function CustomSiteSettings() {
       </div>
 
       <div className="w-fit">
-        <h2 className="text-sm leading-6 font-medium text-white mt-2">
+        <p className="text-sm leading-6 font-medium text-white mt-2">
           {t("customization.items.browser-appearance.favicon.title")}
-        </h2>
+        </p>
         <p className="text-xs text-white/60">
           {t("customization.items.browser-appearance.favicon.description")}
         </p>

@@ -58,9 +58,9 @@ export default function SupportEmail() {
       className="flex flex-col gap-y-0.5 mt-4"
       onSubmit={updateSupportEmail}
     >
-      <h2 className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-white">
         {t("customization.items.support-email.title")}
-      </h2>
+      </p>
       <p className="text-xs text-white/60">
         {t("customization.items.support-email.description")}
       </p>

@@ -8,9 +8,9 @@ export function MessageDirection() {
 
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
-      <h2 className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-white">
         {t("customization.items.chat-message-alignment.title")}
-      </h2>
+      </p>
       <p className="text-xs text-white/60">
         {t("customization.items.chat-message-alignment.description")}
       </p>
@@ -48,7 +48,7 @@ function ItemDirection({ active, reverse, onSelect, msg }) {
       data-tooltip-id="alignment-choice-item"
       data-tooltip-content={msg}
       type="button"
-      className={`flex:1 p-4 bg-transparent hover:light:bg-gray-100 hover:bg-gray-700/20 rounded-xl border w-[250px] ${active ? "border-primary-button" : " border-theme-border-sidebar-item"}`}
+      className={`flex:1 p-4 bg-transparent hover:light:bg-gray-100 hover:bg-gray-700/20 rounded-xl border w-[250px] ${active ? "border-primary-button" : " border-theme-sidebar-border"}`}
       onClick={onSelect}
     >
       <div className="space-y-4">

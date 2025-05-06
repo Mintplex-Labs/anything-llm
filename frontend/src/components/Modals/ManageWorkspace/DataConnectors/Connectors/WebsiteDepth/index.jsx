@@ -118,9 +118,7 @@ export default function WebsiteDepthOptions() {
             <button
               type="submit"
               disabled={loading}
-              className={`mt-2 w-full ${
-                loading ? "cursor-not-allowed animate-pulse" : ""
-              } justify-center border border-slate-200 px-4 py-2 rounded-lg text-dark-text text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed`}
+              className="mt-2 w-full justify-center border-none px-4 py-2 rounded-lg text-dark-text light:text-white text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
             >
               {loading ? "Scraping website..." : "Submit"}
             </button>

@@ -88,7 +88,6 @@ export const CHECKLIST_ITEMS = () => [
       showNewWsModal = noop,
     }) => {
       if (workspaces.length === 0) {
-        debugger;
         showToast(t("main-page.noWorkspaceError"), "warning", {
           clear: true,
         });
@@ -160,7 +159,10 @@ export const CHECKLIST_ITEMS = () => [
     title: t("main-page.checklist.tasks.visit_community.title"),
     description: t("main-page.checklist.tasks.visit_community.description"),
     action: t("main-page.checklist.tasks.visit_community.action"),
-    handler: () => window.open(paths.communityHub.website(), "_blank"),
+    handler: () => {
+      window.open(paths.communityHub.website(), "_blank");
+      return true;
+    },
     icon: UsersThree,
   },
 ];

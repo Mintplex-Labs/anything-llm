@@ -30,9 +30,9 @@ export default function AutoSubmit() {
 
   return (
     <div className="flex flex-col gap-y-0.5 my-4">
-      <h2 className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-white">
         {t("customization.chat.auto_submit.title")}
-      </h2>
+      </p>
       <p className="text-xs text-white/60">
         {t("customization.chat.auto_submit.description")}
       </p>
