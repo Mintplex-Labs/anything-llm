@@ -10,7 +10,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { GearSix, UploadSimple, DotsSixVertical } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
-import { Link, useMatch } from "react-router-dom";
+import { useMatch } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import showToast from "@/utils/toast";
 
@@ -155,10 +155,7 @@ export default function ActiveWorkspaces() {
                                   }}
                                   className="border-none rounded-md flex items-center justify-center ml-auto p-[2px] hover:bg-[#646768] text-[#A7A8A9] hover:text-white"
                                 >
-                                  <UploadSimple
-                                    className="h-[20px] w-[20px]"
-                                    // weight="bold"
-                                  />
+                                  <UploadSimple className="h-[20px] w-[20px]" />
                                 </button>
                                 <button
                                   onClick={(e) => {
@@ -182,7 +179,6 @@ export default function ActiveWorkspaces() {
                                         ? "#46C8FF"
                                         : undefined
                                     }
-                                    // weight="bold"
                                     className="h-[20px] w-[20px]"
                                   />
                                 </button>
