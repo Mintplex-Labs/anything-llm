@@ -48,6 +48,7 @@
     "AnythingLLMInstance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
+        "KeyName": "milvus-key", 
         "IamInstanceProfile": { "Ref": "AnythingLLMInstanceProfile" },
         "ImageId": {
           "Fn::FindInMap": [
