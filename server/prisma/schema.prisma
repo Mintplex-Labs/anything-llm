@@ -154,6 +154,7 @@ model workspace_threads {
   slug          String     @unique
   workspace_id  Int
   user_id       Int?
+  archived      Boolean    @default(false)
   createdAt     DateTime   @default(now())
   lastUpdatedAt DateTime   @default(now())
   workspace     workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
