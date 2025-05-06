@@ -36,7 +36,10 @@ jobs:
         id: build-image
         run: |
           TAG=${GITHUB_SHA::8}
-          docker build -t $ECR_REPOSITORY:$TAG .
+          docker build \
+            -f ./docker/Dockerfile \
+            -t $ECR_REPOSITORY:$TAG \
+            .
           docker push $ECR_REPOSITORY:$TAG
           echo "image_uri=$ECR_REPOSITORY:$TAG" >> $GITHUB_OUTPUT
 
