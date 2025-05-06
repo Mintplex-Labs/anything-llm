@@ -56,9 +56,13 @@ export default function WorkspaceFileRow({
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
   return (
     <div
-      className={`items-center h-[34px] text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 ${
-        !disableSelection ? "hover:bg-sky-500/20 cursor-pointer" : ""
-      } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${selected ? "selected" : ""}`}
+      className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 h-[34px] items-center ${
+        !disableSelection
+          ? "hover:bg-theme-file-picker-hover cursor-pointer"
+          : ""
+      } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${
+        selected ? "selected light:text-white" : ""
+      }`}
       onClick={toggleRowSelection}
     >
       <div
@@ -73,7 +77,9 @@ export default function WorkspaceFileRow({
         <div className="shrink-0 w-3 h-3">
           {!disableSelection ? (
             <div
-              className="w-full h-full rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+              className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white ${
+                selected ? "text-white" : "text-theme-text-primary light:invert"
+              } flex justify-center items-center cursor-pointer`}
               role="checkbox"
               aria-checked={selected}
               tabIndex={0}
@@ -158,18 +164,28 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="flex gap-x-2 items-center hover:bg-main-gradient p-[2px] rounded ml-2"
+      onClick={updatePinStatus}
+      className="flex items-center ml-2 cursor-pointer"
+      data-tooltip-id="pin-document"
+      data-tooltip-content={
+        pinned ? "Un-pin from workspace" : "Pin to workspace"
+      }
     >
-      <PushPin
-        data-tooltip-id="pin-document"
-        data-tooltip-content={
-          pinned ? "Un-Pin from workspace" : "Pin to workspace"
-        }
-        size={16}
-        onClick={updatePinStatus}
-        weight={hover || pinned ? "fill" : "regular"}
-        className="outline-none text-base font-bold flex-shrink-0 cursor-pointer"
-      />
+      {pinned ? (
+        <div
+          className={`bg-theme-settings-input-active rounded-3xl whitespace-nowrap ${hover ? "bg-red-500/20" : ""}`}
+        >
+          <p className={`text-xs px-2 py-0.5 ${hover ? "text-red-500" : ""}`}>
+            {hover ? "Un-pin" : "Pinned"}
+          </p>
+        </div>
+      ) : (
+        <PushPin
+          size={16}
+          weight="regular"
+          className="outline-none text-base font-bold flex-shrink-0"
+        />
+      )}
     </div>
   );
 });
@@ -224,7 +240,7 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="flex gap-x-2 items-center hover:bg-main-gradient p-[2px] rounded ml-2"
+      className="flex gap-x-2 items-center hover:bg-theme-file-picker-hover p-[2px] rounded ml-2"
     >
       <Eye
         data-tooltip-id="watch-changes"

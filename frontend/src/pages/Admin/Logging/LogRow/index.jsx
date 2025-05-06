@@ -27,35 +27,35 @@ export default function LogRow({ log }) {
     <>
       <tr
         onClick={handleRowClick}
-        className={`bg-transparent text-white text-opacity-80 text-sm font-medium ${
+        className={`bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10 ${
           hasMetadata ? "cursor-pointer hover:bg-white/5" : ""
         }`}
       >
         <EventBadge event={log.event} />
-        <td className="px-6 py-4 border-transparent transform transition-transform duration-200">
+        <td className="px-6 border-transparent transform transition-transform duration-200">
           {log.user.username}
         </td>
-        <td className="px-6 py-4 border-transparent transform transition-transform duration-200">
+        <td className="px-6 border-transparent transform transition-transform duration-200">
           {log.occurredAt}
         </td>
         {hasMetadata && (
-          <>
+          <div className="mt-1">
             {expanded ? (
               <td
-                className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
+                className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200`}
               >
                 <CaretUp weight="bold" size={20} />
                 <p className="text-xs text-white/50 w-[20px]">hide</p>
               </td>
             ) : (
               <td
-                className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
+                className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200`}
               >
                 <CaretDown weight="bold" size={20} />
                 <p className="text-xs text-white/50 w-[20px]">show</p>
               </td>
             )}
-          </>
+          </div>
         )}
       </tr>
       <EventMetadata metadata={metadata} expanded={expanded} />
@@ -66,15 +66,15 @@ export default function LogRow({ log }) {
 const EventMetadata = ({ metadata, expanded = false }) => {
   if (!metadata || !expanded) return null;
   return (
-    <tr className="bg-sidebar">
+    <tr className="bg-theme-bg-primary">
       <td
         colSpan="2"
-        className="px-6 py-4 font-medium text-white rounded-l-2xl"
+        className="px-6 py-4 font-medium text-theme-text-primary rounded-l-2xl"
       >
         Event Metadata
       </td>
       <td colSpan="4" className="px-6 py-4 rounded-r-2xl">
-        <div className="w-full rounded-lg bg-main-2 p-2 text-white shadow-sm border-white border bg-opacity-10">
+        <div className="w-full rounded-lg bg-theme-bg-secondary p-2 text-white shadow-sm border-white/10 border bg-opacity-10">
           <pre className="overflow-scroll">
             {JSON.stringify(metadata, null, 2)}
           </pre>
@@ -85,18 +85,30 @@ const EventMetadata = ({ metadata, expanded = false }) => {
 };
 
 const EventBadge = ({ event }) => {
-  let colorTheme = { bg: "bg-sky-600/20", text: "text-sky-400 " };
+  let colorTheme = {
+    bg: "bg-sky-600/20",
+    text: "text-sky-400 light:text-sky-800",
+  };
   if (event.includes("update"))
-    colorTheme = { bg: "bg-yellow-600/20", text: "text-yellow-400 " };
+    colorTheme = {
+      bg: "bg-yellow-600/20",
+      text: "text-yellow-400 light:text-yellow-800",
+    };
   if (event.includes("failed_") || event.includes("deleted"))
-    colorTheme = { bg: "bg-red-600/20", text: "text-red-400 " };
+    colorTheme = {
+      bg: "bg-red-600/20",
+      text: "text-red-400 light:text-red-800",
+    };
   if (event === "login_event")
-    colorTheme = { bg: "bg-green-600/20", text: "text-green-400 " };
+    colorTheme = {
+      bg: "bg-green-600/20",
+      text: "text-green-400 light:text-green-800",
+    };
 
   return (
-    <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
+    <td className="px-6 py-2 font-medium whitespace-nowrap text-white flex items-center">
       <span
-        className={`rounded-full ${colorTheme.bg} px-2 py-0.5 text-sm font-medium ${colorTheme.text} shadow-sm`}
+        className={`rounded-full ${colorTheme.bg} px-2 py-0.5 text-xs font-medium ${colorTheme.text} shadow-sm`}
       >
         {event}
       </span>

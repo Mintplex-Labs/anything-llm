@@ -1,22 +1,29 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
-  writeResponseChunk,
-  clientAbortedHandler,
+  formatChatHistory,
+  handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 class AzureOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
+    const { AzureOpenAI } = require("openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
-    this.openai = new OpenAIClient(
-      process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
-    );
+    this.apiVersion = "2024-12-01-preview";
+    this.openai = new AzureOpenAI({
+      apiKey: process.env.AZURE_OPENAI_KEY,
+      apiVersion: this.apiVersion,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+    });
     this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
+    this.isOTypeModel =
+      process.env.AZURE_OPENAI_MODEL_TYPE === "reasoning" || false;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -25,6 +32,13 @@ class AzureOpenAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.#log(
+      `Initialized. Model "${this.model}" @ ${this.promptWindowLimit()} tokens.\nAPI-Version: ${this.apiVersion}.\nModel Type: ${this.isOTypeModel ? "reasoning" : "default"}`
+    );
+  }
+
+  #log(text, ...args) {
+    console.log(`\x1b[32m[AzureOpenAi]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -40,6 +54,13 @@ class AzureOpenAiLLM {
   }
 
   streamingEnabled() {
+    // Streaming of reasoning models is not supported
+    if (this.isOTypeModel) {
+      this.#log(
+        "Streaming will be disabled. AZURE_OPENAI_MODEL_TYPE is set to 'reasoning'."
+      );
+      return false;
+    }
     return "streamGetChatCompletion" in this;
   }
 
@@ -95,12 +116,12 @@ class AzureOpenAiLLM {
     attachments = [], // This is the specific attachment for only this prompt
   }) {
     const prompt = {
-      role: "system",
+      role: this.isOTypeModel ? "user" : "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),
@@ -114,11 +135,30 @@ class AzureOpenAiLLM {
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
-    const data = await this.openai.getChatCompletions(this.model, messages, {
-      temperature,
-    });
-    if (!data.hasOwnProperty("choices")) return null;
-    return data.choices[0].message.content;
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions.create({
+        messages,
+        model: this.model,
+        ...(this.isOTypeModel ? {} : { temperature }),
+      })
+    );
+
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
+      return null;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage.prompt_tokens || 0,
+        completion_tokens: result.output.usage.completion_tokens || 0,
+        total_tokens: result.output.usage.total_tokens || 0,
+        outputTps: result.output.usage.completion_tokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = [], { temperature = 0.7 }) {
@@ -127,57 +167,22 @@ class AzureOpenAiLLM {
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
-    const stream = await this.openai.streamChatCompletions(
-      this.model,
-      messages,
-      {
-        temperature,
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      await this.openai.chat.completions.create({
+        messages,
+        model: this.model,
+        ...(this.isOTypeModel ? {} : { temperature }),
         n: 1,
-      }
+        stream: true,
+      }),
+      messages
     );
-    return stream;
+
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {
-    const { uuid = uuidv4(), sources = [] } = responseProps;
-
-    return new Promise(async (resolve) => {
-      let fullText = "";
-
-      // Establish listener to early-abort a streaming response
-      // in case things go sideways or the user does not like the response.
-      // We preserve the generated text but continue as if chat was completed
-      // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
-      response.on("close", handleAbort);
-
-      for await (const event of stream) {
-        for (const choice of event.choices) {
-          const delta = choice.delta?.content;
-          if (!delta) continue;
-          fullText += delta;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: delta,
-            close: false,
-            error: false,
-          });
-        }
-      }
-
-      writeResponseChunk(response, {
-        uuid,
-        sources,
-        type: "textResponseChunk",
-        textResponse: "",
-        close: true,
-        error: false,
-      });
-      response.removeListener("close", handleAbort);
-      resolve(fullText);
-    });
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

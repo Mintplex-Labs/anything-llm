@@ -137,6 +137,7 @@ const DataConnector = {
       username,
       accessToken,
       cloud,
+      personalAccessToken,
     }) {
       return await fetch(`${API_BASE}/ext/confluence`, {
         method: "POST",
@@ -147,6 +148,30 @@ const DataConnector = {
           username,
           accessToken,
           cloud,
+          personalAccessToken,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
+
+  drupalwiki: {
+    collect: async function ({ baseUrl, spaceIds, accessToken }) {
+      return await fetch(`${API_BASE}/ext/drupalwiki`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({
+          baseUrl,
+          spaceIds,
+          accessToken,
         }),
       })
         .then((res) => res.json())

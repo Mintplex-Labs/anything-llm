@@ -68,6 +68,7 @@ model users {
   createdAt                   DateTime                      @default(now())
   lastUpdatedAt               DateTime                      @default(now())
   dailyMessageLimit           Int?
+  bio                         String?                       @default("")
   workspace_chats             workspace_chats[]
   workspace_users             workspace_users[]
   embed_configs               embed_configs[]
@@ -79,6 +80,7 @@ model users {
   slash_command_presets       slash_command_presets[]
   browser_extension_api_keys  browser_extension_api_keys[]
   temporary_auth_tokens       temporary_auth_tokens[]
+  system_prompt_variables     system_prompt_variables[]
 }
 
 model recovery_codes {
@@ -137,6 +139,7 @@ model workspaces {
   agentProvider                String?
   agentModel                   String?
   queryRefusalResponse         String?
+  vectorSearchMode             String?                        @default("default")
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
@@ -322,5 +325,19 @@ model temporary_auth_tokens {
   user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([token])
+  @@index([userId])
+}
+
+model system_prompt_variables {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String?
+  description String?
+  type        String   @default("system") // system, user, dynamic
+  userId      Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }

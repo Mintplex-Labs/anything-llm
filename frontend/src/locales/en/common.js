@@ -1,4 +1,62 @@
 const TRANSLATIONS = {
+  onboarding: {
+    home: {
+      title: "Welcome to",
+      getStarted: "Get Started",
+    },
+    llm: {
+      title: "LLM Preference",
+      description:
+        "AnythingLLM can work with many LLM providers. This will be the service which handles chatting.",
+    },
+    userSetup: {
+      title: "User Setup",
+      description: "Configure your user settings.",
+      howManyUsers: "How many users will be using this instance?",
+      justMe: "Just me",
+      myTeam: "My team",
+      instancePassword: "Instance Password",
+      setPassword: "Would you like to set up a password?",
+      passwordReq: "Passwords must be at least 8 characters.",
+      passwordWarn:
+        "It's important to save this password because there is no recovery method.",
+
+      adminUsername: "Admin account username",
+      adminUsernameReq:
+        "Username must be at least 6 characters long and only contain lowercase letters, numbers, underscores, and hyphens with no spaces.",
+      adminPassword: "Admin account password",
+      adminPasswordReq: "Passwords must be at least 8 characters.",
+      teamHint:
+        "By default, you will be the only admin. Once onboarding is completed you can create and invite others to be users or admins. Do not lose your password as only admins can reset passwords.",
+    },
+    data: {
+      title: "Data Handling & Privacy",
+      description:
+        "We are committed to transparency and control when it comes to your personal data.",
+      settingsHint:
+        "These settings can be reconfigured at any time in the settings.",
+    },
+    survey: {
+      title: "Welcome to AnythingLLM",
+      description: "Help us make AnythingLLM built for your needs. Optional.",
+
+      email: "What's your email?",
+      useCase: "What will you use AnythingLLM for?",
+      useCaseWork: "For work",
+      useCasePersonal: "For personal use",
+      useCaseOther: "Other",
+      comment: "How did you hear about AnythingLLM?",
+      commentPlaceholder:
+        "Reddit, Twitter, GitHub, YouTube, etc. - Let us know how you found us!",
+      skip: "Skip Survey",
+      thankYou: "Thank you for your feedback!",
+    },
+    workspace: {
+      title: "Create your first workspace",
+      description:
+        "Create your first workspace and get started with AnythingLLM.",
+    },
+  },
   common: {
     "workspaces-name": "Workspaces Name",
     error: "error",
@@ -9,6 +67,9 @@ const TRANSLATIONS = {
     save: "Save changes",
     previous: "Previous Page",
     next: "Next Page",
+    optional: "Optional",
+    yes: "Yes",
+    no: "No",
   },
 
   // Setting Sidebar menu items.
@@ -20,6 +81,9 @@ const TRANSLATIONS = {
     workspaces: "Workspaces",
     "workspace-chats": "Workspace Chats",
     customization: "Customization",
+    interface: "UI Preferences",
+    branding: "Branding & Whitelabeling",
+    chat: "Chat",
     "api-keys": "Developer API",
     llm: "LLM",
     transcription: "Transcription",
@@ -36,6 +100,7 @@ const TRANSLATIONS = {
     "agent-skills": "Agent Skills",
     admin: "Admin",
     tools: "Tools",
+    "system-prompt-variables": "System Prompt Variables",
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
@@ -73,7 +138,7 @@ const TRANSLATIONS = {
       "AnythingLLM is the easiest way to put powerful AI products like OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services together in a neat package with no fuss to increase your productivity by 100x.",
     part3:
       "AnythingLLM can run totally locally on your machine with little overhead you wont even notice it's there! No GPU needed. Cloud and on-premises installation is available as well.\nThe AI tooling ecosystem gets more powerful everyday. AnythingLLM makes it easy to use.",
-    githubIssue: "Create an issue on Github",
+    githubIssue: "Create an issue on GitHub",
     user1: "How do I get started?!",
     part4:
       "It's simple. All collections are organized into buckets we call \"Workspaces\". Workspaces are buckets of files, documents, images, PDFs, and other files which will be transformed into something LLM's can understand and use in conversation.\n\nYou can add and remove files at anytime.",
@@ -84,8 +149,91 @@ const TRANSLATIONS = {
       "AnythingLLM is more than a smarter Dropbox.\n\nAnythingLLM offers two ways of talking with your data:\n\n<i>Query:</i> Your chats will return data or inferences found with the documents in your workspace it has access to. Adding more documents to the Workspace make it smarter! \n\n<i>Conversational:</i> Your documents + your on-going chat history both contribute to the LLM knowledge at the same time. Great for appending real-time text-based info or corrections and misunderstandings the LLM might have. \n\nYou can toggle between either mode \n<i>in the middle of chatting!</i>",
     user3: "Wow, this sounds amazing, let me try it out already!",
     part6: "Have Fun!",
-    starOnGithub: "Star on GitHub",
+    starOnGitHub: "Star on GitHub",
     contact: "Contact Mintplex Labs",
+  },
+
+  "main-page": {
+    noWorkspaceError: "Please create a workspace before starting a chat.",
+    checklist: {
+      title: "Getting Started",
+      tasksLeft: "tasks left",
+      completed: "You're on your way to becoming an AnythingLLM expert!",
+      dismiss: "close",
+      tasks: {
+        create_workspace: {
+          title: "Create a workspace",
+          description: "Create your first workspace to get started",
+          action: "Create",
+        },
+        send_chat: {
+          title: "Send a chat",
+          description: "Start a conversation with your AI assistant",
+          action: "Chat",
+        },
+        embed_document: {
+          title: "Embed a document",
+          description: "Add your first document to your workspace",
+          action: "Embed",
+        },
+        setup_system_prompt: {
+          title: "Set up a system prompt",
+          description: "Configure your AI assistant's behavior",
+          action: "Set Up",
+        },
+        define_slash_command: {
+          title: "Define a slash command",
+          description: "Create custom commands for your assistant",
+          action: "Define",
+        },
+        visit_community: {
+          title: "Visit Community Hub",
+          description: "Explore community resources and templates",
+          action: "Browse",
+        },
+      },
+    },
+    quickLinks: {
+      title: "Quick Links",
+      sendChat: "Send Chat",
+      embedDocument: "Embed a Document",
+      createWorkspace: "Create Workspace",
+    },
+    exploreMore: {
+      title: "Explore more features",
+      features: {
+        customAgents: {
+          title: "Custom AI Agents",
+          description: "Build powerful AI Agents and automations with no code.",
+          primaryAction: "Chat using @agent",
+          secondaryAction: "Build an agent flow",
+        },
+        slashCommands: {
+          title: "Slash Commands",
+          description:
+            "Save time and inject prompts using custom slash commands.",
+          primaryAction: "Create a Slash Command",
+          secondaryAction: "Explore on Hub",
+        },
+        systemPrompts: {
+          title: "System Prompts",
+          description:
+            "Modify the system prompt to customize the AI replies of a workspace.",
+          primaryAction: "Modify a System Prompt",
+          secondaryAction: "Manage prompt variables",
+        },
+      },
+    },
+    announcements: {
+      title: "Updates & Announcements",
+    },
+    resources: {
+      title: "Resources",
+      links: {
+        docs: "Docs",
+        star: "Star on Github",
+      },
+    },
   },
 
   "new-workspace": {
@@ -302,35 +450,99 @@ const TRANSLATIONS = {
     },
   },
 
-  // Appearance
-  appearance: {
-    title: "Appearance",
-    description: "Customize the appearance settings of your platform.",
-    logo: {
-      title: "Customize Logo",
-      description: "Upload your custom logo to make your chatbot yours.",
-      add: "Add a custom logo",
-      recommended: "Recommended size: 800 x 200",
-      remove: "Remove",
-      replace: "Replace",
+  customization: {
+    interface: {
+      title: "UI Preferences",
+      description: "Set your UI preferences for AnythingLLM.",
     },
-    message: {
-      title: "Customize Messages",
-      description: "Customize the automatic messages displayed to your users.",
-      new: "New",
-      system: "system",
-      user: "user",
-      message: "message",
-      assistant: "AnythingLLM Chat Assistant",
-      "double-click": "Double click to edit...",
-      save: "Save Messages",
-    },
-    icons: {
-      title: "Custom Footer Icons",
+    branding: {
+      title: "Branding & Whitelabeling",
       description:
-        "Customize the footer icons displayed on the bottom of the sidebar.",
-      icon: "Icon",
-      link: "Link",
+        "White-label your AnythingLLM instance with custom branding.",
+    },
+    chat: {
+      title: "Chat",
+      description: "Set your chat preferences for AnythingLLM.",
+      auto_submit: {
+        title: "Auto-Submit Speech Input",
+        description:
+          "Automatically submit speech input after a period of silence",
+      },
+      auto_speak: {
+        title: "Auto-Speak Responses",
+        description: "Automatically speak responses from the AI",
+      },
+    },
+    items: {
+      theme: {
+        title: "Theme",
+        description: "Select your preferred color theme for the application.",
+      },
+      "show-scrollbar": {
+        title: "Show Scrollbar",
+        description: "Enable or disable the scrollbar in the chat window.",
+      },
+      "support-email": {
+        title: "Support Email",
+        description:
+          "Set the support email address that should be accessible by users when they need help.",
+      },
+      "app-name": {
+        title: "Name",
+        description:
+          "Set a name that is displayed on the login page to all users.",
+      },
+      "chat-message-alignment": {
+        title: "Chat Message Alignment",
+        description:
+          "Select the message alignment mode when using the chat interface.",
+      },
+      "display-language": {
+        title: "Display Language",
+        description:
+          "Select the preferred language to render AnythingLLM's UI in - when translations are available.",
+      },
+      logo: {
+        title: "Brand Logo",
+        description: "Upload your custom logo to showcase on all pages.",
+        add: "Add a custom logo",
+        recommended: "Recommended size: 800 x 200",
+        remove: "Remove",
+        replace: "Replace",
+      },
+      "welcome-messages": {
+        title: "Welcome Messages",
+        description:
+          "Customize the welcome messages displayed to your users. Only non-admin users will see these messages.",
+        new: "New",
+        system: "system",
+        user: "user",
+        message: "message",
+        assistant: "AnythingLLM Chat Assistant",
+        "double-click": "Double click to edit...",
+        save: "Save Messages",
+      },
+      "browser-appearance": {
+        title: "Browser Appearance",
+        description:
+          "Customize the appearance of the browser tab and title when the app is open.",
+        tab: {
+          title: "Title",
+          description:
+            "Set a custom tab title when the app is open in a browser.",
+        },
+        favicon: {
+          title: "Favicon",
+          description: "Use a custom favicon for the browser tab.",
+        },
+      },
+      "sidebar-footer": {
+        title: "Sidebar Footer Items",
+        description:
+          "Customize the footer items displayed on the bottom of the sidebar.",
+        icon: "Icon",
+        link: "Link",
+      },
     },
   },
 
@@ -489,6 +701,224 @@ const TRANSLATIONS = {
     embedding: "Embedding Preference",
     vector: "Vector Database",
     anonymous: "Anonymous Telemetry Enabled",
+  },
+
+  connectors: {
+    "search-placeholder": "Search data connectors",
+    "no-connectors": "No data connectors found.",
+    github: {
+      name: "GitHub Repo",
+      description:
+        "Import an entire public or private GitHub repository in a single click.",
+      URL: "GitHub Repo URL",
+      URL_explained: "Url of the GitHub repo you wish to collect.",
+      token: "GitHub Access Token",
+      optional: "optional",
+      token_explained: "Access Token to prevent rate limiting.",
+      token_explained_start: "Without a ",
+      token_explained_link1: "Personal Access Token",
+      token_explained_middle:
+        ", the GitHub API may limit the number of files that can be collected due to rate limits. You can ",
+      token_explained_link2: "create a temporary Access Token",
+      token_explained_end: " to avoid this issue.",
+      ignores: "File Ignores",
+      git_ignore:
+        "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
+      task_explained:
+        "Once complete, all files will be available for embedding into workspaces in the document picker.",
+      branch: "Branch you wish to collect files from.",
+      branch_loading: "-- loading available branches --",
+      branch_explained: "Branch you wish to collect files from.",
+      token_information:
+        "Without filling out the <b>GitHub Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitHub's public API rate-limits.",
+      token_personal:
+        "Get a free Personal Access Token with a GitHub account here.",
+    },
+    gitlab: {
+      name: "GitLab Repo",
+      description:
+        "Import an entire public or private GitLab repository in a single click.",
+      URL: "GitLab Repo URL",
+      URL_explained: "URL of the GitLab repo you wish to collect.",
+      token: "GitLab Access Token",
+      optional: "optional",
+      token_explained: "Access Token to prevent rate limiting.",
+      token_description:
+        "Select additional entities to fetch from the GitLab API.",
+      token_explained_start: "Without a ",
+      token_explained_link1: "Personal Access Token",
+      token_explained_middle:
+        ", the GitLab API may limit the number of files that can be collected due to rate limits. You can ",
+      token_explained_link2: "create a temporary Access Token",
+      token_explained_end: " to avoid this issue.",
+      fetch_issues: "Fetch Issues as Documents",
+      ignores: "File Ignores",
+      git_ignore:
+        "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
+      task_explained:
+        "Once complete, all files will be available for embedding into workspaces in the document picker.",
+      branch: "Branch you wish to collect files from",
+      branch_loading: "-- loading available branches --",
+      branch_explained: "Branch you wish to collect files from.",
+      token_information:
+        "Without filling out the <b>GitLab Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitLab's public API rate-limits.",
+      token_personal:
+        "Get a free Personal Access Token with a GitLab account here.",
+    },
+    youtube: {
+      name: "YouTube Transcript",
+      description:
+        "Import the transcription of an entire YouTube video from a link.",
+      URL: "YouTube Video URL",
+      URL_explained_start:
+        "Enter the URL of any YouTube video to fetch its transcript. The video must have ",
+      URL_explained_link: "closed captions",
+      URL_explained_end: " available.",
+      task_explained:
+        "Once complete, the transcript will be available for embedding into workspaces in the document picker.",
+      language: "Transcript Language",
+      language_explained:
+        "Select the language of the transcript you want to collect.",
+      loading_languages: "-- loading available languages --",
+    },
+    "website-depth": {
+      name: "Bulk Link Scraper",
+      description: "Scrape a website and its sub-links up to a certain depth.",
+      URL: "Website URL",
+      URL_explained: "URL of the website you want to scrape.",
+      depth: "Crawl Depth",
+      depth_explained:
+        "This is the number of child-links that the worker should follow from the origin URL.",
+      max_pages: "Maximum Pages",
+      max_pages_explained: "Maximum number of links to scrape.",
+      task_explained:
+        "Once complete, all scraped content will be available for embedding into workspaces in the document picker.",
+    },
+    confluence: {
+      name: "Confluence",
+      description: "Import an entire Confluence page in a single click.",
+      deployment_type: "Confluence deployment type",
+      deployment_type_explained:
+        "Determine if your Confluence instance is hosted on Atlassian cloud or self-hosted.",
+      base_url: "Confluence base URL",
+      base_url_explained: "This is the base URL of your Confluence space.",
+      space_key: "Confluence space key",
+      space_key_explained:
+        "This is the spaces key of your confluence instance that will be used. Usually begins with ~",
+      username: "Confluence Username",
+      username_explained: "Your Confluence username",
+      auth_type: "Confluence Auth Type",
+      auth_type_explained:
+        "Select the authentication type you want to use to access your Confluence pages.",
+      auth_type_username: "Username and Access Token",
+      auth_type_personal: "Personal Access Token",
+      token: "Confluence Access Token",
+      token_explained_start:
+        "You need to provide an access token for authentication. You can generate an access token",
+      token_explained_link: "here",
+      token_desc: "Access token for authentication",
+      pat_token: "Confluence Personal Access Token",
+      pat_token_explained: "Your Confluence personal access token.",
+      task_explained:
+        "Once complete, the page content will be available for embedding into workspaces in the document picker.",
+    },
+
+    manage: {
+      documents: "Documents",
+      "data-connectors": "Data Connectors",
+      "desktop-only":
+        "Editing these settings are only available on a desktop device. Please access this page on your desktop to continue.",
+      dismiss: "Dismiss",
+      editing: "Editing",
+    },
+    directory: {
+      "my-documents": "My Documents",
+      "new-folder": "New Folder",
+      "search-document": "Search for document",
+      "no-documents": "No Documents",
+      "move-workspace": "Move to Workspace",
+      name: "Name",
+      "delete-confirmation":
+        "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible.",
+      "removing-message":
+        "Removing {{count}} documents and {{folderCount}} folders. Please wait.",
+      "move-success": "Successfully moved {{count}} documents.",
+      date: "Date",
+      type: "Type",
+      no_docs: "No Documents",
+      select_all: "Select All",
+      deselect_all: "Deselect All",
+      remove_selected: "Remove Selected",
+      costs: "*One time cost for embeddings",
+      save_embed: "Save and Embed",
+    },
+    upload: {
+      "processor-offline": "Document Processor Unavailable",
+      "processor-offline-desc":
+        "We can't upload your files right now because the document processor is offline. Please try again later.",
+      "click-upload": "Click to upload or drag and drop",
+      "file-types":
+        "supports text files, csv's, spreadsheets, audio files, and more!",
+      "or-submit-link": "or submit a link",
+      "placeholder-link": "https://example.com",
+      fetching: "Fetching...",
+      "fetch-website": "Fetch website",
+      "privacy-notice":
+        "These files will be uploaded to the document processor running on this AnythingLLM instance. These files are not sent or shared with a third party.",
+    },
+    pinning: {
+      what_pinning: "What is document pinning?",
+      pin_explained_block1:
+        "When you <b>pin</b> a document in AnythingLLM we will inject the entire content of the document into your prompt window for your LLM to fully comprehend.",
+      pin_explained_block2:
+        "This works best with <b>large-context models</b> or small files that are critical to its knowledge-base.",
+      pin_explained_block3:
+        "If you are not getting the answers you desire from AnythingLLM by default then pinning is a great way to get higher quality answers in a click.",
+      accept: "Okay, got it",
+    },
+    watching: {
+      what_watching: "What does watching a document do?",
+      watch_explained_block1:
+        "When you <b>watch</b> a document in AnythingLLM we will <i>automatically</i> sync your document content from it's original source on regular intervals. This will automatically update the content in every workspace where this file is managed.",
+      watch_explained_block2:
+        "This feature currently supports online-based content and will not be available for manually uploaded documents.",
+      watch_explained_block3_start:
+        "You can manage what documents are watched from the ",
+      watch_explained_block3_link: "File manager",
+      watch_explained_block3_end: " admin view.",
+      accept: "Okay, got it",
+    },
+  },
+
+  chat_window: {
+    welcome: "Welcome to your new workspace.",
+    get_started: "To get started either",
+    get_started_default: "To get started",
+    upload: "upload a document",
+    or: "or",
+    send_chat: "send a chat.",
+    send_message: "Send a message",
+    attach_file: "Attach a file to this chat",
+    slash: "View all available slash commands for chatting.",
+    agents: "View all available agents you can use for chatting.",
+    text_size: "Change text size.",
+    microphone: "Speak your prompt.",
+    send: "Send prompt message to workspace",
+  },
+
+  profile_settings: {
+    edit_account: "Edit Account",
+    profile_picture: "Profile Picture",
+    remove_profile_picture: "Remove Profile Picture",
+    username: "Username",
+    username_description:
+      "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+    new_password: "New Password",
+    passwort_description: "Password must be at least 8 characters long",
+    cancel: "Cancel",
+    update_account: "Update Account",
+    theme: "Theme Preference",
+    language: "Preferred language",
   },
 };
 

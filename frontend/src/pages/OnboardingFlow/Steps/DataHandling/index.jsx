@@ -9,6 +9,7 @@ import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
+import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
@@ -24,7 +25,6 @@ import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
-
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
@@ -35,14 +35,13 @@ import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
+import PPIOLogo from "@/media/llmprovider/ppio.png";
 
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const TITLE = "Data Handling & Privacy";
-const DESCRIPTION =
-  "We are committed to transparency and control when it comes to your personal data.";
 export const LLM_SELECTION_PRIVACY = {
   openai: {
     name: "OpenAI",
@@ -76,6 +75,13 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: GeminiLogo,
   },
+  "nvidia-nim": {
+    name: "NVIDIA NIM",
+    description: [
+      "Your model and chats are only accessible on the machine running the NVIDIA NIM",
+    ],
+    logo: NvidiaNimLogo,
+  },
   lmstudio: {
     name: "LMStudio",
     description: [
@@ -96,13 +102,6 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on the machine running Ollama models",
     ],
     logo: OllamaLogo,
-  },
-  native: {
-    name: "Custom Llama Model",
-    description: [
-      "Your model and chats are only accessible on this AnythingLLM instance",
-    ],
-    logo: AnythingLLMIcon,
   },
   togetherai: {
     name: "TogetherAI",
@@ -227,6 +226,14 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: XAILogo,
   },
+  ppio: {
+    name: "PPIO",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to PPIO",
+    ],
+    logo: PPIOLogo,
+  },
 };
 
 export const VECTOR_DB_PRIVACY = {
@@ -349,6 +356,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: VoyageAiLogo,
   },
+  mistral: {
+    name: "Mistral AI",
+    description: [
+      "Data sent to Mistral AI's servers is shared according to the terms of service of https://mistral.ai.",
+    ],
+    logo: MistralLogo,
+  },
   litellm: {
     name: "LiteLLM",
     description: [
@@ -363,14 +377,50 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: GenericOpenAiLogo,
   },
+  gemini: {
+    name: "Google Gemini",
+    description: [
+      "Your document text is sent to Google Gemini's servers for processing",
+      "Your document text is stored or managed according to the terms of service of Google Gemini API Terms of Service",
+    ],
+    logo: GeminiLogo,
+  },
+};
+
+export const FALLBACKS = {
+  LLM: (provider) => ({
+    name: "Unknown",
+    description: [
+      `"${provider}" has no known data handling policy defined in AnythingLLM`,
+    ],
+    logo: AnythingLLMIcon,
+  }),
+  EMBEDDING: (provider) => ({
+    name: "Unknown",
+    description: [
+      `"${provider}" has no known data handling policy defined in AnythingLLM`,
+    ],
+    logo: AnythingLLMIcon,
+  }),
+  VECTOR: (provider) => ({
+    name: "Unknown",
+    description: [
+      `"${provider}" has no known data handling policy defined in AnythingLLM`,
+    ],
+    logo: AnythingLLMIcon,
+  }),
 };
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
+  const { t } = useTranslation();
   const [llmChoice, setLLMChoice] = useState("openai");
   const [loading, setLoading] = useState(true);
   const [vectorDb, setVectorDb] = useState("pinecone");
   const [embeddingEngine, setEmbeddingEngine] = useState("openai");
   const navigate = useNavigate();
+
+  const TITLE = t("onboarding.data.title");
+  const DESCRIPTION = t("onboarding.data.description");
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
@@ -402,71 +452,80 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
       </div>
     );
 
+  const LLMSelection =
+    LLM_SELECTION_PRIVACY?.[llmChoice] || FALLBACKS.LLM(llmChoice);
+  const EmbeddingEngine =
+    EMBEDDING_ENGINE_PRIVACY?.[embeddingEngine] ||
+    FALLBACKS.EMBEDDING(embeddingEngine);
+  const VectorDb = VECTOR_DB_PRIVACY?.[vectorDb] || FALLBACKS.VECTOR(vectorDb);
+
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <div className="p-8 flex flex-col gap-8">
-        <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-white text-base font-bold">LLM Selection</div>
+        <div className="flex flex-col gap-y-2 border-b border-theme-sidebar-border pb-4">
+          <div className="text-theme-text-primary text-base font-bold">
+            LLM Selection
+          </div>
           <div className="flex items-center gap-2.5">
             <img
-              src={LLM_SELECTION_PRIVACY[llmChoice].logo}
+              src={LLMSelection.logo}
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-white text-sm font-bold">
-              {LLM_SELECTION_PRIVACY[llmChoice].name}
+            <p className="text-theme-text-primary text-sm font-bold">
+              {LLMSelection.name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {LLM_SELECTION_PRIVACY[llmChoice].description.map((desc) => (
-              <li className="text-white/90 text-sm">{desc}</li>
+            {LLMSelection.description.map((desc) => (
+              <li className="text-theme-text-primary text-sm">{desc}</li>
             ))}
           </ul>
         </div>
-        <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-white text-base font-bold">
+        <div className="flex flex-col gap-y-2 border-b border-theme-sidebar-border pb-4">
+          <div className="text-theme-text-primary text-base font-bold">
             Embedding Preference
           </div>
           <div className="flex items-center gap-2.5">
             <img
-              src={EMBEDDING_ENGINE_PRIVACY[embeddingEngine].logo}
+              src={EmbeddingEngine.logo}
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-white text-sm font-bold">
-              {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].name}
+            <p className="text-theme-text-primary text-sm font-bold">
+              {EmbeddingEngine.name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].description.map(
-              (desc) => (
-                <li className="text-white/90 text-sm">{desc}</li>
-              )
-            )}
+            {EmbeddingEngine.description.map((desc) => (
+              <li className="text-theme-text-primary text-sm">{desc}</li>
+            ))}
           </ul>
         </div>
 
         <div className="flex flex-col gap-y-2 pb-4">
-          <div className="text-white text-base font-bold">Vector Database</div>
+          <div className="text-theme-text-primary text-base font-bold">
+            Vector Database
+          </div>
           <div className="flex items-center gap-2.5">
             <img
-              src={VECTOR_DB_PRIVACY[vectorDb].logo}
+              src={VectorDb.logo}
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-white text-sm font-bold">
-              {VECTOR_DB_PRIVACY[vectorDb].name}
+            <p className="text-theme-text-primary text-sm font-bold">
+              {VectorDb.name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {VECTOR_DB_PRIVACY[vectorDb].description.map((desc) => (
-              <li className="text-white/90 text-sm">{desc}</li>
+            {VectorDb.description.map((desc) => (
+              <li className="text-theme-text-primary text-sm">{desc}</li>
             ))}
           </ul>
         </div>
       </div>
-      <p className="text-white/60 text-sm font-medium py-1">
-        These settings can be reconfigured at any time in the settings.
+      <p className="text-theme-text-secondary text-sm font-medium py-1">
+        {t("onboarding.data.settingsHint")}
       </p>
     </div>
   );

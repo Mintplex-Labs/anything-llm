@@ -3,6 +3,7 @@ import useCopyText from "@/hooks/useCopyText";
 import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { EditMessageAction } from "./EditMessage";
+import RenderMetrics from "./RenderMetrics";
 import ActionMenu from "./ActionMenu";
 
 const Actions = ({
@@ -15,6 +16,8 @@ const Actions = ({
   forkThread,
   isEditing,
   role,
+  metrics = {},
+  alignmentCls = "",
 }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
   const handleFeedback = async (newFeedback) => {
@@ -25,7 +28,7 @@ const Actions = ({
   };
 
   return (
-    <div className="flex w-full justify-between items-center">
+    <div className={`flex w-full justify-between items-center ${alignmentCls}`}>
       <div className="flex justify-start items-center gap-x-[8px]">
         <CopyMessage message={message} />
         <div className="md:group-hover:opacity-100 transition-all duration-300 md:opacity-0 flex justify-start items-center gap-x-[8px]">
@@ -58,6 +61,7 @@ const Actions = ({
           />
         </div>
       </div>
+      <RenderMetrics metrics={metrics} />
     </div>
   );
 };
@@ -78,6 +82,7 @@ function FeedbackButton({
         aria-label={tooltipContent}
       >
         <IconComponent
+          color="var(--theme-sidebar-footer-icon-fill)"
           size={20}
           className="mb-1"
           weight={isSelected ? "fill" : "regular"}
@@ -101,9 +106,17 @@ function CopyMessage({ message }) {
           aria-label="Copy"
         >
           {copied ? (
-            <Check size={20} className="mb-1" />
+            <Check
+              color="var(--theme-sidebar-footer-icon-fill)"
+              size={20}
+              className="mb-1"
+            />
           ) : (
-            <Copy size={20} className="mb-1" />
+            <Copy
+              color="var(--theme-sidebar-footer-icon-fill)"
+              size={20}
+              className="mb-1"
+            />
           )}
         </button>
       </div>
@@ -122,7 +135,12 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
         className="border-none text-zinc-300"
         aria-label="Regenerate"
       >
-        <ArrowsClockwise size={20} className="mb-1" weight="fill" />
+        <ArrowsClockwise
+          color="var(--theme-sidebar-footer-icon-fill)"
+          size={20}
+          className="mb-1"
+          weight="fill"
+        />
       </button>
     </div>
   );

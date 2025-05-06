@@ -1,7 +1,11 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
@@ -114,7 +118,7 @@ class LMStudioLLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),
@@ -128,15 +132,30 @@ class LMStudioLLM {
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const result = await this.lmstudio.chat.completions.create({
-      model: this.model,
-      messages,
-      temperature,
-    });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.lmstudio.chat.completions.create({
+        model: this.model,
+        messages,
+        temperature,
+      })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage?.prompt_tokens || 0,
+        completion_tokens: result.output.usage?.completion_tokens || 0,
+        total_tokens: result.output.usage?.total_tokens || 0,
+        outputTps: result.output.usage?.completion_tokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -145,13 +164,16 @@ class LMStudioLLM {
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const streamRequest = await this.lmstudio.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      temperature,
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.lmstudio.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+      }),
+      messages
+    );
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {

@@ -27,6 +27,7 @@ const {
   renameLogoFile,
   removeCustomLogo,
   LOGO_FILENAME,
+  isDefaultFilename,
 } = require("../utils/files/logo");
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
@@ -55,6 +56,8 @@ const {
 } = require("../utils/middleware/chatHistoryViewable");
 const { simpleSSOEnabled } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
+const { SystemPromptVariables } = require("../models/systemPromptVariables");
+const { VALID_COMMANDS } = require("../utils/chats");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -574,9 +577,11 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/logo", async function (_, response) {
+  app.get("/system/logo", async function (request, response) {
     try {
-      const defaultFilename = getDefaultFilename();
+      const darkMode =
+        !request?.query?.theme || request?.query?.theme === "default";
+      const defaultFilename = getDefaultFilename(darkMode);
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
 
@@ -596,7 +601,8 @@ function systemEndpoints(app) {
         "Content-Length": size,
         "X-Is-Custom-Logo":
           currentLogoFilename !== null &&
-          currentLogoFilename !== defaultFilename,
+          currentLogoFilename !== defaultFilename &&
+          !isDefaultFilename(currentLogoFilename),
       });
       response.end(Buffer.from(buffer, "base64"));
       return;
@@ -655,24 +661,18 @@ function systemEndpoints(app) {
     async function (request, response) {
       try {
         const { id } = request.params;
-        const pfpPath = await determinePfpFilepath(id);
+        if (response.locals?.user?.id !== Number(id))
+          return response.sendStatus(204).end();
 
-        if (!pfpPath) {
-          response.sendStatus(204).end();
-          return;
-        }
+        const pfpPath = await determinePfpFilepath(id);
+        if (!pfpPath) return response.sendStatus(204).end();
 
         const { found, buffer, size, mime } = fetchPfp(pfpPath);
-        if (!found) {
-          response.sendStatus(204).end();
-          return;
-        }
+        if (!found) return response.sendStatus(204).end();
 
         response.writeHead(200, {
           "Content-Type": mime || "image/png",
-          "Content-Disposition": `attachment; filename=${path.basename(
-            pfpPath
-          )}`,
+          "Content-Disposition": `attachment; filename=${path.basename(pfpPath)}`,
           "Content-Length": size,
         });
         response.end(Buffer.from(buffer, "base64"));
@@ -802,7 +802,8 @@ function systemEndpoints(app) {
   app.get("/system/is-default-logo", async (_, response) => {
     try {
       const currentLogoFilename = await SystemSettings.currentLogoFilename();
-      const isDefaultLogo = currentLogoFilename === LOGO_FILENAME;
+      const isDefaultLogo =
+        !currentLogoFilename || currentLogoFilename === LOGO_FILENAME;
       response.status(200).json({ isDefaultLogo });
     } catch (error) {
       console.error("Error processing the logo request:", error);
@@ -907,7 +908,6 @@ function systemEndpoints(app) {
         }
 
         const { apiKey, error } = await ApiKey.create();
-        await Telemetry.sendTelemetry("api_key_created");
         await EventLogs.logEvent(
           "api_key_created",
           {},
@@ -927,28 +927,35 @@ function systemEndpoints(app) {
     }
   );
 
-  app.delete("/system/api-key", [validatedRequest], async (_, response) => {
-    try {
-      if (response.locals.multiUserMode) {
-        return response.sendStatus(401).end();
-      }
+  // TODO: This endpoint is replicated in the admin endpoints file.
+  // and should be consolidated to be a single endpoint with flexible role protection.
+  app.delete(
+    "/system/api-key/:id",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (response.locals.multiUserMode)
+          return response.sendStatus(401).end();
+        const { id } = request.params;
+        if (!id || isNaN(Number(id))) return response.sendStatus(400).end();
 
-      await ApiKey.delete();
-      await EventLogs.logEvent(
-        "api_key_deleted",
-        { deletedBy: response.locals?.user?.username },
-        response?.locals?.user?.id
-      );
-      return response.status(200).end();
-    } catch (error) {
-      console.error(error);
-      response.status(500).end();
+        await ApiKey.delete({ id: Number(id) });
+        await EventLogs.logEvent(
+          "api_key_deleted",
+          { deletedBy: response.locals?.user?.username },
+          response?.locals?.user?.id
+        );
+        return response.status(200).end();
+      } catch (error) {
+        console.error(error);
+        response.status(500).end();
+      }
     }
-  });
+  );
 
   app.post(
     "/system/custom-models",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { provider, apiKey = null, basePath = null } = reqBody(request);
@@ -1084,7 +1091,7 @@ function systemEndpoints(app) {
   app.post("/system/user", [validatedRequest], async (request, response) => {
     try {
       const sessionUser = await userFromSession(request, response);
-      const { username, password } = reqBody(request);
+      const { username, password, bio } = reqBody(request);
       const id = Number(sessionUser.id);
 
       if (!id) {
@@ -1093,12 +1100,10 @@ function systemEndpoints(app) {
       }
 
       const updates = {};
-      if (username) {
+      if (username)
         updates.username = User.validations.username(String(username));
-      }
-      if (password) {
-        updates.password = String(password);
-      }
+      if (password) updates.password = String(password);
+      if (bio) updates.bio = String(bio);
 
       if (Object.keys(updates).length === 0) {
         response
@@ -1137,8 +1142,19 @@ function systemEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const { command, prompt, description } = reqBody(request);
+        const formattedCommand = SlashCommandPresets.formatCommand(
+          String(command)
+        );
+
+        if (Object.keys(VALID_COMMANDS).includes(formattedCommand)) {
+          return response.status(400).json({
+            message:
+              "Cannot create a preset with a command that matches a system command",
+          });
+        }
+
         const presetData = {
-          command: SlashCommandPresets.formatCommand(String(command)),
+          command: formattedCommand,
           prompt: String(prompt),
           description: String(description),
         };
@@ -1165,6 +1181,16 @@ function systemEndpoints(app) {
         const user = await userFromSession(request, response);
         const { slashCommandId } = request.params;
         const { command, prompt, description } = reqBody(request);
+        const formattedCommand = SlashCommandPresets.formatCommand(
+          String(command)
+        );
+
+        if (Object.keys(VALID_COMMANDS).includes(formattedCommand)) {
+          return response.status(400).json({
+            message:
+              "Cannot update a preset to use a command that matches a system command",
+          });
+        }
 
         // Valid user running owns the preset if user session is valid.
         const ownsPreset = await SlashCommandPresets.get({
@@ -1175,7 +1201,7 @@ function systemEndpoints(app) {
           return response.status(404).json({ message: "Preset not found" });
 
         const updates = {
-          command: SlashCommandPresets.formatCommand(String(command)),
+          command: formattedCommand,
           prompt: String(prompt),
           description: String(description),
         };
@@ -1216,6 +1242,130 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error("Error deleting slash command preset:", error);
         response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.get(
+    "/system/prompt-variables",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const variables = await SystemPromptVariables.getAll(user?.id);
+        response.status(200).json({ variables });
+      } catch (error) {
+        console.error("Error fetching system prompt variables:", error);
+        response.status(500).json({
+          success: false,
+          error: `Failed to fetch system prompt variables: ${error.message}`,
+        });
+      }
+    }
+  );
+
+  app.post(
+    "/system/prompt-variables",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { key, value, description = null } = reqBody(request);
+
+        if (!key || !value) {
+          return response.status(400).json({
+            success: false,
+            error: "Key and value are required",
+          });
+        }
+
+        const variable = await SystemPromptVariables.create({
+          key,
+          value,
+          description,
+          userId: user?.id || null,
+        });
+
+        response.status(200).json({
+          success: true,
+          variable,
+        });
+      } catch (error) {
+        console.error("Error creating system prompt variable:", error);
+        response.status(500).json({
+          success: false,
+          error: `Failed to create system prompt variable: ${error.message}`,
+        });
+      }
+    }
+  );
+
+  app.put(
+    "/system/prompt-variables/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const { key, value, description = null } = reqBody(request);
+
+        if (!key || !value) {
+          return response.status(400).json({
+            success: false,
+            error: "Key and value are required",
+          });
+        }
+
+        const variable = await SystemPromptVariables.update(Number(id), {
+          key,
+          value,
+          description,
+        });
+
+        if (!variable) {
+          return response.status(404).json({
+            success: false,
+            error: "Variable not found",
+          });
+        }
+
+        response.status(200).json({
+          success: true,
+          variable,
+        });
+      } catch (error) {
+        console.error("Error updating system prompt variable:", error);
+        response.status(500).json({
+          success: false,
+          error: `Failed to update system prompt variable: ${error.message}`,
+        });
+      }
+    }
+  );
+
+  app.delete(
+    "/system/prompt-variables/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const success = await SystemPromptVariables.delete(Number(id));
+
+        if (!success) {
+          return response.status(404).json({
+            success: false,
+            error: "System prompt variable not found or could not be deleted",
+          });
+        }
+
+        response.status(200).json({
+          success: true,
+        });
+      } catch (error) {
+        console.error("Error deleting system prompt variable:", error);
+        response.status(500).json({
+          success: false,
+          error: `Failed to delete system prompt variable: ${error.message}`,
+        });
       }
     }
   );

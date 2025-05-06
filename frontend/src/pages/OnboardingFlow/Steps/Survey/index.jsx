@@ -6,9 +6,7 @@ import paths from "@/utils/paths";
 import { CheckCircle } from "@phosphor-icons/react";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
-const TITLE = "Welcome to AnythingLLM";
-const DESCRIPTION = "Help us make AnythingLLM built for your needs. Optional.";
+import { useTranslation } from "react-i18next";
 
 async function sendQuestionnaire({ email, useCase, comment }) {
   if (import.meta.env.DEV) {
@@ -44,10 +42,14 @@ async function sendQuestionnaire({ email, useCase, comment }) {
 }
 
 export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
+  const { t } = useTranslation();
   const [selectedOption, setSelectedOption] = useState("");
   const formRef = useRef(null);
   const navigate = useNavigate();
   const submitRef = useRef(null);
+
+  const TITLE = t("onboarding.survey.title");
+  const DESCRIPTION = t("onboarding.survey.description");
 
   function handleForward() {
     if (!!window?.localStorage?.getItem(COMPLETE_QUESTIONNAIRE)) {
@@ -109,7 +111,9 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
         <div className="w-full flex items-center justify-center px-1 md:px-8 py-4">
           <div className="w-auto flex flex-col gap-y-1 items-center">
             <CheckCircle size={60} className="text-green-500" />
-            <p className="text-white text-lg">Thank you for your feedback!</p>
+            <p className="text-white text-lg">
+              {t("onboarding.survey.thankYou")}
+            </p>
             <a
               href={paths.mailToMintplex()}
               className="text-sky-400 underline text-xs"
@@ -123,33 +127,38 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
   }
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center bo">
       <form onSubmit={handleSubmit} ref={formRef} className="">
         <div className="md:min-w-[400px]">
-          <label htmlFor="email" className="text-white text-base font-medium">
-            What's your email?{" "}
+          <label
+            htmlFor="email"
+            className="text-theme-text-primary text-base font-medium"
+          >
+            {t("onboarding.survey.email")}{" "}
           </label>
           <input
             name="email"
             type="email"
             placeholder="you@gmail.com"
             required={true}
-            className="mt-2 bg-zinc-900 text-white placeholder:text-white/20 text-sm font-medium font-['Plus Jakarta Sans'] leading-tight w-full h-11 p-2.5 bg-zinc-900 rounded-lg"
+            className="mt-2 bg-theme-settings-input-bg text-white focus:outline-primary-button active:outline-primary-button placeholder:text-theme-settings-input-placeholder outline-none text-sm font-medium font-['Plus Jakarta Sans'] leading-tight w-full h-11 p-2.5 bg-theme-settings-input-bg rounded-lg"
           />
         </div>
 
         <div className="mt-8">
           <label
-            className="text-white text-base font-medium"
+            className="text-theme-text-primary text-base font-medium"
             htmlFor="use_case"
           >
-            What will you use AnythingLLM for?{" "}
+            {t("onboarding.survey.useCase")}{" "}
           </label>
           <div className="mt-2 gap-y-3 flex flex-col">
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-                selectedOption === "job" ? "border-white border-opacity-40" : ""
-              } hover:border-white/60`}
+              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border ${
+                selectedOption === "job"
+                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+                  : "border-theme-sidebar-border"
+              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
             >
               <input
                 type="radio"
@@ -160,20 +169,22 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-                  selectedOption === "job" ? "bg-white" : ""
+                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                  selectedOption === "job"
+                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                    : ""
                 }`}
               ></div>
-              <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                For work
+              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+                {t("onboarding.survey.useCaseWork")}
               </div>
             </label>
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
+              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
                 selectedOption === "personal"
-                  ? "border-white border-opacity-40"
-                  : ""
-              } hover:border-white/60`}
+                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+                  : "border-theme-sidebar-border"
+              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
             >
               <input
                 type="radio"
@@ -184,20 +195,22 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-                  selectedOption === "personal" ? "bg-white" : ""
+                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                  selectedOption === "personal"
+                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                    : ""
                 }`}
               ></div>
-              <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                For my personal use
+              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+                {t("onboarding.survey.useCasePersonal")}
               </div>
             </label>
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
+              className={`border-solid transition-all duration-300 w-full h-11 p-2.5 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border-[1px] ${
                 selectedOption === "other"
-                  ? "border-white border-opacity-40"
-                  : ""
-              } hover:border-white/60`}
+                  ? "border-theme-sidebar-item-workspace-active bg-theme-bg-secondary"
+                  : "border-theme-sidebar-border"
+              } hover:border-theme-sidebar-border hover:bg-theme-bg-secondary`}
             >
               <input
                 type="radio"
@@ -208,12 +221,14 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 className="hidden"
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-                  selectedOption === "other" ? "bg-white" : ""
+                className={`w-4 h-4 rounded-full border-2 border-theme-sidebar-border mr-2 ${
+                  selectedOption === "other"
+                    ? "bg-[var(--theme-sidebar-item-workspace-active)]"
+                    : ""
                 }`}
               ></div>
-              <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                Other
+              <div className="text-theme-text-primary text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
+                {t("onboarding.survey.useCaseOther")}
               </div>
             </label>
           </div>
@@ -221,16 +236,16 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
 
         <div className="mt-8">
           <label htmlFor="comment" className="text-white text-base font-medium">
-            Any comments for the team?{" "}
+            {t("onboarding.survey.comment")}{" "}
             <span className="text-neutral-400 text-base font-light">
-              (Optional)
+              ({t("common.optional")})
             </span>
           </label>
           <textarea
             name="comment"
             rows={5}
-            className="mt-2 bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="If you have any questions or comments right now, you can leave them here and we will get back to you. You can also email team@mintplexlabs.com"
+            className="mt-2 bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button placeholder:text-theme-settings-input-placeholder outline-none block w-full p-2.5"
+            placeholder={t("onboarding.survey.commentPlaceholder")}
             wrap="soft"
             autoComplete="off"
           />
@@ -246,9 +261,9 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           <button
             type="button"
             onClick={skipSurvey}
-            className="text-white text-base font-medium text-opacity-30 hover:text-opacity-100 mt-8"
+            className="text-white text-base font-medium text-opacity-30 hover:text-opacity-100 hover:text-teal mt-8"
           >
-            Skip Survey
+            {t("onboarding.survey.skip")}
           </button>
         </div>
       </form>

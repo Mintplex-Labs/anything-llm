@@ -10,7 +10,7 @@ class NovitaProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   constructor(config = {}) {
-    const { model = "gryphe/mythomax-l2-13b" } = config;
+    const { model = "deepseek/deepseek-r1" } = config;
     super();
     const client = new OpenAI({
       baseURL: "https://api.novita.ai/v3/openai",
@@ -57,7 +57,7 @@ class NovitaProvider extends InheritMultiple([Provider, UnTooled]) {
    * @param functions
    * @returns The completion.
    */
-  async complete(messages, functions = null) {
+  async complete(messages, functions = []) {
     let completion;
     if (functions.length > 0) {
       const { toolCall, text } = await this.functionCall(

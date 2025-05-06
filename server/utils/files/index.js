@@ -91,6 +91,50 @@ async function viewLocalFiles() {
   return directory;
 }
 
+async function getDocumentsByFolder(folderName = "") {
+  if (!folderName) throw new Error("Folder name must be provided.");
+  const folderPath = path.resolve(documentsPath, normalizePath(folderName));
+  if (
+    !isWithin(documentsPath, folderPath) ||
+    !fs.existsSync(folderPath) ||
+    !fs.lstatSync(folderPath).isDirectory()
+  )
+    throw new Error(`Folder "${folderName}" does not exist.`);
+
+  const documents = [];
+  const filenames = {};
+  const files = fs.readdirSync(folderPath);
+  for (const file of files) {
+    if (path.extname(file) !== ".json") continue;
+    const filePath = path.join(folderPath, file);
+    const rawData = fs.readFileSync(filePath, "utf8");
+    const cachefilename = `${folderName}/${file}`;
+    const { pageContent, ...metadata } = JSON.parse(rawData);
+    documents.push({
+      name: file,
+      type: "file",
+      ...metadata,
+      cached: await cachedVectorInformation(cachefilename, true),
+    });
+    filenames[cachefilename] = file;
+  }
+
+  // Get pinned and watched information for each document in the folder
+  const pinnedWorkspacesByDocument =
+    await getPinnedWorkspacesByDocument(filenames);
+  const watchedDocumentsFilenames =
+    await getWatchedDocumentFilenames(filenames);
+  for (let doc of documents) {
+    doc.pinnedWorkspaces = pinnedWorkspacesByDocument[doc.name] || [];
+    doc.watched = Object.prototype.hasOwnProperty.call(
+      watchedDocumentsFilenames,
+      doc.name
+    );
+  }
+
+  return { folder: folderName, documents };
+}
+
 /**
  * Searches the vector-cache folder for existing information so we dont have to re-embed a
  * document and can instead push directly to vector db.
@@ -281,6 +325,16 @@ async function getWatchedDocumentFilenames(filenames = []) {
   }, {});
 }
 
+/**
+ * Purges the entire vector-cache folder and recreates it.
+ * @returns {void}
+ */
+function purgeEntireVectorCache() {
+  fs.rmSync(vectorCachePath, { recursive: true, force: true });
+  fs.mkdirSync(vectorCachePath);
+  return;
+}
+
 module.exports = {
   findDocumentInDocuments,
   cachedVectorInformation,
@@ -293,4 +347,6 @@ module.exports = {
   isWithin,
   documentsPath,
   hasVectorCachedFiles,
+  purgeEntireVectorCache,
+  getDocumentsByFolder,
 };

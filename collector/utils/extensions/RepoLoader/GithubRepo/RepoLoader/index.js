@@ -18,7 +18,7 @@ class GitHubRepoLoader {
    */
   constructor(args = {}) {
     this.ready = false;
-    this.repo = args?.repo;
+    this.repo = this.#processRepoUrl(args?.repo);
     this.branch = args?.branch;
     this.accessToken = args?.accessToken || null;
     this.ignorePaths = args?.ignorePaths || [];
@@ -28,6 +28,36 @@ class GitHubRepoLoader {
     this.branches = [];
   }
 
+  /**
+   * Processes a repository URL to ensure it is in the correct format
+   * - remove the .git suffix if present
+   * - ensure the url is valid
+   * @param {string} repoUrl - The repository URL to process.
+   * @returns {string|null} The processed repository URL, or null if the URL is invalid.
+   */
+  #processRepoUrl(repoUrl) {
+    if (!repoUrl) return repoUrl;
+    try {
+      const url = new URL(repoUrl);
+      if (url.pathname.endsWith(".git"))
+        url.pathname = url.pathname.slice(0, -4);
+      return url.toString();
+    } catch (e) {
+      console.error(
+        `[GitHub Loader]: Error processing repository URL ${this.repo}: ${e.message}`
+      );
+      return repoUrl;
+    }
+  }
+
+  /**
+   * Validates the GitHub URL format.
+   * - ensure the url is valid
+   * - ensure the hostname is github.com
+   * - ensure the pathname is in the format of github.com/{author}/{project}
+   * - sets the author and project properties of class instance
+   * @returns {boolean} True if the URL is valid, false otherwise.
+   */
   #validGithubUrl() {
     try {
       const url = new URL(this.repo);
@@ -35,7 +65,7 @@ class GitHubRepoLoader {
       // Not a github url at all.
       if (url.hostname !== "github.com") {
         console.log(
-          `[Github Loader]: Invalid Github URL provided! Hostname must be 'github.com'. Got ${url.hostname}`
+          `[GitHub Loader]: Invalid GitHub URL provided! Hostname must be 'github.com'. Got ${url.hostname}`
         );
         return false;
       }
@@ -45,7 +75,7 @@ class GitHubRepoLoader {
       const [author, project, ..._rest] = url.pathname.slice(1).split("/");
       if (!author || !project) {
         console.log(
-          `[Github Loader]: Invalid Github URL provided! URL must be in the format of 'github.com/{author}/{project}'. Got ${url.pathname}`
+          `[GitHub Loader]: Invalid GitHub URL provided! URL must be in the format of 'github.com/{author}/{project}'. Got ${url.pathname}`
         );
         return false;
       }
@@ -55,7 +85,7 @@ class GitHubRepoLoader {
       return true;
     } catch (e) {
       console.log(
-        `[Github Loader]: Invalid Github URL provided! Error: ${e.message}`
+        `[GitHub Loader]: Invalid GitHub URL provided! Error: ${e.message}`
       );
       return false;
     }
@@ -68,10 +98,10 @@ class GitHubRepoLoader {
     if (!!this.branch && this.branches.includes(this.branch)) return;
 
     console.log(
-      "[Github Loader]: Branch not set! Auto-assigning to a default branch."
+      "[GitHub Loader]: Branch not set! Auto-assigning to a default branch."
     );
     this.branch = this.branches.includes("main") ? "main" : "master";
-    console.log(`[Github Loader]: Branch auto-assigned to ${this.branch}.`);
+    console.log(`[GitHub Loader]: Branch auto-assigned to ${this.branch}.`);
     return;
   }
 
@@ -90,7 +120,7 @@ class GitHubRepoLoader {
       })
       .catch((e) => {
         console.error(
-          "Invalid Github Access Token provided! Access token will not be used",
+          "Invalid GitHub Access Token provided! Access token will not be used",
           e.message
         );
         return false;
@@ -118,14 +148,14 @@ class GitHubRepoLoader {
    * @throws {Error} If the RepoLoader is not in a ready state.
    */
   async recursiveLoader() {
-    if (!this.ready) throw new Error("[Github Loader]: not in ready state!");
+    if (!this.ready) throw new Error("[GitHub Loader]: not in ready state!");
     const {
       GithubRepoLoader: LCGithubLoader,
     } = require("@langchain/community/document_loaders/web/github");
 
     if (this.accessToken)
       console.log(
-        `[Github Loader]: Access token set! Recursive loading enabled!`
+        `[GitHub Loader]: Access token set! Recursive loading enabled!`
       );
 
     const loader = new LCGithubLoader(this.repo, {

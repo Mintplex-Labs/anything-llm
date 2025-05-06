@@ -6,9 +6,10 @@ import { useModal } from "@/hooks/useModal";
 import System from "@/models/system";
 import { DotsThree, Plus } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
+import { useSearchParams } from "react-router-dom";
 
 export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
-export default function SlashPresets({ setShowing, sendCommand }) {
+export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
   const isActiveAgentSession = useIsAgentSessionActive();
   const {
     isOpen: isAddModalOpen,
@@ -22,10 +23,25 @@ export default function SlashPresets({ setShowing, sendCommand }) {
   } = useModal();
   const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     fetchPresets();
   }, []);
+
+  /*
+   * @checklist-item
+   * If the URL has the slash-commands param, open the add modal for the user
+   * automatically when the component mounts.
+   */
+  useEffect(() => {
+    if (
+      searchParams.get("action") === "open-new-slash-command-modal" &&
+      !isAddModalOpen
+    )
+      openAddModal();
+  }, []);
+
   if (isActiveAgentSession) return null;
 
   const fetchPresets = async () => {
@@ -84,12 +100,15 @@ export default function SlashPresets({ setShowing, sendCommand }) {
           onClick={() => {
             setShowing(false);
             sendCommand(`${preset.command} `, false);
+            promptRef?.current?.focus();
           }}
-          className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-row justify-start"
+          className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start"
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-white text-sm font-bold">{preset.command}</div>
-            <div className="text-white text-opacity-60 text-sm">
+            <div className="text-theme-text-primary text-sm font-bold">
+              {preset.command}
+            </div>
+            <div className="text-theme-text-secondary text-sm">
               {preset.description}
             </div>
           </div>
@@ -98,7 +117,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
               e.stopPropagation();
               handleEditPreset(preset);
             }}
-            className="text-white text-sm p-1 hover:cursor-pointer hover:bg-zinc-900 rounded-full mt-1"
+            className="border-none text-theme-text-primary text-sm p-1 hover:cursor-pointer hover:bg-theme-action-menu-item-hover rounded-full mt-1"
           >
             <DotsThree size={24} weight="bold" />
           </button>
@@ -106,11 +125,13 @@ export default function SlashPresets({ setShowing, sendCommand }) {
       ))}
       <button
         onClick={openAddModal}
-        className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-1 rounded-xl flex flex-col justify-start"
+        className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-1 rounded-xl flex flex-col justify-start"
       >
         <div className="w-full flex-row flex pointer-events-none items-center gap-2">
-          <Plus size={24} weight="fill" fill="white" />
-          <div className="text-white text-sm font-medium">Add New Preset </div>
+          <Plus size={24} weight="fill" className="text-theme-text-primary" />
+          <div className="text-theme-text-primary text-sm font-medium">
+            Add New Preset
+          </div>
         </div>
       </button>
       <AddPresetModal

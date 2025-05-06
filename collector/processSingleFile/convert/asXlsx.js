@@ -67,7 +67,7 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
           published: createdDate(fullFilePath),
           wordCount: content.split(/\s+/).length,
           pageContent: content,
-          token_count_estimate: tokenizeString(content).length,
+          token_count_estimate: tokenizeString(content),
         };
 
         const document = writeToServerDocuments(

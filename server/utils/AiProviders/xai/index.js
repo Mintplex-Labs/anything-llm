@@ -1,6 +1,10 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 
@@ -24,6 +28,11 @@ class XAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.log("Initialized with model:", this.model);
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -50,13 +59,8 @@ class XAiLLM {
     return MODEL_MAP.xai[this.model] ?? 131_072;
   }
 
-  isValidChatCompletionModel(modelName = "") {
-    switch (modelName) {
-      case "grok-beta":
-        return true;
-      default:
-        return false;
-    }
+  isValidChatCompletionModel(_modelName = "") {
+    return true;
   }
 
   /**
@@ -100,7 +104,7 @@ class XAiLLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),
@@ -114,19 +118,34 @@ class XAiLLM {
         `xAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const result = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        temperature,
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature,
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage.prompt_tokens || 0,
+        completion_tokens: result.output.usage.completion_tokens || 0,
+        total_tokens: result.output.usage.total_tokens || 0,
+        outputTps: result.output.usage.completion_tokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -135,13 +154,18 @@ class XAiLLM {
         `xAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+      }),
       messages,
-      temperature,
-    });
-    return streamRequest;
+      false
+    );
+
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {

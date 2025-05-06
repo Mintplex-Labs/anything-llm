@@ -4,7 +4,7 @@ const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const { getVectorDbClass } = require("../../../utils/helpers");
+const { getVectorDbClass, getLLMProvider } = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
@@ -14,6 +14,7 @@ const {
   writeResponseChunk,
 } = require("../../../utils/helpers/chat/responses");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
+const { getModelTag } = require("../../utils");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -23,12 +24,19 @@ function apiWorkspaceEndpoints(app) {
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Create a new workspace'
     #swagger.requestBody = {
-      description: 'JSON object containing new display name of workspace.',
+      description: 'JSON object containing workspace configuration.',
       required: true,
       content: {
         "application/json": {
           example: {
             name: "My New Workspace",
+            similarityThreshold: 0.7,
+            openAiTemp: 0.7,
+            openAiHistory: 20,
+            openAiPrompt: "Custom prompt for responses",
+            queryRefusalResponse: "Custom refusal message",
+            chatMode: "chat",
+            topN: 4
           }
         }
       }
@@ -62,14 +70,25 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const { name = null } = reqBody(request);
-      const { workspace, message } = await Workspace.new(name);
+      const { name = null, ...additionalFields } = reqBody(request);
+      const { workspace, message } = await Workspace.new(
+        name,
+        null,
+        additionalFields
+      );
+
+      if (!workspace) {
+        response.status(400).json({ workspace: null, message });
+        return;
+      }
+
       await Telemetry.sendTelemetry("workspace_created", {
         multiUserMode: multiUserMode(response),
         LLMSelection: process.env.LLM_PROVIDER || "openai",
         Embedder: process.env.EMBEDDING_ENGINE || "inherit",
         VectorDbSelection: process.env.VECTOR_DB || "lancedb",
         TTSSelection: process.env.TTS_PROVIDER || "native",
+        LLMModel: getModelTag(),
       });
       await EventLogs.logEvent("api_workspace_created", {
         workspaceName: workspace?.name || "Unknown Workspace",
@@ -123,6 +142,7 @@ function apiWorkspaceEndpoints(app) {
             select: {
               user_id: true,
               slug: true,
+              name: true,
             },
           },
         },
@@ -393,7 +413,7 @@ function apiWorkspaceEndpoints(app) {
         const {
           apiSessionId = null,
           limit = 100,
-          orderBy = "desc",
+          orderBy = "asc",
         } = request.query;
         const workspace = await Workspace.get({ slug });
 
@@ -405,7 +425,7 @@ function apiWorkspaceEndpoints(app) {
         const validLimit = Math.max(1, parseInt(limit));
         const validOrderBy = ["asc", "desc"].includes(orderBy)
           ? orderBy
-          : "desc";
+          : "asc";
 
         const history = apiSessionId
           ? await WorkspaceChats.forWorkspaceByApiSessionId(
@@ -592,7 +612,8 @@ function apiWorkspaceEndpoints(app) {
                  mime: "image/png",
                  contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
-             ]
+             ],
+             reset: false
            }
          }
        }
@@ -627,6 +648,7 @@ function apiWorkspaceEndpoints(app) {
           mode = "query",
           sessionId = null,
           attachments = [],
+          reset = false,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
@@ -642,7 +664,7 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -650,7 +672,7 @@ function apiWorkspaceEndpoints(app) {
             sources: [],
             close: true,
             error: !message?.length
-              ? "message parameter cannot be empty."
+              ? "Message is empty"
               : `${mode} is not a valid mode.`,
           });
           return;
@@ -664,6 +686,7 @@ function apiWorkspaceEndpoints(app) {
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
+          reset,
         });
 
         await Telemetry.sendTelemetry("sent_chat", {
@@ -714,7 +737,8 @@ function apiWorkspaceEndpoints(app) {
                  mime: "image/png",
                  contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
-             ]
+             ],
+             reset: false
            }
          }
        }
@@ -770,6 +794,7 @@ function apiWorkspaceEndpoints(app) {
           mode = "query",
           sessionId = null,
           attachments = [],
+          reset = false,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
@@ -785,7 +810,7 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -814,6 +839,7 @@ function apiWorkspaceEndpoints(app) {
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
+          reset,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection:
@@ -838,6 +864,136 @@ function apiWorkspaceEndpoints(app) {
           error: e.message,
         });
         response.end();
+      }
+    }
+  );
+
+  app.post(
+    "/v1/workspace/:slug/vector-search",
+    [validApiKey],
+    async (request, response) => {
+      /*
+    #swagger.tags = ['Workspaces']
+    #swagger.description = 'Perform a vector similarity search in a workspace'
+    #swagger.parameters['slug'] = {
+        in: 'path',
+        description: 'Unique slug of workspace to search in',
+        required: true,
+        type: 'string'
+    }
+    #swagger.requestBody = {
+      description: 'Query to perform vector search with and optional parameters',
+      required: true,
+      content: {
+        "application/json": {
+          example: {
+            query: "What is the meaning of life?",
+            topN: 4,
+            scoreThreshold: 0.75
+          }
+        }
+      }
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              results: [
+                {
+                  id: "5a6bee0a-306c-47fc-942b-8ab9bf3899c4",
+                  text: "Document chunk content...",
+                  metadata: {
+                    url: "file://document.txt",
+                    title: "document.txt",
+                    author: "no author specified",
+                    description: "no description found",
+                    docSource: "post:123456",
+                    chunkSource: "document.txt",
+                    published: "12/1/2024, 11:39:39 AM",
+                    wordCount: 8,
+                    tokenCount: 9
+                  },
+                  distance: 0.541887640953064,
+                  score: 0.45811235904693604
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+    */
+      try {
+        const { slug } = request.params;
+        const { query, topN, scoreThreshold } = reqBody(request);
+        const workspace = await Workspace.get({ slug: String(slug) });
+
+        if (!workspace)
+          return response.status(400).json({
+            message: `Workspace ${slug} is not a valid workspace.`,
+          });
+
+        if (!query?.length)
+          return response.status(400).json({
+            message: "Query parameter cannot be empty.",
+          });
+
+        const VectorDb = getVectorDbClass();
+        const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
+        const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+
+        if (!hasVectorizedSpace || embeddingsCount === 0)
+          return response.status(200).json({
+            results: [],
+            message: "No embeddings found for this workspace.",
+          });
+
+        const parseSimilarityThreshold = () => {
+          let input = parseFloat(scoreThreshold);
+          if (isNaN(input) || input < 0 || input > 1)
+            return workspace?.similarityThreshold ?? 0.25;
+          return input;
+        };
+
+        const parseTopN = () => {
+          let input = Number(topN);
+          if (isNaN(input) || input < 1) return workspace?.topN ?? 4;
+          return input;
+        };
+
+        const results = await VectorDb.performSimilaritySearch({
+          namespace: workspace.slug,
+          input: String(query),
+          LLMConnector: getLLMProvider(),
+          similarityThreshold: parseSimilarityThreshold(),
+          topN: parseTopN(),
+          rerank: workspace?.vectorSearchMode === "rerank",
+        });
+
+        response.status(200).json({
+          results: results.sources.map((source) => ({
+            id: source.id,
+            text: source.text,
+            metadata: {
+              url: source.url,
+              title: source.title,
+              author: source.docAuthor,
+              description: source.description,
+              docSource: source.docSource,
+              chunkSource: source.chunkSource,
+              published: source.published,
+              wordCount: source.wordCount,
+              tokenCount: source.token_count_estimate,
+            },
+            distance: source._distance,
+            score: source.score,
+          })),
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
       }
     }
   );

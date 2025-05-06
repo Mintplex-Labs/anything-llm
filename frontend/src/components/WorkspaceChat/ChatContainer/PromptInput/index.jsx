@@ -16,6 +16,8 @@ import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
 import AttachItem from "./AttachItem";
 import { PASTE_ATTACHMENT_EVENT } from "../DnDWrapper";
+import useTextSize from "@/hooks/useTextSize";
+import { useTranslation } from "react-i18next";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 const MAX_EDIT_STACK_SIZE = 100;
@@ -23,11 +25,11 @@ const MAX_EDIT_STACK_SIZE = 100;
 export default function PromptInput({
   submit,
   onChange,
-  inputDisabled,
-  buttonDisabled,
+  isStreaming,
   sendCommand,
   attachments = [],
 }) {
+  const { t } = useTranslation();
   const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
@@ -36,6 +38,7 @@ export default function PromptInput({
   const [_, setFocused] = useState(false);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
+  const { textSizeClass } = useTextSize();
 
   /**
    * To prevent too many re-renders we remotely listen for updates from the parent
@@ -47,11 +50,6 @@ export default function PromptInput({
     setPromptInput(e?.detail ?? "");
   }
 
-  function resetTextAreaHeight() {
-    if (!textareaRef.current) return;
-    textareaRef.current.style.height = "auto";
-  }
-
   useEffect(() => {
     if (!!window)
       window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
@@ -60,9 +58,9 @@ export default function PromptInput({
   }, []);
 
   useEffect(() => {
-    if (!inputDisabled && textareaRef.current) textareaRef.current.focus();
+    if (!isStreaming && textareaRef.current) textareaRef.current.focus();
     resetTextAreaHeight();
-  }, [inputDisabled]);
+  }, [isStreaming]);
 
   /**
    * Save the current state before changes
@@ -113,6 +111,7 @@ export default function PromptInput({
     // Is simple enter key press w/o shift key
     if (event.keyCode === 13 && !event.shiftKey) {
       event.preventDefault();
+      if (isStreaming) return;
       return submit(event);
     }
 
@@ -238,6 +237,7 @@ export default function PromptInput({
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
         sendCommand={sendCommand}
+        promptRef={textareaRef}
       />
       <AvailableAgents
         showing={showAgents}
@@ -250,9 +250,9 @@ export default function PromptInput({
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
       >
         <div className="flex items-center rounded-lg md:mb-4">
-          <div className="w-[95vw] md:w-[635px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+          <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-2xl flex flex-col px-4 overflow-hidden">
             <AttachmentManager attachments={attachments} />
-            <div className="flex items-center w-full border-b-2 border-gray-500/50">
+            <div className="flex items-center w-full border-b-2 border-theme-chat-input-border">
               <textarea
                 ref={textareaRef}
                 onChange={handleChange}
@@ -262,29 +262,32 @@ export default function PromptInput({
                   handlePasteEvent(e);
                 }}
                 required={true}
-                disabled={inputDisabled}
                 onFocus={() => setFocused(true)}
                 onBlur={(e) => {
                   setFocused(false);
                   adjustTextArea(e);
                 }}
                 value={promptInput}
-                className="cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
-                placeholder={"Send a message"}
+                className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full leading-5 md:text-md text-white bg-transparent placeholder:text-white/60 light:placeholder:text-theme-text-primary resize-none active:outline-none focus:outline-none flex-grow ${textSizeClass}`}
+                placeholder={t("chat_window.send_message")}
               />
-              {buttonDisabled ? (
+              {isStreaming ? (
                 <StopGenerationButton />
               ) : (
                 <>
                   <button
                     ref={formRef}
                     type="submit"
-                    className="inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
+                    className="border-none inline-flex justify-center rounded-2xl cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ml-4"
                     data-tooltip-id="send-prompt"
-                    data-tooltip-content="Send prompt message to workspace"
-                    aria-label="Send prompt message to workspace"
+                    data-tooltip-content={t("chat_window.send")}
+                    aria-label={t("chat_window.send")}
                   >
-                    <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
+                    <PaperPlaneRight
+                      color="var(--theme-sidebar-footer-icon-fill)"
+                      className="w-[22px] h-[22px] pointer-events-none text-theme-text-primary"
+                      weight="fill"
+                    />
                     <span className="sr-only">Send message</span>
                   </button>
                   <Tooltip

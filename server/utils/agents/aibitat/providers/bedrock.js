@@ -39,7 +39,11 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       model,
     };
 
-    if (authMethod === 'iam_user' && process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID && process.env.AWS_BEDROCK_LLM_ACCESS_KEY) {
+    if (
+      authMethod === "iam_user" &&
+      process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID &&
+      process.env.AWS_BEDROCK_LLM_ACCESS_KEY
+    ) {
       clientConfig.credentials = {
         accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
@@ -50,7 +54,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   getCurrentAuthMethod() {
-    return process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || 'iam_role';
+    return process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
   }
 
   shouldRefreshClient() {
@@ -59,8 +63,10 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     const currentConfig = this.getClientConfig();
     const currentAuthMethod = this.getCurrentAuthMethod();
 
-    return JSON.stringify(currentConfig) !== JSON.stringify(this._lastConfig) ||
-           currentAuthMethod !== this._lastAuthMethod;
+    return (
+      JSON.stringify(currentConfig) !== JSON.stringify(this._lastConfig) ||
+      currentAuthMethod !== this._lastAuthMethod
+    );
   }
 
   refreshClient() {
@@ -110,7 +116,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
    * @param functions
    * @returns The completion.
    */
-  async complete(messages, functions = null) {
+  async complete(messages, functions = []) {
     try {
       let completion;
       if (functions.length > 0) {

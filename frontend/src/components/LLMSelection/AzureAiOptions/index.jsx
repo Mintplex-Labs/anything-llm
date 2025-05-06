@@ -9,7 +9,7 @@ export default function AzureAiOptions({ settings }) {
           <input
             type="url"
             name="AzureOpenAiEndpoint"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="https://my-azure.openai.azure.com"
             defaultValue={settings?.AzureOpenAiEndpoint}
             required={true}
@@ -25,7 +25,7 @@ export default function AzureAiOptions({ settings }) {
           <input
             type="password"
             name="AzureOpenAiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Azure OpenAI API Key"
             defaultValue={settings?.AzureOpenAiKey ? "*".repeat(20) : ""}
             required={true}
@@ -41,7 +41,7 @@ export default function AzureAiOptions({ settings }) {
           <input
             type="text"
             name="AzureOpenAiModelPref"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Azure OpenAI chat model deployment name"
             defaultValue={settings?.AzureOpenAiModelPref}
             required={true}
@@ -59,7 +59,7 @@ export default function AzureAiOptions({ settings }) {
           <select
             name="AzureOpenAiTokenLimit"
             defaultValue={settings?.AzureOpenAiTokenLimit || 4096}
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             required={true}
           >
             <option value={4096}>4,096 (gpt-3.5-turbo)</option>
@@ -67,8 +67,25 @@ export default function AzureAiOptions({ settings }) {
             <option value={8192}>8,192 (gpt-4)</option>
             <option value={32768}>32,768 (gpt-4-32k)</option>
             <option value={128000}>
-              128,000 (gpt-4-turbo,gpt-4o,gpt-4o-mini)
+              128,000 (gpt-4-turbo,gpt-4o,gpt-4o-mini,o1-mini)
             </option>
+            <option value={200000}>200,000 (o1,o1-pro,o3-mini)</option>
+            <option value={1047576}>1,047,576 (gpt-4.1)</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Model Type
+          </label>
+          <select
+            name="AzureOpenAiModelType"
+            defaultValue={settings?.AzureOpenAiModelType || "default"}
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            required={true}
+          >
+            <option value="default">Default</option>
+            <option value="reasoning">Reasoning</option>
           </select>
         </div>
       </div>

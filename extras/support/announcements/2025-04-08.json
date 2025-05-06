@@ -1,0 +1,26 @@
+[
+  {
+    "thumbnail_url": "https://cdn.anythingllm.com/support/announcements/assets/mcp.jpg",
+    "title": "MCP Support",
+    "short_description": "Import and leverage MCP tools using AnythingLLM.",
+    "goto": "https://docs.anythingllm.com/mcp-compatibility/overview",
+    "author": "AnythingLLM",
+    "date": "April 8, 2025"
+  },
+  {
+    "thumbnail_url": "https://blogs.nvidia.com/wp-content/uploads/2025/03/nv-raig-032525-nv-blog-1280x680-1-scaled.jpg",
+    "title": "NVIDIA NIM Support",
+    "short_description": "Unlock the power of NVIDIA NIM on Windows with RTX GPU in our latest update via the NVIDIA NIM LLM provider.",
+    "goto": "https://blogs.nvidia.com/blog/rtx-ai-garage-nim-blueprints-g-assist",
+    "author": "NVIDIA",
+    "date": "March 25, 2025"
+  },
+  {
+    "thumbnail_url": null,
+    "title": "Community Hub Updates",
+    "short_description": "We refreshed the Community Hub with a new look and feel. Check it out!",
+    "goto": "https://hub.anythingllm.com",
+    "author": "AnythingLLM",
+    "date": "March 12, 2025"
+  }
+]

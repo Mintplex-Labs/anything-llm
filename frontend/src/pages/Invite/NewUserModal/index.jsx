@@ -32,9 +32,9 @@ export default function NewUserModal() {
 
   return (
     <div className="relative w-full max-w-2xl max-h-full">
-      <div className="relative bg-main-gradient rounded-lg shadow">
-        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-          <h3 className="text-xl font-semibold text-white">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+        <div className="flex items-start justify-between p-4 border-b rounded-t border-theme-modal-border">
+          <h3 className="text-xl font-semibold text-theme-text-primary">
             Create a new account
           </h3>
         </div>
@@ -44,14 +44,14 @@ export default function NewUserModal() {
               <div>
                 <label
                   htmlFor="username"
-                  className="block mb-2 text-sm font-medium text-white"
+                  className="block mb-2 text-sm font-medium text-theme-text-primary"
                 >
                   Username
                 </label>
                 <input
                   name="username"
                   type="text"
-                  className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="My username"
                   minLength={2}
                   required={true}
@@ -61,14 +61,14 @@ export default function NewUserModal() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-white"
+                  className="block mb-2 text-sm font-medium text-theme-text-primary"
                 >
                   Password
                 </label>
                 <input
                   name="password"
                   type="password"
-                  className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="border-none bg-theme-settings-input-bg text-theme-text-primary placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="Your password"
                   required={true}
                   minLength={8}
@@ -76,16 +76,16 @@ export default function NewUserModal() {
                 />
               </div>
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
-              <p className="text-slate-200 text-xs md:text-sm">
+              <p className="text-theme-text-secondary text-xs md:text-sm">
                 After creating your account you will be able to login with these
                 credentials and start using workspaces.
               </p>
             </div>
           </div>
-          <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+          <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-theme-modal-border">
             <button
               type="submit"
-              className="w-full transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800 text-center justify-center"
+              className="w-full transition-all duration-300 border border-theme-text-primary px-4 py-2 rounded-lg text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-theme-text-primary hover:text-theme-bg-primary focus:ring-gray-800 text-center justify-center"
             >
               Accept Invitation
             </button>

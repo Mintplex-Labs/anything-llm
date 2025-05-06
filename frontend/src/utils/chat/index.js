@@ -1,4 +1,5 @@
 import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
+import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
 
 // For handling of chat responses in the frontend by their various types.
@@ -17,8 +18,10 @@ export default function handleChat(
     sources = [],
     error,
     close,
+    animate = false,
     chatId = null,
     action = null,
+    metrics = {},
   } = chatResult;
 
   if (type === "abort" || type === "statusResponse") {
@@ -33,8 +36,9 @@ export default function handleChat(
         sources,
         closed: true,
         error,
-        animate: false,
+        animate,
         pending: false,
+        metrics,
       },
     ]);
     _chatHistory.push({
@@ -45,8 +49,9 @@ export default function handleChat(
       sources,
       closed: true,
       error,
-      animate: false,
+      animate,
       pending: false,
+      metrics,
     });
   } else if (type === "textResponse") {
     setLoadingResponse(false);
@@ -62,6 +67,7 @@ export default function handleChat(
         animate: !close,
         pending: false,
         chatId,
+        metrics,
       },
     ]);
     _chatHistory.push({
@@ -74,21 +80,44 @@ export default function handleChat(
       animate: !close,
       pending: false,
       chatId,
+      metrics,
     });
-  } else if (type === "textResponseChunk") {
+    emitAssistantMessageCompleteEvent(chatId);
+  } else if (
+    type === "textResponseChunk" ||
+    type === "finalizeResponseStream"
+  ) {
     const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
     if (chatIdx !== -1) {
       const existingHistory = { ..._chatHistory[chatIdx] };
-      const updatedHistory = {
-        ...existingHistory,
-        content: existingHistory.content + textResponse,
-        sources,
-        error,
-        closed: close,
-        animate: !close,
-        pending: false,
-        chatId,
-      };
+      let updatedHistory;
+
+      // If the response is finalized, we can set the loading state to false.
+      // and append the metrics to the history.
+      if (type === "finalizeResponseStream") {
+        updatedHistory = {
+          ...existingHistory,
+          closed: close,
+          animate: !close,
+          pending: false,
+          chatId,
+          metrics,
+        };
+        setLoadingResponse(false);
+        emitAssistantMessageCompleteEvent(chatId);
+      } else {
+        updatedHistory = {
+          ...existingHistory,
+          content: existingHistory.content + textResponse,
+          sources,
+          error,
+          closed: close,
+          animate: !close,
+          pending: false,
+          chatId,
+          metrics,
+        };
+      }
       _chatHistory[chatIdx] = updatedHistory;
     } else {
       _chatHistory.push({
@@ -101,6 +130,7 @@ export default function handleChat(
         animate: !close,
         pending: false,
         chatId,
+        metrics,
       });
     }
     setChatHistory([..._chatHistory]);
@@ -125,6 +155,7 @@ export default function handleChat(
       error: null,
       animate: false,
       pending: false,
+      metrics,
     };
     _chatHistory[chatIdx] = updatedHistory;
 

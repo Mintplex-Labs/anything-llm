@@ -11,9 +11,9 @@ import {
   PencilSimpleLine,
   Nut,
   Toolbox,
+  Globe,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
-import { USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
 import { Link } from "react-router-dom";
@@ -47,10 +47,10 @@ export default function SettingsSidebar() {
   if (isMobile) {
     return (
       <>
-        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-sidebar text-slate-200 shadow-lg h-16">
+        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-white text-theme-text-secondary shadow-lg h-16">
           <button
             onClick={() => setShowSidebar(true)}
-            className="rounded-md p-2 flex items-center justify-center text-slate-200"
+            className="rounded-md p-2 flex items-center justify-center text-theme-text-secondary"
           >
             <List className="h-6 w-6" />
           </button>
@@ -75,12 +75,12 @@ export default function SettingsSidebar() {
               showBgOverlay
                 ? "transition-all opacity-1"
                 : "transition-none opacity-0"
-            }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
+            }  duration-500 fixed top-0 left-0 bg-theme-bg-secondary bg-opacity-75 w-screen h-screen`}
             onClick={() => setShowSidebar(false)}
           />
           <div
             ref={sidebarRef}
-            className="h-[100vh] fixed top-0 left-0 rounded-r-[26px] bg-sidebar w-[80%] p-[18px]"
+            className="h-[100vh] fixed top-0 left-0 rounded-r-[26px] bg-theme-bg-sidebar w-[80%] p-[18px]"
           >
             <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
               {/* Header Information */}
@@ -96,7 +96,7 @@ export default function SettingsSidebar() {
                 <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
                   <a
                     href={paths.home()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
                     <House className="h-4 w-4" />
                   </a>
@@ -105,7 +105,7 @@ export default function SettingsSidebar() {
 
               {/* Primary Body */}
               <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
-                <div className="h-auto md:sidebar-items md:dark:sidebar-items">
+                <div className="h-auto md:sidebar-items">
                   <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} t={t} />
                     <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
@@ -115,14 +115,14 @@ export default function SettingsSidebar() {
                         user?.hasOwnProperty("role") && user.role !== "admin"
                       }
                       to={paths.settings.privacy()}
-                      className="text-darker hover:text-white text-xs leading-[18px] mx-3"
+                      className="text-theme-text-secondary hover:text-white text-xs leading-[18px] mx-3"
                     >
                       {t("settings.privacy")}
                     </Link>
                   </div>
                 </div>
               </div>
-              <div className="absolute bottom-2 left-0 right-0 pt-2 bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
+              <div className="absolute bottom-2 left-0 right-0 pt-2 bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
                 <Footer />
               </div>
             </div>
@@ -148,10 +148,10 @@ export default function SettingsSidebar() {
         </Link>
         <div
           ref={sidebarRef}
-          className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+          className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
-            <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
+            <div className="text-theme-text-secondary text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
               {t("settings.title")}
             </div>
             <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
@@ -165,14 +165,14 @@ export default function SettingsSidebar() {
                       user?.hasOwnProperty("role") && user.role !== "admin"
                     }
                     to={paths.settings.privacy()}
-                    className="text-darker hover:text-white text-xs leading-[18px] mx-3"
+                    className="text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary text-xs leading-[18px] mx-3"
                   >
                     {t("settings.privacy")}
                   </Link>
                 </div>
               </div>
             </div>
-            <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
+            <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
               <Footer />
             </div>
           </div>
@@ -201,7 +201,7 @@ function SupportEmail() {
   return (
     <Link
       to={supportEmail}
-      className="text-darker hover:text-white text-xs leading-[18px] mx-3 mt-1"
+      className="text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary text-xs leading-[18px] mx-3 mt-1"
     >
       {t("settings.contact")}
     </Link>
@@ -293,12 +293,53 @@ const SidebarOptions = ({ user = null, t }) => (
           roles={["admin"]}
         />
         <Option
+          btnText="Community Hub"
+          icon={<Globe className="h-5 w-5 flex-shrink-0" />}
+          childOptions={[
+            {
+              btnText: "Explore Trending",
+              href: paths.communityHub.trending(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
+              btnText: "Your Account",
+              href: paths.communityHub.authentication(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
+              btnText: "Import Item",
+              href: paths.communityHub.importItem(),
+              flex: true,
+              roles: ["admin"],
+            },
+          ]}
+        />
+        <Option
           btnText={t("settings.customization")}
           icon={<PencilSimpleLine className="h-5 w-5 flex-shrink-0" />}
-          href={paths.settings.appearance()}
           user={user}
-          flex={true}
-          roles={["admin", "manager"]}
+          childOptions={[
+            {
+              btnText: t("settings.interface"),
+              href: paths.settings.interface(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
+            {
+              btnText: t("settings.branding"),
+              href: paths.settings.branding(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
+            {
+              btnText: t("settings.chat"),
+              href: paths.settings.chat(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
+          ]}
         />
         <Option
           btnText={t("settings.tools")}
@@ -327,6 +368,12 @@ const SidebarOptions = ({ user = null, t }) => (
             {
               btnText: t("settings.api-keys"),
               href: paths.settings.apiKeys(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
+              btnText: t("settings.system-prompt-variables"),
+              href: paths.settings.systemPromptVariables(),
               flex: true,
               roles: ["admin"],
             },

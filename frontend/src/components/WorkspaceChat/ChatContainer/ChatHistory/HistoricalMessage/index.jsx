@@ -5,14 +5,18 @@ import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
 import { userFromStorage } from "@/utils/request";
 import Citations from "../Citation";
-import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { v4 } from "uuid";
-import createDOMPurify from "dompurify";
+import DOMPurify from "@/utils/chat/purify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
 import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
 import TTSMessage from "./Actions/TTSButton";
+import {
+  THOUGHT_REGEX_CLOSE,
+  THOUGHT_REGEX_COMPLETE,
+  THOUGHT_REGEX_OPEN,
+  ThoughtChainComponent,
+} from "../ThoughtContainer";
 
-const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = ({
   uuid = v4(),
   message,
@@ -27,6 +31,8 @@ const HistoricalMessage = ({
   regenerateMessage,
   saveEditedMessage,
   forkThread,
+  metrics = {},
+  alignmentCls = "",
 }) => {
   const { isEditing } = useEditMessage({ chatId, role });
   const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
@@ -43,12 +49,10 @@ const HistoricalMessage = ({
     return (
       <div
         key={uuid}
-        className={`flex justify-center items-end w-full ${
-          role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-        }`}
+        className={`flex justify-center items-end w-full bg-theme-bg-chat`}
       >
         <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-          <div className="flex gap-x-5">
+          <div className={`flex gap-x-5 ${alignmentCls}`}>
             <ProfileImage role={role} workspace={workspace} />
             <div className="p-2 rounded-lg bg-red-50 text-red-500">
               <span className="inline-block">
@@ -66,18 +70,17 @@ const HistoricalMessage = ({
   }
 
   if (completeDelete) return null;
+
   return (
     <div
       key={uuid}
       onAnimationEnd={onEndAnimation}
       className={`${
         isDeleted ? "animate-remove" : ""
-      } flex justify-center items-end w-full group ${
-        role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-      }`}
+      } flex justify-center items-end w-full group bg-theme-bg-chat`}
     >
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-        <div className="flex gap-x-5">
+        <div className={`flex gap-x-5 ${alignmentCls}`}>
           <div className="flex flex-col items-center">
             <ProfileImage role={role} workspace={workspace} />
             <div className="mt-1 -mb-10">
@@ -100,12 +103,11 @@ const HistoricalMessage = ({
               saveChanges={saveEditedMessage}
             />
           ) : (
-            <div className="overflow-x-scroll break-words no-scroll">
-              <span
-                className="flex flex-col gap-y-1"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(renderMarkdown(message)),
-                }}
+            <div className="break-words">
+              <RenderChatContent
+                role={role}
+                message={message}
+                expanded={isLastMessage}
               />
               <ChatAttachments attachments={attachments} />
             </div>
@@ -122,6 +124,8 @@ const HistoricalMessage = ({
             isEditing={isEditing}
             role={role}
             forkThread={forkThread}
+            metrics={metrics}
+            alignmentCls={alignmentCls}
           />
         </div>
         {role === "assistant" && <Citations sources={sources} />}
@@ -182,3 +186,62 @@ function ChatAttachments({ attachments = [] }) {
     </div>
   );
 }
+
+const RenderChatContent = memo(
+  ({ role, message, expanded = false }) => {
+    // If the message is not from the assistant, we can render it directly
+    // as normal since the user cannot think (lol)
+    if (role !== "assistant")
+      return (
+        <span
+          className="flex flex-col gap-y-1"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(renderMarkdown(message)),
+          }}
+        />
+      );
+    let thoughtChain = null;
+    let msgToRender = message;
+
+    // If the message is a perfect thought chain, we can render it directly
+    // Complete == open and close tags match perfectly.
+    if (message.match(THOUGHT_REGEX_COMPLETE)) {
+      thoughtChain = message.match(THOUGHT_REGEX_COMPLETE)?.[0];
+      msgToRender = message.replace(THOUGHT_REGEX_COMPLETE, "");
+    }
+
+    // If the message is a thought chain but not a complete thought chain (matching opening tags but not closing tags),
+    // we can render it as a thought chain if we can at least find a closing tag
+    // This can occur when the assistant starts with <thinking> and then <response>'s later.
+    if (
+      message.match(THOUGHT_REGEX_OPEN) &&
+      message.match(THOUGHT_REGEX_CLOSE)
+    ) {
+      const closingTag = message.match(THOUGHT_REGEX_CLOSE)?.[0];
+      const splitMessage = message.split(closingTag);
+      thoughtChain = splitMessage[0] + closingTag;
+      msgToRender = splitMessage[1];
+    }
+
+    return (
+      <>
+        {thoughtChain && (
+          <ThoughtChainComponent content={thoughtChain} expanded={expanded} />
+        )}
+        <span
+          className="flex flex-col gap-y-1"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
+          }}
+        />
+      </>
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.role === nextProps.role &&
+      prevProps.message === nextProps.message &&
+      prevProps.expanded === nextProps.expanded
+    );
+  }
+);

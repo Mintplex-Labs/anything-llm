@@ -3,10 +3,14 @@ const { v4: uuidv4 } = require("uuid");
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
@@ -44,6 +48,33 @@ class OpenRouterLLM {
       fs.mkdirSync(cacheFolder, { recursive: true });
     this.cacheModelPath = path.resolve(cacheFolder, "models.json");
     this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+    this.log("Initialized with model:", this.model);
+  }
+
+  /**
+   * Returns true if the model is a Perplexity model.
+   * OpenRouter has support for a lot of models and we have some special handling for Perplexity models
+   * that support in-line citations.
+   * @returns {boolean}
+   */
+  get isPerplexityModel() {
+    return this.model.startsWith("perplexity/");
+  }
+
+  /**
+   * Generic formatting of a token for the following use cases:
+   * - Perplexity models that return inline citations in the token text
+   * @param {{token: string, citations: string[]}} options - The token text and citations.
+   * @returns {string} - The formatted token text.
+   */
+  enrichToken({ token, citations = [] }) {
+    if (!Array.isArray(citations) || citations.length === 0) return token;
+    return token.replace(/\[(\d+)\]/g, (match, index) => {
+      const citationIndex = parseInt(index) - 1;
+      return citations[citationIndex]
+        ? `[[${index}](${citations[citationIndex]})]`
+        : match;
+    });
   }
 
   log(text, ...args) {
@@ -159,8 +190,19 @@ class OpenRouterLLM {
         },
       });
     }
-    console.log(content.flat());
     return content.flat();
+  }
+
+  /**
+   * Parses and prepends reasoning from the response and returns the full text response.
+   * @param {Object} response
+   * @returns {string}
+   */
+  #parseReasoningFromResponse({ message }) {
+    let textResponse = message?.content;
+    if (!!message?.reasoning && message.reasoning.trim().length > 0)
+      textResponse = `<think>${message.reasoning}</think>${textResponse}`;
+    return textResponse;
   }
 
   constructPrompt({
@@ -176,7 +218,7 @@ class OpenRouterLLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),
@@ -190,19 +232,39 @@ class OpenRouterLLM {
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
       );
 
-    const result = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        temperature,
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature,
+          // This is an OpenRouter specific option that allows us to get the reasoning text
+          // before the token text.
+          include_reasoning: true,
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
-      return null;
-    return result.choices[0].message.content;
+    if (
+      !result?.output?.hasOwnProperty("choices") ||
+      result?.output?.choices?.length === 0
+    )
+      throw new Error(
+        `Invalid response body returned from OpenRouter: ${result.output?.error?.message || "Unknown error"} ${result.output?.error?.code || "Unknown code"}`
+      );
+
+    return {
+      textResponse: this.#parseReasoningFromResponse(result.output.choices[0]),
+      metrics: {
+        prompt_tokens: result.output.usage.prompt_tokens || 0,
+        completion_tokens: result.output.usage.completion_tokens || 0,
+        total_tokens: result.output.usage.total_tokens || 0,
+        outputTps: result.output.usage.completion_tokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -211,28 +273,56 @@ class OpenRouterLLM {
         `OpenRouter chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      temperature,
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+        // This is an OpenRouter specific option that allows us to get the reasoning text
+        // before the token text.
+        include_reasoning: true,
+      }),
+      messages
+      // We have to manually count the tokens
+      // OpenRouter has a ton of providers and they all can return slightly differently
+      // some return chunk.usage on STOP, some do it after stop, its inconsistent.
+      // So it is possible reported metrics are inaccurate since we cannot reliably
+      // catch the metrics before resolving the stream - so we just pretend this functionality
+      // is not available.
+    );
+
+    return measuredStreamRequest;
   }
 
+  /**
+   * Handles the default stream response for a chat.
+   * @param {import("express").Response} response
+   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream
+   * @param {Object} responseProps
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
     const timeoutThresholdMs = this.timeout;
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      let reasoningText = "";
       let lastChunkTime = null; // null when first token is still not received.
+      let pplxCitations = []; // Array of inline citations for Perplexity models (if applicable)
+      let isPerplexity = this.isPerplexityModel;
 
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement({
+          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+        });
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       // NOTICE: Not all OpenRouter models will return a stop reason
@@ -247,6 +337,7 @@ class OpenRouterLLM {
 
         const now = Number(new Date());
         const diffMs = now - lastChunkTime;
+
         if (diffMs >= timeoutThresholdMs) {
           console.log(
             `OpenRouter stream did not self-close and has been stale for >${timeoutThresholdMs}ms. Closing response stream.`
@@ -261,6 +352,9 @@ class OpenRouterLLM {
           });
           clearInterval(timeoutCheck);
           response.removeListener("close", handleAbort);
+          stream?.endMeasurement({
+            completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+          });
           resolve(fullText);
         }
       }, 500);
@@ -269,15 +363,79 @@ class OpenRouterLLM {
         for await (const chunk of stream) {
           const message = chunk?.choices?.[0];
           const token = message?.delta?.content;
+          const reasoningToken = message?.delta?.reasoning;
           lastChunkTime = Number(new Date());
 
-          if (token) {
-            fullText += token;
+          // Some models will return citations (e.g. Perplexity) - we should preserve them for inline citations if applicable.
+          if (
+            isPerplexity &&
+            Array.isArray(chunk?.citations) &&
+            chunk?.citations?.length !== 0
+          )
+            pplxCitations.push(...chunk.citations);
+
+          // Reasoning models will always return the reasoning text before the token text.
+          // can be null or ''
+          if (reasoningToken) {
+            const formattedReasoningToken = this.enrichToken({
+              token: reasoningToken,
+              citations: pplxCitations,
+            });
+
+            // If the reasoning text is empty (''), we need to initialize it
+            // and send the first chunk of reasoning text.
+            if (reasoningText.length === 0) {
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: `<think>${formattedReasoningToken}`,
+                close: false,
+                error: false,
+              });
+              reasoningText += `<think>${formattedReasoningToken}`;
+              continue;
+            } else {
+              // If the reasoning text is not empty, we need to append the reasoning text
+              // to the existing reasoning text.
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: formattedReasoningToken,
+                close: false,
+                error: false,
+              });
+              reasoningText += formattedReasoningToken;
+            }
+          }
+
+          // If the reasoning text is not empty, but the reasoning token is empty
+          // and the token text is not empty we need to close the reasoning text and begin sending the token text.
+          if (!!reasoningText && !reasoningToken && token) {
             writeResponseChunk(response, {
               uuid,
               sources: [],
               type: "textResponseChunk",
-              textResponse: token,
+              textResponse: `</think>`,
+              close: false,
+              error: false,
+            });
+            fullText += `${reasoningText}</think>`;
+            reasoningText = "";
+          }
+
+          if (token) {
+            const formattedToken = this.enrichToken({
+              token,
+              citations: pplxCitations,
+            });
+            fullText += formattedToken;
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: formattedToken,
               close: false,
               error: false,
             });
@@ -293,6 +451,10 @@ class OpenRouterLLM {
               error: false,
             });
             response.removeListener("close", handleAbort);
+            clearInterval(timeoutCheck);
+            stream?.endMeasurement({
+              completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+            });
             resolve(fullText);
           }
         }
@@ -306,6 +468,10 @@ class OpenRouterLLM {
           error: e.message,
         });
         response.removeListener("close", handleAbort);
+        clearInterval(timeoutCheck);
+        stream?.endMeasurement({
+          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
+        });
         resolve(fullText);
       }
     });

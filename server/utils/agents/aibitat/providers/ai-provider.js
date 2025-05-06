@@ -121,7 +121,10 @@ class Provider {
           region: process.env.AWS_BEDROCK_LLM_REGION,
           ...config,
         };
-        if (process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID && process.env.AWS_BEDROCK_LLM_ACCESS_KEY) {
+        if (
+          process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID &&
+          process.env.AWS_BEDROCK_LLM_ACCESS_KEY
+        ) {
           bedrockConfig.credentials = {
             accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
             secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
@@ -155,6 +158,30 @@ class Provider {
             baseURL: "https://api.x.ai/v1",
           },
           apiKey: process.env.XAI_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "novita":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.novita.ai/v3/openai",
+          },
+          apiKey: process.env.NOVITA_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "ppio":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.ppinfra.com/v3/openai",
+          },
+          apiKey: process.env.PPIO_API_KEY ?? null,
+          ...config,
+        });
+      case "gemini":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+          },
+          apiKey: process.env.GEMINI_API_KEY ?? null,
           ...config,
         });
 
@@ -209,12 +236,12 @@ class Provider {
           apiKey: process.env.LITE_LLM_API_KEY ?? null,
           ...config,
         });
-      case "novita":
+      case "nvidia-nim":
         return new ChatOpenAI({
           configuration: {
-            baseURL: "https://api.novita.ai/v3/openai",
+            baseURL: process.env.NVIDIA_NIM_LLM_BASE_PATH,
           },
-          apiKey: process.env.NOVITA_LLM_API_KEY ?? null,
+          apiKey: null,
           ...config,
         });
 

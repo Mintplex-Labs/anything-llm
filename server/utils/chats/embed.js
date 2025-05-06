@@ -54,6 +54,7 @@ async function streamChatWithForEmbed(
   }
 
   let completeText;
+  let metrics = {};
   let contextTexts = [];
   let sources = [];
   let pinnedDocIdentifiers = [];
@@ -92,6 +93,7 @@ async function streamChatWithForEmbed(
           similarityThreshold: embed.workspace?.similarityThreshold,
           topN: embed.workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
+          rerank: embed.workspace?.vectorSearchMode === "rerank",
         })
       : {
           contextTexts: [],
@@ -150,7 +152,7 @@ async function streamChatWithForEmbed(
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: chatPrompt(embed.workspace),
+      systemPrompt: await chatPrompt(embed.workspace, username),
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -164,9 +166,12 @@ async function streamChatWithForEmbed(
     console.log(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
-    completeText = await LLMConnector.getChatCompletion(messages, {
-      temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
-    });
+    const { textResponse, metrics: performanceMetrics } =
+      await LLMConnector.getChatCompletion(messages, {
+        temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      });
+    completeText = textResponse;
+    metrics = performanceMetrics;
     writeResponseChunk(response, {
       uuid,
       sources: [],
@@ -183,12 +188,13 @@ async function streamChatWithForEmbed(
       uuid,
       sources: [],
     });
+    metrics = stream.metrics;
   }
 
   await EmbedChats.new({
     embedId: embed.id,
     prompt: message,
-    response: { text: completeText, type: chatMode, sources },
+    response: { text: completeText, type: chatMode, sources, metrics },
     connection_information: response.locals.connection
       ? {
           ...response.locals.connection,
@@ -204,7 +210,7 @@ async function streamChatWithForEmbed(
  * @param {string} sessionId the session id of the user from embed widget
  * @param {Object} embed the embed config object
  * @param {Number} messageLimit the number of messages to return
- * @returns {Promise<{rawHistory: import("@prisma/client").embed_chats[], chatHistory: {role: string, content: string}[]}>
+ * @returns {Promise<{rawHistory: import("@prisma/client").embed_chats[], chatHistory: {role: string, content: string, attachments?: Object[]}[]}>
  */
 async function recentEmbedChatHistory(sessionId, embed, messageLimit = 20) {
   const rawHistory = (

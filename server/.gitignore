@@ -9,6 +9,9 @@ storage/vector-cache/*.json
 storage/exports
 storage/imports
 storage/plugins/agent-skills/*
+storage/plugins/agent-flows/*
+storage/plugins/office-extensions/*
+storage/plugins/anythingllm_mcp_servers.json
 !storage/documents/DOCUMENTS.md
 logs/server.log
 *.db

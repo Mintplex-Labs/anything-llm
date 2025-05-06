@@ -1,9 +1,13 @@
-const { StringOutputParser } = require("@langchain/core/output_parsers");
 const {
   writeResponseChunk,
   clientAbortedHandler,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const { Ollama } = require("ollama");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -11,6 +15,7 @@ class OllamaAILLM {
     if (!process.env.OLLAMA_BASE_PATH)
       throw new Error("No Ollama Base Path was set.");
 
+    this.authToken = process.env.OLLAMA_AUTH_TOKEN;
     this.basePath = process.env.OLLAMA_BASE_PATH;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
     this.performanceMode = process.env.OLLAMA_PERFORMANCE_MODE || "base";
@@ -23,47 +28,19 @@ class OllamaAILLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
+    const headers = this.authToken
+      ? { Authorization: `Bearer ${this.authToken}` }
+      : {};
+    this.client = new Ollama({ host: this.basePath, headers: headers });
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.#log(
+      `OllamaAILLM initialized with\nmodel: ${this.model}\nperf: ${this.performanceMode}\nn_ctx: ${this.promptWindowLimit()}`
+    );
   }
 
-  #ollamaClient({ temperature = 0.07 }) {
-    const { ChatOllama } = require("@langchain/community/chat_models/ollama");
-    return new ChatOllama({
-      baseUrl: this.basePath,
-      model: this.model,
-      keepAlive: this.keepAlive,
-      useMLock: true,
-      // There are currently only two performance settings so if its not "base" - its max context.
-      ...(this.performanceMode === "base"
-        ? {}
-        : { numCtx: this.promptWindowLimit() }),
-      temperature,
-    });
-  }
-
-  // For streaming we use Langchain's wrapper to handle weird chunks
-  // or otherwise absorb headaches that can arise from Ollama models
-  #convertToLangchainPrototypes(chats = []) {
-    const {
-      HumanMessage,
-      SystemMessage,
-      AIMessage,
-    } = require("@langchain/core/messages");
-    const langchainChats = [];
-    const roleToMessageMap = {
-      system: SystemMessage,
-      user: HumanMessage,
-      assistant: AIMessage,
-    };
-
-    for (const chat of chats) {
-      if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
-      const MessageClass = roleToMessageMap[chat.role];
-      langchainChats.push(new MessageClass({ content: chat.content }));
-    }
-
-    return langchainChats;
+  #log(text, ...args) {
+    console.log(`\x1b[32m[Ollama]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -105,21 +82,29 @@ class OllamaAILLM {
   /**
    * Generates appropriate content array for a message + attachments.
    * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
-   * @returns {string|object[]}
+   * @returns {{content: string, images: string[]}}
    */
   #generateContent({ userPrompt, attachments = [] }) {
-    if (!attachments.length) {
-      return { content: userPrompt };
-    }
+    if (!attachments.length) return { content: userPrompt };
+    const images = attachments.map(
+      (attachment) => attachment.contentString.split("base64,").slice(-1)[0]
+    );
+    return { content: userPrompt, images };
+  }
 
-    const content = [{ type: "text", text: userPrompt }];
-    for (let attachment of attachments) {
-      content.push({
-        type: "image_url",
-        image_url: attachment.contentString,
-      });
+  /**
+   * Handles errors from the Ollama API to make them more user friendly.
+   * @param {Error} e
+   */
+  #errorHandler(e) {
+    switch (e.message) {
+      case "fetch failed":
+        throw new Error(
+          "Your Ollama instance could not be reached or is not responding. Please make sure it is running the API server and your connection information is correct in AnythingLLM."
+        );
+      default:
+        return e;
     }
-    return { content: content.flat() };
   }
 
   /**
@@ -140,7 +125,7 @@ class OllamaAILLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent, "spread"),
       {
         role: "user",
         ...this.#generateContent({ userPrompt, attachments }),
@@ -149,41 +134,103 @@ class OllamaAILLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const model = this.#ollamaClient({ temperature });
-    const textResponse = await model
-      .pipe(new StringOutputParser())
-      .invoke(this.#convertToLangchainPrototypes(messages))
-      .catch((e) => {
-        throw new Error(
-          `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
-        );
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.client
+        .chat({
+          model: this.model,
+          stream: false,
+          messages,
+          keep_alive: this.keepAlive,
+          options: {
+            temperature,
+            use_mlock: true,
+            // There are currently only two performance settings so if its not "base" - its max context.
+            ...(this.performanceMode === "base"
+              ? {}
+              : { num_ctx: this.promptWindowLimit() }),
+          },
+        })
+        .then((res) => {
+          return {
+            content: res.message.content,
+            usage: {
+              prompt_tokens: res.prompt_eval_count,
+              completion_tokens: res.eval_count,
+              total_tokens: res.prompt_eval_count + res.eval_count,
+            },
+          };
+        })
+        .catch((e) => {
+          throw new Error(
+            `Ollama::getChatCompletion failed to communicate with Ollama. ${this.#errorHandler(e).message}`
+          );
+        })
+    );
 
-    if (!textResponse || !textResponse.length)
+    if (!result.output.content || !result.output.content.length)
       throw new Error(`Ollama::getChatCompletion text response was empty.`);
 
-    return textResponse;
+    return {
+      textResponse: result.output.content,
+      metrics: {
+        prompt_tokens: result.output.usage.prompt_tokens,
+        completion_tokens: result.output.usage.completion_tokens,
+        total_tokens: result.output.usage.total_tokens,
+        outputTps: result.output.usage.completion_tokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const model = this.#ollamaClient({ temperature });
-    const stream = await model
-      .pipe(new StringOutputParser())
-      .stream(this.#convertToLangchainPrototypes(messages));
-    return stream;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.client.chat({
+        model: this.model,
+        stream: true,
+        messages,
+        keep_alive: this.keepAlive,
+        options: {
+          temperature,
+          use_mlock: true,
+          // There are currently only two performance settings so if its not "base" - its max context.
+          ...(this.performanceMode === "base"
+            ? {}
+            : { num_ctx: this.promptWindowLimit() }),
+        },
+      }),
+      messages,
+      false
+    ).catch((e) => {
+      throw this.#errorHandler(e);
+    });
+    return measuredStreamRequest;
   }
 
+  /**
+   * Handles streaming responses from Ollama.
+   * @param {import("express").Response} response
+   * @param {import("../../helpers/chat/LLMPerformanceMonitor").MonitoredStream} stream
+   * @param {import("express").Request} request
+   * @returns {Promise<string>}
+   */
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
       let fullText = "";
+      let usage = {
+        prompt_tokens: 0,
+        completion_tokens: 0,
+      };
 
       // Establish listener to early-abort a streaming response
       // in case things go sideways or the user does not like the response.
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      const handleAbort = () => {
+        stream?.endMeasurement(usage);
+        clientAbortedHandler(resolve, fullText);
+      };
       response.on("close", handleAbort);
 
       try {
@@ -193,30 +240,36 @@ class OllamaAILLM {
               "Stream returned undefined chunk. Aborting reply - check model provider logs."
             );
 
-          const content = chunk.hasOwnProperty("content")
-            ? chunk.content
-            : chunk;
-          fullText += content;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: content,
-            close: false,
-            error: false,
-          });
-        }
+          if (chunk.done) {
+            usage.prompt_tokens = chunk.prompt_eval_count;
+            usage.completion_tokens = chunk.eval_count;
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: "",
+              close: true,
+              error: false,
+            });
+            response.removeListener("close", handleAbort);
+            stream?.endMeasurement(usage);
+            resolve(fullText);
+            break;
+          }
 
-        writeResponseChunk(response, {
-          uuid,
-          sources,
-          type: "textResponseChunk",
-          textResponse: "",
-          close: true,
-          error: false,
-        });
-        response.removeListener("close", handleAbort);
-        resolve(fullText);
+          if (chunk.hasOwnProperty("message")) {
+            const content = chunk.message.content;
+            fullText += content;
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: content,
+              close: false,
+              error: false,
+            });
+          }
+        }
       } catch (error) {
         writeResponseChunk(response, {
           uuid,
@@ -229,6 +282,8 @@ class OllamaAILLM {
           }`,
         });
         response.removeListener("close", handleAbort);
+        stream?.endMeasurement(usage);
+        resolve(fullText);
       }
     });
   }

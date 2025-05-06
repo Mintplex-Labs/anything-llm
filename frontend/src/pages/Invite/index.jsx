@@ -32,7 +32,7 @@ export default function InvitePage() {
 
   if (result.status === "loading") {
     return (
-      <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+      <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
         <FullScreenLoader />
       </div>
     );
@@ -40,14 +40,14 @@ export default function InvitePage() {
 
   if (result.status === "invalid") {
     return (
-      <div className="w-screen h-screen overflow-hidden bg-sidebar flex items-center justify-center">
+      <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex items-center justify-center">
         <p className="text-red-400 text-lg">{result.message}</p>
       </div>
     );
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex items-center justify-center">
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex items-center justify-center">
       <ModalWrapper isOpen={true}>
         <NewUserModal />
       </ModalWrapper>

@@ -1,25 +1,26 @@
 import { useEffect, useRef, useState } from "react";
-import SlashCommandIcon from "./icons/slash-commands-icon.svg";
+import SlashCommandIcon from "./icons/SlashCommandIcon";
 import { Tooltip } from "react-tooltip";
 import ResetCommand from "./reset";
 import EndAgentSession from "./endAgentSession";
 import SlashPresets from "./SlashPresets";
+import { useTranslation } from "react-i18next";
 
 export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
+  const { t } = useTranslation();
   return (
     <div
       id="slash-cmd-btn"
       data-tooltip-id="tooltip-slash-cmd-btn"
-      data-tooltip-content="View all available slash commands for chatting."
+      data-tooltip-content={t("chat_window.slash")}
       onClick={() => setShowSlashCommand(!showing)}
-      className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
+      className={`flex justify-center items-center cursor-pointer ${
         showing ? "!opacity-100" : ""
       }`}
     >
-      <img
-        src={SlashCommandIcon}
-        className="w-6 h-6 pointer-events-none"
-        alt="Slash commands button"
+      <SlashCommandIcon
+        color="var(--theme-sidebar-footer-icon-fill)"
+        className={`w-[20px] h-[20px] pointer-events-none opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60`}
       />
       <Tooltip
         id="tooltip-slash-cmd-btn"
@@ -31,7 +32,7 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
   );
 }
 
-export function SlashCommands({ showing, setShowing, sendCommand }) {
+export function SlashCommands({ showing, setShowing, sendCommand, promptRef }) {
   const cmdRef = useRef(null);
   useEffect(() => {
     function listenForOutsideClick() {
@@ -53,11 +54,15 @@ export function SlashCommands({ showing, setShowing, sendCommand }) {
       <div className="w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4">
         <div
           ref={cmdRef}
-          className="w-[600px] bg-zinc-800 rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[300px] no-scroll"
+          className="w-[600px] bg-theme-action-menu-bg rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[300px] no-scroll"
         >
           <ResetCommand sendCommand={sendCommand} setShowing={setShowing} />
           <EndAgentSession sendCommand={sendCommand} setShowing={setShowing} />
-          <SlashPresets sendCommand={sendCommand} setShowing={setShowing} />
+          <SlashPresets
+            sendCommand={sendCommand}
+            setShowing={setShowing}
+            promptRef={promptRef}
+          />
         </div>
       </div>
     </div>

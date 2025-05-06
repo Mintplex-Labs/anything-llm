@@ -1,8 +1,12 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -27,8 +31,8 @@ class OpenAiLLM {
    * Check if the model is an o1 model.
    * @returns {boolean}
    */
-  get isO1Model() {
-    return this.model.startsWith("o1");
+  get isOTypeModel() {
+    return this.model.startsWith("o");
   }
 
   #appendContext(contextTexts = []) {
@@ -44,7 +48,8 @@ class OpenAiLLM {
   }
 
   streamingEnabled() {
-    if (this.isO1Model) return false;
+    // o3-mini is the only o-type model that supports streaming
+    if (this.isOTypeModel && this.model !== "o3-mini") return false;
     return "streamGetChatCompletion" in this;
   }
 
@@ -62,7 +67,9 @@ class OpenAiLLM {
   // we don't want to hit the OpenAI api every chat because it will get spammed
   // and introduce latency for no reason.
   async isValidChatCompletionModel(modelName = "") {
-    const isPreset = modelName.toLowerCase().includes("gpt");
+    const isPreset =
+      modelName.toLowerCase().includes("gpt") ||
+      modelName.toLowerCase().startsWith("o");
     if (isPreset) return true;
 
     const model = await this.openai.models
@@ -111,12 +118,12 @@ class OpenAiLLM {
     // in order to combat this, we can use the "user" role as a replacement for now
     // https://community.openai.com/t/o1-models-do-not-support-system-role-in-chat-completion/953880
     const prompt = {
-      role: this.isO1Model ? "user" : "system",
+      role: this.isOTypeModel ? "user" : "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),
@@ -130,19 +137,34 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const result = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        messages,
-        temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
-      })
-      .catch((e) => {
-        throw new Error(e.message);
-      });
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature: this.isOTypeModel ? 1 : temperature, // o1 models only accept temperature 1
+        })
+        .catch((e) => {
+          throw new Error(e.message);
+        })
+    );
 
-    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+    if (
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
+    )
       return null;
-    return result.choices[0].message.content;
+
+    return {
+      textResponse: result.output.choices[0].message.content,
+      metrics: {
+        prompt_tokens: result.output.usage.prompt_tokens || 0,
+        completion_tokens: result.output.usage.completion_tokens || 0,
+        total_tokens: result.output.usage.total_tokens || 0,
+        outputTps: result.output.usage.completion_tokens / result.duration,
+        duration: result.duration,
+      },
+    };
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -151,13 +173,20 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
-      messages,
-      temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
-    });
-    return streamRequest;
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature: this.isOTypeModel ? 1 : temperature, // o1 models only accept temperature 1
+      }),
+      messages
+      // runPromptTokenCalculation: true - We manually count the tokens because OpenAI does not provide them in the stream
+      // since we are not using the OpenAI API version that supports this `stream_options` param.
+      // TODO: implement this once we upgrade to the OpenAI API version that supports this param.
+    );
+
+    return measuredStreamRequest;
   }
 
   handleStream(response, stream, responseProps) {

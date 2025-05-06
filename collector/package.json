@@ -10,8 +10,8 @@
     "node": ">=18.12.1"
   },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
-    "start": "NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./processSingleFile ./processLink ./utils index.js"
   },
   "dependencies": {
@@ -38,7 +38,9 @@
     "openai": "4.38.5",
     "pdf-parse": "^1.1.1",
     "puppeteer": "~21.5.2",
+    "sharp": "^0.33.5",
     "slugify": "^1.6.6",
+    "tesseract.js": "^6.0.0",
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",
@@ -47,6 +49,7 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
-    "prettier": "^2.4.1"
+    "prettier": "^2.4.1",
+    "cross-env": "^7.0.3"
   }
 }

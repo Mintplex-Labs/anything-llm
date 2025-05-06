@@ -2,10 +2,12 @@ const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../http");
 const { isWithin, normalizePath } = require("../files");
+const { CollectorApi } = require("../collectorApi");
 const pluginsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../storage/plugins/agent-skills")
     : path.resolve(process.env.STORAGE_DIR, "plugins", "agent-skills");
+const sharedWebScraper = new CollectorApi();
 
 class ImportedPlugin {
   constructor(config) {
@@ -57,9 +59,9 @@ class ImportedPlugin {
   /**
    * Loads plugins from `plugins` folder in storage that are custom loaded and defined.
    * only loads plugins that are active: true.
-   * @returns {Promise<string[]>} - array of plugin names to be loaded later.
+   * @returns {string[]} - array of plugin names to be loaded later.
    */
-  static async activeImportedPlugins() {
+  static activeImportedPlugins() {
     const plugins = [];
     this.checkPluginFolderExists();
     const folders = fs.readdirSync(path.resolve(pluginsPath));
@@ -125,6 +127,20 @@ class ImportedPlugin {
   }
 
   /**
+   * Deletes a plugin. Removes the entire folder of the object.
+   * @param {string} hubId - The hub ID of the plugin.
+   * @returns {boolean} - True if the plugin was deleted, false otherwise.
+   */
+  static deletePlugin(hubId) {
+    if (!hubId) throw new Error("No plugin hubID passed.");
+    const pluginFolder = path.resolve(pluginsPath, normalizePath(hubId));
+    if (!this.isValidLocation(pluginFolder)) return;
+    fs.rmSync(pluginFolder, { recursive: true });
+    return true;
+  }
+
+  /**
+  /**
    * Validates if the handler.js file exists for the given plugin.
    * @param {string} hubId - The hub ID of the plugin.
    * @returns {boolean} - True if the handler.js file exists, false otherwise.
@@ -170,6 +186,8 @@ class ImportedPlugin {
           description: this.config.description,
           logger: aibitat?.handlerProps?.log || console.log, // Allows plugin to log to the console.
           introspect: aibitat?.introspect || console.log, // Allows plugin to display a "thought" the chat window UI.
+          runtime: "docker",
+          webScraper: sharedWebScraper,
           examples: this.config.examples ?? [],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
@@ -181,6 +199,107 @@ class ImportedPlugin {
         });
       },
     };
+  }
+
+  /**
+   * Imports a community item from a URL.
+   * The community item is a zip file that contains a plugin.json file and handler.js file.
+   * This function will unzip the file and import the plugin into the agent-skills folder
+   * based on the hubId found in the plugin.json file.
+   * The zip file will be downloaded to the pluginsPath folder and then unzipped and finally deleted.
+   * @param {string} url - The signed URL of the community item zip file.
+   * @param {object} item - The community item.
+   * @returns {Promise<object>} - The result of the import.
+   */
+  static async importCommunityItemFromUrl(url, item) {
+    this.checkPluginFolderExists();
+    const hubId = item.id;
+    if (!hubId) return { success: false, error: "No hubId passed to import." };
+
+    const zipFilePath = path.resolve(pluginsPath, `${item.id}.zip`);
+    const pluginFile = item.manifest.files.find(
+      (file) => file.name === "plugin.json"
+    );
+    if (!pluginFile)
+      return {
+        success: false,
+        error: "No plugin.json file found in manifest.",
+      };
+
+    const pluginFolder = path.resolve(pluginsPath, normalizePath(hubId));
+    if (fs.existsSync(pluginFolder))
+      console.log(
+        "ImportedPlugin.importCommunityItemFromUrl - plugin folder already exists - will overwrite"
+      );
+
+    try {
+      const protocol = new URL(url).protocol.replace(":", "");
+      const httpLib = protocol === "https" ? require("https") : require("http");
+
+      const downloadZipFile = new Promise(async (resolve) => {
+        try {
+          console.log(
+            "ImportedPlugin.importCommunityItemFromUrl - downloading asset from ",
+            new URL(url).origin
+          );
+          const zipFile = fs.createWriteStream(zipFilePath);
+          const request = httpLib.get(url, function (response) {
+            response.pipe(zipFile);
+            zipFile.on("finish", () => {
+              console.log(
+                "ImportedPlugin.importCommunityItemFromUrl - downloaded zip file"
+              );
+              resolve(true);
+            });
+          });
+
+          request.on("error", (error) => {
+            console.error(
+              "ImportedPlugin.importCommunityItemFromUrl - error downloading zip file: ",
+              error
+            );
+            resolve(false);
+          });
+        } catch (error) {
+          console.error(
+            "ImportedPlugin.importCommunityItemFromUrl - error downloading zip file: ",
+            error
+          );
+          resolve(false);
+        }
+      });
+
+      const success = await downloadZipFile;
+      if (!success)
+        return { success: false, error: "Failed to download zip file." };
+
+      // Unzip the file to the plugin folder
+      // Note: https://github.com/cthackers/adm-zip?tab=readme-ov-file#electron-original-fs
+      const AdmZip = require("adm-zip");
+      const zip = new AdmZip(zipFilePath);
+      zip.extractAllTo(pluginFolder);
+
+      // We want to make sure specific keys are set to the proper values for
+      // plugin.json so we read and overwrite the file with the proper values.
+      const pluginJsonPath = path.resolve(pluginFolder, "plugin.json");
+      const pluginJson = safeJsonParse(fs.readFileSync(pluginJsonPath, "utf8"));
+      pluginJson.active = false;
+      pluginJson.hubId = hubId;
+      fs.writeFileSync(pluginJsonPath, JSON.stringify(pluginJson, null, 2));
+
+      console.log(
+        `ImportedPlugin.importCommunityItemFromUrl - successfully imported plugin to agent-skills/${hubId}`
+      );
+      return { success: true, error: null };
+    } catch (error) {
+      console.error(
+        "ImportedPlugin.importCommunityItemFromUrl - error: ",
+        error
+      );
+      return { success: false, error: error.message };
+    } finally {
+      if (fs.existsSync(zipFilePath)) fs.unlinkSync(zipFilePath);
+    }
   }
 }
 
