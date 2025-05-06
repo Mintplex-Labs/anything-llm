@@ -1,103 +1,24 @@
-/**
- * AWS Bedrock Language Model Connector using the Converse API.
- * Supports text and multi-modal (text + image) interactions.
- * Handles distinct context window limits and max output token limits.
- */
-
-// Core AWS SDK imports for Bedrock Converse API
 const {
   BedrockRuntimeClient,
   ConverseCommand,
   ConverseStreamCommand,
 } = require("@aws-sdk/client-bedrock-runtime");
-
-// Helper imports from the application
 const {
   writeResponseChunk,
   clientAbortedHandler,
-} = require("../../helpers/chat/responses"); // For streaming responses
-const { NativeEmbedder } = require("../../EmbeddingEngines/native"); // Default embedder
+} = require("../../helpers/chat/responses");
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   LLMPerformanceMonitor,
-} = require("../../helpers/chat/LLMPerformanceMonitor"); // For tracking API call performance
-const { v4: uuidv4 } = require("uuid"); // For generating unique IDs
-const { MODEL_MAP } = require("../modelMap"); // Although imported, not currently used for Bedrock limits
-
-// --- Constants ---
-
-/** @const {string[]} Supported image formats by Bedrock Converse API */
-const SUPPORTED_BEDROCK_IMAGE_FORMATS = ["jpeg", "png", "gif", "webp"];
-/** @const {number} Default maximum tokens to generate in the response. Models often have lower output limits than their total context windows. */
-const DEFAULT_MAX_OUTPUT_TOKENS = 4096;
-/** @const {number} Default total context window size if not specified in environment variables. */
-const DEFAULT_CONTEXT_WINDOW_TOKENS = 8191;
-
-// --- Helper Functions ---
-
-/**
- * Parses a MIME type string (e.g., "image/jpeg") to extract and validate the image format
- * supported by Bedrock Converse. Handles 'image/jpg' as 'jpeg'.
- * @param {string | null | undefined} mimeType - The MIME type string.
- * @returns {string | null} The validated image format (e.g., "jpeg") or null if invalid/unsupported.
- */
-function getImageFormatFromMime(mimeType) {
-  if (!mimeType || typeof mimeType !== "string") {
-    console.warn(
-      `[AWSBedrock] Invalid or missing MIME type provided for attachment.`
-    );
-    return null;
-  }
-  const parts = mimeType.toLowerCase().split("/");
-  if (parts.length !== 2 || parts[0] !== "image") {
-    console.warn(
-      `[AWSBedrock] Invalid MIME type format: "${mimeType}". Expected "image/...".`
-    );
-    return null;
-  }
-
-  let format = parts[1];
-  if (format === "jpg") format = "jpeg"; // Normalize jpg to jpeg
-
-  if (!SUPPORTED_BEDROCK_IMAGE_FORMATS.includes(format)) {
-    console.warn(
-      `[AWSBedrock] Unsupported image format: "${format}" from MIME type "${mimeType}". Supported formats: ${SUPPORTED_BEDROCK_IMAGE_FORMATS.join(
-        ", "
-      )}.`
-    );
-    return null;
-  }
-  return format;
-}
-
-/**
- * Decodes a pure base64 string (without data URI prefix) into a Uint8Array using the atob method.
- * This approach matches the technique previously used by Langchain's implementation.
- * @param {string} base64String - The pure base64 encoded data.
- * @returns {Uint8Array | null} The resulting byte array or null on decoding error.
- */
-function base64ToUint8Array(base64String) {
-  try {
-    const binaryString = atob(base64String); // Decode base64 to binary string
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i); // Convert char code to byte value
-    }
-    return bytes;
-  } catch (e) {
-    console.error(
-      `[AWSBedrock] Error decoding base64 string with atob: ${e.message}`
-    );
-    if (e.name === "InvalidCharacterError") {
-      console.error(
-        "[AWSBedrock] Base64 decoding failed. Ensure input string is valid base64 and does not contain a data URI prefix."
-      );
-    }
-    return null;
-  }
-}
-
-// --- AWSBedrockLLM Class ---
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const { v4: uuidv4 } = require("uuid");
+const {
+  DEFAULT_MAX_OUTPUT_TOKENS,
+  DEFAULT_CONTEXT_WINDOW_TOKENS,
+  SUPPORTED_CONNECTION_METHODS,
+  getImageFormatFromMime,
+  base64ToUint8Array,
+} = require("./utils");
 
 class AWSBedrockLLM {
   /**
@@ -109,6 +30,7 @@ class AWSBedrockLLM {
     "amazon.titan-text-lite-v1",
     "cohere.command-text-v14",
     "cohere.command-light-text-v14",
+    "us.deepseek.r1-v1:0",
     // Add other models here if identified
   ];
 
@@ -119,18 +41,19 @@ class AWSBedrockLLM {
    * @throws {Error} If required environment variables are missing or invalid.
    */
   constructor(embedder = null, modelPreference = null) {
-    // --- Environment Variable Validation ---
     const requiredEnvVars = [
       "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
       "AWS_BEDROCK_LLM_ACCESS_KEY",
       "AWS_BEDROCK_LLM_REGION",
-      "AWS_BEDROCK_LLM_MODEL_PREFERENCE", // Model preference is effectively required
+      "AWS_BEDROCK_LLM_MODEL_PREFERENCE",
     ];
+
+    // Validate required environment variables
     for (const envVar of requiredEnvVars) {
-      if (!process.env[envVar]) {
+      if (!process.env[envVar])
         throw new Error(`Required environment variable ${envVar} is not set.`);
-      }
     }
+
     if (
       process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD === "sessionToken" &&
       !process.env.AWS_BEDROCK_LLM_SESSION_TOKEN
@@ -140,19 +63,16 @@ class AWSBedrockLLM {
       );
     }
 
-    // --- Model and Limits Setup ---
     this.model =
       modelPreference || process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
-    // Get the total context window limit (used for input management)
+
     const contextWindowLimit = this.promptWindowLimit();
-    // Define approximate limits for different parts of the prompt based on the context window
     this.limits = {
       history: Math.floor(contextWindowLimit * 0.15),
       system: Math.floor(contextWindowLimit * 0.15),
-      user: Math.floor(contextWindowLimit * 0.7), // Allow user prompt + context to take the bulk
+      user: Math.floor(contextWindowLimit * 0.7),
     };
 
-    // --- AWS SDK Client Configuration ---
     this.bedrockClient = new BedrockRuntimeClient({
       region: process.env.AWS_BEDROCK_LLM_REGION,
       credentials: {
@@ -164,10 +84,8 @@ class AWSBedrockLLM {
       },
     });
 
-    // --- Other Initializations ---
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7; // Default sampling temperature
-
+    this.defaultTemp = 0.7;
     this.#log(
       `Initialized with model: ${this.model}. Auth: ${this.authMethod}. Context Window: ${contextWindowLimit}.`
     );
@@ -180,17 +98,17 @@ class AWSBedrockLLM {
    */
   get authMethod() {
     const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
-    return ["iam", "sessionToken"].includes(method) ? method : "iam";
+    return SUPPORTED_CONNECTION_METHODS.includes(method) ? method : "iam";
   }
 
   /**
    * Appends context texts to a string with standard formatting.
-   * @param {string[]} [contextTexts=[]] - An array of context text snippets.
+   * @param {string[]} contextTexts - An array of context text snippets.
    * @returns {string} Formatted context string or empty string if no context provided.
    * @private
    */
   #appendContext(contextTexts = []) {
-    if (!Array.isArray(contextTexts) || contextTexts.length === 0) return "";
+    if (!contextTexts?.length) return "";
     return (
       "\nContext:\n" +
       contextTexts
@@ -210,37 +128,38 @@ class AWSBedrockLLM {
   }
 
   /**
+   * Internal logging helper with provider prefix for static methods.
+   * @private
+   */
+  static #slog(text, ...args) {
+    console.log(`\x1b[32m[AWSBedrock]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
    * Indicates if the provider supports streaming responses.
    * @returns {boolean} True.
    */
   streamingEnabled() {
-    return typeof this.streamGetChatCompletion === "function";
+    return "streamGetChatCompletion" in this;
   }
 
   /**
+   * @static
    * Gets the total prompt window limit (total context window: input + output) from the environment variable.
    * This value is used for calculating input limits, NOT for setting the max output tokens in API calls.
-   * @param {string} [_modelName] - The model name (parameter currently unused, reads directly from env var).
-   * @returns {number} The total context window token limit.
-   * @static
-   * @throws {Error} If the AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT environment variable is invalid.
+   * @returns {number} The total context window token limit. Defaults to 8191.
    */
-  static promptWindowLimit(_modelName) {
-    const limitSourceValue = process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT;
-    // Log the value being read (can be commented out in production)
-    // console.log(`[AWSBedrock DEBUG] Reading AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT for prompt window. Value found: ${limitSourceValue} (Type: ${typeof limitSourceValue})`);
-    const limit = limitSourceValue || DEFAULT_CONTEXT_WINDOW_TOKENS; // Use default if not set
-
+  static promptWindowLimit() {
+    const limit =
+      process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT ??
+      DEFAULT_CONTEXT_WINDOW_TOKENS;
     const numericLimit = Number(limit);
     if (isNaN(numericLimit) || numericLimit <= 0) {
-      console.error(
-        `[AWSBedrock ERROR] Invalid AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT found: "${limitSourceValue}". Must be a positive number.`
+      this.#slog(
+        `[AWSBedrock ERROR] Invalid AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT found: "${limitSourceValue}". Must be a positive number - returning default ${DEFAULT_CONTEXT_WINDOW_TOKENS}.`
       );
-      throw new Error(
-        `Invalid AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT set in environment: "${limitSourceValue}"`
-      );
+      return DEFAULT_CONTEXT_WINDOW_TOKENS;
     }
-    // Note: Does not use MODEL_MAP for Bedrock context window. Relies on the specific Bedrock env var.
     return numericLimit;
   }
 
@@ -249,8 +168,7 @@ class AWSBedrockLLM {
    * @returns {number} The token limit.
    */
   promptWindowLimit() {
-    // Delegates to the static method for consistency.
-    return AWSBedrockLLM.promptWindowLimit(this.model);
+    return AWSBedrockLLM.promptWindowLimit();
   }
 
   /**
@@ -261,115 +179,110 @@ class AWSBedrockLLM {
    */
   getMaxOutputTokens() {
     const outputLimitSource = process.env.AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS;
-    let outputLimit = DEFAULT_MAX_OUTPUT_TOKENS; // Start with the class default
-
-    if (outputLimitSource) {
-      const numericOutputLimit = Number(outputLimitSource);
-      // Validate the environment variable value
-      if (!isNaN(numericOutputLimit) && numericOutputLimit > 0) {
-        outputLimit = numericOutputLimit;
-      } else {
-        this.#log(
-          `Invalid AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS value "${outputLimitSource}". Using default ${DEFAULT_MAX_OUTPUT_TOKENS}.`
-        );
-      }
+    if (isNaN(Number(outputLimitSource))) {
+      this.#log(
+        `[AWSBedrock ERROR] Invalid AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS found: "${outputLimitSource}". Must be a positive number - returning default ${DEFAULT_MAX_OUTPUT_TOKENS}.`
+      );
+      return DEFAULT_MAX_OUTPUT_TOKENS;
     }
-    return outputLimit;
+
+    const numericOutputLimit = Number(outputLimitSource);
+    if (numericOutputLimit <= 0) {
+      this.#log(
+        `[AWSBedrock ERROR] Invalid AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS found: "${outputLimitSource}". Must be a greater than 0 - returning default ${DEFAULT_MAX_OUTPUT_TOKENS}.`
+      );
+      return DEFAULT_MAX_OUTPUT_TOKENS;
+    }
+
+    return numericOutputLimit;
+  }
+
+  /** Stubbed method for compatibility with LLM interface. */
+  async isValidChatCompletionModel(_modelName = "") {
+    return true;
   }
 
   /**
-   * Checks if the configured model is valid for chat completion (basic check for Bedrock).
-   * @param {string} [_modelName] - Model name (unused).
-   * @returns {Promise<boolean>} Always true, assuming any configured Bedrock model supports Converse API.
+   * Validates attachments array and returns a new array with valid attachments.
+   * @param {Array<{contentString: string, mime: string}>} attachments - Array of attachments.
+   * @returns {Array<{image: {format: string, source: {bytes: Uint8Array}}>} Array of valid attachments.
+   * @private
    */
-  async isValidChatCompletionModel(_modelName = "") {
-    // Assume valid for Bedrock Converse; more specific checks could be added if needed.
-    return true;
+  #validateAttachments(attachments = []) {
+    if (!Array.isArray(attachments) || !attachments?.length) return [];
+    const validAttachments = [];
+    for (const attachment of attachments) {
+      if (
+        !attachment ||
+        typeof attachment.mime !== "string" ||
+        typeof attachment.contentString !== "string"
+      ) {
+        this.#log("Skipping invalid attachment object.", attachment);
+        continue;
+      }
+
+      // Strip data URI prefix (e.g., "data:image/png;base64,")
+      const base64Data = attachment.contentString.replace(
+        /^data:image\/\w+;base64,/,
+        ""
+      );
+
+      const format = getImageFormatFromMime(attachment.mime);
+      const attachmentInfo = {
+        valid: format !== null,
+        format,
+        imageBytes: base64ToUint8Array(base64Data),
+      };
+
+      if (!attachmentInfo.valid) {
+        this.#log(
+          `Skipping attachment with unsupported/invalid MIME type: ${attachment.mime}`
+        );
+        continue;
+      }
+
+      validAttachments.push({
+        image: {
+          format: format,
+          source: { bytes: attachmentInfo.imageBytes },
+        },
+      });
+    }
+
+    return validAttachments;
   }
 
   /**
    * Generates the Bedrock Converse API content array for a message,
    * processing text and formatting valid image attachments.
    * @param {object} params
-   * @param {string} [params.userPrompt=""] - The text part of the message.
-   * @param {Array<{contentString: string, mime: string}>} [params.attachments=[]] - Array of attachments for the message.
+   * @param {string} params.userPrompt - The text part of the message.
+   * @param {Array<{contentString: string, mime: string}>} params.attachments - Array of attachments for the message.
    * @returns {Array<object>} Array of content blocks (e.g., [{text: "..."}, {image: {...}}]).
    * @private
    */
   #generateContent({ userPrompt = "", attachments = [] }) {
     const content = [];
-
     // Add text block if prompt is not empty
-    if (
-      userPrompt &&
-      typeof userPrompt === "string" &&
-      userPrompt.trim().length > 0
-    ) {
-      content.push({ text: userPrompt });
-    }
+    if (!!userPrompt?.trim()?.length) content.push({ text: userPrompt });
 
-    // Process valid attachments
-    if (Array.isArray(attachments)) {
-      for (const attachment of attachments) {
-        if (
-          !attachment ||
-          typeof attachment.mime !== "string" ||
-          typeof attachment.contentString !== "string"
-        ) {
-          this.#log("Skipping invalid attachment object.", attachment);
-          continue;
-        }
-
-        // Strip data URI prefix (e.g., "data:image/png;base64,")
-        let base64Data = attachment.contentString;
-        const dataUriPrefixMatch = base64Data.match(/^data:image\/\w+;base64,/);
-        if (dataUriPrefixMatch) {
-          base64Data = base64Data.substring(dataUriPrefixMatch[0].length);
-        }
-
-        const format = getImageFormatFromMime(attachment.mime);
-        if (format) {
-          const imageBytes = base64ToUint8Array(base64Data);
-          if (imageBytes) {
-            // Add the image block in the required Bedrock format
-            content.push({
-              image: {
-                format: format,
-                source: { bytes: imageBytes },
-              },
-            });
-          } else {
-            this.#log(
-              `Skipping attachment with mime ${attachment.mime} due to base64 decoding error.`
-            );
-          }
-        } else {
-          this.#log(
-            `Skipping attachment with unsupported/invalid MIME type: ${attachment.mime}`
-          );
-        }
-      }
-    }
+    // Validate attachments and add valid attachments to content
+    const validAttachments = this.#validateAttachments(attachments);
+    if (validAttachments?.length) content.push(...validAttachments);
 
     // Ensure content array is never empty (Bedrock requires at least one block)
-    if (content.length === 0) {
-      this.#log(
-        "Warning: #generateContent resulted in an empty content array. Adding empty text block as fallback."
-      );
-      content.push({ text: "" });
-    }
-
+    if (content.length === 0) content.push({ text: "" });
     return content;
   }
 
   /**
    * Constructs the complete message array in the format expected by the Bedrock Converse API.
    * @param {object} params
-   * @param {string} [params.systemPrompt=""] - The system prompt text.
-   * @param {string[]} [params.contextTexts=[]] - Array of context text snippets.
-   * @param {Array<{role: 'user' | 'assistant', content: string, attachments?: Array<{contentString: string, mime: string}>}>} [params.chatHistory=[]] - Previous messages.
-   * @param {string} [params.userPrompt=""] - The latest user prompt text.
-   * @param {Array<{contentString: string, mime: string}>} [params.attachments=[]] - Attachments for the latest user prompt.
+   * @param {string} params.systemPrompt - The system prompt text.
+   * @param {string[]} params.contextTexts - Array of context text snippets.
+   * @param {Array<{role: 'user' | 'assistant', content: string, attachments?: Array<{contentString: string, mime: string}>}>} params.chatHistory - Previous messages.
+   * @param {string} params.userPrompt - The latest user prompt text.
+   * @param {Array<{contentString: string, mime: string}>} params.attachments - Attachments for the latest user prompt.
    * @returns {Array<object>} The formatted message array for the API call.
    */
   constructPrompt({
@@ -379,9 +292,7 @@ class AWSBedrockLLM {
     userPrompt = "",
     attachments = [],
   }) {
-    const systemMessageContent = `${systemPrompt}${this.#appendContext(
-      contextTexts
-    )}`;
+    const systemMessageContent = `${systemPrompt}${this.#appendContext(contextTexts)}`;
     let messages = [];
 
     // Handle system prompt (either real or simulated)
@@ -396,14 +307,14 @@ class AWSBedrockLLM {
             content: this.#generateContent({
               userPrompt: systemMessageContent,
             }),
-          }, // No attachments in simulated system prompt
+          },
           { role: "assistant", content: [{ text: "Okay." }] }
         );
       }
     } else if (systemMessageContent.trim().length > 0) {
       messages.push({
         role: "system",
-        content: this.#generateContent({ userPrompt: systemMessageContent }), // No attachments in system prompt
+        content: this.#generateContent({ userPrompt: systemMessageContent }),
       });
     }
 
@@ -437,18 +348,21 @@ class AWSBedrockLLM {
    * @private
    */
   #parseReasoningFromResponse({ content = [] }) {
-    if (!Array.isArray(content)) return "";
+    if (!content?.length) return "";
+
+    // Find the text block and grab the text
     const textBlock = content.find((block) => block.text !== undefined);
     let textResponse = textBlock?.text || "";
+
+    // Find the reasoning block and grab the reasoning text
     const reasoningBlock = content.find(
       (block) => block.reasoningContent?.reasoningText?.text
     );
     if (reasoningBlock) {
       const reasoningText =
         reasoningBlock.reasoningContent.reasoningText.text.trim();
-      if (reasoningText.length > 0) {
+      if (!!reasoningText?.length)
         textResponse = `<think>${reasoningText}</think>${textResponse}`;
-      }
     }
     return textResponse;
   }
@@ -457,16 +371,15 @@ class AWSBedrockLLM {
    * Sends a request for chat completion (non-streaming).
    * @param {Array<object> | null} messages - Formatted message array from constructPrompt.
    * @param {object} options - Request options.
-   * @param {number} [options.temperature] - Sampling temperature.
+   * @param {number} options.temperature - Sampling temperature.
    * @returns {Promise<object | null>} Response object with textResponse and metrics, or null.
    * @throws {Error} If the API call fails or validation errors occur.
    */
   async getChatCompletion(messages = null, { temperature }) {
-    if (!Array.isArray(messages) || messages.length === 0) {
+    if (!messages?.length)
       throw new Error(
         "AWSBedrock::getChatCompletion requires a non-empty messages array."
       );
-    }
 
     const hasSystem = messages[0]?.role === "system";
     const systemBlock = hasSystem ? messages[0].content : undefined;
@@ -582,12 +495,11 @@ class AWSBedrockLLM {
         e.name === "ValidationException" &&
         e.message.includes("maximum tokens")
       ) {
-        // Provide specific error context for max token issues
         throw new Error(
           `AWSBedrock::streamGetChatCompletion failed during setup. Model ${this.model} rejected maxTokens value of ${maxTokensToSend}. Check model documentation for its maximum output token limit and set AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS if needed. Original error: ${e.message}`
         );
       }
-      // Re-throw other setup errors
+
       throw new Error(
         `AWSBedrock::streamGetChatCompletion failed during setup. ${e.message}`
       );
@@ -600,8 +512,8 @@ class AWSBedrockLLM {
    * @param {object} response - The HTTP response object to write chunks to.
    * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream - The monitored stream object from streamGetChatCompletion.
    * @param {object} responseProps - Additional properties for the response chunks.
-   * @param {string} [responseProps.uuid] - Unique ID for the response.
-   * @param {Array} [responseProps.sources=[]] - Source documents used (if any).
+   * @param {string} responseProps.uuid - Unique ID for the response.
+   * @param {Array} responseProps.sources - Source documents used (if any).
    * @returns {Promise<string>} A promise that resolves with the complete text response when the stream ends.
    */
   handleStream(response, stream, responseProps) {
@@ -790,68 +702,24 @@ class AWSBedrockLLM {
           });
         }
       } finally {
-        // Cleanup: Always remove listener and finalize measurement
         response.removeListener("close", handleAbort);
-        stream?.endMeasurement(usage); // Log final usage metrics
+        stream?.endMeasurement(usage);
         resolve(fullText); // Resolve with the accumulated text
       }
     });
   }
 
-  /**
-   * Embeds a single text input using the configured embedder.
-   * @param {string} textInput - The text to embed.
-   * @returns {Promise<number[]>} The embedding vector.
-   * @throws {Error} If the embedder is not configured or fails.
-   */
+  // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
   async embedTextInput(textInput) {
-    if (!this.embedder?.embedTextInput) {
-      throw new Error(
-        "Embedder is not configured or does not support embedTextInput."
-      );
-    }
-    try {
-      return await this.embedder.embedTextInput(textInput);
-    } catch (e) {
-      this.#log(`EmbedTextInput Error: ${e.message}`, e);
-      throw e; // Re-throw after logging
-    }
+    return await this.embedder.embedTextInput(textInput);
   }
-
-  /**
-   * Embeds multiple chunks of text using the configured embedder.
-   * @param {string[]} [textChunks=[]] - An array of text chunks to embed.
-   * @returns {Promise<number[][]>} An array of embedding vectors.
-   * @throws {Error} If the embedder is not configured or fails.
-   */
   async embedChunks(textChunks = []) {
-    if (!this.embedder?.embedChunks) {
-      throw new Error(
-        "Embedder is not configured or does not support embedChunks."
-      );
-    }
-    try {
-      return await this.embedder.embedChunks(textChunks);
-    } catch (e) {
-      this.#log(`EmbedChunks Error: ${e.message}`, e);
-      throw e; // Re-throw after logging
-    }
+    return await this.embedder.embedChunks(textChunks);
   }
 
-  /**
-   * Compresses chat messages if necessary using the messageArrayCompressor helper.
-   * @param {object} [promptArgs={}] - Arguments to pass to constructPrompt.
-   * @param {Array<object>} [rawHistory=[]] - The raw chat history.
-   * @returns {Promise<object>} The potentially compressed message array and metadata.
-   */
   async compressMessages(promptArgs = {}, rawHistory = []) {
     const { messageArrayCompressor } = require("../../helpers/chat");
-    if (!messageArrayCompressor) {
-      throw new Error("Message compressor helper not found.");
-    }
-    // Construct the message array first
     const messageArray = this.constructPrompt(promptArgs);
-    // Then pass it to the compressor
     return await messageArrayCompressor(this, messageArray, rawHistory);
   }
 }
