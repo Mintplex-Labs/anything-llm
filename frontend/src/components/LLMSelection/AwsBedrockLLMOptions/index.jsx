@@ -175,10 +175,26 @@ export default function AwsBedrockLLMOptions({ settings }) {
                 type="number"
                 name="AwsBedrockLLMTokenLimit"
                 className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                placeholder="Content window limit (eg: 4096)"
+                placeholder="Content window limit (eg: 8192)"
                 min={1}
                 onScroll={(e) => e.target.blur()}
                 defaultValue={settings?.AwsBedrockLLMTokenLimit}
+                required={true}
+                autoComplete="off"
+              />
+            </div>
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-3">
+                Model max output tokens
+              </label>
+              <input
+                type="number"
+                name="AwsBedrockLLMMaxOutputTokens"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                placeholder="Max output tokens (eg: 4096)"
+                min={1}
+                onScroll={(e) => e.target.blur()}
+                defaultValue={settings?.AwsBedrockLLMMaxOutputTokens}
                 required={true}
                 autoComplete="off"
               />
