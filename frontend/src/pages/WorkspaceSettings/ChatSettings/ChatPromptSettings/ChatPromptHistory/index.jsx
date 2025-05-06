@@ -63,7 +63,13 @@ export default function ChatPromptHistory({ show, workspaceSlug, onRestore }) {
   );
 }
 
-function PromptHistoryItem({ prompt, modifiedAt, modifiedBy, user, onRestore }) {
+function PromptHistoryItem({
+  prompt,
+  modifiedAt,
+  modifiedBy,
+  user,
+  onRestore,
+}) {
   return (
     <div className="text-white">
       <div className="flex items-center justify-between">

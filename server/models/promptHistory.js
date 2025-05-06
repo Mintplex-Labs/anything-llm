@@ -17,7 +17,11 @@ const PromptHistory = {
     }
   },
 
-  forWorkspace: async function (workspaceId = null, limit = null, orderBy = null) {
+  forWorkspace: async function (
+    workspaceId = null,
+    limit = null,
+    orderBy = null
+  ) {
     if (!workspaceId) return [];
     try {
       const history = await prisma.prompt_history.findMany({
@@ -25,7 +29,9 @@ const PromptHistory = {
           workspaceId,
         },
         ...(limit !== null ? { take: limit } : {}),
-        ...(orderBy !== null ? { orderBy } : { orderBy: { modifiedAt: "desc" } }),
+        ...(orderBy !== null
+          ? { orderBy }
+          : { orderBy: { modifiedAt: "desc" } }),
         include: {
           user: {
             select: {
@@ -78,26 +84,30 @@ const PromptHistory = {
     }
   },
 
-    /**
+  /**
    * Utility method to handle prompt changes and create history entries
    * @param {Object} workspace - The workspace object
    * @param {Object} updates - The updates being applied
    * @param {number|null} userId - The ID of the user making the change
    * @returns {Promise<void>}
    */
-    handlePromptChange: async function (workspace, updates, userId = null) {
-        if (!updates.openAiPrompt || updates.openAiPrompt === workspace.openAiPrompt) return;
+  handlePromptChange: async function (workspace, updates, userId = null) {
+    if (
+      !updates.openAiPrompt ||
+      updates.openAiPrompt === workspace.openAiPrompt
+    )
+      return;
 
-        try {
-          await this.new({
-            workspaceId: workspace.id,
-            prompt: workspace.openAiPrompt, // Store previous prompt as history
-            modifiedBy: userId,
-          });
-        } catch (error) {
-          console.error("Failed to create prompt history:", error.message);
-        }
-      },
+    try {
+      await this.new({
+        workspaceId: workspace.id,
+        prompt: workspace.openAiPrompt, // Store previous prompt as history
+        modifiedBy: userId,
+      });
+    } catch (error) {
+      console.error("Failed to create prompt history:", error.message);
+    }
+  },
 };
 
 module.exports = { PromptHistory };

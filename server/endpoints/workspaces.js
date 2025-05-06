@@ -995,7 +995,11 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/prompt-history",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager]), validWorkspaceSlug],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
     async (request, response) => {
       try {
         const workspace = response.locals.workspace;
@@ -1003,7 +1007,9 @@ function workspaceEndpoints(app) {
         const { prompt } = reqBody(request);
 
         if (!prompt) {
-          response.status(400).json({ success: false, error: "Prompt is required" });
+          response
+            .status(400)
+            .json({ success: false, error: "Prompt is required" });
           return;
         }
 
@@ -1028,11 +1034,17 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug/prompt-history",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager]), validWorkspaceSlug],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
     async (request, response) => {
       try {
         const workspace = response.locals.workspace;
-        const success = await PromptHistory.delete({ workspaceId: workspace.id });
+        const success = await PromptHistory.delete({
+          workspaceId: workspace.id,
+        });
         response.status(200).json({ success });
       } catch (error) {
         console.error("Error clearing prompt history:", error);
