@@ -14,7 +14,16 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const [isEditing, setIsEditing] = useState(false);
   const [showPromptHistory, setShowPromptHistory] = useState(false);
   const promptRef = useRef(null);
+  const promptHistoryRef = useRef(null);
+  const historyButtonRef = useRef(null);
   const [searchParams] = useSearchParams();
+
+  const handleRestore = (prompt) => {
+    setPrompt(prompt);
+    setShowPromptHistory(false);
+    setHasChanges(true);
+    // TODO: Autosave on restore
+  };
 
   useEffect(() => {
     async function setupVariableHighlighting() {
@@ -35,13 +44,33 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
     }
   }, [isEditing]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        promptHistoryRef.current &&
+        !promptHistoryRef.current.contains(event.target) &&
+        historyButtonRef.current &&
+        !historyButtonRef.current.contains(event.target)
+      ) {
+        setShowPromptHistory(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       <ChatPromptHistory
+        ref={promptHistoryRef}
         workspaceSlug={workspace.slug}
         show={showPromptHistory}
-        onRestore={() => {
-          setPrompt(prompt);
+        onRestore={handleRestore}
+        onClose={() => {
+          setShowPromptHistory(false);
         }}
       />
       <div>
@@ -51,6 +80,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
               {t("chat.prompt.title")}
             </label>
             <button
+              ref={historyButtonRef}
               className="text-theme-home-text-secondary text-xs font-medium py-1.5"
               onClick={(e) => {
                 e.preventDefault();
