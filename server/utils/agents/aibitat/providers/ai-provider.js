@@ -16,6 +16,7 @@ const { ChatBedrockConverse } = require("@langchain/aws");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber } = require("../../../http");
 const { getLLMProviderClass } = require("../../../helpers");
+const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
@@ -116,21 +117,15 @@ class Provider {
           ...config,
         });
       case "bedrock":
-        const bedrockConfig = {
+        return new ChatBedrockConverse({
           model: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
           region: process.env.AWS_BEDROCK_LLM_REGION,
-          ...config,
-        };
-        if (
-          process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID &&
-          process.env.AWS_BEDROCK_LLM_ACCESS_KEY
-        ) {
-          bedrockConfig.credentials = {
+          credentials: {
             accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
             secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-          };
-        }
-        return new ChatBedrockConverse(bedrockConfig);
+          },
+          ...config,
+        });
       case "fireworksai":
         return new ChatOpenAI({
           apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
@@ -199,7 +194,7 @@ class Provider {
       case "lmstudio":
         return new ChatOpenAI({
           configuration: {
-            baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""),
+            baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH),
           },
           apiKey: "not-used", // Needs to be specified or else will assume OpenAI
           ...config,

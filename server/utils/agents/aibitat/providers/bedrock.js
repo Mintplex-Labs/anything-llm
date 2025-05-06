@@ -16,65 +16,38 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(_config = {}) {
     super();
+    const model = process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
+    const client = new ChatBedrockConverse({
+      region: process.env.AWS_BEDROCK_LLM_REGION,
+      credentials: {
+        accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+        // If we're using a session token, we need to pass it in as a credential
+        // otherwise we must omit it so it does not conflict if using IAM auth
+        ...(this.authMethod === "sessionToken"
+          ? { sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN }
+          : {}),
+      },
+      model,
+    });
+
+    this._client = client;
+    this.model = model;
     this.verbose = true;
-    this._lastConfig = null;
-    this._lastAuthMethod = null;
-    this.refreshClient();
+  }
+
+  /**
+   * Get the authentication method for the AWS Bedrock LLM.
+   * There are only two valid values for this setting - anything else will default to "iam".
+   * @returns {"iam"|"sessionToken"}
+   */
+  get authMethod() {
+    const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
+    if (!["iam", "sessionToken"].includes(method)) return "iam";
+    return method;
   }
 
   get client() {
-    if (this.shouldRefreshClient()) {
-      this.refreshClient();
-    }
-    return this._client;
-  }
-
-  getClientConfig() {
-    const model = process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
-    const region = process.env.AWS_BEDROCK_LLM_REGION;
-    const authMethod = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD;
-
-    const clientConfig = {
-      region,
-      model,
-    };
-
-    if (
-      authMethod === "iam_user" &&
-      process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID &&
-      process.env.AWS_BEDROCK_LLM_ACCESS_KEY
-    ) {
-      clientConfig.credentials = {
-        accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-      };
-    }
-
-    return clientConfig;
-  }
-
-  getCurrentAuthMethod() {
-    return process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
-  }
-
-  shouldRefreshClient() {
-    if (!this._client || !this._lastConfig) return true;
-
-    const currentConfig = this.getClientConfig();
-    const currentAuthMethod = this.getCurrentAuthMethod();
-
-    return (
-      JSON.stringify(currentConfig) !== JSON.stringify(this._lastConfig) ||
-      currentAuthMethod !== this._lastAuthMethod
-    );
-  }
-
-  refreshClient() {
-    const config = this.getClientConfig();
-    this._client = new ChatBedrockConverse(config);
-    this.model = config.model;
-    this._lastConfig = config;
-    this._lastAuthMethod = this.getCurrentAuthMethod();
     return this._client;
   }
 
