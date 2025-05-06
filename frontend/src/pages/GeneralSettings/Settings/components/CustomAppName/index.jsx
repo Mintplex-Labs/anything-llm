@@ -63,9 +63,9 @@ export default function CustomAppName() {
       className="flex flex-col gap-y-0.5 mt-4"
       onSubmit={updateCustomAppName}
     >
-      <h2 className="text-sm leading-6 font-semibold text-white">
+      <p className="text-sm leading-6 font-semibold text-white">
         {t("customization.items.app-name.title")}
-      </h2>
+      </p>
       <p className="text-xs text-white/60">
         {t("customization.items.app-name.description")}
       </p>
