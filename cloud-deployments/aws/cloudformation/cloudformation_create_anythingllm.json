@@ -21,6 +21,8 @@
   "Resources": {
     "AnythingLLMInstanceRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -37,6 +39,8 @@
     },
     "AnythingLLMInstanceProfile": {
       "Type": "AWS::IAM::InstanceProfile",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
       "Properties": {
         "Roles": [{ "Ref": "AnythingLLMInstanceRole" }]
       }
