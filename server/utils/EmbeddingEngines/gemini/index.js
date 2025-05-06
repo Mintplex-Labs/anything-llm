@@ -1,5 +1,11 @@
 const { toChunks } = require("../../helpers");
 
+const MODEL_MAP = {
+  "embedding-001": 2048,
+  "text-embedding-004": 2048,
+  "gemini-embedding-exp-03-07": 8192,
+};
+
 class GeminiEmbedder {
   constructor() {
     if (!process.env.GEMINI_EMBEDDING_API_KEY)
@@ -16,9 +22,10 @@ class GeminiEmbedder {
     this.maxConcurrentChunks = 4;
 
     // https://ai.google.dev/gemini-api/docs/models/gemini#text-embedding-and-embedding
-    // TODO: May need to make this dynamic based on the model
-    this.embeddingMaxChunkLength = 2_048;
-    this.log(`Initialized with ${this.model}`);
+    this.embeddingMaxChunkLength = MODEL_MAP[this.model] || 2_048;
+    this.log(
+      `Initialized with ${this.model} - Max Size: ${this.embeddingMaxChunkLength}`
+    );
   }
 
   log(text, ...args) {
@@ -27,7 +34,7 @@ class GeminiEmbedder {
 
   /**
    * Embeds a single text input
-   * @param {string} textInput - The text to embed
+   * @param {string|string[]} textInput - The text to embed
    * @returns {Promise<Array<number>>} The embedding values
    */
   async embedTextInput(textInput) {
@@ -39,7 +46,7 @@ class GeminiEmbedder {
 
   /**
    * Embeds a list of text inputs
-   * @param {Array<string>} textInputs - The list of text to embed
+   * @param {string[]} textChunks - The list of text to embed
    * @returns {Promise<Array<Array<number>>>} The embedding values
    */
   async embedChunks(textChunks = []) {
@@ -98,7 +105,7 @@ class GeminiEmbedder {
       };
     });
 
-    if (!!error) throw new Error(`OpenAI Failed to embed: ${error}`);
+    if (!!error) throw new Error(`Gemini Failed to embed: ${error}`);
     return data.length > 0 &&
       data.every((embd) => embd.hasOwnProperty("embedding"))
       ? data.map((embd) => embd.embedding)

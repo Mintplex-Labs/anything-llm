@@ -163,6 +163,10 @@ const KEY_MAPPING = {
     envKey: "KOBOLD_CPP_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  KoboldCPPMaxTokens: {
+    envKey: "KOBOLD_CPP_MAX_TOKENS",
+    checks: [nonZero],
+  },
 
   // Text Generation Web UI Settings
   TextGenWebUIBasePath: {

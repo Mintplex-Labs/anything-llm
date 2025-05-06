@@ -1599,10 +1599,10 @@
   dependencies:
     ws "^7.5.10"
 
-"@modelcontextprotocol/sdk@^1.8.0":
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.8.0.tgz#55cdd65054ec24e53800250c70e07429d669db67"
-  integrity sha512-e06W7SwrontJDHwCawNO5SGxG+nU9AAx+jpHHZqGl/WrDBdWOpvirC+s58VpJTB5QemI4jTRcjWT4Pt3Q1NPQQ==
+"@modelcontextprotocol/sdk@^1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.11.0.tgz#9f1762efe6f3365f0bf3b019cc9bd1629d19bc50"
+  integrity sha512-k/1pb70eD638anoi0e8wUGAlbMJXyvdV4p62Ko+EZ7eBe1xMx8Uhak1R5DgfoofsK5IBBnRwsYGTaLZl+6/+RQ==
   dependencies:
     content-type "^1.0.5"
     cors "^2.8.5"
@@ -1610,7 +1610,7 @@
     eventsource "^3.0.2"
     express "^5.0.1"
     express-rate-limit "^7.5.0"
-    pkce-challenge "^4.1.0"
+    pkce-challenge "^5.0.0"
     raw-body "^3.0.0"
     zod "^3.23.8"
     zod-to-json-schema "^3.24.1"
@@ -6615,10 +6615,10 @@ pirates@^3.0.2:
   dependencies:
     node-modules-regexp "^1.0.0"
 
-pkce-challenge@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/pkce-challenge/-/pkce-challenge-4.1.0.tgz#95027d7750c3c0f21676a345b48f481786f9acdb"
-  integrity sha512-ZBmhE1C9LcPoH9XZSdwiPtbPHZROwAnMy+kIFQVrnMCxY4Cudlz3gBOpzilgc0jOgRaiT3sIWfpMomW2ar2orQ==
+pkce-challenge@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/pkce-challenge/-/pkce-challenge-5.0.0.tgz#c3a405cb49e272094a38e890a2b51da0228c4d97"
+  integrity sha512-ueGLflrrnvwB3xuo/uGob5pd5FN7l0MsLf0Z87o/UQmRtwjvfylfc9MurIxRAWywCYTgrvpXBcqjV4OfCYGCIQ==
 
 platform@^1.3.6:
   version "1.3.6"
