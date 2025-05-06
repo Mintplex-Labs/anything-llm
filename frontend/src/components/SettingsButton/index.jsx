@@ -32,9 +32,8 @@ export default function SettingsButton() {
   return (
     <div className="flex w-fit">
       <Link
-        to={paths.settings.appearance()}
+        to={paths.settings.interface()}
         className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
-        // className="transition-all duration-300 p-2 rounded-full  bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
         aria-label="Settings"
         data-tooltip-id="footer-item"
         data-tooltip-content="Open settings"

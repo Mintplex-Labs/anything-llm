@@ -10,6 +10,7 @@ frontend/bundleinspector.html
 
 #server
 server/swagger/openapi.json
+server/**/*.mjs
 
 #embed
 **/static/**

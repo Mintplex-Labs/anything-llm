@@ -81,6 +81,9 @@ const TRANSLATIONS = {
     workspaces: "Workspaces",
     "workspace-chats": "Workspace Chats",
     customization: "Customization",
+    interface: "UI Preferences",
+    branding: "Branding & Whitelabeling",
+    chat: "Chat",
     "api-keys": "Developer API",
     llm: "LLM",
     transcription: "Transcription",
@@ -148,6 +151,89 @@ const TRANSLATIONS = {
     part6: "Have Fun!",
     starOnGitHub: "Star on GitHub",
     contact: "Contact Mintplex Labs",
+  },
+
+  "main-page": {
+    noWorkspaceError: "Please create a workspace before starting a chat.",
+    checklist: {
+      title: "Getting Started",
+      tasksLeft: "tasks left",
+      completed: "You're on your way to becoming an AnythingLLM expert!",
+      dismiss: "close",
+      tasks: {
+        create_workspace: {
+          title: "Create a workspace",
+          description: "Create your first workspace to get started",
+          action: "Create",
+        },
+        send_chat: {
+          title: "Send a chat",
+          description: "Start a conversation with your AI assistant",
+          action: "Chat",
+        },
+        embed_document: {
+          title: "Embed a document",
+          description: "Add your first document to your workspace",
+          action: "Embed",
+        },
+        setup_system_prompt: {
+          title: "Set up a system prompt",
+          description: "Configure your AI assistant's behavior",
+          action: "Set Up",
+        },
+        define_slash_command: {
+          title: "Define a slash command",
+          description: "Create custom commands for your assistant",
+          action: "Define",
+        },
+        visit_community: {
+          title: "Visit Community Hub",
+          description: "Explore community resources and templates",
+          action: "Browse",
+        },
+      },
+    },
+    quickLinks: {
+      title: "Quick Links",
+      sendChat: "Send Chat",
+      embedDocument: "Embed a Document",
+      createWorkspace: "Create Workspace",
+    },
+    exploreMore: {
+      title: "Explore more features",
+      features: {
+        customAgents: {
+          title: "Custom AI Agents",
+          description: "Build powerful AI Agents and automations with no code.",
+          primaryAction: "Chat using @agent",
+          secondaryAction: "Build an agent flow",
+        },
+        slashCommands: {
+          title: "Slash Commands",
+          description:
+            "Save time and inject prompts using custom slash commands.",
+          primaryAction: "Create a Slash Command",
+          secondaryAction: "Explore on Hub",
+        },
+        systemPrompts: {
+          title: "System Prompts",
+          description:
+            "Modify the system prompt to customize the AI replies of a workspace.",
+          primaryAction: "Modify a System Prompt",
+          secondaryAction: "Manage prompt variables",
+        },
+      },
+    },
+    announcements: {
+      title: "Updates & Announcements",
+    },
+    resources: {
+      title: "Resources",
+      links: {
+        docs: "Docs",
+        star: "Star on Github",
+      },
+    },
   },
 
   "new-workspace": {
@@ -364,35 +450,99 @@ const TRANSLATIONS = {
     },
   },
 
-  // Appearance
-  appearance: {
-    title: "Appearance",
-    description: "Customize the appearance settings of your platform.",
-    logo: {
-      title: "Customize Logo",
-      description: "Upload your custom logo to make your chatbot yours.",
-      add: "Add a custom logo",
-      recommended: "Recommended size: 800 x 200",
-      remove: "Remove",
-      replace: "Replace",
+  customization: {
+    interface: {
+      title: "UI Preferences",
+      description: "Set your UI preferences for AnythingLLM.",
     },
-    message: {
-      title: "Customize Messages",
-      description: "Customize the automatic messages displayed to your users.",
-      new: "New",
-      system: "system",
-      user: "user",
-      message: "message",
-      assistant: "AnythingLLM Chat Assistant",
-      "double-click": "Double click to edit...",
-      save: "Save Messages",
-    },
-    icons: {
-      title: "Custom Footer Icons",
+    branding: {
+      title: "Branding & Whitelabeling",
       description:
-        "Customize the footer icons displayed on the bottom of the sidebar.",
-      icon: "Icon",
-      link: "Link",
+        "White-label your AnythingLLM instance with custom branding.",
+    },
+    chat: {
+      title: "Chat",
+      description: "Set your chat preferences for AnythingLLM.",
+      auto_submit: {
+        title: "Auto-Submit Speech Input",
+        description:
+          "Automatically submit speech input after a period of silence",
+      },
+      auto_speak: {
+        title: "Auto-Speak Responses",
+        description: "Automatically speak responses from the AI",
+      },
+    },
+    items: {
+      theme: {
+        title: "Theme",
+        description: "Select your preferred color theme for the application.",
+      },
+      "show-scrollbar": {
+        title: "Show Scrollbar",
+        description: "Enable or disable the scrollbar in the chat window.",
+      },
+      "support-email": {
+        title: "Support Email",
+        description:
+          "Set the support email address that should be accessible by users when they need help.",
+      },
+      "app-name": {
+        title: "Name",
+        description:
+          "Set a name that is displayed on the login page to all users.",
+      },
+      "chat-message-alignment": {
+        title: "Chat Message Alignment",
+        description:
+          "Select the message alignment mode when using the chat interface.",
+      },
+      "display-language": {
+        title: "Display Language",
+        description:
+          "Select the preferred language to render AnythingLLM's UI in - when translations are available.",
+      },
+      logo: {
+        title: "Brand Logo",
+        description: "Upload your custom logo to showcase on all pages.",
+        add: "Add a custom logo",
+        recommended: "Recommended size: 800 x 200",
+        remove: "Remove",
+        replace: "Replace",
+      },
+      "welcome-messages": {
+        title: "Welcome Messages",
+        description:
+          "Customize the welcome messages displayed to your users. Only non-admin users will see these messages.",
+        new: "New",
+        system: "system",
+        user: "user",
+        message: "message",
+        assistant: "AnythingLLM Chat Assistant",
+        "double-click": "Double click to edit...",
+        save: "Save Messages",
+      },
+      "browser-appearance": {
+        title: "Browser Appearance",
+        description:
+          "Customize the appearance of the browser tab and title when the app is open.",
+        tab: {
+          title: "Title",
+          description:
+            "Set a custom tab title when the app is open in a browser.",
+        },
+        favicon: {
+          title: "Favicon",
+          description: "Use a custom favicon for the browser tab.",
+        },
+      },
+      "sidebar-footer": {
+        title: "Sidebar Footer Items",
+        description:
+          "Customize the footer items displayed on the bottom of the sidebar.",
+        icon: "Icon",
+        link: "Link",
+      },
     },
   },
 

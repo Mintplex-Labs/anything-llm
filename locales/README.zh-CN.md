@@ -50,7 +50,7 @@ AnythingLLM是一个全栈应用程序，您可以使用现成的商业大语言
 AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工作区的功能类似于线程，同时增加了文档的容器化。工作区可以共享文档，但工作区之间的内容不会互相干扰或污染，因此您可以保持每个工作区的上下文清晰。
 
 ## AnythingLLM的一些酷炫特性
-- 🆕 [**自定义AI代理**](https://docs.anythingllm.com/agent/custom/introduction)
+- 🆕 [**完全兼容 MCP**](https://docs.anythingllm.com/mcp-compatibility/overview)
 - 🆕 [**无代码AI代理构建器**](https://docs.anythingllm.com/agent-flows/overview)
 - 🖼️ **多用户实例支持和权限管理（支持封闭源和开源LLM！）**
 - 👤 多用户实例支持和权限管理 _仅限Docker版本_
@@ -148,7 +148,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 | --------------------------------------------------- |
 | [![在Railway上部署][railway-btn]][railway-deploy] |
 
-[其他方案：不使用Docker配置AnythingLLM实例 →](./BARE_METAL.md)
+[其他方案：不使用Docker配置AnythingLLM实例 →](../BARE_METAL.md)
 
 ## 如何设置开发环境
 
@@ -158,9 +158,9 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 - `yarn dev:frontend` 在本地启动前端（从仓库的根目录）。
 - `yarn dev:collector` 然后运行文档收集器（从仓库的根目录）。
 
-[了解文档](./server/storage/documents/DOCUMENTS.md)
+[了解文档](../server/storage/documents/DOCUMENTS.md)
 
-[了解向量缓存](./server/storage/vector-cache/VECTOR_CACHE.md)
+[了解向量缓存](../server/storage/vector-cache/VECTOR_CACHE.md)
 
 ## 如何贡献
 

@@ -1,3 +1,7 @@
+const { Telemetry } = require("../../models/telemetry");
+const {
+  SUPPORTED_CONNECTION_METHODS,
+} = require("../AiProviders/bedrock/utils");
 const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
 
 const KEY_MAPPING = {
@@ -162,6 +166,10 @@ const KEY_MAPPING = {
     envKey: "KOBOLD_CPP_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  KoboldCPPMaxTokens: {
+    envKey: "KOBOLD_CPP_MAX_TOKENS",
+    checks: [nonZero],
+  },
 
   // Text Generation Web UI Settings
   TextGenWebUIBasePath: {
@@ -222,7 +230,7 @@ const KEY_MAPPING = {
     envKey: "AWS_BEDROCK_LLM_CONNECTION_METHOD",
     checks: [
       (input) =>
-        ["iam", "sessionToken"].includes(input) ? null : "Invalid value",
+        SUPPORTED_CONNECTION_METHODS.includes(input) ? null : "invalid Value",
     ],
   },
   AwsBedrockLLMAccessKeyId: {
@@ -247,6 +255,10 @@ const KEY_MAPPING = {
   },
   AwsBedrockLLMTokenLimit: {
     envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  AwsBedrockLLMMaxOutputTokens: {
+    envKey: "AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS",
     checks: [nonZero],
   },
 
@@ -477,6 +489,11 @@ const KEY_MAPPING = {
   DisableTelemetry: {
     envKey: "DISABLE_TELEMETRY",
     checks: [],
+    preUpdate: [
+      (_, __, nextValue) => {
+        if (nextValue === "true") Telemetry.sendTelemetry("telemetry_disabled");
+      },
+    ],
   },
 
   // Agent Integration ENVs
@@ -800,8 +817,6 @@ function validChromaURL(input = "") {
 function validOpenAiTokenLimit(input = "") {
   const tokenLimit = Number(input);
   if (isNaN(tokenLimit)) return "Token limit is not a number";
-  if (![4_096, 16_384, 8_192, 32_768, 128_000].includes(tokenLimit))
-    return "Invalid OpenAI token limit.";
   return null;
 }
 
@@ -878,7 +893,12 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   const newValues = {};
 
   for (const key of ENV_KEYS) {
-    const { envKey, checks, postUpdate = [] } = KEY_MAPPING[key];
+    const {
+      envKey,
+      checks,
+      preUpdate = [],
+      postUpdate = [],
+    } = KEY_MAPPING[key];
     const prevValue = process.env[envKey];
     const nextValue = newENVs[key];
 
@@ -887,6 +907,9 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
       error += errors.join("\n");
       break;
     }
+
+    for (const preUpdateFunc of preUpdate)
+      await preUpdateFunc(key, prevValue, nextValue);
 
     newValues[key] = nextValue;
     process.env[envKey] = nextValue;
@@ -960,6 +983,9 @@ function dumpENV() {
 
     // OCR Language Support
     "TARGET_OCR_LANG",
+
+    // Collector API common ENV - allows bypassing URL validation checks
+    "COLLECTOR_ALLOW_ANY_IP",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
