@@ -121,26 +121,6 @@ function workspaceThreadEndpoints(app) {
     }
   );
 
-  // app.get(
-  //   "/workspace/:slug/archived-threads",
-  //   [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
-  //   async (request, response) => {
-  //     try {
-  //       const user = await userFromSession(request, response);
-  //       const workspace = response.locals.workspace;
-  //       const threads = await WorkspaceThread.where({
-  //         workspace_id: workspace.id,
-  //         user_id: user?.id || null,
-  //         archived: true,
-  //       });
-  //       response.status(200).json({ threads });
-  //     } catch (e) {
-  //       console.error(e.message, e);
-  //       response.sendStatus(500).end();
-  //     }
-  //   }
-  // );
-
   app.delete(
     "/workspace/:slug/thread/:threadSlug",
     [

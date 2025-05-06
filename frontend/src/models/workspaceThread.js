@@ -20,21 +20,6 @@ const WorkspaceThread = {
 
     return { threads };
   },
-  // allArchived: async function (workspaceSlug) {
-  //   const { threads } = await fetch(
-  //     `${API_BASE}/workspace/${workspaceSlug}/archived-threads`,
-  //     {
-  //       method: "GET",
-  //       headers: baseHeaders(),
-  //     }
-  //   )
-  //     .then((res) => res.json())
-  //     .catch((e) => {
-  //       return { threads: [] };
-  //     });
-
-  //   return { threads };
-  // },
   allArchived: async function (workspaceSlug) {
     const { threads } = await fetch(
       `${API_BASE}/workspace/${workspaceSlug}/threads?archived=true`,
