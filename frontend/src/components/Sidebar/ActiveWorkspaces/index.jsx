@@ -167,7 +167,9 @@ export default function ActiveWorkspaces() {
                                     navigate(
                                       isInWorkspaceSettings
                                         ? paths.workspace.chat(workspace.slug)
-                                        : paths.workspace.settings.generalAppearance(workspace.slug)
+                                        : paths.workspace.settings.generalAppearance(
+                                            workspace.slug
+                                          )
                                     );
                                   }}
                                   className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto p-[2px] hover:bg-[#646768]"
