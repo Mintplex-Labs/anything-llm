@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { writeToServerDocuments } = require("../../../files");
+const { sanitizeFileName, writeToServerDocuments } = require("../../../files");
 const { tokenizeString } = require("../../../tokenizer");
 
 /**
@@ -50,7 +50,8 @@ async function loadGitlabRepo(args, response) {
     fs.mkdirSync(outFolderPath, { recursive: true });
 
   for (const doc of docs) {
-    if (!doc.metadata || (!doc.pageContent && !doc.issue)) continue;
+    if (!doc.metadata || (!doc.pageContent && !doc.issue && !doc.wiki))
+      continue;
     let pageContent = null;
 
     const data = {
@@ -77,6 +78,11 @@ async function loadGitlabRepo(args, response) {
       data.title = `Issue ${doc.issue.iid}: ${doc.issue.title}`;
       data.docAuthor = doc.issue.author.username;
       data.description = doc.issue.description;
+    } else if (doc.wiki) {
+      pageContent = doc.wiki.content;
+      data.title = doc.wiki.title;
+      data.docAuthor = repo.author;
+      data.description = doc.wiki.format === "markdown" ? "GitLab Wiki Page (Markdown)" : "GitLab Wiki Page";
     } else {
       continue;
     }
@@ -91,7 +97,7 @@ async function loadGitlabRepo(args, response) {
 
     writeToServerDocuments(
       data,
-      `${slugify(doc.metadata.source)}-${data.id}`,
+      sanitizeFileName(`${slugify(doc.metadata.source)}-${data.id}`),
       outFolderPath
     );
   }
