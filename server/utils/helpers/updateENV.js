@@ -1,4 +1,7 @@
 const { Telemetry } = require("../../models/telemetry");
+const {
+  SUPPORTED_CONNECTION_METHODS,
+} = require("../AiProviders/bedrock/utils");
 const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
 
 const KEY_MAPPING = {
@@ -227,7 +230,7 @@ const KEY_MAPPING = {
     envKey: "AWS_BEDROCK_LLM_CONNECTION_METHOD",
     checks: [
       (input) =>
-        ["iam", "sessionToken"].includes(input) ? null : "Invalid value",
+        SUPPORTED_CONNECTION_METHODS.includes(input) ? null : "invalid Value",
     ],
   },
   AwsBedrockLLMAccessKeyId: {

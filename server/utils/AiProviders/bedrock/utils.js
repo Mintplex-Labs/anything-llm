@@ -7,8 +7,8 @@ const DEFAULT_MAX_OUTPUT_TOKENS = 4096;
 /** @type {number} */
 const DEFAULT_CONTEXT_WINDOW_TOKENS = 8191;
 
-/** @type {'iam' | 'sessionToken'} */
-const SUPPORTED_CONNECTION_METHODS = ["iam", "sessionToken"];
+/** @type {'iam' | 'iam_role' | 'sessionToken'} */
+const SUPPORTED_CONNECTION_METHODS = ["iam", "iam_role", "sessionToken"];
 
 /**
  * Parses a MIME type string (e.g., "image/jpeg") to extract and validate the image format

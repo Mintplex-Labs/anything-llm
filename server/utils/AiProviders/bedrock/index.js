@@ -42,8 +42,19 @@ class AWSBedrockLLM {
    */
   constructor(embedder = null, modelPreference = null) {
     const requiredEnvVars = [
-      "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
-      "AWS_BEDROCK_LLM_ACCESS_KEY",
+      ...(this.authMethod !== "iam_role"
+        ? [
+            // required for iam and sessionToken
+            "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
+            "AWS_BEDROCK_LLM_ACCESS_KEY",
+          ]
+        : []),
+      ...(this.authMethod === "sessionToken"
+        ? [
+            // required for sessionToken
+            "AWS_BEDROCK_LLM_SESSION_TOKEN",
+          ]
+        : []),
       "AWS_BEDROCK_LLM_REGION",
       "AWS_BEDROCK_LLM_MODEL_PREFERENCE",
     ];
@@ -52,15 +63,6 @@ class AWSBedrockLLM {
     for (const envVar of requiredEnvVars) {
       if (!process.env[envVar])
         throw new Error(`Required environment variable ${envVar} is not set.`);
-    }
-
-    if (
-      process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD === "sessionToken" &&
-      !process.env.AWS_BEDROCK_LLM_SESSION_TOKEN
-    ) {
-      throw new Error(
-        "AWS_BEDROCK_LLM_SESSION_TOKEN is not set for sessionToken authentication method."
-      );
     }
 
     this.model =
@@ -75,13 +77,7 @@ class AWSBedrockLLM {
 
     this.bedrockClient = new BedrockRuntimeClient({
       region: process.env.AWS_BEDROCK_LLM_REGION,
-      credentials: {
-        accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-        ...(this.authMethod === "sessionToken"
-          ? { sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN }
-          : {}),
-      },
+      credentials: this.credentials,
     });
 
     this.embedder = embedder ?? new NativeEmbedder();
@@ -92,9 +88,35 @@ class AWSBedrockLLM {
   }
 
   /**
+   * Gets the credentials for the AWS Bedrock LLM based on the authentication method provided.
+   * @returns {object} The credentials object.
+   */
+  get credentials() {
+    switch (this.authMethod) {
+      case "iam": // explicit credentials
+        return {
+          accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+        };
+      case "sessionToken": // Session token is used for temporary credentials
+        return {
+          accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+          sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
+        };
+      // IAM role is used for long-term credentials implied by system process
+      // is filled by the AWS SDK automatically if we pass in no credentials
+      case "iam_role":
+        return {};
+      default:
+        return {};
+    }
+  }
+
+  /**
    * Gets the configured AWS authentication method ('iam' or 'sessionToken').
    * Defaults to 'iam' if the environment variable is invalid.
-   * @returns {"iam" | "sessionToken"} The authentication method.
+   * @returns {"iam" | "iam_role" | "sessionToken"} The authentication method.
    */
   get authMethod() {
     const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
