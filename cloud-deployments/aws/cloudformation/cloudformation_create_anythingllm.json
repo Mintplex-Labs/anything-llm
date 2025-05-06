@@ -12,12 +12,39 @@
       "Type": "Number",
       "Default": 10,
       "MinValue": 4
+    },
+    "ImageUri": {
+      "Type": "String",
+      "Description": "051826724302.dkr.ecr.us-east-2.amazonaws.com/layerone/allm:abcdef12"
     }
   },
   "Resources": {
+    "AnythingLLMInstanceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": { "Service": "ec2.amazonaws.com" },
+            "Action": "sts:AssumeRole"
+          }]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+        ]
+      }
+    },
+    "AnythingLLMInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [{ "Ref": "AnythingLLMInstanceRole" }]
+      }
+    },
     "AnythingLLMInstance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
+        "IamInstanceProfile": { "Ref": "AnythingLLMInstanceProfile" },
         "ImageId": {
           "Fn::FindInMap": [
             "Region2AMI",
@@ -81,16 +108,32 @@
                 "\n",
                 "\n",
                 "#!/bin/bash\n",
-                "# check output of userdata script with sudo tail -f /var/log/cloud-init-output.log\n",
-                "sudo yum install docker iptables -y\n",
+                "sudo yum install -y aws-cli docker iptables\n",
                 "sudo iptables -A OUTPUT -m owner ! --uid-owner root -d 169.254.169.254 -j DROP\n",
                 "sudo systemctl enable docker\n",
                 "sudo systemctl start docker\n",
                 "mkdir -p /home/ec2-user/anythingllm\n",
                 "touch /home/ec2-user/anythingllm/.env\n",
                 "sudo chown ec2-user:ec2-user -R /home/ec2-user/anythingllm\n",
-                "docker pull 051826724302.dkr.ecr.us-east-2.amazonaws.com/layerone/allm:latest\n",
-                "docker run -d -p 3001:3001 --cap-add SYS_ADMIN -v /home/ec2-user/anythingllm:/app/server/storage -v /home/ec2-user/anythingllm/.env:/app/server/.env -e STORAGE_DIR=\"/app/server/storage\" 051826724302.dkr.ecr.us-east-2.amazonaws.com/layerone/allm:latest\n",
+                "aws ecr get-login-password --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                " | docker login --username AWS --password-stdin 051826724302.dkr.ecr.us-east-2.amazonaws.com\n",
+                "docker pull ",
+                {
+                  "Ref": "ImageUri"
+                },
+                "\n",
+                "docker run -d -p 3001:3001 --cap-add SYS_ADMIN \\\n",
+                "  -v /home/ec2-user/anythingllm:/app/server/storage \\\n",
+                "  -v /home/ec2-user/anythingllm/.env:/app/server/.env \\\n",
+                "  -e STORAGE_DIR=\"/app/server/storage\" \\\n",
+                "  ",
+                {
+                  "Ref": "ImageUri"
+                },
+                "\n",
                 "echo \"Container ID: $(sudo docker ps --latest --quiet)\"\n",
                 "export ONLINE=$(curl -Is http://localhost:3001/api/ping | head -n 1|cut -d$' ' -f2)\n",
                 "echo \"Health check: $ONLINE\"\n",
