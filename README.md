@@ -85,7 +85,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Hugging Face (chat models)](https://huggingface.co/)
 - [Ollama (chat models)](https://ollama.ai/)
 - [LM Studio (all models)](https://lmstudio.ai)
-- [LocalAi (all models)](https://localai.io/)
+- [LocalAI (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
 - [Fireworks AI  (chat models)](https://fireworks.ai/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
@@ -107,7 +107,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- [LocalAi (all)](https://localai.io/)
+- [LocalAI (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
 - [LM Studio (all)](https://lmstudio.ai)
 - [Cohere](https://cohere.com/)
@@ -215,7 +215,7 @@ We will only track usage details that help us make product and roadmap decisions
 
 You can verify these claims by finding all locations `Telemetry.sendTelemetry` is called. Additionally these events are written to the output log so you can also see the specific data which was sent - if enabled. **No IP or other identifying information is collected**. The Telemetry provider is [PostHog](https://posthog.com/) - an open-source telemetry collection service.
 
-We take privacy very seriously and hopefully you can understand our position to also glimpse into how our tool is used with asking for annoying popup surveys so we can build something worth using. The anonymous data is _never_ shared with third parties, ever.
+We take privacy very seriously, and we hope you understand that we want to learn how our tool is used, without using annoying popup surveys, so we can build something worth using. The anonymous data is _never_ shared with third parties, ever.
 
 [View all telemetry events in source code](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
 
