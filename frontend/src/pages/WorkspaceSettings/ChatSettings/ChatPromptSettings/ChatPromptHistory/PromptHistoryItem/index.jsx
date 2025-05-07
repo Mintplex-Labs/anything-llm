@@ -2,6 +2,8 @@ import { DotsThreeVertical } from "@phosphor-icons/react";
 import moment from "moment";
 import { useRef, useState, useEffect } from "react";
 import PromptHistory from "@/models/promptHistory";
+import truncate from "truncate";
+const MAX_PROMPT_LENGTH = 200; // chars
 
 export default function PromptHistoryItem({
   id,
@@ -14,6 +16,7 @@ export default function PromptHistoryItem({
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   const menuButtonRef = useRef(null);
+  const [expanded, setExpanded] = useState(false);
 
   const deleteHistory = async (id) => {
     if (
@@ -61,41 +64,59 @@ export default function PromptHistoryItem({
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <div
-            className="text-xs cursor-pointer hover:text-primary-button"
+          <button
+            type="button"
+            className="border-none text-sm cursor-pointer text-theme-text-primary hover:text-primary-button"
             onClick={onRestore}
           >
             Restore
-          </div>
+          </button>
           <div className="relative">
-            <div
+            <button
+              type="button"
               ref={menuButtonRef}
-              className="text-white cursor-pointer hover:text-primary-button"
+              className="border-none text-theme-text-secondary cursor-pointer hover:text-primary-button"
               onClick={() => setShowMenu(!showMenu)}
             >
               <DotsThreeVertical size={16} weight="bold" />
-            </div>
+            </button>
             {showMenu && (
               <div
                 ref={menuRef}
                 className="absolute right-0 top-6 bg-black light:bg-white rounded-lg z-50"
               >
-                <div
-                  className="px-[10px] py-[6px] text-xs text-white hover:bg-theme-hover cursor-pointer"
+                <button
+                  type="button"
+                  className="px-[10px] py-[6px] text-theme-text-secondary hover:bg-theme-hover cursor-pointer"
                   onClick={() => {
                     setShowMenu(false);
                     deleteHistory(id);
                   }}
                 >
                   Delete
-                </div>
+                </button>
               </div>
             )}
           </div>
         </div>
       </div>
       <div className="flex items-center mt-1">
-        <div className="text-white text-sm font-medium">{prompt}</div>
+        <div className="text-theme-text-primary text-sm font-medium break-all whitespace-pre-wrap">
+          {prompt.length > MAX_PROMPT_LENGTH && !expanded ? (
+            <>
+              {truncate(prompt, MAX_PROMPT_LENGTH)}{" "}
+              <button
+                type="button"
+                className="text-theme-text-secondary hover:text-primary-button"
+                onClick={() => setExpanded(!expanded)}
+              >
+                Expand
+              </button>
+            </>
+          ) : (
+            prompt
+          )}
+        </div>
       </div>
     </div>
   );

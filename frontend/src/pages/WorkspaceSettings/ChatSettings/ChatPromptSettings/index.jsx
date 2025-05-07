@@ -7,6 +7,10 @@ import { Link, useSearchParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import ChatPromptHistory from "./ChatPromptHistory";
 
+// TODO: Move to backend and have user-language sensitive default prompt
+const DEFAULT_PROMPT =
+  "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
+
 export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const { t } = useTranslation();
   const [availableVariables, setAvailableVariables] = useState([]);
@@ -79,16 +83,6 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
             <label htmlFor="name" className="block input-label">
               {t("chat.prompt.title")}
             </label>
-            <button
-              ref={historyButtonRef}
-              className="text-theme-home-text-secondary hover:text-white light:hover:text-black text-xs font-medium py-1.5"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowPromptHistory(!showPromptHistory);
-              }}
-            >
-              {showPromptHistory ? "Hide History" : "View History"}
-            </button>
           </div>
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
             {t("chat.prompt.description")}
@@ -122,65 +116,85 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
         </div>
 
         <input type="hidden" name="openAiPrompt" defaultValue={prompt} />
-
-        <div className="relative">
-          <span
-            className={`${!!prompt ? "hidden" : "block"} text-sm pointer-events-none absolute top-0 left-0 p-2.5 w-full h-full !text-theme-settings-input-placeholder opacity-60`}
+        <div className="relative w-full flex flex-col items-end">
+          <button
+            ref={historyButtonRef}
+            type="button"
+            className="text-theme-text-secondary hover:text-white light:hover:text-black text-sm font-medium"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowPromptHistory(!showPromptHistory);
+            }}
           >
-            Given the following conversation, relevant context, and a follow up
-            question, reply with an answer to the current question the user is
-            asking. Return only your response to the question given the above
-            information following the users instructions as needed.
-          </span>
-          {isEditing ? (
-            <textarea
-              ref={promptRef}
-              autoFocus={true}
-              rows={5}
-              onFocus={(e) => {
-                const length = e.target.value.length;
-                e.target.setSelectionRange(length, length);
-              }}
-              onBlur={(e) => {
-                setIsEditing(false);
-                setPrompt(e.target.value);
-              }}
-              onChange={(e) => {
-                setPrompt(e.target.value);
-                setHasChanges(true);
-              }}
-              onPaste={(e) => {
-                setPrompt(e.target.value);
-                setHasChanges(true);
-              }}
-              style={{
-                resize: "vertical",
-                overflowY: "scroll",
-                minHeight: "150px",
-              }}
-              defaultValue={prompt}
-              className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
-            />
-          ) : (
-            <div
-              onClick={() => setIsEditing(true)}
-              style={{
-                resize: "vertical",
-                overflowY: "scroll",
-                minHeight: "150px",
-              }}
-              className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
+            {showPromptHistory ? "Hide History" : "View History"}
+          </button>
+          <div className="relative w-full">
+            <span
+              className={`${!!prompt ? "hidden" : "block"} text-sm pointer-events-none absolute top-2 left-0 p-2.5 w-full h-full !text-theme-settings-input-placeholder opacity-60`}
             >
-              <Highlighter
-                className="whitespace-pre-wrap"
-                highlightClassName="bg-cta-button p-0.5 rounded-md"
-                searchWords={availableVariables.map((v) => `{${v.key}}`)}
-                autoEscape={true}
-                caseSensitive={true}
-                textToHighlight={prompt}
+              {DEFAULT_PROMPT}
+            </span>
+            {isEditing ? (
+              <textarea
+                ref={promptRef}
+                autoFocus={true}
+                rows={5}
+                onFocus={(e) => {
+                  const length = e.target.value.length;
+                  e.target.setSelectionRange(length, length);
+                }}
+                onBlur={(e) => {
+                  setIsEditing(false);
+                  setPrompt(e.target.value);
+                }}
+                onChange={(e) => {
+                  setPrompt(e.target.value);
+                  setHasChanges(true);
+                }}
+                onPaste={(e) => {
+                  setPrompt(e.target.value);
+                  setHasChanges(true);
+                }}
+                style={{
+                  resize: "vertical",
+                  overflowY: "scroll",
+                  minHeight: "150px",
+                }}
+                defaultValue={prompt}
+                className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
               />
-            </div>
-          )}
+            ) : (
+              <div
+                onClick={() => setIsEditing(true)}
+                style={{
+                  resize: "vertical",
+                  overflowY: "scroll",
+                  minHeight: "150px",
+                }}
+                className="border-none bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 mt-2"
+              >
+                <Highlighter
+                  className="whitespace-pre-wrap"
+                  highlightClassName="bg-cta-button p-0.5 rounded-md"
+                  searchWords={availableVariables.map((v) => `{${v.key}}`)}
+                  autoEscape={true}
+                  caseSensitive={true}
+                  textToHighlight={prompt}
+                />
+              </div>
+            )}
+          </div>
+          <div className="w-full flex flex-row items-center justify-between pt-2">
+            {prompt !== DEFAULT_PROMPT && (
+              <button
+                type="button"
+                onClick={() => handleRestore(DEFAULT_PROMPT)}
+                className="text-theme-text-primary hover:text-white light:hover:text-black text-sm font-medium"
+              >
+                Clear
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </>
