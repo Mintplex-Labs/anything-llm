@@ -130,12 +130,14 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 
 ### 技术概览
 
-这个单库由三个主要部分组成：
+这个单库由六个主要部分组成：
 
 - `frontend`: 一个 viteJS + React 前端，您可以运行它来轻松创建和管理LLM可以使用的所有内容。
 - `server`: 一个 NodeJS express 服务器，用于处理所有交互并进行所有向量数据库管理和 LLM 交互。
-- `docker`: Docker 指令和构建过程 + 从源代码构建的信息。
 - `collector`: NodeJS express 服务器，用于从UI处理和解析文档。
+- `docker`: Docker 指令和构建过程 + 从源代码构建的信息。
+- `embed`: 用于生成和创建[网页嵌入组件](https://github.com/Mintplex-Labs/anythingllm-embed)的子模块.
+- `browser-extension`: 用于[Chrome 浏览器扩展](https://github.com/Mintplex-Labs/anythingllm-extension)的子模块.
 
 ## 🛳 自托管
 
@@ -144,9 +146,9 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 |----------------------------------------|----|-----|---------------|------------|
 | [![在 Docker 上部署][docker-btn]][docker-deploy] | [![在 AWS 上部署][aws-btn]][aws-deploy] | [![在 GCP 上部署][gcp-btn]][gcp-deploy] | [![在DigitalOcean上部署][do-btn]][do-deploy] | [![在 Render.com 上部署][render-btn]][render-deploy] |
 
-| Railway                                             |
-| --------------------------------------------------- |
-| [![在Railway上部署][railway-btn]][railway-deploy] |
+| Railway  |  RepoCloud | Elestio |
+| --- | --- | --- |
+| [![在 Railway 上部署][railway-btn]][railway-deploy] | [![在 RepoCloud 上部署][repocloud-btn]][repocloud-deploy] | [![在 Elestio 上部署][elestio-btn]][elestio-deploy] |
 
 [其他方案：不使用Docker配置AnythingLLM实例 →](../BARE_METAL.md)
 
@@ -161,12 +163,6 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 [了解文档](../server/storage/documents/DOCUMENTS.md)
 
 [了解向量缓存](../server/storage/vector-cache/VECTOR_CACHE.md)
-
-## 如何贡献
-
-- 创建 issue
-- 创建 PR，分支名称格式为 `<issue number>-<short name>`
-- 合并
 
 ## 远程信息收集与隐私保护
 
@@ -196,11 +192,23 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 - 使用中的LLM类型。让我们知道谁才是最受欢迎的LLM模型，并在后续更新中优先考虑相应模型。
 - 信息被`发送`出去。这是最常规的“事件/行为/event”，并让我们了解到所有安装了这个项目的每日活动情况。同样，只收集`发送`这个行为的信息，我们不会收集关于聊天本身的性质或内容的任何信息。
 
-您可以通过查找所有调用`Telemetry.sendTelemetry`的位置来验证这些声明。此外，如果启用，这些事件也会被写入输出日志，因此您也可以看到发送了哪些具体数据。不收集IP或其他识别信息。Telemetry远程信息收集的方案来自[PostHog](https://posthog.com/) - 一个开源的远程信息收集服务。
+您可以通过查找所有调用`Telemetry.sendTelemetry`的位置来验证这些声明。此外，如果启用，这些事件也会被写入输出日志，因此您也可以看到发送了哪些具体数据。**IP或其他识别信息不会被收集**。Telemetry远程信息收集的方案来自[PostHog](https://posthog.com/) - 一个开源的远程信息收集服务。
 
 [在源代码中查看所有信息收集活动](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
 
 </details>
+
+## 如何贡献
+
+- 创建 issue
+- 创建 PR，分支名称格式为 `<issue number>-<short name>`
+- 合并
+
+## 🌟 贡献者们
+
+[![anythingllm 的贡献者们](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
+
+[![Star 历史图](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
 
 ## 🔗 更多产品
 
@@ -209,7 +217,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 <div align="right">
 
-[![][back-to-top]](#readme-top)
+[![][返回顶部]](#readme-top)
 
 </div>
 
@@ -238,3 +246,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
+[repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
+[repocloud-deploy]: https://repocloud.io/details/?app_id=276
+[elestio-btn]: https://elest.io/images/logos/deploy-to-elestio-btn.png
+[elestio-deploy]: https://elest.io/open-source/anythingllm
