@@ -81,7 +81,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
             </label>
             <button
               ref={historyButtonRef}
-              className="text-theme-home-text-secondary text-xs font-medium py-1.5"
+              className="text-theme-home-text-secondary hover:text-white light:hover:text-black text-xs font-medium py-1.5"
               onClick={(e) => {
                 e.preventDefault();
                 setShowPromptHistory(!showPromptHistory);
