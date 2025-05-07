@@ -110,14 +110,6 @@ export default function App() {
                     element={<ManagerRoute Component={WorkspaceSettings} />}
                   />
                   <Route
-                    path="/workspace/:slug/settings/members"
-                    element={<AdminRoute Component={WorkspaceSettings} />}
-                  />
-                  <Route
-                    path="/workspace/:slug/settings/agent-config"
-                    element={<AdminRoute Component={WorkspaceSettings} />}
-                  />
-                  <Route
                     path="/workspace/:slug"
                     element={<PrivateRoute Component={WorkspaceChat} />}
                   />

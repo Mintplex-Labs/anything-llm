@@ -145,6 +145,11 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                       active={engine === "sql-server"}
                       onClick={() => setEngine("sql-server")}
                     />
+                    <DBEngine
+                      provider="snowflake"
+                      active={engine === "snowflake"}
+                      onClick={() => setEngine("snowflake")}
+                    />
                   </div>
                 </div>
 
@@ -160,11 +165,6 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     required={true}
                     autoComplete="off"
                     spellCheck={false}
-                  />
-                  <DBEngine
-                    provider="snowflake"
-                    active={engine === "snowflake"}
-                    onClick={() => setEngine("snowflake")}
                   />
                 </div>
 

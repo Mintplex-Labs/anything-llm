@@ -67,7 +67,7 @@ class MetaGenerator {
       { tag: "meta", props: { property: "og:type", content: "website" } },
       {
         tag: "meta",
-        props: { property: "og:url", content: "https://AzaleaGPT.com" },
+        props: { property: "og:url", content: "https://anythingllm.com" },
       },
       {
         tag: "meta",
