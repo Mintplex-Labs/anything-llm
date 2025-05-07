@@ -217,6 +217,14 @@ const SystemSettings = {
       GeminiEmbeddingApiKey: !!process.env.GEMINI_EMBEDDING_API_KEY,
 
       // --------------------------------------------------------
+      // Azure Providers
+      // --------------------------------------------------------
+      AzureADClientId: process.env.AZURE_AD_CLIENT_ID,
+      AzureADRedirectUri: process.env.AZURE_AD_REDIRECT_URI,
+      AzureADTenantId: process.env.AZURE_AD_TENANT_ID,
+      AzureADGroups: JSON.parse(process.env.AZURE_AD_GROUPS),
+
+      // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
       // --------------------------------------------------------
       VectorDB: vectorDB,

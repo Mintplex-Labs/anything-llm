@@ -82,6 +82,20 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
+  azureAuth: async function (body) {
+    return await fetch(`${API_BASE}/v1/auth/azure`, {
+      method: "POST",
+      body: JSON.stringify({ ...body }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not validate login.");
+        return res.json();
+      })
+      .then((res) => res)
+      .catch((e) => {
+        return { valid: false, message: e.message };
+      });
+  },
   recoverAccount: async function (username, recoveryCodes) {
     return await fetch(`${API_BASE}/system/recover-account`, {
       method: "POST",
@@ -148,6 +162,18 @@ const System = {
   },
   updateSystemPassword: async (data) => {
     return await fetch(`${API_BASE}/system/update-password`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+  setupMultiUserAzureAD: async (data) => {
+    return await fetch(`${API_BASE}/system/enable-multi-user-azure-ad`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),

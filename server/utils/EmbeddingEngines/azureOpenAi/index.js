@@ -22,10 +22,21 @@ class AzureOpenAiEmbedder {
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     // https://learn.microsoft.com/en-us/azure/ai-services/openai/faq#i-am-trying-to-use-embeddings-and-received-the-error--invalidrequesterror--too-many-inputs--the-max-number-of-inputs-is-1---how-do-i-fix-this-:~:text=consisting%20of%20up%20to%2016%20inputs%20per%20API%20request
-    this.maxConcurrentChunks = 16;
+    this.maxConcurrentChunks = 12;
 
     // https://learn.microsoft.com/en-us/answers/questions/1188074/text-embedding-ada-002-token-context-length
-    this.embeddingMaxChunkLength = 2048;
+    //
+    // AL: 2025-03-08
+    // Digging deeper, it seems that Microsoft now allows a max of 8192 tokens (or 2048 if pushed in an array)
+    // see https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/embeddings?tabs=console
+    // The value below is used as the number of CHARACTERS (not tokens).  Since we are of the opinion that longer content
+    // is better, we increase embeddingMaxChunkLength to 2048 * 2.5
+    // This takes into account the average number of characters per word in English (~4.5) and the fact that there may be multiple
+    // tokens per word.
+    // Rough back of the envelope calculation is (2048 * 2.5) / 4.5 = 1150 words = 1150 * 8/6 = 1550 tokens
+    // Assuming that we might send arrays over this gives us a 25% buffer.
+    // This sets the maximum chunk length, we can configure on the UI to reduce it if needed
+    this.embeddingMaxChunkLength = 5120;
   }
 
   log(text, ...args) {

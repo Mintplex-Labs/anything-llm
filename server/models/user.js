@@ -78,7 +78,24 @@ const User = {
     const { password, ...rest } = user;
     return { ...rest };
   },
-
+  createAdminWithAzureAD: async function ({ 
+    username, 
+    role = "default",
+  }) {
+    try {
+      const user = await prisma.users.create({
+        data: {
+          username: username,
+          use_azure_login_provider: true,
+          role: this.validations.role(role)
+        },
+      });
+      return { user: this.filterFields(user), error: null };
+    } catch (error) {
+      console.error("FAILED TO CREATE USER.", error.message);
+      return { user: null, error: error.message };
+    }
+  },
   create: async function ({
     username,
     password,
@@ -111,6 +128,21 @@ const User = {
         },
       });
       return { user: this.filterFields(user), error: null };
+    } catch (error) {
+      console.error("FAILED TO CREATE USER.", error.message);
+      return { user: null, error: error.message };
+    }
+  },
+  createWithAzureAuthProviders: async function ({ username }) {
+    try {
+      const user = await prisma.users.create({
+        data: {
+          username,
+          use_azure_login_provider: true,
+          role: "manager",
+        },
+      });
+      return { user, error: null };
     } catch (error) {
       console.error("FAILED TO CREATE USER.", error.message);
       return { user: null, error: error.message };

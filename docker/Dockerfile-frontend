@@ -1,0 +1,26 @@
+FROM mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm as react-app
+
+WORKDIR /app/client
+COPY ./frontend .
+
+RUN yarn install --network-timeout 100000
+RUN yarn build && \
+    cp -r dist /tmp/frontend-build && \
+    rm -rf * && \
+    cp -r /tmp/frontend-build dist && \
+    cp dist/_index.html dist/index.html && \
+    rm -rf /tmp/frontend-build
+
+FROM nginx:1.27.1-alpine3.20-slim
+
+WORKDIR /usr/share/nginx/
+
+RUN rm -rf html
+RUN mkdir html
+
+WORKDIR /
+
+COPY ./docker/nginx/nginx.conf /etc/nginx
+COPY --from=react-app ./app/client/dist /usr/share/nginx/html
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

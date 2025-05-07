@@ -110,6 +110,14 @@ export default function App() {
                     element={<ManagerRoute Component={WorkspaceSettings} />}
                   />
                   <Route
+                    path="/workspace/:slug/settings/members"
+                    element={<AdminRoute Component={WorkspaceSettings} />}
+                  />
+                  <Route
+                    path="/workspace/:slug/settings/agent-config"
+                    element={<AdminRoute Component={WorkspaceSettings} />}
+                  />
+                  <Route
                     path="/workspace/:slug"
                     element={<PrivateRoute Component={WorkspaceChat} />}
                   />
@@ -187,7 +195,7 @@ export default function App() {
                   {/* Manager */}
                   <Route
                     path="/settings/security"
-                    element={<ManagerRoute Component={GeneralSecurity} />}
+                    element={<AdminRoute Component={GeneralSecurity} />}
                   />
                   <Route
                     path="/settings/privacy"
@@ -237,7 +245,7 @@ export default function App() {
                   />
                   <Route
                     path="/settings/workspaces"
-                    element={<ManagerRoute Component={AdminWorkspaces} />}
+                    element={<AdminRoute Component={AdminWorkspaces} />}
                   />
                   {/* Onboarding Flow */}
                   <Route path="/onboarding" element={<OnboardingFlow />} />

@@ -534,6 +534,24 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Azure Login Providers
+  AzureADClientId: {
+    envKey: "AZURE_AD_CLIENT_ID",
+    checks: [isNotEmpty],
+  },
+  AzureADRedirectUri: {
+    envKey: "AZURE_AD_REDIRECT_URI",
+    checks: [isNotEmpty],
+  },
+  AzureADTenantId: {
+    envKey: "AZURE_AD_TENANT_ID",
+    checks: [isNotEmpty],
+  },
+  AzureADGroups: {
+    envKey: "AZURE_AD_GROUPS",
+    checks: [isNotEmpty],
+  },
+
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
     envKey: "TTS_PROVIDER",
