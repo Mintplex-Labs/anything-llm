@@ -993,45 +993,6 @@ function workspaceEndpoints(app) {
     }
   );
 
-  app.post(
-    "/workspace/:slug/prompt-history",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
-      validWorkspaceSlug,
-    ],
-    async (request, response) => {
-      try {
-        const workspace = response.locals.workspace;
-        const user = await userFromSession(request, response);
-        const { prompt } = reqBody(request);
-
-        if (!prompt) {
-          response
-            .status(400)
-            .json({ success: false, error: "Prompt is required" });
-          return;
-        }
-
-        const { history, message } = await PromptHistory.new({
-          workspaceId: workspace.id,
-          prompt,
-          modifiedBy: user?.id,
-        });
-
-        if (message) {
-          response.status(500).json({ success: false, error: message });
-          return;
-        }
-
-        response.status(200).json({ success: true, history });
-      } catch (error) {
-        console.error("Error creating prompt history:", error);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
   app.delete(
     "/workspace/:slug/prompt-history",
     [
@@ -1048,6 +1009,21 @@ function workspaceEndpoints(app) {
         response.status(200).json({ success });
       } catch (error) {
         console.error("Error clearing prompt history:", error);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/workspace/prompt-history/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const success = await PromptHistory.delete({ id: Number(id) });
+        response.status(200).json({ success });
+      } catch (error) {
+        console.error("Error deleting prompt history:", error);
         response.sendStatus(500).end();
       }
     }

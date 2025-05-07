@@ -1,4 +1,4 @@
-import { useEffect, useState, forwardRef } from "react";
+import { useEffect, useState, forwardRef, useRef } from "react";
 import PromptHistory from "@/models/promptHistory";
 import { DotsThreeVertical, X } from "@phosphor-icons/react";
 import moment from "moment";
@@ -20,9 +20,12 @@ const ChatPromptHistory = forwardRef(function ChatPromptHistory(
 
   const handleClearAll = async () => {
     if (!workspaceSlug) return;
+
+    if (confirm("Are you sure you want to clear all history? This action cannot be undone.")) {
     const { success } = await PromptHistory.clearAll(workspaceSlug);
-    if (success) {
-      setHistory([]);
+      if (success) {
+        setHistory([]);
+      }
     }
   };
 
@@ -73,7 +76,6 @@ const ChatPromptHistory = forwardRef(function ChatPromptHistory(
               {...item}
               onRestore={() => onRestore(item.prompt)}
               setHistory={setHistory}
-              workspaceSlug={workspaceSlug}
             />
           ))
         )}
@@ -89,15 +91,31 @@ function PromptHistoryItem({
   user,
   onRestore,
   setHistory,
-  workspaceSlug,
 }) {
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+
   const deleteHistory = async (id) => {
-    if (!workspaceSlug) return;
-    const { success } = await PromptHistory.delete(id);
-    if (success) {
-      setHistory(history.filter((item) => item.id !== id));
+    if (confirm("Are you sure you want to delete this history item? This action cannot be undone.")) {
+      const { success } = await PromptHistory.delete(id);
+      if (success) {
+        setHistory((prevHistory) => prevHistory.filter((item) => item.id !== id));
+      }
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showMenu && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMenu]);
+
   return (
     <div className="text-white">
       <div className="flex items-center justify-between">
@@ -117,12 +135,27 @@ function PromptHistoryItem({
           >
             Restore
           </div>
-          <DotsThreeVertical
-            size={16}
-            weight="bold"
-            className="text-white cursor-pointer hover:text-gray-300"
-            onClick={() => deleteHistory(id)}
-          />
+          <div className="relative">
+            <DotsThreeVertical
+              size={16}
+              weight="bold"
+              className="text-white cursor-pointer hover:text-gray-300"
+              onClick={() => setShowMenu(!showMenu)}
+            />
+            {showMenu && (
+              <div ref={menuRef} className="absolute right-0 top-6 bg-black rounded-lg z-50">
+                <div
+                  className="px-[10px] py-[6px] text-xs text-white hover:bg-theme-hover cursor-pointer"
+                  onClick={() => {
+                    setShowMenu(false);
+                    deleteHistory(id);
+                  }}
+                >
+                  Delete
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <div className="flex items-center mt-1">
