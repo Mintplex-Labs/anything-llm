@@ -1,4 +1,3 @@
-# .github/workflows/deploy-infra.yml
 name: Build & Deploy with CloudFormation
 
 on:
@@ -27,7 +26,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume:   ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region:            ${{ env.AWS_REGION }}
+          aws-region:       ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -43,6 +42,26 @@ jobs:
           docker push $ECR_REPOSITORY:$TAG
           echo "image_uri=$ECR_REPOSITORY:$TAG" >> $GITHUB_OUTPUT
 
+      - name: Cleanup failed stack (if any)
+        run: |
+          set -e
+          STATUS=$(aws cloudformation describe-stacks \
+            --stack-name $CFN_STACK_NAME \
+            --region $AWS_REGION \
+            --query "Stacks[0].StackStatus" \
+            --output text || echo "NONE")
+          if [ "$STATUS" = "ROLLBACK_COMPLETE" ]; then
+            echo "Found ROLLBACK_COMPLETE stack; deleting..."
+            aws cloudformation delete-stack \
+              --stack-name $CFN_STACK_NAME \
+              --region $AWS_REGION
+            aws cloudformation wait stack-delete-complete \
+              --stack-name $CFN_STACK_NAME \
+              --region $AWS_REGION
+          else
+            echo "No failed stack to clean up (status: $STATUS)."
+          fi
+
       - name: Deploy CloudFormation Stack
         run: |
           aws cloudformation deploy \
@@ -51,4 +70,3 @@ jobs:
             --parameter-overrides ImageUri=${{ steps.build-image.outputs.image_uri }} \
             --capabilities CAPABILITY_NAMED_IAM \
             --region $AWS_REGION
-
