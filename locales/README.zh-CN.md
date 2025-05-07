@@ -53,9 +53,9 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - 🆕 [**完全兼容 MCP**](https://docs.anythingllm.com/mcp-compatibility/overview)
 - 🆕 [**无代码AI代理构建器**](https://docs.anythingllm.com/agent-flows/overview)
 - 🖼️ **多用户实例支持和权限管理（支持封闭源和开源LLM！）**
-- [**自定义AI代理**](https://docs.anythingllm.com/agent/custom/introduction)
+- [**自定义人工智能代理**](https://docs.anythingllm.com/agent/custom/introduction)
 - 👤 多用户实例支持和权限管理 _仅限Docker版本_
-- 🦾 工作区内的智能体Agent（浏览网页、运行代码等）
+- 🦾 工作区内的智能体（浏览网页、运行代码等）
 - 💬 [为您的网站定制的可嵌入聊天窗口](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md)
 - 📖 支持多种文档类型（PDF、TXT、DOCX等）
 - 带有拖放功能和清晰引用的简洁聊天界面。
@@ -229,12 +229,12 @@ _以下是一些与 AnythingLLM 兼容的应用程序，但并非由 Mintplex La
 
 ## 🔗 更多产品
 
-- **[VectorAdmin][vector-admin]**：一个用于管理向量数据库的全方位GUI和工具套件。
-- **[OpenAI Assistant Swarm][assistant-swarm]**：一个智能体Agent就可以管理您所有的OpenAI助手。
+- **[VectorAdmin][vector-admin]**：一个用于管理向量数据库的全方位图形用户界面和工具套件。
+- **[OpenAI Assistant Swarm][assistant-swarm]**：一个智能体就可以管理您所有的OpenAI助手。
 
 <div align="right">
 
-[![][返回顶部]](#readme-top)
+[![][back-to-top]](#readme-top)
 
 </div>
 
