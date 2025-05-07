@@ -11,7 +11,7 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { PromptHistory } = require("../models/promptHistory");
+// const { PromptHistory } = require("../models/promptHistory");
 const { getVectorDbClass } = require("../utils/helpers");
 const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
@@ -97,7 +97,7 @@ function workspaceEndpoints(app) {
           response.sendStatus(400).end();
           return;
         }
-        await PromptHistory.handlePromptChange(currWorkspace, data, user?.id);
+
         await Workspace.trackChange(currWorkspace, data, user);
         const { workspace, message } = await Workspace.update(
           currWorkspace.id,
@@ -981,11 +981,13 @@ function workspaceEndpoints(app) {
   app.get(
     "/workspace/:slug/prompt-history",
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
-    async (request, response) => {
+    async (_, response) => {
       try {
-        const workspace = response.locals.workspace;
-        const history = await PromptHistory.forWorkspace(workspace.id);
-        response.status(200).json({ history });
+        response.status(200).json({
+          history: await Workspace.promptHistory({
+            workspaceId: response.locals.workspace.id,
+          }),
+        });
       } catch (error) {
         console.error("Error fetching prompt history:", error);
         response.sendStatus(500).end();
@@ -1000,13 +1002,13 @@ function workspaceEndpoints(app) {
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
       validWorkspaceSlug,
     ],
-    async (request, response) => {
+    async (_, response) => {
       try {
-        const workspace = response.locals.workspace;
-        const success = await PromptHistory.delete({
-          workspaceId: workspace.id,
+        response.status(200).json({
+          success: await Workspace.deleteAllPromptHistory({
+            workspaceId: response.locals.workspace.id,
+          }),
         });
-        response.status(200).json({ success });
       } catch (error) {
         console.error("Error clearing prompt history:", error);
         response.sendStatus(500).end();
@@ -1016,12 +1018,20 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/prompt-history/:id",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
     async (request, response) => {
       try {
         const { id } = request.params;
-        const success = await PromptHistory.delete({ id: Number(id) });
-        response.status(200).json({ success });
+        response.status(200).json({
+          success: await Workspace.deletePromptHistory({
+            workspaceId: response.locals.workspace.id,
+            id: Number(id),
+          }),
+        });
       } catch (error) {
         console.error("Error deleting prompt history:", error);
         response.sendStatus(500).end();

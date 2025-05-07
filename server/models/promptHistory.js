@@ -17,6 +17,13 @@ const PromptHistory = {
     }
   },
 
+  /**
+   * Get the prompt history for a workspace.
+   * @param {number} workspaceId - The ID of the workspace to get prompt history for.
+   * @param {number|null} limit - The maximum number of history items to return.
+   * @param {string|null} orderBy - The field to order the history by.
+   * @returns {Promise<Array<{id: number, prompt: string, modifiedAt: Date, modifiedBy: number, user: {username: string}}>>} A promise that resolves to an array of prompt history objects.
+   */
   forWorkspace: async function (
     workspaceId = null,
     limit = null,
@@ -35,9 +42,7 @@ const PromptHistory = {
         include: {
           user: {
             select: {
-              id: true,
               username: true,
-              role: true,
             },
           },
         },
@@ -86,23 +91,16 @@ const PromptHistory = {
 
   /**
    * Utility method to handle prompt changes and create history entries
-   * @param {Object} workspace - The workspace object
-   * @param {Object} updates - The updates being applied
-   * @param {number|null} userId - The ID of the user making the change
+   * @param {import('./workspace').Workspace} workspaceData - The workspace object (previous state)
+   * @param {{id: number, role: string}|null} user - The user making the change
    * @returns {Promise<void>}
    */
-  handlePromptChange: async function (workspace, updates, userId = null) {
-    if (
-      !updates.openAiPrompt ||
-      updates.openAiPrompt === workspace.openAiPrompt
-    )
-      return;
-
+  handlePromptChange: async function (workspaceData, user = null) {
     try {
       await this.new({
-        workspaceId: workspace.id,
-        prompt: workspace.openAiPrompt, // Store previous prompt as history
-        modifiedBy: userId,
+        workspaceId: workspaceData.id,
+        prompt: workspaceData.openAiPrompt, // Store previous prompt as history
+        modifiedBy: user?.id,
       });
     } catch (error) {
       console.error("Failed to create prompt history:", error.message);
