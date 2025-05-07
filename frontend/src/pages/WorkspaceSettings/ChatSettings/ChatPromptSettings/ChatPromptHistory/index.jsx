@@ -98,6 +98,7 @@ function PromptHistoryItem({
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
+  const menuButtonRef = useRef(null);
 
   const deleteHistory = async (id) => {
     if (
@@ -116,7 +117,11 @@ function PromptHistoryItem({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showMenu && !menuRef.current.contains(event.target)) {
+      if (
+        showMenu &&
+        !menuRef.current.contains(event.target) &&
+        !menuButtonRef.current.contains(event.target)
+      ) {
         setShowMenu(false);
       }
     };
@@ -146,12 +151,13 @@ function PromptHistoryItem({
             Restore
           </div>
           <div className="relative">
-            <DotsThreeVertical
-              size={16}
-              weight="bold"
+            <div
+              ref={menuButtonRef}
               className="text-white cursor-pointer hover:text-gray-300"
               onClick={() => setShowMenu(!showMenu)}
-            />
+            >
+              <DotsThreeVertical size={16} weight="bold" />
+            </div>
             {showMenu && (
               <div
                 ref={menuRef}
