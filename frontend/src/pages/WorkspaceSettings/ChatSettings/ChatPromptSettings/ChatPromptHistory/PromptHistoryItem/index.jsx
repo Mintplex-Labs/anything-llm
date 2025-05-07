@@ -75,7 +75,7 @@ export default function PromptHistoryItem({
             <button
               type="button"
               ref={menuButtonRef}
-              className="border-none text-theme-text-secondary cursor-pointer hover:text-primary-button"
+              className="border-none text-theme-text-secondary cursor-pointer hover:text-primary-button flex items-center justify-center"
               onClick={() => setShowMenu(!showMenu)}
             >
               <DotsThreeVertical size={16} weight="bold" />
