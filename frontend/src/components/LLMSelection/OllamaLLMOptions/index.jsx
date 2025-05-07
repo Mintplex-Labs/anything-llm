@@ -19,7 +19,6 @@ export default function OllamaLLMOptions({ settings }) {
   } = useProviderEndpointAutoDiscovery({
     provider: "ollama",
     initialBasePath: settings?.OllamaLLMBasePath,
-    initialAuthToken: settings?.OllamaLLMAuthToken,
     ENDPOINTS: OLLAMA_COMMON_URLS,
   });
   const [performanceMode, setPerformanceMode] = useState(
@@ -209,6 +208,9 @@ export default function OllamaLLMOptions({ settings }) {
                 name="OllamaLLMAuthToken"
                 className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5"
                 placeholder="Ollama Auth Token"
+                defaultValue={
+                  settings?.OllamaLLMAuthToken ? "*".repeat(20) : ""
+                }
                 value={authTokenValue.value}
                 onChange={authToken.onChange}
                 onBlur={authToken.onBlur}

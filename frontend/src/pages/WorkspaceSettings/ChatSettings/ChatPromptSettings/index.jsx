@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Fragment } from "react";
 import { chatPrompt } from "@/utils/chat";
 import { useTranslation } from "react-i18next";
 import SystemPromptVariable from "@/models/systemPromptVariable";
@@ -52,15 +52,12 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           </Link>{" "}
           like:{" "}
           {availableVariables.slice(0, 3).map((v, i) => (
-            <>
-              <span
-                key={v.key}
-                className="bg-theme-settings-input-bg px-1 py-0.5 rounded"
-              >
+            <Fragment key={v.key}>
+              <span className="bg-theme-settings-input-bg px-1 py-0.5 rounded">
                 {`{${v.key}}`}
               </span>
               {i < availableVariables.length - 1 && ", "}
-            </>
+            </Fragment>
           ))}
           {availableVariables.length > 3 && (
             <Link
