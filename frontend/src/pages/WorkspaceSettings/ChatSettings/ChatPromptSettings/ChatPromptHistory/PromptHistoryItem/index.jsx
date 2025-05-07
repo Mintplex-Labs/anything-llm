@@ -20,7 +20,7 @@ export default function PromptHistoryItem({
 
   const deleteHistory = async (id) => {
     if (
-      confirm(
+      window.confirm(
         "Are you sure you want to delete this history item? This action cannot be undone."
       )
     ) {
