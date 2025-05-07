@@ -87,7 +87,7 @@ export default function PromptHistoryItem({
               >
                 <button
                   type="button"
-                  className="px-[10px] py-[6px] text-theme-text-secondary hover:bg-theme-hover cursor-pointer"
+                  className="px-[10px] py-[6px] text-theme-text-secondary hover:bg-theme-hover cursor-pointer border-none"
                   onClick={() => {
                     setShowMenu(false);
                     deleteHistory(id);
@@ -107,7 +107,7 @@ export default function PromptHistoryItem({
               {truncate(prompt, MAX_PROMPT_LENGTH)}{" "}
               <button
                 type="button"
-                className="text-theme-text-secondary hover:text-primary-button"
+                className="text-theme-text-secondary hover:text-primary-button border-none"
                 onClick={() => setExpanded(!expanded)}
               >
                 Expand

@@ -65,7 +65,7 @@ export default forwardRef(function ChatPromptHistory(
           {history.length > 0 && (
             <button
               type="button"
-              className="text-sm font-medium text-theme-text-secondary cursor-pointer hover:text-primary-button"
+              className="text-sm font-medium text-theme-text-secondary cursor-pointer hover:text-primary-button border-none"
               onClick={handleClearAll}
             >
               Clear All
@@ -73,7 +73,7 @@ export default forwardRef(function ChatPromptHistory(
           )}
           <button
             type="button"
-            className="text-theme-text-secondary cursor-pointer hover:text-primary-button"
+            className="text-theme-text-secondary cursor-pointer hover:text-primary-button border-none"
             onClick={onClose}
           >
             <X size={16} weight="bold" />
