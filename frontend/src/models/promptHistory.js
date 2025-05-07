@@ -65,13 +65,10 @@ const PromptHistory = {
 
   delete: async function (id) {
     try {
-      return await fetch(
-        `${API_BASE}/workspace/prompt-history/${id}`,
-        {
-          method: "DELETE",
-          headers: baseHeaders(),
-        }
-      )
+      return await fetch(`${API_BASE}/workspace/prompt-history/${id}`, {
+        method: "DELETE",
+        headers: baseHeaders(),
+      })
         .then((res) => res.json())
         .catch((error) => {
           console.error("Error deleting prompt history:", error);

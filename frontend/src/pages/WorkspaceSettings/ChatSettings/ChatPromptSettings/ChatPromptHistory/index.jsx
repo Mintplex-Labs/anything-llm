@@ -21,8 +21,12 @@ const ChatPromptHistory = forwardRef(function ChatPromptHistory(
   const handleClearAll = async () => {
     if (!workspaceSlug) return;
 
-    if (confirm("Are you sure you want to clear all history? This action cannot be undone.")) {
-    const { success } = await PromptHistory.clearAll(workspaceSlug);
+    if (
+      confirm(
+        "Are you sure you want to clear all history? This action cannot be undone."
+      )
+    ) {
+      const { success } = await PromptHistory.clearAll(workspaceSlug);
       if (success) {
         setHistory([]);
       }
@@ -96,10 +100,16 @@ function PromptHistoryItem({
   const menuRef = useRef(null);
 
   const deleteHistory = async (id) => {
-    if (confirm("Are you sure you want to delete this history item? This action cannot be undone.")) {
+    if (
+      confirm(
+        "Are you sure you want to delete this history item? This action cannot be undone."
+      )
+    ) {
       const { success } = await PromptHistory.delete(id);
       if (success) {
-        setHistory((prevHistory) => prevHistory.filter((item) => item.id !== id));
+        setHistory((prevHistory) =>
+          prevHistory.filter((item) => item.id !== id)
+        );
       }
     }
   };
@@ -143,7 +153,10 @@ function PromptHistoryItem({
               onClick={() => setShowMenu(!showMenu)}
             />
             {showMenu && (
-              <div ref={menuRef} className="absolute right-0 top-6 bg-black rounded-lg z-50">
+              <div
+                ref={menuRef}
+                className="absolute right-0 top-6 bg-black rounded-lg z-50"
+              >
                 <div
                   className="px-[10px] py-[6px] text-xs text-white hover:bg-theme-hover cursor-pointer"
                   onClick={() => {

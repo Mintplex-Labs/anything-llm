@@ -82,7 +82,10 @@ async function loadGitlabRepo(args, response) {
       pageContent = doc.wiki.content;
       data.title = doc.wiki.title;
       data.docAuthor = repo.author;
-      data.description = doc.wiki.format === "markdown" ? "GitLab Wiki Page (Markdown)" : "GitLab Wiki Page";
+      data.description =
+        doc.wiki.format === "markdown"
+          ? "GitLab Wiki Page (Markdown)"
+          : "GitLab Wiki Page";
     } else {
       continue;
     }
