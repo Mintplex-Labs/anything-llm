@@ -33,7 +33,8 @@
           }]
         },
         "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+          "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+          "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess" 
         ]
       }
     },
