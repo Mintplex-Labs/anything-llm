@@ -4,11 +4,13 @@ import { X } from "@phosphor-icons/react";
 import PromptHistoryItem from "./PromptHistoryItem";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useTranslation } from "react-i18next";
 
 export default forwardRef(function ChatPromptHistory(
   { show, workspaceSlug, onRestore, onClose },
   ref
 ) {
+  const { t } = useTranslation();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,11 +31,7 @@ export default forwardRef(function ChatPromptHistory(
 
   function handleClearAll() {
     if (!workspaceSlug) return;
-    if (
-      window.confirm(
-        "Are you sure you want to clear all history? This action cannot be undone."
-      )
-    ) {
+    if (window.confirm(t("chat.prompt.history.clearAllConfirm"))) {
       PromptHistory.clearAll(workspaceSlug)
         .then(({ success }) => {
           if (success) setHistory([]);
@@ -59,7 +57,7 @@ export default forwardRef(function ChatPromptHistory(
     >
       <div className="flex items-center justify-between">
         <div className="text-theme-text-primary text-sm font-semibold">
-          System Prompt History
+          {t("chat.prompt.history.title")}
         </div>
         <div className="flex items-center gap-2">
           {history.length > 0 && (
@@ -68,7 +66,7 @@ export default forwardRef(function ChatPromptHistory(
               className="text-sm font-medium text-theme-text-secondary cursor-pointer hover:text-primary-button border-none"
               onClick={handleClearAll}
             >
-              Clear All
+              {t("chat.prompt.history.clearAll")}
             </button>
           )}
           <button
@@ -85,7 +83,7 @@ export default forwardRef(function ChatPromptHistory(
           <LoaderSkeleton />
         ) : history.length === 0 ? (
           <div className="flex text-theme-text-secondary text-sm text-center w-full h-full flex items-center justify-center">
-            No system prompt history available
+            {t("chat.prompt.history.noHistory")}
           </div>
         ) : (
           history.map((item) => (

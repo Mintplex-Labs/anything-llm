@@ -3,6 +3,7 @@ import moment from "moment";
 import { useRef, useState, useEffect } from "react";
 import PromptHistory from "@/models/promptHistory";
 import truncate from "truncate";
+import { useTranslation } from "react-i18next";
 const MAX_PROMPT_LENGTH = 200; // chars
 
 export default function PromptHistoryItem({
@@ -13,17 +14,14 @@ export default function PromptHistoryItem({
   onRestore,
   setHistory,
 }) {
+  const { t } = useTranslation();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   const menuButtonRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
 
   const deleteHistory = async (id) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this history item? This action cannot be undone."
-      )
-    ) {
+    if (window.confirm(t("chat.prompt.history.deleteConfirm"))) {
       const { success } = await PromptHistory.delete(id);
       if (success) {
         setHistory((prevHistory) =>
@@ -69,7 +67,7 @@ export default function PromptHistoryItem({
             className="border-none text-sm cursor-pointer text-theme-text-primary hover:text-primary-button"
             onClick={onRestore}
           >
-            Restore
+            {t("chat.prompt.history.restore")}
           </button>
           <div className="relative">
             <button
@@ -93,7 +91,7 @@ export default function PromptHistoryItem({
                     deleteHistory(id);
                   }}
                 >
-                  Delete
+                  {t("chat.prompt.history.delete")}
                 </button>
               </div>
             )}
@@ -110,7 +108,7 @@ export default function PromptHistoryItem({
                 className="text-theme-text-secondary hover:text-primary-button border-none"
                 onClick={() => setExpanded(!expanded)}
               >
-                Expand
+                {t("chat.prompt.history.expand")}
               </button>
             </>
           ) : (
