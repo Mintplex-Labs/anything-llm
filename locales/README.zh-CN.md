@@ -53,17 +53,17 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - 🆕 [**完全兼容 MCP**](https://docs.anythingllm.com/mcp-compatibility/overview)
 - 🆕 [**无代码AI代理构建器**](https://docs.anythingllm.com/agent-flows/overview)
 - 🖼️ **多用户实例支持和权限管理（支持封闭源和开源LLM！）**
+- [**自定义AI代理**](https://docs.anythingllm.com/agent/custom/introduction)
 - 👤 多用户实例支持和权限管理 _仅限Docker版本_
 - 🦾 工作区内的智能体Agent（浏览网页、运行代码等）
 - 💬 [为您的网站定制的可嵌入聊天窗口](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md)
 - 📖 支持多种文档类型（PDF、TXT、DOCX等）
-- 通过简单的用户界面管理向量数据库中的文档
-- 两种对话模式：`聊天`和`查询`。聊天模式保留先前的对话记录。查询模式则是针对您的文档做简单问答
-- 聊天中会提供所引用的相应文档内容
+- 带有拖放功能和清晰引用的简洁聊天界面。
 - 100%云部署就绪。
-- “部署你自己的LLM模型”。
-- 管理超大文档时高效、低耗。只需要一次就可以嵌入（Embedding）一个庞大的文档或文字记录。比其他文档聊天机器人解决方案节省90%的成本。
+- 兼容所有主流的[闭源和开源大语言模型提供商](#支持的llm嵌入模型转录模型和向量数据库)。
+- 内置节省成本和时间的机制，用于处理超大文档，优于任何其他聊天界面。
 - 全套的开发人员API，用于自定义集成！
+- 而且还有更多精彩功能……安装后亲自体验吧！
 
 ### 支持的LLM、嵌入模型、转录模型和向量数据库
 
@@ -73,21 +73,28 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - [OpenAI](https://openai.com)
 - [OpenAI (通用)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- [AWS Bedrock](https://aws.amazon.com/bedrock/)
 - [Anthropic](https://www.anthropic.com/)
+- [NVIDIA NIM (聊天模型)](https://build.nvidia.com/explore/discover)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Hugging Face (聊天模型)](https://huggingface.co/)
 - [Ollama (聊天模型)](https://ollama.ai/)
 - [LM Studio (所有模型)](https://lmstudio.ai)
-- [LocalAi (所有模型)](https://localai.io/)
+- [LocalAI (所有模型)](https://localai.io/)
 - [Together AI (聊天模型)](https://www.together.ai/)
 - [Fireworks AI (聊天模型)](https://fireworks.ai/)
 - [Perplexity (聊天模型)](https://www.perplexity.ai/)
 - [OpenRouter (聊天模型)](https://openrouter.ai/)
-- [Novita AI (聊天模型)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
+- [DeepSeek (聊天模型)](https://deepseek.com/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [LiteLLM](https://github.com/BerriAI/litellm)
+- [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
+- [Apipie](https://apipie.ai/)
+- [xAI](https://x.ai/)
+- [Novita AI (聊天模型)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO (聊天模型)](https://ppinfra.com?utm_source=github_anything-llm)
 
 **支持的嵌入模型：**
@@ -95,7 +102,7 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - [AnythingLLM原生嵌入器](/server/storage/models/README.md)（默认）
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- [LocalAi (全部)](https://localai.io/)
+- [LocalAI (全部)](https://localai.io/)
 - [Ollama (全部)](https://ollama.ai/)
 - [LM Studio (全部)](https://lmstudio.ai)
 - [Cohere](https://cohere.com/)
@@ -164,6 +171,14 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 [了解向量缓存](../server/storage/vector-cache/VECTOR_CACHE.md)
 
+## 外部应用与集成
+
+_以下是一些与 AnythingLLM 兼容的应用程序，但并非由 Mintplex Labs 维护。列在此处并不代表官方背书。_
+
+- [Midori AI 子系统管理器 - 使用 Docker 容器技术高效部署 AI 系统的简化方式](https://io.midori-ai.xyz/subsystem/anythingllm/) - 使用 Docker 容器技术高效部署 AI 系统的简化方式。
+- [Coolify](https://coolify.io/docs/services/anythingllm/) - 一键部署 AnythingLLM。
+- [适用于 Microsoft Word 的 GPTLocalhost](https://gptlocalhost.com/demo/) - 一个本地 Word 插件，让你可以在 Microsoft Word 中使用 AnythingLLM。
+
 ## 远程信息收集与隐私保护
 
 由 Mintplex Labs Inc 开发的 AnythingLLM 包含一个收集匿名使用信息的 Telemetry 功能。
@@ -180,7 +195,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ### 怎样关闭
 
-通过在服务器或 docker 的 `.env` 设置中将 `DISABLE_TELEMETRY` 设置为 “true” 来选择退出 Telemetry 远程信息收集功能。您也可以进入 AnythingLLM 应用 >>> 侧边栏最下方 >>> `隐私和数据` （Privacy&Data） >>> 找到最下方的 Anonymous Telemetry Enabled，点击绿色按钮让它变灰色，从而禁用信息收集功能。
+在服务器或 Docker 的 .env 设置中将 `DISABLE_TELEMETRY` 设置为 "true"，即可选择不参与遥测数据收集。你也可以在应用内通过以下路径操作：侧边栏 > `Privacy` （隐私） > 关闭遥测功能。 
 
 ### 你们跟踪收集哪些信息？
 
@@ -193,6 +208,8 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 - 信息被`发送`出去。这是最常规的“事件/行为/event”，并让我们了解到所有安装了这个项目的每日活动情况。同样，只收集`发送`这个行为的信息，我们不会收集关于聊天本身的性质或内容的任何信息。
 
 您可以通过查找所有调用`Telemetry.sendTelemetry`的位置来验证这些声明。此外，如果启用，这些事件也会被写入输出日志，因此您也可以看到发送了哪些具体数据。**IP或其他识别信息不会被收集**。Telemetry远程信息收集的方案来自[PostHog](https://posthog.com/) - 一个开源的远程信息收集服务。
+
+我们非常重视隐私，且不用烦人的弹窗问卷来获取反馈，希望你能理解为什么我们想要知道该工具的使用情况，这样我们才能打造真正值得使用的产品。所有匿名数据 _绝不会_ 与任何第三方共享。 
 
 [在源代码中查看所有信息收集活动](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
 
