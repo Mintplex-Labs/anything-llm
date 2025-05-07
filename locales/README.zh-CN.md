@@ -130,7 +130,7 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 
 ### 技术概览
 
-这个单库由三个主要部分组成：
+这个单库由六个主要部分组成：
 
 - `frontend`: 一个 viteJS + React 前端，您可以运行它来轻松创建和管理LLM可以使用的所有内容。
 - `server`: 一个 NodeJS express 服务器，用于处理所有交互并进行所有向量数据库管理和 LLM 交互。
