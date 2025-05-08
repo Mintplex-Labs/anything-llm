@@ -371,13 +371,27 @@ const KEY_MAPPING = {
   },
 
   // Astra DB Options
-
   AstraDBApplicationToken: {
     envKey: "ASTRA_DB_APPLICATION_TOKEN",
     checks: [isNotEmpty],
   },
   AstraDBEndpoint: {
     envKey: "ASTRA_DB_ENDPOINT",
+    checks: [isNotEmpty],
+  },
+
+  /*
+  PGVector Options
+  - Does very simple validations - we should expand this in the future
+  - to ensure the connection string is valid and the table name is valid
+  - via direct query
+  */
+  PGVectorConnectionString: {
+    envKey: "PGVECTOR_CONNECTION_STRING",
+    checks: [isNotEmpty, looksLikePostgresConnectionString],
+  },
+  PGVectorTableName: {
+    envKey: "PGVECTOR_TABLE_NAME",
     checks: [isNotEmpty],
   },
 
@@ -802,6 +816,7 @@ function supportedVectorDB(input = "") {
     "milvus",
     "zilliz",
     "astra",
+    "pgvector",
   ];
   return supported.includes(input)
     ? null
@@ -878,6 +893,19 @@ async function handleVectorStoreReset(key, prevValue, nextValue) {
     return await resetAllVectorStores({ vectorDbKey: process.env.VECTOR_DB });
   }
   return false;
+}
+
+/**
+ * Validates the Postgres connection string for the PGVector options.
+ * @param {string} input - The Postgres connection string to validate.
+ * @returns {string} - An error message if the connection string is invalid, otherwise null.
+ */
+async function looksLikePostgresConnectionString(connectionString = null) {
+  if (!connectionString || !connectionString.startsWith("postgresql://"))
+    return "Invalid Postgres connection string. Must start with postgresql://";
+  if (connectionString.includes(" "))
+    return "Invalid Postgres connection string. Must not contain spaces.";
+  return null;
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or

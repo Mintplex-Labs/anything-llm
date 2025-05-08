@@ -107,6 +107,9 @@ function getVectorDbClass(getExactly = null) {
     case "astra":
       const { AstraDB } = require("../vectorDbProviders/astra");
       return AstraDB;
+    case "pgvector":
+      const { PGVector } = require("../vectorDbProviders/pgvector");
+      return PGVector;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }
