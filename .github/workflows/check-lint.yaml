@@ -43,7 +43,8 @@ jobs:
         run: |
           echo "Running lint checks"
           echo "Current directory: $(pwd)"
-          
+          cat .prettierignore
+
           # Server lint check
           cd server
           npm run lint:check
