@@ -198,6 +198,13 @@
     },
     "TaskDefinition": {
       "Type": "AWS::ECS::TaskDefinition",
+      "DependsOn": [
+        "EcsLogGroup",
+        "MilvusLogGroup",
+        "EFSMountTarget1",
+        "EFSMountTarget2",
+        "EFSMountTarget3"
+      ],
       "Properties": {
         "Family": "anythingllm-task",
         "Cpu": "1024",
