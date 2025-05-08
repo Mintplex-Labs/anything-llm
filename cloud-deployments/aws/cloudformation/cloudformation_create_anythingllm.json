@@ -1,212 +1,333 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Create a stack that runs AnythingLLM on a single instance",
+  "Description": "Production‑ready ECS Fargate service for AnythingLLM & Milvus, with split SGs, CloudWatch Logs, SSM‑backed env vars, and EFS persistence for Milvus",
   "Parameters": {
-    "InstanceType": {
-      "Description": "EC2 instance type",
+    "ClusterName": {
       "Type": "String",
-      "Default": "t3.small"
-    },
-    "InstanceVolume": {
-      "Description": "Storage size of disk on Instance in GB",
-      "Type": "Number",
-      "Default": 10,
-      "MinValue": 4
+      "Description": "Existing ECS cluster name"
     },
     "ImageUri": {
       "Type": "String",
-      "Description": "051826724302.dkr.ecr.us-east-2.amazonaws.com/layerone/allm:abcdef12"
+      "Description": "ECR URI for the AnythingLLM container"
+    },
+    "MilvusImageUri": {
+      "Type": "String",
+      "Description": "Image URI for Milvus"
+    },
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "SubnetIds": {
+      "Type": "List<AWS::EC2::Subnet::Id>"
+    },
+    "CertificateArn": {
+      "Type": "String",
+      "Description": "ACM certificate ARN for the ALB"
+    },
+    "DesiredCount": {
+      "Type": "Number",
+      "Default": 1
+    },
+    "ParameterPrefix": {
+      "Type": "String",
+      "Description": "SSM Parameter Store prefix for env vars (no leading or trailing slash)"
     }
   },
   "Resources": {
-    "AnythingLLMInstanceRole": {
+    "ServiceSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "ALB SG – allows HTTP/HTTPS from anywhere",
+        "VpcId": { "Ref": "VpcId" },
+        "SecurityGroupIngress": [
+          { "IpProtocol": "tcp", "FromPort": 80, "ToPort": 80, "CidrIp": "0.0.0.0/0" },
+          { "IpProtocol": "tcp", "FromPort": 443, "ToPort": 443, "CidrIp": "0.0.0.0/0" }
+        ]
+      }
+    },
+    "TaskSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "ECS Task SG – allows ALB → tasks on 3001 only",
+        "VpcId": { "Ref": "VpcId" },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3001,
+            "ToPort": 3001,
+            "SourceSecurityGroupId": { "Ref": "ServiceSecurityGroup" }
+          }
+        ]
+      }
+    },
+    "EFSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "EFS SG – allows NFS (2049) from ECS tasks",
+        "VpcId": { "Ref": "VpcId" },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 2049,
+            "ToPort": 2049,
+            "SourceSecurityGroupId": { "Ref": "TaskSecurityGroup" }
+          }
+        ]
+      }
+    },
+    "EFSFileSystem": {
+      "Type": "AWS::EFS::FileSystem",
+      "Properties": {
+        "Encrypted": true,
+        "FileSystemTags": [
+          { "Key": "Name", "Value": "anythingllm-milvus" }
+        ]
+      }
+    },
+    "EFSMountTarget1": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+        "FileSystemId": { "Ref": "EFSFileSystem" },
+        "SubnetId": { "Fn::Select": [0, { "Ref": "SubnetIds" }] },
+        "SecurityGroups": [{ "Ref": "EFSecurityGroup" }]
+      }
+    },
+    "EFSMountTarget2": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+        "FileSystemId": { "Ref": "EFSFileSystem" },
+        "SubnetId": { "Fn::Select": [1, { "Ref": "SubnetIds" }] },
+        "SecurityGroups": [{ "Ref": "EFSecurityGroup" }]
+      }
+    },
+    "EFSMountTarget3": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+        "FileSystemId": { "Ref": "EFSFileSystem" },
+        "SubnetId": { "Fn::Select": [2, { "Ref": "SubnetIds" }] },
+        "SecurityGroups": [{ "Ref": "EFSecurityGroup" }]
+      }
+    },
+    "LoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "Name": "anythingllm-alb",
+        "Scheme": "internet-facing",
+        "Subnets": { "Ref": "SubnetIds" },
+        "SecurityGroups": [{ "Ref": "ServiceSecurityGroup" }]
+      }
+    },
+    "TargetGroup": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Name": "anythingllm-tg",
+        "Port": 3001,
+        "Protocol": "HTTP",
+        "VpcId": { "Ref": "VpcId" },
+        "TargetType": "ip",
+        "HealthCheckPath": "/api/ping"
+      }
+    },
+    "ListenerHTTP": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "LoadBalancerArn": { "Ref": "LoadBalancer" },
+        "Protocol": "HTTP",
+        "Port": 80,
+        "DefaultActions": [
+          {
+            "Type": "redirect",
+            "RedirectConfig": {
+              "Protocol": "HTTPS",
+              "Port": "443",
+              "StatusCode": "HTTP_301"
+            }
+          }
+        ]
+      }
+    },
+    "ListenerHTTPS": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "LoadBalancerArn": { "Ref": "LoadBalancer" },
+        "Protocol": "HTTPS",
+        "Port": 443,
+        "Certificates": [{ "CertificateArn": { "Ref": "CertificateArn" } }],
+        "DefaultActions": [
+          { "Type": "forward", "TargetGroupArn": { "Ref": "TargetGroup" } }
+        ]
+      }
+    },
+    "TaskExecutionRole": {
       "Type": "AWS::IAM::Role",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
             {
               "Effect": "Allow",
-              "Principal": { "Service": "ec2.amazonaws.com" },
+              "Principal": { "Service": "ecs-tasks.amazonaws.com" },
               "Action": "sts:AssumeRole"
             }
           ]
         },
         "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
           "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
           "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
         ]
       }
     },
-    "AnythingLLMInstanceProfile": {
-      "Type": "AWS::IAM::InstanceProfile",
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain",
+    "TaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
       "Properties": {
-        "Roles": [ { "Ref": "AnythingLLMInstanceRole" } ]
-      }
-    },
-    "AnythingLLMInstanceSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "AnythingLLM Instance Security Group",
-        "SecurityGroupIngress": [
+        "Family": "anythingllm-task",
+        "Cpu": "1024",
+        "Memory": "2048",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": ["FARGATE"],
+        "ExecutionRoleArn": { "Fn::GetAtt": ["TaskExecutionRole", "Arn"] },
+        "Volumes": [
           {
-            "IpProtocol": "tcp",
-            "FromPort": 22,
-            "ToPort": 22,
-            "CidrIp": "0.0.0.0/0"
+            "Name": "milvus-data",
+            "EfsVolumeConfiguration": {
+              "FileSystemId": { "Ref": "EFSFileSystem" }
+            }
+          }
+        ],
+        "ContainerDefinitions": [
+          {
+            "Name": "anythingllm",
+            "Image": { "Ref": "ImageUri" },
+            "PortMappings": [{ "ContainerPort": 3001, "Protocol": "tcp" }],
+            "Secrets": [
+              {
+                "Name": "LLM_PROVIDER",
+                "ValueFrom": {
+                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/LLM_PROVIDER"
+                }
+              },
+              {
+                "Name": "EMBEDDING_ENGINE",
+                "ValueFrom": {
+                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/EMBEDDING_ENGINE"
+                }
+              },
+              {
+                "Name": "VECTOR_DB",
+                "ValueFrom": {
+                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/VECTOR_DB"
+                }
+              },
+              {
+                "Name": "MILVUS_ENDPOINT",
+                "ValueFrom": {
+                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_ENDPOINT"
+                }
+              },
+              {
+                "Name": "MILVUS_USERNAME",
+                "ValueFrom": {
+                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_USERNAME"
+                }
+              },
+              {
+                "Name": "MILVUS_PASSWORD",
+                "ValueFrom": {
+                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_PASSWORD"
+                }
+              },
+              {
+                "Name": "OPEN_AI_KEY",
+                "ValueFrom": {
+                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/OPEN_AI_KEY"
+                }
+              },
+              {
+                "Name": "OPEN_MODEL_PREF",
+                "ValueFrom": {
+                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/OPEN_MODEL_PREF"
+                }
+              },
+              {
+                "Name": "AGENT_GSE_KEY",
+                "ValueFrom": {
+                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/AGENT_GSE_KEY"
+                }
+              },
+              {
+                "Name": "AGENT_GSE_CTX",
+                "ValueFrom": {
+                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/AGENT_GSE_CTX"
+                }
+              }
+            ],
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": "/ecs/anythingllm",
+                "awslogs-region": "us-east-2",
+                "awslogs-stream-prefix": "anythingllm"
+              }
+            }
           },
           {
-            "IpProtocol": "tcp",
-            "FromPort": 80,
-            "ToPort": 80,
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 443,
-            "ToPort": 443,
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 3001,
-            "ToPort": 3001,
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 3001,
-            "ToPort": 3001,
-            "CidrIpv6": "::/0"
+            "Name": "milvus",
+            "Image": { "Ref": "MilvusImageUri" },
+            "PortMappings": [{ "ContainerPort": 19530, "Protocol": "tcp" }],
+            "MountPoints": [
+              {
+                "SourceVolume": "milvus-data",
+                "ContainerPath": "/var/lib/milvus"
+              }
+            ],
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": "/ecs/milvus",
+                "awslogs-region": "us-east-2",
+                "awslogs-stream-prefix": "milvus"
+              }
+            }
           }
         ]
       }
     },
-    "AnythingLLMInstance": {
-      "Type": "AWS::EC2::Instance",
+    "Service": {
+      "Type": "AWS::ECS::Service",
       "Properties": {
-        "KeyName": "milvus-key",
-        "IamInstanceProfile": { "Ref": "AnythingLLMInstanceProfile" },
-        "ImageId": {
-          "Fn::FindInMap": [
-            "Region2AMI",
-            { "Ref": "AWS::Region" },
-            "AMI"
-          ]
+        "Cluster": { "Ref": "ClusterName" },
+        "ServiceName": "anythingllm-service",
+        "TaskDefinition": { "Ref": "TaskDefinition" },
+        "DesiredCount": { "Ref": "DesiredCount" },
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "ENABLED",
+            "Subnets": { "Ref": "SubnetIds" },
+            "SecurityGroups": [{ "Ref": "TaskSecurityGroup" }]
+          }
         },
-        "InstanceType": { "Ref": "InstanceType" },
-        "SecurityGroupIds": [
-          { "Ref": "AnythingLLMInstanceSecurityGroup" }
-        ],
-        "BlockDeviceMappings": [
+        "LoadBalancers": [
           {
-            "DeviceName": {
-              "Fn::FindInMap": [
-                "Region2AMI",
-                { "Ref": "AWS::Region" },
-                "RootDeviceName"
-              ]
-            },
-            "Ebs": {
-              "VolumeSize": { "Ref": "InstanceVolume" }
-            }
+            "ContainerName": "anythingllm",
+            "ContainerPort": 3001,
+            "TargetGroupArn": { "Ref": "TargetGroup" }
           }
-        ],
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "#!/bin/bash\n",
-                "yum install -y nginx aws-cli docker iptables\n",
-                "cat >/etc/nginx/conf.d/anythingllm.conf <<'EOF'\n",
-                "server {\n",
-                "    listen 80;\n",
-                "    server_name anythingllm.dropdev.co;\n",
-                "    return 301 https://$host$request_uri;\n",
-                "}\n",
-                "server {\n",
-                "    listen 443 ssl;\n",
-                "    server_name anythingllm.dropdev.co;\n",
-                "    ssl_certificate     /etc/ssl/certs/fullchain.pem;\n",
-                "    ssl_certificate_key /etc/ssl/private/privkey.pem;\n",
-                "    location / {\n",
-                "        proxy_pass http://127.0.0.1:3001;\n",
-                "        proxy_set_header Host $host;\n",
-                "        proxy_set_header X-Real-IP $remote_addr;\n",
-                "        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n",
-                "    }\n",
-                "}\n",
-                "EOF\n",
-                "systemctl enable nginx\n",
-                "systemctl start nginx\n",
-                "iptables -A OUTPUT -m owner ! --uid-owner root -d 169.254.169.254 -j DROP\n",
-                "systemctl enable docker\n",
-                "systemctl start docker\n",
-                "mkdir -p /home/ec2-user/anythingllm\n",
-                "touch /home/ec2-user/anythingllm/.env\n",
-                "chown ec2-user:ec2-user -R /home/ec2-user/anythingllm\n",
-                "aws ecr get-login-password --region ", { "Ref": "AWS::Region" },
-                " | docker login --username AWS --password-stdin 051826724302.dkr.ecr.us-east-2.amazonaws.com\n",
-                "docker pull ", { "Ref": "ImageUri" }, "\n",
-                "docker run -d -p 3001:3001 --cap-add SYS_ADMIN \\\n",
-                "  -v /home/ec2-user/anythingllm:/app/server/storage \\\n",
-                "  -v /home/ec2-user/anythingllm/.env:/app/server/.env \\\n",
-                "  -e STORAGE_DIR=\"/app/server/storage\" \\\n",
-                "  ", { "Ref": "ImageUri" }, "\n",
-                "echo \"Container ID: $(docker ps --latest --quiet)\"\n",
-                "echo \"Health check: $(curl -Is http://localhost:3001/api/ping | head -n1)\"\n"
-              ]
-            ]
-          }
-        }
+        ]
       }
     }
   },
   "Outputs": {
-    "ServerIp": {
-      "Description": "IP address of the AnythingLLM instance",
-      "Value": {
-        "Fn::GetAtt": [ "AnythingLLMInstance", "PublicIp" ]
-      }
+    "LoadBalancerDNS": {
+      "Description": "DNS name of the ALB",
+      "Value": { "Fn::GetAtt": ["LoadBalancer", "DNSName"] }
     },
-    "ServerURL": {
-      "Description": "URL of the AnythingLLM server",
+    "ServiceURL": {
+      "Description": "HTTPS endpoint for AnythingLLM",
       "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "http://",
-            { "Fn::GetAtt": [ "AnythingLLMInstance", "PublicIp" ] },
-            ":3001"
-          ]
-        ]
+        "Fn::Join": ["", ["https://", { "Fn::GetAtt": ["LoadBalancer", "DNSName"] }]]
       }
-    }
-  },
-  "Mappings": {
-    "Region2AMI": {
-      "ap-south-1": { "AMI": "ami-0e6329e222e662a52", "RootDeviceName": "/dev/xvda" },
-      "eu-north-1": { "AMI": "ami-08c308b1bb265e927", "RootDeviceName": "/dev/xvda" },
-      "eu-west-3": { "AMI": "ami-069d1ea6bc64443f0", "RootDeviceName": "/dev/xvda" },
-      "eu-west-2": { "AMI": "ami-06a566ca43e14780d", "RootDeviceName": "/dev/xvda" },
-      "eu-west-1": { "AMI": "ami-0a8dc52684ee2fee2", "RootDeviceName": "/dev/xvda" },
-      "ap-northeast-3": { "AMI": "ami-0c8a89b455fae8513", "RootDeviceName": "/dev/xvda" },
-      "ap-northeast-2": { "AMI": "ami-0ff56409a6e8ea2a0", "RootDeviceName": "/dev/xvda" },
-      "ap-northeast-1": { "AMI": "ami-0ab0bbbd329f565e6", "RootDeviceName": "/dev/xvda" },
-      "ca-central-1": { "AMI": "ami-033c256a10931f206", "RootDeviceName": "/dev/xvda" },
-      "sa-east-1": { "AMI": "ami-0dabf4dab6b183eef", "RootDeviceName": "/dev/xvda" },
-      "ap-southeast-1": { "AMI": "ami-0dc5785603ad4ff54", "RootDeviceName": "/dev/xvda" },
-      "ap-southeast-2": { "AMI": "ami-0c5d61202c3b9c33e", "RootDeviceName": "/dev/xvda" },
-      "eu-central-1": { "AMI": "ami-004359656ecac6a95", "RootDeviceName": "/dev/xvda" },
-      "us-east-1": { "AMI": "ami-0cff7528ff583bf9a", "RootDeviceName": "/dev/xvda" },
-      "us-east-2": { "AMI": "ami-02238ac43d6385ab3", "RootDeviceName": "/dev/xvda" },
-      "us-west-1": { "AMI": "ami-01163e76c844a2129", "RootDeviceName": "/dev/xvda" },
-      "us-west-2": { "AMI": "ami-0ceecbb0f30a902a6", "RootDeviceName": "/dev/xvda" }
     }
   }
 }

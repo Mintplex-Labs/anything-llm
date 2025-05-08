@@ -1,14 +1,14 @@
-name: Build & Deploy with CloudFormation
+name: Build & Deploy to ECS
 
 on:
   push:
     branches: [ master ]
 
 env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}                         # e.g. us-east-2
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}                 # e.g. 051826724302.dkr.ecr.us-east-2.amazonaws.com/layerone/allm
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   CFN_STACK_NAME: anythingllm-stack
-  CFN_TEMPLATE: ./cloud-deployments/aws/cloudformation/cloudformation_create_anythingllm.json
+  CFN_TEMPLATE: ./cloud-deployments/aws/cloudformation/ecs_anythingllm.json
 
 permissions:
   contents: read
@@ -25,48 +25,33 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume:   ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region:       ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build & Push Docker image
+      - name: Build & Push AnythingLLM image
         id: build-image
         run: |
           TAG=${GITHUB_SHA::8}
-          docker build \
-            -f ./docker/Dockerfile \
-            -t $ECR_REPOSITORY:$TAG \
-            .
+          docker build -f ./docker/Dockerfile -t $ECR_REPOSITORY:$TAG .
           docker push $ECR_REPOSITORY:$TAG
           echo "image_uri=$ECR_REPOSITORY:$TAG" >> $GITHUB_OUTPUT
-
-      - name: Cleanup failed stack (if any)
-        run: |
-          set -e
-          STATUS=$(aws cloudformation describe-stacks \
-            --stack-name $CFN_STACK_NAME \
-            --region $AWS_REGION \
-            --query "Stacks[0].StackStatus" \
-            --output text || echo "NONE")
-          if [ "$STATUS" = "ROLLBACK_COMPLETE" ]; then
-            echo "Found ROLLBACK_COMPLETE stack; deleting..."
-            aws cloudformation delete-stack \
-              --stack-name $CFN_STACK_NAME \
-              --region $AWS_REGION
-            aws cloudformation wait stack-delete-complete \
-              --stack-name $CFN_STACK_NAME \
-              --region $AWS_REGION
-          else
-            echo "No failed stack to clean up (status: $STATUS)."
-          fi
 
       - name: Deploy CloudFormation Stack
         run: |
           aws cloudformation deploy \
-            --stack-name $CFN_STACK_NAME \
-            --template-file $CFN_TEMPLATE \
-            --parameter-overrides ImageUri=${{ steps.build-image.outputs.image_uri }} \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --region $AWS_REGION
+            --stack-name ${{ env.CFN_STACK_NAME }} \
+            --template-file ${{ env.CFN_TEMPLATE }} \
+            --parameter-overrides \
+              ClusterName=anythingllm-cluster \
+              ImageUri=${{ steps.build-image.outputs.image_uri }} \
+              MilvusImageUri=milvusdb/milvus:latest \
+              VpcId=vpc-0cca77c79f4c8a21c \
+              SubnetIds=subnet-04df9c2220b4c5319,subnet-0494357a10fa150f7,subnet-004a06e624edaf31a \
+              CertificateArn=${{ secrets.CERTIFICATE_ARN }} \
+              DesiredCount=1 \
+              ParameterPrefix=anythingllm/config \
+            --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
+            --region ${{ env.AWS_REGION }}4
