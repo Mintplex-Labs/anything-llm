@@ -36,16 +36,15 @@ jobs:
 
       - name: Setup dependencies
         run: |
-          npm install -g yarn
-          yarn global add prettier@^3.0.3
-          echo "Yarn installed"
+          npm install -g prettier@^3.0.3
+          echo "Prettier installed"
 
       - name: Run lint checks
         run: |
           echo "Running lint checks"
-          cd server && yarn lint:check && cd ..
-          cd frontend && yarn lint:check && cd ..
-          cd collector && yarn lint:check && cd ..
+          cd server && npm run lint:check && cd ..
+          cd frontend && npm run lint:check && cd ..
+          cd collector && npm run lint:check && cd ..
 
       - name: Fail job on error
         if: failure()
