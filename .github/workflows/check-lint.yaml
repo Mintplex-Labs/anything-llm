@@ -37,7 +37,8 @@ jobs:
       - name: Run checkLint.mjs script
         run: |
           cd extras/scripts
-          npm install -g yarn prettier
+          npm install -g yarn
+          yarn global add prettier@^3.0.3
           node checkLint.mjs
 
       - name: Fail job on error
