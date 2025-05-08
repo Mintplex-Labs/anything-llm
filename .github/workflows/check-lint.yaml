@@ -38,10 +38,9 @@ jobs:
         run: |
           npm install -g yarn
           echo "Yarn installed"
-          yarn --production=false
-          cd server && yarn --production=false && cd ..
-          cd frontend && yarn --production=false && cd ..
-          cd collector && yarn --production=false && cd ..
+          cd server && yarn add prettier@^3.0.3 && cd ..
+          cd frontend && yarn add prettier@^3.0.3 && cd ..
+          cd collector && yarn add prettier@^3.0.3 && cd ..
           echo "Dev dependencies installed"
 
       - name: Run checkLint.mjs script
