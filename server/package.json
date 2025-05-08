@@ -13,7 +13,7 @@
     "dev": "cross-env NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js",
     "start": "cross-env NODE_ENV=production node index.js",
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./endpoints ./models ./utils index.js",
-    "lint:check": "npx prettier --ignore-path ../.prettierignore --list-different ./endpoints ./models ./utils index.js",
+    "lint:check": "yarn prettier --ignore-path ../.prettierignore --list-different ./endpoints ./models ./utils index.js",
     "swagger": "node ./swagger/init.js"
   },
   "prisma": {
