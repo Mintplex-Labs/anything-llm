@@ -31,7 +31,7 @@ const hasErrors = [];
 for (const pkg of Object.values(packages)) {
   console.log(`\n📦 Linting ${pkg.name}...`);
   try {
-    execSync(`yarn prettier ${pkg.params.join(' ')}`, {
+    execSync(`npx prettier ${pkg.params.join(' ')}`, {
       cwd: pkg.path,
       stdio: 'inherit'
     });
