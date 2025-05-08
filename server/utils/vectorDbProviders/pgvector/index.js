@@ -195,7 +195,7 @@ const PGVector = {
   },
 
   /**
-   * Performs a SimilaritySearch on a give LanceDB namespace.
+   * Performs a SimilaritySearch on a given PGVector namespace.
    * @param {Object} params
    * @param {pgsql.Client} params.client
    * @param {string} params.namespace
@@ -433,7 +433,7 @@ const PGVector = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Chunks created from document:", textChunks.length);
+      this.log("Chunks created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
@@ -467,7 +467,7 @@ const PGVector = {
         const chunks = [];
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
-        console.log("Inserting vectorized chunks into LanceDB collection.");
+        this.log("Inserting vectorized chunks into PGVector collection.");
         await this.updateOrCreateCollection({
           connection,
           submissions,
