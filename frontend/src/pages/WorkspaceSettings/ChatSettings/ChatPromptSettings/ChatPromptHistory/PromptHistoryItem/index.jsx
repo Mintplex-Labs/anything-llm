@@ -1,9 +1,10 @@
 import { DotsThreeVertical } from "@phosphor-icons/react";
-import moment from "moment";
 import { useRef, useState, useEffect } from "react";
 import PromptHistory from "@/models/promptHistory";
-import truncate from "truncate";
 import { useTranslation } from "react-i18next";
+import moment from "moment";
+import truncate from "truncate";
+
 const MAX_PROMPT_LENGTH = 200; // chars
 
 export default function PromptHistoryItem({

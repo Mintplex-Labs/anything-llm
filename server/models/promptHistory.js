@@ -5,9 +5,9 @@ const PromptHistory = {
     try {
       const history = await prisma.prompt_history.create({
         data: {
-          workspaceId,
-          prompt,
-          modifiedBy,
+          workspaceId: Number(workspaceId),
+          prompt: String(prompt),
+          modifiedBy: !!modifiedBy ? Number(modifiedBy) : null,
         },
       });
       return { history, message: null };
@@ -32,9 +32,7 @@ const PromptHistory = {
     if (!workspaceId) return [];
     try {
       const history = await prisma.prompt_history.findMany({
-        where: {
-          workspaceId,
-        },
+        where: { workspaceId: Number(workspaceId) },
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null
           ? { orderBy }
@@ -79,9 +77,7 @@ const PromptHistory = {
 
   delete: async function (clause = {}) {
     try {
-      await prisma.prompt_history.deleteMany({
-        where: clause,
-      });
+      await prisma.prompt_history.deleteMany({ where: clause });
       return true;
     } catch (error) {
       console.error(error.message);

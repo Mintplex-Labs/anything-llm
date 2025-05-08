@@ -1,10 +1,10 @@
 import { useEffect, useState, forwardRef } from "react";
-import PromptHistory from "@/models/promptHistory";
+import { useTranslation } from "react-i18next";
 import { X } from "@phosphor-icons/react";
+import PromptHistory from "@/models/promptHistory";
 import PromptHistoryItem from "./PromptHistoryItem";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useTranslation } from "react-i18next";
 
 export default forwardRef(function ChatPromptHistory(
   { show, workspaceSlug, onRestore, onClose },

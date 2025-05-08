@@ -449,6 +449,7 @@ const Workspace = {
   _trackWorkspacePromptChange: async function (prevData, newData, user = null) {
     if (
       !!newData?.openAiPrompt && // new prompt is set
+      !!prevData?.openAiPrompt && // previous prompt was not null (default)
       prevData?.openAiPrompt !== this.defaultPrompt && // previous prompt was not default
       newData?.openAiPrompt !== prevData?.openAiPrompt // previous and new prompt are not the same
     )
