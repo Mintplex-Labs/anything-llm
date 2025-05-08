@@ -8,7 +8,7 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   CFN_STACK_NAME: anythingllm-stack
-  CFN_TEMPLATE: ./cloud-deployments/aws/cloudformation/ecs_anythingllm.json
+  CFN_TEMPLATE: ./cloud-deployments/aws/cloudformation/cloudformation_create_anythingllm.json
 
 permissions:
   contents: read
