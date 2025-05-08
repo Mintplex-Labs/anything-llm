@@ -49,13 +49,13 @@ export default forwardRef(function ChatPromptHistory(
   return (
     <div
       ref={ref}
-      className={`fixed right-3 top-3 bottom-3 w-[375px] bg-theme-action-menu-bg light:bg-theme-home-update-card-bg rounded-xl py-4 px-4 z-[9999] overflow-y-auto ${
+      className={`fixed right-3 top-3 bottom-3 w-[375px] bg-theme-action-menu-bg light:bg-theme-home-update-card-bg rounded-xl py-4 px-4 z-[9999] overflow-y-hidden ${
         show
           ? "translate-x-0 opacity-100 visible"
           : "translate-x-full opacity-0 invisible"
       } transition-all duration-300`}
     >
-      <div className="flex items-center justify-between">
+      <div className="sticky flex items-center justify-between">
         <div className="text-theme-text-primary text-sm font-semibold">
           {t("chat.prompt.history.title")}
         </div>
@@ -78,7 +78,7 @@ export default forwardRef(function ChatPromptHistory(
           </button>
         </div>
       </div>
-      <div className="mt-4 flex flex-col gap-y-[14px] h-full">
+      <div className="mt-4 flex flex-col gap-y-[14px] h-full overflow-y-scroll pb-[50px]">
         {loading ? (
           <LoaderSkeleton />
         ) : history.length === 0 ? (
