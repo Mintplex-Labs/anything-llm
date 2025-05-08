@@ -222,6 +222,16 @@ const TRANSLATIONS = {
       title: "聊天提示",
       description:
         "将在此工作区上使用的提示。定义 AI 生成响应的上下文和指令。你应该提供精心设计的提示，以便人工智能可以生成相关且准确的响应。",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "查询模式拒绝响应",

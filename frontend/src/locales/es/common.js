@@ -226,6 +226,16 @@ const TRANSLATIONS = {
       title: "Prompt",
       description:
         "El prompt que se utilizará en este espacio de trabajo. Define el contexto y las instrucciones para que la IA genere una respuesta. Debes proporcionar un prompt cuidadosamente elaborado para que la IA pueda generar una respuesta relevante y precisa.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "Respuesta de rechazo en modo consulta",
