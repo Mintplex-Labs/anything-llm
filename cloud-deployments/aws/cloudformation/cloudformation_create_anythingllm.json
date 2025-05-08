@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Production‑ready ECS Fargate service for AnythingLLM & Milvus, with split SGs, CloudWatch Logs, SSM‑backed env vars, and EFS persistence for Milvus",
+  "Description": "Production-ready ECS Fargate service for AnythingLLM & Milvus, with split SGs, CloudWatch Logs, SSM-backed env vars, and EFS persistence for Milvus",
   "Parameters": {
     "ClusterName": {
       "Type": "String",
@@ -37,7 +37,7 @@
     "ServiceSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "ALB SG – allows HTTP/HTTPS from anywhere",
+        "GroupDescription": "ALB SG - allows HTTP/HTTPS from anywhere",
         "VpcId": { "Ref": "VpcId" },
         "SecurityGroupIngress": [
           { "IpProtocol": "tcp", "FromPort": 80, "ToPort": 80, "CidrIp": "0.0.0.0/0" },
@@ -48,7 +48,7 @@
     "TaskSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "ECS Task SG – allows ALB → tasks on 3001 only",
+        "GroupDescription": "ECS Task SG - allows ALB → tasks on 3001 only",
         "VpcId": { "Ref": "VpcId" },
         "SecurityGroupIngress": [
           {
@@ -63,7 +63,7 @@
     "EFSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "EFS SG – allows NFS (2049) from ECS tasks",
+        "GroupDescription": "EFS SG - allows NFS (2049) from ECS tasks",
         "VpcId": { "Ref": "VpcId" },
         "SecurityGroupIngress": [
           {
