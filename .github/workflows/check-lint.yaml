@@ -1,0 +1,44 @@
+# This GitHub action is for ensuring that `yarn lint` is run on all 
+# files to normalize code formatting across the project.
+name: Check lint
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths-ignore:
+      - '**.md'
+      - 'cloud-deployments/*'
+      - 'images/**/*'
+      - '.vscode/**/*'
+      - '**/.env.example'
+      - '.github/ISSUE_TEMPLATE/**/*'
+      - '.devcontainer/**/*'
+      - 'embed/**/*' 
+      - 'browser-extension/**/*'
+      - 'server/utils/agents/aibitat/example/**/*'
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Run checkLint.mjs script
+        run: |
+          cd extras/scripts
+          node checkLint.mjs
+
+      - name: Fail job on error
+        if: failure()
+        run: exit 1
