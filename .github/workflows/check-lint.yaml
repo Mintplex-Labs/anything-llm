@@ -34,9 +34,18 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Setup dependencies
+        run: |
+          npm install -g yarn
+          echo "Yarn installed"
+          yarn --dev
+          cd server && yarn --dev && cd ..
+          cd frontend && yarn --dev && cd ..
+          cd collector && yarn --dev && cd ..
+          echo "Dev dependencies installed"
+
       - name: Run checkLint.mjs script
         run: |
-          npm install -g prettier@^3.0.3
           cd extras/scripts
           node checkLint.mjs
 
