@@ -36,6 +36,7 @@
   "Resources": {
     "EcsLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": "/ecs/anythingllm",
         "RetentionInDays": 14
@@ -43,6 +44,7 @@
     },
     "MilvusLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": "/ecs/milvus",
         "RetentionInDays": 14
