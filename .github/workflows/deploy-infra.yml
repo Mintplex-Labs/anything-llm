@@ -54,4 +54,4 @@ jobs:
               DesiredCount=1 \
               ParameterPrefix=anythingllm/config \
             --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
-            --region ${{ env.AWS_REGION }}4
+            --region ${{ env.AWS_REGION }}
