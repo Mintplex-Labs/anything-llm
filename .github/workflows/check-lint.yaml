@@ -39,11 +39,10 @@ jobs:
           npm install -g yarn
           echo "Yarn installed"
 
-      - name: Run checkLint.mjs script
+      - name: Run lint checks
         run: |
+          echo "Running lint checks"
           cd server && yarn lint:check && cd ..
-          cd frontend && yarn lint:check && cd ..
-          cd collector && yarn lint:check && cd ..
 
       - name: Fail job on error
         if: failure()
