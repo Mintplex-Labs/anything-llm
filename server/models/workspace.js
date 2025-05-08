@@ -447,11 +447,18 @@ const Workspace = {
    * @returns {Promise<void>}
    */
   _trackWorkspacePromptChange: async function (prevData, newData, user = null) {
+    if (
+      !!newData?.openAiPrompt && // new prompt is set
+      prevData?.openAiPrompt !== this.defaultPrompt && // previous prompt was not default
+      newData?.openAiPrompt !== prevData?.openAiPrompt // previous and new prompt are not the same
+    )
+      await PromptHistory.handlePromptChange(prevData, user); // log the change to the prompt history
+
     const { Telemetry } = require("./telemetry");
     const { EventLogs } = require("./eventLogs");
     if (
       !newData?.openAiPrompt || // no prompt change
-      newData?.openAiPrompt === this.defaultPrompt || // default prompt
+      newData?.openAiPrompt === this.defaultPrompt || // new prompt is default prompt
       newData?.openAiPrompt === prevData?.openAiPrompt // same prompt
     )
       return;
@@ -466,7 +473,6 @@ const Workspace = {
       },
       user?.id
     );
-    await PromptHistory.handlePromptChange(prevData, user);
     return;
   },
 
