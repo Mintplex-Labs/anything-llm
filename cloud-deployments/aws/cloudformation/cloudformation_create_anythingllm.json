@@ -48,7 +48,7 @@
     "TaskSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "ECS Task SG - allows ALB - tasks on 3001 only",
+        "GroupDescription": "ECS Task SG - allow ALB inbound on TCP port 3001 only",
         "VpcId": { "Ref": "VpcId" },
         "SecurityGroupIngress": [
           {
@@ -297,6 +297,7 @@
     },
     "Service": {
       "Type": "AWS::ECS::Service",
+      "DependsOn": ["ListenerHTTPS"],
       "Properties": {
         "Cluster": { "Ref": "ClusterName" },
         "ServiceName": "anythingllm-service",
