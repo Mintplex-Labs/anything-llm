@@ -36,12 +36,8 @@ jobs:
 
       - name: Setup dependencies
         run: |
-          npm install -g yarn
-          echo "Yarn installed"
-          cd server && yarn add prettier@^3.0.3 && cd ..
-          cd frontend && yarn add prettier@^3.0.3 && cd ..
-          cd collector && yarn add prettier@^3.0.3 && cd ..
-          echo "Dev dependencies installed"
+          npm install -g prettier@^3.0.3
+          echo "Prettier installed"
 
       - name: Run checkLint.mjs script
         run: |
