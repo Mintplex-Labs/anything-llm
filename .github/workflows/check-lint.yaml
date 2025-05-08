@@ -42,9 +42,16 @@ jobs:
       - name: Run lint checks
         run: |
           echo "Running lint checks"
+          echo "Current directory: $(pwd)"
+          
           cd server && npm run lint:check && cd ..
+          echo "Current directory: $(pwd)"
+
           cd frontend && npm run lint:check && cd ..
+          echo "Current directory: $(pwd)"
+
           cd collector && npm run lint:check && cd ..
+          echo "Current directory: $(pwd)"
 
       - name: Fail job on error
         if: failure()
