@@ -48,7 +48,7 @@
     "TaskSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "ECS Task SG - allows ALB → tasks on 3001 only",
+        "GroupDescription": "ECS Task SG - allows ALB - tasks on 3001 only",
         "VpcId": { "Ref": "VpcId" },
         "SecurityGroupIngress": [
           {
