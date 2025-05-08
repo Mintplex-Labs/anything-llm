@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
     "start": "cross-env NODE_ENV=production node index.js",
-    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./processSingleFile ./processLink ./utils index.js"
+    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./processSingleFile ./processLink ./utils index.js",
+    "lint:check": "yarn prettier --ignore-path ../.prettierignore --list-different ./processSingleFile ./processLink ./utils index.js"
   },
   "dependencies": {
     "@langchain/community": "^0.2.23",
