@@ -36,7 +36,8 @@ jobs:
 
       - name: Setup dependencies
         run: |
-          npm install -g yarn prettier@^3.0.3
+          npm install -g yarn
+          yarn global add prettier@^3.0.3
           echo "Yarn installed"
 
       - name: Run lint checks
