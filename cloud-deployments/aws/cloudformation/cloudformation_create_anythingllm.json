@@ -10,10 +10,6 @@
       "Type": "String",
       "Description": "ECR URI for the AnythingLLM container"
     },
-    "MilvusImageUri": {
-      "Type": "String",
-      "Description": "Image URI for Milvus"
-    },
     "VpcId": {
       "Type": "AWS::EC2::VPC::Id"
     },
@@ -72,101 +68,6 @@
             "SourceSecurityGroupId": {
               "Ref": "ServiceSecurityGroup"
             }
-          }
-        ]
-      }
-    },
-    "EFSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "EFS SG - allows NFS (2049) from ECS tasks",
-        "VpcId": {
-          "Ref": "VpcId"
-        },
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 2049,
-            "ToPort": 2049,
-            "SourceSecurityGroupId": {
-              "Ref": "TaskSecurityGroup"
-            }
-          }
-        ]
-      }
-    },
-    "EFSFileSystem": {
-      "Type": "AWS::EFS::FileSystem",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Encrypted": true,
-        "FileSystemTags": [
-          {
-            "Key": "Name",
-            "Value": "anythingllm-milvus"
-          }
-        ]
-      }
-    },
-    "EFSMountTarget1": {
-      "Type": "AWS::EFS::MountTarget",
-      "Properties": {
-        "FileSystemId": {
-          "Ref": "EFSFileSystem"
-        },
-        "SubnetId": {
-          "Fn::Select": [
-            0,
-            {
-              "Ref": "SubnetIds"
-            }
-          ]
-        },
-        "SecurityGroups": [
-          {
-            "Ref": "EFSecurityGroup"
-          }
-        ]
-      }
-    },
-    "EFSMountTarget2": {
-      "Type": "AWS::EFS::MountTarget",
-      "Properties": {
-        "FileSystemId": {
-          "Ref": "EFSFileSystem"
-        },
-        "SubnetId": {
-          "Fn::Select": [
-            1,
-            {
-              "Ref": "SubnetIds"
-            }
-          ]
-        },
-        "SecurityGroups": [
-          {
-            "Ref": "EFSecurityGroup"
-          }
-        ]
-      }
-    },
-    "EFSMountTarget3": {
-      "Type": "AWS::EFS::MountTarget",
-      "Properties": {
-        "FileSystemId": {
-          "Ref": "EFSFileSystem"
-        },
-        "SubnetId": {
-          "Fn::Select": [
-            2,
-            {
-              "Ref": "SubnetIds"
-            }
-          ]
-        },
-        "SecurityGroups": [
-          {
-            "Ref": "EFSecurityGroup"
           }
         ]
       }
@@ -293,11 +194,6 @@
     },
     "TaskDefinition": {
       "Type": "AWS::ECS::TaskDefinition",
-      "DependsOn": [
-        "EFSMountTarget1",
-        "EFSMountTarget2",
-        "EFSMountTarget3"
-      ],
       "Properties": {
         "Family": "anythingllm-task",
         "Cpu": "4096",
@@ -312,16 +208,6 @@
             "Arn"
           ]
         },
-        "Volumes": [
-          {
-            "Name": "milvus-data",
-            "EfsVolumeConfiguration": {
-              "FileSystemId": {
-                "Ref": "EFSFileSystem"
-              }
-            }
-          }
-        ],
         "ContainerDefinitions": [
           {
             "Name": "anythingllm",
@@ -345,30 +231,6 @@
                 "Name": "EMBEDDING_ENGINE",
                 "ValueFrom": {
                   "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/EMBEDDING_ENGINE"
-                }
-              },
-              {
-                "Name": "VECTOR_DB",
-                "ValueFrom": {
-                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/VECTOR_DB"
-                }
-              },
-              {
-                "Name": "MILVUS_ENDPOINT",
-                "ValueFrom": {
-                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_ENDPOINT"
-                }
-              },
-              {
-                "Name": "MILVUS_USERNAME",
-                "ValueFrom": {
-                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_USERNAME"
-                }
-              },
-              {
-                "Name": "MILVUS_PASSWORD",
-                "ValueFrom": {
-                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_PASSWORD"
                 }
               },
               {
@@ -405,34 +267,6 @@
                   "Ref": "AWS::Region"
                 },
                 "awslogs-stream-prefix": "anythingllm"
-              }
-            }
-          },
-          {
-            "Name": "milvus",
-            "Image": "milvusdb/milvus:v2.4.5",
-            "Command": [ "milvus", "run", "standalone" ],
-            "PortMappings": [
-              {
-                "ContainerPort": 19530,
-                "Protocol": "tcp"
-              }
-            ],
-            "MountPoints": [
-              {
-                "SourceVolume": "milvus-data",
-                "ContainerPath": "/var/lib/milvus"
-              }
-            ],
-            "LogConfiguration": {
-              "LogDriver": "awslogs",
-              "Options": {
-                "awslogs-create-group": "true",
-                "awslogs-group": "/ecs/milvus",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                },
-                "awslogs-stream-prefix": "milvus"
               }
             }
           }
