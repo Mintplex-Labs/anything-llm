@@ -196,7 +196,9 @@
           "Ref": "VpcId"
         },
         "TargetType": "ip",
-        "HealthCheckPath": "/api/ping"
+        "HealthCheckProtocol": "HTTP",
+        "HealthCheckPath": "/healthz",
+        "Matcher": { "HttpCode": "200-399" }
       }
     },
     "ListenerHTTP": {
@@ -454,6 +456,7 @@
         "DesiredCount": {
           "Ref": "DesiredCount"
         },
+        "HealthCheckGracePeriodSeconds": 120,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
