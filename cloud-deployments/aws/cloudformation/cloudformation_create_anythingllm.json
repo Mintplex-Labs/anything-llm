@@ -410,9 +410,7 @@
           },
           {
             "Name": "milvus",
-            "Image": {
-              "Ref": "MilvusImageUri"
-            },
+            "Image": "milvusdb/milvus:v2.4.5",
             "Command": [ "milvus", "run", "standalone" ],
             "PortMappings": [
               {
