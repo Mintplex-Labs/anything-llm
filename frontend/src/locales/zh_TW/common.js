@@ -687,6 +687,10 @@ const TRANSLATIONS = {
         title: "自動語音回應",
         description: "自動朗讀 AI 的回應內容",
       },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
     },
     items: {
       theme: {

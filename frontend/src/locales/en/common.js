@@ -483,6 +483,10 @@ const TRANSLATIONS = {
         title: "Auto-Speak Responses",
         description: "Automatically speak responses from the AI",
       },
+      spellcheck: {
+        title: "Enable Spellcheck",
+        description: "Enable or disable spellcheck in the chat input field",
+      },
     },
     items: {
       theme: {
