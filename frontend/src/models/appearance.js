@@ -5,6 +5,7 @@ const Appearance = {
     showScrollbar: false,
     autoSubmitSttInput: true,
     autoPlayAssistantTtsResponse: false,
+    enableSpellCheck: true,
   },
 
   /**

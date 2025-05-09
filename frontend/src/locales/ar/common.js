@@ -680,6 +680,10 @@ const TRANSLATIONS = {
         title: null,
         description: null,
       },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
     },
     items: {
       theme: {

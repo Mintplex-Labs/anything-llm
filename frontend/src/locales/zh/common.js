@@ -674,6 +674,10 @@ const TRANSLATIONS = {
         title: "自动语音回复",
         description: "自动朗读 AI 的回复内容",
       },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
     },
     items: {
       theme: {
