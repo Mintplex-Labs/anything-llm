@@ -371,7 +371,6 @@ const KEY_MAPPING = {
   },
 
   // Astra DB Options
-
   AstraDBApplicationToken: {
     envKey: "ASTRA_DB_APPLICATION_TOKEN",
     checks: [isNotEmpty],
@@ -379,6 +378,23 @@ const KEY_MAPPING = {
   AstraDBEndpoint: {
     envKey: "ASTRA_DB_ENDPOINT",
     checks: [isNotEmpty],
+  },
+
+  /*
+  PGVector Options
+  - Does very simple validations - we should expand this in the future
+  - to ensure the connection string is valid and the table name is valid
+  - via direct query
+  */
+  PGVectorConnectionString: {
+    envKey: "PGVECTOR_CONNECTION_STRING",
+    checks: [isNotEmpty, looksLikePostgresConnectionString],
+    preUpdate: [validatePGVectorConnectionString],
+  },
+  PGVectorTableName: {
+    envKey: "PGVECTOR_TABLE_NAME",
+    checks: [isNotEmpty],
+    preUpdate: [validatePGVectorTableName],
   },
 
   // Together Ai Options
@@ -802,6 +818,7 @@ function supportedVectorDB(input = "") {
     "milvus",
     "zilliz",
     "astra",
+    "pgvector",
   ];
   return supported.includes(input)
     ? null
@@ -880,6 +897,70 @@ async function handleVectorStoreReset(key, prevValue, nextValue) {
   return false;
 }
 
+/**
+ * Validates the Postgres connection string for the PGVector options.
+ * @param {string} input - The Postgres connection string to validate.
+ * @returns {string} - An error message if the connection string is invalid, otherwise null.
+ */
+async function looksLikePostgresConnectionString(connectionString = null) {
+  if (!connectionString || !connectionString.startsWith("postgresql://"))
+    return "Invalid Postgres connection string. Must start with postgresql://";
+  if (connectionString.includes(" "))
+    return "Invalid Postgres connection string. Must not contain spaces.";
+  return null;
+}
+
+/**
+ * Validates the Postgres connection string for the PGVector options.
+ * @param {string} key - The ENV key we are validating.
+ * @param {string} prevValue - The previous value of the key.
+ * @param {string} nextValue - The next value of the key.
+ * @returns {string} - An error message if the connection string is invalid, otherwise null.
+ */
+async function validatePGVectorConnectionString(key, prevValue, nextValue) {
+  const envKey = KEY_MAPPING[key].envKey;
+
+  if (prevValue === nextValue) return; // If the value is the same as the previous value, don't validate it.
+  if (!nextValue) return; // If the value is not set, don't validate it.
+  if (nextValue === process.env[envKey]) return; // If the value is the same as the current connection string, don't validate it.
+
+  const { PGVector } = require("../vectorDbProviders/pgvector");
+  const { error, success } = await PGVector.validateConnection({
+    connectionString: nextValue,
+  });
+  if (!success) return error;
+
+  // Set the ENV variable for the PGVector connection string early so we can use it in the table check.
+  process.env[envKey] = nextValue;
+  return null;
+}
+
+/**
+ * Validates the Postgres table name for the PGVector options.
+ * - Table should not already exist in the database.
+ * @param {string} key - The ENV key we are validating.
+ * @param {string} prevValue - The previous value of the key.
+ * @param {string} nextValue - The next value of the key.
+ * @returns {string} - An error message if the table name is invalid, otherwise null.
+ */
+async function validatePGVectorTableName(key, prevValue, nextValue) {
+  const envKey = KEY_MAPPING[key].envKey;
+
+  if (prevValue === nextValue) return; // If the value is the same as the previous value, don't validate it.
+  if (!nextValue) return; // If the value is not set, don't validate it.
+  if (nextValue === process.env[envKey]) return; // If the value is the same as the current table name, don't validate it.
+  if (!process.env.PGVECTOR_CONNECTION_STRING) return; // if connection string is not set, don't validate it since it will fail.
+
+  const { PGVector } = require("../vectorDbProviders/pgvector");
+  const { error, success } = await PGVector.validateConnection({
+    connectionString: process.env.PGVECTOR_CONNECTION_STRING,
+    tableName: nextValue,
+  });
+  if (!success) return error;
+
+  return null;
+}
+
 // This will force update .env variables which for any which reason were not able to be parsed or
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
@@ -901,15 +982,28 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
     } = KEY_MAPPING[key];
     const prevValue = process.env[envKey];
     const nextValue = newENVs[key];
+    let errors = await executeValidationChecks(checks, nextValue, force);
 
-    const errors = await executeValidationChecks(checks, nextValue, force);
+    // If there are any errors from regular simple validation checks
+    // exit early.
     if (errors.length > 0) {
       error += errors.join("\n");
       break;
     }
 
-    for (const preUpdateFunc of preUpdate)
-      await preUpdateFunc(key, prevValue, nextValue);
+    // Accumulate errors from preUpdate functions
+    errors = [];
+    for (const preUpdateFunc of preUpdate) {
+      const errorMsg = await preUpdateFunc(key, prevValue, nextValue);
+      if (!!errorMsg && typeof errorMsg === "string") errors.push(errorMsg);
+    }
+
+    // If there are any errors from preUpdate functions
+    // exit early.
+    if (errors.length > 0) {
+      error += errors.join("\n");
+      break;
+    }
 
     newValues[key] = nextValue;
     process.env[envKey] = nextValue;
