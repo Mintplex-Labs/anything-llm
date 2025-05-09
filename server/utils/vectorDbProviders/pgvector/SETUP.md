@@ -27,7 +27,7 @@ _this can be done via the UI or by directly editing the `.env` file_
 First, obtain a valid connection string for the user, credentials, and db you want to target.
 eg: `postgresql://dbuser:dbuserpass@localhost:5432/yourdb`
 
-> ![NOTE]
+> [!IMPORTANT]
 > If you have an existing table that you want to use as a vector database, AnythingLLM **requires** that the table be
 > at least minimally conform to the expected schema - this can be seen in the [index.js](./index.js) file.
 
