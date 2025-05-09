@@ -33,6 +33,37 @@ eg: `postgresql://dbuser:dbuserpass@localhost:5432/yourdb`
 
 _optional_ - set a table name you wish to have AnythingLLM store vectors to. By default this is `anythingllm_vectors`
 
+## Common Questions
+
+### Can I use an existing table as a vector database?
+
+Yes, you can use an existing table as a vector database. However, AnythingLLM **requires** that the table be at least minimally conform to the expected schema - this can be seen in the [index.js](./index.js) file.
+
+It is **absolutely critical** that the `embedding` column's `VECTOR(XXXX)` dimensions match the dimension of the embedder in AnythingLLM. The default embedding model is 384 dimensions. However, if you are using a custom embedder, you will need to ensure that the dimension value is set correctly.
+
+### Validate the connection to the database
+
+When setting the connection string in or table name via the AnythingLLM UI, the following validations will be attempted:
+
+- Validate the connection string
+- Validate the table name
+- Run test connection to ensure the table exists and is accessible by the connection string used
+- Check if the table name already exists and if so, validate that it is an embedding table with the correct schema
+
+### My embedding table is not present in the DB
+
+The embedding storage table is created by AnythingLLM **on the first upsert** of a vector. If you have not yet embedding any documents, the table will not be present in the DB.
+
+### How do I reset my vector database?
+
+_at the workspace level in Settings > Vector Database_
+
+You can use the "Reset Vector Database" button in the AnythingLLM UI to reset your vector database. This will drop all vectors within that workspace, but the table will remain in the DB.
+
+_reset the vector database at the db level_
+
+For this, you will need to `DROP TABLE` from the command line or however you manage your DB. Once the table is dropped, it will be recreated by AnythingLLM on the next upsert.
+
 ## Troubleshooting
 
 ### Cannot connect to DB
