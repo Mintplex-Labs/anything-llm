@@ -289,28 +289,12 @@
         ]
       }
     },
-    "AnythingLLMLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/ecs/anythingllm",
-        "RetentionInDays": 7
-      }
-    },
-    "MilvusLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/ecs/milvus",
-        "RetentionInDays": 7
-    }
-  },
     "TaskDefinition": {
       "Type": "AWS::ECS::TaskDefinition",
       "DependsOn": [
         "EFSMountTarget1",
         "EFSMountTarget2",
-        "EFSMountTarget3",
-        "AnythingLLMLogGroup",
-        "MilvusLogGroup"
+        "EFSMountTarget3"
       ],
       "Properties": {
         "Family": "anythingllm-task",
@@ -413,7 +397,8 @@
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
-                "awslogs-group": { "Ref": "AnythingLLMLogGroup" },
+                "awslogs-create-group": "true",
+                "awslogs-group": "/ecs/anythingllm",
                 "awslogs-region": {
                   "Ref": "AWS::Region"
                 },
@@ -441,6 +426,7 @@
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
+                "awslogs-create-group": "true",
                 "awslogs-group": "/ecs/milvus",
                 "awslogs-region": {
                   "Ref": "AWS::Region"
