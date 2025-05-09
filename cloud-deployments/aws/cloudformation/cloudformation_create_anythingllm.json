@@ -271,24 +271,19 @@
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents"
-                  ],
-                  "Resource": {
-                    "Fn::Sub": [
-                      "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/ecs/*",
-                      "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/ecs/*:*",
-                      {
-                        "Partition": "aws"
-                      }
-                    ]
-                  }
-                }
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": [
+                { "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/ecs/*" },
+                { "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/ecs/*:*" }
               ]
+            }
+          ]
             }
           }
         ]
@@ -313,7 +308,9 @@
       "DependsOn": [
         "EFSMountTarget1",
         "EFSMountTarget2",
-        "EFSMountTarget3"
+        "EFSMountTarget3",
+        "AnythingLLMLogGroup",
+        "MilvusLogGroup"
       ],
       "Properties": {
         "Family": "anythingllm-task",
