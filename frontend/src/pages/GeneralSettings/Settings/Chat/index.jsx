@@ -3,6 +3,7 @@ import { isMobile } from "react-device-detect";
 import { useTranslation } from "react-i18next";
 import AutoSubmit from "../components/AutoSubmit";
 import AutoSpeak from "../components/AutoSpeak";
+import SpellCheck from "../components/SpellCheck";
 
 export default function ChatSettings() {
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ export default function ChatSettings() {
           </div>
           <AutoSubmit />
           <AutoSpeak />
+          <SpellCheck />
         </div>
       </div>
     </div>
