@@ -219,7 +219,7 @@ _以下是一些与 AnythingLLM 兼容的应用程序，但并非由 Mintplex La
 
 </details>
 
-## 如何贡献
+## 👋 如何贡献
 
 - 创建 issue
 - 创建 PR，分支名称格式为 `<issue number>-<short name>`
