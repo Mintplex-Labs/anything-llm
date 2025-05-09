@@ -35,6 +35,23 @@ _optional_ - set a table name you wish to have AnythingLLM store vectors to. By 
 
 ## Common Questions
 
+### I cannot connect to the DB (Running AnythingLLM in Docker)
+
+If you are running AnythingLLM in Docker, you will need to ensure that the DB is accessible from the container.
+If you are running your DB in another Docker container **or** on the host machine, you will need to ensure that the container can access the DB.
+
+`localhost` will not work in this case as it will attempt to connect to the DB _inside the AnythingLLM container_ instead of the host machine or another container.
+
+You will need to use the `host.docker.internal` (or `172.17.0.1` on Linux/Ubuntu) address.
+
+```
+on Mac or Windows:
+postgresql://dbuser:dbuserpass@localhost:5432/yourdb => postgresql://dbuser:dbuserpass@host.docker.internal:5432/yourdb
+
+on Linux:
+postgresql://dbuser:dbuserpass@localhost:5432/yourdb => postgresql://dbuser:dbuserpass@172.17.0.1:5432/yourdb
+```
+
 ### Can I use an existing table as a vector database?
 
 Yes, you can use an existing table as a vector database. However, AnythingLLM **requires** that the table be at least minimally conform to the expected schema - this can be seen in the [index.js](./index.js) file.
