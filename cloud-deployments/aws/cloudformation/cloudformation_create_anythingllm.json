@@ -38,7 +38,9 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "ALB SG - allows HTTP/HTTPS from anywhere",
-        "VpcId": { "Ref": "VpcId" },
+        "VpcId": {
+          "Ref": "VpcId"
+        },
         "SecurityGroupIngress": [
           {
             "IpProtocol": "tcp",
@@ -59,13 +61,17 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "ECS Task SG - allow ALB inbound on TCP port 3001 only",
-        "VpcId": { "Ref": "VpcId" },
+        "VpcId": {
+          "Ref": "VpcId"
+        },
         "SecurityGroupIngress": [
           {
             "IpProtocol": "tcp",
             "FromPort": 3001,
             "ToPort": 3001,
-            "SourceSecurityGroupId": { "Ref": "ServiceSecurityGroup" }
+            "SourceSecurityGroupId": {
+              "Ref": "ServiceSecurityGroup"
+            }
           }
         ]
       }
@@ -74,13 +80,17 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "EFS SG - allows NFS (2049) from ECS tasks",
-        "VpcId": { "Ref": "VpcId" },
+        "VpcId": {
+          "Ref": "VpcId"
+        },
         "SecurityGroupIngress": [
           {
             "IpProtocol": "tcp",
             "FromPort": 2049,
             "ToPort": 2049,
-            "SourceSecurityGroupId": { "Ref": "TaskSecurityGroup" }
+            "SourceSecurityGroupId": {
+              "Ref": "TaskSecurityGroup"
+            }
           }
         ]
       }
@@ -101,25 +111,64 @@
     "EFSMountTarget1": {
       "Type": "AWS::EFS::MountTarget",
       "Properties": {
-        "FileSystemId": { "Ref": "EFSFileSystem" },
-        "SubnetId": { "Fn::Select": [0, { "Ref": "SubnetIds" }] },
-        "SecurityGroups": [{ "Ref": "EFSecurityGroup" }]
+        "FileSystemId": {
+          "Ref": "EFSFileSystem"
+        },
+        "SubnetId": {
+          "Fn::Select": [
+            0,
+            {
+              "Ref": "SubnetIds"
+            }
+          ]
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "EFSecurityGroup"
+          }
+        ]
       }
     },
     "EFSMountTarget2": {
       "Type": "AWS::EFS::MountTarget",
       "Properties": {
-        "FileSystemId": { "Ref": "EFSFileSystem" },
-        "SubnetId": { "Fn::Select": [1, { "Ref": "SubnetIds" }] },
-        "SecurityGroups": [{ "Ref": "EFSecurityGroup" }]
+        "FileSystemId": {
+          "Ref": "EFSFileSystem"
+        },
+        "SubnetId": {
+          "Fn::Select": [
+            1,
+            {
+              "Ref": "SubnetIds"
+            }
+          ]
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "EFSecurityGroup"
+          }
+        ]
       }
     },
     "EFSMountTarget3": {
       "Type": "AWS::EFS::MountTarget",
       "Properties": {
-        "FileSystemId": { "Ref": "EFSFileSystem" },
-        "SubnetId": { "Fn::Select": [2, { "Ref": "SubnetIds" }] },
-        "SecurityGroups": [{ "Ref": "EFSecurityGroup" }]
+        "FileSystemId": {
+          "Ref": "EFSFileSystem"
+        },
+        "SubnetId": {
+          "Fn::Select": [
+            2,
+            {
+              "Ref": "SubnetIds"
+            }
+          ]
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "EFSecurityGroup"
+          }
+        ]
       }
     },
     "LoadBalancer": {
@@ -127,8 +176,14 @@
       "Properties": {
         "Name": "anythingllm-alb",
         "Scheme": "internet-facing",
-        "Subnets": { "Ref": "SubnetIds" },
-        "SecurityGroups": [{ "Ref": "ServiceSecurityGroup" }]
+        "Subnets": {
+          "Ref": "SubnetIds"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "ServiceSecurityGroup"
+          }
+        ]
       }
     },
     "TargetGroup": {
@@ -137,7 +192,9 @@
         "Name": "anythingllm-tg",
         "Port": 3001,
         "Protocol": "HTTP",
-        "VpcId": { "Ref": "VpcId" },
+        "VpcId": {
+          "Ref": "VpcId"
+        },
         "TargetType": "ip",
         "HealthCheckPath": "/api/ping"
       }
@@ -145,7 +202,9 @@
     "ListenerHTTP": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "Properties": {
-        "LoadBalancerArn": { "Ref": "LoadBalancer" },
+        "LoadBalancerArn": {
+          "Ref": "LoadBalancer"
+        },
         "Protocol": "HTTP",
         "Port": 80,
         "DefaultActions": [
@@ -163,18 +222,24 @@
     "ListenerHTTPS": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "Properties": {
-        "LoadBalancerArn": { "Ref": "LoadBalancer" },
+        "LoadBalancerArn": {
+          "Ref": "LoadBalancer"
+        },
         "Protocol": "HTTPS",
         "Port": 443,
         "Certificates": [
           {
-            "CertificateArn": { "Ref": "CertificateArn" }
+            "CertificateArn": {
+              "Ref": "CertificateArn"
+            }
           }
         ],
         "DefaultActions": [
           {
             "Type": "forward",
-            "TargetGroupArn": { "Ref": "TargetGroup" }
+            "TargetGroupArn": {
+              "Ref": "TargetGroup"
+            }
           }
         ]
       }
@@ -188,7 +253,9 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Principal": { "Service": "ecs-tasks.amazonaws.com" },
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              },
               "Action": "sts:AssumeRole"
             }
           ]
@@ -197,6 +264,32 @@
           "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
           "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
           "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "AllowLogsCreateAndStream",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": [
+                      "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/ecs/*:*",
+                      {
+                        "Partition": "aws"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
         ]
       }
     },
@@ -212,20 +305,31 @@
         "Cpu": "1024",
         "Memory": "2048",
         "NetworkMode": "awsvpc",
-        "RequiresCompatibilities": ["FARGATE"],
-        "ExecutionRoleArn": { "Fn::GetAtt": ["TaskExecutionRole", "Arn"] },
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "TaskExecutionRole",
+            "Arn"
+          ]
+        },
         "Volumes": [
           {
             "Name": "milvus-data",
             "EfsVolumeConfiguration": {
-              "FileSystemId": { "Ref": "EFSFileSystem" }
+              "FileSystemId": {
+                "Ref": "EFSFileSystem"
+              }
             }
           }
         ],
         "ContainerDefinitions": [
           {
             "Name": "anythingllm",
-            "Image": { "Ref": "ImageUri" },
+            "Image": {
+              "Ref": "ImageUri"
+            },
             "PortMappings": [
               {
                 "ContainerPort": 3001,
@@ -298,14 +402,18 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": "/ecs/anythingllm",
-                "awslogs-region": { "Ref": "AWS::Region" },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
                 "awslogs-stream-prefix": "anythingllm"
               }
             }
           },
           {
             "Name": "milvus",
-            "Image": { "Ref": "MilvusImageUri" },
+            "Image": {
+              "Ref": "MilvusImageUri"
+            },
             "PortMappings": [
               {
                 "ContainerPort": 19530,
@@ -322,7 +430,9 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": "/ecs/milvus",
-                "awslogs-region": { "Ref": "AWS::Region" },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
                 "awslogs-stream-prefix": "milvus"
               }
             }
@@ -332,25 +442,41 @@
     },
     "Service": {
       "Type": "AWS::ECS::Service",
-      "DependsOn": ["ListenerHTTPS"],
+      "DependsOn": [
+        "ListenerHTTPS"
+      ],
       "Properties": {
-        "Cluster": { "Ref": "ClusterName" },
+        "Cluster": {
+          "Ref": "ClusterName"
+        },
         "ServiceName": "anythingllm-service",
-        "TaskDefinition": { "Ref": "TaskDefinition" },
-        "DesiredCount": { "Ref": "DesiredCount" },
+        "TaskDefinition": {
+          "Ref": "TaskDefinition"
+        },
+        "DesiredCount": {
+          "Ref": "DesiredCount"
+        },
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
             "AssignPublicIp": "ENABLED",
-            "Subnets": { "Ref": "SubnetIds" },
-            "SecurityGroups": [{ "Ref": "TaskSecurityGroup" }]
+            "Subnets": {
+              "Ref": "SubnetIds"
+            },
+            "SecurityGroups": [
+              {
+                "Ref": "TaskSecurityGroup"
+              }
+            ]
           }
         },
         "LoadBalancers": [
           {
             "ContainerName": "anythingllm",
             "ContainerPort": 3001,
-            "TargetGroupArn": { "Ref": "TargetGroup" }
+            "TargetGroupArn": {
+              "Ref": "TargetGroup"
+            }
           }
         ]
       }
@@ -359,14 +485,27 @@
   "Outputs": {
     "LoadBalancerDNS": {
       "Description": "DNS name of the ALB",
-      "Value": { "Fn::GetAtt": ["LoadBalancer", "DNSName"] }
+      "Value": {
+        "Fn::GetAtt": [
+          "LoadBalancer",
+          "DNSName"
+        ]
+      }
     },
     "ServiceURL": {
       "Description": "HTTPS endpoint for AnythingLLM",
       "Value": {
         "Fn::Join": [
           "",
-          ["https://", { "Fn::GetAtt": ["LoadBalancer", "DNSName"] }]
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "LoadBalancer",
+                "DNSName"
+              ]
+            }
+          ]
         ]
       }
     }
