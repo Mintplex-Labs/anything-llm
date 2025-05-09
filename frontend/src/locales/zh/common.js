@@ -447,8 +447,8 @@ const TRANSLATIONS = {
         description: "自动朗读 AI 的回复内容",
       },
       spellcheck: {
-        title: null,
-        description: null,
+        title: "启用拼写检查",
+        description: "在聊天输入框中启用或禁用拼写检查",
       },
     },
     items: {
