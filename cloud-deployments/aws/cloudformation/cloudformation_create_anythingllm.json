@@ -413,6 +413,7 @@
             "Image": {
               "Ref": "MilvusImageUri"
             },
+            "Command": [ "milvus", "run", "standalone" ],
             "PortMappings": [
               {
                 "ContainerPort": 19530,
