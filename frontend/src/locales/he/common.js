@@ -220,6 +220,16 @@ const TRANSLATIONS = {
       title: "בקשה",
       description:
         "הבקשה שתיעשה שימוש בה בסביבת העבודה הזו. הגדר את ההקשר וההוראות עבור ה-AI כדי ליצור תגובה. עליך לספק בקשה מעוצבת בקפידה כדי שה-AI יוכל ליצור תגובה רלוונטית ומדויקת.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "תגובת סירוב במצב שאילתה",

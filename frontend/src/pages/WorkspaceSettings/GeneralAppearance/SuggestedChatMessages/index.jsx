@@ -98,9 +98,9 @@ export default function SuggestedChatMessages({ slug }) {
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           {t("general.message.description")}
         </p>
-        <p className="text-white text-opacity-60 text-sm font-medium mt-6">
+        <div className="text-white text-opacity-60 text-sm font-medium mt-6">
           <PreLoader size="4" />
-        </p>
+        </div>
       </div>
     );
   return (

@@ -325,9 +325,20 @@ const TRANSLATIONS = {
         "Anything more than 45 is likely to lead to continuous chat failures depending on message size.",
     },
     prompt: {
-      title: "Prompt",
+      title: "System Prompt",
       description:
         "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+      history: {
+        title: "System Prompt History",
+        clearAll: "Clear All",
+        noHistory: "No system prompt history available",
+        restore: "Restore",
+        delete: "Delete",
+        deleteConfirm: "Are you sure you want to delete this history item?",
+        clearAllConfirm:
+          "Are you sure you want to clear all history? This action cannot be undone.",
+        expand: "Expand",
+      },
     },
     refusal: {
       title: "Query mode refusal response",
@@ -567,7 +578,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM Preference",
     description:
-      "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else AnythingLLM will not function properly.",
+      "These are the credentials and settings for your preferred LLM chat & embedding provider. It is important that these keys are current and correct, or else AnythingLLM will not function properly.",
     provider: "LLM Provider",
   },
 
