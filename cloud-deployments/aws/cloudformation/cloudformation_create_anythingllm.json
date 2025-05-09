@@ -280,6 +280,7 @@
                   ],
                   "Resource": {
                     "Fn::Sub": [
+                      "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/ecs/*",
                       "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/ecs/*:*",
                       {
                         "Partition": "aws"
@@ -293,6 +294,20 @@
         ]
       }
     },
+    "AnythingLLMLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/ecs/anythingllm",
+        "RetentionInDays": 7
+      }
+    },
+    "MilvusLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/ecs/milvus",
+        "RetentionInDays": 7
+    }
+  },
     "TaskDefinition": {
       "Type": "AWS::ECS::TaskDefinition",
       "DependsOn": [
