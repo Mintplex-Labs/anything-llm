@@ -2,15 +2,10 @@ const { v4 } = require("uuid");
 const { default: slugify } = require("slugify");
 const path = require("path");
 const fs = require("fs");
-const {
-  writeToServerDocuments,
-  sanitizeFileName,
-} = require("../../files");
+const { writeToServerDocuments, sanitizeFileName } = require("../../files");
 
 async function loadObsidianVault({ files }) {
-  const outFolder = slugify(
-    `obsidian-${v4().slice(0, 4)}`
-  ).toLowerCase();
+  const outFolder = slugify(`obsidian-${v4().slice(0, 4)}`).toLowerCase();
   const outFolderPath =
     process.env.NODE_ENV === "development"
       ? path.resolve(
@@ -23,9 +18,7 @@ async function loadObsidianVault({ files }) {
     fs.mkdirSync(outFolderPath, { recursive: true });
   }
 
-  console.log(
-    `Processing ${files.length} files from Obsidian Vault`
-  );
+  console.log(`Processing ${files.length} files from Obsidian Vault`);
 
   const results = [];
   for (const file of files) {
@@ -35,7 +28,7 @@ async function loadObsidianVault({ files }) {
       const data = {
         id: v4(),
         url: `obsidian://${file.path}`,
-        title: file.name.replace('.md', ''),
+        title: file.name.replace(".md", ""),
         docAuthor: "Obsidian Vault",
         description: file.name,
         docSource: "Obsidian Vault",
@@ -47,7 +40,7 @@ async function loadObsidianVault({ files }) {
       };
 
       const targetFileName = sanitizeFileName(
-        `${slugify(file.name.replace('.md', ''))}-${data.id}`
+        `${slugify(file.name.replace(".md", ""))}-${data.id}`
       );
       writeToServerDocuments(data, targetFileName, outFolderPath);
       results.push({ file: file.path, status: "success" });

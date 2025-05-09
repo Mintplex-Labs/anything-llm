@@ -123,5 +123,3 @@ Then, you will need to create the extension on the database. This can be done by
 psql <database-name>
 CREATE EXTENSION vector;
 ```
-
-

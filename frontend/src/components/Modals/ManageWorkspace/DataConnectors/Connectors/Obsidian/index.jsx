@@ -15,12 +15,12 @@ export default function ObsidianOptions() {
     if (files.length === 0) return;
 
     // Filter for .md files only
-    const markdownFiles = files.filter(file => file.name.endsWith('.md'));
+    const markdownFiles = files.filter((file) => file.name.endsWith(".md"));
     setSelectedFiles(markdownFiles);
 
     // Set the folder path from the first file
     if (markdownFiles.length > 0) {
-      const path = markdownFiles[0].webkitRelativePath.split('/')[0];
+      const path = markdownFiles[0].webkitRelativePath.split("/")[0];
       setVaultPath(path);
     }
   };
@@ -43,14 +43,14 @@ export default function ObsidianOptions() {
           return {
             name: file.name,
             path: file.webkitRelativePath,
-            content: content
+            content: content,
           };
         })
       );
 
       const { data, error } = await System.dataConnectors.obsidian.collect({
         vaultPath,
-        files: fileContents
+        files: fileContents,
       });
 
       if (!!error) {

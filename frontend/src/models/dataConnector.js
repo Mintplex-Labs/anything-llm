@@ -193,7 +193,7 @@ const DataConnector = {
         method: "POST",
         headers: baseHeaders(),
         body: JSON.stringify({
-          files
+          files,
         }),
       })
         .then((res) => res.json())
