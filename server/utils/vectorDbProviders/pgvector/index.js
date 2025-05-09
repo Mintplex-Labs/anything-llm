@@ -15,6 +15,7 @@ const { sourceIdentifier } = require("../../chats");
 
 const PGVector = {
   name: "PGVector",
+  connectionTimeout: 30_000,
   /**
    * Get the table name for the PGVector database.
    * - Defaults to "anythingllm_vectors" if no table name is provided.
@@ -41,6 +42,8 @@ const PGVector = {
   },
   getTablesSql:
     "SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'public'",
+  getEmbeddingTableSchemaSql:
+    "SELECT column_name,data_type FROM information_schema.columns WHERE table_name = $1",
   createTableSql: (dimensions) =>
     `CREATE TABLE IF NOT EXISTS "${PGVector.tableName()}" (id UUID PRIMARY KEY, namespace TEXT, embedding vector(${Number(dimensions)}), metadata JSONB, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`,
 
@@ -55,42 +58,145 @@ const PGVector = {
   },
 
   /**
+   * Validate the existing embedding table schema.
+   * @param {pgsql.Client} pgClient
+   * @param {string} tableName
+   * @returns {Promise<boolean>}
+   */
+  validateExistingEmbeddingTableSchema: async function (pgClient, tableName) {
+    const result = await pgClient.query(this.getEmbeddingTableSchemaSql, [
+      tableName,
+    ]);
+
+    // Minimum expected schema for an embedding table.
+    // Extra columns are allowed but the minimum exact columns are required
+    // to be present in the table.
+    const expectedSchema = [
+      {
+        column_name: "id",
+        expected: "uuid",
+        validation: function (dataType) {
+          return dataType.toLowerCase() === this.expected;
+        },
+      },
+      {
+        column_name: "namespace",
+        expected: "text",
+        validation: function (dataType) {
+          return dataType.toLowerCase() === this.expected;
+        },
+      },
+      {
+        column_name: "embedding",
+        expected: "vector",
+        validation: function (dataType) {
+          return !!dataType;
+        },
+      }, // just check if it exists
+      {
+        column_name: "metadata",
+        expected: "jsonb",
+        validation: function (dataType) {
+          return dataType.toLowerCase() === this.expected;
+        },
+      },
+      {
+        column_name: "created_at",
+        expected: "timestamp",
+        validation: function (dataType) {
+          return dataType.toLowerCase().includes(this.expected);
+        },
+      },
+    ];
+
+    if (result.rows.length === 0)
+      throw new Error(
+        `The table '${tableName}' was found but does not contain any columns or cannot be accessed by role. It cannot be used as an embedding table in AnythingLLM.`
+      );
+
+    for (const rowDef of expectedSchema) {
+      const column = result.rows.find(
+        (c) => c.column_name === rowDef.column_name
+      );
+      if (!column)
+        throw new Error(
+          `The column '${rowDef.column_name}' was expected but not found in the table '${tableName}'.`
+        );
+      if (!rowDef.validation(column.data_type))
+        throw new Error(
+          `Invalid data type for column: '${column.column_name}'. Got '${column.data_type}' but expected '${rowDef.expected}'`
+        );
+    }
+
+    this.log(
+      `✅ The pgvector table '${tableName}' was found and meets the minimum expected schema for an embedding table.`
+    );
+    return true;
+  },
+
+  /**
    * Validate the connection to the database and verify that the table does not already exist.
    * so that anythingllm can manage the table directly.
    *
-   * TODO: handling changes to the connection string so that we only validate what is being changed.
-   *
    * @param {{connectionString: string | null, tableName: string | null}} params
-   * @returns {{error: string | null, success: boolean}}
+   * @returns {Promise<{error: string | null, success: boolean}>}
    */
   validateConnection: async function ({
     connectionString = null,
     tableName = null,
   }) {
     if (!connectionString) throw new Error("No connection string provided");
-    if (!tableName) throw new Error("No table name provided");
 
-    let pgClient = null;
     try {
-      pgClient = this.client(connectionString);
-      await pgClient.connect();
-      const result = await pgClient.query(this.getTablesSql);
+      const timeoutPromise = new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            error: `Connection timeout (${(PGVector.connectionTimeout / 1000).toFixed(0)}s). Please check your connection string and try again.`,
+            success: false,
+          });
+        }, PGVector.connectionTimeout);
+      });
 
-      if (result.rows.length !== 0 && !!tableName) {
-        const tableExists = result.rows.some(
-          (row) => row.tablename === tableName
-        );
-        if (!!tableExists)
-          throw new Error(
-            `The vector table ${tableName} already exists. Please use a table name that does not already exist in the database.`
-          );
-      }
+      const connectionPromise = new Promise(async (resolve) => {
+        let pgClient = null;
+        try {
+          pgClient = this.client(connectionString);
+          await pgClient.connect();
+          const result = await pgClient.query(this.getTablesSql);
 
-      return { error: null, success: true };
+          if (result.rows.length !== 0 && !!tableName) {
+            const tableExists = result.rows.some(
+              (row) => row.tablename === tableName
+            );
+            if (tableExists)
+              await this.validateExistingEmbeddingTableSchema(
+                pgClient,
+                tableName
+              );
+          }
+          resolve({ error: null, success: true });
+        } catch (err) {
+          resolve({ error: err.message, success: false });
+        } finally {
+          if (pgClient) await pgClient.end();
+        }
+      });
+
+      // Race the connection attempt against the timeout
+      const result = await Promise.race([connectionPromise, timeoutPromise]);
+      return result;
     } catch (err) {
-      return { error: err.message, success: false };
-    } finally {
-      if (pgClient) await pgClient.end();
+      this.log("Validation Error:", err.message);
+      let readableError = err.message;
+      switch (true) {
+        case err.message.includes("ECONNREFUSED"):
+          readableError =
+            "The host could not be reached. Please check your connection string and try again.";
+          break;
+        default:
+          break;
+      }
+      return { error: readableError, success: false };
     }
   },
 

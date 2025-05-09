@@ -28,8 +28,8 @@ First, obtain a valid connection string for the user, credentials, and db you wa
 eg: `postgresql://dbuser:dbuserpass@localhost:5432/yourdb`
 
 > ![NOTE]
-> The table in your tables **must not exist** AnythingLLM will create and manage this table **for you**.
-> The pgvector table requires a dimension value be set and therefore we cannot use an existing table automatically.
+> If you have an existing table that you want to use as a vector database, AnythingLLM **requires** that the table be
+> at least minimally conform to the expected schema - this can be seen in the [index.js](./index.js) file.
 
 _optional_ - set a table name you wish to have AnythingLLM store vectors to. By default this is `anythingllm_vectors`
 
