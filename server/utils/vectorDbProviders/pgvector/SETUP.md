@@ -104,3 +104,24 @@ For this, you will need to `DROP TABLE` from the command line or however you man
 - Ensure the user has `SELECT` permissions in the database
 - Ensure the table has a vector column set
 - Ensure the table has a dimension value set and this matches the dimension of the embedder in AnythingLLM
+
+### "type 'vector' does not exist" issues with PGVector
+
+If you are using the PGVector as your vector database, you may encounter an error similar to the following when embedding documents:
+
+```
+type 'vector' does not exist
+```
+
+This is due to the fact that the `vector` type is not installed on the PG database.
+
+First, follow the instructions in the [PGVector README](https://github.com/pgvector/pgvector#installation) to install the `vector` type on your database.
+
+Then, you will need to create the extension on the database. This can be done by running the following command:
+
+```bash
+psql <database-name>
+CREATE EXTENSION vector;
+```
+
+
