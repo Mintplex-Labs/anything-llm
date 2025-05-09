@@ -40,8 +40,18 @@
         "GroupDescription": "ALB SG - allows HTTP/HTTPS from anywhere",
         "VpcId": { "Ref": "VpcId" },
         "SecurityGroupIngress": [
-          { "IpProtocol": "tcp", "FromPort": 80, "ToPort": 80, "CidrIp": "0.0.0.0/0" },
-          { "IpProtocol": "tcp", "FromPort": 443, "ToPort": 443, "CidrIp": "0.0.0.0/0" }
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0"
+          }
         ]
       }
     },
@@ -81,7 +91,10 @@
       "Properties": {
         "Encrypted": true,
         "FileSystemTags": [
-          { "Key": "Name", "Value": "anythingllm-milvus" }
+          {
+            "Key": "Name",
+            "Value": "anythingllm-milvus"
+          }
         ]
       }
     },
@@ -153,15 +166,22 @@
         "LoadBalancerArn": { "Ref": "LoadBalancer" },
         "Protocol": "HTTPS",
         "Port": 443,
-        "Certificates": [{ "CertificateArn": { "Ref": "CertificateArn" } }],
+        "Certificates": [
+          {
+            "CertificateArn": { "Ref": "CertificateArn" }
+          }
+        ],
         "DefaultActions": [
-          { "Type": "forward", "TargetGroupArn": { "Ref": "TargetGroup" } }
+          {
+            "Type": "forward",
+            "TargetGroupArn": { "Ref": "TargetGroup" }
+          }
         ]
       }
     },
     "TaskExecutionRole": {
       "Type": "AWS::IAM::Role",
-      "DeletionPolicy": "Retain", 
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -206,66 +226,71 @@
           {
             "Name": "anythingllm",
             "Image": { "Ref": "ImageUri" },
-            "PortMappings": [{ "ContainerPort": 3001, "Protocol": "tcp" }],
+            "PortMappings": [
+              {
+                "ContainerPort": 3001,
+                "Protocol": "tcp"
+              }
+            ],
             "Secrets": [
               {
                 "Name": "LLM_PROVIDER",
                 "ValueFrom": {
-                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/LLM_PROVIDER"
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/LLM_PROVIDER"
                 }
               },
               {
                 "Name": "EMBEDDING_ENGINE",
                 "ValueFrom": {
-                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/EMBEDDING_ENGINE"
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/EMBEDDING_ENGINE"
                 }
               },
               {
                 "Name": "VECTOR_DB",
                 "ValueFrom": {
-                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/VECTOR_DB"
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/VECTOR_DB"
                 }
               },
               {
                 "Name": "MILVUS_ENDPOINT",
                 "ValueFrom": {
-                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_ENDPOINT"
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_ENDPOINT"
                 }
               },
               {
                 "Name": "MILVUS_USERNAME",
                 "ValueFrom": {
-                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_USERNAME"
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_USERNAME"
                 }
               },
               {
                 "Name": "MILVUS_PASSWORD",
                 "ValueFrom": {
-                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_PASSWORD"
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/MILVUS_PASSWORD"
                 }
               },
               {
                 "Name": "OPEN_AI_KEY",
                 "ValueFrom": {
-                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/OPEN_AI_KEY"
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/OPEN_AI_KEY"
                 }
               },
               {
                 "Name": "OPEN_MODEL_PREF",
                 "ValueFrom": {
-                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/OPEN_MODEL_PREF"
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/OPEN_MODEL_PREF"
                 }
               },
               {
                 "Name": "AGENT_GSE_KEY",
                 "ValueFrom": {
-                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/AGENT_GSE_KEY"
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/AGENT_GSE_KEY"
                 }
               },
               {
                 "Name": "AGENT_GSE_CTX",
                 "ValueFrom": {
-                  "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/AGENT_GSE_CTX"
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ParameterPrefix}/AGENT_GSE_CTX"
                 }
               }
             ],
@@ -273,7 +298,7 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": "/ecs/anythingllm",
-                "awslogs-region": "us-east-2",
+                "awslogs-region": { "Ref": "AWS::Region" },
                 "awslogs-stream-prefix": "anythingllm"
               }
             }
@@ -281,7 +306,12 @@
           {
             "Name": "milvus",
             "Image": { "Ref": "MilvusImageUri" },
-            "PortMappings": [{ "ContainerPort": 19530, "Protocol": "tcp" }],
+            "PortMappings": [
+              {
+                "ContainerPort": 19530,
+                "Protocol": "tcp"
+              }
+            ],
             "MountPoints": [
               {
                 "SourceVolume": "milvus-data",
@@ -292,7 +322,7 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": "/ecs/milvus",
-                "awslogs-region": "us-east-2",
+                "awslogs-region": { "Ref": "AWS::Region" },
                 "awslogs-stream-prefix": "milvus"
               }
             }
@@ -334,7 +364,10 @@
     "ServiceURL": {
       "Description": "HTTPS endpoint for AnythingLLM",
       "Value": {
-        "Fn::Join": ["", ["https://", { "Fn::GetAtt": ["LoadBalancer", "DNSName"] }]]
+        "Fn::Join": [
+          "",
+          ["https://", { "Fn::GetAtt": ["LoadBalancer", "DNSName"] }]
+        ]
       }
     }
   }
