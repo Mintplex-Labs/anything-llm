@@ -34,20 +34,6 @@
     }
   },
   "Resources": {
-    "EcsLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/ecs/anythingllm",
-        "RetentionInDays": 14
-      }
-    },
-    "MilvusLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/ecs/milvus",
-        "RetentionInDays": 14
-      }
-    },
     "ServiceSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -197,8 +183,6 @@
     "TaskDefinition": {
       "Type": "AWS::ECS::TaskDefinition",
       "DependsOn": [
-        "EcsLogGroup",
-        "MilvusLogGroup",
         "EFSMountTarget1",
         "EFSMountTarget2",
         "EFSMountTarget3"
