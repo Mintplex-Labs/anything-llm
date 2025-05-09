@@ -298,9 +298,9 @@ export default function LLMPreference({
     const data = {};
     const formData = new FormData(form);
     data.LLMProvider = selectedLLM;
-    // Default to AnythingLLM embedder and LanceDB
+    // Default to AnythingLLM embedder and PGVector (on pg Docker image)
     data.EmbeddingEngine = "native";
-    data.VectorDB = "lancedb";
+    data.VectorDB = "pgvector";
     for (var [key, value] of formData.entries()) data[key] = value;
 
     const { error } = await System.updateSystem(data);
