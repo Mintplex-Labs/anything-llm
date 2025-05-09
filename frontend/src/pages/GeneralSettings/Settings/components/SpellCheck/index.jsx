@@ -3,30 +3,24 @@ import Appearance from "@/models/appearance";
 import { useTranslation } from "react-i18next";
 
 export default function SpellCheck() {
-  const [saving, setSaving] = useState(false);
-  const [enableSpellCheck, setEnableSpellCheck] = useState(false);
   const { t } = useTranslation();
+  const [saving, setSaving] = useState(false);
+  const [enableSpellCheck, setEnableSpellCheck] = useState(
+    Appearance.get("enableSpellCheck")
+  );
 
   const handleChange = async (e) => {
     const newValue = e.target.checked;
     setEnableSpellCheck(newValue);
     setSaving(true);
     try {
-      Appearance.updateSettings({ enableSpellCheck: newValue });
+      Appearance.set("enableSpellCheck", newValue);
     } catch (error) {
       console.error("Failed to update appearance settings:", error);
       setEnableSpellCheck(!newValue);
     }
     setSaving(false);
   };
-
-  useEffect(() => {
-    function fetchSettings() {
-      const settings = Appearance.getSettings();
-      setEnableSpellCheck(settings.enableSpellCheck ?? true);
-    }
-    fetchSettings();
-  }, []);
 
   return (
     <div className="flex flex-col gap-y-0.5 my-4">

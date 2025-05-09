@@ -40,15 +40,6 @@ export default function PromptInput({
   const undoStack = useRef([]);
   const redoStack = useRef([]);
   const { textSizeClass } = useTextSize();
-  const [enableSpellCheck, setEnableSpellCheck] = useState(false);
-
-  useEffect(() => {
-    function fetchSettings() {
-      const settings = Appearance.getSettings();
-      setEnableSpellCheck(settings.enableSpellCheck ?? true);
-    }
-    fetchSettings();
-  }, []);
 
   /**
    * To prevent too many re-renders we remotely listen for updates from the parent
@@ -278,7 +269,7 @@ export default function PromptInput({
                   adjustTextArea(e);
                 }}
                 value={promptInput}
-                spellCheck={enableSpellCheck}
+                spellCheck={Appearance.get("enableSpellCheck")}
                 className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full leading-5 md:text-md text-white bg-transparent placeholder:text-white/60 light:placeholder:text-theme-text-primary resize-none active:outline-none focus:outline-none flex-grow ${textSizeClass}`}
                 placeholder={t("chat_window.send_message")}
               />

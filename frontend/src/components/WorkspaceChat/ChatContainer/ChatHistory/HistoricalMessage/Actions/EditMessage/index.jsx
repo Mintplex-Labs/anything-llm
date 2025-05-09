@@ -71,16 +71,6 @@ export function EditMessageForm({
   saveChanges,
 }) {
   const formRef = useRef(null);
-  const [enableSpellCheck, setEnableSpellCheck] = useState(false);
-
-  useEffect(() => {
-    function fetchSettings() {
-      const settings = Appearance.getSettings();
-      setEnableSpellCheck(settings.enableSpellCheck ?? true);
-    }
-    fetchSettings();
-  }, []);
-
   function handleSaveMessage(e) {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -109,7 +99,7 @@ export function EditMessageForm({
       <textarea
         ref={formRef}
         name="editedMessage"
-        spellCheck={enableSpellCheck}
+        spellCheck={Appearance.get("enableSpellCheck")}
         className="text-white w-full rounded bg-theme-bg-secondary border border-white/20 active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-y"
         defaultValue={message}
         onChange={adjustTextArea}
