@@ -413,7 +413,7 @@
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
-                "awslogs-group": "/ecs/anythingllm",
+                "awslogs-group": { "Ref": "AnythingLLMLogGroup" },
                 "awslogs-region": {
                   "Ref": "AWS::Region"
                 },
