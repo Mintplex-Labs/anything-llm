@@ -300,8 +300,8 @@
       ],
       "Properties": {
         "Family": "anythingllm-task",
-        "Cpu": "1024",
-        "Memory": "4096",
+        "Cpu": "4096",
+        "Memory": "8192",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE"
