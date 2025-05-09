@@ -86,7 +86,7 @@ function apiWorkspaceEndpoints(app) {
         multiUserMode: multiUserMode(response),
         LLMSelection: process.env.LLM_PROVIDER || "openai",
         Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-        VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+        VectorDbSelection: process.env.VECTOR_DB || "pgvector",
         TTSSelection: process.env.TTS_PROVIDER || "native",
         LLMModel: getModelTag(),
       });
@@ -429,14 +429,14 @@ function apiWorkspaceEndpoints(app) {
 
         const history = apiSessionId
           ? await WorkspaceChats.forWorkspaceByApiSessionId(
-              workspace.id,
-              apiSessionId,
-              validLimit,
-              { createdAt: validOrderBy }
-            )
+            workspace.id,
+            apiSessionId,
+            validLimit,
+            { createdAt: validOrderBy }
+          )
           : await WorkspaceChats.forWorkspace(workspace.id, validLimit, {
-              createdAt: validOrderBy,
-            });
+            createdAt: validOrderBy,
+          });
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
         console.error(e.message, e);
@@ -693,7 +693,7 @@ function apiWorkspaceEndpoints(app) {
           LLMSelection:
             workspace.chatProvider ?? process.env.LLM_PROVIDER ?? "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          VectorDbSelection: process.env.VECTOR_DB || "pgvector",
           TTSSelection: process.env.TTS_PROVIDER || "native",
         });
         await EventLogs.logEvent("api_sent_chat", {

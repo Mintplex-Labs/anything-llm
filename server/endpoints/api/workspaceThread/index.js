@@ -94,7 +94,7 @@ function apiWorkspaceThreadEndpoints(app) {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          VectorDbSelection: process.env.VECTOR_DB || "pgvector",
           TTSSelection: process.env.TTS_PROVIDER || "native",
         });
         await EventLogs.logEvent("api_workspace_thread_created", {
@@ -435,7 +435,7 @@ function apiWorkspaceThreadEndpoints(app) {
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          VectorDbSelection: process.env.VECTOR_DB || "pgvector",
           TTSSelection: process.env.TTS_PROVIDER || "native",
           LLMModel: getModelTag(),
         });
@@ -606,7 +606,7 @@ function apiWorkspaceThreadEndpoints(app) {
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          VectorDbSelection: process.env.VECTOR_DB || "pgvector",
           TTSSelection: process.env.TTS_PROVIDER || "native",
           LLMModel: getModelTag(),
         });

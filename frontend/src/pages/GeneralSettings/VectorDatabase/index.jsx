@@ -95,7 +95,7 @@ export default function GeneralVectorDatabase() {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setSelectedVDB(_settings?.VectorDB || "lancedb");
+      setSelectedVDB(_settings?.VectorDB || "pgvector");
       setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
       setLoading(false);
     }

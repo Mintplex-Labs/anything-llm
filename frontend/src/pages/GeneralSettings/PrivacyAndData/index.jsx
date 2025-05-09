@@ -65,7 +65,7 @@ export default function PrivacyAndDataHandling() {
 function ThirdParty({ settings }) {
   const llmChoice = settings?.LLMProvider || "openai";
   const embeddingEngine = settings?.EmbeddingEngine || "openai";
-  const vectorDb = settings?.VectorDB || "lancedb";
+  const vectorDb = settings?.VectorDB || "pgvector";
   const { t } = useTranslation();
 
   const LLMSelection =

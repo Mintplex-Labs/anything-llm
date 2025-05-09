@@ -81,7 +81,7 @@
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
-  const vectorSelection = getExactly ?? process.env.VECTOR_DB ?? "lancedb";
+  const vectorSelection = getExactly ?? process.env.VECTOR_DB ?? "pgvector";
   switch (vectorSelection) {
     case "pinecone":
       const { Pinecone } = require("../vectorDbProviders/pinecone");

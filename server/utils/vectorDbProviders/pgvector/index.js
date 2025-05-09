@@ -26,9 +26,11 @@ const PGVector = {
   /**
    * Get the connection string for the PGVector database.
    * - Requires a connection string to be present in the environment variables.
+   * - On the PG docker image - assumes DATABASE_URL to be used here since
+   * the user likely wants to store everything in the same database.
    * @returns {string | null}
    */
-  connectionString: () => process.env.PGVECTOR_CONNECTION_STRING,
+  connectionString: () => process.env.DATABASE_URL || process.env.PGVECTOR_CONNECTION_STRING,
 
   // Possible for this to be a user-configurable option in the future.
   // Will require a handler per operator to ensure scores are normalized.

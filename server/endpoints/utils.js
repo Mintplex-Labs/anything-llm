@@ -11,7 +11,7 @@ function utilEndpoints(app) {
         mode: (await SystemSettings.isMultiUserMode())
           ? "multi-user"
           : "single-user",
-        vectorDB: process.env.VECTOR_DB || "lancedb",
+        vectorDB: process.env.VECTOR_DB || "pgvector",
         storage: await getDiskStorage(),
       };
       response.status(200).json(metrics);
