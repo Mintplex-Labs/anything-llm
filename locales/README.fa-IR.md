@@ -137,6 +137,7 @@ AnythingLLM اسناد شما را به اشیایی به نام `workspaces` ت
 **پایگاه‌های داده برداری:**
 
 - [LanceDB](https://github.com/lancedb/lancedb) (پیش‌فرض)
+- [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)

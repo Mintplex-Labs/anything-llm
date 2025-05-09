@@ -3,30 +3,34 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import { useModal } from "@/hooks/useModal";
+import CTAButton from "@/components/lib/CTAButton";
+import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
+import PreLoader from "@/components/Preloader";
+import ChangeWarningModal from "@/components/ChangeWarning";
+import ModalWrapper from "@/components/ModalWrapper";
+import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
+
+import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
 import PineconeLogo from "@/media/vectordbs/pinecone.png";
-import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
-import PreLoader from "@/components/Preloader";
-import ChangeWarningModal from "@/components/ChangeWarning";
-import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
+import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
 import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
-import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
 import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions";
-import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
+import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
 import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
-import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
-import CTAButton from "@/components/lib/CTAButton";
-import { useTranslation } from "react-i18next";
+import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -113,6 +117,13 @@ export default function GeneralVectorDatabase() {
       options: <LanceDBOptions />,
       description:
         "100% local vector DB that runs on the same instance as AnythingLLM.",
+    },
+    {
+      name: "PGVector",
+      value: "pgvector",
+      logo: PGVectorLogo,
+      options: <PGVectorOptions settings={settings} />,
+      description: "Vector search powered by PostgreSQL.",
     },
     {
       name: "Chroma",
