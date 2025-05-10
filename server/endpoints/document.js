@@ -1,19 +1,16 @@
 const { Document } = require("../models/documents");
 const { normalizePath, documentsPath, isWithin } = require("../utils/files");
 const { reqBody } = require("../utils/http");
-const {
-  flexUserRoleValid,
-  ROLES,
-} = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const fs = require("fs");
 const path = require("path");
+const AccessManager = require("../utils/AccessManager");
 
 function documentEndpoints(app) {
   if (!app) return;
   app.post(
     "/document/create-folder",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, AccessManager.flexibleAC(["documents.createFolder"])],
     async (request, response) => {
       try {
         const { name } = reqBody(request);
@@ -43,7 +40,7 @@ function documentEndpoints(app) {
 
   app.post(
     "/document/move-files",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, AccessManager.flexibleAC(["documents.moveFiles"])],
     async (request, response) => {
       try {
         const { files } = reqBody(request);

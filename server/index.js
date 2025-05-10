@@ -28,10 +28,12 @@ const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
+const AccessManager = require("./utils/AccessManager");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
 
+AccessManager.loadRoles();
 app.use(cors({ origin: true }));
 app.use(bodyParser.text({ limit: FILE_LIMIT }));
 app.use(bodyParser.json({ limit: FILE_LIMIT }));

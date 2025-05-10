@@ -1,17 +1,14 @@
 const ImportedPlugin = require("../../utils/agents/imported");
 const { reqBody } = require("../../utils/http");
-const {
-  flexUserRoleValid,
-  ROLES,
-} = require("../../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../../utils/middleware/validatedRequest");
+const AccessManager = require("../../utils/AccessManager");
 
 function importedAgentPluginEndpoints(app) {
   if (!app) return;
 
   app.post(
     "/experimental/agent-plugins/:hubId/toggle",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["agent.imported.update"])],
     (request, response) => {
       try {
         const { hubId } = request.params;
@@ -29,7 +26,7 @@ function importedAgentPluginEndpoints(app) {
 
   app.post(
     "/experimental/agent-plugins/:hubId/config",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["agent.imported.update"])],
     (request, response) => {
       try {
         const { hubId } = request.params;
@@ -48,7 +45,7 @@ function importedAgentPluginEndpoints(app) {
 
   app.delete(
     "/experimental/agent-plugins/:hubId",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["agent.imported.delete"])],
     async (request, response) => {
       try {
         const { hubId } = request.params;

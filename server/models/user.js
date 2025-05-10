@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
+const AccessManager = require("../utils/AccessManager");
 
 /**
  * @typedef {Object} User
@@ -37,7 +38,7 @@ const User = {
       }
     },
     role: (role = "default") => {
-      const VALID_ROLES = ["default", "admin", "manager"];
+      const VALID_ROLES = AccessManager.availableRolesAsArray();
       if (!VALID_ROLES.includes(role)) {
         throw new Error(
           `Invalid role. Allowed roles are: ${VALID_ROLES.join(", ")}`
@@ -309,8 +310,11 @@ const User = {
    * @returns {Promise<boolean>} True if the user can send a chat, false otherwise.
    */
   canSendChat: async function (user) {
-    const { ROLES } = require("../utils/middleware/multiUserProtected");
-    if (!user || user.dailyMessageLimit === null || user.role === ROLES.admin)
+    if (
+      !user ||
+      user.dailyMessageLimit === null ||
+      user.role === AccessManager.defaultRoles.admin
+    )
       return true;
 
     const { WorkspaceChats } = require("./workspaceChats");

@@ -7,11 +7,8 @@ const {
 const { CollectorApi } = require("../utils/collectorApi");
 const { reqBody, multiUserMode, userFromSession } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const {
-  flexUserRoleValid,
-  ROLES,
-} = require("../utils/middleware/multiUserProtected");
 const { Telemetry } = require("../models/telemetry");
+const AccessManager = require("../utils/AccessManager");
 
 function browserExtensionEndpoints(app) {
   if (!app) return;
@@ -154,7 +151,7 @@ function browserExtensionEndpoints(app) {
   // Internal endpoints for managing API keys
   app.get(
     "/browser-extension/api-keys",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, AccessManager.flexibleAC(["browserExtensionKey.read"])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -174,7 +171,10 @@ function browserExtensionEndpoints(app) {
 
   app.post(
     "/browser-extension/api-keys/new",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      AccessManager.flexibleAC(["browserExtensionKey.create"]),
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -194,21 +194,21 @@ function browserExtensionEndpoints(app) {
 
   app.delete(
     "/browser-extension/api-keys/:id",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      AccessManager.flexibleAC(["browserExtensionKey.delete"]),
+    ],
     async (request, response) => {
       try {
         const { id } = request.params;
         const user = await userFromSession(request, response);
+        const apiKey = await BrowserExtensionApiKey.get({
+          id: parseInt(id),
+          user_id: user?.id,
+        });
 
-        if (multiUserMode(response) && user.role !== ROLES.admin) {
-          const apiKey = await BrowserExtensionApiKey.get({
-            id: parseInt(id),
-            user_id: user?.id,
-          });
-          if (!apiKey) {
-            return response.status(403).json({ error: "Unauthorized" });
-          }
-        }
+        if (!apiKey)
+          return response.status(403).json({ error: "Unauthorized" });
 
         const { success, error } = await BrowserExtensionApiKey.delete(id);
         if (!success) throw new Error(error);

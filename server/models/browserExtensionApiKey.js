@@ -1,6 +1,6 @@
 const prisma = require("../utils/prisma");
 const { SystemSettings } = require("./systemSettings");
-const { ROLES } = require("../utils/middleware/multiUserProtected");
+const AccessManager = require("../utils/AccessManager");
 
 const BrowserExtensionApiKey = {
   /**
@@ -122,9 +122,13 @@ const BrowserExtensionApiKey = {
     limit = null,
     orderBy = null
   ) {
-    // Admin can view and use any keys
-    if ([ROLES.admin].includes(user.role))
-      return await this.where(clause, limit, orderBy);
+    const acm = new AccessManager();
+    const perms = acm.roles?.[user?.role]?.permissions || {};
+    const canViewAll = acm.parsePermissionFromRole(
+      perms,
+      "browserExtensionKey.readAny"
+    );
+    if (canViewAll) return await this.where(clause, limit, orderBy);
 
     try {
       const apiKeys = await prisma.browser_extension_api_keys.findMany({
