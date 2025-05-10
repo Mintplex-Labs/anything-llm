@@ -9,6 +9,7 @@ import DrupalWikiOptions from "./Connectors/DrupalWiki";
 import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
 import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
+import ObsidianOptions from "./Connectors/Obsidian";
 
 export const getDataConnectors = (t) => ({
   github: {
@@ -46,6 +47,12 @@ export const getDataConnectors = (t) => ({
     image: ConnectorImages.drupalwiki,
     description: "Import Drupal Wiki spaces in a single click.",
     options: <DrupalWikiOptions />,
+  },
+  obsidian: {
+    name: "Obsidian",
+    image: ConnectorImages.obsidian,
+    description: "Import Obsidian vault in a single click.",
+    options: <ObsidianOptions />,
   },
 });
 
