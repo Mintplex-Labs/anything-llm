@@ -49,7 +49,6 @@ export default function ObsidianOptions() {
       );
 
       const { data, error } = await System.dataConnectors.obsidian.collect({
-        vaultPath,
         files: fileContents,
       });
 
@@ -95,11 +94,10 @@ export default function ObsidianOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                    Vault Location
+                    {t("connectors.obsidian.vault_location")}
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    Select your Obsidian vault folder to import all notes and
-                    their connections.
+                    {t("connectors.obsidian.vault_description")}
                   </p>
                 </div>
                 <div className="flex gap-x-2">
@@ -126,7 +124,9 @@ export default function ObsidianOptions() {
                 </div>
                 {selectedFiles.length > 0 && (
                   <p className="text-xs text-white mt-2">
-                    Selected {selectedFiles.length} markdown files
+                    {t("connectors.obsidian.selected_files", {
+                      count: selectedFiles.length,
+                    })}
                   </p>
                 )}
               </div>
@@ -138,8 +138,7 @@ export default function ObsidianOptions() {
               <div className="gap-x-2 flex items-center">
                 <Info className="shrink-0" size={25} />
                 <p className="text-sm">
-                  Make sure your Obsidian vault is not currently open in the app
-                  to avoid any conflicts.
+                  {t("connectors.obsidian.vault_warning")}
                 </p>
               </div>
             </div>
@@ -148,11 +147,13 @@ export default function ObsidianOptions() {
               disabled={loading || selectedFiles.length === 0}
               className="border-none mt-2 w-full justify-center px-4 py-2 rounded-lg text-dark-text light:text-white text-sm font-bold items-center flex gap-x-2 bg-theme-home-button-primary hover:bg-theme-home-button-primary-hover disabled:bg-theme-home-button-primary-hover disabled:cursor-not-allowed"
             >
-              {loading ? "Importing vault..." : "Import Vault"}
+              {loading
+                ? t("connectors.obsidian.importing")
+                : t("connectors.obsidian.import_vault")}
             </button>
             {loading && (
               <p className="text-xs text-white/50">
-                This may take a while depending on the size of your vault.
+                {t("connectors.obsidian.processing_time")}
               </p>
             )}
           </div>
