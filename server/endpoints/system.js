@@ -654,7 +654,7 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/pfp/:id",
-    [validatedRequest, AccessManager.flexibleAC(["system.branding.read"])],
+    [validatedRequest, AccessManager.flexibleAC(["users.pfp.read"])],
     async function (request, response) {
       try {
         const { id } = request.params;
@@ -685,7 +685,7 @@ function systemEndpoints(app) {
     "/system/upload-pfp",
     [
       validatedRequest,
-      AccessManager.flexibleAC(["system.branding.update"]),
+      AccessManager.flexibleAC(["users.pfp.update"]),
       handlePfpUpload,
     ],
     async function (request, response) {
@@ -727,7 +727,7 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/remove-pfp",
-    [validatedRequest, AccessManager.flexibleAC(["system.branding.delete"])],
+    [validatedRequest, AccessManager.flexibleAC(["users.pfp.delete"])],
     async function (request, response) {
       try {
         const user = await userFromSession(request, response);

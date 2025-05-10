@@ -14,8 +14,15 @@ for (const file of fs.readdirSync(ROLES_DIR)) {
 LegacyRoleMap = {
   // Pre-existing rules that were ROLES.all before the custom role system was introduced
   'all': [
+    'workspace.chat',
 
-  ]
+  ],
+  'admin': [
+
+  ],
+  'admin_manager': [
+
+  ],
 }
 
 for (const role of defaultRoleDefinitions) {
