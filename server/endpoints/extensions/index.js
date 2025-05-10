@@ -1,13 +1,10 @@
 const { Telemetry } = require("../../models/telemetry");
 const { CollectorApi } = require("../../utils/collectorApi");
-const {
-  flexUserRoleValid,
-  ROLES,
-} = require("../../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../../utils/middleware/validatedRequest");
 const {
   isSupportedRepoProvider,
 } = require("../../utils/middleware/isSupportedRepoProviders");
+const AccessManager = require("../../utils/AccessManager");
 
 function extensionEndpoints(app) {
   if (!app) return;
@@ -16,7 +13,7 @@ function extensionEndpoints(app) {
     "/ext/:repo_platform/branches",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      AccessManager.flexibleAC(["collector.useExtension"]),
       isSupportedRepoProvider,
     ],
     async (request, response) => {
@@ -40,7 +37,7 @@ function extensionEndpoints(app) {
     "/ext/:repo_platform/repo",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      AccessManager.flexibleAC(["collector.useExtension"]),
       isSupportedRepoProvider,
     ],
     async (request, response) => {
@@ -65,7 +62,7 @@ function extensionEndpoints(app) {
 
   app.post(
     "/ext/youtube/transcript",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, AccessManager.flexibleAC(["collector.useExtension"])],
     async (request, response) => {
       try {
         const responseFromProcessor =
@@ -87,7 +84,7 @@ function extensionEndpoints(app) {
 
   app.post(
     "/ext/confluence",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, AccessManager.flexibleAC(["collector.useExtension"])],
     async (request, response) => {
       try {
         const responseFromProcessor =
@@ -108,7 +105,7 @@ function extensionEndpoints(app) {
   );
   app.post(
     "/ext/website-depth",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, AccessManager.flexibleAC(["collector.useExtension"])],
     async (request, response) => {
       try {
         const responseFromProcessor =
@@ -129,7 +126,7 @@ function extensionEndpoints(app) {
   );
   app.post(
     "/ext/drupalwiki",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, AccessManager.flexibleAC(["collector.useExtension"])],
     async (request, response) => {
       try {
         const responseFromProcessor =

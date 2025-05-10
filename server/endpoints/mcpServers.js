@@ -1,17 +1,14 @@
 const { reqBody } = require("../utils/http");
 const MCPCompatibilityLayer = require("../utils/MCP");
-const {
-  flexUserRoleValid,
-  ROLES,
-} = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const AccessManager = require("../utils/AccessManager");
 
 function mcpServersEndpoints(app) {
   if (!app) return;
 
   app.get(
     "/mcp-servers/force-reload",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["mcp.forceReload"])],
     async (_request, response) => {
       try {
         const mcp = new MCPCompatibilityLayer();
@@ -34,7 +31,7 @@ function mcpServersEndpoints(app) {
 
   app.get(
     "/mcp-servers/list",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["mcp.read"])],
     async (_request, response) => {
       try {
         const servers = await new MCPCompatibilityLayer().servers();
@@ -54,7 +51,7 @@ function mcpServersEndpoints(app) {
 
   app.post(
     "/mcp-servers/toggle",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["mcp.update"])],
     async (request, response) => {
       try {
         const { name } = reqBody(request);
@@ -77,7 +74,7 @@ function mcpServersEndpoints(app) {
 
   app.post(
     "/mcp-servers/delete",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["mcp.update"])],
     async (request, response) => {
       try {
         const { name } = reqBody(request);

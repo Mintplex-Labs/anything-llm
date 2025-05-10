@@ -1,0 +1,171 @@
+{
+  "name": "admin",
+  "description": "Administrator with full system access",
+  "permissions": {
+    "system": {
+      "update": true,
+      "countVectors": true,
+      "branding": {
+        "read": true,
+        "update": true,
+        "delete": true
+      },
+      "models": {
+        "read": true
+      }
+    },
+    "systemSettings": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "apiKeys": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "browserExtensionKey": {
+      "readAny": true,
+      "create": true,
+      "read": true,
+      "delete": true
+    },
+    "workspace": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true,
+      "chat": true,
+      "embed": true,
+      "resetVectorDb": true,
+      "documentPinStatus": true,
+      "playTTS": true,
+      "readAny": true
+    },
+    "workspaceThread": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "workspaceChats": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true,
+      "export": true
+    },
+    "documents": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true,
+      "createFolder": true,
+      "moveFiles": true,
+      "upload": true
+    },
+    "documentSync": {
+      "read": true,
+      "update": true
+    },
+    "users": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true,
+      "pfp": {
+        "read": true,
+        "update": true,
+        "delete": true
+      }
+    },
+    "chatEmbeds": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "chatEmbedChats": {
+      "read": true,
+      "delete": true
+    },
+    "agentFlows": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "agent": {
+      "invoke": true,
+      "imported": {
+        "update": true,
+        "delete": true
+      }
+    },
+    "roles": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "eventLogs": {
+      "read": true,
+      "delete": true
+    },
+    "invite": {
+      "create": true,
+      "read": true,
+      "delete": true
+    },
+    "promptHistory": {
+      "read": true,
+      "delete": true
+    },
+    "slashCommands": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "systemPromptVariables": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "welcomeMessages": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "workspaceSuggestedMessages": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "workspaceUsers": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "communityHub": {
+      "explore": true,
+      "viewItems": true,
+      "importItems": true
+    },
+    "mcp": {
+      "forceReload": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "collector": {
+      "useExtension": true
+    }
+  }
+}

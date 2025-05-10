@@ -79,7 +79,9 @@
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
     "weaviate-ts-client": "^1.4.0",
-    "winston": "^3.13.0"
+    "winston": "^3.13.0",
+    "zod": "^3.24.4",
+    "zod-empty": "^1.4.5"
   },
   "devDependencies": {
     "@inquirer/prompts": "^4.3.1",
