@@ -89,6 +89,10 @@ const TRANSLATIONS = {
     "experimental-features": "Experimentele Functies",
     contact: "Contact Ondersteuning",
     "browser-extension": "Browser Extensie",
+    "system-prompt-variables": null,
+    interface: null,
+    branding: null,
+    chat: null,
   },
   login: {
     "multi-user": {
@@ -220,6 +224,16 @@ const TRANSLATIONS = {
       title: "Prompt",
       description:
         "De prompt die in deze werkruimte zal worden gebruikt. Definieer de context en instructies voor de AI om een reactie te genereren. Je moet een zorgvuldig samengestelde prompt geven zodat de AI een relevante en nauwkeurige reactie kan genereren.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "Afwijzingsreactie in Querymodus",
@@ -332,37 +346,6 @@ const TRANSLATIONS = {
       prompt: "Prompt",
       response: "Response",
       at: "Verzonden Om",
-    },
-  },
-  appearance: {
-    title: "Verschijning",
-    description: "Pas de verschijningsinstellingen van je platform aan.",
-    logo: {
-      title: "Logo Aanpassen",
-      description: "Upload je aangepaste logo om je chatbot eigen te maken.",
-      add: "Voeg een aangepast logo toe",
-      recommended: "Aanbevolen grootte: 800 x 200",
-      remove: "Verwijderen",
-      replace: "Vervangen",
-    },
-    message: {
-      title: "Berichten Aanpassen",
-      description:
-        "Pas de automatische berichten aan die aan je gebruikers worden weergegeven.",
-      new: "Nieuw",
-      system: "systeem",
-      user: "gebruiker",
-      message: "bericht",
-      assistant: "AnythingLLM Chat Assistent",
-      "double-click": "Dubbelklik om te bewerken...",
-      save: "Berichten Opslaan",
-    },
-    icons: {
-      title: "Aangepaste Voettekstpictogrammen",
-      description:
-        "Pas de voettekstpictogrammen aan die onder aan de zijbalk worden weergegeven.",
-      icon: "Pictogram",
-      link: "Link",
     },
   },
   api: {
@@ -681,6 +664,175 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError: null,
+    checklist: {
+      title: null,
+      tasksLeft: null,
+      completed: null,
+      dismiss: null,
+      tasks: {
+        create_workspace: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        send_chat: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        embed_document: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        setup_system_prompt: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        define_slash_command: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        visit_community: {
+          title: null,
+          description: null,
+          action: null,
+        },
+      },
+    },
+    quickLinks: {
+      title: null,
+      sendChat: null,
+      embedDocument: null,
+      createWorkspace: null,
+    },
+    exploreMore: {
+      title: null,
+      features: {
+        customAgents: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        slashCommands: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        systemPrompts: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+      },
+    },
+    announcements: {
+      title: null,
+    },
+    resources: {
+      title: null,
+      links: {
+        docs: null,
+        star: null,
+      },
+    },
   },
 };
 

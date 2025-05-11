@@ -11,7 +11,6 @@ import {
   Robot,
   Hammer,
   FlowArrow,
-  PlusCircle,
 } from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
@@ -23,6 +22,8 @@ import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
 import { Tooltip } from "react-tooltip";
 import AgentFlowsList from "./AgentFlows";
 import FlowPanel from "./AgentFlows/FlowPanel";
+import { MCPServersList, MCPServerHeader } from "./MCPServers";
+import ServerPanel from "./MCPServers/ServerPanel";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import AgentFlows from "@/models/agentFlows";
@@ -42,6 +43,10 @@ export default function AdminAgents() {
   const [agentFlows, setAgentFlows] = useState([]);
   const [selectedFlow, setSelectedFlow] = useState(null);
   const [activeFlowIds, setActiveFlowIds] = useState([]);
+
+  // MCP Servers are lazy loaded to not block the UI thread
+  const [mcpServers, setMcpServers] = useState([]);
+  const [selectedMcpServer, setSelectedMcpServer] = useState(null);
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {
@@ -67,6 +72,7 @@ export default function AdminAgents() {
         "active_agent_flows",
       ]);
       const { flows = [] } = await AgentFlows.listFlows();
+
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
       setDisabledAgentSkills(
@@ -106,6 +112,15 @@ export default function AdminAgents() {
         ? prev.filter((id) => id !== flowId)
         : [...prev, flowId];
       return updatedFlows;
+    });
+  };
+
+  const toggleMCP = (serverName) => {
+    setMcpServers((prev) => {
+      return prev.map((server) => {
+        if (server.name !== serverName) return server;
+        return { ...server, running: !server.running };
+      });
     });
   };
 
@@ -159,29 +174,59 @@ export default function AdminAgents() {
     setHasChanges(false);
   };
 
-  const SelectedSkillComponent = selectedFlow
-    ? FlowPanel
-    : selectedSkill?.imported
-      ? ImportedSkillConfig
-      : configurableSkills[selectedSkill]?.component ||
-        defaultSkills[selectedSkill]?.component;
+  let SelectedSkillComponent = null;
+  if (selectedFlow) {
+    SelectedSkillComponent = FlowPanel;
+  } else if (selectedMcpServer) {
+    SelectedSkillComponent = ServerPanel;
+  } else if (selectedSkill?.imported) {
+    SelectedSkillComponent = ImportedSkillConfig;
+  } else if (configurableSkills[selectedSkill]) {
+    SelectedSkillComponent = configurableSkills[selectedSkill]?.component;
+  } else {
+    SelectedSkillComponent = defaultSkills[selectedSkill]?.component;
+  }
 
   // Update the click handlers to clear the other selection
+  const handleDefaultSkillClick = (skill) => {
+    setSelectedFlow(null);
+    setSelectedMcpServer(null);
+    setSelectedSkill(skill);
+    if (isMobile) setShowSkillModal(true);
+  };
+
   const handleSkillClick = (skill) => {
     setSelectedFlow(null);
+    setSelectedMcpServer(null);
     setSelectedSkill(skill);
     if (isMobile) setShowSkillModal(true);
   };
 
   const handleFlowClick = (flow) => {
     setSelectedSkill(null);
+    setSelectedMcpServer(null);
     setSelectedFlow(flow);
+    if (isMobile) setShowSkillModal(true);
+  };
+
+  const handleMCPClick = (server) => {
+    setSelectedSkill(null);
+    setSelectedFlow(null);
+    setSelectedMcpServer(server);
+    if (isMobile) setShowSkillModal(true);
   };
 
   const handleFlowDelete = (flowId) => {
     setSelectedFlow(null);
     setActiveFlowIds((prev) => prev.filter((id) => id !== flowId));
     setAgentFlows((prev) => prev.filter((flow) => flow.uuid !== flowId));
+  };
+
+  const handleMCPServerDelete = (serverName) => {
+    setSelectedMcpServer(null);
+    setMcpServers((prev) =>
+      prev.filter((server) => server.name !== serverName)
+    );
   };
 
   if (loading) {
@@ -220,7 +265,10 @@ export default function AdminAgents() {
           />
 
           {/* Skill settings nav */}
-          <div hidden={showSkillModal} className="flex flex-col gap-y-[18px]">
+          <div
+            hidden={showSkillModal}
+            className="flex flex-col gap-y-[18px] overflow-y-scroll no-scroll"
+          >
             <div className="text-theme-text-primary flex items-center gap-x-2">
               <Robot size={24} />
               <p className="text-lg font-medium">Agent Skills</p>
@@ -229,11 +277,7 @@ export default function AdminAgents() {
             <SkillList
               skills={defaultSkills}
               selectedSkill={selectedSkill}
-              handleClick={(skill) => {
-                setSelectedFlow(null);
-                setSelectedSkill(skill);
-                setShowSkillModal(true);
-              }}
+              handleClick={handleDefaultSkillClick}
               activeSkills={Object.keys(defaultSkills).filter(
                 (skill) => !disabledAgentSkills.includes(skill)
               )}
@@ -242,11 +286,7 @@ export default function AdminAgents() {
             <SkillList
               skills={configurableSkills}
               selectedSkill={selectedSkill}
-              handleClick={(skill) => {
-                setSelectedFlow(null);
-                setSelectedSkill(skill);
-                setShowSkillModal(true);
-              }}
+              handleClick={handleDefaultSkillClick}
               activeSkills={agentSkills}
             />
 
@@ -275,6 +315,21 @@ export default function AdminAgents() {
               id="active_agent_flows"
               value={activeFlowIds.join(",")}
             />
+            <MCPServerHeader
+              setMcpServers={setMcpServers}
+              setSelectedMcpServer={setSelectedMcpServer}
+            >
+              {({ loadingMcpServers }) => {
+                return (
+                  <MCPServersList
+                    isLoading={loadingMcpServers}
+                    servers={mcpServers}
+                    selectedServer={selectedMcpServer}
+                    handleClick={handleMCPClick}
+                  />
+                );
+              }}
+            </MCPServerHeader>
           </div>
 
           {/* Selected agent skill modal */}
@@ -297,10 +352,16 @@ export default function AdminAgents() {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4">
+                  <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-scroll no-scroll">
                     {SelectedSkillComponent ? (
                       <>
-                        {selectedFlow ? (
+                        {selectedMcpServer ? (
+                          <ServerPanel
+                            server={selectedMcpServer}
+                            toggleServer={toggleMCP}
+                            onDelete={handleMCPServerDelete}
+                          />
+                        ) : selectedFlow ? (
                           <FlowPanel
                             flow={selectedFlow}
                             toggleFlow={toggleFlow}
@@ -349,7 +410,7 @@ export default function AdminAgents() {
                       <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                         <Robot size={40} />
                         <p className="font-medium">
-                          Select an agent skill or flow
+                          Select an Agent Skill, Agent Flow, or MCP Server
                         </p>
                       </div>
                     )}
@@ -460,16 +521,38 @@ export default function AdminAgents() {
                 selectedFlow={selectedFlow}
                 handleClick={handleFlowClick}
               />
+
+              <MCPServerHeader
+                setMcpServers={setMcpServers}
+                setSelectedMcpServer={setSelectedMcpServer}
+              >
+                {({ loadingMcpServers }) => {
+                  return (
+                    <MCPServersList
+                      isLoading={loadingMcpServers}
+                      servers={mcpServers}
+                      selectedServer={selectedMcpServer}
+                      handleClick={handleMCPClick}
+                    />
+                  );
+                }}
+              </MCPServerHeader>
             </div>
           </div>
         </div>
 
         {/* Selected agent skill setting panel */}
         <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4">
+          <div className="bg-theme-bg-secondary text-white rounded-xl flex-1 p-4 overflow-y-scroll no-scroll">
             {SelectedSkillComponent ? (
               <>
-                {selectedFlow ? (
+                {selectedMcpServer ? (
+                  <ServerPanel
+                    server={selectedMcpServer}
+                    toggleServer={toggleMCP}
+                    onDelete={handleMCPServerDelete}
+                  />
+                ) : selectedFlow ? (
                   <FlowPanel
                     flow={selectedFlow}
                     toggleFlow={toggleFlow}
@@ -517,7 +600,9 @@ export default function AdminAgents() {
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-theme-text-secondary">
                 <Robot size={40} />
-                <p className="font-medium">Select an agent skill or flow</p>
+                <p className="font-medium">
+                  Select an Agent Skill, Agent Flow, or MCP Server
+                </p>
               </div>
             )}
           </div>

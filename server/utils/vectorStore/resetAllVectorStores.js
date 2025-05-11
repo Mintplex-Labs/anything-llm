@@ -30,11 +30,22 @@ async function resetAllVectorStores({ vectorDbKey }) {
       vectorDbKey
     );
     const VectorDb = getVectorDbClass(vectorDbKey);
-    for (const workspace of workspaces) {
-      try {
-        await VectorDb["delete-namespace"]({ namespace: workspace.slug });
-      } catch (e) {
-        console.error(e.message);
+
+    if (vectorDbKey === "pgvector") {
+      /*
+      pgvector has a reset method that drops the entire embedding table
+      which is required since if this function is called we will need to
+      reset the embedding column VECTOR dimension value and you cannot change
+      the dimension value of an existing vector column.
+      */
+      await VectorDb.reset();
+    } else {
+      for (const workspace of workspaces) {
+        try {
+          await VectorDb["delete-namespace"]({ namespace: workspace.slug });
+        } catch (e) {
+          console.error(e.message);
+        }
       }
     }
 

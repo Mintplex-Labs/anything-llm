@@ -55,6 +55,21 @@ const client = new OpenAI({
     console.log({ message });
   }
 
+  // Test embeddings creation
+  console.log("Creating embeddings");
+  const embedding = await client.embeddings.create({
+    model: null, // model is optional for AnythingLLM
+    input: "This is a test string for embedding",
+    encoding_format: "float",
+  });
+  console.log("Embedding created successfully:");
+  console.log(`Dimensions: ${embedding.data[0].embedding.length}`);
+  console.log(
+    `First few values:`,
+    embedding.data[0].embedding.slice(0, 5),
+    `+ ${embedding.data[0].embedding.length - 5} more`
+  );
+
   // Vector DB functionality
   console.log("Fetching /vector_stores");
   const vectorDBList = await client.beta.vectorStores.list();

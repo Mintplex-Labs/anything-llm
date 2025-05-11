@@ -162,7 +162,11 @@ function WorkspaceDirectory({
             <div className="overflow-y-auto h-[calc(100%-40px)]">
               {files.items.some((folder) => folder.items.length > 0) ||
               movedItems.length > 0 ? (
-                <RenderFileRows files={files} movedItems={movedItems}>
+                <RenderFileRows
+                  files={files}
+                  movedItems={movedItems}
+                  workspace={workspace}
+                >
                   {({ item, folder }) => (
                     <WorkspaceFileRow
                       key={item.id}
@@ -231,7 +235,7 @@ function WorkspaceDirectory({
                     }`}
               </p>
               <p className="mt-2 text-xs italic" hidden={embeddingCosts === 0}>
-                {t("new-workspace.costs")}
+                {t("connectors.directory.costs")}
               </p>
             </div>
 
@@ -345,7 +349,7 @@ const DocumentWatchAlert = memo(() => {
               weight="regular"
             />
             <h3 className="text-xl font-semibold text-white">
-              {t("connectors.pinning.what_watching")}
+              {t("connectors.watching.what_watching")}
             </h3>
           </div>
         </div>
@@ -384,12 +388,19 @@ const DocumentWatchAlert = memo(() => {
   );
 });
 
-function RenderFileRows({ files, movedItems, children }) {
+function RenderFileRows({ files, movedItems, children, workspace }) {
   function sortMovedItemsAndFiles(a, b) {
     const aIsMovedItem = movedItems.some((movedItem) => movedItem.id === a.id);
     const bIsMovedItem = movedItems.some((movedItem) => movedItem.id === b.id);
     if (aIsMovedItem && !bIsMovedItem) return -1;
     if (!aIsMovedItem && bIsMovedItem) return 1;
+
+    // Sort pinned items to the top
+    const aIsPinned = a.pinnedWorkspaces?.includes(workspace.id);
+    const bIsPinned = b.pinnedWorkspaces?.includes(workspace.id);
+    if (aIsPinned && !bIsPinned) return -1;
+    if (!aIsPinned && bIsPinned) return 1;
+
     return 0;
   }
 
