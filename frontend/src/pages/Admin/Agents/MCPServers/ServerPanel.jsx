@@ -41,13 +41,13 @@ function ManageServerMenu({ server, toggleServer, onDelete }) {
     const { success, error } = await MCPServers.toggleServer(server.name);
     if (success) {
       const newState = !running;
+      setRunning(newState);
       toggleServer(server.name);
       showToast(
         `MCP server ${server.name} ${newState ? "started" : "stopped"} successfully.`,
         "success",
         { clear: true }
       );
-      setRunning(newState);
     } else {
       showToast(error || "Failed to toggle MCP server.", "error", {
         clear: true,
