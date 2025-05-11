@@ -132,6 +132,7 @@ AnythingLLM, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen 
 **Vektör Databases:**
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
+- [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
@@ -162,7 +163,7 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 | --- | --- | --- |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] |
 
-[veya Docker kullanmadan üretim ortamında AnythingLLM kurun →](./BARE_METAL.md)  
+[veya Docker kullanmadan üretim ortamında AnythingLLM kurun →](../BARE_METAL.md)  
 
 ## Geliştirme İçin Kurulum  
 
@@ -172,9 +173,9 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 - `yarn dev:frontend` → Ön yüzü yerel olarak çalıştırır (repo’nun kök dizininden çalıştırılmalıdır).  
 - `yarn dev:collector` → Belge toplayıcıyı çalıştırır (repo’nun kök dizininden çalıştırılmalıdır).  
 
-[Belgeler hakkında bilgi edinin](./server/storage/documents/DOCUMENTS.md)  
+[Belgeler hakkında bilgi edinin](../server/storage/documents/DOCUMENTS.md)  
 
-[Vektör önbellekleme hakkında bilgi edinin](./server/storage/vector-cache/VECTOR_CACHE.md)  
+[Vektör önbellekleme hakkında bilgi edinin](../server/storage/vector-cache/VECTOR_CACHE.md)  
 
 ## Harici Uygulamalar ve Entegrasyonlar  
 
@@ -242,7 +243,7 @@ Bu verileri doğrulamak için kod içinde **`Telemetry.sendTelemetry` çağrıla
 ---  
 
 Telif Hakkı © 2025 [Mintplex Labs][profile-link]. <br />  
-Bu proje [MIT](./LICENSE) lisansı ile lisanslanmıştır.
+Bu proje [MIT](../LICENSE) lisansı ile lisanslanmıştır.
 
 <!-- LINK GROUP -->
 

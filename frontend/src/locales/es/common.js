@@ -89,6 +89,10 @@ const TRANSLATIONS = {
     "experimental-features": "Funciones Experimentales",
     contact: "Contactar Soporte",
     "browser-extension": "Extensión del navegador",
+    "system-prompt-variables": null,
+    interface: null,
+    branding: null,
+    chat: null,
   },
   login: {
     "multi-user": {
@@ -222,6 +226,16 @@ const TRANSLATIONS = {
       title: "Prompt",
       description:
         "El prompt que se utilizará en este espacio de trabajo. Define el contexto y las instrucciones para que la IA genere una respuesta. Debes proporcionar un prompt cuidadosamente elaborado para que la IA pueda generar una respuesta relevante y precisa.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "Respuesta de rechazo en modo consulta",
@@ -336,38 +350,6 @@ const TRANSLATIONS = {
       prompt: "Prompt",
       response: "Respuesta",
       at: "Enviado a",
-    },
-  },
-  appearance: {
-    title: "Apariencia",
-    description: "Personaliza la configuración de apariencia de tu plataforma.",
-    logo: {
-      title: "Personalizar logotipo",
-      description:
-        "Sube tu logotipo personalizado para hacer que tu chatbot sea tuyo.",
-      add: "Agregar un logotipo personalizado",
-      recommended: "Tamaño recomendado: 800 x 200",
-      remove: "Eliminar",
-      replace: "Reemplazar",
-    },
-    message: {
-      title: "Personalizar mensajes",
-      description:
-        "Personaliza los mensajes automáticos que se muestran a tus usuarios.",
-      new: "Nuevo",
-      system: "sistema",
-      user: "usuario",
-      message: "mensaje",
-      assistant: "Asistente de chat AnythingLLM",
-      "double-click": "Haz doble clic para editar...",
-      save: "Guardar mensajes",
-    },
-    icons: {
-      title: "Iconos de pie de página personalizados",
-      description:
-        "Personaliza los iconos de pie de página que se muestran en la parte inferior de la barra lateral.",
-      icon: "Icono",
-      link: "Enlace",
     },
   },
   api: {
@@ -686,6 +668,180 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError:
+      "Por favor, crea un espacio de trabajo antes de iniciar un chat.",
+    checklist: {
+      title: "Comenzando",
+      tasksLeft: "tareas restantes",
+      completed:
+        "¡Estás en camino de convertirte en un experto en AnythingLLM!",
+      dismiss: "cerrar",
+      tasks: {
+        create_workspace: {
+          title: "Crear un espacio de trabajo",
+          description: "Crea tu primer espacio de trabajo para comenzar",
+          action: "Crear",
+        },
+        send_chat: {
+          title: "Enviar un chat",
+          description: "Inicia una conversación con tu asistente de IA",
+          action: "Chatear",
+        },
+        embed_document: {
+          title: "Incrustar un documento",
+          description: "Añade tu primer documento a tu espacio de trabajo",
+          action: "Incrustar",
+        },
+        setup_system_prompt: {
+          title: "Configurar un prompt del sistema",
+          description: "Configura el comportamiento de tu asistente de IA",
+          action: "Configurar",
+        },
+        define_slash_command: {
+          title: "Definir un comando de barra",
+          description: "Crea comandos personalizados para tu asistente",
+          action: "Definir",
+        },
+        visit_community: {
+          title: "Visitar el Centro de la Comunidad",
+          description: "Explora recursos y plantillas de la comunidad",
+          action: "Explorar",
+        },
+      },
+    },
+    quickLinks: {
+      title: "Enlaces Rápidos",
+      sendChat: "Enviar Chat",
+      embedDocument: "Incrustar un Documento",
+      createWorkspace: "Crear Espacio de Trabajo",
+    },
+    exploreMore: {
+      title: "Explora más características",
+      features: {
+        customAgents: {
+          title: "Agentes de IA Personalizados",
+          description:
+            "Crea poderosos agentes de IA y automatizaciones sin código.",
+          primaryAction: "Chatear usando @agente",
+          secondaryAction: "Crear un flujo de agente",
+        },
+        slashCommands: {
+          title: "Comandos de Barra",
+          description:
+            "Ahorra tiempo e inyecta prompts utilizando comandos de barra personalizados.",
+          primaryAction: "Crear un Comando de Barra",
+          secondaryAction: "Explorar en el Hub",
+        },
+        systemPrompts: {
+          title: "Prompts del Sistema",
+          description:
+            "Modifica el prompt del sistema para personalizar las respuestas de IA de un espacio de trabajo.",
+          primaryAction: "Modificar un Prompt del Sistema",
+          secondaryAction: "Gestionar variables de prompt",
+        },
+      },
+    },
+    announcements: {
+      title: "Actualizaciones y Anuncios",
+    },
+    resources: {
+      title: "Recursos",
+      links: {
+        docs: "Documentación",
+        star: "Destacar en Github",
+      },
+    },
   },
 };
 

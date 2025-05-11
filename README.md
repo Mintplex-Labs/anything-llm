@@ -55,9 +55,10 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 
 ## Cool features of AnythingLLM
 
-- 🆕 [**Custom AI Agents**](https://docs.anythingllm.com/agent/custom/introduction)
+- 🆕 [**Full MCP-compatibility**](https://docs.anythingllm.com/mcp-compatibility/overview)
 - 🆕 [**No-code AI Agent builder**](https://docs.anythingllm.com/agent-flows/overview)
 - 🖼️ **Multi-modal support (both closed and open-source LLMs!)**
+- [**Custom AI Agents**](https://docs.anythingllm.com/agent/custom/introduction)
 - 👤 Multi-user instance support and permissioning _Docker version only_
 - 🦾 Agents inside your workspace (browse the web, etc)
 - 💬 [Custom Embeddable Chat widget for your website](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _Docker version only_
@@ -84,7 +85,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Hugging Face (chat models)](https://huggingface.co/)
 - [Ollama (chat models)](https://ollama.ai/)
 - [LM Studio (all models)](https://lmstudio.ai)
-- [LocalAi (all models)](https://localai.io/)
+- [LocalAI (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
 - [Fireworks AI  (chat models)](https://fireworks.ai/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
@@ -106,7 +107,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- [LocalAi (all)](https://localai.io/)
+- [LocalAI (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
 - [LM Studio (all)](https://lmstudio.ai)
 - [Cohere](https://cohere.com/)
@@ -131,6 +132,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 **Vector Databases:**
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
+- [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
@@ -141,11 +143,11 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 
 ### Technical Overview
 
-This monorepo consists of three main sections:
+This monorepo consists of six main sections:
 
 - `frontend`: A viteJS + React frontend that you can run to easily create and manage all your content the LLM can use.
 - `server`: A NodeJS express server to handle all the interactions and do all the vectorDB management and LLM interactions.
-- `collector`: NodeJS express server that process and parses documents from the UI.
+- `collector`: NodeJS express server that processes and parses documents from the UI.
 - `docker`: Docker instructions and build process + information for building from source.
 - `embed`: Submodule for generation & creation of the [web embed widget](https://github.com/Mintplex-Labs/anythingllm-embed).
 - `browser-extension`: Submodule for the [chrome browser extension](https://github.com/Mintplex-Labs/anythingllm-extension).
@@ -203,12 +205,18 @@ Set `DISABLE_TELEMETRY` in your server or docker .env settings to "true" to opt 
 We will only track usage details that help us make product and roadmap decisions, specifically:
 
 - Type of your installation (Docker or Desktop)
-- When a document is added or removed. No information _about_ the document. Just that the event occurred. This gives us an idea of use.
-- Type of vector database in use. Let's us know which vector database provider is the most used to prioritize changes when updates arrive for that provider.
-- Type of LLM in use. Let's us know the most popular choice and prioritize changes when updates arrive for that provider.
-- Chat is sent. This is the most regular "event" and gives us an idea of the daily-activity of this project across all installations. Again, only the event is sent - we have no information on the nature or content of the chat itself.
 
-You can verify these claims by finding all locations `Telemetry.sendTelemetry` is called. Additionally these events are written to the output log so you can also see the specific data which was sent - if enabled. No IP or other identifying information is collected. The Telemetry provider is [PostHog](https://posthog.com/) - an open-source telemetry collection service.
+- When a document is added or removed. No information _about_ the document. Just that the event occurred. This gives us an idea of use.
+
+- Type of vector database in use. Let's us know which vector database provider is the most used to prioritize changes when updates arrive for that provider.
+
+- Type of LLM provider & model tag in use. Let's us know the most popular choice and prioritize changes when updates arrive for that provider or model, or combination thereof. eg: reasoning vs regular, multi-modal models, etc.
+
+- When a chat is sent. This is the most regular "event" and gives us an idea of the daily-activity of this project across all installations. Again, only the **event** is sent - we have no information on the nature or content of the chat itself.
+
+You can verify these claims by finding all locations `Telemetry.sendTelemetry` is called. Additionally these events are written to the output log so you can also see the specific data which was sent - if enabled. **No IP or other identifying information is collected**. The Telemetry provider is [PostHog](https://posthog.com/) - an open-source telemetry collection service.
+
+We take privacy very seriously, and we hope you understand that we want to learn how our tool is used, without using annoying popup surveys, so we can build something worth using. The anonymous data is _never_ shared with third parties, ever.
 
 [View all telemetry events in source code](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
 

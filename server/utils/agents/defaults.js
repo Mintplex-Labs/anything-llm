@@ -4,6 +4,7 @@ const { safeJsonParse } = require("../http");
 const Provider = require("./aibitat/providers/ai-provider");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
+const MCPCompatibilityLayer = require("../MCP");
 
 // This is a list of skills that are built-in and default enabled.
 const DEFAULT_SKILLS = [
@@ -31,6 +32,7 @@ const WORKSPACE_AGENT = {
         ...(await agentSkillsFromSystemSettings()),
         ...ImportedPlugin.activeImportedPlugins(),
         ...AgentFlows.activeFlowPlugins(),
+        ...(await new MCPCompatibilityLayer().activeMCPServers()),
       ],
     };
   },
