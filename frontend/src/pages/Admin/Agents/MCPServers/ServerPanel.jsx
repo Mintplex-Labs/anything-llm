@@ -43,7 +43,7 @@ function ManageServerMenu({ server, toggleServer, onDelete }) {
       setRunning(!running);
       toggleServer(server.name);
       showToast(
-        `MCP server ${server.name} ${running ? "started" : "stopped"} successfully.`,
+        `MCP server ${server.name} ${running ? "stopped" : "started"} successfully.`,
         "success",
         { clear: true }
       );
