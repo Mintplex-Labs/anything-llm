@@ -727,13 +727,13 @@ const TRANSLATIONS = {
       vault_location: "Vault Location",
       vault_description:
         "Select your Obsidian vault folder to import all notes and their connections.",
-      selected_files: "Selected {{count}} markdown files",
+      selected_files: "Found {{count}} markdown files",
       importing: "Importing vault...",
       import_vault: "Import Vault",
       processing_time:
         "This may take a while depending on the size of your vault.",
       vault_warning:
-        "Make sure your Obsidian vault is not currently open in the app to avoid any conflicts.",
+        "To avoid any conflicts, make sure your Obsidian vault is not currently open.",
     },
     github: {
       name: "GitHub Repo",

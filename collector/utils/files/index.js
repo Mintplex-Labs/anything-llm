@@ -3,6 +3,15 @@ const path = require("path");
 const { MimeDetector } = require("./mime");
 
 /**
+ * The folder where documents are stored to be stored when
+ * processed by the collector.
+ */
+const documentsFolder =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../../server/storage/documents`)
+    : path.resolve(process.env.STORAGE_DIR, `documents`);
+
+/**
  * Checks if a file is text by checking the mime type and then falling back to buffer inspection.
  * This way we can capture all the cases where the mime type is not known but still parseable as text
  * without having to constantly add new mime type overrides.
@@ -189,4 +198,5 @@ module.exports = {
   normalizePath,
   isWithin,
   sanitizeFileName,
+  documentsFolder,
 };
