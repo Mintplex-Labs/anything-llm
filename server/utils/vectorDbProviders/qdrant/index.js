@@ -347,8 +347,20 @@ const QDrant = {
     });
 
     const sources = sourceDocuments.map((metadata, i) => {
-      return { ...metadata, text: contextTexts[i] };
+      return {
+        text: contextTexts[i],
+        title: metadata.title || "Untitled",
+        url: metadata.url || "No URL provided",
+        product_image: metadata.product_image || null, // Include product image
+        description: metadata.description || null, // Include description
+        docAuthor: metadata.docAuthor || null, // Include author
+        published: metadata.published || null, // Include published date
+        ...metadata,
+      };
     });
+
+    console.log("Sources being returned:", sources); // Debugging log
+
     return {
       contextTexts,
       sources: this.curateSources(sources),
