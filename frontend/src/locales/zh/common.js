@@ -66,7 +66,6 @@ const TRANSLATIONS = {
     yes: "是",
     no: "否",
   },
-
   settings: {
     title: "设置",
     system: "系统",
@@ -221,12 +220,10 @@ const TRANSLATIONS = {
       },
     },
   },
-
   "new-workspace": {
     title: "新工作区",
     placeholder: "我的工作区",
   },
-
   "workspaces—settings": {
     general: "通用设置",
     chat: "聊天设置",
@@ -234,7 +231,6 @@ const TRANSLATIONS = {
     members: "成员",
     agent: "代理配置",
   },
-
   general: {
     vector: {
       title: "向量数量",
@@ -267,7 +263,6 @@ const TRANSLATIONS = {
         "工作区。这将删除矢量数据库中的所有矢量嵌入。\n\n原始源文件将保持不变。此操作是不可逆转的。",
     },
   },
-
   chat: {
     llm: {
       title: "工作区 LLM 提供者",
@@ -332,7 +327,6 @@ const TRANSLATIONS = {
       hint: "大多数 LLM 都有各种可接受的有效值范围。请咨询你的LLM提供商以获取该信息。",
     },
   },
-
   "vector-workspace": {
     identifier: "向量数据库标识符",
     snippets: {
@@ -359,7 +353,6 @@ const TRANSLATIONS = {
       error: "无法重置工作区向量数据库！",
     },
   },
-
   agent: {
     "performance-warning":
       "不明确支持工具调用的 LLMs 的性能高度依赖于模型的功能和准确性。有些能力可能受到限制或不起作用。",
@@ -376,7 +369,6 @@ const TRANSLATIONS = {
       description: "将用于此工作区的 @agent 代理的特定 LLM 模型。",
       wait: "-- 等待模型 --",
     },
-
     skill: {
       title: "默认代理技能",
       description:
@@ -411,7 +403,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
   recorded: {
     title: "工作区聊天历史记录",
     description: "这些是用户发送的所有聊天记录和消息，按创建日期排序。",
@@ -425,7 +416,6 @@ const TRANSLATIONS = {
       at: "发送时间",
     },
   },
-
   customization: {
     interface: {
       title: "界面偏好设置",
@@ -515,7 +505,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
   api: {
     title: "API 密钥",
     description: "API 密钥允许持有者以编程方式访问和管理此 AnythingLLM 实例。",
@@ -527,14 +516,12 @@ const TRANSLATIONS = {
       created: "创建时间",
     },
   },
-
   llm: {
     title: "LLM 首选项",
     description:
       "这些是你首选的 LLM 聊天和嵌入提供商的凭据和设置。重要的是，确保这些密钥是最新的和正确的，否则 AnythingLLM 将无法正常运行。",
     provider: "LLM 提供商",
   },
-
   transcription: {
     title: "转录模型首选项",
     description:
@@ -545,7 +532,6 @@ const TRANSLATIONS = {
     "warn-recommend": "我们建议至少 2GB RAM 并上传 <10Mb 的文件。",
     "warn-end": "内置模型将在首次使用时自动下载。",
   },
-
   embedding: {
     title: "嵌入首选项",
     "desc-start":
@@ -557,7 +543,6 @@ const TRANSLATIONS = {
       description: "使用 AnythingLLM 的本机嵌入引擎时不需要设置。",
     },
   },
-
   text: {
     title: "文本拆分和分块首选项",
     "desc-start":
@@ -571,13 +556,11 @@ const TRANSLATIONS = {
       description: "这是单个向量中可以存在的字符的最大长度。",
       recommend: "嵌入模型的最大长度为",
     },
-
     overlap: {
       title: "文本块重叠",
       description: "这是在两个相邻文本块之间分块期间发生的最大字符重叠。",
     },
   },
-
   vector: {
     title: "向量数据库",
     description:
@@ -587,7 +570,6 @@ const TRANSLATIONS = {
       description: "LanceDB 不需要任何配置。",
     },
   },
-
   embeddable: {
     title: "可嵌入的聊天小部件",
     description:
@@ -599,7 +581,6 @@ const TRANSLATIONS = {
       Active: "活动域",
     },
   },
-
   "embed-chats": {
     title: "嵌入的聊天历史纪录",
     export: "导出",
@@ -612,7 +593,6 @@ const TRANSLATIONS = {
       at: "发送时间",
     },
   },
-
   multi: {
     title: "多用户模式",
     description: "通过激活多用户模式来设置你的实例以支持你的团队。",
@@ -636,7 +616,6 @@ const TRANSLATIONS = {
       password: "实例密码",
     },
   },
-
   event: {
     title: "事件日志",
     description: "查看此实例上发生的所有操作和事件以进行监控。",
@@ -647,7 +626,6 @@ const TRANSLATIONS = {
       occurred: "发生时间",
     },
   },
-
   privacy: {
     title: "隐私和数据处理",
     description:
@@ -657,7 +635,6 @@ const TRANSLATIONS = {
     vector: "向量数据库",
     anonymous: "启用匿名遥测",
   },
-
   connectors: {
     "search-placeholder": "搜索数据连接器",
     "no-connectors": "未找到数据连接器。",
@@ -764,7 +741,6 @@ const TRANSLATIONS = {
       pat_token_explained: "您的 Confluence 个人访问令牌。",
       task_explained: "完成后，页面内容将可用于在文档选择器中嵌入至工作区。",
     },
-
     manage: {
       documents: "文档",
       "data-connectors": "数据连接器",
@@ -828,8 +804,18 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " 管理视图中管理被监控的文档。",
       accept: "好的，知道了",
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
-
   chat_window: {
     welcome: "欢迎来到你的新工作区。",
     get_started: "开始使用，请先",
@@ -845,7 +831,6 @@ const TRANSLATIONS = {
     microphone: "语音输入你的提示。",
     send: "将提示消息发送到工作区",
   },
-
   profile_settings: {
     edit_account: "编辑帐户",
     profile_picture: "头像",

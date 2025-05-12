@@ -679,6 +679,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " adminvisning.",
       accept: "Okay, jeg har forstået",
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: "Velkommen til dit nye arbejdsområde.",
