@@ -10,7 +10,7 @@
 
 <p align="center">
     <b>AnythingLLM:</b> The all-in-one AI app you were looking for.<br />
-    Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no frustrating set up required.
+    Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no frustrating setup required.
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://anythingllm.com/download" target="_blank"> Download Now</a>
 </p>
 
-A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
+A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as a reference during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
 
 ![Chatting](https://github.com/Mintplex-Labs/anything-llm/assets/16845892/cfc5f47c-bd91-4067-986c-f3f49621a859)
 
@@ -63,7 +63,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - 🦾 Agents inside your workspace (browse the web, etc)
 - 💬 [Custom Embeddable Chat widget for your website](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _Docker version only_
 - 📖 Multiple document type support (PDF, TXT, DOCX, etc)
-- Simple chat UI with Drag-n-Drop funcitonality and clear citations.
+- Simple chat UI with Drag-n-Drop functionality and clear citations.
 - 100% Cloud deployment ready.
 - Works with all popular [closed and open-source LLM providers](#supported-llms-embedder-models-speech-models-and-vector-databases).
 - Built-in cost & time-saving measures for managing very large documents compared to any other chat UI.
@@ -152,7 +152,7 @@ This monorepo consists of six main sections:
 - `embed`: Submodule for generation & creation of the [web embed widget](https://github.com/Mintplex-Labs/anythingllm-embed).
 - `browser-extension`: Submodule for the [chrome browser extension](https://github.com/Mintplex-Labs/anythingllm-extension).
 
-## 🛳 Self Hosting
+## 🛳 Self-Hosting
 
 Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
