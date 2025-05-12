@@ -74,7 +74,7 @@ function mcpServersEndpoints(app) {
 
   app.post(
     "/mcp-servers/delete",
-    [validatedRequest, AccessManager.flexibleAC(["mcp.update"])],
+    [validatedRequest, AccessManager.flexibleAC(["mcp.delete"])],
     async (request, response) => {
       try {
         const { name } = reqBody(request);
