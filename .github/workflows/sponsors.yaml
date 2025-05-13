@@ -24,19 +24,15 @@ jobs:
         with:
           token: ${{ secrets.SPONSOR_PAT }}
           file: 'README.md'
+          organization: true
+          active-only: false
 
       - name: Commit and Push 🚀
         uses: stefanzweifel/git-auto-commit-action@v5
         id: auto-commit-action
         with:
-          organization: true,
-          active-only: false,
           commit_message: 'Update Sponsors README'
           file_pattern: 'README.md'
-          file_content: ${{ steps.generate-sponsors.outputs.sponsors-readme }}
-          commit_author: 'GitHub Actions <actions@github.com>'
-          commit_author_email: 'actions@github.com'
-          commit_author_name: 'GitHub Actions'
 
       - name: Generate PR if changes detected
         uses: peter-evans/create-pull-request@v7
