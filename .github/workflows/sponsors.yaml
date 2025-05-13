@@ -1,13 +1,8 @@
 name: Generate Sponsors README
 
-# on:
-#   workflow_dispatch:
-#   schedule:
-#     - cron: '0/15 * * * *'
-
 on:
-  push:
-    branches: ['sponsors']
+  schedule:
+    - cron: "0 12 * * 3" # Run every Wednesday at 12:00 PM UTC
 
 permissions:
   contents: write
