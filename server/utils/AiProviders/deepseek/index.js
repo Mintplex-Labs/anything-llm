@@ -29,7 +29,9 @@ class DeepSeekLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
-    this.log(`Initialized ${this.model} with context window ${this.promptWindowLimit()}`);
+    this.log(
+      `Initialized ${this.model} with context window ${this.promptWindowLimit()}`
+    );
   }
 
   log(text, ...args) {

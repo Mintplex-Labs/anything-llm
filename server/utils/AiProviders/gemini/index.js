@@ -124,7 +124,8 @@ class GeminiLLM {
 
   promptWindowLimit() {
     try {
-      if (!fs.existsSync(this.cacheModelPath)) return MODEL_MAP.get("gemini", this.model) ?? 30_720;
+      if (!fs.existsSync(this.cacheModelPath))
+        return MODEL_MAP.get("gemini", this.model) ?? 30_720;
       const models = safeJsonParse(fs.readFileSync(this.cacheModelPath));
       const model = models.find((model) => model.id === this.model);
       if (!model)
