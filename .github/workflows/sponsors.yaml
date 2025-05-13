@@ -1,9 +1,13 @@
 name: Generate Sponsors README
 
+# on:
+#   workflow_dispatch:
+#   schedule:
+#     - cron: '0/15 * * * *'
+
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0/15 * * * *'
+  push:
+    branches: ['sponsors']
 
 permissions:
   contents: write
