@@ -1029,7 +1029,7 @@ function workspaceEndpoints(app) {
     "/workspace/:slug/prompt-history",
     [
       validatedRequest,
-      AccessManager.flexibleAC(["workspace.delete"]),
+      AccessManager.flexibleAC(["workspace.read", "promptHistory.delete"]),
       validWorkspaceSlug,
     ],
     async (_, response) => {
@@ -1050,7 +1050,7 @@ function workspaceEndpoints(app) {
     "/workspace/prompt-history/:id",
     [
       validatedRequest,
-      AccessManager.flexibleAC(["workspace.delete"]),
+      AccessManager.flexibleAC(["workspace.read", "promptHistory.delete"]),
       validWorkspaceSlug,
     ],
     async (request, response) => {

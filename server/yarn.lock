@@ -5534,11 +5534,6 @@ jsonwebtoken@^9.0.0:
     object.assign "^4.1.4"
     object.values "^1.1.6"
 
-just-clone@6.2.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/just-clone/-/just-clone-6.2.0.tgz#a4614d9bf7e4bbdcae7f9ba904aea5ea9cae8ae5"
-  integrity sha512-1IynUYEc/HAwxhi3WDpIpxJbZpMCvvrrmZVqvj9EhpvbH8lls7HhdhiByjL7DkAaWlLIzpC0Xc/VPvy/UxLNjA==
-
 jwa@^1.4.1:
   version "1.4.1"
   resolved "https://registry.npmjs.org/jwa/-/jwa-1.4.1.tgz"
@@ -6226,6 +6221,11 @@ object-assign@^4, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz"
   integrity sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==
+
+object-deep-compare@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/object-deep-compare/-/object-deep-compare-2.0.0.tgz#ca07d91b25674e210e106029da7f094415154fc1"
+  integrity sha512-bIu+4D1j36NtcclajmXyhReqNx3xicvaSHZgNYEnIVI3g+5ksPwQVqBFHmDK/9FeDL2cNNQHrM01fFKzWcgqIQ==
 
 object-inspect@^1.13.1:
   version "1.13.1"
@@ -8129,13 +8129,6 @@ yup@0.32.9:
     property-expr "^2.0.4"
     toposort "^2.0.2"
 
-zod-empty@^1.4.5:
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/zod-empty/-/zod-empty-1.4.5.tgz#6c71a0449a6e73a97345fc5740e9cdf972dc06b5"
-  integrity sha512-SzE8nIWyNK4R3I9o/kApRkfTU2lAGfkChQjD8PKhL2or1xt1TUufvYZjnNXt0AIRJXZiDcp64xXy7LmMDFN7Bw==
-  dependencies:
-    just-clone "6.2.0"
-
 zod-to-json-schema@^3.22.3, zod-to-json-schema@^3.22.4, zod-to-json-schema@^3.22.5:
   version "3.23.0"
   resolved "https://registry.npmjs.org/zod-to-json-schema/-/zod-to-json-schema-3.23.0.tgz"
@@ -8155,8 +8148,3 @@ zod@^3.23.8:
   version "3.24.2"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.24.2.tgz#8efa74126287c675e92f46871cfc8d15c34372b3"
   integrity sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==
-
-zod@^3.24.4:
-  version "3.24.4"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-3.24.4.tgz#e2e2cca5faaa012d76e527d0d36622e0a90c315f"
-  integrity sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==

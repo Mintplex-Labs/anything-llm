@@ -79,9 +79,7 @@
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
     "weaviate-ts-client": "^1.4.0",
-    "winston": "^3.13.0",
-    "zod": "^3.24.4",
-    "zod-empty": "^1.4.5"
+    "winston": "^3.13.0"
   },
   "devDependencies": {
     "@inquirer/prompts": "^4.3.1",
@@ -99,6 +97,7 @@
     "hermes-eslint": "^0.15.0",
     "node-html-markdown": "^1.3.0",
     "nodemon": "^2.0.22",
+    "object-deep-compare": "^2.0.0",
     "prettier": "^3.0.3"
   }
 }

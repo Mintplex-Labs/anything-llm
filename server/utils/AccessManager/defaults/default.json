@@ -6,7 +6,6 @@
       "update": false,
       "countVectors": false,
       "branding": {
-        "read": false,
         "update": false,
         "delete": false
       },
@@ -15,15 +14,12 @@
       }
     },
     "systemSettings": {
-      "create": false,
       "read": false,
-      "update": false,
-      "delete": false
+      "update": false
     },
     "apiKeys": {
       "create": false,
       "read": false,
-      "update": false,
       "delete": false
     },
     "browserExtensionKey": {
@@ -41,7 +37,6 @@
       "embed": false,
       "resetVectorDb": false,
       "documentPinStatus": false,
-      "playTTS": true,
       "readAny": false
     },
     "workspaceThread": {
@@ -51,17 +46,16 @@
       "delete": true
     },
     "workspaceChats": {
-      "create": true,
+      "create": false,
       "read": true,
       "update": true,
       "delete": true,
-      "export": false
+      "export": false,
+      "playTTS": true
     },
     "documents": {
-      "create": false,
       "read": false,
-      "update": false,
-      "delete": false,
+      "remove": false,
       "createFolder": false,
       "moveFiles": false,
       "upload": false
@@ -76,9 +70,9 @@
       "update": false,
       "delete": false,
       "pfp": {
-        "read": false,
-        "update": false,
-        "delete": false
+        "read": true,
+        "update": true,
+        "delete": true
       }
     },
     "chatEmbeds": {
@@ -98,7 +92,6 @@
       "delete": false
     },
     "agent": {
-      "invoke": true,
       "imported": {
         "update": false,
         "delete": false
@@ -136,22 +129,16 @@
       "delete": false
     },
     "welcomeMessages": {
-      "create": false,
       "read": true,
-      "update": false,
-      "delete": false
+      "update": false
     },
     "workspaceSuggestedMessages": {
-      "create": false,
       "read": true,
-      "update": false,
-      "delete": false
+      "update": false
     },
     "workspaceUsers": {
-      "create": false,
       "read": false,
-      "update": false,
-      "delete": false
+      "update": false
     },
     "communityHub": {
       "explore": false,

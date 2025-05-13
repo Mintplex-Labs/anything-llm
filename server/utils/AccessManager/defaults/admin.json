@@ -6,7 +6,6 @@
       "update": true,
       "countVectors": true,
       "branding": {
-        "read": true,
         "update": true,
         "delete": true
       },
@@ -15,15 +14,12 @@
       }
     },
     "systemSettings": {
-      "create": true,
       "read": true,
-      "update": true,
-      "delete": true
+      "update": true
     },
     "apiKeys": {
       "create": true,
       "read": true,
-      "update": true,
       "delete": true
     },
     "browserExtensionKey": {
@@ -41,7 +37,6 @@
       "embed": true,
       "resetVectorDb": true,
       "documentPinStatus": true,
-      "playTTS": true,
       "readAny": true
     },
     "workspaceThread": {
@@ -55,13 +50,12 @@
       "read": true,
       "update": true,
       "delete": true,
-      "export": true
+      "export": true,
+      "playTTS": true
     },
     "documents": {
-      "create": true,
       "read": true,
-      "update": true,
-      "delete": true,
+      "remove": true,
       "createFolder": true,
       "moveFiles": true,
       "upload": true
@@ -98,7 +92,6 @@
       "delete": true
     },
     "agent": {
-      "invoke": true,
       "imported": {
         "update": true,
         "delete": true
@@ -136,22 +129,16 @@
       "delete": true
     },
     "welcomeMessages": {
-      "create": true,
       "read": true,
-      "update": true,
-      "delete": true
+      "update": true
     },
     "workspaceSuggestedMessages": {
-      "create": true,
       "read": true,
-      "update": true,
-      "delete": true
+      "update": true
     },
     "workspaceUsers": {
-      "create": true,
       "read": true,
-      "update": true,
-      "delete": true
+      "update": true
     },
     "communityHub": {
       "explore": true,

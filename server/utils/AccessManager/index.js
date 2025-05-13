@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const ZodEmpty = require("zod-empty");
-const ACCESS_SCHEMA = require("./schema");
+const { getDefaultAccessSchema } = require("./schema");
 
 class AccessManager {
   static instance;
@@ -23,7 +22,7 @@ class AccessManager {
   constructor() {
     if (AccessManager.instance) return AccessManager.instance;
     AccessManager.instance = this;
-    this.defaultAC = ZodEmpty.init(ACCESS_SCHEMA);
+    this.defaultAC = getDefaultAccessSchema();
   }
 
   /**
@@ -35,9 +34,9 @@ class AccessManager {
       process.env.NODE_ENV === "development"
         ? path.resolve(__dirname, `../../storage/roles`)
         : path.resolve(
-            process.env.STORAGE_DIR ?? path.resolve(__dirname, `../../storage`),
-            `roles`
-          );
+          process.env.STORAGE_DIR ?? path.resolve(__dirname, `../../storage`),
+          `roles`
+        );
 
     if (!fs.existsSync(rolesDefinitionFolder))
       fs.mkdirSync(rolesDefinitionFolder, { recursive: true });
@@ -71,8 +70,8 @@ class AccessManager {
         }),
         {}
       ),
-      // manager: safeJsonParse(fs.readFileSync(path.join(__dirname, "defaults", "manager.json"), { encoding: "utf8" }), {}),
-      // default: safeJsonParse(fs.readFileSync(path.join(__dirname, "defaults", "default.json"), { encoding: "utf8" }), {}),
+      manager: safeJsonParse(fs.readFileSync(path.join(__dirname, "defaults", "manager.json"), { encoding: "utf8" }), {}),
+      default: safeJsonParse(fs.readFileSync(path.join(__dirname, "defaults", "default.json"), { encoding: "utf8" }), {}),
     };
 
     // Custom roles

@@ -1,163 +1,148 @@
-const { z } = require("zod");
-
 const CRUD_DEFAULTS = {
-  create: z.boolean().default(false),
-  read: z.boolean().default(false),
-  update: z.boolean().default(false),
-  delete: z.boolean().default(false),
+  create: "boolean",
+  read: "boolean",
+  update: "boolean",
+  delete: "boolean",
 };
 
-const ACCESS_SCHEMA = z.object({
-  name: z.string().default(""),
-  description: z.string().default("").optional(),
-  permissions: z.object({
-    system: z.object({
-      update: z.boolean().default(false),
-      countVectors: z.boolean().default(false),
-      branding: z.object({
-        read: z.boolean().default(false),
-        update: z.boolean().default(false),
-        delete: z.boolean().default(false),
-      }),
-      models: z.object({
-        read: z.boolean().default(false),
-      }),
-    }),
-
-    systemSettings: z.object({
+const ACCESS_SCHEMA = {
+  name: "string",
+  description: "string",
+  permissions: {
+    system: {
+      update: "boolean",
+      countVectors: "boolean",
+      branding: {
+        update: "boolean",
+        delete: "boolean",
+      },
+      models: {
+        read: "boolean",
+      },
+    },
+    systemSettings: {
+      read: "boolean",
+      update: "boolean",
+    },
+    apiKeys: {
+      create: "boolean",
+      read: "boolean",
+      delete: "boolean",
+    },
+    browserExtensionKey: {
+      readAny: "boolean",
+      read: "boolean",
+      create: "boolean",
+      delete: "boolean",
+    },
+    workspace: {
       ...CRUD_DEFAULTS,
-    }),
-
-    apiKeys: z.object({
+      chat: true,
+      embed: "boolean",
+      resetVectorDb: "boolean",
+      documentPinStatus: "boolean",
+      readAny: "boolean",
+    },
+    workspaceThread: {
       ...CRUD_DEFAULTS,
-    }),
-
-    browserExtensionKey: z.object({
-      readAny: z.boolean().default(false),
-      create: z.boolean().default(false),
-      read: z.boolean().default(false),
-      delete: z.boolean().default(false),
-    }),
-
-    workspace: z.object({
+    },
+    workspaceChats: {
       ...CRUD_DEFAULTS,
-      chat: z.boolean().default(true),
-      embed: z.boolean().default(false),
-      resetVectorDb: z.boolean().default(false),
-      documentPinStatus: z.boolean().default(false),
-      playTTS: z.boolean().default(false),
-      readAny: z.boolean().default(false),
-    }),
-
-    workspaceThread: z.object({
+      export: "boolean",
+      playTTS: "boolean",
+    },
+    documents: {
+      read: "boolean",
+      remove: "boolean",
+      createFolder: "boolean",
+      moveFiles: "boolean",
+      upload: "boolean",
+    },
+    documentSync: {
+      read: "boolean",
+      update: "boolean",
+    },
+    users: {
       ...CRUD_DEFAULTS,
-    }),
-
-    workspaceChats: z.object({
+      pfp: {
+        read: "boolean",
+        update: "boolean",
+        delete: "boolean",
+      },
+    },
+    chatEmbeds: {
       ...CRUD_DEFAULTS,
-      export: z.boolean().default(false),
-    }),
-
-    documents: z.object({
-      read: z.boolean().default(false),
-      delete: z.boolean().default(false),
-      createFolder: z.boolean().default(false),
-      moveFiles: z.boolean().default(false),
-      upload: z.boolean().default(false),
-    }),
-
-    documentSync: z.object({
-      read: z.boolean().default(false),
-      update: z.boolean().default(false),
-    }),
-
-    users: z.object({
+    },
+    chatEmbedChats: {
+      read: "boolean",
+      delete: "boolean",
+      // export?
+    },
+    agentFlows: {
       ...CRUD_DEFAULTS,
-      pfp: z.object({
-        read: z.boolean().default(false),
-        update: z.boolean().default(false),
-        delete: z.boolean().default(false),
-      }),
-    }),
-
-    chatEmbeds: z.object({
+    },
+    agent: {
+      imported: {
+        update: "boolean",
+        delete: "boolean",
+      },
+    },
+    roles: {
       ...CRUD_DEFAULTS,
-    }),
-
-    chatEmbedChats: z.object({
-      read: z.boolean().default(false),
-      delete: z.boolean().default(false),
-    }),
-
-    agentFlows: z.object({
+    },
+    eventLogs: {
+      read: "boolean",
+      delete: "boolean",
+    },
+    invite: {
+      create: "boolean",
+      read: "boolean",
+      delete: "boolean",
+    },
+    promptHistory: {
+      read: "boolean",
+      delete: "boolean",
+    },
+    slashCommands: {
       ...CRUD_DEFAULTS,
-    }),
-
-    agent: z.object({
-      invoke: z.boolean().default(false),
-      imported: z.object({
-        update: z.boolean().default(false),
-        delete: z.boolean().default(false),
-      }),
-    }),
-
-    roles: z.object({
+    },
+    systemPromptVariables: {
       ...CRUD_DEFAULTS,
-    }),
+    },
+    welcomeMessages: {
+      read: "boolean",
+      update: "boolean",
+    },
+    workspaceSuggestedMessages: {
+      read: "boolean",
+      update: "boolean",
+    },
+    workspaceUsers: {
+      read: "boolean",
+      update: "boolean",
+    },
+    communityHub: {
+      explore: "boolean",
+      viewItems: "boolean",
+      importItems: "boolean",
+    },
+    mcp: {
+      forceReload: "boolean",
+      read: "boolean",
+      update: "boolean",
+      delete: "boolean",
+    },
+    collector: {
+      useExtension: "boolean",
+    },
+  },
+};
 
-    eventLogs: z.object({
-      read: z.boolean().default(false),
-      delete: z.boolean().default(false),
-    }),
+const getDefaultAccessSchema = () => JSON.parse(
+  JSON.stringify(ACCESS_SCHEMA)
+    .replaceAll("boolean", false)
+    .replaceAll("string", "")
+    .replaceAll("number", 0)
+);
 
-    invite: z.object({
-      create: z.boolean().default(false),
-      read: z.boolean().default(false),
-      delete: z.boolean().default(false),
-    }),
-
-    promptHistory: z.object({
-      read: z.boolean().default(false),
-      delete: z.boolean().default(false),
-    }),
-
-    slashCommands: z.object({
-      ...CRUD_DEFAULTS,
-    }),
-
-    systemPromptVariables: z.object({
-      ...CRUD_DEFAULTS,
-    }),
-
-    welcomeMessages: z.object({
-      ...CRUD_DEFAULTS,
-    }),
-
-    workspaceSuggestedMessages: z.object({
-      ...CRUD_DEFAULTS,
-    }),
-
-    workspaceUsers: z.object({
-      ...CRUD_DEFAULTS,
-    }),
-
-    communityHub: z.object({
-      explore: z.boolean().default(false),
-      viewItems: z.boolean().default(false),
-      importItems: z.boolean().default(false),
-    }),
-
-    mcp: z.object({
-      forceReload: z.boolean().default(false),
-      read: z.boolean().default(false),
-      update: z.boolean().default(false),
-      delete: z.boolean().default(false),
-    }),
-
-    collector: z.object({
-      useExtension: z.boolean().default(false),
-    }),
-  }),
-});
-
-module.exports = ACCESS_SCHEMA;
+module.exports = { ACCESS_SCHEMA, getDefaultAccessSchema };
