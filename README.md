@@ -233,16 +233,10 @@ We take privacy very seriously, and we hope you understand that we want to learn
 
 ### Premium Sponsors
 
-<!-- premium-sponsors -->
+<!-- premium-sponsors (reserved for $100/mth sponsors who request to be called out here and/or are non-private sponsors) -->
 <a href="https://www.dcsdigital.co.uk" target="_blank">
   <img src="https://a8cforagenciesportfolio.wordpress.com/wp-content/uploads/2024/08/logo-image-232621379.png" height="100px" alt="User avatar: DCS DIGITAL" />
 </a>
-
-<a href="https://www.dcsdigital.co.uk" target="_blank">
-  <img src="https://a8cforagenciesportfolio.wordpress.com/wp-content/uploads/2024/08/logo-image-232621379.png" height="100px" alt="User avatar: DCS DIGITAL" />
-</a>
-
-<!-- <img src="https://ui-avatars.com/api?name=Anonymous&size=100" width="100px" alt="User avatar: Anonymous" /> -->
 <!-- premium-sponsors -->
 
 ### All Sponsors
