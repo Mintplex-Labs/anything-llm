@@ -1,0 +1,48 @@
+name: Generate Sponsors README
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0/15 * * * *'
+
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
+      - name: Generate Sponsors README
+        id: generate-sponsors
+        uses: JamesIves/github-sponsors-readme-action@v1
+        with:
+          token: ${{ secrets.SPONSOR_PAT }}
+          file: 'README.md'
+
+      - name: Commit and Push 🚀
+        uses: stefanzweifel/git-auto-commit-action@v5
+        id: auto-commit-action
+        with:
+          organization: true,
+          active-only: false,
+          commit_message: 'Update Sponsors README'
+          file_pattern: 'README.md'
+          file_content: ${{ steps.generate-sponsors.outputs.sponsors-readme }}
+          commit_author: 'GitHub Actions <actions@github.com>'
+          commit_author_email: 'actions@github.com'
+          commit_author_name: 'GitHub Actions'
+
+      - name: Generate PR if changes detected
+        uses: peter-evans/create-pull-request@v7
+        if: steps.auto-commit-action.outputs.files_changed == 'true'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'Update Sponsors README'
+          branch: 'chore/update-sponsors'
+          base: 'master'
+          draft: false
+          reviewers: 'timothycarambat'
+          assignees: 'timothycarambat'
+          maintainer-can-modify: true
