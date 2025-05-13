@@ -233,7 +233,15 @@ We take privacy very seriously, and we hope you understand that we want to learn
 
 ### Premium Sponsors
 
-<!-- premium-sponsors --><!-- premium-sponsors -->
+<!-- premium-sponsors -->
+<a href="https://github.com/dcsdigital">
+  <img src="https://s3.eu-west-2.amazonaws.com/dcs.mediazoom.org/2020/10/16091829/email-logo.svg" width="100px" alt="User avatar: Jascha" />
+</a>
+
+<a href="#">
+  <img src="https://ui-avatars.com/api/?name=Anonymous" width="60px" alt="User avatar: Anonymous" />
+</a>
+<!-- premium-sponsors -->
 
 ### All Sponsors
 
