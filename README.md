@@ -234,11 +234,15 @@ We take privacy very seriously, and we hope you understand that we want to learn
 ### Premium Sponsors
 
 <!-- premium-sponsors -->
-<a href="https://www.dcsdigital.co.uk" target="_blank" style="text-decoration: none;">
+<a href="https://www.dcsdigital.co.uk" target="_blank">
   <img src="https://a8cforagenciesportfolio.wordpress.com/wp-content/uploads/2024/08/logo-image-232621379.png" height="100px" alt="User avatar: DCS DIGITAL" />
 </a>
 
-<img src="https://ui-avatars.com/api/?name=Anonymous&size=100" width="100px" alt="User avatar: Anonymous" />
+<a href="https://www.dcsdigital.co.uk" target="_blank">
+  <img src="https://a8cforagenciesportfolio.wordpress.com/wp-content/uploads/2024/08/logo-image-232621379.png" height="100px" alt="User avatar: DCS DIGITAL" />
+</a>
+
+<!-- <img src="https://ui-avatars.com/api?name=Anonymous&size=100" width="100px" alt="User avatar: Anonymous" /> -->
 <!-- premium-sponsors -->
 
 ### All Sponsors
