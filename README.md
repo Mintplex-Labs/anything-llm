@@ -229,6 +229,10 @@ We take privacy very seriously, and we hope you understand that we want to learn
 - create PR with branch name format of `<issue number>-<short name>`
 - LGTM from core-team
 
+## 💖 Sponsors
+
+<!-- sponsors --><!-- sponsors -->
+
 ## 🌟 Contributors
 
 [![anythingllm contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
