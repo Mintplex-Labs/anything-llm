@@ -234,8 +234,8 @@ We take privacy very seriously, and we hope you understand that we want to learn
 ### Premium Sponsors
 
 <!-- premium-sponsors -->
-<a href="https://github.com/dcsdigital" style="background-color: #FFFFFF;">
-  <img src="https://s3.eu-west-2.amazonaws.com/dcs.mediazoom.org/2020/10/16091829/email-logo.svg" alt="User avatar: DCS DIGITAL" />
+<a href="#">
+  <img src="https://s3.eu-west-2.amazonaws.com/dcs.mediazoom.org/2020/10/16091829/email-logo.svg" height="60px" style="background-color: #ffffff" alt="User avatar: DCS DIGITAL" />
 </a>
 
 <a href="#">
