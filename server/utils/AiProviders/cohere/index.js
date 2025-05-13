@@ -63,11 +63,11 @@ class CohereLLM {
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.cohere[modelName] ?? 4_096;
+    return MODEL_MAP.get("cohere", modelName) ?? 4_096;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.cohere[this.model] ?? 4_096;
+    return MODEL_MAP.get("cohere", this.model) ?? 4_096;
   }
 
   async isValidChatCompletionModel(model = "") {
