@@ -231,7 +231,13 @@ We take privacy very seriously, and we hope you understand that we want to learn
 
 ## 💖 Sponsors
 
-<!-- sponsors --><!-- sponsors -->
+### Premium Sponsors
+
+<!-- premium-sponsors --><!-- premium-sponsors -->
+
+### All Sponsors
+
+<!-- all-sponsors --><!-- all-sponsors -->
 
 ## 🌟 Contributors
 
