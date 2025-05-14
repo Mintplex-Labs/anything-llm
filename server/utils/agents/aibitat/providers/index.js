@@ -22,6 +22,7 @@ const NovitaProvider = require("./novita.js");
 const NvidiaNimProvider = require("./nvidiaNim.js");
 const PPIOProvider = require("./ppio.js");
 const GeminiProvider = require("./gemini.js");
+const DellProAiStudioProvider = require("./dellProAiStudio.js");
 
 module.exports = {
   OpenAIProvider,
@@ -48,4 +49,5 @@ module.exports = {
   NvidiaNimProvider,
   PPIOProvider,
   GeminiProvider,
+  DellProAiStudioProvider,
 };

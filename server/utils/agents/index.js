@@ -189,6 +189,16 @@ class AgentHandler {
         if (!process.env.GEMINI_API_KEY)
           throw new Error("Gemini API key must be provided to use agents.");
         break;
+      case "dpais":
+        if (!process.env.DPAIS_LLM_BASE_PATH)
+          throw new Error(
+            "Dell Pro AI Studio base path must be provided to use agents."
+          );
+        if (!process.env.DPAIS_LLM_MODEL_PREF)
+          throw new Error(
+            "Dell Pro AI Studio model must be set to use agents."
+          );
+        break;
 
       default:
         throw new Error(
@@ -256,6 +266,8 @@ class AgentHandler {
         return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
       case "gemini":
         return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
+      case "dpais":
+        return process.env.DPAIS_LLM_MODEL_PREF;
       default:
         return null;
     }
