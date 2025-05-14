@@ -177,17 +177,23 @@ async function storeVectorResult(vectorData = [], filename = null) {
 // Purges a file from the documents/ folder.
 async function purgeSourceDocument(filename = null) {
   if (!filename) return;
-  const filePath = path.resolve(documentsPath, normalizePath(filename));
+  try {
+    const sanitizedFilename = normalizePath(filename);
+    const filePath = path.resolve(documentsPath, sanitizedFilename);
 
-  if (
-    !fs.existsSync(filePath) ||
-    !isWithin(documentsPath, filePath) ||
-    !fs.lstatSync(filePath).isFile()
-  )
-    return;
+    if (
+      !filePath.startsWith(documentsPath) || // Ensure the path is within documentsPath
+      !fs.existsSync(filePath) ||
+      !fs.lstatSync(filePath).isFile()
+    ) {
+      throw new Error(`Invalid or unsafe file path: ${filename}`);
+    }
 
-  console.log(`Purging source document of ${filename}.`);
-  fs.rmSync(filePath);
+    console.log(`Purging source document of ${filename}.`);
+    fs.rmSync(filePath);
+  } catch (error) {
+    console.error(`Failed to purge source document: ${error.message}`);
+  }
   return;
 }
 
@@ -251,9 +257,12 @@ function isWithin(outer, inner) {
 function normalizePath(filepath = "") {
   const result = path
     .normalize(filepath.trim())
-    .replace(/^(\.\.(\/|\\|$))+/, "")
+    .replace(/^(\.\.(\/|\\|$))+/, "") // Remove leading `../` sequences
+    .replace(/(\.\.(\/|\\|$))+/g, "") // Remove any remaining `../` segments
     .trim();
-  if (["..", ".", "/"].includes(result)) throw new Error("Invalid path.");
+  if (!result || result.startsWith("/") || result.includes("..")) {
+    throw new Error("Invalid or unsafe path.");
+  }
   return result;
 }
 
