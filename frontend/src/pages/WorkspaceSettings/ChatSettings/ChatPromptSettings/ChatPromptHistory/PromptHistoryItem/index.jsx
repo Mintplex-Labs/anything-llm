@@ -58,7 +58,7 @@ export default function PromptHistoryItem({
               <span className="mx-1 text-white">•</span>
             </>
           )}
-          <span className="text-theme-home-text-secondary">
+          <span className="text-white opacity-50 light:opacity-100">
             {moment(modifiedAt).fromNow()}
           </span>
         </div>
@@ -82,11 +82,11 @@ export default function PromptHistoryItem({
             {showMenu && (
               <div
                 ref={menuRef}
-                className="absolute right-0 top-6 bg-black light:bg-white rounded-lg z-50"
+                className="absolute right-0 top-6 bg-theme-bg-popup-menu rounded-lg z-50"
               >
                 <button
                   type="button"
-                  className="px-[10px] py-[6px] text-theme-text-secondary hover:bg-theme-hover cursor-pointer border-none"
+                  className="px-[10px] py-[6px] text-sm text-white hover:bg-theme-hover cursor-pointer border-none"
                   onClick={() => {
                     setShowMenu(false);
                     deleteHistory(id);

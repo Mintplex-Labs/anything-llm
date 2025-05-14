@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['873-pgvector-support'] # put your current branch to create a build. Core team only.
+    branches: ['warn-bad-docker-command'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
