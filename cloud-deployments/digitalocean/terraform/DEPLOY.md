@@ -1,6 +1,6 @@
 # How to deploy a private AnythingLLM instance on DigitalOcean using Terraform
 
-With a DigitalOcean account, you can easily deploy a private AnythingLLM instance using Terraform. This will create a URL that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys, and they will not be exposed. However, if you want your instance to be protected, it is highly recommended that you set a password one setup is complete.
+With a DigitalOcean account, you can easily deploy a private AnythingLLM instance using Terraform. This will create a URL that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys, and they will not be exposed. However, if you want your instance to be protected, it is highly recommended that you set a password once setup is complete.
 
 The output of this Terraform configuration will be:
 - 1 DigitalOcean Droplet

@@ -94,7 +94,7 @@ export default function DrupalWikiOptions() {
                     Drupal Wiki Space IDs
                   </label>
                   <p className="text-xs font-normal text-theme-text-secondary">
-                    Comma seperated Space IDs you want to extract. See the&nbsp;
+                    Comma separated Space IDs you want to extract. See the&nbsp;
                     <a
                       href="https://help.drupal-wiki.com/node/606"
                       target="_blank"

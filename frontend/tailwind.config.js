@@ -56,6 +56,7 @@ export default {
             container: 'var(--theme-bg-container)',
             chat: 'var(--theme-bg-chat)',
             "chat-input": 'var(--theme-bg-chat-input)',
+            "popup-menu": 'var(--theme-popup-menu-bg)',
           },
           text: {
             primary: 'var(--theme-text-primary)',

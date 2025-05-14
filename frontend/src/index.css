@@ -23,6 +23,7 @@
   --theme-sidebar-subitem-default: rgba(255, 255, 255, 0.05);
   --theme-sidebar-subitem-selected: rgba(255, 255, 255, 0.05);
   --theme-sidebar-thread-selected: rgba(255, 255, 255, 0.05);
+  --theme-popup-menu-bg: #000000;
 
   --theme-sidebar-subitem-hover: rgba(255, 255, 255, 0.05);
   --theme-sidebar-border: rgba(255, 255, 255, 0.1);
@@ -88,11 +89,11 @@
 
 [data-theme="light"] {
   --theme-loader: #000000;
-
   --theme-bg-primary: #ffffff;
   --theme-bg-secondary: #ffffff;
   --theme-bg-sidebar: #edf2fa;
   --theme-bg-container: #f9fbfd;
+  --theme-popup-menu-bg: #c2e7fe;
 
   --theme-bg-chat: #ffffff;
   --theme-bg-chat-input: #eaeaea;
