@@ -17,6 +17,10 @@ const preserveCamelCase = (
   toUpperCase,
   preserveConsecutiveUppercase
 ) => {
+  if (typeof string !== "string" || string.length > 1000) {
+    throw new Error("Invalid input: `string` must be a string with a length of 1000 characters or less.");
+  }
+
   let isLastCharLower = false;
   let isLastCharUpper = false;
   let isLastLastCharUpper = false;
