@@ -80,7 +80,11 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-theme-modal-border transition-all duration-300"
                   >
                     {copied ? (
-                      <Check size={20} className="text-green-400" weight="bold" />
+                      <Check
+                        size={20}
+                        className="text-green-400"
+                        weight="bold"
+                      />
                     ) : (
                       <Copy size={20} className="text-white" weight="bold" />
                     )}
