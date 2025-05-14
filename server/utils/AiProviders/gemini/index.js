@@ -107,7 +107,7 @@ class GeminiLLM {
     try {
       const cacheModelPath = path.resolve(cacheFolder, "models.json");
       if (!fs.existsSync(cacheModelPath))
-        return MODEL_MAP.gemini[modelName] ?? 30_720;
+        return MODEL_MAP.get("gemini", modelName) ?? 30_720;
 
       const models = safeJsonParse(fs.readFileSync(cacheModelPath));
       const model = models.find((model) => model.id === modelName);
@@ -118,15 +118,14 @@ class GeminiLLM {
       return model.contextWindow;
     } catch (e) {
       console.error(`GeminiLLM:promptWindowLimit`, e.message);
-      return MODEL_MAP.gemini[modelName] ?? 30_720;
+      return MODEL_MAP.get("gemini", modelName) ?? 30_720;
     }
   }
 
   promptWindowLimit() {
     try {
       if (!fs.existsSync(this.cacheModelPath))
-        return MODEL_MAP.gemini[this.model] ?? 30_720;
-
+        return MODEL_MAP.get("gemini", this.model) ?? 30_720;
       const models = safeJsonParse(fs.readFileSync(this.cacheModelPath));
       const model = models.find((model) => model.id === this.model);
       if (!model)
@@ -136,7 +135,7 @@ class GeminiLLM {
       return model.contextWindow;
     } catch (e) {
       console.error(`GeminiLLM:promptWindowLimit`, e.message);
-      return MODEL_MAP.gemini[this.model] ?? 30_720;
+      return MODEL_MAP.get("gemini", this.model) ?? 30_720;
     }
   }
 
@@ -281,7 +280,7 @@ class GeminiLLM {
 
     if (allModels.length === 0) {
       console.error(`Gemini:getGeminiModels - No models found`);
-      return defaultGeminiModels;
+      return defaultGeminiModels();
     }
 
     console.log(
