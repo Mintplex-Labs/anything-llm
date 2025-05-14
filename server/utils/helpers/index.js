@@ -203,6 +203,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return new PPIOLLM(embedder, model);
+    case "dpais":
+      const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
+      return new DellProAiStudioLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -347,6 +350,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return PPIOLLM;
+    case "dpais":
+      const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
+      return DellProAiStudioLLM;
     default:
       return null;
   }
