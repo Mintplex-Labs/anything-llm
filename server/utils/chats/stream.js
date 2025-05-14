@@ -11,7 +11,8 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
-const { checkChunkRelevance } = require("../helpers/chat/relevanceCheck");
+const { rankDocuments } = require("../helpers/chat/hierarchyRanks");
+/* const { checkChunkRelevance } = require("../helpers/chat/relevanceCheck"); */
 
 const VALID_CHAT_MODE = ["chat", "query"];
 
@@ -148,6 +149,17 @@ async function streamChatWithWorkspace(
           message: null,
         };
 
+  // Rank the documents if we have results and are in query mode
+  if (vectorSearchResults.sources.length > 0 && chatMode === "query") {
+    console.log("[Document Ranking] Starting document ranking...");
+    console.log("[Document Ranking] Evaluating Sources:", vectorSearchResults.sources);
+
+    const rankedSources = await rankDocuments(updatedMessage, vectorSearchResults.sources, workspace, chatMode);
+    vectorSearchResults.sources = rankedSources;
+    // Update contextTexts to match the new order
+    vectorSearchResults.contextTexts = rankedSources.map(doc => doc.text || "");
+  }
+
   // Failed similarity search if it was run at all and failed.
   if (!!vectorSearchResults.message) {
     writeResponseChunk(response, {
@@ -163,7 +175,7 @@ async function streamChatWithWorkspace(
 
   const { fillSourceWindow } = require("../helpers/chat");
   const filledSources = fillSourceWindow({
-    nDocs: workspace?.topN || 4,
+    nDocs: workspace?.topN || 10,
     searchResults: vectorSearchResults.sources,
     history: rawHistory,
     filterIdentifiers: pinnedDocIdentifiers,
@@ -189,24 +201,17 @@ async function streamChatWithWorkspace(
         console.log(chunk);
       });
 
-      // Perform relevance check on the chunks
-      const relevantChunks = await checkChunkRelevance(message, contextTexts, workspace);
-
-      // Update context texts and sources to only include relevant chunks
-      if (relevantChunks.length < contextTexts.length) {
-        const relevantIndices = new Set();
-        contextTexts.forEach((chunk, index) => {
-          if (relevantChunks.includes(chunk)) {
-            relevantIndices.add(index);
-          }
-        });
-
-        contextTexts = relevantChunks;
-        sources = sources.filter((_, index) => relevantIndices.has(index));
-      }
+      // Log the final context being sent to LLM
+      console.log("\n[LLM Context] Final context being sent to LLM:");
+      console.log(JSON.stringify({
+        systemPrompt: await chatPrompt(workspace, user),
+        userPrompt: updatedMessage,
+        contextTexts,
+        chatHistory,
+        attachments,
+      }, null, 2));
     } catch (error) {
-      console.error("Error during relevance check:", error);
-      // Continue with original chunks if relevance check fails
+      console.error("Error during context assembly:", error);
     }
   }
 
