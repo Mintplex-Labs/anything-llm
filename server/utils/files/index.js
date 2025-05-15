@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const JSONStream = require("JSONStream");
 const { v5: uuidv5 } = require("uuid");
 const { Document } = require("../../models/documents");
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
@@ -58,13 +57,16 @@ async function viewLocalFiles() {
         filePromises.push(
           fileToPickerData({
             pathToFile: path.join(folderPath, subfile),
-            liveSyncAvailable
+            liveSyncAvailable,
           })
         );
         filenames[cachefilename] = subfile;
       }
-      const results = await Promise.all(filePromises);
+      const results = await Promise.all(filePromises).then((results) =>
+        results.filter((i) => !!i)
+      ); // Filter out any null results
       subdocs.items.push(...results);
+
       // Grab the pinned workspaces and watched documents for this folder's documents
       // at the time of the query so we don't have to re-query the database for each file
       const pinnedWorkspacesByDocument =
@@ -335,7 +337,23 @@ function purgeEntireVectorCache() {
   return;
 }
 
-const FILE_READ_SIZE_THRESHOLD = 30 * (1024 * 1024); // 30MB
+/**
+ * File size threshold for files that are too large to be read into memory (MB)
+ *
+ * If the file is larger than this, we will stream it and parse it in chunks
+ * This is to prevent us from using too much memory when parsing large files
+ * or loading the files in the file picker.
+ * @TODO - When lazy loading for folders is implemented, we should increase this threshold (512MB)
+ * since it will always be faster to readSync than to stream the file and parse it in chunks.
+ */
+const FILE_READ_SIZE_THRESHOLD = 150 * (1024 * 1024);
+
+/**
+ * Converts a file to picker data
+ * @param {string} pathToFile - The path to the file to convert
+ * @param {boolean} liveSyncAvailable - Whether live sync is available
+ * @returns {Promise<{name: string, type: string, [string]: any, cached: boolean, canWatch: boolean}>} - The picker data
+ */
 async function fileToPickerData({ pathToFile, liveSyncAvailable = false }) {
   let metadata = {};
   const filename = path.basename(pathToFile);
@@ -347,7 +365,15 @@ async function fileToPickerData({ pathToFile, liveSyncAvailable = false }) {
 
   if (fileStats.size < FILE_READ_SIZE_THRESHOLD) {
     const rawData = fs.readFileSync(pathToFile, "utf8");
-    metadata = JSON.parse(rawData);
+    try {
+      metadata = JSON.parse(rawData);
+      // Remove the pageContent field from the metadata - it is large and not needed for the picker
+      delete metadata.pageContent;
+    } catch (err) {
+      console.error("Error parsing file", err);
+      return null;
+    }
+
     return {
       name: filename,
       type: "file",
@@ -356,32 +382,45 @@ async function fileToPickerData({ pathToFile, liveSyncAvailable = false }) {
       canWatch: canWatchStatus,
       // pinnedWorkspaces: [], // This is the list of workspaceIds that have pinned this document
       // watched: false, // boolean to indicate if this document is watched in ANY workspace
-    }
+    };
   }
 
   console.log(
     `Stream-parsing ${path.basename(pathToFile)} because it exceeds the ${FILE_READ_SIZE_THRESHOLD} byte limit.`
   );
-
   const stream = fs.createReadStream(pathToFile, { encoding: "utf8" });
-  const parser = JSONStream.parse("$*");
   try {
+    let fileContent = "";
     metadata = await new Promise((resolve, reject) => {
-      let result = {};
-      parser.on("data", (data) => {
-        if (data.key === "pageContent") return;
-        result[data.key] = data.value;
-      });
-      parser.on("end", () => resolve(result));
-      parser.on("error", reject);
-      stream.pipe(parser);
+      stream
+        .on("data", (chunk) => {
+          fileContent += chunk;
+        })
+        .on("end", () => {
+          metadata = JSON.parse(fileContent);
+          // Remove the pageContent field from the metadata - it is large and not needed for the picker
+          delete metadata.pageContent;
+          resolve(metadata);
+        })
+        .on("error", (err) => {
+          console.error("Error parsing file", err);
+          reject(null);
+        });
+    }).catch((err) => {
+      console.error("Error parsing file", err);
     });
+  } catch (err) {
+    console.error("Error parsing file", err);
+    metadata = null;
   } finally {
     stream.destroy();
-    parser.destroy();
   }
 
-  console.log({ metadata });
+  // If the metadata is empty or something went wrong, return null
+  if (!metadata || !Object.keys(metadata)?.length) {
+    console.log(`Stream-parsing failed for ${path.basename(pathToFile)}`);
+    return null;
+  }
 
   return {
     name: filename,
