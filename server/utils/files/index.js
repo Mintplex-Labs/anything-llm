@@ -26,6 +26,7 @@ async function fileData(filePath = null) {
 
 async function viewLocalFiles() {
   if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
+  const filePromises = [];
   const liveSyncAvailable = await DocumentSyncQueue.enabled();
   const directory = {
     name: "documents",
@@ -43,28 +44,26 @@ async function viewLocalFiles() {
         type: "folder",
         items: [],
       };
+
       const subfiles = fs.readdirSync(folderPath);
       const filenames = {};
 
-      for (const subfile of subfiles) {
-        if (path.extname(subfile) !== ".json") continue;
-        const filePath = path.join(folderPath, subfile);
-        const rawData = fs.readFileSync(filePath, "utf8");
+      for (let i = 0; i < subfiles.length; i++) {
+        const subfile = subfiles[i];
         const cachefilename = `${file}/${subfile}`;
-        const { pageContent, ...metadata } = JSON.parse(rawData);
-        subdocs.items.push({
-          name: subfile,
-          type: "file",
-          ...metadata,
-          cached: await cachedVectorInformation(cachefilename, true),
-          canWatch: liveSyncAvailable
-            ? DocumentSyncQueue.canWatch(metadata)
-            : false,
-          // pinnedWorkspaces: [], // This is the list of workspaceIds that have pinned this document
-          // watched: false, // boolean to indicate if this document is watched in ANY workspace
-        });
+        if (path.extname(subfile) !== ".json") continue;
+        filePromises.push(
+          fileToPickerData({
+            pathToFile: path.join(folderPath, subfile),
+            liveSyncAvailable,
+          })
+        );
         filenames[cachefilename] = subfile;
       }
+      const results = await Promise.all(filePromises).then((results) =>
+        results.filter((i) => !!i)
+      ); // Filter out any null results
+      subdocs.items.push(...results);
 
       // Grab the pinned workspaces and watched documents for this folder's documents
       // at the time of the query so we don't have to re-query the database for each file
@@ -333,6 +332,100 @@ function purgeEntireVectorCache() {
   fs.rmSync(vectorCachePath, { recursive: true, force: true });
   fs.mkdirSync(vectorCachePath);
   return;
+}
+
+/**
+ * File size threshold for files that are too large to be read into memory (MB)
+ *
+ * If the file is larger than this, we will stream it and parse it in chunks
+ * This is to prevent us from using too much memory when parsing large files
+ * or loading the files in the file picker.
+ * @TODO - When lazy loading for folders is implemented, we should increase this threshold (512MB)
+ * since it will always be faster to readSync than to stream the file and parse it in chunks.
+ */
+const FILE_READ_SIZE_THRESHOLD = 150 * (1024 * 1024);
+
+/**
+ * Converts a file to picker data
+ * @param {string} pathToFile - The path to the file to convert
+ * @param {boolean} liveSyncAvailable - Whether live sync is available
+ * @returns {Promise<{name: string, type: string, [string]: any, cached: boolean, canWatch: boolean}>} - The picker data
+ */
+async function fileToPickerData({ pathToFile, liveSyncAvailable = false }) {
+  let metadata = {};
+  const filename = path.basename(pathToFile);
+  const fileStats = fs.statSync(pathToFile);
+  const cachedStatus = await cachedVectorInformation(pathToFile, true);
+  const canWatchStatus = liveSyncAvailable
+    ? DocumentSyncQueue.canWatch(metadata)
+    : false;
+
+  if (fileStats.size < FILE_READ_SIZE_THRESHOLD) {
+    const rawData = fs.readFileSync(pathToFile, "utf8");
+    try {
+      metadata = JSON.parse(rawData);
+      // Remove the pageContent field from the metadata - it is large and not needed for the picker
+      delete metadata.pageContent;
+    } catch (err) {
+      console.error("Error parsing file", err);
+      return null;
+    }
+
+    return {
+      name: filename,
+      type: "file",
+      ...metadata,
+      cached: cachedStatus,
+      canWatch: canWatchStatus,
+      // pinnedWorkspaces: [], // This is the list of workspaceIds that have pinned this document
+      // watched: false, // boolean to indicate if this document is watched in ANY workspace
+    };
+  }
+
+  console.log(
+    `Stream-parsing ${path.basename(pathToFile)} because it exceeds the ${FILE_READ_SIZE_THRESHOLD} byte limit.`
+  );
+  const stream = fs.createReadStream(pathToFile, { encoding: "utf8" });
+  try {
+    let fileContent = "";
+    metadata = await new Promise((resolve, reject) => {
+      stream
+        .on("data", (chunk) => {
+          fileContent += chunk;
+        })
+        .on("end", () => {
+          metadata = JSON.parse(fileContent);
+          // Remove the pageContent field from the metadata - it is large and not needed for the picker
+          delete metadata.pageContent;
+          resolve(metadata);
+        })
+        .on("error", (err) => {
+          console.error("Error parsing file", err);
+          reject(null);
+        });
+    }).catch((err) => {
+      console.error("Error parsing file", err);
+    });
+  } catch (err) {
+    console.error("Error parsing file", err);
+    metadata = null;
+  } finally {
+    stream.destroy();
+  }
+
+  // If the metadata is empty or something went wrong, return null
+  if (!metadata || !Object.keys(metadata)?.length) {
+    console.log(`Stream-parsing failed for ${path.basename(pathToFile)}`);
+    return null;
+  }
+
+  return {
+    name: filename,
+    type: "file",
+    ...metadata,
+    cached: cachedStatus,
+    canWatch: canWatchStatus,
+  };
 }
 
 module.exports = {
