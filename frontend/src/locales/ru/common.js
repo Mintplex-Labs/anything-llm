@@ -706,6 +706,7 @@ const TRANSLATIONS = {
     text_size: "Изменить размер текста.",
     microphone: "Произнесите ваш запрос.",
     send: "Отправить запрос в рабочее пространство",
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",

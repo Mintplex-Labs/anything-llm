@@ -665,6 +665,7 @@ const TRANSLATIONS = {
     text_size: null,
     microphone: null,
     send: null,
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: null,
