@@ -43,6 +43,10 @@ function apiDocumentEndpoints(app) {
                 type: 'string',
                 format: 'binary',
                 description: 'The file to upload'
+              },
+              addToWorkspaces: {
+                type: 'string',
+                description: 'comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2',
               }
             },
             required: ['file']
@@ -87,6 +91,7 @@ function apiDocumentEndpoints(app) {
       try {
         const Collector = new CollectorApi();
         const { originalname } = request.file;
+        const { addToWorkspaces = "" } = reqBody(request);
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -117,6 +122,12 @@ function apiDocumentEndpoints(app) {
         await EventLogs.logEvent("api_document_uploaded", {
           documentName: originalname,
         });
+
+        if (!!addToWorkspaces)
+          await Document.api.uploadToWorkspace(
+            addToWorkspaces,
+            documents?.[0].location
+          );
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);
@@ -152,6 +163,10 @@ function apiDocumentEndpoints(app) {
                   type: 'string',
                   format: 'binary',
                   description: 'The file to upload'
+                },
+                addToWorkspaces: {
+                  type: 'string',
+                  description: 'comma-separated text-string of workspace slugs to embed the document into post-upload. eg: workspace1,workspace2',
                 }
               }
             }
@@ -206,6 +221,7 @@ function apiDocumentEndpoints(app) {
       */
       try {
         const { originalname } = request.file;
+        const { addToWorkspaces = "" } = reqBody(request);
         let folder = request.params?.folderName || "custom-documents";
         folder = normalizePath(folder);
         const targetFolderPath = path.join(documentsPath, folder);
@@ -276,6 +292,12 @@ function apiDocumentEndpoints(app) {
           documentName: originalname,
           folder,
         });
+
+        if (!!addToWorkspaces)
+          await Document.api.uploadToWorkspace(
+            addToWorkspaces,
+            documents?.[0].location
+          );
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);
@@ -290,16 +312,21 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding.'
+    #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding. Optionally, specify a comma-separated list of workspace slugs to embed the document into post-upload.'
     #swagger.requestBody = {
-      description: 'Link of web address to be scraped.',
+      description: 'Link of web address to be scraped and optionally a comma-separated list of workspace slugs to embed the document into post-upload.',
       required: true,
       content: {
           "application/json": {
             schema: {
               type: 'object',
               example: {
-                "link": "https://anythingllm.com"
+                "link": "https://anythingllm.com",
+                "addToWorkspaces": "workspace1,workspace2",
+                "scraperHeaders": {
+                  "Authorization": "Bearer token123",
+                  "My-Custom-Header": "value"
+                }
               }
             }
           }
@@ -342,7 +369,11 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const Collector = new CollectorApi();
-        const { link } = reqBody(request);
+        const {
+          link,
+          addToWorkspaces = "",
+          scraperHeaders = {},
+        } = reqBody(request);
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -356,8 +387,10 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        const { success, reason, documents } =
-          await Collector.processLink(link);
+        const { success, reason, documents } = await Collector.processLink(
+          link,
+          scraperHeaders
+        );
         if (!success) {
           response
             .status(500)
@@ -373,6 +406,12 @@ function apiDocumentEndpoints(app) {
         await EventLogs.logEvent("api_link_uploaded", {
           link,
         });
+
+        if (!!addToWorkspaces)
+          await Document.api.uploadToWorkspace(
+            addToWorkspaces,
+            documents?.[0].location
+          );
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);
@@ -397,11 +436,12 @@ function apiDocumentEndpoints(app) {
             type: 'object',
             example: {
               "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
+              "addToWorkspaces": "workspace1,workspace2",
               "metadata": {
                 "title": "This key is required. See in /server/endpoints/api/document/index.js:287",
-                keyOne: "valueOne",
-                keyTwo: "valueTwo",
-                etc: "etc"
+                "keyOne": "valueOne",
+                "keyTwo": "valueTwo",
+                "etc": "etc"
               }
             }
           }
@@ -446,7 +486,11 @@ function apiDocumentEndpoints(app) {
       try {
         const Collector = new CollectorApi();
         const requiredMetadata = ["title"];
-        const { textContent, metadata = {} } = reqBody(request);
+        const {
+          textContent,
+          metadata = {},
+          addToWorkspaces = "",
+        } = reqBody(request);
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -506,6 +550,12 @@ function apiDocumentEndpoints(app) {
         );
         await Telemetry.sendTelemetry("raw_document_uploaded");
         await EventLogs.logEvent("api_raw_document_uploaded");
+
+        if (!!addToWorkspaces)
+          await Document.api.uploadToWorkspace(
+            addToWorkspaces,
+            documents?.[0].location
+          );
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.error(e.message, e);

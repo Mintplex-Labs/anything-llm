@@ -1,3 +1,6 @@
+const {
+  SUPPORTED_CONNECTION_METHODS,
+} = require("../../../AiProviders/bedrock/utils.js");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
@@ -19,15 +22,7 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
     const model = process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE ?? null;
     const client = new ChatBedrockConverse({
       region: process.env.AWS_BEDROCK_LLM_REGION,
-      credentials: {
-        accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-        // If we're using a session token, we need to pass it in as a credential
-        // otherwise we must omit it so it does not conflict if using IAM auth
-        ...(this.authMethod === "sessionToken"
-          ? { sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN }
-          : {}),
-      },
+      credentials: this.credentials,
       model,
     });
 
@@ -37,14 +32,39 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   /**
-   * Get the authentication method for the AWS Bedrock LLM.
-   * There are only two valid values for this setting - anything else will default to "iam".
-   * @returns {"iam"|"sessionToken"}
+   * Gets the credentials for the AWS Bedrock LLM based on the authentication method provided.
+   * @returns {object} The credentials object.
+   */
+  get credentials() {
+    switch (this.authMethod) {
+      case "iam": // explicit credentials
+        return {
+          accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+        };
+      case "sessionToken": // Session token is used for temporary credentials
+        return {
+          accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+          sessionToken: process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
+        };
+      // IAM role is used for long-term credentials implied by system process
+      // is filled by the AWS SDK automatically if we pass in no credentials
+      case "iam_role":
+        return {};
+      default:
+        return {};
+    }
+  }
+
+  /**
+   * Gets the configured AWS authentication method ('iam' or 'sessionToken').
+   * Defaults to 'iam' if the environment variable is invalid.
+   * @returns {"iam" | "iam_role" | "sessionToken"} The authentication method.
    */
   get authMethod() {
     const method = process.env.AWS_BEDROCK_LLM_CONNECTION_METHOD || "iam";
-    if (!["iam", "sessionToken"].includes(method)) return "iam";
-    return method;
+    return SUPPORTED_CONNECTION_METHODS.includes(method) ? method : "iam";
   }
 
   get client() {

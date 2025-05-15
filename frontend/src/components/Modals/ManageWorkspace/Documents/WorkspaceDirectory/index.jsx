@@ -235,7 +235,7 @@ function WorkspaceDirectory({
                     }`}
               </p>
               <p className="mt-2 text-xs italic" hidden={embeddingCosts === 0}>
-                {t("new-workspace.costs")}
+                {t("connectors.directory.costs")}
               </p>
             </div>
 
@@ -349,7 +349,7 @@ const DocumentWatchAlert = memo(() => {
               weight="regular"
             />
             <h3 className="text-xl font-semibold text-white">
-              {t("connectors.pinning.what_watching")}
+              {t("connectors.watching.what_watching")}
             </h3>
           </div>
         </div>

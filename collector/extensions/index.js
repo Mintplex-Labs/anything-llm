@@ -4,6 +4,7 @@ const { resolveRepoLoader, resolveRepoLoaderFunction } = require("../utils/exten
 const { reqBody } = require("../utils/http");
 const { validURL } = require("../utils/url");
 const RESYNC_METHODS = require("./resync");
+const { loadObsidianVault } = require("../utils/extensions/ObsidianVault");
 
 function extensions(app) {
   if (!app) return;
@@ -154,6 +155,53 @@ function extensions(app) {
       return;
     }
   );
+
+  app.post(
+    "/ext/drupalwiki",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { loadAndStoreSpaces } = require("../utils/extensions/DrupalWiki");
+        const { success, reason, data } = await loadAndStoreSpaces(
+          reqBody(request),
+          response
+        );
+        response.status(200).json({ success, reason, data });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: {
+            title: null,
+            author: null,
+          },
+        });
+      }
+      return;
+    }
+  );
+
+  app.post(
+    "/ext/obsidian/vault",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { files } = reqBody(request);
+        const result = await loadObsidianVault({ files });
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: null,
+        });
+      }
+      return;
+    }
+  );
 }
+
 
 module.exports = extensions;

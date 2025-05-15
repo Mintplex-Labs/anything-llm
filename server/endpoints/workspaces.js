@@ -34,6 +34,7 @@ const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
+const { getModelTag } = require("./utils");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -56,6 +57,7 @@ function workspaceEndpoints(app) {
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "lancedb",
             TTSSelection: process.env.TTS_PROVIDER || "native",
+            LLMModel: getModelTag(),
           },
           user?.id
         );
@@ -94,6 +96,7 @@ function workspaceEndpoints(app) {
           response.sendStatus(400).end();
           return;
         }
+
         await Workspace.trackChange(currWorkspace, data, user);
         const { workspace, message } = await Workspace.update(
           currWorkspace.id,
@@ -969,6 +972,67 @@ function workspaceEndpoints(app) {
         response.status(200).end();
       } catch (e) {
         console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/prompt-history",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (_, response) => {
+      try {
+        response.status(200).json({
+          history: await Workspace.promptHistory({
+            workspaceId: response.locals.workspace.id,
+          }),
+        });
+      } catch (error) {
+        console.error("Error fetching prompt history:", error);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/workspace/:slug/prompt-history",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (_, response) => {
+      try {
+        response.status(200).json({
+          success: await Workspace.deleteAllPromptHistory({
+            workspaceId: response.locals.workspace.id,
+          }),
+        });
+      } catch (error) {
+        console.error("Error clearing prompt history:", error);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/workspace/prompt-history/:id",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        response.status(200).json({
+          success: await Workspace.deletePromptHistory({
+            workspaceId: response.locals.workspace.id,
+            id: Number(id),
+          }),
+        });
+      } catch (error) {
+        console.error("Error deleting prompt history:", error);
         response.sendStatus(500).end();
       }
     }

@@ -115,10 +115,6 @@ class AgentHandler {
             "LocalAI must have a valid base path to use for the api."
           );
         break;
-      case "gemini":
-        if (!process.env.GEMINI_API_KEY)
-          throw new Error("Gemini API key must be provided to use agents.");
-        break;
       case "openrouter":
         if (!process.env.OPENROUTER_API_KEY)
           throw new Error("OpenRouter API key must be provided to use agents.");
@@ -189,6 +185,20 @@ class AgentHandler {
         if (!process.env.PPIO_API_KEY)
           throw new Error("PPIO API Key must be provided to use agents.");
         break;
+      case "gemini":
+        if (!process.env.GEMINI_API_KEY)
+          throw new Error("Gemini API key must be provided to use agents.");
+        break;
+      case "dpais":
+        if (!process.env.DPAIS_LLM_BASE_PATH)
+          throw new Error(
+            "Dell Pro AI Studio base path must be provided to use agents."
+          );
+        if (!process.env.DPAIS_LLM_MODEL_PREF)
+          throw new Error(
+            "Dell Pro AI Studio model must be set to use agents."
+          );
+        break;
 
       default:
         throw new Error(
@@ -221,11 +231,9 @@ class AgentHandler {
           "mistralai/Mixtral-8x7B-Instruct-v0.1"
         );
       case "azure":
-        return null;
+        return process.env.OPEN_MODEL_PREF;
       case "koboldcpp":
         return process.env.KOBOLD_CPP_MODEL_PREF ?? null;
-      case "gemini":
-        return process.env.GEMINI_MODEL_PREF ?? "gemini-pro";
       case "localai":
         return process.env.LOCAL_AI_MODEL_PREF ?? null;
       case "openrouter":
@@ -256,6 +264,10 @@ class AgentHandler {
         return process.env.NVIDIA_NIM_LLM_MODEL_PREF ?? null;
       case "ppio":
         return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
+      case "gemini":
+        return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
+      case "dpais":
+        return process.env.DPAIS_LLM_MODEL_PREF;
       default:
         return null;
     }
@@ -265,7 +277,7 @@ class AgentHandler {
    * Attempts to find a fallback provider and model to use if the workspace
    * does not have an explicit `agentProvider` and `agentModel` set.
    * 1. Fallback to the workspace `chatProvider` and `chatModel` if they exist.
-   * 2. Fallback to the system `LLM_PROVIDER` and try to load the the associated default model via ENV params or a base available model.
+   * 2. Fallback to the system `LLM_PROVIDER` and try to load the associated default model via ENV params or a base available model.
    * 3. Otherwise, return null - will likely throw an error the user can act on.
    * @returns {object|null} - An object with provider and model keys.
    */

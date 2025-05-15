@@ -70,6 +70,7 @@ const DataConnector = {
       branch,
       ignorePaths = [],
       fetchIssues = false,
+      fetchWikis = false,
     }) {
       return await fetch(`${API_BASE}/ext/gitlab/repo`, {
         method: "POST",
@@ -80,6 +81,7 @@ const DataConnector = {
           branch,
           ignorePaths,
           fetchIssues,
+          fetchWikis,
         }),
       })
         .then((res) => res.json())
@@ -149,6 +151,49 @@ const DataConnector = {
           accessToken,
           cloud,
           personalAccessToken,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
+
+  drupalwiki: {
+    collect: async function ({ baseUrl, spaceIds, accessToken }) {
+      return await fetch(`${API_BASE}/ext/drupalwiki`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({
+          baseUrl,
+          spaceIds,
+          accessToken,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
+  obsidian: {
+    collect: async function ({ files }) {
+      return await fetch(`${API_BASE}/ext/obsidian/vault`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({
+          files,
         }),
       })
         .then((res) => res.json())

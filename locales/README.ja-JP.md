@@ -120,6 +120,7 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 **ベクトルデータベース：**
 
 - [LanceDB](https://github.com/lancedb/lancedb)（デフォルト）
+- [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
