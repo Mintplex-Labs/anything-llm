@@ -25,8 +25,6 @@ async function fileData(filePath = null) {
 }
 
 async function viewLocalFiles() {
-  const start = Date.now();
-
   if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
   const filePromises = [];
   const liveSyncAvailable = await DocumentSyncQueue.enabled();
@@ -89,7 +87,6 @@ async function viewLocalFiles() {
     ...directory.items.filter((folder) => folder.name !== "custom-documents"),
   ].filter((i) => !!i);
 
-  console.log(`Time taken to load documents: ${Date.now() - start}ms`);
   return directory;
 }
 
@@ -268,7 +265,7 @@ function hasVectorCachedFiles() {
       fs.readdirSync(vectorCachePath)?.filter((name) => name.endsWith(".json"))
         .length !== 0
     );
-  } catch { }
+  } catch {}
   return false;
 }
 
