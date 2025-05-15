@@ -18,6 +18,25 @@ import { useTranslation } from "react-i18next";
 export default function AdminApiKeys() {
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const [apiKeys, setApiKeys] = useState([]);
+
+  const fetchExistingKeys = async () => {
+    const user = userFromStorage();
+    const Model = !!user ? Admin : System;
+    const { apiKeys: foundKeys } = await Model.getApiKeys();
+    setApiKeys(foundKeys);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchExistingKeys();
+  }, []);
+
+  const removeApiKey = (id) => {
+    setApiKeys((prevKeys) => prevKeys.filter((apiKey) => apiKey.id !== id));
+  };
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
@@ -54,70 +73,62 @@ export default function AdminApiKeys() {
             </CTAButton>
           </div>
           <div className="overflow-x-auto mt-6">
-            <ApiKeysContainer />
+            {loading ? (
+              <Skeleton.default
+                height="80vh"
+                width="100%"
+                highlightColor="var(--theme-bg-primary)"
+                baseColor="var(--theme-bg-secondary)"
+                count={1}
+                className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm"
+                containerClassName="flex w-full"
+              />
+            ) : (
+              <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
+                <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 rounded-tl-lg">
+                      {t("api.table.key")}
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      {t("api.table.by")}
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      {t("api.table.created")}
+                    </th>
+                    <th scope="col" className="px-6 py-3 rounded-tr-lg">
+                      {" "}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {apiKeys.length === 0 ? (
+                    <tr className="bg-transparent text-theme-text-secondary text-sm font-medium">
+                      <td colSpan="4" className="px-6 py-4 text-center">
+                        No API keys found
+                      </td>
+                    </tr>
+                  ) : (
+                    apiKeys.map((apiKey) => (
+                      <ApiKeyRow
+                        key={apiKey.id}
+                        apiKey={apiKey}
+                        removeApiKey={removeApiKey}
+                      />
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
         <ModalWrapper isOpen={isOpen}>
-          <NewApiKeyModal closeModal={closeModal} />
+          <NewApiKeyModal
+            closeModal={closeModal}
+            onSuccess={fetchExistingKeys}
+          />
         </ModalWrapper>
       </div>
     </div>
-  );
-}
-
-function ApiKeysContainer() {
-  const [loading, setLoading] = useState(true);
-  const [apiKeys, setApiKeys] = useState([]);
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    async function fetchExistingKeys() {
-      const user = userFromStorage();
-      const Model = !!user ? Admin : System;
-      const { apiKeys: foundKeys } = await Model.getApiKeys();
-      setApiKeys(foundKeys);
-      setLoading(false);
-    }
-    fetchExistingKeys();
-  }, []);
-
-  if (loading) {
-    return (
-      <Skeleton.default
-        height="80vh"
-        width="100%"
-        highlightColor="var(--theme-bg-primary)"
-        baseColor="var(--theme-bg-secondary)"
-        count={1}
-        className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm"
-        containerClassName="flex w-full"
-      />
-    );
-  }
-
-  return (
-    <table className="w-full text-sm text-left rounded-lg min-w-[640px] border-spacing-0">
-      <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
-        <tr>
-          <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            {t("api.table.key")}
-          </th>
-          <th scope="col" className="px-6 py-3">
-            {t("api.table.by")}
-          </th>
-          <th scope="col" className="px-6 py-3">
-            {t("api.table.created")}
-          </th>
-          <th scope="col" className="px-6 py-3 rounded-tr-lg">
-            {" "}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {apiKeys.map((apiKey) => (
-          <ApiKeyRow key={apiKey.id} apiKey={apiKey} />
-        ))}
-      </tbody>
-    </table>
   );
 }

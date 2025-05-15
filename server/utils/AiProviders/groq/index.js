@@ -49,11 +49,11 @@ class GroqLLM {
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.groq[modelName] ?? 8192;
+    return MODEL_MAP.get("groq", modelName) ?? 8192;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.groq[this.model] ?? 8192;
+    return MODEL_MAP.get("groq", this.model) ?? 8192;
   }
 
   async isValidChatCompletionModel(modelName = "") {

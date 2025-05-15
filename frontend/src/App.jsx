@@ -27,9 +27,17 @@ const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
 const AdminAgents = lazy(() => import("@/pages/Admin/Agents"));
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
-const GeneralAppearance = lazy(
-  () => import("@/pages/GeneralSettings/Appearance")
+const InterfaceSettings = lazy(
+  () => import("@/pages/GeneralSettings/Settings/Interface")
 );
+const BrandingSettings = lazy(
+  () => import("@/pages/GeneralSettings/Settings/Branding")
+);
+
+const ChatSettings = lazy(
+  () => import("@/pages/GeneralSettings/Settings/Chat")
+);
+
 const GeneralApiKeys = lazy(() => import("@/pages/GeneralSettings/ApiKeys"));
 const GeneralLLMPreference = lazy(
   () => import("@/pages/GeneralSettings/LLMPreference")
@@ -68,7 +76,6 @@ const LiveDocumentSyncManage = lazy(
   () => import("@/pages/Admin/ExperimentalFeatures/Features/LiveSync/manage")
 );
 const AgentBuilder = lazy(() => import("@/pages/Admin/AgentBuilder"));
-
 const CommunityHubTrending = lazy(
   () => import("@/pages/GeneralSettings/CommunityHub/Trending")
 );
@@ -77,6 +84,9 @@ const CommunityHubAuthentication = lazy(
 );
 const CommunityHubImportItem = lazy(
   () => import("@/pages/GeneralSettings/CommunityHub/ImportItem")
+);
+const SystemPromptVariables = lazy(
+  () => import("@/pages/Admin/SystemPromptVariables")
 );
 
 export default function App() {
@@ -184,8 +194,16 @@ export default function App() {
                     element={<AdminRoute Component={PrivacyAndData} />}
                   />
                   <Route
-                    path="/settings/appearance"
-                    element={<ManagerRoute Component={GeneralAppearance} />}
+                    path="/settings/interface"
+                    element={<ManagerRoute Component={InterfaceSettings} />}
+                  />
+                  <Route
+                    path="/settings/branding"
+                    element={<ManagerRoute Component={BrandingSettings} />}
+                  />
+                  <Route
+                    path="/settings/chat"
+                    element={<ManagerRoute Component={ChatSettings} />}
                   />
                   <Route
                     path="/settings/beta-features"
@@ -194,6 +212,10 @@ export default function App() {
                   <Route
                     path="/settings/api-keys"
                     element={<AdminRoute Component={GeneralApiKeys} />}
+                  />
+                  <Route
+                    path="/settings/system-prompt-variables"
+                    element={<AdminRoute Component={SystemPromptVariables} />}
                   />
                   <Route
                     path="/settings/browser-extension"

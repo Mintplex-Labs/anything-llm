@@ -67,8 +67,10 @@ export default function AzureAiOptions({ settings }) {
             <option value={8192}>8,192 (gpt-4)</option>
             <option value={32768}>32,768 (gpt-4-32k)</option>
             <option value={128000}>
-              128,000 (gpt-4-turbo,gpt-4o,gpt-4o-mini)
+              128,000 (gpt-4-turbo,gpt-4o,gpt-4o-mini,o1-mini)
             </option>
+            <option value={200000}>200,000 (o1,o1-pro,o3-mini)</option>
+            <option value={1047576}>1,047,576 (gpt-4.1)</option>
           </select>
         </div>
 

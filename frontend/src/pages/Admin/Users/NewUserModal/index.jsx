@@ -62,17 +62,10 @@ export default function NewUserModal({ closeModal }) {
                   minLength={2}
                   required={true}
                   autoComplete="off"
-                  pattern="^[a-z0-9_-]+$"
-                  onInvalid={(e) =>
-                    e.target.setCustomValidity(
-                      "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
-                    )
-                  }
-                  onChange={(e) => e.target.setCustomValidity("")}
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Username must only contain lowercase letters, numbers,
-                  underscores, and hyphens with no spaces
+                  Username must only contain lowercase letters, periods,
+                  numbers, underscores, and hyphens with no spaces
                 </p>
               </div>
               <div>

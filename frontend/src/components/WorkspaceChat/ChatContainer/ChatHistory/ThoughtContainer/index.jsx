@@ -23,6 +23,21 @@ export const THOUGHT_REGEX_COMPLETE = new RegExp(
 const THOUGHT_PREVIEW_LENGTH = isMobile ? 25 : 50;
 
 /**
+ * Checks if the content has readable content.
+ * @param {string} content - The content to check.
+ * @returns {boolean} - Whether the content has readable content.
+ */
+function contentIsNotEmpty(content = "") {
+  return (
+    content
+      ?.trim()
+      ?.replace(THOUGHT_REGEX_OPEN, "")
+      ?.replace(THOUGHT_REGEX_CLOSE, "")
+      ?.replace(/[\n\s]/g, "")?.length > 0
+  );
+}
+
+/**
  * Component to render a thought chain.
  * @param {string} content - The content of the thought chain.
  * @param {boolean} expanded - Whether the thought chain is expanded.
@@ -31,10 +46,14 @@ const THOUGHT_PREVIEW_LENGTH = isMobile ? 25 : 50;
 export const ThoughtChainComponent = forwardRef(
   ({ content: initialContent, expanded }, ref) => {
     const [content, setContent] = useState(initialContent);
+    const [hasReadableContent, setHasReadableContent] = useState(
+      contentIsNotEmpty(initialContent)
+    );
     const [isExpanded, setIsExpanded] = useState(expanded);
     useImperativeHandle(ref, () => ({
       updateContent: (newContent) => {
         setContent(newContent);
+        setHasReadableContent(contentIsNotEmpty(newContent));
       },
     }));
 
@@ -49,7 +68,7 @@ export const ThoughtChainComponent = forwardRef(
     const autoExpand =
       isThinking && tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
     const canExpand = tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
-    if (!content || !content.length) return null;
+    if (!content || !content.length || !hasReadableContent) return null;
 
     function handleExpandClick() {
       if (!canExpand) return;

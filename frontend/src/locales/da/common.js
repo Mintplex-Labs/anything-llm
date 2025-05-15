@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -20,7 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "Adgangskoder skal være på mindst 8 tegn.",
       passwordWarn:
         "Det er vigtigt at gemme denne adgangskode, da der ikke findes nogen metode til genoprettelse.",
-
       adminUsername: "Brugernavn til admin-konto",
       adminUsernameReq:
         "Brugernavnet skal være mindst 6 tegn langt og må kun indeholde små bogstaver, tal, understregninger og bindestreger uden mellemrum.",
@@ -40,7 +40,6 @@ const TRANSLATIONS = {
       title: "Velkommen til AnythingLLM",
       description:
         "Hjælp os med at gøre AnythingLLM tilpasset dine behov. Valgfrit.",
-
       email: "Hvad er din e-mail?",
       useCase: "Hvad vil du bruge AnythingLLM til?",
       useCaseWork: "Til arbejde",
@@ -72,8 +71,6 @@ const TRANSLATIONS = {
     yes: "Ja",
     no: "Nej",
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Instansindstillinger",
     system: "Generelle indstillinger",
@@ -101,9 +98,11 @@ const TRANSLATIONS = {
     "experimental-features": "Eksperimentelle funktioner",
     contact: "Kontakt support",
     "browser-extension": "Browserudvidelse",
+    "system-prompt-variables": null,
+    interface: null,
+    branding: null,
+    chat: null,
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Velkommen til",
@@ -127,7 +126,6 @@ const TRANSLATIONS = {
       "back-to-login": "Tilbage til log ind",
     },
   },
-
   welcomeMessage: {
     part1:
       "Velkommen til AnythingLLM, AnythingLLM er et open source AI-værktøj fra Mintplex Labs, der forvandler alt til en trænet chatbot, som du kan spørge og chatte med. AnythingLLM er en BYOK (bring-your-own-keys) software, så der er ingen abonnement, gebyr eller omkostninger forbundet med denne software udover de tjenester, du ønsker at bruge den med.",
@@ -149,13 +147,10 @@ const TRANSLATIONS = {
     starOnGitHub: "Giv en stjerne på GitHub",
     contact: "Kontakt Mintplex Labs",
   },
-
   "new-workspace": {
     title: "Nyt arbejdsområde",
     placeholder: "Mit arbejdsområde",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Generelle indstillinger",
     chat: "Chatindstillinger",
@@ -163,8 +158,6 @@ const TRANSLATIONS = {
     members: "Medlemmer",
     agent: "Agentkonfiguration",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Antal vektorer",
@@ -185,7 +178,6 @@ const TRANSLATIONS = {
     pfp: {
       title: "Assistentens profilbillede",
       description: "Tilpas assistentens profilbillede for dette arbejdsområde.",
-
       image: "Arbejdsområdebillede",
       remove: "Fjern arbejdsområdebillede",
     },
@@ -200,8 +192,6 @@ const TRANSLATIONS = {
         "arbejdsområde. Dette vil fjerne alle vektor-indlejringer i din vektordatabase.\n\nDe oprindelige kildefiler forbliver uberørte. Denne handling kan ikke fortrydes.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Arbejdsområdets LLM-udbyder",
@@ -242,6 +232,16 @@ const TRANSLATIONS = {
       title: "Prompt",
       description:
         "Prompten, der vil blive brugt i dette arbejdsområde. Definér konteksten og instruktionerne til, at AI'en kan generere et svar. Du bør levere en omhyggeligt udformet prompt, så AI'en kan generere et relevant og præcist svar.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "Afvisningssvar for forespørgsels-tilstand",
@@ -259,8 +259,6 @@ const TRANSLATIONS = {
       hint: "De fleste LLM'er har forskellige acceptable intervaller for gyldige værdier. Konsulter din LLM-udbyder for den information.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Identifikator for vektordatabase",
     snippets: {
@@ -287,8 +285,6 @@ const TRANSLATIONS = {
       success: "Arbejdsområdets vektordatabase blev nulstillet!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "Ydeevnen for LLM'er, der ikke eksplicit understøtter værktøjskald, er i høj grad afhængig af modellens kapacitet og nøjagtighed. Nogle funktioner kan være begrænsede eller ikke-fungerende.",
@@ -308,7 +304,6 @@ const TRANSLATIONS = {
         "Den specifikke LLM-model, der vil blive brugt for dette arbejdsområdes @agent-agent.",
       wait: "-- venter på modeller --",
     },
-
     skill: {
       title: "Standard agentfærdigheder",
       description:
@@ -347,8 +342,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Arbejdsområde-chat",
     description:
@@ -363,40 +356,6 @@ const TRANSLATIONS = {
       at: "Sendt kl.",
     },
   },
-
-  // Appearance
-  appearance: {
-    title: "Udseende",
-    description: "Tilpas platformens udseendeindstillinger.",
-    logo: {
-      title: "Tilpas logo",
-      description: "Upload dit tilpassede logo for at gøre din chatbot unik.",
-      add: "Tilføj et tilpasset logo",
-      recommended: "Anbefalet størrelse: 800 x 200",
-      remove: "Fjern",
-      replace: "Erstat",
-    },
-    message: {
-      title: "Tilpas beskeder",
-      description:
-        "Tilpas de automatiske beskeder, der vises for dine brugere.",
-      new: "Ny",
-      system: "system",
-      user: "bruger",
-      message: "besked",
-      assistant: "AnythingLLM Chat-assistent",
-      "double-click": "Dobbeltklik for at redigere...",
-      save: "Gem beskeder",
-    },
-    icons: {
-      title: "Tilpassede sidefodsikoner",
-      description: "Tilpas sidefodens ikoner, der vises nederst i sidebjælken.",
-      icon: "Ikon",
-      link: "Link",
-    },
-  },
-
-  // API Keys
   api: {
     title: "API-nøgler",
     description:
@@ -409,14 +368,12 @@ const TRANSLATIONS = {
       created: "Oprettet",
     },
   },
-
   llm: {
     title: "LLM-præference",
     description:
       "Disse er legitimationsoplysningerne og indstillingerne for din foretrukne LLM chat- og indlejringsudbyder. Det er vigtigt, at disse nøgler er opdaterede og korrekte, ellers vil AnythingLLM ikke fungere korrekt.",
     provider: "LLM-udbyder",
   },
-
   transcription: {
     title: "Foretrukken transskriptionsmodel",
     description:
@@ -428,7 +385,6 @@ const TRANSLATIONS = {
     "warn-end":
       "Den indbyggede model vil automatisk blive downloadet ved første brug.",
   },
-
   embedding: {
     title: "Foretrukken indlejringsmetode",
     "desc-start":
@@ -441,7 +397,6 @@ const TRANSLATIONS = {
         "Ingen opsætning er nødvendig, når du bruger AnythingLLM's indbyggede indlejringsmotor.",
     },
   },
-
   text: {
     title: "Præferencer for tekstopdeling & segmentering",
     "desc-start":
@@ -457,15 +412,12 @@ const TRANSLATIONS = {
         "Dette er den maksimale længde af tegn, der kan være i en enkelt vektor.",
       recommend: "Indlejringsmodellens maksimale længde er",
     },
-
     overlap: {
       title: "Overlap mellem tekstbidder",
       description:
         "Dette er det maksimale overlap af tegn, der forekommer ved opdeling mellem to tilstødende tekstbidder.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Vektordatabase",
     description:
@@ -475,8 +427,6 @@ const TRANSLATIONS = {
       description: "Ingen konfiguration er nødvendig for LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Indlejrede chatwidgets",
     description:
@@ -488,7 +438,6 @@ const TRANSLATIONS = {
       Active: "Aktive domæner",
     },
   },
-
   "embed-chats": {
     title: "Indlejrede chats",
     export: "Eksporter",
@@ -502,7 +451,6 @@ const TRANSLATIONS = {
       at: "Sendt kl.",
     },
   },
-
   multi: {
     title: "Multi-brugertilstand",
     description:
@@ -527,8 +475,6 @@ const TRANSLATIONS = {
       password: "Instansens adgangskode",
     },
   },
-
-  // Event Logs
   event: {
     title: "Hændelseslog",
     description:
@@ -540,8 +486,6 @@ const TRANSLATIONS = {
       occurred: "Skete kl.",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Privatliv & datahåndtering",
     description:
@@ -551,7 +495,6 @@ const TRANSLATIONS = {
     vector: "Vektordatabase",
     anonymous: "Anonym telemetri aktiveret",
   },
-
   connectors: {
     "search-placeholder": "Søg efter datakonnektorer",
     "no-connectors": "Ingen datakonnektorer fundet.",
@@ -671,7 +614,6 @@ const TRANSLATIONS = {
       task_explained:
         "Når færdig, vil sideindholdet være tilgængeligt for indlejring i arbejdsområder i dokumentvælgeren.",
     },
-
     manage: {
       documents: "Dokumenter",
       "data-connectors": "Datakonnektorer",
@@ -737,8 +679,18 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " adminvisning.",
       accept: "Okay, jeg har forstået",
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
-
   chat_window: {
     welcome: "Velkommen til dit nye arbejdsområde.",
     get_started: "For at komme i gang, enten",
@@ -754,7 +706,6 @@ const TRANSLATIONS = {
     microphone: "Tal din prompt.",
     send: "Send promptbesked til arbejdsområdet",
   },
-
   profile_settings: {
     edit_account: "Rediger konto",
     profile_picture: "Profilbillede",
@@ -768,6 +719,175 @@ const TRANSLATIONS = {
     update_account: "Opdater konto",
     theme: "Tema-præference",
     language: "Foretrukket sprog",
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError: null,
+    checklist: {
+      title: null,
+      tasksLeft: null,
+      completed: null,
+      dismiss: null,
+      tasks: {
+        create_workspace: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        send_chat: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        embed_document: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        setup_system_prompt: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        define_slash_command: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        visit_community: {
+          title: null,
+          description: null,
+          action: null,
+        },
+      },
+    },
+    quickLinks: {
+      title: null,
+      sendChat: null,
+      embedDocument: null,
+      createWorkspace: null,
+    },
+    exploreMore: {
+      title: null,
+      features: {
+        customAgents: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        slashCommands: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        systemPrompts: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+      },
+    },
+    announcements: {
+      title: null,
+    },
+    resources: {
+      title: null,
+      links: {
+        docs: null,
+        star: null,
+      },
+    },
   },
 };
 

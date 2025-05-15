@@ -96,6 +96,10 @@ const TRANSLATIONS = {
     "experimental-features": "الميزات التجريبية",
     contact: "اتصل بالدعم",
     "browser-extension": "ملحق المتصفح",
+    "system-prompt-variables": null,
+    interface: null,
+    branding: null,
+    chat: null,
   },
   login: {
     "multi-user": {
@@ -227,6 +231,16 @@ const TRANSLATIONS = {
       title: "النداء",
       description:
         "النداء التي سيتم استخدامه في مساحة العمل هذه. حدد السياق والتعليمات للذكاء الاصطناعي للاستجابة. يجب عليك تقديم نداء مصمم بعناية حتى يتمكن الذكاء الاصطناعي من إنشاء استجابة دقيقة وذات صلة.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "الرد على رفض وضعية الاستعلام",
@@ -338,35 +352,6 @@ const TRANSLATIONS = {
       prompt: "نداء",
       response: "استجابة",
       at: "أرسلت في",
-    },
-  },
-  appearance: {
-    title: "مظهر",
-    description: "تخصيص إعدادات مظهر منصتك.",
-    logo: {
-      title: "تخصيص الشعار",
-      description: "قم بتحميل شعارك المخصص لجعل روبوت المحادثة خاصا بك .",
-      add: "أضف شعارًا مخصصًا",
-      recommended: "الحجم الموصى به: 800 × 200",
-      remove: "قم بإزالة",
-      replace: "قم باستبدال",
-    },
-    message: {
-      title: "تخصيص الرسائل",
-      description: "قم بتخصيص الرسائل التلقائية التي يتم عرضها لمستعمليك.",
-      new: "جديد",
-      system: "نظام",
-      user: "مستعمل",
-      message: "رسالة",
-      assistant: "مساعد الدردشة لِـ إني ثينك إلْلْم",
-      "double-click": "انقر نقراً مزدوجاً للتحرير...",
-      save: "حفظ الرسائل",
-    },
-    icons: {
-      title: "أيقونات التذييل المخصصة",
-      description: "تخصيص أيقونات التذييل المعروضة في أسفل الشريط الجانبي.",
-      icon: "أيقونة",
-      link: "رابط",
     },
   },
   api: {
@@ -656,6 +641,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: null,
       accept: null,
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: null,
@@ -684,6 +680,175 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError: null,
+    checklist: {
+      title: null,
+      tasksLeft: null,
+      completed: null,
+      dismiss: null,
+      tasks: {
+        create_workspace: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        send_chat: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        embed_document: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        setup_system_prompt: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        define_slash_command: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        visit_community: {
+          title: null,
+          description: null,
+          action: null,
+        },
+      },
+    },
+    quickLinks: {
+      title: null,
+      sendChat: null,
+      embedDocument: null,
+      createWorkspace: null,
+    },
+    exploreMore: {
+      title: null,
+      features: {
+        customAgents: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        slashCommands: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        systemPrompts: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+      },
+    },
+    announcements: {
+      title: null,
+    },
+    resources: {
+      title: null,
+      links: {
+        docs: null,
+        star: null,
+      },
+    },
   },
 };
 

@@ -14,6 +14,7 @@ const {
   writeResponseChunk,
 } = require("../../../utils/helpers/chat/responses");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
+const { getModelTag } = require("../../utils");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -87,6 +88,7 @@ function apiWorkspaceEndpoints(app) {
         Embedder: process.env.EMBEDDING_ENGINE || "inherit",
         VectorDbSelection: process.env.VECTOR_DB || "lancedb",
         TTSSelection: process.env.TTS_PROVIDER || "native",
+        LLMModel: getModelTag(),
       });
       await EventLogs.logEvent("api_workspace_created", {
         workspaceName: workspace?.name || "Unknown Workspace",
@@ -610,7 +612,8 @@ function apiWorkspaceEndpoints(app) {
                  mime: "image/png",
                  contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
-             ]
+             ],
+             reset: false
            }
          }
        }
@@ -645,6 +648,7 @@ function apiWorkspaceEndpoints(app) {
           mode = "query",
           sessionId = null,
           attachments = [],
+          reset = false,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
@@ -660,7 +664,7 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -668,7 +672,7 @@ function apiWorkspaceEndpoints(app) {
             sources: [],
             close: true,
             error: !message?.length
-              ? "message parameter cannot be empty."
+              ? "Message is empty"
               : `${mode} is not a valid mode.`,
           });
           return;
@@ -682,6 +686,7 @@ function apiWorkspaceEndpoints(app) {
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
+          reset,
         });
 
         await Telemetry.sendTelemetry("sent_chat", {
@@ -732,7 +737,8 @@ function apiWorkspaceEndpoints(app) {
                  mime: "image/png",
                  contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
-             ]
+             ],
+             reset: false
            }
          }
        }
@@ -788,6 +794,7 @@ function apiWorkspaceEndpoints(app) {
           mode = "query",
           sessionId = null,
           attachments = [],
+          reset = false,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
@@ -803,7 +810,7 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+        if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
@@ -832,6 +839,7 @@ function apiWorkspaceEndpoints(app) {
           thread: null,
           sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
+          reset,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection:
