@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const JSONStream = require("JSONStream");
 const { v5: uuidv5 } = require("uuid");
 const { Document } = require("../../models/documents");
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
@@ -25,7 +26,10 @@ async function fileData(filePath = null) {
 }
 
 async function viewLocalFiles() {
+  const start = Date.now();
+
   if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
+  const filePromises = [];
   const liveSyncAvailable = await DocumentSyncQueue.enabled();
   const directory = {
     name: "documents",
@@ -43,29 +47,24 @@ async function viewLocalFiles() {
         type: "folder",
         items: [],
       };
+
       const subfiles = fs.readdirSync(folderPath);
       const filenames = {};
 
-      for (const subfile of subfiles) {
-        if (path.extname(subfile) !== ".json") continue;
-        const filePath = path.join(folderPath, subfile);
-        const rawData = fs.readFileSync(filePath, "utf8");
+      for (let i = 0; i < subfiles.length; i++) {
+        const subfile = subfiles[i];
         const cachefilename = `${file}/${subfile}`;
-        const { pageContent, ...metadata } = JSON.parse(rawData);
-        subdocs.items.push({
-          name: subfile,
-          type: "file",
-          ...metadata,
-          cached: await cachedVectorInformation(cachefilename, true),
-          canWatch: liveSyncAvailable
-            ? DocumentSyncQueue.canWatch(metadata)
-            : false,
-          // pinnedWorkspaces: [], // This is the list of workspaceIds that have pinned this document
-          // watched: false, // boolean to indicate if this document is watched in ANY workspace
-        });
+        if (path.extname(subfile) !== ".json") continue;
+        filePromises.push(
+          fileToPickerData({
+            pathToFile: path.join(folderPath, subfile),
+            liveSyncAvailable
+          })
+        );
         filenames[cachefilename] = subfile;
       }
-
+      const results = await Promise.all(filePromises);
+      subdocs.items.push(...results);
       // Grab the pinned workspaces and watched documents for this folder's documents
       // at the time of the query so we don't have to re-query the database for each file
       const pinnedWorkspacesByDocument =
@@ -88,6 +87,7 @@ async function viewLocalFiles() {
     ...directory.items.filter((folder) => folder.name !== "custom-documents"),
   ].filter((i) => !!i);
 
+  console.log(`Time taken to load documents: ${Date.now() - start}ms`);
   return directory;
 }
 
@@ -266,7 +266,7 @@ function hasVectorCachedFiles() {
       fs.readdirSync(vectorCachePath)?.filter((name) => name.endsWith(".json"))
         .length !== 0
     );
-  } catch {}
+  } catch { }
   return false;
 }
 
@@ -333,6 +333,63 @@ function purgeEntireVectorCache() {
   fs.rmSync(vectorCachePath, { recursive: true, force: true });
   fs.mkdirSync(vectorCachePath);
   return;
+}
+
+const FILE_READ_SIZE_THRESHOLD = 30 * (1024 * 1024); // 30MB
+async function fileToPickerData({ pathToFile, liveSyncAvailable = false }) {
+  let metadata = {};
+  const filename = path.basename(pathToFile);
+  const fileStats = fs.statSync(pathToFile);
+  const cachedStatus = await cachedVectorInformation(pathToFile, true);
+  const canWatchStatus = liveSyncAvailable
+    ? DocumentSyncQueue.canWatch(metadata)
+    : false;
+
+  if (fileStats.size < FILE_READ_SIZE_THRESHOLD) {
+    const rawData = fs.readFileSync(pathToFile, "utf8");
+    metadata = JSON.parse(rawData);
+    return {
+      name: filename,
+      type: "file",
+      ...metadata,
+      cached: cachedStatus,
+      canWatch: canWatchStatus,
+      // pinnedWorkspaces: [], // This is the list of workspaceIds that have pinned this document
+      // watched: false, // boolean to indicate if this document is watched in ANY workspace
+    }
+  }
+
+  console.log(
+    `Stream-parsing ${path.basename(pathToFile)} because it exceeds the ${FILE_READ_SIZE_THRESHOLD} byte limit.`
+  );
+
+  const stream = fs.createReadStream(pathToFile, { encoding: "utf8" });
+  const parser = JSONStream.parse("$*");
+  try {
+    metadata = await new Promise((resolve, reject) => {
+      let result = {};
+      parser.on("data", (data) => {
+        if (data.key === "pageContent") return;
+        result[data.key] = data.value;
+      });
+      parser.on("end", () => resolve(result));
+      parser.on("error", reject);
+      stream.pipe(parser);
+    });
+  } finally {
+    stream.destroy();
+    parser.destroy();
+  }
+
+  console.log({ metadata });
+
+  return {
+    name: filename,
+    type: "file",
+    ...metadata,
+    cached: cachedStatus,
+    canWatch: canWatchStatus,
+  };
 }
 
 module.exports = {
