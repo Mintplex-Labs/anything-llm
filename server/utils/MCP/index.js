@@ -85,10 +85,14 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                       `MCP server: ${name}:${tool.name} failed with error:`,
                       error
                     );
-                    aibitat.introspect(
-                      `MCP server: ${name}:${tool.name} failed with error:`,
-                      error
-                    );
+                    aibitat.introspect({
+                      text: `${tool.name} (via MCP: ${name}) failed with error`,
+                      json: {
+                        error: error?.message || "An unknown error occurred",
+                      },
+                      toolName: tool.name,
+                      messageType: "mcp_error",
+                    });
                     return `The tool ${name}:${tool.name} failed with error: ${error?.message || "An unknown error occurred"}`;
                   }
                 },
