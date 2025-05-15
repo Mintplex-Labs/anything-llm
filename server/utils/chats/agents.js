@@ -58,7 +58,7 @@ async function grepAgents({
         agentHandles.length
       )} ${agentHandles.join(
         ", "
-      )} invoked.\nSwapping over to agent chat. Type /exit to exit agent execution loop early.`,
+      )} invoked. Swapping over to agent chat. Type /exit to exit agent execution loop early.`,
       sources: [],
       close: true,
       error: null,

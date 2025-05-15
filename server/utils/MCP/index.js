@@ -57,9 +57,12 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                       `Executing MCP server: ${name}:${tool.name} with args:`,
                       args
                     );
-                    aibitat.introspect(
-                      `Executing MCP server: ${name} with ${JSON.stringify(args, null, 2)}`
-                    );
+                    aibitat.introspect({
+                      text: `Executing ${tool.name} (via MCP: ${name}) with request`,
+                      json: args,
+                      toolName: tool.name,
+                      messageType: "mcp_request",
+                    });
                     const result = await mcp.callTool({
                       name: tool.name,
                       arguments: args,
@@ -68,9 +71,12 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                       `MCP server: ${name}:${tool.name} completed successfully`,
                       result
                     );
-                    aibitat.introspect(
-                      `MCP server: ${name}:${tool.name} completed successfully`
-                    );
+                    aibitat.introspect({
+                      text: `${tool.name} (via MCP: ${name}) completed successfully with response`,
+                      json: result,
+                      toolName: tool.name,
+                      messageType: "mcp_response",
+                    });
                     return typeof result === "object"
                       ? JSON.stringify(result)
                       : String(result);

@@ -79,6 +79,12 @@ export function ChatTooltips() {
         delayShow={500}
         className="tooltip !text-xs"
       />
+      <Tooltip
+        id="show-details"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
     </>
   );
 }
