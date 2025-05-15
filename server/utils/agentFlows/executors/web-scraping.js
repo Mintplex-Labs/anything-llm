@@ -10,7 +10,7 @@ const { summarizeContent } = require("../../agents/aibitat/utils/summarize");
  * @returns {Promise<string>} Scraped content
  */
 async function executeWebScraping(config, context) {
-  const { url, captureAs = "text", enableSummarization = false } = config;
+  const { url, captureAs = "text", enableSummarization = true } = config;
   const { introspect, logger, aibitat } = context;
   logger(
     `\x1b[43m[AgentFlowToolExecutor]\x1b[0m - executing Web Scraping block`
