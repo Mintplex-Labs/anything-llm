@@ -183,7 +183,6 @@ export function DnDFileUploaderProvider({ workspace, children }) {
       promises.push(
         Workspace.uploadAndEmbedFile(workspace.slug, formData).then(
           ({ response, data }) => {
-            console.log("response", response);
             const updates = {
               status: response.ok ? "success" : "failed",
               error: data?.error ?? null,
