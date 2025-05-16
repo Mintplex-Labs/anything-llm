@@ -88,7 +88,7 @@ const Citation = memo(({ source, onClick }) => {
     : ICONS.file;
 
   return (
-    <div className="flex flex-col" onClick={onClick}>
+    <button className="flex flex-col text-left" onClick={onClick}>
       <div className="flex items-center gap-x-1 cursor-pointer -mb-2">
         <CitationIcon size={16} />
         <p className="text-xs font-semibold whitespace-nowrap text-white hover:opacity-55">
@@ -98,7 +98,7 @@ const Citation = memo(({ source, onClick }) => {
       <div className="ml-5">
         <p className="text-[10px] font-medium text-white/60">{`${references} ${pluralize("Reference", Number(references) || 1)}`}</p>
       </div>
-    </div>
+    </button>
   );
 });
 
