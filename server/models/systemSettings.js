@@ -8,6 +8,7 @@ const prisma = require("../utils/prisma");
 const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
+const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -208,6 +209,8 @@ const SystemSettings = {
       HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+      EmbeddingModelNativePref:
+        process.env.EMBEDDING_MODEL_NATIVE_PREF ?? NativeEmbedder.defaultModel,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,

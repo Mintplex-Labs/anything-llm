@@ -4,33 +4,85 @@ const { toChunks } = require("../../helpers");
 const { v4 } = require("uuid");
 
 class NativeEmbedder {
+  static defaultModel = "Xenova/all-MiniLM-L6-v2";
+  static supportedModels = {
+    // https://huggingface.co/Xenova/all-MiniLM-L6-v2
+    "Xenova/all-MiniLM-L6-v2": {
+      maxConcurrentChunks: 25,
+      embeddingMaxChunkLength: 512,
+      chunkPrefix: "",
+      queryPrefix: "",
+    },
+    // https://huggingface.co/Xenova/nomic-embed-text-v1
+    "Xenova/nomic-embed-text-v1": {
+      maxConcurrentChunks: 25,
+      embeddingMaxChunkLength: 8192,
+      chunkPrefix: "search_document: ",
+      queryPrefix: "search_query: ",
+    },
+    // https://huggingface.co/intfloat/multilingual-e5-small
+    "MintplexLabs/multilingual-e5-small": {
+      maxConcurrentChunks: 25,
+      embeddingMaxChunkLength: 512,
+      chunkPrefix: "passage: ",
+      queryPrefix: "query: ",
+    },
+  };
+
   // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
   // endpoint for various reasons. This endpoint is not guaranteed to be active or maintained
   // and may go offline at any time at Mintplex Labs's discretion.
   #fallbackHost = "https://cdn.anythingllm.com/support/models/";
 
   constructor() {
-    // Model Card: https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
-    this.model = "Xenova/all-MiniLM-L6-v2";
+    this.model = this.getEmbeddingModel();
+    this.modelInfo = this.getEmbedderInfo();
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
         ? path.resolve(process.env.STORAGE_DIR, `models`)
         : path.resolve(__dirname, `../../../storage/models`)
     );
-    this.modelPath = path.resolve(this.cacheDir, "Xenova", "all-MiniLM-L6-v2");
+    this.modelPath = path.resolve(this.cacheDir, ...this.model.split("/"));
     this.modelDownloaded = fs.existsSync(this.modelPath);
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
-    this.maxConcurrentChunks = 25;
-    this.embeddingMaxChunkLength = 1_000;
+    this.maxConcurrentChunks = this.modelInfo.maxConcurrentChunks;
+    this.embeddingMaxChunkLength = this.modelInfo.embeddingMaxChunkLength;
 
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
-    this.log("Initialized");
+    this.log(`Initialized ${this.model}`);
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[NativeEmbedder]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * Get the embedding model to use.
+   * We only support a few models and will default to the default model if the environment variable is not set or not supported.
+   *
+   * Why only a few? Because we need to mirror them on the CDN so non-US users can download them.
+   * eg: "Xenova/all-MiniLM-L6-v2"
+   * eg: "Xenova/nomic-embed-text-v1"
+   * @returns {string}
+   */
+  getEmbeddingModel() {
+    const envModel =
+      process.env.EMBEDDING_MODEL_NATIVE_PREF ?? NativeEmbedder.defaultModel;
+    if (NativeEmbedder.supportedModels?.[envModel]) return envModel;
+    return NativeEmbedder.defaultModel;
+  }
+
+  /**
+   * Get the embedding model info.
+   *
+   * Will always fallback to the default model if the model is not supported.
+   * @returns {Object}
+   */
+  getEmbedderInfo() {
+    const model = this.getEmbeddingModel();
+    return NativeEmbedder.supportedModels[model];
   }
 
   #tempfilePath() {

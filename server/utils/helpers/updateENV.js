@@ -290,6 +290,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
     postUpdate: [handleVectorStoreReset],
   },
+  EmbeddingModelNativePref: {
+    envKey: "EMBEDDING_MODEL_NATIVE_PREF",
+    checks: [isNotEmpty],
+    postUpdate: [
+      () => {
+        const { NativeEmbedder } = require("../EmbeddingEngines/native");
+        new NativeEmbedder().embedderClient();
+      },
+    ],
+  },
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
