@@ -664,6 +664,7 @@ const TRANSLATIONS = {
     text_size: "變更文字大小。",
     microphone: "語音輸入提示。",
     send: "將提示訊息發送到工作區",
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: null,

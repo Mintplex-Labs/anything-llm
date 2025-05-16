@@ -705,6 +705,7 @@ const TRANSLATIONS = {
     text_size: "Ændr tekststørrelse.",
     microphone: "Tal din prompt.",
     send: "Send promptbesked til arbejdsområdet",
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: "Rediger konto",
