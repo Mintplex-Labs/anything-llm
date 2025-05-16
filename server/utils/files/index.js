@@ -26,7 +26,6 @@ async function fileData(filePath = null) {
 
 async function viewLocalFiles() {
   if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
-  const filePromises = [];
   const liveSyncAvailable = await DocumentSyncQueue.enabled();
   const directory = {
     name: "documents",
@@ -47,6 +46,7 @@ async function viewLocalFiles() {
 
       const subfiles = fs.readdirSync(folderPath);
       const filenames = {};
+      const filePromises = [];
 
       for (let i = 0; i < subfiles.length; i++) {
         const subfile = subfiles[i];
@@ -63,7 +63,8 @@ async function viewLocalFiles() {
       }
       const results = await Promise.all(filePromises).then((results) =>
         results.filter((i) => !!i)
-      ); // Filter out any null results
+      );
+      console.log({ folder: file, subdocs: results.length });
       subdocs.items.push(...results);
 
       // Grab the pinned workspaces and watched documents for this folder's documents
