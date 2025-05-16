@@ -91,10 +91,12 @@ const Citation = memo(({ source, onClick }) => {
     <div className="flex flex-col" onClick={onClick}>
       <div className="flex items-center gap-x-1 cursor-pointer -mb-2">
         <CitationIcon size={16} />
-        <p className="text-xs font-semibold whitespace-nowrap text-white hover:opacity-55">{truncatedTitle}</p>
+        <p className="text-xs font-semibold whitespace-nowrap text-white hover:opacity-55">
+          {truncatedTitle}
+        </p>
       </div>
       <div className="ml-5">
-      <p className="text-[10px] font-medium text-white/60">{`${references} ${pluralize("Reference", Number(references) || 1)}`}</p>
+        <p className="text-[10px] font-medium text-white/60">{`${references} ${pluralize("Reference", Number(references) || 1)}`}</p>
       </div>
     </div>
   );
