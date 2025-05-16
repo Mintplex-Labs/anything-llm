@@ -288,13 +288,10 @@ const KEY_MAPPING = {
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
-    postUpdate: [handleVectorStoreReset],
-  },
-  EmbeddingModelNativePref: {
-    envKey: "EMBEDDING_MODEL_NATIVE_PREF",
-    checks: [isNotEmpty],
     postUpdate: [
-      () => {
+      handleVectorStoreReset,
+      () => { // Hot download the model if the user has selected the native embedder
+        if (process.env.EMBEDDING_ENGINE !== "native") return;
         const { NativeEmbedder } = require("../EmbeddingEngines/native");
         new NativeEmbedder().embedderClient();
       },

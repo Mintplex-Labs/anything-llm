@@ -190,6 +190,7 @@ const SystemSettings = {
     const { hasVectorCachedFiles } = require("../utils/files");
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
+    const embeddingEngine = process.env.EMBEDDING_ENGINE ?? "native";
     return {
       // --------------------------------------------------------
       // General Settings
@@ -204,13 +205,11 @@ const SystemSettings = {
       // --------------------------------------------------------
       // Embedder Provider Selection Settings & Configs
       // --------------------------------------------------------
-      EmbeddingEngine: process.env.EMBEDDING_ENGINE,
+      EmbeddingEngine: embeddingEngine,
       HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
       HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
-      EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-      EmbeddingModelNativePref:
-        process.env.EMBEDDING_MODEL_NATIVE_PREF ?? NativeEmbedder.defaultModel,
+      EmbeddingModelPref: embeddingEngine === "native" ? NativeEmbedder._getEmbeddingModel() : process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,

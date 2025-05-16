@@ -59,6 +59,16 @@ class NativeEmbedder {
   }
 
   /**
+   * Get the selected model from the environment variable.
+   * @returns {string}
+   */
+  static _getEmbeddingModel() {
+    const envModel = process.env.EMBEDDING_MODEL_PREF ?? NativeEmbedder.defaultModel;
+    if (NativeEmbedder.supportedModels?.[envModel]) return envModel;
+    return NativeEmbedder.defaultModel;
+  }
+
+  /**
    * Get the embedding model to use.
    * We only support a few models and will default to the default model if the environment variable is not set or not supported.
    *
@@ -68,8 +78,7 @@ class NativeEmbedder {
    * @returns {string}
    */
   getEmbeddingModel() {
-    const envModel =
-      process.env.EMBEDDING_MODEL_NATIVE_PREF ?? NativeEmbedder.defaultModel;
+    const envModel = process.env.EMBEDDING_MODEL_PREF ?? NativeEmbedder.defaultModel;
     if (NativeEmbedder.supportedModels?.[envModel]) return envModel;
     return NativeEmbedder.defaultModel;
   }
@@ -122,16 +131,15 @@ class NativeEmbedder {
           cache_dir: this.cacheDir,
           ...(!this.modelDownloaded
             ? {
-                // Show download progress if we need to download any files
-                progress_callback: (data) => {
-                  if (!data.hasOwnProperty("progress")) return;
-                  console.log(
-                    `\x1b[36m[NativeEmbedder - Downloading model]\x1b[0m ${
-                      data.file
-                    } ${~~data?.progress}%`
-                  );
-                },
-              }
+              // Show download progress if we need to download any files
+              progress_callback: (data) => {
+                if (!data.hasOwnProperty("progress")) return;
+                console.log(
+                  `\x1b[36m[NativeEmbedder - Downloading model]\x1b[0m ${data.file
+                  } ${~~data?.progress}%`
+                );
+              },
+            }
             : {}),
         }),
         retry: false,
@@ -200,6 +208,7 @@ class NativeEmbedder {
     const chunkLen = chunks.length;
 
     for (let [idx, chunk] of chunks.entries()) {
+      console.log({ idx, chunk });
       if (idx === 0) await this.#writeToTempfile(tmpFilePath, "[");
       let data;
       let pipeline = await this.embedderClient();

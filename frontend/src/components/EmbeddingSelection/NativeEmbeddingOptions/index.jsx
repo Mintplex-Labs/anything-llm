@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-const models = [
+
+// TODO: Migrate to backend to be part of NativeEmbedder class
+// and called via System.customModels()
+const AVAILABLE_MODELS = [
   {
     id: "Xenova/all-MiniLM-L6-v2",
     name: "all-MiniLM-L6-v2",
@@ -25,14 +28,11 @@ const models = [
 ];
 
 export default function NativeEmbeddingOptions({ settings }) {
-  const [selectedModel, setSelectedModel] = useState(
-    settings?.EmbeddingModelNativePref
-  );
-  const [selectedModelInfo, setSelectedModelInfo] = useState(
-    models.find((model) => model.id === selectedModel)
-  );
+  const [selectedModel, setSelectedModel] = useState(settings?.EmbeddingModelPref);
+  const [selectedModelInfo, setSelectedModelInfo] = useState(AVAILABLE_MODELS[0]);
+
   useEffect(() => {
-    setSelectedModelInfo(models.find((model) => model.id === selectedModel));
+    setSelectedModelInfo(AVAILABLE_MODELS.find((model) => model.id === selectedModel));
   }, [selectedModel]);
 
   return (
@@ -43,14 +43,14 @@ export default function NativeEmbeddingOptions({ settings }) {
             Model Preference
           </label>
           <select
-            name="EmbeddingModelNativePref"
+            name="EmbeddingModelPref"
             required={true}
             defaultValue={selectedModel}
             className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-60 p-2.5"
             onChange={(e) => setSelectedModel(e.target.value)}
           >
             <optgroup label="Supported embedding models">
-              {models.map((model) => {
+              {AVAILABLE_MODELS.map((model) => {
                 return (
                   <option
                     key={model.id}
