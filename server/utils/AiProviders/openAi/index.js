@@ -25,6 +25,13 @@ class OpenAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.log(
+      `Initialized ${this.model} with context window ${this.promptWindowLimit()}`
+    );
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
   /**
@@ -54,11 +61,11 @@ class OpenAiLLM {
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.openai[modelName] ?? 4_096;
+    return MODEL_MAP.get("openai", modelName) ?? 4_096;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.openai[this.model] ?? 4_096;
+    return MODEL_MAP.get("openai", this.model) ?? 4_096;
   }
 
   // Short circuit if name has 'gpt' since we now fetch models from OpenAI API
@@ -183,6 +190,7 @@ class OpenAiLLM {
       messages
       // runPromptTokenCalculation: true - We manually count the tokens because OpenAI does not provide them in the stream
       // since we are not using the OpenAI API version that supports this `stream_options` param.
+      // TODO: implement this once we upgrade to the OpenAI API version that supports this param.
     );
 
     return measuredStreamRequest;

@@ -117,13 +117,18 @@ class Provider {
           ...config,
         });
       case "bedrock":
+        // Grab just the credentials from the bedrock provider
+        // using a closure to avoid circular dependency + to avoid instantiating the provider
+        const credentials = (() => {
+          const AWSBedrockProvider = require("./bedrock");
+          const bedrockProvider = new AWSBedrockProvider();
+          return bedrockProvider.credentials;
+        })();
+
         return new ChatBedrockConverse({
           model: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
           region: process.env.AWS_BEDROCK_LLM_REGION,
-          credentials: {
-            accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
-          },
+          credentials: credentials,
           ...config,
         });
       case "fireworksai":

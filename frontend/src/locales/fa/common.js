@@ -90,6 +90,9 @@ const TRANSLATIONS = {
     contact: "تماس با پشتیبانی",
     "browser-extension": "افزونه مرورگر",
     "system-prompt-variables": null,
+    interface: null,
+    branding: null,
+    chat: null,
   },
   login: {
     "multi-user": {
@@ -219,6 +222,16 @@ const TRANSLATIONS = {
       title: "پیش‌متن",
       description:
         "پیش‌متنی که در این فضای کاری استفاده خواهد شد. زمینه و دستورالعمل‌ها را برای تولید پاسخ توسط هوش مصنوعی تعریف کنید. باید یک پیش‌متن دقیق ارائه دهید تا هوش مصنوعی بتواند پاسخی مرتبط و دقیق تولید کند.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "پاسخ رد در حالت پرس‌وجو",
@@ -331,37 +344,6 @@ const TRANSLATIONS = {
       prompt: "درخواست",
       response: "پاسخ",
       at: "زمان ارسال",
-    },
-  },
-  appearance: {
-    title: "ظاهر",
-    description: "تنظیمات ظاهری پلتفرم خود را شخصی‌سازی کنید.",
-    logo: {
-      title: "شخصی‌سازی لوگو",
-      description: "لوگوی سفارشی خود را برای شخصی‌سازی ربات گفتگو آپلود کنید.",
-      add: "افزودن لوگوی سفارشی",
-      recommended: "اندازه پیشنهادی: 800 x 200",
-      remove: "حذف",
-      replace: "جایگزینی",
-    },
-    message: {
-      title: "شخصی‌سازی پیام‌ها",
-      description:
-        "پیام‌های خودکار نمایش داده شده به کاربران را شخصی‌سازی کنید.",
-      new: "جدید",
-      system: "سیستم",
-      user: "کاربر",
-      message: "پیام",
-      assistant: "دستیار گفتگوی AnythingLLM",
-      "double-click": "برای ویرایش دوبار کلیک کنید...",
-      save: "ذخیره پیام‌ها",
-    },
-    icons: {
-      title: "آیکون‌های سفارشی پاورقی",
-      description:
-        "آیکون‌های نمایش داده شده در پایین نوار کناری را شخصی‌سازی کنید.",
-      icon: "آیکون",
-      link: "لینک",
     },
   },
   api: {
@@ -651,6 +633,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: null,
       accept: null,
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: null,
@@ -679,6 +672,175 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError: null,
+    checklist: {
+      title: null,
+      tasksLeft: null,
+      completed: null,
+      dismiss: null,
+      tasks: {
+        create_workspace: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        send_chat: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        embed_document: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        setup_system_prompt: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        define_slash_command: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        visit_community: {
+          title: null,
+          description: null,
+          action: null,
+        },
+      },
+    },
+    quickLinks: {
+      title: null,
+      sendChat: null,
+      embedDocument: null,
+      createWorkspace: null,
+    },
+    exploreMore: {
+      title: null,
+      features: {
+        customAgents: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        slashCommands: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        systemPrompts: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+      },
+    },
+    announcements: {
+      title: null,
+    },
+    resources: {
+      title: null,
+      links: {
+        docs: null,
+        star: null,
+      },
+    },
   },
 };
 

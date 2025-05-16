@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { safeJsonParse } from "@/utils/request";
-import { ArrowSquareOut } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import PlaceholderOne from "@/media/announcements/placeholder-1.png";
 import PlaceholderTwo from "@/media/announcements/placeholder-2.png";
 import PlaceholderThree from "@/media/announcements/placeholder-3.png";
+import { useTranslation } from "react-i18next";
 
 /**
  * @typedef {Object} NewsItem
@@ -30,13 +30,14 @@ function randomPlaceholder() {
 }
 
 export default function Updates() {
+  const { t } = useTranslation();
   const { isLoading, news } = useNewsItems();
   if (isLoading || !news?.length) return null;
 
   return (
     <div>
       <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
-        Updates & Announcements
+        {t("main-page.announcements.title")}
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {news.map((item, index) => (
@@ -55,12 +56,6 @@ export default function Updates() {
   );
 }
 
-function getSource(goto) {
-  if (!goto) return null;
-  const url = new URL(goto);
-  return url.hostname;
-}
-
 function isExternal(goto) {
   if (!goto) return false;
   const url = new URL(goto);
@@ -76,7 +71,6 @@ function AnnouncementCard({
   goto = "#",
 }) {
   const placeHolderImage = randomPlaceholder();
-  const source = getSource(goto);
   const isExternalLink = isExternal(goto);
 
   return (
@@ -95,16 +89,6 @@ function AnnouncementCard({
           className="w-[80px] h-[80px] rounded-lg flex-shrink-0 object-cover"
         />
         <div className="flex flex-col gap-y-1">
-          <div className="flex items-center gap-x-[1px]">
-            <p className="text-theme-home-text-secondary text-xs">{source}</p>
-            {isExternalLink && (
-              <ArrowSquareOut
-                size={12}
-                weight="bold"
-                className="text-theme-home-text-secondary mb-[1.5px]"
-              />
-            )}
-          </div>
           <h3 className="text-theme-home-text font-medium text-sm">{title}</h3>
           <p className="text-theme-home-text-secondary text-xs line-clamp-2">
             {subtitle}

@@ -56,6 +56,7 @@ export default {
             container: 'var(--theme-bg-container)',
             chat: 'var(--theme-bg-chat)',
             "chat-input": 'var(--theme-bg-chat-input)',
+            "popup-menu": 'var(--theme-popup-menu-bg)',
           },
           text: {
             primary: 'var(--theme-text-primary)',
@@ -111,12 +112,15 @@ export default {
             "button-secondary-hover": 'var(--theme-home-button-secondary-hover)',
             "button-secondary-text": 'var(--theme-home-button-secondary-text)',
             "button-secondary-hover-text": 'var(--theme-home-button-secondary-hover-text)',
+            "button-secondary-border": 'var(--theme-home-button-secondary-border)',
+            "button-secondary-border-hover": 'var(--theme-home-button-secondary-border-hover)',
             "update-card-bg": 'var(--theme-home-update-card-bg)',
             "update-card-hover": 'var(--theme-home-update-card-hover)',
             "update-source": 'var(--theme-home-update-source)',
           },
           checklist: {
             "item-bg": 'var(--theme-checklist-item-bg)',
+            "item-bg-hover": 'var(--theme-checklist-item-bg-hover)',
             "item-text": 'var(--theme-checklist-item-text)',
             "item-completed-bg": 'var(--theme-checklist-item-completed-bg)',
             "item-completed-text": 'var(--theme-checklist-item-completed-text)',

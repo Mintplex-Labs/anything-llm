@@ -235,7 +235,7 @@ function WorkspaceDirectory({
                     }`}
               </p>
               <p className="mt-2 text-xs italic" hidden={embeddingCosts === 0}>
-                {t("new-workspace.costs")}
+                {t("connectors.directory.costs")}
               </p>
             </div>
 

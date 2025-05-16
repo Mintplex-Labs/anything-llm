@@ -802,7 +802,8 @@ function systemEndpoints(app) {
   app.get("/system/is-default-logo", async (_, response) => {
     try {
       const currentLogoFilename = await SystemSettings.currentLogoFilename();
-      const isDefaultLogo = currentLogoFilename === LOGO_FILENAME;
+      const isDefaultLogo =
+        !currentLogoFilename || currentLogoFilename === LOGO_FILENAME;
       response.status(200).json({ isDefaultLogo });
     } catch (error) {
       console.error("Error processing the logo request:", error);
@@ -907,7 +908,6 @@ function systemEndpoints(app) {
         }
 
         const { apiKey, error } = await ApiKey.create();
-        await Telemetry.sendTelemetry("api_key_created");
         await EventLogs.logEvent(
           "api_key_created",
           {},

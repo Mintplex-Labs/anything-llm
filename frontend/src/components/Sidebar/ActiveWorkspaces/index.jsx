@@ -6,15 +6,16 @@ import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../Modals/ManageWorkspace";
 import paths from "@/utils/paths";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { GearSix, UploadSimple, DotsSixVertical } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
-import { Link, useMatch } from "react-router-dom";
+import { useMatch } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import showToast from "@/utils/toast";
 
 export default function ActiveWorkspaces() {
+  const navigate = useNavigate();
   const { slug } = useParams();
   const [loading, setLoading] = useState(true);
   const [workspaces, setWorkspaces] = useState([]);
@@ -154,19 +155,20 @@ export default function ActiveWorkspaces() {
                                   }}
                                   className="border-none rounded-md flex items-center justify-center ml-auto p-[2px] hover:bg-[#646768] text-[#A7A8A9] hover:text-white"
                                 >
-                                  <UploadSimple
-                                    className="h-[20px] w-[20px]"
-                                    // weight="bold"
-                                  />
+                                  <UploadSimple className="h-[20px] w-[20px]" />
                                 </button>
-                                <Link
-                                  to={
-                                    isInWorkspaceSettings
-                                      ? paths.workspace.chat(workspace.slug)
-                                      : paths.workspace.settings.generalAppearance(
-                                          workspace.slug
-                                        )
-                                  }
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    navigate(
+                                      isInWorkspaceSettings
+                                        ? paths.workspace.chat(workspace.slug)
+                                        : paths.workspace.settings.generalAppearance(
+                                            workspace.slug
+                                          )
+                                    );
+                                  }}
                                   className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto p-[2px] hover:bg-[#646768]"
                                   aria-label="General appearance settings"
                                 >
@@ -177,10 +179,9 @@ export default function ActiveWorkspaces() {
                                         ? "#46C8FF"
                                         : undefined
                                     }
-                                    // weight="bold"
                                     className="h-[20px] w-[20px]"
                                   />
-                                </Link>
+                                </button>
                               </div>
                             )}
                           </div>

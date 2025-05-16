@@ -22,9 +22,9 @@ export default function VectorCount({ reload, workspace }) {
         <p className="text-white text-opacity-60 text-xs font-medium py-1">
           {t("general.vector.description")}
         </p>
-        <p className="text-white text-opacity-60 text-sm font-medium">
+        <div className="text-white text-opacity-60 text-sm font-medium">
           <PreLoader size="4" />
-        </p>
+        </div>
       </div>
     );
   return (

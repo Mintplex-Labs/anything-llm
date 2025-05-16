@@ -31,6 +31,7 @@ import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
+import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import FlowiseAiLogo from "@/media/llmprovider/flowiseai.png";
 
 import PreLoader from "@/components/Preloader";
@@ -60,6 +61,7 @@ import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
+import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -130,13 +132,17 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["OllamaLLMBasePath"],
   },
   {
-    name: "Novita AI",
-    value: "novita",
-    logo: NovitaLogo,
-    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    name: "Dell Pro AI Studio",
+    value: "dpais",
+    logo: DellProAiStudioLogo,
+    options: (settings) => <DellProAiStudioOptions settings={settings} />,
     description:
-      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
-    requiredConfig: ["NovitaLLMApiKey"],
+      "Run powerful LLMs quickly on NPU powered by Dell Pro AI Studio.",
+    requiredConfig: [
+      "DellProAiStudioBasePath",
+      "DellProAiStudioModelPref",
+      "DellProAiStudioTokenLimit",
+    ],
   },
   {
     name: "LM Studio",
@@ -154,6 +160,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <LocalAiOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
     requiredConfig: ["LocalAiApiKey", "LocalAiBasePath", "LocalAiTokenLimit"],
+  },
+  {
+    name: "Novita AI",
+    value: "novita",
+    logo: NovitaLogo,
+    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    description:
+      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
+    requiredConfig: ["NovitaLLMApiKey"],
   },
   {
     name: "Together AI",

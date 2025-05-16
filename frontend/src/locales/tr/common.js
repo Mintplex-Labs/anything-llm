@@ -90,6 +90,9 @@ const TRANSLATIONS = {
     contact: "Destekle İletişime Geçin",
     "browser-extension": "Tarayıcı Uzantısı",
     "system-prompt-variables": null,
+    interface: null,
+    branding: null,
+    chat: null,
   },
   login: {
     "multi-user": {
@@ -221,6 +224,16 @@ const TRANSLATIONS = {
       title: "Komut (Prompt)",
       description:
         "Bu çalışma alanında kullanılacak komut. Yapay zekanın yanıt üretmesi için bağlam ve talimatları tanımlayın. Uygun ve doğru yanıtlar almak için özenle hazırlanmış bir komut sağlamalısınız.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "Sorgu Modu Ret Yanıtı",
@@ -333,38 +346,6 @@ const TRANSLATIONS = {
       prompt: "Komut (Prompt)",
       response: "Yanıt",
       at: "Gönderilme Zamanı",
-    },
-  },
-  appearance: {
-    title: "Görünüm",
-    description: "Platformunuzun görünüm ayarlarını özelleştirin.",
-    logo: {
-      title: "Logoyu Özelleştir",
-      description:
-        "Özel bir logo yükleyerek chatbot'unuzu kendinize ait hale getirin.",
-      add: "Özel bir logo ekle",
-      recommended: "Önerilen boyut: 800 x 200",
-      remove: "Kaldır",
-      replace: "Değiştir",
-    },
-    message: {
-      title: "Mesajları Özelleştir",
-      description:
-        "Kullanıcılarınıza gösterilen otomatik mesajları özelleştirin.",
-      new: "Yeni",
-      system: "sistem",
-      user: "kullanıcı",
-      message: "mesaj",
-      assistant: "AnythingLLM Sohbet Asistanı",
-      "double-click": "Düzenlemek için çift tıklayın...",
-      save: "Mesajları Kaydet",
-    },
-    icons: {
-      title: "Özel Altbilgi Simgeleri",
-      description:
-        "Kenar çubuğunun altında görüntülenen altbilgi simgelerini özelleştirin.",
-      icon: "Simge",
-      link: "Bağlantı",
     },
   },
   api: {
@@ -655,6 +636,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: null,
       accept: null,
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: null,
@@ -683,6 +675,175 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError: null,
+    checklist: {
+      title: null,
+      tasksLeft: null,
+      completed: null,
+      dismiss: null,
+      tasks: {
+        create_workspace: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        send_chat: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        embed_document: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        setup_system_prompt: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        define_slash_command: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        visit_community: {
+          title: null,
+          description: null,
+          action: null,
+        },
+      },
+    },
+    quickLinks: {
+      title: null,
+      sendChat: null,
+      embedDocument: null,
+      createWorkspace: null,
+    },
+    exploreMore: {
+      title: null,
+      features: {
+        customAgents: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        slashCommands: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        systemPrompts: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+      },
+    },
+    announcements: {
+      title: null,
+    },
+    resources: {
+      title: null,
+      links: {
+        docs: null,
+        star: null,
+      },
+    },
   },
 };
 

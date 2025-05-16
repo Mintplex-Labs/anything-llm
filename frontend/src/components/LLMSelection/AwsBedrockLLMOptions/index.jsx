@@ -3,10 +3,11 @@ import { AWS_REGIONS } from "./regions";
 import { useState } from "react";
 
 export default function AwsBedrockLLMOptions({ settings }) {
-  const [useSessionToken, setUseSessionToken] = useState(
-    settings?.AwsBedrockLLMConnectionMethod === "sessionToken"
+  const [connectionMethod, setConnectionMethod] = useState(
+    settings?.AwsBedrockLLMConnectionMethod ?? "iam"
   );
 
+  console.log("connectionMethod", connectionMethod);
   return (
     <div className="w-full flex flex-col">
       {!settings?.credentialsOnly && (
@@ -29,11 +30,11 @@ export default function AwsBedrockLLMOptions({ settings }) {
         </div>
       )}
 
-      <div className="flex flex-col gap-y-2">
+      <div className="flex flex-col gap-y-2 mb-2">
         <input
           type="hidden"
           name="AwsBedrockLLMConnectionMethod"
-          value={useSessionToken ? "sessionToken" : "iam"}
+          value={connectionMethod}
         />
         <div className="flex flex-col w-full">
           <label className="text-theme-text-primary text-sm font-semibold block mb-3">
@@ -43,73 +44,61 @@ export default function AwsBedrockLLMOptions({ settings }) {
             Select the method to authenticate with AWS Bedrock.
           </p>
         </div>
-        <div className="flex items-center justify-start gap-x-4 bg-theme-settings-input-bg p-2.5 rounded-lg w-fit">
-          <span
-            className={`text-sm ${
-              !useSessionToken
-                ? "text-theme-text-primary"
-                : "text-theme-text-secondary"
-            }`}
-          >
-            IAM
-          </span>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              checked={useSessionToken}
-              onChange={(e) => setUseSessionToken(e.target.checked)}
-            />
-            <div className="w-11 h-6 bg-[#4b5563] light:bg-[#e5e7eb] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#d1d5db] light:after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-button"></div>
-          </label>
-          <span
-            className={`text-sm ${
-              useSessionToken
-                ? "text-theme-text-primary"
-                : "text-theme-text-secondary"
-            }`}
-          >
-            Session Token
-          </span>
-        </div>
+        <select
+          name="AwsBedrockLLMConnectionMethod"
+          value={connectionMethod}
+          required={true}
+          onChange={(e) => setConnectionMethod(e.target.value)}
+          className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit p-2.5"
+        >
+          <option value="iam">IAM (Explicit Credentials)</option>
+          <option value="sessionToken">
+            Session Token (Temporary Credentials)
+          </option>
+          <option value="iam_role">IAM Role (Implied Credentials)</option>
+        </select>
       </div>
 
       <div className="w-full flex items-center gap-[36px] my-1.5">
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            AWS Bedrock IAM Access ID
-          </label>
-          <input
-            type="password"
-            name="AwsBedrockLLMAccessKeyId"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="AWS Bedrock IAM User Access ID"
-            defaultValue={
-              settings?.AwsBedrockLLMAccessKeyId ? "*".repeat(20) : ""
-            }
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-3">
-            AWS Bedrock IAM Access Key
-          </label>
-          <input
-            type="password"
-            name="AwsBedrockLLMAccessKey"
-            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="AWS Bedrock IAM User Access Key"
-            defaultValue={
-              settings?.AwsBedrockLLMAccessKey ? "*".repeat(20) : ""
-            }
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-        {useSessionToken && (
+        {["iam", "sessionToken"].includes(connectionMethod) && (
+          <>
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-3">
+                AWS Bedrock IAM Access ID
+              </label>
+              <input
+                type="password"
+                name="AwsBedrockLLMAccessKeyId"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                placeholder="AWS Bedrock IAM User Access ID"
+                defaultValue={
+                  settings?.AwsBedrockLLMAccessKeyId ? "*".repeat(20) : ""
+                }
+                required={true}
+                autoComplete="off"
+                spellCheck={false}
+              />
+            </div>
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-3">
+                AWS Bedrock IAM Access Key
+              </label>
+              <input
+                type="password"
+                name="AwsBedrockLLMAccessKey"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                placeholder="AWS Bedrock IAM User Access Key"
+                defaultValue={
+                  settings?.AwsBedrockLLMAccessKey ? "*".repeat(20) : ""
+                }
+                required={true}
+                autoComplete="off"
+                spellCheck={false}
+              />
+            </div>
+          </>
+        )}
+        {connectionMethod === "sessionToken" && (
           <div className="flex flex-col w-60">
             <label className="text-theme-text-primary text-sm font-semibold block mb-3">
               AWS Bedrock Session Token
@@ -175,10 +164,26 @@ export default function AwsBedrockLLMOptions({ settings }) {
                 type="number"
                 name="AwsBedrockLLMTokenLimit"
                 className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                placeholder="Content window limit (eg: 4096)"
+                placeholder="Content window limit (eg: 8192)"
                 min={1}
                 onScroll={(e) => e.target.blur()}
                 defaultValue={settings?.AwsBedrockLLMTokenLimit}
+                required={true}
+                autoComplete="off"
+              />
+            </div>
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-3">
+                Model max output tokens
+              </label>
+              <input
+                type="number"
+                name="AwsBedrockLLMMaxOutputTokens"
+                className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                placeholder="Max output tokens (eg: 4096)"
+                min={1}
+                onScroll={(e) => e.target.blur()}
+                defaultValue={settings?.AwsBedrockLLMMaxOutputTokens}
                 required={true}
                 autoComplete="off"
               />

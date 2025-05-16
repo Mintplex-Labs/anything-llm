@@ -7,6 +7,8 @@ import {
 } from "@phosphor-icons/react";
 import SlashCommandIcon from "./ChecklistItem/icons/SlashCommand";
 import paths from "@/utils/paths";
+import { t } from "i18next";
+
 const noop = () => {};
 
 export const CHECKLIST_UPDATED_EVENT = "anythingllm_checklist_updated";
@@ -34,13 +36,16 @@ export const CHECKLIST_HIDDEN = "anythingllm_checklist_dismissed";
  * @property {boolean} completed
  */
 
-/** @type {ChecklistItem[]} */
-export const CHECKLIST_ITEMS = [
+/**
+ * Function to generate the checklist items
+ * @returns {ChecklistItem[]}
+ */
+export const CHECKLIST_ITEMS = () => [
   {
     id: "create_workspace",
-    title: "Create a workspace",
-    description: "Create your first workspace to get started",
-    action: "Create",
+    title: t("main-page.checklist.tasks.create_workspace.title"),
+    description: t("main-page.checklist.tasks.create_workspace.description"),
+    action: t("main-page.checklist.tasks.create_workspace.action"),
     handler: ({ showNewWsModal = noop }) => {
       showNewWsModal();
       return true;
@@ -49,9 +54,9 @@ export const CHECKLIST_ITEMS = [
   },
   {
     id: "send_chat",
-    title: "Send a chat",
-    description: "Start a conversation with your AI assistant",
-    action: "Chat",
+    title: t("main-page.checklist.tasks.send_chat.title"),
+    description: t("main-page.checklist.tasks.send_chat.description"),
+    action: t("main-page.checklist.tasks.send_chat.action"),
     handler: ({
       workspaces = [],
       navigate = noop,
@@ -59,11 +64,9 @@ export const CHECKLIST_ITEMS = [
       showNewWsModal = noop,
     }) => {
       if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before starting a chat.",
-          "warning",
-          { clear: true }
-        );
+        showToast(t("main-page.noWorkspaceError"), "warning", {
+          clear: true,
+        });
         showNewWsModal();
         return false;
       }
@@ -74,9 +77,9 @@ export const CHECKLIST_ITEMS = [
   },
   {
     id: "embed_document",
-    title: "Embed a document",
-    description: "Add your first document to your workspace",
-    action: "Embed",
+    title: t("main-page.checklist.tasks.embed_document.title"),
+    description: t("main-page.checklist.tasks.embed_document.description"),
+    action: t("main-page.checklist.tasks.embed_document.action"),
     handler: ({
       workspaces = [],
       setSelectedWorkspace = noop,
@@ -85,11 +88,9 @@ export const CHECKLIST_ITEMS = [
       showNewWsModal = noop,
     }) => {
       if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before embedding documents.",
-          "warning",
-          { clear: true }
-        );
+        showToast(t("main-page.noWorkspaceError"), "warning", {
+          clear: true,
+        });
         showNewWsModal();
         return false;
       }
@@ -101,9 +102,9 @@ export const CHECKLIST_ITEMS = [
   },
   {
     id: "setup_system_prompt",
-    title: "Set up a system prompt",
-    description: "Configure your AI assistant's behavior",
-    action: "Set Up",
+    title: t("main-page.checklist.tasks.setup_system_prompt.title"),
+    description: t("main-page.checklist.tasks.setup_system_prompt.description"),
+    action: t("main-page.checklist.tasks.setup_system_prompt.action"),
     handler: ({
       workspaces = [],
       navigate = noop,
@@ -111,25 +112,28 @@ export const CHECKLIST_ITEMS = [
       showToast = noop,
     }) => {
       if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before setting up system prompts.",
-          "warning",
-          { clear: true }
-        );
+        showToast(t("main-page.noWorkspaceError"), "warning", {
+          clear: true,
+        });
         showNewWsModal();
         return false;
       }
-      navigate(paths.workspace.settings.chatSettings(workspaces[0].slug));
-      window.location.hash = "#system-prompts";
+      navigate(
+        paths.workspace.settings.chatSettings(workspaces[0].slug, {
+          search: { action: "focus-system-prompt" },
+        })
+      );
       return true;
     },
     icon: ChatCenteredText,
   },
   {
     id: "define_slash_command",
-    title: "Define a slash command",
-    description: "Create custom commands for your assistant",
-    action: "Define",
+    title: t("main-page.checklist.tasks.define_slash_command.title"),
+    description: t(
+      "main-page.checklist.tasks.define_slash_command.description"
+    ),
+    action: t("main-page.checklist.tasks.define_slash_command.action"),
     handler: ({
       workspaces = [],
       navigate = noop,
@@ -137,26 +141,28 @@ export const CHECKLIST_ITEMS = [
       showToast = noop,
     }) => {
       if (workspaces.length === 0) {
-        showToast(
-          "Please create a workspace before setting up slash commands.",
-          "warning",
-          { clear: true }
-        );
+        showToast(t("main-page.noWorkspaceError"), "warning", { clear: true });
         showNewWsModal();
         return false;
       }
-      navigate(paths.workspace.chat(workspaces[0].slug));
-      window.location.hash = "#slash-commands";
+      navigate(
+        paths.workspace.chat(workspaces[0].slug, {
+          search: { action: "open-new-slash-command-modal" },
+        })
+      );
       return true;
     },
     icon: SlashCommandIcon,
   },
   {
     id: "visit_community",
-    title: "Visit Community Hub",
-    description: "Explore community resources and templates",
-    action: "Browse",
-    handler: () => window.open(paths.communityHub.website(), "_blank"),
+    title: t("main-page.checklist.tasks.visit_community.title"),
+    description: t("main-page.checklist.tasks.visit_community.description"),
+    action: t("main-page.checklist.tasks.visit_community.action"),
+    handler: () => {
+      window.open(paths.communityHub.website(), "_blank");
+      return true;
+    },
     icon: UsersThree,
   },
 ];

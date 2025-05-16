@@ -2,50 +2,57 @@
 const TRANSLATIONS = {
   onboarding: {
     survey: {
-      email: null,
-      useCase: null,
-      useCaseWork: null,
-      useCasePersonal: null,
-      useCaseOther: null,
-      comment: null,
-      commentPlaceholder: null,
-      skip: null,
-      thankYou: null,
-      title: null,
-      description: null,
+      email: "Qual o seu email?",
+      useCase: "Para que fim pretende usar AnythingLLM",
+      useCaseWork: "Para trabalho",
+      useCasePersonal: "Uso pessoal",
+      useCaseOther: "Outro",
+      comment: "Onde ouviu sobre AnythingLLM pela primeira vez",
+      commentPlaceholder:
+        "Reddit, Twitter, GitHub, YouTube, etc. - Conte para nós como você nos encontrou!",
+      skip: "Ignorar pesquisa",
+      thankYou: "Obrigado pelo seu feedback",
+      title: "Bem-vindo a AnythingLLM",
+      description: "Ajude-nos a construir AnythingLLM para si. Opcional",
     },
     home: {
-      title: null,
-      getStarted: null,
+      title: "Bem-vindo a",
+      getStarted: "Começar",
     },
     llm: {
-      title: null,
-      description: null,
+      title: "Preferências LLM",
+      description:
+        "AnythingLLM consegue trabalhar com diversos provedores LLM. Este é o serviço que lida com conversas.",
     },
     userSetup: {
-      title: null,
-      description: null,
-      howManyUsers: null,
-      justMe: null,
-      myTeam: null,
-      instancePassword: null,
-      setPassword: null,
-      passwordReq: null,
-      passwordWarn: null,
-      adminUsername: null,
-      adminUsernameReq: null,
-      adminPassword: null,
-      adminPasswordReq: null,
-      teamHint: null,
+      title: "Configuração de usuário",
+      description: "Configure o seu usuário.",
+      howManyUsers: "Quantos usuários vão usar esta instância",
+      justMe: "Apenas eu",
+      myTeam: "Minha equipe",
+      instancePassword: "Senha da Instância",
+      setPassword: "Gostaria de definir uma senha?",
+      passwordReq: "A sua senha deve conter pelo menos 8 caracteres",
+      passwordWarn:
+        "É importante que salve a senha porque não existe método de recuperação",
+      adminUsername: "Utilizador da conta de administrador",
+      adminUsernameReq:
+        'Utilizador deve conter pelo menos 6 caracteres, letras minúsculas, números, "uderscore", e hífen sem espaços',
+      adminPassword: "Senha da conta de administrador",
+      adminPasswordReq: "Senha deve conter pelo menos 8 caracteres",
+      teamHint:
+        'Por padrão, você será o único administrador. Após o "onboarding", você poderá criar e convidar outros usuários ou administradores. Não perca sua senha, pois somente administradores podem redefini-la.',
     },
     data: {
-      title: null,
-      description: null,
-      settingsHint: null,
+      title: "Gestão de dados e privacidade",
+      description:
+        "Estamos comprometidos com a transparência e o controle quando se trata de seus dados pessoais.",
+      settingsHint:
+        "Essas configurações podem ser reconfiguradas a qualquer momento nas configurações.",
     },
     workspace: {
-      title: null,
-      description: null,
+      title: "Crie seu primeiro workspace",
+      description: "Crie seu primeiro workspace e comece a usar o AnythingLLM.",
     },
   },
   common: {
@@ -58,9 +65,9 @@ const TRANSLATIONS = {
     save: "Salvar alterações",
     previous: "Página Anterior",
     next: "Próxima Página",
-    optional: null,
-    yes: null,
-    no: null,
+    optional: "Opcional",
+    yes: "Sim",
+    no: "Não",
   },
   settings: {
     title: "Configurações da Instância",
@@ -89,7 +96,10 @@ const TRANSLATIONS = {
     "experimental-features": "Recursos Experimentais",
     contact: "Contato com Suporte",
     "browser-extension": "Extensão do navegador",
-    "system-prompt-variables": null,
+    "system-prompt-variables": "Variáveis de prompt do sistema",
+    interface: "Preferências de Interface",
+    branding: null,
+    chat: "Conversa",
   },
   login: {
     "multi-user": {
@@ -221,6 +231,16 @@ const TRANSLATIONS = {
       title: "Prompt",
       description:
         "O prompt que será usado neste workspace. Defina o contexto e as instruções para que a IA gere uma resposta. Você deve fornecer um prompt cuidadosamente elaborado para que a IA possa gerar uma resposta relevante e precisa.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "Resposta de Recusa no Modo de Consulta",
@@ -334,38 +354,6 @@ const TRANSLATIONS = {
       prompt: "Prompt",
       response: "Resposta",
       at: "Enviado Em",
-    },
-  },
-  appearance: {
-    title: "Aparência",
-    description: "Personalize as configurações de aparência da sua plataforma.",
-    logo: {
-      title: "Personalizar Logo",
-      description:
-        "Envie seu logotipo personalizado para tornar seu chatbot seu.",
-      add: "Adicionar um logotipo personalizado",
-      recommended: "Tamanho recomendado: 800 x 200",
-      remove: "Remover",
-      replace: "Substituir",
-    },
-    message: {
-      title: "Personalizar Mensagens",
-      description:
-        "Personalize as mensagens automáticas exibidas aos seus usuários.",
-      new: "Novo",
-      system: "sistema",
-      user: "usuário",
-      message: "mensagem",
-      assistant: "Assistente de Chat AnythingLLM",
-      "double-click": "Clique duas vezes para editar...",
-      save: "Salvar Mensagens",
-    },
-    icons: {
-      title: "Ícones de Rodapé Personalizados",
-      description:
-        "Personalize os ícones de rodapé exibidos na parte inferior da barra lateral.",
-      icon: "Ícone",
-      link: "Link",
     },
   },
   api: {
@@ -509,14 +497,15 @@ const TRANSLATIONS = {
     anonymous: "Telemetria Anônima Ativada",
   },
   connectors: {
-    "search-placeholder": null,
-    "no-connectors": null,
+    "search-placeholder": "Pesquisa conectores de dados",
+    "no-connectors": "Nenhum conector de dados encontrado",
     github: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      token: null,
+      name: "Repositório GitHub",
+      description:
+        "Importe um repositório GitHub público ou privado inteiro com um único clique.",
+      URL: "URL do repositório Github",
+      URL_explained: "URL do repositório do GitHub que você deseja coletar.",
+      token: "Token de acesso do Github",
       optional: null,
       token_explained: null,
       token_explained_start: null,
@@ -656,6 +645,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: null,
       accept: null,
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: null,
@@ -684,6 +684,175 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError: null,
+    checklist: {
+      title: null,
+      tasksLeft: null,
+      completed: null,
+      dismiss: null,
+      tasks: {
+        create_workspace: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        send_chat: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        embed_document: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        setup_system_prompt: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        define_slash_command: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        visit_community: {
+          title: null,
+          description: null,
+          action: null,
+        },
+      },
+    },
+    quickLinks: {
+      title: null,
+      sendChat: null,
+      embedDocument: null,
+      createWorkspace: null,
+    },
+    exploreMore: {
+      title: null,
+      features: {
+        customAgents: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        slashCommands: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        systemPrompts: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+      },
+    },
+    announcements: {
+      title: null,
+    },
+    resources: {
+      title: null,
+      links: {
+        docs: null,
+        star: null,
+      },
+    },
   },
 };
 

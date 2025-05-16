@@ -3,6 +3,7 @@ import { Tooltip } from "react-tooltip";
 import { At } from "@phosphor-icons/react";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 
 export default function AvailableAgentsButton({ showing, setShowAgents }) {
   const { t } = useTranslation();
@@ -49,14 +50,16 @@ export function AvailableAgents({
 }) {
   const formRef = useRef(null);
   const agentSessionActive = useIsAgentSessionActive();
+  const [searchParams] = useSearchParams();
 
   /*
    * @checklist-item
-   * If the URL has the #agent hash, open the agent menu for the user
+   * If the URL has the agent param, open the agent menu for the user
    * automatically when the component mounts.
    */
   useEffect(() => {
-    if (window.location.hash === "#agent" && !showing) handleAgentClick();
+    if (searchParams.get("action") === "set-agent-chat" && !showing)
+      handleAgentClick();
   }, [promptRef.current]);
 
   useEffect(() => {

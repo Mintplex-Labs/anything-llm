@@ -1,12 +1,15 @@
 import { useLanguageOptions } from "@/hooks/useLanguageOptions";
 import usePfp from "@/hooks/usePfp";
 import System from "@/models/system";
+import Appearance from "@/models/appearance";
 import { AUTH_USER } from "@/utils/constants";
 import showToast from "@/utils/toast";
-import { Plus, X } from "@phosphor-icons/react";
+import { Info, Plus, X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useTheme } from "@/hooks/useTheme";
 import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
+import { Tooltip } from "react-tooltip";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
@@ -178,9 +181,15 @@ export default function AccountModal({ user, hideModal }) {
                   defaultValue={user.bio}
                 />
               </div>
-              <div className="flex flex-row gap-x-8">
-                <ThemePreference />
-                <LanguagePreference />
+              <div className="flex gap-x-16">
+                <div className="flex flex-col gap-y-6">
+                  <ThemePreference />
+                  <LanguagePreference />
+                </div>
+                <div className="flex flex-col gap-y-6">
+                  <AutoSubmitPreference />
+                  <AutoSpeakPreference />
+                </div>
               </div>
             </div>
             <div className="flex justify-between items-center border-t border-theme-modal-border pt-4 p-6">
@@ -262,6 +271,119 @@ function ThemePreference() {
           </option>
         ))}
       </select>
+    </div>
+  );
+}
+
+function AutoSubmitPreference() {
+  const [autoSubmitSttInput, setAutoSubmitSttInput] = useState(true);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    const settings = Appearance.getSettings();
+    setAutoSubmitSttInput(settings.autoSubmitSttInput ?? true);
+  }, []);
+
+  const handleChange = (e) => {
+    const newValue = e.target.checked;
+    setAutoSubmitSttInput(newValue);
+    Appearance.updateSettings({ autoSubmitSttInput: newValue });
+  };
+
+  return (
+    <div>
+      <div className="flex items-center gap-x-1 mb-2">
+        <label
+          htmlFor="autoSubmit"
+          className="block text-sm font-medium text-white"
+        >
+          {t("customization.chat.auto_submit.title")}
+        </label>
+        <div
+          data-tooltip-id="auto-submit-info"
+          data-tooltip-content={t("customization.chat.auto_submit.description")}
+          className="cursor-pointer h-fit"
+        >
+          <Info size={16} weight="bold" className="text-white" />
+        </div>
+      </div>
+      <div className="flex items-center gap-x-4">
+        <label className="relative inline-flex cursor-pointer items-center">
+          <input
+            id="autoSubmit"
+            type="checkbox"
+            name="autoSubmit"
+            checked={autoSubmitSttInput}
+            onChange={handleChange}
+            className="peer sr-only"
+          />
+          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+        </label>
+      </div>
+      <Tooltip
+        id="auto-submit-info"
+        place="bottom"
+        delayShow={300}
+        className="allm-tooltip !allm-text-xs"
+      />
+    </div>
+  );
+}
+
+function AutoSpeakPreference() {
+  const [autoPlayAssistantTtsResponse, setAutoPlayAssistantTtsResponse] =
+    useState(false);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    const settings = Appearance.getSettings();
+    setAutoPlayAssistantTtsResponse(
+      settings.autoPlayAssistantTtsResponse ?? false
+    );
+  }, []);
+
+  const handleChange = (e) => {
+    const newValue = e.target.checked;
+    setAutoPlayAssistantTtsResponse(newValue);
+    Appearance.updateSettings({ autoPlayAssistantTtsResponse: newValue });
+  };
+
+  return (
+    <div>
+      <div className="flex items-center gap-x-1 mb-2">
+        <label
+          htmlFor="autoSpeak"
+          className="block text-sm font-medium text-white"
+        >
+          {t("customization.chat.auto_speak.title")}
+        </label>
+        <div
+          data-tooltip-id="auto-speak-info"
+          data-tooltip-content={t("customization.chat.auto_speak.description")}
+          className="cursor-pointer h-fit"
+        >
+          <Info size={16} weight="bold" className="text-white" />
+        </div>
+      </div>
+      <div className="flex items-center gap-x-4">
+        <label className="relative inline-flex cursor-pointer items-center">
+          <input
+            id="autoSpeak"
+            type="checkbox"
+            name="autoSpeak"
+            checked={autoPlayAssistantTtsResponse}
+            onChange={handleChange}
+            className="peer sr-only"
+          />
+          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+        </label>
+      </div>
+      <Tooltip
+        id="auto-speak-info"
+        place="bottom"
+        delayShow={300}
+        className="allm-tooltip !allm-text-xs"
+      />
     </div>
   );
 }
