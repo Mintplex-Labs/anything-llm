@@ -389,8 +389,6 @@ const TRANSLATIONS = {
       "L'embedding è il processo di trasformazione del testo in vettori. Queste credenziali sono necessarie per trasformare i file e i prompt in un formato che AnythingLLM può utilizzare per l'elaborazione.",
     provider: {
       title: "Provider di embedding",
-      description:
-        "Non è richiesta alcuna configurazione quando si utilizza il motore di embedding nativo di AnythingLLM.",
     },
   },
   text: {

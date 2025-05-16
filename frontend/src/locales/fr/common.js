@@ -391,8 +391,6 @@ const TRANSLATIONS = {
       "L'intégration est le processus de transformation du texte en vecteurs. Ces identifiants sont nécessaires pour transformer vos fichiers et invites en un format que AnythingLLM peut utiliser pour traiter.",
     provider: {
       title: "Fournisseur d'intégration",
-      description:
-        "Aucune configuration n'est nécessaire lors de l'utilisation du moteur d'intégration natif de AnythingLLM.",
     },
   },
   text: {
