@@ -56,6 +56,7 @@ async function viewLocalFiles() {
           fileToPickerData({
             pathToFile: path.join(folderPath, subfile),
             liveSyncAvailable,
+            cachefilename,
           })
         );
         filenames[cachefilename] = subfile;
@@ -351,11 +352,15 @@ const FILE_READ_SIZE_THRESHOLD = 150 * (1024 * 1024);
  * @param {boolean} liveSyncAvailable - Whether live sync is available
  * @returns {Promise<{name: string, type: string, [string]: any, cached: boolean, canWatch: boolean}>} - The picker data
  */
-async function fileToPickerData({ pathToFile, liveSyncAvailable = false }) {
+async function fileToPickerData({
+  pathToFile,
+  liveSyncAvailable = false,
+  cachefilename = null,
+}) {
   let metadata = {};
   const filename = path.basename(pathToFile);
   const fileStats = fs.statSync(pathToFile);
-  const cachedStatus = await cachedVectorInformation(pathToFile, true);
+  const cachedStatus = await cachedVectorInformation(cachefilename, true);
   const canWatchStatus = liveSyncAvailable
     ? DocumentSyncQueue.canWatch(metadata)
     : false;
