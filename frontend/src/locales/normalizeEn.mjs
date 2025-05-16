@@ -94,6 +94,11 @@ function normalizeTranslations(lang, source, target, subdir = null) {
     );
   }
 
+  // If a non-en file has a key that is NOT in the en file, it will be removed
+  for (const key of Object.keys(normalized)) {
+    if (!source[key]) delete normalized[key];
+  }
+
   return normalized;
 }
 

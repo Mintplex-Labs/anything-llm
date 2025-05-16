@@ -390,8 +390,6 @@ const TRANSLATIONS = {
       "La incrustación es el proceso de convertir texto en vectores. Estas credenciales son necesarias para convertir tus archivos y prompts en un formato que AnythingLLM pueda usar para procesar.",
     provider: {
       title: "Proveedor de incrustación",
-      description:
-        "No se requiere configuración cuando se utiliza el motor de incrustación nativo de AnythingLLM.",
     },
   },
   text: {

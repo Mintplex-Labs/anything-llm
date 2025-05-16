@@ -394,8 +394,6 @@ const TRANSLATIONS = {
       "A incorporação é o processo de transformar texto em vetores. Essas credenciais são necessárias para transformar seus arquivos e prompts em um formato que o AnythingLLM possa usar para processar.",
     provider: {
       title: "Provedor de Incorporação",
-      description:
-        "Não é necessária configuração ao usar o mecanismo de incorporação nativo do AnythingLLM.",
     },
   },
   text: {
