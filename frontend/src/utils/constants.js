@@ -51,13 +51,6 @@ export const NVIDIA_NIM_COMMON_URLS = [
   "http://172.17.0.1:8000/v1/version",
 ];
 
-export const FLOWISE_COMMON_URLS = [
-  "http://127.0.0.1:3000",
-  "http://localhost:3000",
-  "http://host.docker.internal:3000",
-  "http://172.17.0.1:3000",
-]
-
 export function fullApiUrl() {
   if (API_BASE !== "/api") return API_BASE;
   return `${window.location.origin}/api`;
