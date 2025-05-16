@@ -925,6 +925,7 @@ const TRANSLATIONS = {
     get_started_default: "To get started",
     upload: "upload a document",
     or: "or",
+    attachments_processing: "Attachments are processing. Please wait...",
     send_chat: "send a chat.",
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",

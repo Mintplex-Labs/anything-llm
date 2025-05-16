@@ -697,6 +697,7 @@ const TRANSLATIONS = {
     text_size: "テキストサイズを変更",
     microphone: "プロンプトを音声入力",
     send: "ワークスペースにプロンプトメッセージを送信",
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: "アカウントを編集",

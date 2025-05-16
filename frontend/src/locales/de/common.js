@@ -703,6 +703,7 @@ const TRANSLATIONS = {
     text_size: "Ändere die Größe des Textes.",
     microphone: "Spreche deinen Prompt ein.",
     send: "Versende den Prompt an den Arbeitsbereich.",
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: "Account bearbeiten",
