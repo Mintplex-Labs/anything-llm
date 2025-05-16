@@ -6,26 +6,50 @@ const { v4 } = require("uuid");
 class NativeEmbedder {
   static defaultModel = "Xenova/all-MiniLM-L6-v2";
   static supportedModels = {
-    // https://huggingface.co/Xenova/all-MiniLM-L6-v2
     "Xenova/all-MiniLM-L6-v2": {
       maxConcurrentChunks: 25,
       embeddingMaxChunkLength: 512,
       chunkPrefix: "",
       queryPrefix: "",
+      apiInfo: {
+        id: "Xenova/all-MiniLM-L6-v2",
+        name: "all-MiniLM-L6-v2",
+        description:
+          "A lightweight and fast model for embedding text. The default model for AnythingLLM.",
+        lang: "English",
+        size: "23MB",
+        modelCard: "https://huggingface.co/Xenova/all-MiniLM-L6-v2",
+      },
     },
-    // https://huggingface.co/Xenova/nomic-embed-text-v1
     "Xenova/nomic-embed-text-v1": {
-      maxConcurrentChunks: 25,
+      maxConcurrentChunks: 5,
       embeddingMaxChunkLength: 8192,
       chunkPrefix: "search_document: ",
       queryPrefix: "search_query: ",
+      apiInfo: {
+        id: "Xenova/nomic-embed-text-v1",
+        name: "nomic-embed-text-v1",
+        description:
+          "A high-performing open embedding model with a large token context window. Requires more processing power and memory.",
+        lang: "English",
+        size: "139MB",
+        modelCard: "https://huggingface.co/Xenova/nomic-embed-text-v1",
+      },
     },
-    // https://huggingface.co/intfloat/multilingual-e5-small
     "MintplexLabs/multilingual-e5-small": {
-      maxConcurrentChunks: 25,
+      maxConcurrentChunks: 5,
       embeddingMaxChunkLength: 512,
       chunkPrefix: "passage: ",
       queryPrefix: "query: ",
+      apiInfo: {
+        id: "MintplexLabs/multilingual-e5-small",
+        name: "multilingual-e5-small",
+        description:
+          "A larger multilingual embedding model that supports 100+ languages. Requires more processing power and memory.",
+        lang: "100+ languages",
+        size: "487MB",
+        modelCard: "https://huggingface.co/intfloat/multilingual-e5-small",
+      },
     },
   };
 
@@ -63,9 +87,29 @@ class NativeEmbedder {
    * @returns {string}
    */
   static _getEmbeddingModel() {
-    const envModel = process.env.EMBEDDING_MODEL_PREF ?? NativeEmbedder.defaultModel;
+    const envModel =
+      process.env.EMBEDDING_MODEL_PREF ?? NativeEmbedder.defaultModel;
     if (NativeEmbedder.supportedModels?.[envModel]) return envModel;
     return NativeEmbedder.defaultModel;
+  }
+
+  get embeddingPrefix() {
+    return NativeEmbedder.supportedModels[this.model]?.chunkPrefix || "";
+  }
+
+  get queryPrefix() {
+    return NativeEmbedder.supportedModels[this.model]?.queryPrefix || "";
+  }
+
+  /**
+   * Get the available models in an API response format
+   * we can use to populate the frontend dropdown.
+   * @returns {{id: string, name: string, description: string, lang: string, size: string, modelCard: string}[]}
+   */
+  static availableModels() {
+    return Object.values(NativeEmbedder.supportedModels).map(
+      (model) => model.apiInfo
+    );
   }
 
   /**
@@ -78,7 +122,8 @@ class NativeEmbedder {
    * @returns {string}
    */
   getEmbeddingModel() {
-    const envModel = process.env.EMBEDDING_MODEL_PREF ?? NativeEmbedder.defaultModel;
+    const envModel =
+      process.env.EMBEDDING_MODEL_PREF ?? NativeEmbedder.defaultModel;
     if (NativeEmbedder.supportedModels?.[envModel]) return envModel;
     return NativeEmbedder.defaultModel;
   }
@@ -131,15 +176,16 @@ class NativeEmbedder {
           cache_dir: this.cacheDir,
           ...(!this.modelDownloaded
             ? {
-              // Show download progress if we need to download any files
-              progress_callback: (data) => {
-                if (!data.hasOwnProperty("progress")) return;
-                console.log(
-                  `\x1b[36m[NativeEmbedder - Downloading model]\x1b[0m ${data.file
-                  } ${~~data?.progress}%`
-                );
-              },
-            }
+                // Show download progress if we need to download any files
+                progress_callback: (data) => {
+                  if (!data.hasOwnProperty("progress")) return;
+                  console.log(
+                    `\x1b[36m[NativeEmbedder - Downloading model]\x1b[0m ${
+                      data.file
+                    } ${~~data?.progress}%`
+                  );
+                },
+              }
             : {}),
         }),
         retry: false,
@@ -184,7 +230,28 @@ class NativeEmbedder {
     throw fetchResponse.error;
   }
 
+  /**
+   * Apply the query prefix to the text input if it is required by the model.
+   * eg: nomic-embed-text-v1 requires a query prefix for embedding/searching.
+   * @param {string|string[]} textInput - The text to embed.
+   * @returns {string|string[]} The text with the prefix applied.
+   */
+  #applyPrefix(textInput) {
+    if (!this.queryPrefix) return textInput;
+    if (Array.isArray(textInput))
+      textInput = textInput.map((text) => `${this.queryPrefix}${text}`);
+    else textInput = `${this.queryPrefix}${textInput}`;
+    return textInput;
+  }
+
+  /**
+   * Embed a single text input.
+   * @param {string|string[]} textInput - The text to embed.
+   * @returns {Promise<Array<number>>} The embedded text.
+   */
   async embedTextInput(textInput) {
+    textInput = this.#applyPrefix(textInput);
+    console.log({ textInput });
     const result = await this.embedChunks(
       Array.isArray(textInput) ? textInput : [textInput]
     );
@@ -208,7 +275,6 @@ class NativeEmbedder {
     const chunkLen = chunks.length;
 
     for (let [idx, chunk] of chunks.entries()) {
-      console.log({ idx, chunk });
       if (idx === 0) await this.#writeToTempfile(tmpFilePath, "[");
       let data;
       let pipeline = await this.embedderClient();

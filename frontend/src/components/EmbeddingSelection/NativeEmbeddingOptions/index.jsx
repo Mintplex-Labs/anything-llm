@@ -1,39 +1,36 @@
 import { useEffect, useState } from "react";
-
-// TODO: Migrate to backend to be part of NativeEmbedder class
-// and called via System.customModels()
-const AVAILABLE_MODELS = [
-  {
-    id: "Xenova/all-MiniLM-L6-v2",
-    name: "all-MiniLM-L6-v2",
-    description: "A super small, fast, and accurate model for embedding text.",
-    lang: "English",
-    size: "23MB",
-  },
-  {
-    id: "Xenova/nomic-embed-text-v1",
-    name: "nomic-embed-text-v1",
-    description:
-      "A high-performing open embedding model with a large token context window.",
-    lang: "English",
-    size: "139MB",
-  },
-  {
-    id: "MintplexLabs/multilingual-e5-small",
-    name: "multilingual-e5-small",
-    description: "A multilingual embedding model that supports 100+ languages.",
-    lang: "100+ languages",
-    size: "487MB",
-  },
-];
+import { Link } from "react-router-dom";
+import System from "@/models/system";
 
 export default function NativeEmbeddingOptions({ settings }) {
-  const [selectedModel, setSelectedModel] = useState(settings?.EmbeddingModelPref);
-  const [selectedModelInfo, setSelectedModelInfo] = useState(AVAILABLE_MODELS[0]);
+  const [loading, setLoading] = useState(true);
+  const [availableModels, setAvailableModels] = useState([]);
+  const [selectedModel, setSelectedModel] = useState(
+    settings?.EmbeddingModelPref
+  );
+  const [selectedModelInfo, setSelectedModelInfo] = useState();
 
   useEffect(() => {
-    setSelectedModelInfo(AVAILABLE_MODELS.find((model) => model.id === selectedModel));
-  }, [selectedModel]);
+    System.customModels("native-embedder")
+      .then(({ models }) => {
+        if (models?.length > 0) {
+          setAvailableModels(models);
+          setSelectedModelInfo(
+            models.find((model) => model.id === settings?.EmbeddingModelPref)
+          );
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!availableModels?.length || !selectedModel) return;
+    setSelectedModelInfo(
+      availableModels.find((model) => model.id === selectedModel)
+    );
+  }, [selectedModel, availableModels]);
 
   return (
     <div className="w-full flex flex-col gap-y-4">
@@ -46,35 +43,55 @@ export default function NativeEmbeddingOptions({ settings }) {
             name="EmbeddingModelPref"
             required={true}
             defaultValue={selectedModel}
-            className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-60 p-2.5"
+            className="border-none bg-theme-settings-input-bg border-gray-500 text-theme-text-primary text-sm rounded-lg block w-60 p-2.5"
             onChange={(e) => setSelectedModel(e.target.value)}
           >
-            <optgroup label="Supported embedding models">
-              {AVAILABLE_MODELS.map((model) => {
-                return (
-                  <option
-                    key={model.id}
-                    value={model.id}
-                    selected={selectedModel === model.id}
-                  >
-                    {model.name}
-                  </option>
-                );
-              })}
-            </optgroup>
+            {loading ? (
+              <option
+                value="--loading-available-models--"
+                disabled={true}
+                selected={true}
+              >
+                --loading available models--
+              </option>
+            ) : (
+              <optgroup label="Available embedding models">
+                {availableModels.map((model) => {
+                  return (
+                    <option
+                      key={model.id}
+                      value={model.id}
+                      selected={selectedModel === model.id}
+                    >
+                      {model.name}
+                    </option>
+                  );
+                })}
+              </optgroup>
+            )}
           </select>
         </div>
-        <div className="flex flex-col gap-y-2 mt-2">
-          <p className="text-theme-text-secondary text-xs font-normal block">
-            {selectedModelInfo?.description}
-          </p>
-          <p className="text-theme-text-secondary text-xs font-normal block">
-            Trained on: {selectedModelInfo?.lang}
-          </p>
-          <p className="text-theme-text-secondary text-xs font-normal block">
-            Download Size: {selectedModelInfo?.size}
-          </p>
-        </div>
+        {selectedModelInfo && (
+          <div className="flex flex-col gap-y-2 mt-2">
+            <p className="text-theme-text-secondary text-xs font-normal block">
+              {selectedModelInfo?.description}
+            </p>
+            <p className="text-theme-text-secondary text-xs font-normal block">
+              Trained on: {selectedModelInfo?.lang}
+            </p>
+            <p className="text-theme-text-secondary text-xs font-normal block">
+              Download Size: {selectedModelInfo?.size}
+            </p>
+            <Link
+              to={selectedModelInfo?.modelCard}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-theme-text-secondary text-xs font-normal block underline hover:text-theme-text-primary"
+            >
+              View model card on Hugging Face &rarr;
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

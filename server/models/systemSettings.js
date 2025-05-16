@@ -209,7 +209,10 @@ const SystemSettings = {
       HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
       HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
-      EmbeddingModelPref: embeddingEngine === "native" ? NativeEmbedder._getEmbeddingModel() : process.env.EMBEDDING_MODEL_PREF,
+      EmbeddingModelPref:
+        embeddingEngine === "native"
+          ? NativeEmbedder._getEmbeddingModel()
+          : process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
