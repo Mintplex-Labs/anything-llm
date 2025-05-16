@@ -128,7 +128,9 @@ class TextSplitter {
   }
 
   /**
-   *  Creates a string of metadata to be prepended to each chunk.
+   * Creates a string of metadata to be prepended to each chunk.
+   * Will additionally prepend a prefix to the text if it was provided (requirement for some embedders).
+   * @returns {string} The text with the embedder model prefix applied.
    */
   stringifyHeader() {
     let content = "";
@@ -138,7 +140,7 @@ class TextSplitter {
       content += `${key}: ${value}\n`;
     });
 
-    if (!content) return this.#applyPrefix("");
+    if (!content) return this.#applyPrefix(content);
     return this.#applyPrefix(
       `<document_metadata>\n${content}</document_metadata>\n\n`
     );

@@ -15,9 +15,11 @@ export default function NativeEmbeddingOptions({ settings }) {
       .then(({ models }) => {
         if (models?.length > 0) {
           setAvailableModels(models);
-          setSelectedModelInfo(
-            models.find((model) => model.id === settings?.EmbeddingModelPref)
-          );
+          const _selectedModel =
+            models.find((model) => model.id === settings?.EmbeddingModelPref) ??
+            models[0];
+          setSelectedModel(_selectedModel.id);
+          setSelectedModelInfo(_selectedModel);
         }
       })
       .finally(() => {

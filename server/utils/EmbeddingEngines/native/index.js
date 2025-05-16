@@ -2,56 +2,27 @@ const path = require("path");
 const fs = require("fs");
 const { toChunks } = require("../../helpers");
 const { v4 } = require("uuid");
+const { SUPPORTED_NATIVE_EMBEDDING_MODELS } = require("./constants");
 
 class NativeEmbedder {
   static defaultModel = "Xenova/all-MiniLM-L6-v2";
-  static supportedModels = {
-    "Xenova/all-MiniLM-L6-v2": {
-      maxConcurrentChunks: 25,
-      embeddingMaxChunkLength: 512,
-      chunkPrefix: "",
-      queryPrefix: "",
-      apiInfo: {
-        id: "Xenova/all-MiniLM-L6-v2",
-        name: "all-MiniLM-L6-v2",
-        description:
-          "A lightweight and fast model for embedding text. The default model for AnythingLLM.",
-        lang: "English",
-        size: "23MB",
-        modelCard: "https://huggingface.co/Xenova/all-MiniLM-L6-v2",
-      },
-    },
-    "Xenova/nomic-embed-text-v1": {
-      maxConcurrentChunks: 5,
-      embeddingMaxChunkLength: 8192,
-      chunkPrefix: "search_document: ",
-      queryPrefix: "search_query: ",
-      apiInfo: {
-        id: "Xenova/nomic-embed-text-v1",
-        name: "nomic-embed-text-v1",
-        description:
-          "A high-performing open embedding model with a large token context window. Requires more processing power and memory.",
-        lang: "English",
-        size: "139MB",
-        modelCard: "https://huggingface.co/Xenova/nomic-embed-text-v1",
-      },
-    },
-    "MintplexLabs/multilingual-e5-small": {
-      maxConcurrentChunks: 5,
-      embeddingMaxChunkLength: 512,
-      chunkPrefix: "passage: ",
-      queryPrefix: "query: ",
-      apiInfo: {
-        id: "MintplexLabs/multilingual-e5-small",
-        name: "multilingual-e5-small",
-        description:
-          "A larger multilingual embedding model that supports 100+ languages. Requires more processing power and memory.",
-        lang: "100+ languages",
-        size: "487MB",
-        modelCard: "https://huggingface.co/intfloat/multilingual-e5-small",
-      },
-    },
-  };
+
+  /**
+   * Supported embedding models for native.
+   * @type {Record<string, {
+   *   chunkPrefix: string;
+   *   queryPrefix: string;
+   *   apiInfo: {
+   *     id: string;
+   *     name: string;
+   *     description: string;
+   *     lang: string;
+   *     size: string;
+   *     modelCard: string;
+   *   };
+   * }>}
+   */
+  static supportedModels = SUPPORTED_NATIVE_EMBEDDING_MODELS;
 
   // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
   // endpoint for various reasons. This endpoint is not guaranteed to be active or maintained
@@ -251,7 +222,6 @@ class NativeEmbedder {
    */
   async embedTextInput(textInput) {
     textInput = this.#applyPrefix(textInput);
-    console.log({ textInput });
     const result = await this.embedChunks(
       Array.isArray(textInput) ? textInput : [textInput]
     );
