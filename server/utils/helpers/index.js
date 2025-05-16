@@ -200,6 +200,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return new PPIOLLM(embedder, model);
+    case "flowiseai":
+      const { FlowiseLLM } = require("../AiProviders/flowise");
+      return new FlowiseLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`

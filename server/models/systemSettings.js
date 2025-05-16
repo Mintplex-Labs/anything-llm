@@ -487,6 +487,11 @@ const SystemSettings = {
       FireworksAiLLMApiKey: !!process.env.FIREWORKS_AI_LLM_API_KEY,
       FireworksAiLLMModelPref: process.env.FIREWORKS_AI_LLM_MODEL_PREF,
 
+      // FLOWISE API Keys
+      FlowiseLLMBasePath: process.env.FLOWISE_LLM_BASE_PATH,
+      FlowiseLLMChatflowId: process.env.FLOWISE_LLM_CHATFLOW_ID,
+      FlowiseLLMTokenLimit: process.env.FLOWISE_LLM_TOKEN_LIMIT,
+
       // Perplexity AI Keys
       PerplexityApiKey: !!process.env.PERPLEXITY_API_KEY,
       PerplexityModelPref: process.env.PERPLEXITY_MODEL_PREF,

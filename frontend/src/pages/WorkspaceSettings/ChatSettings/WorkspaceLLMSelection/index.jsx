@@ -11,7 +11,7 @@ import paths from "@/utils/paths";
 // Some providers do not support model selection via /models.
 // In that case we allow the user to enter the model name manually and hope they
 // type it correctly.
-const FREE_FORM_LLM_SELECTION = ["bedrock", "azure", "generic-openai"];
+const FREE_FORM_LLM_SELECTION = ["bedrock", "azure", "generic-openai", 'flowiseai'];
 
 // Some providers do not support model selection via /models
 // and only have a fixed single-model they can use.

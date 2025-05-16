@@ -1,0 +1,313 @@
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
+  formatChatHistory,
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
+const axios = require("axios");
+const { v4 } = require("uuid");
+const { Readable } = require("stream");
+
+class FlowiseLLM {
+  constructor(embedder = null, modelPreference = null) {
+    if (!process.env.FLOWISE_LLM_BASE_PATH)
+      throw new Error(
+        "FlowiseLLM must have a valid base path to use for the api."
+      );
+
+    if (!process.env.FLOWISE_LLM_CHATFLOW_ID)
+      throw new Error(
+        "FlowiseLLM must have a valid ChatFlow ID to use for the api."
+      );
+
+    this.basePath = process.env.FLOWISE_LLM_BASE_PATH;
+    this.model = modelPreference ?? "flowise" ?? null;
+    if (!this.model) throw new Error("FlowiseLLM must have a valid model set.");
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
+
+    this.embedder = embedder ?? new NativeEmbedder();
+    this.defaultTemp = 0.7;
+    this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+  }
+
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
+  }
+
+  streamingEnabled() {
+    return "streamGetChatCompletion" in this;
+  }
+
+  static promptWindowLimit(_modelName) {
+    const limit = process.env.FLOWISE_LLM_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No token context limit was set.");
+    return Number(limit);
+  }
+
+  promptWindowLimit() {
+    const limit = process.env.FLOWISE_LLM_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No token context limit was set.");
+    return Number(limit);
+  }
+
+  isValidChatCompletionModel(_modelName = "") {
+    return true;
+  }
+
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+          detail: "high",
+        },
+      });
+    }
+    return content.flat();
+  }
+
+  constructPrompt({
+    systemPrompt = "",
+    contextTexts = [],
+    chatHistory = [],
+    userPrompt = "",
+    attachments = [],
+  }) {
+    const prompt = {
+      role: "system",
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
+    };
+    return [
+      prompt,
+      ...formatChatHistory(chatHistory, this.#generateContent),
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
+  }
+
+  async getChatCompletion(messages = null) {
+    try {
+      const lastMessage = messages[messages.length - 1];
+      const result = await LLMPerformanceMonitor.measureAsyncFunction(
+        axios.post(
+          `${this.basePath}/api/v1/prediction/${process.env.FLOWISE_LLM_CHATFLOW_ID}`,
+          {
+            question: lastMessage.content,
+            streaming: false,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+      );
+
+      const response = result.output;
+      if (!response || !response.content || !response.content[0]) {
+        throw new Error("Invalid response format from Flowise API");
+      }
+
+      const promptTokens = response.usage?.input_tokens || 0;
+      const completionTokens = response.usage?.output_tokens || 0;
+
+      return {
+        textResponse: response.content[0].text,
+        metrics: {
+          prompt_tokens: promptTokens,
+          completion_tokens: completionTokens,
+          total_tokens: promptTokens + completionTokens,
+          outputTps: completionTokens / result.duration,
+          duration: result.duration,
+        },
+      };
+    } catch (error) {
+      this.log(`Error in getChatCompletion: ${error.message}`);
+      return {
+        textResponse: "An error occurred while processing your request.",
+        metrics: {},
+      };
+    }
+  }
+
+  async streamGetChatCompletion(messages = null) {
+    try {
+      const lastMessage = messages[messages.length - 1];
+      const response = await axios.post(
+        `${this.basePath}/api/v1/prediction/${process.env.FLOWISE_LLM_CHATFLOW_ID}`,
+        {
+          question: lastMessage.content,
+          streaming: true,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          responseType: "stream",
+        }
+      );
+
+      const stream = new Readable({
+        read() {},
+      });
+
+      response.data.on("data", (chunk) => {
+        stream.push(chunk);
+      });
+
+      response.data.on("end", () => {
+        stream.push(null);
+      });
+
+      response.data.on("error", (error) => {
+        stream.emit("error", error);
+      });
+
+      return stream;
+    } catch (error) {
+      this.log(`Error in streamGetChatCompletion: ${error.message}`);
+      throw error;
+    }
+  }
+
+  handleStream(response, stream, responseProps) {
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      const { uuid = v4(), sources = [] } = responseProps;
+      let usage = {
+        prompt_tokens: 0,
+        completion_tokens: 0,
+      };
+
+      const handleAbort = () => {
+        stream?.endMeasurement?.(usage);
+        clientAbortedHandler(resolve, fullText);
+      };
+      response.on("close", handleAbort);
+
+      let buffer = "";
+      stream.on("data", (chunk) => {
+        const text = chunk.toString();
+        const lines = (buffer + text).split("\n");
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          if (!line.trim() || line.startsWith("message:")) continue;
+
+          if (line.startsWith("data:")) {
+            try {
+              const data = JSON.parse(line.slice(5));
+              if (data.event === "token") {
+                fullText += data.data;
+                writeResponseChunk(response, {
+                  uuid,
+                  sources,
+                  type: "textResponseChunk",
+                  textResponse: data.data,
+                  close: false,
+                  error: false,
+                });
+              }
+            } catch (e) {
+              this.log(`Error parsing chunk: ${e.message}`);
+            }
+          }
+        }
+      });
+
+      stream.on("end", () => {
+        if (buffer.trim()) {
+          try {
+            const data = JSON.parse(buffer.trim().slice(5));
+            if (data.event === "token") {
+              fullText += data.data;
+              writeResponseChunk(response, {
+                uuid,
+                sources,
+                type: "textResponseChunk",
+                textResponse: data.data,
+                close: false,
+                error: false,
+              });
+            }
+          } catch (e) {
+            this.log(`Error parsing final buffer: ${e.message}`);
+          }
+        }
+
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "textResponseChunk",
+          textResponse: "",
+          close: true,
+          error: false,
+        });
+
+        stream?.endMeasurement?.(usage);
+        resolve(fullText);
+      });
+
+      stream.on("error", (error) => {
+        this.log(`Stream error: ${error.message}`);
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "textResponseChunk",
+          textResponse: "",
+          close: true,
+          error: error.message,
+        });
+        stream?.endMeasurement?.(usage);
+        resolve(fullText);
+      });
+    });
+  }
+
+  async embedTextInput(textInput) {
+    return await this.embedder.embedTextInput(textInput);
+  }
+
+  async embedChunks(textChunks = []) {
+    return await this.embedder.embedChunks(textChunks);
+  }
+
+  async compressMessages(promptArgs = {}, rawHistory = []) {
+    const { messageArrayCompressor } = require("../../helpers/chat");
+    const messageArray = this.constructPrompt(promptArgs);
+    return await messageArrayCompressor(this, messageArray, rawHistory);
+  }
+}
+
+module.exports = {
+  FlowiseLLM,
+};
