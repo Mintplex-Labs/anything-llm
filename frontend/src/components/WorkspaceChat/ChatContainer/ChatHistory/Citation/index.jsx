@@ -10,13 +10,14 @@ import {
   Info,
   ArrowSquareOut,
   GithubLogo,
-  Link,
   X,
   YoutubeLogo,
+  LinkSimple,
 } from "@phosphor-icons/react";
 import ConfluenceLogo from "@/media/dataConnectors/confluence.png";
 import DrupalWikiLogo from "@/media/dataConnectors/drupalwiki.png";
 import { toPercentString } from "@/utils/numbers";
+import pluralize from "pluralize";
 
 function combineLikeSources(sources) {
   const combined = {};
@@ -57,7 +58,7 @@ export default function Citations({ sources = [] }) {
         />
       </button>
       {open && (
-        <div className="flex flex-wrap md:flex-row md:items-center gap-4 overflow-x-scroll mt-1 doc__source ml-14">
+        <div className="flex flex-wrap flex-col items-start overflow-x-scroll mt-1 doc__source ml-14">
           {combineLikeSources(sources).map((source) => (
             <Citation
               key={v4()}
@@ -78,7 +79,7 @@ export default function Citations({ sources = [] }) {
 }
 
 const Citation = memo(({ source, onClick }) => {
-  const { title } = source;
+  const { title, references = 1 } = source;
   if (!title) return null;
   const chunkSourceInfo = parseChunkSource(source);
   const truncatedTitle = chunkSourceInfo?.text ?? middleTruncate(title, 25);
@@ -87,12 +88,14 @@ const Citation = memo(({ source, onClick }) => {
     : ICONS.file;
 
   return (
-    <div
-      className="w-fit flex flex-row justify-center items-center cursor-pointer text-sky-400"
-      onClick={onClick}
-    >
-      <CitationIcon className="w-6 h-6" weight="bold" />
-      <p className="text-sm font-medium whitespace-nowrap">{truncatedTitle}</p>
+    <div className="flex flex-col">
+      <div className="flex items-center gap-x-1 cursor-pointer -mb-2" onClick={onClick}>
+        <CitationIcon size={16} />
+        <p className="text-xs font-semibold whitespace-nowrap text-white hover:opacity-55">{truncatedTitle}</p>
+      </div>
+      <div className="ml-5">
+      <p className="text-[10px] font-medium text-white/60">{`${references} ${pluralize("Reference", Number(references) || 1)}`}</p>
+      </div>
     </div>
   );
 });
@@ -255,7 +258,7 @@ const DrupalWikiIcon = ({ ...props }) => (
 
 const ICONS = {
   file: FileText,
-  link: Link,
+  link: LinkSimple,
   youtube: YoutubeLogo,
   github: GithubLogo,
   confluence: ConfluenceIcon,
