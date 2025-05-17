@@ -1,0 +1,158 @@
+{
+  "name": "manager",
+  "description": "Manager user with some basic access to the system for managing users and workspaces",
+  "permissions": {
+    "system": {
+      "update": false,
+      "countVectors": true,
+      "branding": {
+        "update": true,
+        "delete": true
+      },
+      "models": {
+        "read": false
+      }
+    },
+    "systemSettings": {
+      "read": true,
+      "update": true
+    },
+    "apiKeys": {
+      "create": false,
+      "read": false,
+      "delete": false
+    },
+    "browserExtensionKey": {
+      "readAny": false,
+      "create": true,
+      "read": true,
+      "delete": true
+    },
+    "workspace": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true,
+      "chat": true,
+      "embed": true,
+      "resetVectorDb": true,
+      "documentPinStatus": true,
+      "readAny": true
+    },
+    "workspaceThread": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "workspaceChats": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true,
+      "export": true,
+      "playTTS": true
+    },
+    "documents": {
+      "read": true,
+      "remove": true,
+      "createFolder": true,
+      "moveFiles": true,
+      "upload": true
+    },
+    "documentSync": {
+      "read": false,
+      "update": true
+    },
+    "users": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true,
+      "pfp": {
+        "read": true,
+        "update": true,
+        "delete": true
+      }
+    },
+    "chatEmbeds": {
+      "create": false,
+      "read": false,
+      "update": false,
+      "delete": false
+    },
+    "chatEmbedChats": {
+      "read": false,
+      "delete": false
+    },
+    "agentFlows": {
+      "create": false,
+      "read": false,
+      "update": false,
+      "delete": false
+    },
+    "agent": {
+      "imported": {
+        "update": false,
+        "delete": false
+      }
+    },
+    "roles": {
+      "create": false,
+      "read": false,
+      "update": false,
+      "delete": false
+    },
+    "eventLogs": {
+      "read": false,
+      "delete": false
+    },
+    "invite": {
+      "create": true,
+      "read": true,
+      "delete": true
+    },
+    "promptHistory": {
+      "read": true,
+      "delete": false
+    },
+    "slashCommands": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "systemPromptVariables": {
+      "create": false,
+      "read": true,
+      "update": false,
+      "delete": false
+    },
+    "welcomeMessages": {
+      "read": true,
+      "update": true
+    },
+    "workspaceSuggestedMessages": {
+      "read": true,
+      "update": true
+    },
+    "workspaceUsers": {
+      "read": true,
+      "update": true
+    },
+    "communityHub": {
+      "explore": false,
+      "viewItems": false,
+      "importItems": false
+    },
+    "mcp": {
+      "forceReload": false,
+      "read": false,
+      "update": false,
+      "delete": false
+    },
+    "collector": {
+      "useExtension": true
+    }
+  }
+}
