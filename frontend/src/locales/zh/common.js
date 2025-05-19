@@ -808,7 +808,8 @@ const TRANSLATIONS = {
       name: "Obsidian",
       description: "一键导入 Obsidian 仓库。",
       vault_location: "仓库位置",
-      vault_description: "选择你的 Obsidian 仓库文件夹，以导入所有笔记及其关联。",
+      vault_description:
+        "选择你的 Obsidian 仓库文件夹，以导入所有笔记及其关联。",
       selected_files: "找到 {{count}} 个 Markdown 文件",
       importing: "正在导入保险库…",
       import_vault: "导入保险库",
