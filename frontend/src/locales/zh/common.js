@@ -830,7 +830,7 @@ const TRANSLATIONS = {
     text_size: "更改文字大小。",
     microphone: "语音输入你的提示。",
     send: "将提示消息发送到工作区",
-    attachments_processing: null,
+    attachments_processing: "附件正在处理，请稍候……",
   },
   profile_settings: {
     edit_account: "编辑帐户",
