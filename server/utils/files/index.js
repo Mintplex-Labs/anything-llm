@@ -64,7 +64,6 @@ async function viewLocalFiles() {
       const results = await Promise.all(filePromises).then((results) =>
         results.filter((i) => !!i)
       );
-      console.log({ folder: file, subdocs: results.length });
       subdocs.items.push(...results);
 
       // Grab the pinned workspaces and watched documents for this folder's documents
