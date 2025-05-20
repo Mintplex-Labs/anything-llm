@@ -796,6 +796,7 @@ function supportedLLM(input = "") {
     "nvidia-nim",
     "ppio",
     "dpais",
+    "flowiseai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

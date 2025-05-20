@@ -42,6 +42,7 @@ import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import FlowiseAiLogo from "@/media/llmprovider/flowiseai.png";
 
 export const LLM_SELECTION_PRIVACY = {
   openai: {
@@ -241,6 +242,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chat contents are only accessible on the computer running Dell Pro AI Studio",
     ],
     logo: DPAISLogo,
+  },
+  flowiseai: {
+    name: "Flowise AI",
+    description: [
+      "Your model and chats are only accessible on the server running Flowise AI",
+    ],
+    logo: FlowiseAiLogo,
   },
 };
 
