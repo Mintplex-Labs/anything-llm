@@ -3,21 +3,18 @@ const { EmbedConfig } = require("../models/embedConfig");
 const { EventLogs } = require("../models/eventLogs");
 const { reqBody, userFromSession } = require("../utils/http");
 const { validEmbedConfigId } = require("../utils/middleware/embedMiddleware");
-const {
-  flexUserRoleValid,
-  ROLES,
-} = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
   chatHistoryViewable,
 } = require("../utils/middleware/chatHistoryViewable");
+const AccessManager = require("../utils/AccessManager");
 
 function embedManagementEndpoints(app) {
   if (!app) return;
 
   app.get(
     "/embeds",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["chatEmbeds.read"])],
     async (_, response) => {
       try {
         const embeds = await EmbedConfig.whereWithWorkspace({}, null, {
@@ -33,7 +30,7 @@ function embedManagementEndpoints(app) {
 
   app.post(
     "/embeds/new",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["chatEmbeds.create"])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -54,7 +51,11 @@ function embedManagementEndpoints(app) {
 
   app.post(
     "/embed/update/:embedId",
-    [validatedRequest, flexUserRoleValid([ROLES.admin]), validEmbedConfigId],
+    [
+      validatedRequest,
+      AccessManager.flexibleAC(["chatEmbeds.update"]),
+      validEmbedConfigId,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -72,7 +73,11 @@ function embedManagementEndpoints(app) {
 
   app.delete(
     "/embed/:embedId",
-    [validatedRequest, flexUserRoleValid([ROLES.admin]), validEmbedConfigId],
+    [
+      validatedRequest,
+      AccessManager.flexibleAC(["chatEmbeds.delete"]),
+      validEmbedConfigId,
+    ],
     async (request, response) => {
       try {
         const { embedId } = request.params;
@@ -92,7 +97,11 @@ function embedManagementEndpoints(app) {
 
   app.post(
     "/embed/chats",
-    [chatHistoryViewable, validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [
+      chatHistoryViewable,
+      validatedRequest,
+      AccessManager.flexibleAC(["chatEmbedChats.read"]),
+    ],
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);
@@ -114,7 +123,7 @@ function embedManagementEndpoints(app) {
 
   app.delete(
     "/embed/chats/:chatId",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["chatEmbedChats.delete"])],
     async (request, response) => {
       try {
         const { chatId } = request.params;

@@ -6222,6 +6222,11 @@ object-assign@^4, object-assign@^4.1.1:
   resolved "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz"
   integrity sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==
 
+object-deep-compare@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/object-deep-compare/-/object-deep-compare-2.0.0.tgz#ca07d91b25674e210e106029da7f094415154fc1"
+  integrity sha512-bIu+4D1j36NtcclajmXyhReqNx3xicvaSHZgNYEnIVI3g+5ksPwQVqBFHmDK/9FeDL2cNNQHrM01fFKzWcgqIQ==
+
 object-inspect@^1.13.1:
   version "1.13.1"
   resolved "https://registry.npmjs.org/object-inspect/-/object-inspect-1.13.1.tgz"
