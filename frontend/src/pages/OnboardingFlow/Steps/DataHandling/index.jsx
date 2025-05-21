@@ -38,6 +38,7 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
+import LlamaStackLogo from "@/media/vectordbs/llamastack.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -310,6 +311,14 @@ export const VECTOR_DB_PRIVACY = {
       "Your vectors and document text are stored privately on this instance of AnythingLLM",
     ],
     logo: LanceDbLogo,
+  },
+  llamastack: {
+    name: "LlamaStack",
+    description: [
+      "Your vectors and document text are stored on your LlamaStack instance.",
+      "Access to your instance is managed by you.",
+    ],
+    logo: LlamaStackLogo,
   },
 };
 

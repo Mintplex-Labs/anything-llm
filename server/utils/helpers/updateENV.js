@@ -672,6 +672,12 @@ const KEY_MAPPING = {
     envKey: "PPIO_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // LlamaStack Options
+  LlamaStackEndpoint: {
+    envKey: "LLAMASTACK_BASE_URL",
+    checks: [isNotEmpty, isValidURL],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -834,6 +840,7 @@ function supportedVectorDB(input = "") {
     "zilliz",
     "astra",
     "pgvector",
+    "llamastack",
   ];
   return supported.includes(input)
     ? null
