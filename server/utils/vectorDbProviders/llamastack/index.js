@@ -113,23 +113,17 @@ const LlamaStackProvider = {
         const exists = await this.namespaceExists(client, namespace);
         if (!exists) {
             try {
-                if (!dimensions) {
-                    throw new Error("Unable to infer vector dimensions from input");
-                }
                 const response = await client.vectorDBs.register({
                     vector_db_id: namespace,
-                    // TODO: Make this configurable
+                    // TODO: Make this configurable in .env file
                     embedding_model: "all-MiniLM-L6-v2",
-                    embedding_dimensions: 384,
-                    provider: "sqlite-vec",
+                    embedding_dimension: 384,
                 })
-                if (response.status !== 200) {
-                    throw new Error("Failed to create vector database");
-                }
+                console.log("[LlamaStack] Vector database created successfully", response);
                 return response.identifier;
             } catch (err) {
-                console.error("Error creating vector database:", err.message);
-                return null;
+                console.error("[LlamaStack] Error creating vector database:", err.message);
+                throw new Error("Failed to create vector database");
             }
         }
         return namespace;
@@ -149,6 +143,7 @@ const LlamaStackProvider = {
         fullFilePath = null,
         skipCache = false
     ) {
+        console.log("[LlamaStack] Adding document to vector-db-id", namespace);
         try {
             const { pageContent, docId, ...metadata } = documentData;
             if (!pageContent || pageContent.length == 0) return false;
@@ -219,6 +214,7 @@ const LlamaStackProvider = {
         topN = 4,
         filterIdentifiers = [],
     }) {
+        console.log("[LlamaStack] Performing similarity search for", namespace, input);
         if (!namespace || !input || !LLMConnector)
             throw new Error("Invalid request to performSimilaritySearch");
 
