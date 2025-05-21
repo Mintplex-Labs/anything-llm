@@ -11,7 +11,7 @@ export default function FlowiseAiOptions({ settings }) {
           type="url"
           name="FlowiseLLMBasePath"
           className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-          placeholder="http://localhost:3000/v1"
+          placeholder="http://localhost:3000"
           defaultValue={settings?.FlowiseLLMBasePath}
           required={true}
           autoComplete="off"
