@@ -26,7 +26,6 @@ async function fileData(filePath = null) {
 
 async function viewLocalFiles() {
   if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
-  const filePromises = [];
   const liveSyncAvailable = await DocumentSyncQueue.enabled();
   const directory = {
     name: "documents",
@@ -47,6 +46,7 @@ async function viewLocalFiles() {
 
       const subfiles = fs.readdirSync(folderPath);
       const filenames = {};
+      const filePromises = [];
 
       for (let i = 0; i < subfiles.length; i++) {
         const subfile = subfiles[i];
@@ -56,13 +56,14 @@ async function viewLocalFiles() {
           fileToPickerData({
             pathToFile: path.join(folderPath, subfile),
             liveSyncAvailable,
+            cachefilename,
           })
         );
         filenames[cachefilename] = subfile;
       }
-      const results = await Promise.all(filePromises).then((results) =>
-        results.filter((i) => !!i)
-      ); // Filter out any null results
+      const results = await Promise.all(filePromises)
+        .then((results) => results.filter((i) => !!i)) // Remove null results
+        .then((results) => results.filter((i) => hasRequiredMetadata(i))); // Remove invalid file structures
       subdocs.items.push(...results);
 
       // Grab the pinned workspaces and watched documents for this folder's documents
@@ -351,11 +352,15 @@ const FILE_READ_SIZE_THRESHOLD = 150 * (1024 * 1024);
  * @param {boolean} liveSyncAvailable - Whether live sync is available
  * @returns {Promise<{name: string, type: string, [string]: any, cached: boolean, canWatch: boolean}>} - The picker data
  */
-async function fileToPickerData({ pathToFile, liveSyncAvailable = false }) {
+async function fileToPickerData({
+  pathToFile,
+  liveSyncAvailable = false,
+  cachefilename = null,
+}) {
   let metadata = {};
   const filename = path.basename(pathToFile);
   const fileStats = fs.statSync(pathToFile);
-  const cachedStatus = await cachedVectorInformation(pathToFile, true);
+  const cachedStatus = await cachedVectorInformation(cachefilename, true);
   const canWatchStatus = liveSyncAvailable
     ? DocumentSyncQueue.canWatch(metadata)
     : false;
@@ -426,6 +431,31 @@ async function fileToPickerData({ pathToFile, liveSyncAvailable = false }) {
     cached: cachedStatus,
     canWatch: canWatchStatus,
   };
+}
+
+const REQUIRED_FILE_OBJECT_FIELDS = [
+  "name",
+  "type",
+  "url",
+  "title",
+  "docAuthor",
+  "description",
+  "docSource",
+  "chunkSource",
+  "published",
+  "wordCount",
+  "token_count_estimate",
+];
+
+/**
+ * Checks if a given metadata object has all the required fields
+ * @param {{name: string, type: string, url: string, title: string, docAuthor: string, description: string, docSource: string, chunkSource: string, published: string, wordCount: number, token_count_estimate: number}} metadata - The metadata object to check (fileToPickerData)
+ * @returns {boolean} - Returns true if the metadata object has all the required fields, false otherwise
+ */
+function hasRequiredMetadata(metadata = {}) {
+  return REQUIRED_FILE_OBJECT_FIELDS.every((field) =>
+    metadata.hasOwnProperty(field)
+  );
 }
 
 module.exports = {
