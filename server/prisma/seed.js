@@ -5,19 +5,15 @@ async function main() {
   const settings = [
     { label: "multi_user_mode", value: "false" },
     { label: "logo_filename", value: "anything-llm.png" },
+    { label: "hub_api_key", value: "YGDXDKJ-N67MF6C-KR8FKRS-QE812HM" },
   ];
 
   for (let setting of settings) {
-    const existing = await prisma.system_settings.findUnique({
+    await prisma.system_settings.upsert({
       where: { label: setting.label },
+      update: { value: setting.value },
+      create: { label: setting.label, value: setting.value },
     });
-
-    // Only create the setting if it doesn't already exist
-    if (!existing) {
-      await prisma.system_settings.create({
-        data: setting,
-      });
-    }
   }
 }
 
