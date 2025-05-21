@@ -27,6 +27,7 @@ import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
+import FlowiseAiLogo from "@/media/llmprovider/flowiseai.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -55,6 +56,7 @@ import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
+import FlowiseAiOptions from "@/components/LLMSelection/FlowiseAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -262,6 +264,13 @@ const LLMS = [
     logo: XAILogo,
     options: (settings) => <XAILLMOptions settings={settings} />,
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
+  },
+  {
+    name: "FlowiseAi",
+    value: "flowiseai",
+    logo: FlowiseAiLogo,
+    options: (settings) => <FlowiseAiOptions settings={settings} />,
+    description: "Run flows and LLMs using FlowiseAi's powerful platform.",
   },
 ];
 
