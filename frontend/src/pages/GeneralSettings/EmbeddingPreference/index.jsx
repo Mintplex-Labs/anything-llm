@@ -311,7 +311,7 @@ export default function GeneralEmbeddingPreference() {
                           onClick={handleXButton}
                         />
                       </div>
-                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
+                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 pb-4">
                         {filteredEmbedders.map((embedder) => (
                           <EmbedderItem
                             key={embedder.name}
