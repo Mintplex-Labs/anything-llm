@@ -6,6 +6,7 @@ const executeCode = require("./executors/code");
 const executeLLMInstruction = require("./executors/llm-instruction");
 const executeWebScraping = require("./executors/web-scraping");
 const { Telemetry } = require("../../models/telemetry");
+const { safeJsonParse } = require("../http");
 
 class FlowExecutor {
   constructor() {
@@ -21,15 +22,124 @@ class FlowExecutor {
     this.logger = loggerFn || console.info;
   }
 
+  /**
+   * Resolves nested values from objects using dot notation and array indices
+   * Supports paths like "data.items[0].name" or "response.users[2].address.city"
+   * Returns empty string for invalid paths or errors
+   */
+  getValueFromPath(obj, path) {
+    try {
+      if (!path || typeof path !== 'string') return '';
+
+      const parsedObj = typeof obj === 'string'
+        ? safeJsonParse(obj, obj)
+        : obj;
+
+      // If no dots in path, return the whole object as a string
+      if (!path.includes('.')) {
+        if (typeof parsedObj === 'object') {
+          try {
+            return JSON.stringify(parsedObj, null, 0);
+          } catch (e) {
+            return ''; // fallback for stringify errors
+          }
+        }
+        return String(parsedObj);
+      }
+
+      // Get path without the variable name prefix
+      const pathWithoutVar = path.split('.').slice(1).join('.');
+
+      // Parse path into segments, converting array indices to [array, index] pairs
+      const segments = [];
+      let currentSegment = '';
+      let inBracket = false;
+      let bracketContent = '';
+
+      // Parse each character to handle both object properties and array indices
+      // Example path: items[0].name.details[1].type
+      // Becomes: ['items', ['array', 0], 'name', 'details', ['array', 1], 'type']
+      for (let i = 0; i < pathWithoutVar.length; i++) {
+        const char = pathWithoutVar[i];
+
+        // Start of array index - push current property name if exists
+        if (char === '[' && !inBracket) {
+          inBracket = true;
+          if (currentSegment) {
+            segments.push(currentSegment);
+            currentSegment = '';
+          }
+          continue;
+        }
+
+        // End of array index - validate and convert to number
+        if (char === ']' && inBracket) {
+          inBracket = false;
+          if (/^\d+$/.test(bracketContent)) {
+            segments.push(['array', parseInt(bracketContent, 10)]);
+          }
+          bracketContent = '';
+          continue;
+        }
+
+        // Build up array index or property name
+        if (inBracket) {
+          bracketContent += char;
+        } else if (char === '.') {
+          if (currentSegment) {
+            segments.push(currentSegment);
+            currentSegment = '';
+          }
+        } else {
+          currentSegment += char;
+        }
+      }
+
+      if (currentSegment) {
+        segments.push(currentSegment);
+      }
+
+      // Navigate through object using segments, handling both array and object access
+      let result = parsedObj;
+      for (const segment of segments) {
+        if (result === null || result === undefined) return '';
+
+        if (Array.isArray(segment)) {
+          const [type, index] = segment;
+          if (type === 'array') {
+            if (!Array.isArray(result) || index < 0 || index >= result.length) return '';
+            result = result[index];
+          }
+        } else {
+          result = result?.[segment];
+        }
+      }
+
+      // Convert final result to string, handling objects and error cases
+      if (result === null || result === undefined) return '';
+      if (typeof result === 'object') {
+        try {
+          return JSON.stringify(result, null, 0);
+        } catch (e) {
+          return ''; // fallback for stringify errors
+        }
+      }
+      return String(result);
+    } catch (error) {
+      console.error('Error in getValueFromPath:', error);
+      return '';
+    }
+  }
+
   // Utility to replace variables in config
   replaceVariables(config) {
     const deepReplace = (obj) => {
       if (typeof obj === "string") {
-        return obj.replace(/\${([^}]+)}/g, (match, varName) => {
-          return this.variables[varName] !== undefined
-            ? this.variables[varName]
-            : match;
+        const result = obj.replace(/\${([^}]+)}/g, (match, varName) => {
+          if (!this.variables[varName.split('.')[0]]) return match;
+          return this.getValueFromPath(this.variables[varName.split('.')[0]], varName);
         });
+        return result;
       }
       if (Array.isArray(obj)) {
         return obj.map((item) => deepReplace(item));
