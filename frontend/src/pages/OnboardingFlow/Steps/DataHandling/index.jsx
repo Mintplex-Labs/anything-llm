@@ -246,7 +246,7 @@ export const LLM_SELECTION_PRIVACY = {
   flowiseai: {
     name: "Flowise AI",
     description: [
-      "Your model and chats are only accessible on the server running Flowise AI",
+      "Your model and chats are only accessible on the server running FlowiseAI",
     ],
     logo: FlowiseAiLogo,
   },

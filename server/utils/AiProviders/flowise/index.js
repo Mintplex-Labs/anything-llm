@@ -20,11 +20,11 @@ class FlowiseLLM {
 
     if (!process.env.FLOWISE_LLM_CHATFLOW_ID)
       throw new Error(
-        "FlowiseLLM must have a valid ChatFlow ID to use for the api."
+        "FlowiseLLM must have a valid Chatflow ID to use for the api."
       );
 
     this.basePath = process.env.FLOWISE_LLM_BASE_PATH;
-    this.model = modelPreference ?? "flowise" ?? null;
+    this.model = "flowise";
     if (!this.model) throw new Error("FlowiseLLM must have a valid model set.");
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
