@@ -13,6 +13,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
 
 import LanceDbLogo from "@/media/vectordbs/lancedb.png";
+import LlamaStackLogo from "@/media/vectordbs/llamastack.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
 import PineconeLogo from "@/media/vectordbs/pinecone.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
@@ -31,6 +32,7 @@ import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
+import LlamaStackOptions from "@/components/VectorDBSelection/LlamaStackOptions";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -176,6 +178,13 @@ export default function GeneralVectorDatabase() {
       logo: AstraDBLogo,
       options: <AstraDBOptions settings={settings} />,
       description: "Vector Search for Real-world GenAI.",
+    },
+    {
+      name: "LlamaStack",
+      value: "llamastack",
+      logo: LlamaStackLogo,
+      options: <LlamaStackOptions settings={settings} />,
+      description: "Stack to build RAG with Llama",
     },
   ];
 
