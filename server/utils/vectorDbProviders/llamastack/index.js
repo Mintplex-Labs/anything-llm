@@ -18,7 +18,7 @@ const LlamaStackProvider = {
         if (!this.baseUrl) throw new Error("LlamaStack base URL not configured");
         // if (!this.apiKey) throw new Error("LlamaStack API key not configured");
 
-        console.log("Connecting to LlamaStack at", this.baseUrl);
+        // console.log("Connecting to LlamaStack at", this.baseUrl);
         const client = new LlamaStackClient({
             baseUrl: this.baseUrl,
         });
@@ -37,13 +37,6 @@ const LlamaStackProvider = {
         return 1 - distance;
     },
 
-    // hasNamespace: async function (namespace = null) {
-    //     if (!namespace) return false;
-    //     const { client } = await this.connect();
-    //     const exists = await this.namespaceExists(client, namespace);
-    //     return exists;
-    // },
-
     /**
      * Check if the service is available
      * @returns {Promise<{heartbeat: number}>}
@@ -55,6 +48,11 @@ const LlamaStackProvider = {
         return { heartbeat: Number(new Date()) };
     },
 
+    getCollectionStats: async function (namespace = null) {
+        if (!namespace) return { totalVectors: 0 };
+        return { totalVectors: 1 };
+    },
+
     /**
      * Get total number of vectors across all namespaces
      * @returns {Promise<number>}
@@ -64,7 +62,7 @@ const LlamaStackProvider = {
         const collections = await client.listCollections();
         let count = 0;
         for (const collection of collections) {
-            const stats = await client.getCollectionStats(collection);
+            const stats = await this.getCollectionStats(collection);
             count += stats.totalVectors || 0;
         }
         return count;
@@ -81,7 +79,7 @@ const LlamaStackProvider = {
         const exists = await this.namespaceExists(client, namespace);
         if (!exists) return 0;
 
-        const stats = await client.getCollectionStats(namespace);
+        const stats = await this.getCollectionStats(namespace);
         return stats.totalVectors || 0;
     },
 
@@ -95,7 +93,8 @@ const LlamaStackProvider = {
         if (!namespace) throw new Error("No namespace provided");
         try {
             const response = await client.vectorDBs.retrieve(namespace);
-            return response.status === 200;
+            // console.log("[LlamaStack] client.vectorDBs.retrieve response -- ", response);
+            return true;
         } catch (error) {
             if (error.status === 400) return false;
             throw error; // Re-throw unexpected errors
@@ -221,10 +220,11 @@ const LlamaStackProvider = {
         try {
             const { client } = await this.connect();
             const response = await client.toolRuntime.ragTool.query({
-                query: input,
-                vector_db_id: [namespace],
+                content: input,
+                vector_db_ids: [namespace],
                 top_k: topN
             });
+            // console.log("[LlamaStack VectorDB Provider] response", response);
 
             // Extract document IDs from metadata
             const documentIds = response.metadata?.document_ids || [];
@@ -239,10 +239,10 @@ const LlamaStackProvider = {
 
                 // Skip first and last two items
                 // as it contains text like -- 
-                // BEGIN of knowledge_search tool results.
-                // END of knowledge_search tool results.
-                // The above results were retrieved to help answer the user\'s query:
-                const relevantItems = textItems.slice(2, -2);
+                // "BEGIN of knowledge_search tool results"
+                // "END of knowledge_search tool results"
+                // "The above results were retrieved to help answer the user\'s query"
+                const relevantItems = textItems.slice(1, -2);
 
                 for (const item of relevantItems) {
                     // Extract content and metadata from each result
@@ -251,29 +251,40 @@ const LlamaStackProvider = {
 
                     if (contentMatch) {
                         const content = contentMatch[1].trim();
-                        const metadata = metadataMatch ? JSON.parse(metadataMatch[1]) : {};
+                        let metadata = {};
+                        if (metadataMatch) {
+                            let metaStr = metadataMatch[1];
+                            // Convert single quotes to double quotes for property names and string values
+                            // This is a naive approach and may not work for all edge cases, but works for simple objects
+                            try {
+                                metaStr = metaStr.replace(/'/g, '"');
+                                metadata = JSON.parse(metaStr);
+                            } catch (e) {
+                                console.error("[LlamaStack] Failed to parse metadata:", metaStr, e);
+                                metadata = {};
+                            }
+                        }
 
                         contextTexts.push(content);
-                        sources.push({
-                            metadata: {
+                        sources.push(
+                            {
                                 ...metadata,
+                                text: content,
                                 source: metadata.source || 'unknown'
                             }
-                        });
+                        );
                     }
                 }
             }
-            console.log('contextTexts', contextTexts);
-            console.log('sources', sources);
             return {
                 contextTexts,
-                sources,
+                sources: sources,
                 message: null
             };
 
         } catch (err) {
             console.error("performSimilaritySearch error:", err);
-            return { error: err.message, success: false };
+            return { message: err.message, success: false };
         }
     },
 

@@ -211,19 +211,19 @@ async function chatSync({
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
-          namespace: workspace.slug,
-          input: message,
-          LLMConnector,
-          similarityThreshold: workspace?.similarityThreshold,
-          topN: workspace?.topN,
-          filterIdentifiers: pinnedDocIdentifiers,
-          rerank: workspace?.vectorSearchMode === "rerank",
-        })
+        namespace: workspace.slug,
+        input: message,
+        LLMConnector,
+        similarityThreshold: workspace?.similarityThreshold,
+        topN: workspace?.topN,
+        filterIdentifiers: pinnedDocIdentifiers,
+        rerank: workspace?.vectorSearchMode === "rerank",
+      })
       : {
-          contextTexts: [],
-          sources: [],
-          message: null,
-        };
+        contextTexts: [],
+        sources: [],
+        message: null,
+      };
 
   // Failed similarity search if it was run at all and failed.
   if (!!vectorSearchResults.message) {
@@ -408,6 +408,7 @@ async function streamChat({
   message = processedMessage;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
+    console.log("[Agent] Starting agent chat");
     await Telemetry.sendTelemetry("agent_chat_started");
 
     // Initialize the EphemeralAgentHandler to handle non-continuous
@@ -547,19 +548,19 @@ async function streamChat({
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
-          namespace: workspace.slug,
-          input: message,
-          LLMConnector,
-          similarityThreshold: workspace?.similarityThreshold,
-          topN: workspace?.topN,
-          filterIdentifiers: pinnedDocIdentifiers,
-          rerank: workspace?.vectorSearchMode === "rerank",
-        })
+        namespace: workspace.slug,
+        input: message,
+        LLMConnector,
+        similarityThreshold: workspace?.similarityThreshold,
+        topN: workspace?.topN,
+        filterIdentifiers: pinnedDocIdentifiers,
+        rerank: workspace?.vectorSearchMode === "rerank",
+      })
       : {
-          contextTexts: [],
-          sources: [],
-          message: null,
-        };
+        contextTexts: [],
+        sources: [],
+        message: null,
+      };
 
   // Failed similarity search if it was run at all and failed.
   if (!!vectorSearchResults.message) {
