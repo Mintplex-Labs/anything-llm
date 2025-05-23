@@ -1,5 +1,5 @@
-import React, { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { lazy, Suspense, useEffect } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 import { ContextWrapper } from "@/AuthContext";
 import PrivateRoute, {
@@ -12,11 +12,13 @@ import Login from "@/pages/Login";
 import SimpleSSOPassthrough from "@/pages/Login/SSO/simple";
 import OnboardingFlow from "@/pages/OnboardingFlow";
 import i18n from "./i18n";
+import paths from "@/utils/paths";
 
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 import { FullScreenLoader } from "./components/Preloader";
 import { ThemeProvider } from "./ThemeContext";
+import KeyboardShortcutsModal from "@/components/Modals/KeyboardShortcutsModal";
 
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
@@ -90,6 +92,115 @@ const SystemPromptVariables = lazy(
 );
 
 export default function App() {
+  const navigate = useNavigate();
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Detect platform
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      
+      // Skip if user is typing in an input field
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+        return;
+      }
+      
+      // Settings shortcuts
+      // macOS: Cmd+, (Command + comma)
+      if (isMac && e.key === "," && e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.settings.interface());
+        return;
+      }
+      
+      // Windows/Linux: Ctrl+, (Control + comma) - standard behavior
+      if (!isMac && e.key === "," && e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.settings.interface());
+        return;
+      }
+
+      // Alternative Windows shortcut: Windows key + I (if specifically requested)
+      // Note: Windows key maps to metaKey on Windows
+      if (!isMac && e.key === "i" && e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.settings.interface());
+        return;
+      }
+
+      // Home navigation - Ctrl/Cmd + H
+      if (e.key === "h" && (isMac ? e.metaKey : e.ctrlKey) && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.home());
+        return;
+      }
+
+      // Workspaces management - Ctrl/Cmd + W
+      if (e.key === "w" && (isMac ? e.metaKey : e.ctrlKey) && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.settings.workspaces());
+        return;
+      }
+
+      // API Keys - Ctrl/Cmd + K
+      if (e.key === "k" && (isMac ? e.metaKey : e.ctrlKey) && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.settings.apiKeys());
+        return;
+      }
+
+      // LLM Preferences - Ctrl/Cmd + L
+      if (e.key === "l" && (isMac ? e.metaKey : e.ctrlKey) && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.settings.llmPreference());
+        return;
+      }
+
+      // Users management - Ctrl/Cmd + U
+      if (e.key === "u" && (isMac ? e.metaKey : e.ctrlKey) && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.settings.users());
+        return;
+      }
+
+      // Chat settings - Ctrl/Cmd + Shift + C
+      if (e.key === "c" && (isMac ? e.metaKey : e.ctrlKey) && e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.settings.chat());
+        return;
+      }
+
+      // Vector Database settings - Ctrl/Cmd + V
+      if (e.key === "v" && (isMac ? e.metaKey : e.ctrlKey) && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.settings.vectorDatabase());
+        return;
+      }
+
+      // Security settings - Ctrl/Cmd + S
+      if (e.key === "s" && (isMac ? e.metaKey : e.ctrlKey) && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        navigate(paths.settings.security());
+        return;
+      }
+
+      // Help/Keyboard shortcuts - Ctrl/Cmd + ? or F1
+      if ((e.key === "?" && (isMac ? e.metaKey : e.ctrlKey) && !e.shiftKey && !e.altKey) || 
+          e.key === "F1") {
+        e.preventDefault();
+        // Dispatch custom event to show help modal
+        window.dispatchEvent(new CustomEvent('show-keyboard-shortcuts-help'));
+        return;
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [navigate]);
+
   return (
     <ThemeProvider>
       <Suspense fallback={<FullScreenLoader />}>
@@ -274,6 +385,7 @@ export default function App() {
           </LogoProvider>
         </ContextWrapper>
       </Suspense>
+      <KeyboardShortcutsModal />
     </ThemeProvider>
   );
 }
