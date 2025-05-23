@@ -162,7 +162,11 @@ export default function BlockList({
 
     // Direct output switch to the last block before finish
     const isLastBeforeFinish = blocks[blocks.length - 2]?.id === block.id;
-    if (isLastBeforeFinish && block.type !== BLOCK_TYPES.START && block.type !== BLOCK_TYPES.FLOW_INFO) {
+    if (
+      isLastBeforeFinish &&
+      block.type !== BLOCK_TYPES.START &&
+      block.type !== BLOCK_TYPES.FLOW_INFO
+    ) {
       return (
         <div className="space-y-4">
           {renderBlockConfigContent(block, props)}
@@ -179,7 +183,12 @@ export default function BlockList({
               <input
                 type="checkbox"
                 checked={props.config.directOutput || false}
-                onChange={(e) => props.onConfigChange({ ...props.config, directOutput: e.target.checked })}
+                onChange={(e) =>
+                  props.onConfigChange({
+                    ...props.config,
+                    directOutput: e.target.checked,
+                  })
+                }
                 className="peer sr-only"
                 aria-label="Toggle direct output"
               />
