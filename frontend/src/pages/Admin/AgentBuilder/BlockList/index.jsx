@@ -160,6 +160,40 @@ export default function BlockList({
       onDeleteVariable,
     };
 
+    // Direct output switch to the last block before finish
+    const isLastBeforeFinish = blocks[blocks.length - 2]?.id === block.id;
+    if (isLastBeforeFinish && block.type !== BLOCK_TYPES.START && block.type !== BLOCK_TYPES.FLOW_INFO) {
+      return (
+        <div className="space-y-4">
+          {renderBlockConfigContent(block, props)}
+          <div className="flex justify-between items-center pt-4 border-t border-white/10">
+            <div>
+              <label className="block text-sm font-medium text-theme-text-primary">
+                Direct Output
+              </label>
+              <p className="text-xs text-theme-text-secondary">
+                Return result directly to chat without LLM processing
+              </p>
+            </div>
+            <label className="relative inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                checked={props.config.directOutput || false}
+                onChange={(e) => props.onConfigChange({ ...props.config, directOutput: e.target.checked })}
+                className="peer sr-only"
+                aria-label="Toggle direct output"
+              />
+              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+            </label>
+          </div>
+        </div>
+      );
+    }
+
+    return renderBlockConfigContent(block, props);
+  };
+
+  const renderBlockConfigContent = (block, props) => {
     switch (block.type) {
       case BLOCK_TYPES.FLOW_INFO:
         return <FlowInfoNode {...props} ref={refs} />;

@@ -33,6 +33,10 @@ const FLOW_TYPES = {
         type: "string",
         description: "Variable to store the response",
       },
+      directOutput: {
+        type: "boolean",
+        description: "Whether to return the response directly to the user without LLM processing",
+      },
     },
     examples: [
       {
@@ -60,6 +64,10 @@ const FLOW_TYPES = {
         type: "string",
         description: "Variable to store the result",
       },
+      directOutput: {
+        type: "boolean",
+        description: "Whether to return the result directly to the user without LLM processing",
+      },
     },
   },
   FILE: {
@@ -79,6 +87,10 @@ const FLOW_TYPES = {
         type: "string",
         description: "Variable to store the result",
       },
+      directOutput: {
+        type: "boolean",
+        description: "Whether to return the result directly to the user without LLM processing",
+      },
     },
   },
   CODE: {
@@ -93,6 +105,10 @@ const FLOW_TYPES = {
       resultVariable: {
         type: "string",
         description: "Variable to store the result",
+      },
+      directOutput: {
+        type: "boolean",
+        description: "Whether to return the result directly to the user without LLM processing",
       },
     },
   },
@@ -125,6 +141,10 @@ const FLOW_TYPES = {
       resultVariable: {
         type: "string",
         description: "Variable to store the scraped content",
+      },
+      directOutput: {
+        type: "boolean",
+        description: "Whether to return the scraped content directly to the user without LLM processing",
       },
     },
   },

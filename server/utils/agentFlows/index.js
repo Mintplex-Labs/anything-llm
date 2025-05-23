@@ -218,6 +218,22 @@ class AgentFlows {
                 return `Flow execution failed: ${result.results[0]?.error || "Unknown error"}`;
               }
               aibitat.introspect(`${flow.name} completed successfully`);
+
+              // Send response directly to chat
+              if (result.directOutput !== null) {
+                const content = typeof result.directOutput === 'object'
+                  ? JSON.stringify(result.directOutput, null, 2)
+                  : String(result.directOutput);
+
+                // Prevent LLM from processing response
+                aibitat.newMessage({
+                  from: "FLOW",
+                  to: "USER",
+                  content
+                });
+                return content;
+              }
+
               return typeof result === "object"
                 ? JSON.stringify(result)
                 : String(result);

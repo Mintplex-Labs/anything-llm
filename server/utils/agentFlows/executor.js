@@ -99,6 +99,11 @@ class FlowExecutor {
       this.variables[varName] = result;
     }
 
+    // If directOutput is true, mark this result for direct output
+    if (config.directOutput) {
+      result = { directOutput: true, result };
+    }
+
     return result;
   }
 
@@ -123,10 +128,15 @@ class FlowExecutor {
     this.aibitat = aibitat;
     this.attachLogging(aibitat?.introspect, aibitat?.handlerProps?.log);
     const results = [];
+    let directOutputResult = null;
 
     for (const step of flow.config.steps) {
       try {
         const result = await this.executeStep(step);
+        if (result?.directOutput) {
+          directOutputResult = result.result;
+          break; // Stop processing after direct output
+        }
         results.push({ success: true, result });
       } catch (error) {
         results.push({ success: false, error: error.message });
@@ -138,6 +148,7 @@ class FlowExecutor {
       success: results.every((r) => r.success),
       results,
       variables: this.variables,
+      directOutput: directOutputResult,
     };
   }
 }
