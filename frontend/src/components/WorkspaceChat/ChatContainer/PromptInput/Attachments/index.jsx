@@ -21,7 +21,7 @@ import { Tooltip } from "react-tooltip";
 export default function AttachmentManager({ attachments }) {
   if (attachments.length === 0) return null;
   return (
-    <div className="flex flex-wrap mt-4 mb-2 gap-y-2 gap-x-[0.5px]">
+    <div className="flex flex-wrap gap-2 mt-2 mb-4">
       {attachments.map((attachment) => (
         <AttachmentItem key={attachment.uid} attachment={attachment} />
       ))}
@@ -45,21 +45,20 @@ function AttachmentItem({ attachment }) {
 
   if (status === "in_progress") {
     return (
-      <div
-        className={`h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-zinc-800 light:bg-theme-bg-sidebar border border-white/20 w-[200px]`}
-      >
+      <div className="flex items-center gap-x-1 rounded-lg bg-[#18191A] light:bg-theme-bg-sidebar border-none w-[180px]">
         <div
-          className={`${iconBgColor} rounded-lg flex items-center justify-center flex-shrink-0 p-1`}
+          className={`${iconBgColor} rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
         >
           <CircleNotch
-            size={30}
+            size={24}
+            weight="light"
             className="text-white light:text-white animate-spin"
           />
         </div>
-        <div className="flex flex-col w-[130px]">
-          <p className="text-white text-xs font-medium truncate">{file.name}</p>
-          <p className="text-white/60 text-xs font-medium">
-            {humanFileSize(file.size)}
+        <div className="flex flex-col w-[125px]">
+          <p className="text-white text-xs font-semibold truncate">{file.name}</p>
+          <p className="text-white/80 light:text-black/80 text-[10px] leading-[14px] font-medium">
+            Uploading...
           </p>
         </div>
       </div>
@@ -72,7 +71,7 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-error`}
           data-tooltip-content={error}
-          className={`relative h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-error/40 light:bg-error/30 border border-transparent w-[200px] group`}
+          className={`relative flex items-center gap-x-4 rounded-lg bg-error/40 light:bg-error/30 border border-transparent w-[200px] group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
@@ -114,7 +113,7 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-success`}
           data-tooltip-content={`${file.name} will be attached to this prompt. It will not be embedded into the workspace permanently.`}
-          className={`relative h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-zinc-800 light:bg-theme-bg-sidebar border border-white/20 w-[200px] group`}
+          className={`relative flex items-center gap-x-4 rounded-lg bg-zinc-800 light:bg-theme-bg-sidebar border border-white/20 w-[200px] group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
@@ -127,6 +126,7 @@ function AttachmentItem({ attachment }) {
           </div>
           {contentString ? (
             <img
+              alt={`Preview of ${file.name}`}
               src={contentString}
               className={`${iconBgColor} w-[30px] h-[30px] rounded-lg flex items-center justify-center`}
             />
@@ -134,7 +134,7 @@ function AttachmentItem({ attachment }) {
             <div
               className={`${iconBgColor} rounded-lg flex items-center justify-center flex-shrink-0 p-1`}
             >
-              <Icon size={30} className="text-white light:text-white" />
+              <Icon size={24} className="text-white light:text-white" />
             </div>
           )}
           <div className="flex flex-col w-[130px]">
@@ -161,7 +161,7 @@ function AttachmentItem({ attachment }) {
       <div
         data-tooltip-id={`attachment-uid-${uid}-success`}
         data-tooltip-content={`${file.name} was uploaded and embedded into this workspace. It will be available for RAG chat now.`}
-        className={`relative h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-zinc-800 light:bg-theme-bg-sidebar border border-white/20 w-[200px] group`}
+        className={`flex items-center gap-x-1 rounded-lg bg-[#18191A] light:bg-theme-bg-sidebar border-none w-[180px] group`}
       >
         <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
           <button
@@ -173,13 +173,13 @@ function AttachmentItem({ attachment }) {
           </button>
         </div>
         <div
-          className={`${iconBgColor} rounded-lg flex items-center justify-center flex-shrink-0 p-1`}
+          className={`${iconBgColor} rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
         >
-          <Icon size={30} className="text-white light:text-white" />
+          <Icon size={24} weight="light" className="text-white light:text-white" />
         </div>
-        <div className="flex flex-col w-[130px]">
-          <p className="text-white text-xs font-medium truncate">{file.name}</p>
-          <p className="text-white/80 light:text-black/80 text-xs font-medium">
+        <div className="flex flex-col w-[125px]">
+          <p className="text-white text-xs font-semibold truncate">{file.name}</p>
+          <p className="text-white/80 light:text-black/80 text-[10px] leading-[14px] font-medium">
             File embedded!
           </p>
         </div>
