@@ -221,6 +221,16 @@ const TRANSLATIONS = {
       title: "提示詞",
       description:
         "將在此工作區中使用的提示詞。定義 AI 產生回應的上下文和指示。您應該提供精心設計的提示詞，以便 AI 可以產生相關且準確的回應。",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "查詢模式拒絕回應",
@@ -628,6 +638,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " 管理觀看的文件。",
       accept: "好的，明白了",
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: "歡迎使用您的新工作區。",
@@ -643,6 +664,7 @@ const TRANSLATIONS = {
     text_size: "變更文字大小。",
     microphone: "語音輸入提示。",
     send: "將提示訊息發送到工作區",
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: null,
@@ -676,6 +698,10 @@ const TRANSLATIONS = {
       auto_speak: {
         title: "自動語音回應",
         description: "自動朗讀 AI 的回應內容",
+      },
+      spellcheck: {
+        title: null,
+        description: null,
       },
     },
     items: {

@@ -231,6 +231,16 @@ const TRANSLATIONS = {
       title: "النداء",
       description:
         "النداء التي سيتم استخدامه في مساحة العمل هذه. حدد السياق والتعليمات للذكاء الاصطناعي للاستجابة. يجب عليك تقديم نداء مصمم بعناية حتى يتمكن الذكاء الاصطناعي من إنشاء استجابة دقيقة وذات صلة.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "الرد على رفض وضعية الاستعلام",
@@ -631,6 +641,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: null,
       accept: null,
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: null,
@@ -646,6 +667,7 @@ const TRANSLATIONS = {
     text_size: null,
     microphone: null,
     send: null,
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: null,
@@ -677,6 +699,10 @@ const TRANSLATIONS = {
         description: null,
       },
       auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
         title: null,
         description: null,
       },

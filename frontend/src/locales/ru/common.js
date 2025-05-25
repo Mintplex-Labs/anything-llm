@@ -233,6 +233,16 @@ const TRANSLATIONS = {
       title: "Подсказка",
       description:
         "Подсказка, которая будет использоваться в этом рабочем пространстве. Определите контекст и инструкции для AI для создания ответа. Вы должны предоставить тщательно разработанную подсказку, чтобы AI мог генерировать релевантный и точный ответ.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "Ответ об отказе в режиме запроса",
@@ -670,6 +680,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " в режиме администратора.",
       accept: "Хорошо, понял",
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: "Добро пожаловать в ваше новое рабочее пространство.",
@@ -685,6 +706,7 @@ const TRANSLATIONS = {
     text_size: "Изменить размер текста.",
     microphone: "Произнесите ваш запрос.",
     send: "Отправить запрос в рабочее пространство",
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: "Редактировать учётную запись",
@@ -717,6 +739,10 @@ const TRANSLATIONS = {
         description: null,
       },
       auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
         title: null,
         description: null,
       },

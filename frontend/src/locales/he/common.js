@@ -220,6 +220,16 @@ const TRANSLATIONS = {
       title: "בקשה",
       description:
         "הבקשה שתיעשה שימוש בה בסביבת העבודה הזו. הגדר את ההקשר וההוראות עבור ה-AI כדי ליצור תגובה. עליך לספק בקשה מעוצבת בקפידה כדי שה-AI יוכל ליצור תגובה רלוונטית ומדויקת.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "תגובת סירוב במצב שאילתה",
@@ -616,6 +626,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: null,
       accept: null,
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: null,
@@ -631,6 +652,7 @@ const TRANSLATIONS = {
     text_size: null,
     microphone: null,
     send: null,
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: null,
@@ -662,6 +684,10 @@ const TRANSLATIONS = {
         description: null,
       },
       auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
         title: null,
         description: null,
       },

@@ -124,7 +124,7 @@ export default function GitlabOptions() {
                     <p className="font-bold text-white">Settings</p>
                   </label>
                   <p className="text-xs font-normal text-white">
-                     {t("connectors.gitlab.token_description")}
+                    {t("connectors.gitlab.token_description")}
                   </p>
                 </div>
                 <div className="flex items-center gap-x-2 mb-3">

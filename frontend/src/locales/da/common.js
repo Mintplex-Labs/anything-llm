@@ -232,6 +232,16 @@ const TRANSLATIONS = {
       title: "Prompt",
       description:
         "Prompten, der vil blive brugt i dette arbejdsområde. Definér konteksten og instruktionerne til, at AI'en kan generere et svar. Du bør levere en omhyggeligt udformet prompt, så AI'en kan generere et relevant og præcist svar.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "Afvisningssvar for forespørgsels-tilstand",
@@ -669,6 +679,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " adminvisning.",
       accept: "Okay, jeg har forstået",
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: "Velkommen til dit nye arbejdsområde.",
@@ -684,6 +705,7 @@ const TRANSLATIONS = {
     text_size: "Ændr tekststørrelse.",
     microphone: "Tal din prompt.",
     send: "Send promptbesked til arbejdsområdet",
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: "Rediger konto",
@@ -716,6 +738,10 @@ const TRANSLATIONS = {
         description: null,
       },
       auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
         title: null,
         description: null,
       },
