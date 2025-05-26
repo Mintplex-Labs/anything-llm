@@ -20,8 +20,7 @@ function getImageFormatFromMime(mimeType = "") {
   if (!mimeType) return null;
   const parts = mimeType.toLowerCase().split("/");
   if (parts?.[0] !== "image") return null;
-  const format = parts?.[1];
-
+  let format = parts?.[1];
   if (!format) return null;
 
   // Remap jpg to jpeg

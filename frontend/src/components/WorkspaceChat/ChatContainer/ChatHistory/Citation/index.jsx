@@ -13,9 +13,11 @@ import {
   Link,
   X,
   YoutubeLogo,
+  GitlabLogo,
 } from "@phosphor-icons/react";
 import ConfluenceLogo from "@/media/dataConnectors/confluence.png";
 import DrupalWikiLogo from "@/media/dataConnectors/drupalwiki.png";
+import ObsidianLogo from "@/media/dataConnectors/obsidian.png";
 import { toPercentString } from "@/utils/numbers";
 
 function combineLikeSources(sources) {
@@ -182,10 +184,24 @@ function CitationDetailModal({ source, onClose }) {
   );
 }
 
-// Show the correct title and/or display text for citations
-// which contain valid outbound links that can be clicked by the
-// user when viewing a citation. Optionally allows various icons
-// to show distinct types of sources.
+const supportedSources = [
+  "link://",
+  "confluence://",
+  "github://",
+  "gitlab://",
+  "drupalwiki://",
+  "youtube://",
+  "obsidian://",
+];
+
+/**
+ * Parses the chunk source to get the correct title and/or display text for citations
+ * which contain valid outbound links that can be clicked by the
+ * user when viewing a citation. Optionally allows various icons
+ * to show distinct types of sources.
+ * @param {{title: string, chunks: {text: string, chunkSource: string}[]}} options
+ * @returns {{isUrl: boolean, text: string, href: string, icon: string}}
+ */
 function parseChunkSource({ title = "", chunks = [] }) {
   const nullResponse = {
     isUrl: false,
@@ -196,50 +212,77 @@ function parseChunkSource({ title = "", chunks = [] }) {
 
   if (
     !chunks.length ||
-    (!chunks[0].chunkSource?.startsWith("link://") &&
-      !chunks[0].chunkSource?.startsWith("confluence://") &&
-      !chunks[0].chunkSource?.startsWith("github://") &&
-      !chunks[0].chunkSource?.startsWith("drupalwiki://"))
+    !supportedSources.some((source) =>
+      chunks[0].chunkSource?.startsWith(source)
+    )
   )
     return nullResponse;
 
   try {
-    const url = new URL(
-      chunks[0].chunkSource.split("link://")[1] ||
-        chunks[0].chunkSource.split("confluence://")[1] ||
-        chunks[0].chunkSource.split("github://")[1] ||
-        chunks[0].chunkSource.split("drupalwiki://")[1]
+    const sourceID = supportedSources.find((source) =>
+      chunks[0].chunkSource?.startsWith(source)
     );
-    let text = url.host + url.pathname;
-    let icon = "link";
+    console.log({ sourceID });
+    let url, text, icon;
 
-    if (url.host.includes("youtube.com")) {
-      text = title;
-      icon = "youtube";
-    }
+    // Try to parse the URL from the chunk source
+    // If it fails, we'll use the title as the text and the link icon
+    // but the document will not be linkable
+    try {
+      url = new URL(chunks[0].chunkSource.split(sourceID)[1]);
+    } catch {}
 
-    if (url.host.includes("github.com")) {
-      text = title;
-      icon = "github";
-    }
+    switch (sourceID) {
+      case "link://":
+        text = url.host + url.pathname;
+        icon = "link";
+        break;
 
-    if (url.host.includes("atlassian.net")) {
-      text = title;
-      icon = "confluence";
-    }
+      case "youtube://":
+        text = title;
+        icon = "youtube";
+        break;
 
-    if (url.host.includes("drupal-wiki.net")) {
-      text = title;
-      icon = "drupalwiki";
+      case "github://":
+        text = title;
+        icon = "github";
+        break;
+
+      case "gitlab://":
+        text = title;
+        icon = "gitlab";
+        break;
+
+      case "confluence://":
+        text = title;
+        icon = "confluence";
+        break;
+
+      case "drupalwiki://":
+        text = title;
+        icon = "drupalwiki";
+        break;
+
+      case "obsidian://":
+        text = title;
+        icon = "obsidian";
+        break;
+
+      default:
+        text = url.host + url.pathname;
+        icon = "link";
+        break;
     }
 
     return {
-      isUrl: true,
-      href: url.toString(),
+      isUrl: !!url,
+      href: url?.toString() ?? "#",
       text,
       icon,
     };
-  } catch {}
+  } catch (err) {
+    console.warn(`Unsupported source identifier ${chunks[0].chunkSource}`, err);
+  }
   return nullResponse;
 }
 
@@ -253,11 +296,15 @@ const DrupalWikiIcon = ({ ...props }) => (
   <img src={DrupalWikiLogo} {...props} />
 );
 
+const ObsidianIcon = ({ ...props }) => <img src={ObsidianLogo} {...props} />;
+
 const ICONS = {
   file: FileText,
   link: Link,
   youtube: YoutubeLogo,
   github: GithubLogo,
+  gitlab: GitlabLogo,
   confluence: ConfluenceIcon,
   drupalwiki: DrupalWikiIcon,
+  obsidian: ObsidianIcon,
 };

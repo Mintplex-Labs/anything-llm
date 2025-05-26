@@ -671,6 +671,17 @@ const TRANSLATIONS = {
       watch_explained_block3_end: "管理画面から行えます。",
       accept: "わかりました",
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: "新しいワークスペースへようこそ。",
@@ -686,6 +697,7 @@ const TRANSLATIONS = {
     text_size: "テキストサイズを変更",
     microphone: "プロンプトを音声入力",
     send: "ワークスペースにプロンプトメッセージを送信",
+    attachments_processing: null,
   },
   profile_settings: {
     edit_account: "アカウントを編集",

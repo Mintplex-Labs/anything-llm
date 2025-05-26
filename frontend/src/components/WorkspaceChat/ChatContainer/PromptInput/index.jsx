@@ -15,7 +15,11 @@ import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
 import AttachItem from "./AttachItem";
-import { PASTE_ATTACHMENT_EVENT } from "../DnDWrapper";
+import {
+  ATTACHMENTS_PROCESSED_EVENT,
+  ATTACHMENTS_PROCESSING_EVENT,
+  PASTE_ATTACHMENT_EVENT,
+} from "../DnDWrapper";
 import useTextSize from "@/hooks/useTextSize";
 import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
@@ -31,6 +35,7 @@ export default function PromptInput({
   attachments = [],
 }) {
   const { t } = useTranslation();
+  const { isDisabled } = useIsDisabled();
   const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
@@ -112,7 +117,7 @@ export default function PromptInput({
     // Is simple enter key press w/o shift key
     if (event.keyCode === 13 && !event.shiftKey) {
       event.preventDefault();
-      if (isStreaming) return;
+      if (isStreaming || isDisabled) return; // Prevent submission if streaming or disabled
       return submit(event);
     }
 
@@ -280,14 +285,19 @@ export default function PromptInput({
                   <button
                     ref={formRef}
                     type="submit"
-                    className="border-none inline-flex justify-center rounded-2xl cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ml-4"
+                    disabled={isDisabled}
+                    className="border-none inline-flex justify-center rounded-2xl cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ml-4 disabled:cursor-not-allowed group"
                     data-tooltip-id="send-prompt"
-                    data-tooltip-content={t("chat_window.send")}
+                    data-tooltip-content={
+                      isDisabled
+                        ? t("chat_window.attachments_processing")
+                        : t("chat_window.send")
+                    }
                     aria-label={t("chat_window.send")}
                   >
                     <PaperPlaneRight
                       color="var(--theme-sidebar-footer-icon-fill)"
-                      className="w-[22px] h-[22px] pointer-events-none text-theme-text-primary"
+                      className="w-[22px] h-[22px] pointer-events-none text-theme-text-primary group-disabled:opacity-[25%]"
                       weight="fill"
                     />
                     <span className="sr-only">Send message</span>
@@ -323,4 +333,38 @@ export default function PromptInput({
       </form>
     </div>
   );
+}
+
+/**
+ * Handle event listeners to prevent the send button from being used
+ * for whatever reason that may we may want to prevent the user from sending a message.
+ */
+function useIsDisabled() {
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  /**
+   * Handle attachments processing and processed events
+   * to prevent the send button from being clicked when attachments are processing
+   * or else the query may not have relevant context since RAG is not yet ready.
+   */
+  useEffect(() => {
+    if (!window) return;
+    window.addEventListener(ATTACHMENTS_PROCESSING_EVENT, () =>
+      setIsDisabled(true)
+    );
+    window.addEventListener(ATTACHMENTS_PROCESSED_EVENT, () =>
+      setIsDisabled(false)
+    );
+
+    return () => {
+      window?.removeEventListener(ATTACHMENTS_PROCESSING_EVENT, () =>
+        setIsDisabled(true)
+      );
+      window?.removeEventListener(ATTACHMENTS_PROCESSED_EVENT, () =>
+        setIsDisabled(false)
+      );
+    };
+  }, []);
+
+  return { isDisabled };
 }

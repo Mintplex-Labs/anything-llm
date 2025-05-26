@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { X } from "@phosphor-icons/react";
+import { X, Copy, Check } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import paths from "@/utils/paths";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
+import showToast from "@/utils/toast";
 
-export default function NewApiKeyModal({ closeModal }) {
+export default function NewApiKeyModal({ closeModal, onSuccess }) {
   const [apiKey, setApiKey] = useState(null);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -17,14 +18,22 @@ export default function NewApiKeyModal({ closeModal }) {
     const Model = !!user ? Admin : System;
 
     const { apiKey: newApiKey, error } = await Model.generateApiKey();
-    if (!!newApiKey) setApiKey(newApiKey);
+    if (!!newApiKey) {
+      setApiKey(newApiKey);
+      onSuccess();
+    }
     setError(error);
   };
+
   const copyApiKey = () => {
     if (!apiKey) return false;
     window.navigator.clipboard.writeText(apiKey.secret);
     setCopied(true);
+    showToast("API key copied to clipboard", "success", {
+      clear: true,
+    });
   };
+
   useEffect(() => {
     function resetStatus() {
       if (!copied) return false;
@@ -57,12 +66,30 @@ export default function NewApiKeyModal({ closeModal }) {
             <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
               {apiKey && (
-                <input
-                  type="text"
-                  defaultValue={`${apiKey.secret}`}
-                  disabled={true}
-                  className="border-none bg-theme-settings-input-bg w-full text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    defaultValue={`${apiKey.secret}`}
+                    disabled={true}
+                    className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={copyApiKey}
+                    disabled={copied}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-theme-modal-border transition-all duration-300"
+                  >
+                    {copied ? (
+                      <Check
+                        size={20}
+                        className="text-green-400"
+                        weight="bold"
+                      />
+                    ) : (
+                      <Copy size={20} className="text-white" weight="bold" />
+                    )}
+                  </button>
+                </div>
               )}
               <p className="text-white text-opacity-60 text-xs md:text-sm">
                 Once created the API key can be used to programmatically access
@@ -77,13 +104,13 @@ export default function NewApiKeyModal({ closeModal }) {
                 Read the API documentation &rarr;
               </a>
             </div>
-            <div className="flex justify-between items-center mt-6 pt-6 border-t border-theme-modal-border">
+            <div className="flex justify-end items-center mt-6 pt-6 border-t border-theme-modal-border">
               {!apiKey ? (
                 <>
                   <button
                     onClick={closeModal}
                     type="button"
-                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm mr-2"
                   >
                     Cancel
                   </button>
@@ -91,17 +118,16 @@ export default function NewApiKeyModal({ closeModal }) {
                     type="submit"
                     className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
                   >
-                    Create API key
+                    Create API Key
                   </button>
                 </>
               ) : (
                 <button
-                  onClick={copyApiKey}
+                  onClick={closeModal}
                   type="button"
-                  disabled={copied}
-                  className="w-full transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
                 >
-                  {copied ? "Copied API key" : "Copy API key"}
+                  Close
                 </button>
               )}
             </div>
