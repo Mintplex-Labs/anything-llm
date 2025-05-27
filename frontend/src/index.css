@@ -277,25 +277,22 @@ a {
 }
 
 .doc__source {
-  transform-origin: 0 100%;
-  transform: scale(0);
-  animation: message2 0.15s ease-out 0s forwards;
+  opacity: 0;
   animation-delay: 50ms;
+  animation: citationAnimation 0.15s ease-out 0s forwards;
 }
 
-@keyframes message2 {
+@keyframes citationAnimation {
   0% {
-    max-height: 100%;
+    opacity: 0;
   }
 
   80% {
-    transform: scale(1.1);
+    opacity: 0.5;
   }
 
   100% {
-    transform: scale(1);
-    max-height: 100%;
-    overflow: visible;
+    opacity: 1;
   }
 }
 

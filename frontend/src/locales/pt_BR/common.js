@@ -1,4 +1,3 @@
-// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   "onboarding": {
     "home": {
@@ -215,6 +214,8 @@ const TRANSLATIONS = {
     "title": "Novo Workspace",
     "placeholder": "Meu Workspace"
   },
+
+  // Workspace Settings menu items
   "workspaces—settings": {
     "general": "Configurações Gerais",
     "chat": "Configurações de Chat",
@@ -312,6 +313,8 @@ const TRANSLATIONS = {
       "hint": "Cada modelo LLM tem faixas de valores válidos. Consulte seu provedor."
     }
   },
+
+  // Vector Database
   "vector-workspace": {
     "identifier": "Identificador do banco de dados",
     "snippets": {
