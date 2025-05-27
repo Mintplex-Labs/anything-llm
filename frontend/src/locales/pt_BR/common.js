@@ -1,54 +1,55 @@
-// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
-    survey: {
-      email: "Qual o seu email?",
-      useCase: "Para que fim pretende usar AnythingLLM",
-      useCaseWork: "Para trabalho",
-      useCasePersonal: "Uso pessoal",
-      useCaseOther: "Outro",
-      comment: "Onde ouviu sobre AnythingLLM pela primeira vez",
-      commentPlaceholder:
-        "Reddit, Twitter, GitHub, YouTube, etc. - Conte para nós como você nos encontrou!",
-      skip: "Ignorar pesquisa",
-      thankYou: "Obrigado pelo seu feedback",
-      title: "Bem-vindo a AnythingLLM",
-      description: "Ajude-nos a construir AnythingLLM para si. Opcional",
-    },
     home: {
-      title: "Bem-vindo a",
+      title: "Bem-vindo ao",
       getStarted: "Começar",
     },
     llm: {
-      title: "Preferências LLM",
+      title: "Preferência de LLM",
       description:
-        "AnythingLLM consegue trabalhar com diversos provedores LLM. Este é o serviço que lida com conversas.",
+        "AnythingLLM funciona com vários provedores de LLM. Este será o serviço que lidará com os chats.",
     },
     userSetup: {
-      title: "Configuração de usuário",
-      description: "Configure o seu usuário.",
-      howManyUsers: "Quantos usuários vão usar esta instância",
+      title: "Configuração do Usuário",
+      description: "Configure suas preferências de usuário.",
+      howManyUsers: "Quantos usuários usarão esta instância?",
       justMe: "Apenas eu",
       myTeam: "Minha equipe",
       instancePassword: "Senha da Instância",
-      setPassword: "Gostaria de definir uma senha?",
-      passwordReq: "A sua senha deve conter pelo menos 8 caracteres",
+      setPassword: "Deseja configurar uma senha?",
+      passwordReq: "Senhas devem ter pelo menos 8 caracteres.",
       passwordWarn:
-        "É importante que salve a senha porque não existe método de recuperação",
-      adminUsername: "Utilizador da conta de administrador",
+        "É importante salvar esta senha pois não há método de recuperação.",
+
+      adminUsername: "Nome de usuário admin",
       adminUsernameReq:
-        'Utilizador deve conter pelo menos 6 caracteres, letras minúsculas, números, "uderscore", e hífen sem espaços',
-      adminPassword: "Senha da conta de administrador",
-      adminPasswordReq: "Senha deve conter pelo menos 8 caracteres",
+        "O nome deve ter pelo menos 6 caracteres e conter apenas letras minúsculas, números, sublinhados e hífens, sem espaços.",
+      adminPassword: "Senha de admin",
+      adminPasswordReq: "Senhas devem ter pelo menos 8 caracteres.",
       teamHint:
-        'Por padrão, você será o único administrador. Após o "onboarding", você poderá criar e convidar outros usuários ou administradores. Não perca sua senha, pois somente administradores podem redefini-la.',
+        "Por padrão, você será o único admin. Após a configuração, você poderá convidar outros usuários ou admins. Não perca sua senha, pois apenas admins podem redefini-la.",
     },
     data: {
-      title: "Gestão de dados e privacidade",
+      title: "Privacidade de Dados",
       description:
-        "Estamos comprometidos com a transparência e o controle quando se trata de seus dados pessoais.",
+        "Estamos comprometidos com transparência e controle sobre seus dados pessoais.",
       settingsHint:
-        "Essas configurações podem ser reconfiguradas a qualquer momento nas configurações.",
+        "Estas configurações podem ser alteradas a qualquer momento.",
+    },
+    survey: {
+      title: "Bem-vindo ao AnythingLLM",
+      description: "Ajude-nos a melhorar o AnythingLLM. Opcional.",
+
+      email: "Qual seu email?",
+      useCase: "Como você usará o AnythingLLM?",
+      useCaseWork: "Para trabalho",
+      useCasePersonal: "Uso pessoal",
+      useCaseOther: "Outro",
+      comment: "Como você conheceu o AnythingLLM?",
+      commentPlaceholder:
+        "Reddit, Twitter, GitHub, YouTube, etc. - Conte como nos encontrou!",
+      skip: "Pular Pesquisa",
+      thankYou: "Obrigado pelo seu feedback!",
     },
     workspace: {
       title: "Crie seu primeiro workspace",
@@ -56,7 +57,7 @@ const TRANSLATIONS = {
     },
   },
   common: {
-    "workspaces-name": "Nome dos Workspaces",
+    "workspaces-name": "Nome do Workspace",
     error: "erro",
     success: "sucesso",
     user: "Usuário",
@@ -69,6 +70,8 @@ const TRANSLATIONS = {
     yes: "Sim",
     no: "Não",
   },
+
+  // Setting Sidebar menu items.
   settings: {
     title: "Configurações da Instância",
     system: "Configurações Gerais",
@@ -76,279 +79,375 @@ const TRANSLATIONS = {
     users: "Usuários",
     workspaces: "Workspaces",
     "workspace-chats": "Chats do Workspace",
-    customization: "Customização",
-    "api-keys": "API para Desenvolvedores",
+    customization: "Personalização",
+    interface: "Preferências de UI",
+    branding: "Marca e Etiqueta Branca",
+    chat: "Chat",
+    "api-keys": "API de Desenvolvedor",
     llm: "LLM",
     transcription: "Transcrição",
-    embedder: "Incorporador",
-    "text-splitting": "Divisor de Texto e Fragmentação",
+    embedder: "Vinculador",
+    "text-splitting": "Divisor de Texto",
     "voice-speech": "Voz e Fala",
     "vector-database": "Banco de Dados Vetorial",
-    embeds: "Incorporar Chat",
-    "embed-chats": "Histórico de Chats Incorporados",
+    embeds: "Incorporador de Chat",
+    "embed-chats": "Histórico de Incorporações",
     security: "Segurança",
     "event-logs": "Logs de Eventos",
     privacy: "Privacidade e Dados",
     "ai-providers": "Provedores de IA",
-    "agent-skills": "Habilidades do Agente",
+    "agent-skills": "Habilidades de Agente",
     admin: "Admin",
     tools: "Ferramentas",
+    "system-prompt-variables": "Variáveis de Prompt",
     "experimental-features": "Recursos Experimentais",
-    contact: "Contato com Suporte",
-    "browser-extension": "Extensão do navegador",
-    "system-prompt-variables": "Variáveis de prompt do sistema",
-    interface: "Preferências de Interface",
-    branding: null,
-    chat: "Conversa",
+    contact: "Suporte",
+    "browser-extension": "Extensão de Navegador",
   },
+
+  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Bem-vindo ao",
-      "placeholder-username": "Nome de Usuário",
+      "placeholder-username": "Nome de usuário",
       "placeholder-password": "Senha",
-      login: "Entrar",
+      login: "Login",
       validating: "Validando...",
-      "forgot-pass": "Esqueceu a senha",
+      "forgot-pass": "Esqueci a senha",
       reset: "Redefinir",
     },
     "sign-in": {
-      start: "Faça login na sua",
+      start: "Acesse sua",
       end: "conta.",
     },
     "password-reset": {
       title: "Redefinição de Senha",
       description:
-        "Forneça as informações necessárias abaixo para redefinir sua senha.",
+        "Forneça as informações necessárias para redefinir sua senha.",
       "recovery-codes": "Códigos de Recuperação",
       "recovery-code": "Código de Recuperação {{index}}",
       "back-to-login": "Voltar ao Login",
     },
   },
+
   welcomeMessage: {
     part1:
-      "Bem-vindo ao AnythingLLM, AnythingLLM é uma ferramenta de IA de código aberto da Mintplex Labs que transforma qualquer coisa em um chatbot treinado que você pode consultar e conversar. AnythingLLM é um software BYOK (bring-your-own-keys | traga suas próprias chaves), portanto, não há assinatura, taxa ou cobranças para este software fora dos serviços que você deseja usar com ele.",
+      "Bem-vindo ao AnythingLLM, uma ferramenta de IA open-source da Mintplex Labs que transforma qualquer conteúdo em um chatbot treinado. AnythingLLM é um software BYOK (bring-your-own-keys), sem taxas ou assinaturas.",
     part2:
-      "AnythingLLM é a maneira mais fácil de reunir produtos de IA poderosos como OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB e outros serviços em um pacote organizado sem complicações para aumentar sua produtividade em 100x.",
+      "AnythingLLM é a maneira mais fácil de integrar poderosas ferramentas de IA como OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB e outros serviços em um pacote simples.",
     part3:
-      "AnythingLLM pode ser executado totalmente localmente em sua máquina com pouca sobrecarga que você nem perceberá que está lá! Não é necessário GPU. A instalação em nuvem e localmente também está disponível.\nO ecossistema de ferramentas de IA fica mais poderoso a cada dia. AnythingLLM facilita o uso.",
-    githubIssue: "Criar uma issue no GitHub",
-    user1: "Como eu começo?!",
+      "AnythingLLM pode rodar localmente na sua máquina com baixo consumo de recursos. Sem GPU necessária. Disponível para instalação na nuvem ou on-premises.\nO ecossistema de IA evolui rapidamente. AnythingLLM facilita seu uso.",
+    githubIssue: "Criar issue no GitHub",
+    user1: "Como começar?!",
     part4:
-      'É simples. Todas as coleções são organizadas em grupos que chamamos de "Workspaces". Workspaces são grupos de arquivos, documentos, imagens, PDFs e outros arquivos que serão transformados em algo que os LLMs podem entender e usar em conversas.\n\nVocê pode adicionar e remover arquivos a qualquer momento.',
+      'É simples. As coleções são organizadas em "Workspaces". Workspaces são grupos de arquivos, documentos, imagens, PDFs e outros arquivos que serão transformados em algo que os LLMs possam entender e usar em conversas.\n\nVocê pode adicionar ou remover arquivos a qualquer momento.',
     createWorkspace: "Crie seu primeiro workspace",
-    user2:
-      "Isso é como um Dropbox de IA ou algo assim? E quanto a conversar? Não é um chatbot?",
+    user2: "Isso é como um Dropbox com IA? E os chats? É um chatbot, certo?",
     part5:
-      "AnythingLLM é mais do que um Dropbox mais inteligente.\n\nAnythingLLM oferece duas maneiras de conversar com seus dados:\n\n<i>Consulta:</i> Seus chats retornarão dados ou inferências encontradas com os documentos em seu workspace ao qual tem acesso. Adicionar mais documentos ao Workspace o torna mais inteligente!\n\n<i>Conversacional:</i> Seus documentos + seu histórico de chat em andamento contribuem para o conhecimento do LLM ao mesmo tempo. Ótimo para adicionar informações em tempo real baseadas em texto ou correções e mal-entendidos que o LLM possa ter.\n\nVocê pode alternar entre qualquer modo \n<i>no meio da conversa!</i>",
-    user3: "Uau, isso soa incrível, deixe-me experimentar já!",
+      "AnythingLLM é mais que um Dropbox inteligente.\n\nAnythingLLM oferece duas formas de interagir com seus dados:\n\n<i>Consulta:</i> Seus chats retornarão dados encontrados nos documentos do workspace.\n\n<i>Conversacional:</i> Seus documentos + histórico de chat contribuem para o conhecimento do LLM em tempo real.\n\nVocê pode alternar entre os modos <i>durante o chat!</i>",
+    user3: "Uau, isso parece incrível, quero testar agora!",
     part6: "Divirta-se!",
-    starOnGitHub: "Dar estrela no GitHub",
-    contact: "Contato Mintplex Labs",
+    starOnGitHub: "Estrelar no GitHub",
+    contact: "Contate a Mintplex Labs",
   },
+
+  "main-page": {
+    noWorkspaceError: "Por favor, crie um workspace antes de iniciar um chat.",
+    checklist: {
+      title: "Primeiros Passos",
+      tasksLeft: "tarefas restantes",
+      completed:
+        "Você está no caminho para se tornar um expert em AnythingLLM!",
+      dismiss: "fechar",
+      tasks: {
+        create_workspace: {
+          title: "Criar workspace",
+          description: "Crie seu primeiro workspace para começar",
+          action: "Criar",
+        },
+        send_chat: {
+          title: "Enviar chat",
+          description: "Inicie uma conversa com seu assistente de IA",
+          action: "Chat",
+        },
+        embed_document: {
+          title: "Inserir documento",
+          description: "Adicione seu primeiro documento ao workspace",
+          action: "Inserir",
+        },
+        setup_system_prompt: {
+          title: "Configurar prompt",
+          description: "Defina o comportamento do seu assistente de IA",
+          action: "Configurar",
+        },
+        define_slash_command: {
+          title: "Definir comando",
+          description: "Crie comandos personalizados para seu assistente",
+          action: "Definir",
+        },
+        visit_community: {
+          title: "Visitar Comunidade",
+          description: "Explore recursos e templates da comunidade",
+          action: "Explorar",
+        },
+      },
+    },
+    quickLinks: {
+      title: "Links Rápidos",
+      sendChat: "Enviar Chat",
+      embedDocument: "Vincular Documento",
+      createWorkspace: "Criar Workspace",
+    },
+    exploreMore: {
+      title: "Explore mais recursos",
+      features: {
+        customAgents: {
+          title: "Agentes Personalizados",
+          description: "Crie agentes de IA poderosos sem código.",
+          primaryAction: "Chat com @agent",
+          secondaryAction: "Criar fluxo de agente",
+        },
+        slashCommands: {
+          title: "Comandos de Barra",
+          description: "Economize tempo com comandos personalizados de barra.",
+          primaryAction: "Criar Comando",
+          secondaryAction: "Explorar no Hub",
+        },
+        systemPrompts: {
+          title: "Prompts de Sistema",
+          description:
+            "Modifique o prompt para personalizar as respostas da IA.",
+          primaryAction: "Modificar Prompt",
+          secondaryAction: "Gerenciar variáveis",
+        },
+      },
+    },
+    announcements: {
+      title: "Atualizações e Anúncios",
+    },
+    resources: {
+      title: "Recursos",
+      links: {
+        docs: "Documentação",
+        star: "Avalie-nos no Github",
+      },
+    },
+  },
+
   "new-workspace": {
     title: "Novo Workspace",
     placeholder: "Meu Workspace",
   },
+
+  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Configurações Gerais",
     chat: "Configurações de Chat",
     vector: "Banco de Dados Vetorial",
     members: "Membros",
-    agent: "Configuração do Agente",
+    agent: "Configuração de Agente",
   },
+
+  // General Appearance
   general: {
     vector: {
       title: "Contagem de Vetores",
-      description: "Número total de vetores no seu banco de dados vetorial.",
+      description: "Número total de vetores no seu banco de dados.",
     },
     names: {
-      description: "Isso mudará apenas o nome de exibição do seu workspace.",
+      description: "Isso altera apenas o nome exibido do seu workspace.",
     },
     message: {
-      title: "Mensagens de Chat Sugeridas",
+      title: "Sugestões de Chat",
       description:
-        "Personalize as mensagens que serão sugeridas aos usuários do seu workspace.",
-      add: "Adicionar nova mensagem",
+        "Personalize as mensagens sugeridas aos usuários do workspace.",
+      add: "Adicionar mensagem",
       save: "Salvar Mensagens",
       heading: "Explique para mim",
       body: "os benefícios do AnythingLLM",
     },
     pfp: {
-      title: "Imagem de Perfil do Assistente",
-      description:
-        "Personalize a imagem de perfil do assistente para este workspace.",
+      title: "Imagem do Assistente",
+      description: "Personalize a imagem do assistente para este workspace.",
       image: "Imagem do Workspace",
-      remove: "Remover Imagem do Workspace",
+      remove: "Remover Imagem",
     },
     delete: {
       title: "Excluir Workspace",
       description:
-        "Excluir este workspace e todos os seus dados. Isso excluirá o workspace para todos os usuários.",
+        "Exclua este workspace e todos seus dados. Isso afetará todos os usuários.",
       delete: "Excluir Workspace",
       deleting: "Excluindo Workspace...",
-      "confirm-start": "Você está prestes a excluir todo o seu",
+      "confirm-start": "Você está prestes a excluir todo o",
       "confirm-end":
-        "workspace. Isso removerá todas as incorporações vetoriais no seu banco de dados vetorial.\n\nOs arquivos de origem originais permanecerão intactos. Esta ação é irreversível.",
+        "workspace. Isso removerá todos os vetores do banco de dados.\n\nOs arquivos originais permanecerão intactos. Esta ação é irreversível.",
     },
   },
+
+  // Chat Settings
   chat: {
     llm: {
-      title: "Provedor de LLM do Workspace",
+      title: "Provedor de LLM",
       description:
-        "O provedor e modelo específico de LLM que será usado para este workspace. Por padrão, usa o provedor e as configurações do sistema LLM.",
-      search: "Pesquisar todos os provedores de LLM",
+        "O provedor e modelo específico que será usado neste workspace. Por padrão, usa as configurações do sistema.",
+      search: "Buscar todos provedores",
     },
     model: {
-      title: "Modelo de Chat do Workspace",
+      title: "Modelo de Chat",
       description:
-        "O modelo de chat específico que será usado para este workspace. Se vazio, usará a preferência do LLM do sistema.",
+        "O modelo específico para este workspace. Se vazio, usará a preferência do sistema.",
       wait: "-- aguardando modelos --",
     },
     mode: {
       title: "Modo de Chat",
       chat: {
         title: "Chat",
-        "desc-start": "fornecerá respostas com o conhecimento geral do LLM",
+        "desc-start": "fornecerá respostas com conhecimento geral do LLM",
         and: "e",
-        "desc-end": "contexto do documento encontrado.",
+        "desc-end": "contexto dos documentos encontrados.",
       },
       query: {
         title: "Consulta",
         "desc-start": "fornecerá respostas",
-        only: "somente",
-        "desc-end": "se o contexto do documento for encontrado.",
+        only: "apenas",
+        "desc-end": "se contexto for encontrado nos documentos.",
       },
     },
     history: {
       title: "Histórico de Chat",
       "desc-start":
-        "O número de chats anteriores que serão incluídos na memória de curto prazo da resposta.",
+        "Número de chats anteriores que serão incluídos na memória de curto prazo.",
       recommend: "Recomendado: 20. ",
       "desc-end":
-        "Qualquer coisa acima de 45 provavelmente levará a falhas contínuas de chat dependendo do tamanho da mensagem.",
+        "Valores acima de 45 podem causar falhas dependendo do tamanho das mensagens.",
     },
     prompt: {
-      title: "Prompt",
+      title: "Prompt de Sistema",
       description:
-        "O prompt que será usado neste workspace. Defina o contexto e as instruções para que a IA gere uma resposta. Você deve fornecer um prompt cuidadosamente elaborado para que a IA possa gerar uma resposta relevante e precisa.",
+        "O prompt usado neste workspace. Defina o contexto e instruções para a IA gerar respostas relevantes e precisas.",
       history: {
-        title: null,
-        clearAll: null,
-        noHistory: null,
-        restore: null,
-        delete: null,
-        deleteConfirm: null,
-        clearAllConfirm: null,
-        expand: null,
+        title: "Histórico de Prompts",
+        clearAll: "Limpar Tudo",
+        noHistory: "Nenhum histórico disponível",
+        restore: "Restaurar",
+        delete: "Excluir",
+        deleteConfirm: "Tem certeza que deseja excluir este item?",
+        clearAllConfirm:
+          "Tem certeza que deseja limpar todo o histórico? Esta ação é irreversível.",
+        expand: "Expandir",
       },
     },
     refusal: {
-      title: "Resposta de Recusa no Modo de Consulta",
-      "desc-start": "Quando estiver no modo",
+      title: "Modo Resposta de recusa",
+      "desc-start": "Quando",
       query: "consulta",
       "desc-end":
-        ", você pode querer retornar uma resposta de recusa personalizada quando nenhum contexto for encontrado.",
+        "modo, você pode definir uma resposta personalizada quando nenhum contexto for encontrado.",
     },
     temperature: {
       title: "Temperatura do LLM",
-      "desc-start":
-        'Esta configuração controla o quão "criativas" serão as respostas do seu LLM.',
+      "desc-start": 'Controla o nível de "criatividade" das respostas.',
       "desc-end":
-        "Quanto maior o número, mais criativa será a resposta. Para alguns modelos, isso pode levar a respostas incoerentes quando configurado muito alto.",
-      hint: "A maioria dos LLMs tem vários intervalos aceitáveis de valores válidos. Consulte seu provedor de LLM para essa informação.",
+        "Valores mais altos geram respostas mais criativas, mas para alguns modelos podem se tornar incoerentes.",
+      hint: "Cada modelo LLM tem faixas de valores válidos. Consulte seu provedor.",
     },
   },
+
+  // Vector Database
   "vector-workspace": {
-    identifier: "Identificador do Banco de Dados Vetorial",
+    identifier: "Identificador do banco de dados",
     snippets: {
-      title: "Máximo de Trechos de Contexto",
+      title: "Máximo de Trechos",
       description:
-        "Esta configuração controla a quantidade máxima de trechos de contexto que será enviada ao LLM por chat ou consulta.",
+        "Controla a quantidade máxima de trechos de contexto enviados ao LLM por chat.",
       recommend: "Recomendado: 4",
     },
     doc: {
-      title: "Limite de Similaridade de Documentos",
+      title: "Limiar de similaridade",
       description:
-        "A pontuação mínima de similaridade necessária para que uma fonte seja considerada relacionada ao chat. Quanto maior o número, mais semelhante a fonte deve ser ao chat.",
+        "Pontuação mínima para uma fonte ser considerada relevante para o chat. Valores mais altos exigem maior similaridade.",
       zero: "Sem restrição",
-      low: "Baixo (pontuação de similaridade ≥ 0,25)",
-      medium: "Médio (pontuação de similaridade ≥ 0,50)",
-      high: "Alto (pontuação de similaridade ≥ 0,75)",
+      low: "Baixo (≥ .25)",
+      medium: "Médio (≥ .50)",
+      high: "Alto (≥ .75)",
     },
     reset: {
-      reset: "Redefinir Banco de Dados Vetorial",
+      reset: "Resetar Banco de Dados",
       resetting: "Limpando vetores...",
       confirm:
-        "Você está prestes a redefinir o banco de dados vetorial deste workspace. Isso removerá todas as incorporações vetoriais atualmente embutidas.\n\nOs arquivos de origem originais permanecerão intactos. Esta ação é irreversível.",
-      error: "O banco de dados vetorial do workspace não pôde ser redefinido!",
-      success:
-        "O banco de dados vetorial do workspace foi redefinido com sucesso!",
+        "Você está prestes a resetar o banco de dados deste workspace. Isso removerá todos os vetores atuais.\n\nOs arquivos originais permanecerão intactos. Esta ação é irreversível.",
+      error: "Falha ao resetar o banco de dados!",
+      success: "Banco de dados resetado com sucesso!",
     },
   },
+
+  // Agent Configuration
   agent: {
     "performance-warning":
-      "O desempenho dos LLMs que não suportam explicitamente a chamada de ferramentas depende muito das capacidades e da precisão do modelo. Algumas habilidades podem ser limitadas ou não funcionais.",
+      "O desempenho de LLMs sem suporte a tool-calling varia conforme as capacidades do modelo. Algumas funcionalidades podem ser limitadas.",
     provider: {
-      title: "Provedor de LLM do Agente do Workspace",
+      title: "Provedor LLM de Agente de Workspace",
       description:
-        "O provedor e modelo específico de LLM que será usado para o agente @agent deste workspace.",
+        "O provedor LLM e modelo específico que será usado por este agente @agent deste workspace.",
     },
     mode: {
       chat: {
-        title: "Modelo de Chat do Agente do Workspace",
+        title: "Modelo de Chat para Agente de workspace",
         description:
-          "O modelo de chat específico que será usado para o agente @agent deste workspace.",
+          "O modelo de chat específico para o agente @agent deste workspace.",
       },
-      title: "Modelo do Agente do Workspace",
+      title: "Modelo para Agente de workspace",
       description:
-        "O modelo de LLM específico que será usado para o agente @agent deste workspace.",
+        "O modelo LLM específico que será usado pelo agente @agent deste workspace.",
       wait: "-- aguardando modelos --",
     },
+
     skill: {
       title: "Habilidades padrão do agente",
       description:
-        "Melhore as habilidades naturais do agente padrão com essas habilidades pré-construídas. Esta configuração se aplica a todos os workspaces.",
+        "Melhore as habilidades naturais do agente com estas funções pré-configuradas. Aplica-se a todos os workspaces.",
       rag: {
-        title: "RAG e memória de longo prazo",
+        title: "RAG & memória longa duraçào",
         description:
-          'Permitir que o agente utilize seus documentos locais para responder a uma consulta ou pedir ao agente para "lembrar" peças de conteúdo para recuperação de memória de longo prazo.',
+          'Permite ao agente usar documentos locais para responder suas perguntas ou perguntar ao agente "lembrar" conteúdos de sua memória de longa duração.',
       },
       view: {
-        title: "Visualizar e resumir documentos",
+        title: "Visualizar & resumir",
         description:
-          "Permitir que o agente liste e resuma o conteúdo dos arquivos do workspace atualmente incorporados.",
+          "Permite ao agente listar e resumir conteúdos guardados dos arquivos do workspace.",
       },
       scrape: {
-        title: "Raspagem de sites",
+        title: "Extrair sites",
         description:
-          "Permitir que o agente visite e raspe o conteúdo de sites.",
+          "Permite ao agente visitar e extrair conteúdo de websites.",
       },
       generate: {
         title: "Gerar gráficos",
         description:
-          "Habilitar o agente padrão para gerar vários tipos de gráficos a partir dos dados fornecidos ou dados no chat.",
+          "Permite ao agent padrão gerar diversos tipos de gráficos a partir de dados armazenados ou informados no chat.",
       },
       save: {
-        title: "Gerar e salvar arquivos no navegador",
-        description:
-          "Habilitar o agente padrão para gerar e gravar arquivos que podem ser salvos e baixados no seu navegador.",
+        title: "Gerar & salvar arquivos",
+        description: "Permite ao agente gerar e salvar arquivos no navegador.",
       },
       web: {
-        title: "Pesquisa e navegação na web ao vivo",
+        title: "Busca na web",
         "desc-start":
-          "Permitir que seu agente pesquise na web para responder suas perguntas conectando-se a um provedor de pesquisa na web (SERP).",
+          "Permite ao agente pesquisar na web para responder perguntas conectando-se a um provedor de busca.",
         "desc-end":
-          "A pesquisa na web durante as sessões do agente não funcionará até que isso seja configurado.",
+          "Buscas na web durante sessões de agente não funcionarão até que isso seja configurado.",
       },
     },
   },
+
+  // Workspace Chats
   recorded: {
     title: "Chats do Workspace",
     description:
-      "Estes são todos os chats e mensagens gravados que foram enviados pelos usuários ordenados por data de criação.",
+      "Todos os chats registrados enviados por usuários, ordenados por data de criação.",
     export: "Exportar",
     table: {
-      id: "Id",
+      id: "ID",
       by: "Enviado Por",
       workspace: "Workspace",
       prompt: "Prompt",
@@ -356,504 +455,480 @@ const TRANSLATIONS = {
       at: "Enviado Em",
     },
   },
+
+  customization: {
+    interface: {
+      title: "Preferências de UI",
+      description: "Defina suas preferências de interface.",
+    },
+    branding: {
+      title: "Marca & Etiqueta Branca",
+      description: "Personalize sua instância do AnythingLLM com sua marca.",
+    },
+    chat: {
+      title: "Chat",
+      description: "Defina preferências de chat.",
+      auto_submit: {
+        title: "Envio Automático",
+        description: "Envia automaticamente entrada de voz após silêncio.",
+      },
+      auto_speak: {
+        title: "Falar Respostas",
+        description: "Fala automaticamente as respostas da IA.",
+      },
+      spellcheck: {
+        title: "Verificação Ortográfica",
+        description: "Ativa/desativa verificação ortográfica no chat.",
+      },
+    },
+    items: {
+      theme: {
+        title: "Tema",
+        description: "Selecione seu tema de cores preferido.",
+      },
+      "show-scrollbar": {
+        title: "Mostrar Barra",
+        description: "Ativa/desativa barra de rolagem no chat.",
+      },
+      "support-email": {
+        title: "Email de Suporte",
+        description: "Defina o email de suporte acessível aos usuários.",
+      },
+      "app-name": {
+        title: "Nome",
+        description:
+          "Defina um nome exibido na página de login para todos os usuários.",
+      },
+      "chat-message-alignment": {
+        title: "Alinhamento de Mensagens",
+        description: "Selecione o alinhamento das mensagens no chat.",
+      },
+      "display-language": {
+        title: "Idioma",
+        description:
+          "Selecione o idioma preferido para a interface - quando houver traduções.",
+      },
+      logo: {
+        title: "Logo",
+        description: "Envie seu logo personalizado.",
+        add: "Adicionar logo",
+        recommended: "Tamanho recomendado: 800 x 200",
+        remove: "Remover",
+        replace: "Substituir",
+      },
+      "welcome-messages": {
+        title: "Mensagens de Boas-vindas",
+        description:
+          "Personalize as mensagens exibidas aos usuários que não são administradores.",
+        new: "Novo",
+        system: "sistema",
+        user: "usuário",
+        message: "mensagem",
+        assistant: "Assistente de Chat",
+        "double-click": "Clique duas vezes para editar...",
+        save: "Salvar Mensagens",
+      },
+      "browser-appearance": {
+        title: "Aparência no Navegador",
+        description: "Personalize a aparência da aba e título no navegador.",
+        tab: {
+          title: "Título",
+          description: "Defina um título personalizado para a aba.",
+        },
+        favicon: {
+          title: "Favicon",
+          description: "Use um favicon personalizado.",
+        },
+      },
+      "sidebar-footer": {
+        title: "Itens do Rodapé",
+        description:
+          "Personalize os itens exibidos no rodapé da barra lateral.",
+        icon: "Ícone",
+        link: "Link",
+      },
+    },
+  },
+
+  // API Keys
   api: {
     title: "Chaves API",
-    description:
-      "As chaves API permitem que o titular acesse e gerencie programaticamente esta instância do AnythingLLM.",
+    description: "Chaves API permitem acesso programático a esta instância.",
     link: "Leia a documentação da API",
-    generate: "Gerar Nova Chave API",
+    generate: "Gerar Nova Chave",
     table: {
       key: "Chave API",
       by: "Criado Por",
-      created: "Criado",
+      created: "Criado Em",
     },
   },
+
   llm: {
     title: "Preferência de LLM",
     description:
-      "Estas são as credenciais e configurações para seu provedor preferido de chat e incorporação de LLM. É importante que essas chaves estejam atualizadas e corretas, caso contrário, o AnythingLLM não funcionará corretamente.",
+      "Credenciais e configurações do seu provedor de LLM. Essas chaves devem estar corretas para o funcionamento adequado.",
     provider: "Provedor de LLM",
   },
+
   transcription: {
-    title: "Preferência de Modelo de Transcrição",
+    title: "Preferência de Transcrição",
     description:
-      "Estas são as credenciais e configurações para seu provedor preferido de modelo de transcrição. É importante que essas chaves estejam atualizadas e corretas, caso contrário, os arquivos de mídia e áudio não serão transcritos.",
+      "Credenciais e configurações do seu provedor de transcrição. Essas chaves devem estar corretas para processar arquivos de mídia.",
     provider: "Provedor de Transcrição",
     "warn-start":
-      "Usar o modelo whisper local em máquinas com RAM ou CPU limitados pode travar o AnythingLLM ao processar arquivos de mídia.",
-    "warn-recommend":
-      "Recomendamos pelo menos 2GB de RAM e upload de arquivos <10Mb.",
+      "Usar o modelo local whisper em máquinas com RAM ou CPU limitada pode travar o AnythingLLM.",
+    "warn-recommend": "Recomendamos pelo menos 2GB de RAM e arquivos <10Mb.",
     "warn-end":
-      "O modelo embutido será baixado automaticamente no primeiro uso.",
+      "O modelo interno será baixado automaticamente no primeiro uso.",
   },
+
   embedding: {
-    title: "Preferência de Incorporação",
+    title: "Preferência de Vínculo",
     "desc-start":
-      "Ao usar um LLM que não suporta nativamente um mecanismo de incorporação - pode ser necessário especificar adicionalmente as credenciais para incorporação de texto.",
+      "Ao usar um LLM sem suporte nativo a vínculo, você pode precisar especificar credenciais adicionais.",
     "desc-end":
-      "A incorporação é o processo de transformar texto em vetores. Essas credenciais são necessárias para transformar seus arquivos e prompts em um formato que o AnythingLLM possa usar para processar.",
+      "Vínculo é o processo de transformar texto em vetores. Essas credenciais são necessárias para processar arquivos e prompts.",
     provider: {
-      title: "Provedor de Incorporação",
+      title: "Provedor de Vínculo",
       description:
-        "Não é necessária configuração ao usar o mecanismo de incorporação nativo do AnythingLLM.",
+        "Nenhuma configuração é necessária ao usar o mecanismo nativo do AnythingLLM.",
     },
   },
+
   text: {
-    title: "Preferências de Divisão e Fragmentação de Texto",
+    title: "Preferências de Divisão de Texto",
     "desc-start":
-      "Às vezes, você pode querer alterar a maneira padrão como novos documentos são divididos e fragmentados antes de serem inseridos em seu banco de dados de vetores.",
-    "desc-end":
-      "Você só deve modificar esta configuração se entender como a divisão de texto funciona e seus efeitos colaterais.",
-    "warn-start": "As alterações aqui se aplicarão apenas a",
-    "warn-center": "documentos recém-incorporados",
-    "warn-end": ", não documentos existentes.",
+      "Você pode alterar a forma como novos documentos são divididos antes de serem inseridos no banco de dados vetorial.",
+    "desc-end": "Modifique apenas se entender os efeitos da divisão de texto.",
+    "warn-start": "Alterações afetarão apenas",
+    "warn-center": "documentos novos",
+    "warn-end": ", não os existentes.",
     size: {
-      title: "Tamanho do Fragmento de Texto",
-      description:
-        "Este é o comprimento máximo de caracteres que pode estar presente em um único vetor.",
-      recommend: "O comprimento máximo do modelo de incorporação é",
+      title: "Tamanho dos Trechos",
+      description: "Comprimento máximo de caracteres em um único vetor.",
+      recommend: "Tamanho máximo do modelo de vínculo é",
     },
+
     overlap: {
-      title: "Sobreposição de Fragmento de Texto",
+      title: "Sobreposição de Trechos",
       description:
-        "Esta é a sobreposição máxima de caracteres que ocorre durante a fragmentação entre dois fragmentos de texto adjacentes.",
+        "Sobreposição máxima de caracteres entre dois trechos adjacentes.",
     },
   },
+
+  // Vector Database
   vector: {
     title: "Banco de Dados Vetorial",
     description:
-      "Estas são as credenciais e configurações de como sua instância do AnythingLLM funcionará. É importante que essas chaves estejam atualizadas e corretas.",
+      "Credenciais e configurações do seu banco de dados vetorial. Essas chaves devem estar corretas para o funcionamento adequado.",
     provider: {
-      title: "Provedor de Banco de Dados Vetorial",
-      description: "Não há configuração necessária para o LanceDB.",
+      title: "Provedor do Banco",
+      description: "Nenhuma configuração necessária para LanceDB.",
     },
   },
+
+  // Embeddable Chat Widgets
   embeddable: {
-    title: "Widgets de Chat Incorporáveis",
+    title: "Widgets de Chat vinculado",
     description:
-      "Os widgets de chat incorporáveis são interfaces de chat públicas vinculadas a um único workspace. Eles permitem que você construa workspaces que você pode publicar para o mundo.",
-    create: "Criar incorporação",
+      "Widgets de chat vinculadas são interfaces de chats públicos ligadas a um único workspace. Isto permite construir workspaces e publicá-los na web.",
+    create: "Criar vínculo",
     table: {
       workspace: "Workspace",
       chats: "Chats Enviados",
       Active: "Domínios Ativos",
     },
   },
+
   "embed-chats": {
-    title: "Incorporar Chats",
+    title: "Chats Vinculados",
     export: "Exportar",
-    description:
-      "Estes são todos os chats e mensagens registrados de qualquer incorporação que você publicou.",
+    description: "Todos os chats registrados de qualquer vínculo publicado.",
     table: {
-      embed: "Incorporação",
+      embed: "Vínculo",
       sender: "Remetente",
       message: "Mensagem",
       response: "Resposta",
       at: "Enviado Em",
     },
   },
+
   multi: {
-    title: "Modo Multiusuário",
+    title: "Modo Multi-Usuário",
     description:
-      "Configure sua instância para suportar sua equipe ativando o Modo Multiusuário.",
+      "Configure sua instância para suportar sua equipe ativando o modo multi-usuário.",
     enable: {
-      "is-enable": "Modo Multiusuário está Ativado",
-      enable: "Ativar Modo Multiusuário",
+      "is-enable": "Modo Multi-Usuário Ativo",
+      enable: "Ativar Modo Multi-Usuário",
       description:
-        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para todos os novos usuários ou administradores. Não perca sua senha, pois apenas um usuário Administrador pode redefinir senhas.",
-      username: "Nome de usuário da conta de Administrador",
-      password: "Senha da conta de Administrador",
+        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
+      username: "Nome de usuário admin",
+      password: "Senha de admin",
     },
     password: {
       title: "Proteção por Senha",
       description:
-        "Proteja sua instância do AnythingLLM com uma senha. Se você esquecer esta senha, não há método de recuperação, então certifique-se de salvar esta senha.",
+        "Proteja sua instância com uma senha. Não há recuperação, então salve esta senha.",
     },
     instance: {
-      title: "Proteger Instância com Senha",
+      title: "Proteger Instância",
       description:
-        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para todos os novos usuários ou administradores. Não perca sua senha, pois apenas um usuário Administrador pode redefinir senhas.",
+        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
       password: "Senha da instância",
     },
   },
+
+  // Event Logs
   event: {
     title: "Logs de Eventos",
     description:
-      "Veja todas as ações e eventos acontecendo nesta instância para monitoramento.",
-    clear: "Limpar Logs de Eventos",
+      "Visualize todas as ações e eventos nesta instância para monitoramento.",
+    clear: "Limpar Logs de eventos",
     table: {
       type: "Tipo de Evento",
       user: "Usuário",
-      occurred: "Ocorreu Em",
+      occurred: "Ocorrido Em",
     },
   },
+
+  // Privacy & Data-Handling
   privacy: {
-    title: "Privacidade e Tratamento de Dados",
+    title: "Privacidade & Dados",
     description:
-      "Esta é a sua configuração de como os provedores de terceiros conectados e o AnythingLLM tratam seus dados.",
+      "Configurações de como provedores terceiros e o AnythingLLM lidam com seus dados.",
     llm: "Seleção de LLM",
-    embedding: "Preferência de Incorporação",
+    embedding: "Preferência de Vínculo",
     vector: "Banco de Dados Vetorial",
-    anonymous: "Telemetria Anônima Ativada",
+    anonymous: "Telemetria Anônima Ativa",
   },
+
   connectors: {
-    "search-placeholder": "Pesquisa conectores de dados",
-    "no-connectors": "Nenhum conector de dados encontrado",
+    "search-placeholder": "Buscar conectores",
+    "no-connectors": "Nenhum conector encontrado.",
+    obsidian: {
+      name: "Obsidian",
+      description: "Importe um vault do Obsidian com um clique.",
+      vault_location: "Local do Cofre",
+      vault_description:
+        "Selecione sua pasta do Obsidian para importar todas as notas.",
+      selected_files: "Encontrados {{count}} arquivos markdown",
+      importing: "Importando cofre...",
+      import_vault: "Importar Cofre",
+      processing_time: "Pode levar algum tempo dependendo do tamanho do cofre.",
+      vault_warning:
+        "Para evitar conflitos, certifique-se que seu cofre Obsidian não está aberto.",
+    },
     github: {
       name: "Repositório GitHub",
       description:
-        "Importe um repositório GitHub público ou privado inteiro com um único clique.",
-      URL: "URL do repositório Github",
-      URL_explained: "URL do repositório do GitHub que você deseja coletar.",
-      token: "Token de acesso do Github",
-      optional: null,
-      token_explained: null,
-      token_explained_start: null,
-      token_explained_link1: null,
-      token_explained_middle: null,
-      token_explained_link2: null,
-      token_explained_end: null,
-      ignores: null,
-      git_ignore: null,
-      task_explained: null,
-      branch: null,
-      branch_loading: null,
-      branch_explained: null,
-      token_information: null,
-      token_personal: null,
+        "Importe um repositório GitHub público ou privado com um clique.",
+      URL: "URL do Repositório",
+      URL_explained: "URL do repositório que deseja coletar.",
+      token: "Token de Acesso",
+      optional: "opcional",
+      token_explained: "Token para evitar limitação de taxa.",
+      token_explained_start: "Sem um ",
+      token_explained_link1: "Token de Acesso Pessoal",
+      token_explained_middle:
+        ", a API do GitHub pode limitar o número de arquivos coletados. Você pode ",
+      token_explained_link2: "criar um Token Temporário",
+      token_explained_end: " para evitar isso.",
+      ignores: "Arquivos Ignorados",
+      git_ignore:
+        "Liste no formato .gitignore para ignorar arquivos específicos. Pressione enter após cada entrada.",
+      task_explained:
+        "Após conclusão, todos os arquivos estarão disponíveis para vínculo.",
+      branch: "Branch",
+      branch_loading: "-- carregando branches --",
+      branch_explained: "Branch para coletar arquivos.",
+      token_information:
+        "Sem preencher o <b>Token de Acesso</b>, este conector só poderá coletar arquivos <b>do nível superior</b> devido a limitações da API pública.",
+      token_personal: "Obtenha um Token de Acesso Pessoal gratuito aqui.",
     },
     gitlab: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      token: null,
-      optional: null,
-      token_explained: null,
-      token_description: null,
-      token_explained_start: null,
-      token_explained_link1: null,
-      token_explained_middle: null,
-      token_explained_link2: null,
-      token_explained_end: null,
-      fetch_issues: null,
-      ignores: null,
-      git_ignore: null,
-      task_explained: null,
-      branch: null,
-      branch_loading: null,
-      branch_explained: null,
-      token_information: null,
-      token_personal: null,
+      name: "Repositório GitLab",
+      description:
+        "Importe um repositório GitLab público ou privado com um clique.",
+      URL: "URL do Repositório",
+      URL_explained: "URL do repositório que deseja coletar.",
+      token: "Token de Acesso",
+      optional: "opcional",
+      token_explained: "Token para evitar limitação de taxa.",
+      token_description: "Selecione entidades adicionais para buscar na API.",
+      token_explained_start: "Sem um ",
+      token_explained_link1: "Token de Acesso Pessoal",
+      token_explained_middle:
+        ", a API do GitLab pode limitar o número de arquivos coletados. Você pode ",
+      token_explained_link2: "criar um Token Temporário",
+      token_explained_end: " para evitar isso.",
+      fetch_issues: "Buscar Issues como Documentos",
+      ignores: "Arquivos Ignorados",
+      git_ignore:
+        "Liste no formato .gitignore para ignorar arquivos específicos. Pressione enter após cada entrada.",
+      task_explained:
+        "Após conclusão, todos os arquivos estarão disponíveis para vínculo.",
+      branch: "Branch",
+      branch_loading: "-- carregando branches --",
+      branch_explained: "Branch para coletar arquivos.",
+      token_information:
+        "Sem preencher o <b>Token de Acesso</b>, este conector só poderá coletar arquivos <b>do nível superior</b> devido a limitações da API pública.",
+      token_personal: "Obtenha um Token de Acesso Pessoal gratuito aqui.",
     },
     youtube: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained_start: null,
-      URL_explained_link: null,
-      URL_explained_end: null,
-      task_explained: null,
-      language: null,
-      language_explained: null,
-      loading_languages: null,
+      name: "Transcrição do YouTube",
+      description:
+        "Importe a transcrição de um vídeo do YouTube a partir de um link.",
+      URL: "URL do Vídeo",
+      URL_explained_start:
+        "Insira a URL de qualquer vídeo do YouTube para buscar sua transcrição. O vídeo deve ter ",
+      URL_explained_link: "legendas",
+      URL_explained_end: " disponíveis.",
+      task_explained:
+        "Após conclusão, a transcrição estará disponível para vínculo.",
+      language: "Idioma da Transcrição",
+      language_explained:
+        "Selecione o idioma da transcrição que deseja coletar.",
+      loading_languages: "-- carregando idiomas --",
     },
     "website-depth": {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      depth: null,
-      depth_explained: null,
-      max_pages: null,
-      max_pages_explained: null,
-      task_explained: null,
+      name: "Coletor de Links",
+      description:
+        "Extraia um site e seus sublinks até uma certa profundidade.",
+      URL: "URL do Site",
+      URL_explained: "URL do site que deseja extrair.",
+      depth: "Profundidade",
+      depth_explained:
+        "Número de links filhos que o coletor deve seguir a partir da URL original.",
+      max_pages: "Máximo de Páginas",
+      max_pages_explained: "Número máximo de links para extrair.",
+      task_explained:
+        "Após conclusão, todo o conteúdo estará disponível para vínculo.",
     },
     confluence: {
-      name: null,
-      description: null,
-      deployment_type: null,
-      deployment_type_explained: null,
-      base_url: null,
-      base_url_explained: null,
-      space_key: null,
-      space_key_explained: null,
-      username: null,
-      username_explained: null,
-      auth_type: null,
-      auth_type_explained: null,
-      auth_type_username: null,
-      auth_type_personal: null,
-      token: null,
-      token_explained_start: null,
-      token_explained_link: null,
-      token_desc: null,
-      pat_token: null,
-      pat_token_explained: null,
-      task_explained: null,
+      name: "Confluence",
+      description: "Importe uma página do Confluence com um clique.",
+      deployment_type: "Tipo de instalação",
+      deployment_type_explained:
+        "Determine se sua instância é hospedada na nuvem ou auto-hospedada.",
+      base_url: "URL Base",
+      base_url_explained: "URL base do seu espaço no Confluence.",
+      space_key: "Chave do Espaço",
+      space_key_explained:
+        "Chave do espaço no Confluence que será usada. Geralmente começa com ~",
+      username: "Nome de Usuário",
+      username_explained: "Seu nome de usuário no Confluence",
+      auth_type: "Tipo de Autenticação",
+      auth_type_explained:
+        "Selecione o tipo de autenticação para acessar suas páginas.",
+      auth_type_username: "Usuário e Token",
+      auth_type_personal: "Token Pessoal",
+      token: "Token de Acesso",
+      token_explained_start:
+        "Forneça um token de acesso para autenticação. Você pode gerar um token",
+      token_explained_link: "aqui",
+      token_desc: "Token para autenticação",
+      pat_token: "Token Pessoal",
+      pat_token_explained: "Seu token pessoal de acesso.",
+      task_explained:
+        "Após conclusão, o conteúdo da página estará disponível para vínculo.",
     },
+
     manage: {
-      documents: null,
-      "data-connectors": null,
-      "desktop-only": null,
-      dismiss: null,
-      editing: null,
+      documents: "Documentos",
+      "data-connectors": "Conectores de Dados",
+      "desktop-only":
+        "Editar estas configurações só está disponível em dispositivos desktop. Acesse esta página em seu desktop para continuar.",
+      dismiss: "Ignorar",
+      editing: "Editando",
     },
     directory: {
-      "my-documents": null,
-      "new-folder": null,
-      "search-document": null,
-      "no-documents": null,
-      "move-workspace": null,
-      name: null,
-      "delete-confirmation": null,
-      "removing-message": null,
-      "move-success": null,
-      date: null,
-      type: null,
-      no_docs: null,
-      select_all: null,
-      deselect_all: null,
-      remove_selected: null,
-      costs: null,
-      save_embed: null,
+      "my-documents": "Meus Documentos",
+      "new-folder": "Nova Pasta",
+      "search-document": "Buscar documento",
+      "no-documents": "Nenhum Documento",
+      "move-workspace": "Mover para Workspace",
+      name: "Nome",
+      "delete-confirmation":
+        "Tem certeza que deseja excluir estes arquivos e pastas?\nIsso removerá os arquivos do sistema e de todos os workspaces automaticamente.\nEsta ação é irreversível.",
+      "removing-message":
+        "Removendo {{count}} documentos e {{folderCount}} pastas. Aguarde.",
+      "move-success": "{{count}} documentos movidos com sucesso.",
+      date: "Data",
+      type: "Tipo",
+      no_docs: "Nenhum Documento",
+      select_all: "Selecionar Tudo",
+      deselect_all: "Desmarcar Tudo",
+      remove_selected: "Remover Selecionados",
+      costs: "*Custo único para vínculos",
+      save_embed: "Salvar e Inserir",
     },
     upload: {
-      "processor-offline": null,
-      "processor-offline-desc": null,
-      "click-upload": null,
-      "file-types": null,
-      "or-submit-link": null,
-      "placeholder-link": null,
-      fetching: null,
-      "fetch-website": null,
-      "privacy-notice": null,
+      "processor-offline": "Processador de documentos Indisponível",
+      "processor-offline-desc":
+        "Não é possível enviar arquivos agora. O processador de documentos está offline. Tente mais tarde.",
+      "click-upload": "Clique para enviar ou arraste e solte",
+      "file-types": "suporta textos, csv, planilhas, áudios e mais!",
+      "or-submit-link": "ou envie um link",
+      "placeholder-link": "https://exemplo.com",
+      fetching: "Buscando...",
+      "fetch-website": "Buscar site",
+      "privacy-notice":
+        "Esses arquivos são enviados ao processador local do AnythingLLM. Não são compartilhados com terceiros.",
     },
     pinning: {
-      what_pinning: null,
-      pin_explained_block1: null,
-      pin_explained_block2: null,
-      pin_explained_block3: null,
-      accept: null,
+      what_pinning: "O que é fixar documento?",
+      pin_explained_block1:
+        "Ao <b>fixar</b> um documento, o conteúdo será injetado na janela do prompt para o LLM entender.",
+      pin_explained_block2:
+        "Funciona melhor com <b>modelos de contexto grande</b> ou arquivos pequenos e importantes.",
+      pin_explained_block3:
+        "Se não tiver boas respostas, fixar pode melhorar a qualidade com um clique.",
+      accept: "Ok, entendi",
     },
     watching: {
-      what_watching: null,
-      watch_explained_block1: null,
-      watch_explained_block2: null,
-      watch_explained_block3_start: null,
-      watch_explained_block3_link: null,
-      watch_explained_block3_end: null,
-      accept: null,
-    },
-    obsidian: {
-      name: null,
-      description: null,
-      vault_location: null,
-      vault_description: null,
-      selected_files: null,
-      importing: null,
-      import_vault: null,
-      processing_time: null,
-      vault_warning: null,
+      what_watching: "O que é monitorar um documento?",
+      watch_explained_block1:
+        "Ao <b>monitorar</b>, o conteúdo será <i>sincronizado</i> com a fonte em intervalos regulares.",
+      watch_explained_block2:
+        "Funciona apenas com conteúdo online, não com uploads manuais.",
+      watch_explained_block3_start:
+        "Você pode gerenciar documentos monitorados no ",
+      watch_explained_block3_link: "Gerenciador de arquivos",
+      watch_explained_block3_end: " na visão de admin.",
+      accept: "Ok, entendi",
     },
   },
+
   chat_window: {
-    welcome: null,
-    get_started: null,
-    get_started_default: null,
-    upload: null,
-    or: null,
-    send_chat: null,
-    send_message: null,
-    attach_file: null,
-    slash: null,
-    agents: null,
-    text_size: null,
-    microphone: null,
-    send: null,
-    attachments_processing: null,
+    welcome: "Bem-vindo ao novo workspace.",
+    get_started: "Para começar,",
+    get_started_default: "Para começar",
+    upload: "envie um documento",
+    or: "ou",
+    attachments_processing: "Anexos em processamento. Aguarde...",
+    send_chat: "envie uma mensagem.",
+    send_message: "Enviar mensagem",
+    attach_file: "Anexar arquivo ao chat",
+    slash: "Veja todos os comandos disponíveis.",
+    agents: "Veja todos os agentes disponíveis.",
+    text_size: "Alterar tamanho do texto.",
+    microphone: "Fale seu prompt.",
+    send: "Enviar prompt para o workspace",
   },
+
   profile_settings: {
-    edit_account: null,
-    profile_picture: null,
-    remove_profile_picture: null,
-    username: null,
-    username_description: null,
-    new_password: null,
-    passwort_description: null,
-    cancel: null,
-    update_account: null,
-    theme: null,
-    language: null,
-  },
-  customization: {
-    interface: {
-      title: null,
-      description: null,
-    },
-    branding: {
-      title: null,
-      description: null,
-    },
-    chat: {
-      title: null,
-      description: null,
-      auto_submit: {
-        title: null,
-        description: null,
-      },
-      auto_speak: {
-        title: null,
-        description: null,
-      },
-      spellcheck: {
-        title: null,
-        description: null,
-      },
-    },
-    items: {
-      theme: {
-        title: null,
-        description: null,
-      },
-      "show-scrollbar": {
-        title: null,
-        description: null,
-      },
-      "support-email": {
-        title: null,
-        description: null,
-      },
-      "app-name": {
-        title: null,
-        description: null,
-      },
-      "chat-message-alignment": {
-        title: null,
-        description: null,
-      },
-      "display-language": {
-        title: null,
-        description: null,
-      },
-      logo: {
-        title: null,
-        description: null,
-        add: null,
-        recommended: null,
-        remove: null,
-        replace: null,
-      },
-      "welcome-messages": {
-        title: null,
-        description: null,
-        new: null,
-        system: null,
-        user: null,
-        message: null,
-        assistant: null,
-        "double-click": null,
-        save: null,
-      },
-      "browser-appearance": {
-        title: null,
-        description: null,
-        tab: {
-          title: null,
-          description: null,
-        },
-        favicon: {
-          title: null,
-          description: null,
-        },
-      },
-      "sidebar-footer": {
-        title: null,
-        description: null,
-        icon: null,
-        link: null,
-      },
-    },
-  },
-  "main-page": {
-    noWorkspaceError: null,
-    checklist: {
-      title: null,
-      tasksLeft: null,
-      completed: null,
-      dismiss: null,
-      tasks: {
-        create_workspace: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        send_chat: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        embed_document: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        setup_system_prompt: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        define_slash_command: {
-          title: null,
-          description: null,
-          action: null,
-        },
-        visit_community: {
-          title: null,
-          description: null,
-          action: null,
-        },
-      },
-    },
-    quickLinks: {
-      title: null,
-      sendChat: null,
-      embedDocument: null,
-      createWorkspace: null,
-    },
-    exploreMore: {
-      title: null,
-      features: {
-        customAgents: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        slashCommands: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        systemPrompts: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-      },
-    },
-    announcements: {
-      title: null,
-    },
-    resources: {
-      title: null,
-      links: {
-        docs: null,
-        star: null,
-      },
-    },
+    edit_account: "Editar conta",
+    profile_picture: "Foto de perfil",
+    remove_profile_picture: "Remover foto de perfil",
+    username: "Nome de usuário",
+    username_description:
+      "Somente letras minúsculas, números, sublinhados e hífens. Sem espaços.",
+    new_password: "Nova senha",
+    passwort_description: "A senha deve ter no mínimo 8 caracteres",
+    cancel: "Cancelar",
+    update_account: "Atualizar conta",
+    theme: "Preferência de tema",
+    language: "Idioma preferido",
   },
 };
 
