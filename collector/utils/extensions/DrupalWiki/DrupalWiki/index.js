@@ -7,7 +7,11 @@
 
 const { htmlToText } = require("html-to-text");
 const { tokenizeString } = require("../../../tokenizer");
-const { sanitizeFileName, writeToServerDocuments, documentsFolder } = require("../../../files");
+const {
+  sanitizeFileName,
+  writeToServerDocuments,
+  documentsFolder,
+} = require("../../../files");
 const { default: slugify } = require("slugify");
 const path = require("path");
 const fs = require("fs");

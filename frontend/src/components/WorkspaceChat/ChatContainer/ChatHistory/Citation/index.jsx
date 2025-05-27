@@ -56,7 +56,9 @@ export default function Citations({ sources = [] }) {
           open ? "pb-2" : ""
         } hover:text-white/75 hover:light:text-black/75 transition-all duration-300`}
       >
-        {open ? t("chat_window.hide_citations") : t("chat_window.show_citations")}
+        {open
+          ? t("chat_window.hide_citations")
+          : t("chat_window.show_citations")}
         <CaretRight
           weight="bold"
           size={14}

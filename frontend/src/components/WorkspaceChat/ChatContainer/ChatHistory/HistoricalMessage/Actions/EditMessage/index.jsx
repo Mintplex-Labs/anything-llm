@@ -49,7 +49,9 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
         onClick={handleEditClick}
         data-tooltip-id="edit-input-text"
         data-tooltip-content={`${
-          role === "user" ? t("chat_window.edit_prompt") : t("chat_window.edit_response")
+          role === "user"
+            ? t("chat_window.edit_prompt")
+            : t("chat_window.edit_response")
         } `}
         className="border-none text-zinc-300"
         aria-label={`Edit ${role === "user" ? t("chat_window.edit_prompt") : t("chat_window.edit_response")}`}
@@ -111,12 +113,16 @@ export function EditMessageForm({
         <button
           type="submit"
           className="border-none px-2 py-1 bg-gray-200 text-gray-700 font-medium rounded-md mr-2 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >{t("chat_window.save_submit")}</button>
+        >
+          {t("chat_window.save_submit")}
+        </button>
         <button
           type="button"
           className="border-none px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 light:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           onClick={cancelEdits}
-        >{t("chat_window.cancel")}</button>
+        >
+          {t("chat_window.cancel")}
+        </button>
       </div>
     </form>
   );

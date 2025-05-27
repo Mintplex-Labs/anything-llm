@@ -957,7 +957,8 @@ const TRANSLATIONS = {
     add_new_preset: " Add New Preset",
     command: "Command",
     your_command: "your-command",
-    placeholder_prompt: "This is the content that will be injected in front of your prompt.",
+    placeholder_prompt:
+      "This is the content that will be injected in front of your prompt.",
     description: "Description",
     placeholder_description: "Responds with a poem about LLMs.",
     save: "Save",

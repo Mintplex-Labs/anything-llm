@@ -91,7 +91,9 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-theme-text-primary text-xs">{t("chat_window.small")}</div>
+            <div className="text-theme-text-primary text-xs">
+              {t("chat_window.small")}
+            </div>
           </div>
         </button>
 
@@ -108,7 +110,9 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-theme-text-primary text-sm">{t("chat_window.normal")}</div>
+            <div className="text-theme-text-primary text-sm">
+              {t("chat_window.normal")}
+            </div>
           </div>
         </button>
 
@@ -125,7 +129,9 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-theme-text-primary text-[16px]">{t("chat_window.large")}</div>
+            <div className="text-theme-text-primary text-[16px]">
+              {t("chat_window.large")}
+            </div>
           </div>
         </button>
       </div>

@@ -61,7 +61,9 @@ export default function AsyncTTSMessage({ slug, chatId }) {
         data-auto-play-chat-id={chatId}
         data-tooltip-id="message-to-speech"
         data-tooltip-content={
-          speaking ? t("pause_tts_speech_message") : t("chat_window.tts_speak_message")
+          speaking
+            ? t("pause_tts_speech_message")
+            : t("chat_window.tts_speak_message")
         }
         className="border-none text-[var(--theme-sidebar-footer-icon-fill)]"
         aria-label={speaking ? "Pause speech" : "Speak message"}

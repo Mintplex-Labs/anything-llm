@@ -99,7 +99,8 @@ export function AvailableAgents({
             >
               <div className="w-full flex-col text-left flex pointer-events-none">
                 <div className="text-theme-text-primary text-sm">
-                  <b>{t("chat_window.at_agent")}</b>{t("chat_window.default_agent_description")}
+                  <b>{t("chat_window.at_agent")}</b>
+                  {t("chat_window.default_agent_description")}
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <AbilityTag text="rag-search" />
