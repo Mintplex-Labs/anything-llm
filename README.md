@@ -63,12 +63,30 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - 🦾 Agents inside your workspace (browse the web, etc)
 - 💬 [Custom Embeddable Chat widget for your website](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _Docker version only_
 - 📖 Multiple document type support (PDF, TXT, DOCX, etc)
+- ⌨️ **Keyboard shortcuts** for quick navigation and actions (press `⌘/Ctrl + Shift + ?` or `F1` to view all shortcuts)
 - Simple chat UI with Drag-n-Drop functionality and clear citations.
 - 100% Cloud deployment ready.
 - Works with all popular [closed and open-source LLM providers](#supported-llms-embedder-models-speech-models-and-vector-databases).
 - Built-in cost & time-saving measures for managing very large documents compared to any other chat UI.
 - Full Developer API for custom integrations!
 - Much more...install and find out!
+
+### Keyboard Shortcuts
+
+AnythingLLM includes a comprehensive set of keyboard shortcuts to help you navigate and use the application more efficiently:
+
+- `⌘/Ctrl + ,` - Open Settings
+- `⌘/Ctrl + H` - Go to Home
+- `⌘/Ctrl + W` - Manage Workspaces
+- `⌘/Ctrl + K` - API Keys Settings
+- `⌘/Ctrl + L` - LLM Preferences
+- `⌘/Ctrl + V` - Vector Database Settings
+- `⌘/Ctrl + S` - Security Settings
+- `⌘/Ctrl + U` - User Management
+- `⌘/Ctrl + Shift + C` - Chat Settings
+- `⌘/Ctrl + Shift + ?` or `F1` - Show keyboard shortcuts help
+
+You can access the keyboard shortcuts help modal at any time by pressing `⌘/Ctrl + Shift + ?` or `F1`, or by clicking the keyboard shortcuts button in the Quick Links section on the home page.
 
 ### Supported LLMs, Embedder Models, Speech models, and Vector Databases
 

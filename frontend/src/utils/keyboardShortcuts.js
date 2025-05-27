@@ -49,13 +49,11 @@ const SHORTCUTS = {
   },
   // Help
   [`${modifier}+shift+?`]: () => {
-    console.log("[Keyboard Shortcuts] Dispatching help event");
     window.dispatchEvent(
       new CustomEvent(KEYBOARD_SHORTCUTS_HELP_EVENT, { detail: { show: true } })
     );
   },
   f1: () => {
-    console.log("[Keyboard Shortcuts] Dispatching help event");
     window.dispatchEvent(
       new CustomEvent(KEYBOARD_SHORTCUTS_HELP_EVENT, { detail: { show: true } })
     );
@@ -77,8 +75,7 @@ function getShortcutKey(event) {
   else if (event.key === "Shift")
     return ""; // Ignore Shift key by itself
   else key += event.key.toLowerCase();
-
-  console.log("[Keyboard Shortcuts] Detected key combination:", key);
+  
   return key;
 }
 
@@ -90,13 +87,11 @@ export function initKeyboardShortcuts() {
 
     const action = SHORTCUTS[shortcutKey];
     if (action) {
-      console.log("[Keyboard Shortcuts] Executing shortcut:", shortcutKey);
       event.preventDefault();
       action();
     }
   }
 
-  console.log("[Keyboard Shortcuts] Initializing keyboard shortcuts");
   window.addEventListener("keydown", handleKeyDown);
   return () => window.removeEventListener("keydown", handleKeyDown);
 }
@@ -108,11 +103,9 @@ export function useKeyboardShortcuts() {
 
   useEffect(() => {
     function handleHelpEvent(e) {
-      console.log("[Keyboard Shortcuts] Help event received:", e.detail);
       setShowHelp(e.detail.show);
     }
 
-    console.log("[Keyboard Shortcuts] Setting up help event listener");
     window.addEventListener(KEYBOARD_SHORTCUTS_HELP_EVENT, handleHelpEvent);
     const cleanup = initKeyboardShortcuts();
 
