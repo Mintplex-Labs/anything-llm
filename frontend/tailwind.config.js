@@ -100,6 +100,14 @@ export default {
           "file-picker": {
             hover: 'var(--theme-file-picker-hover)',
           },
+          attachment: {
+            bg: 'var(--theme-attachment-bg)',
+            'error-bg': 'var(--theme-attachment-error-bg)',
+            'success-bg': 'var(--theme-attachment-success-bg)',
+            text: 'var(--theme-attachment-text)',
+            'text-secondary': 'var(--theme-attachment-text-secondary)',
+            'icon': 'var(--theme-attachment-icon)',
+          },
           home: {
             text: 'var(--theme-home-text)',
             "text-secondary": 'var(--theme-home-text-secondary)',

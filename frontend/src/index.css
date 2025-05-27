@@ -85,6 +85,13 @@
 
   --theme-home-button-secondary-border: #acc1e6;
   --theme-home-button-secondary-border-hover: #293056;
+
+  --theme-attachment-bg: #18191A;
+  --theme-attachment-error-bg: rgba(180, 35, 24, 0.4);
+  --theme-attachment-success-bg: #18191A;
+  --theme-attachment-text: #ffffff;
+  --theme-attachment-text-secondary: rgba(255, 255, 255, 0.8);
+  --theme-attachment-icon: #ffffff;
 }
 
 [data-theme="light"] {
@@ -167,6 +174,15 @@
   --theme-checklist-button-text: #0ba5ec;
   --theme-checklist-button-hover-bg: rgba(11, 165, 236, 0.1);
   --theme-checklist-button-hover-border: rgba(11, 165, 236, 0.8);
+
+  --theme-home-button-secondary-border-hover: #293056;
+
+  --theme-attachment-bg: #eaeaea;
+  --theme-attachment-error-bg: rgba(180, 35, 24, 0.3);
+  --theme-attachment-success-bg: #eaeaea;
+  --theme-attachment-text: #0e0f0f;
+  --theme-attachment-text-secondary: rgba(0, 0, 0, 0.8);
+  --theme-attachment-icon: #ffffff;
 }
 
 [data-theme="light"] .text-white {
