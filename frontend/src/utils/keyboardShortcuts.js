@@ -5,51 +5,57 @@ import { useEffect, useState } from "react";
 // Event to show/hide keyboard shortcuts help
 export const KEYBOARD_SHORTCUTS_HELP_EVENT = "keyboard-shortcuts-help";
 
+// Check if the user is on a Mac
+const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+const modifier = isMac ? "meta" : "ctrl";
+
 // Map of keyboard shortcuts to their actions
 const SHORTCUTS = {
   // Settings
-  "meta+,": () => {
+  [`${modifier}+,`]: () => {
     window.location.href = paths.settings.interface();
   },
   // Home
-  "meta+h": () => {
+  [`${modifier}+h`]: () => {
     window.location.href = paths.home();
   },
   // Workspaces
-  "meta+w": () => {
+  [`${modifier}+w`]: () => {
     window.location.href = paths.settings.workspaces();
   },
   // API Keys
-  "meta+k": () => {
+  [`${modifier}+k`]: () => {
     window.location.href = paths.settings.apiKeys();
   },
   // LLM Preferences
-  "meta+l": () => {
+  [`${modifier}+l`]: () => {
     window.location.href = paths.settings.llmPreference();
   },
   // Vector Database
-  "meta+v": () => {
+  [`${modifier}+v`]: () => {
     window.location.href = paths.settings.vectorDatabase();
   },
   // Security Settings
-  "meta+s": () => {
+  [`${modifier}+s`]: () => {
     window.location.href = paths.settings.security();
   },
   // User Management
-  "meta+u": () => {
+  [`${modifier}+u`]: () => {
     window.location.href = paths.settings.users();
   },
   // Chat Settings
-  "meta+shift+c": () => {
+  [`${modifier}+shift+c`]: () => {
     window.location.href = paths.settings.chat();
   },
   // Help
-  "meta+?": () => {
+  [`${modifier}+shift+?`]: () => {
+    console.log("[Keyboard Shortcuts] Dispatching help event");
     window.dispatchEvent(
       new CustomEvent(KEYBOARD_SHORTCUTS_HELP_EVENT, { detail: { show: true } })
     );
   },
   f1: () => {
+    console.log("[Keyboard Shortcuts] Dispatching help event");
     window.dispatchEvent(
       new CustomEvent(KEYBOARD_SHORTCUTS_HELP_EVENT, { detail: { show: true } })
     );
@@ -58,9 +64,6 @@ const SHORTCUTS = {
 
 // Convert keyboard event to shortcut key
 function getShortcutKey(event) {
-  const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-  const modifier = isMac ? "meta" : "ctrl";
-
   let key = "";
   if (event.metaKey || event.ctrlKey) key += modifier + "+";
   if (event.shiftKey) key += "shift+";
@@ -69,8 +72,13 @@ function getShortcutKey(event) {
   // Handle special keys
   if (event.key === ",") key += ",";
   else if (event.key === "?") key += "?";
+  else if (event.key === "Control")
+    return ""; // Ignore Control key by itself
+  else if (event.key === "Shift")
+    return ""; // Ignore Shift key by itself
   else key += event.key.toLowerCase();
 
+  console.log("[Keyboard Shortcuts] Detected key combination:", key);
   return key;
 }
 
@@ -78,14 +86,17 @@ function getShortcutKey(event) {
 export function initKeyboardShortcuts() {
   function handleKeyDown(event) {
     const shortcutKey = getShortcutKey(event);
-    const action = SHORTCUTS[shortcutKey];
+    if (!shortcutKey) return; // Skip if no valid shortcut key
 
+    const action = SHORTCUTS[shortcutKey];
     if (action) {
+      console.log("[Keyboard Shortcuts] Executing shortcut:", shortcutKey);
       event.preventDefault();
       action();
     }
   }
 
+  console.log("[Keyboard Shortcuts] Initializing keyboard shortcuts");
   window.addEventListener("keydown", handleKeyDown);
   return () => window.removeEventListener("keydown", handleKeyDown);
 }
@@ -97,9 +108,11 @@ export function useKeyboardShortcuts() {
 
   useEffect(() => {
     function handleHelpEvent(e) {
+      console.log("[Keyboard Shortcuts] Help event received:", e.detail);
       setShowHelp(e.detail.show);
     }
 
+    console.log("[Keyboard Shortcuts] Setting up help event listener");
     window.addEventListener(KEYBOARD_SHORTCUTS_HELP_EVENT, handleHelpEvent);
     const cleanup = initKeyboardShortcuts();
 

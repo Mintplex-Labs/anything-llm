@@ -198,6 +198,7 @@ const TRANSLATIONS = {
       sendChat: "Send Chat",
       embedDocument: "Embed a Document",
       createWorkspace: "Create Workspace",
+      keyboardShortcuts: "Keyboard Shortcuts",
     },
     exploreMore: {
       title: "Explore more features",

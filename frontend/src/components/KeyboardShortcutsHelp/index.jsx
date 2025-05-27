@@ -12,7 +12,7 @@ const SHORTCUTS = [
   { key: "⌘ + S", translationKey: "security" },
   { key: "⌘ + U", translationKey: "userManagement" },
   { key: "⌘ + Shift + C", translationKey: "chatSettings" },
-  { key: "⌘ + ? or F1", translationKey: "help" },
+  { key: "⌘ + Shift + ? or F1", translationKey: "help" },
 ];
 
 export default function KeyboardShortcutsHelp({ isOpen, onClose }) {
