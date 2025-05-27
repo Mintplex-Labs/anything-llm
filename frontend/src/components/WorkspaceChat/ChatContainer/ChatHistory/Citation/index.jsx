@@ -10,15 +10,17 @@ import {
   Info,
   ArrowSquareOut,
   GithubLogo,
-  Link,
   X,
   YoutubeLogo,
+  LinkSimple,
   GitlabLogo,
 } from "@phosphor-icons/react";
 import ConfluenceLogo from "@/media/dataConnectors/confluence.png";
 import DrupalWikiLogo from "@/media/dataConnectors/drupalwiki.png";
 import ObsidianLogo from "@/media/dataConnectors/obsidian.png";
 import { toPercentString } from "@/utils/numbers";
+import pluralize from "pluralize";
+import useTextSize from "@/hooks/useTextSize";
 
 function combineLikeSources(sources) {
   const combined = {};
@@ -42,29 +44,33 @@ export default function Citations({ sources = [] }) {
   if (sources.length === 0) return null;
   const [open, setOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
+  const { textSizeClass } = useTextSize();
 
   return (
     <div className="flex flex-col mt-4 justify-left">
       <button
         onClick={() => setOpen(!open)}
-        className={`border-none text-white/50 light:text-black/50 font-medium italic text-sm text-left ml-14 pt-2 ${
+        className={`border-none font-semibold text-white/50 light:text-black/50 font-medium italic ${textSizeClass} text-left ml-14 pt-2 ${
           open ? "pb-2" : ""
         } hover:text-white/75 hover:light:text-black/75 transition-all duration-300`}
       >
         {open ? "Hide Citations" : "Show Citations"}
         <CaretRight
-          className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${
+          weight="bold"
+          size={14}
+          className={`inline-block ml-1 transform transition-transform duration-300 ${
             open ? "rotate-90" : ""
           }`}
         />
       </button>
       {open && (
-        <div className="flex flex-wrap md:flex-row md:items-center gap-4 overflow-x-scroll mt-1 doc__source ml-14">
+        <div className="flex flex-wrap flex-col items-start overflow-x-scroll mt-1 ml-14 gap-y-2">
           {combineLikeSources(sources).map((source) => (
             <Citation
               key={v4()}
               source={source}
               onClick={() => setSelectedSource(source)}
+              textSizeClass={textSizeClass}
             />
           ))}
         </div>
@@ -79,8 +85,8 @@ export default function Citations({ sources = [] }) {
   );
 }
 
-const Citation = memo(({ source, onClick }) => {
-  const { title } = source;
+const Citation = memo(({ source, onClick, textSizeClass }) => {
+  const { title, references = 1 } = source;
   if (!title) return null;
   const chunkSourceInfo = parseChunkSource(source);
   const truncatedTitle = chunkSourceInfo?.text ?? middleTruncate(title, 25);
@@ -89,13 +95,25 @@ const Citation = memo(({ source, onClick }) => {
     : ICONS.file;
 
   return (
-    <div
-      className="w-fit flex flex-row justify-center items-center cursor-pointer text-sky-400"
+    <button
+      className={`flex doc__source gap-x-1 ${textSizeClass}`}
       onClick={onClick}
+      type="button"
     >
-      <CitationIcon className="w-6 h-6" weight="bold" />
-      <p className="text-sm font-medium whitespace-nowrap">{truncatedTitle}</p>
-    </div>
+      <div className="flex items-start flex-1 pt-[4px]">
+        <CitationIcon size={16} />
+      </div>
+      <div className="flex flex-col items-start gap-y-[0.2px] px-1">
+        <p
+          className={`!m-0 font-semibold whitespace-nowrap text-theme-text-primary hover:opacity-55 ${textSizeClass}`}
+        >
+          {truncatedTitle}
+        </p>
+        <p
+          className={`!m-0 text-[10px] font-medium text-theme-text-secondary ${textSizeClass}`}
+        >{`${references} ${pluralize("Reference", Number(references) || 1)}`}</p>
+      </div>
+    </button>
   );
 });
 
@@ -118,12 +136,14 @@ function CitationDetailModal({ source, onClose }) {
                 href={linkTo}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline hover:text-blue-300 flex items-center gap-x-1"
+                className="text-xl w-[90%] font-semibold text-white whitespace-nowrap hover:underline hover:text-blue-300 flex items-center gap-x-1"
               >
-                <h3 className="flex items-center gap-x-1">
-                  {webpageUrl}
-                  <ArrowSquareOut />
-                </h3>
+                <div className="flex items-center gap-x-1 max-w-full overflow-hidden">
+                  <h3 className="truncate text-ellipsis whitespace-nowrap overflow-hidden w-full">
+                    {webpageUrl}
+                  </h3>
+                  <ArrowSquareOut className="flex-shrink-0" />
+                </div>
               </a>
             ) : (
               <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
@@ -222,7 +242,6 @@ function parseChunkSource({ title = "", chunks = [] }) {
     const sourceID = supportedSources.find((source) =>
       chunks[0].chunkSource?.startsWith(source)
     );
-    console.log({ sourceID });
     let url, text, icon;
 
     // Try to parse the URL from the chunk source
@@ -286,21 +305,19 @@ function parseChunkSource({ title = "", chunks = [] }) {
   return nullResponse;
 }
 
-// Patch to render Confluence icon as a element like we do with Phosphor
-const ConfluenceIcon = ({ ...props }) => (
-  <img src={ConfluenceLogo} {...props} />
+const ConfluenceIcon = ({ size = 16, ...props }) => (
+  <img src={ConfluenceLogo} {...props} width={size} height={size} />
 );
-
-// Patch to render DrupalWiki icon as a element like we do with Phosphor
-const DrupalWikiIcon = ({ ...props }) => (
-  <img src={DrupalWikiLogo} {...props} />
+const DrupalWikiIcon = ({ size = 16, ...props }) => (
+  <img src={DrupalWikiLogo} {...props} width={size} height={size} />
 );
-
-const ObsidianIcon = ({ ...props }) => <img src={ObsidianLogo} {...props} />;
+const ObsidianIcon = ({ size = 16, ...props }) => (
+  <img src={ObsidianLogo} {...props} width={size} height={size} />
+);
 
 const ICONS = {
   file: FileText,
-  link: Link,
+  link: LinkSimple,
   youtube: YoutubeLogo,
   github: GithubLogo,
   gitlab: GitlabLogo,
