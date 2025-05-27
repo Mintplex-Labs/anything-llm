@@ -574,6 +574,12 @@ const SystemSettings = {
       // PPIO API keys
       PPIOApiKey: !!process.env.PPIO_API_KEY,
       PPIOModelPref: process.env.PPIO_MODEL_PREF,
+
+      // Dell Pro AI Studio Keys
+      DellProAiStudioBasePath: process.env.DPAIS_LLM_BASE_PATH,
+      DellProAiStudioModelPref: process.env.DPAIS_LLM_MODEL_PREF,
+      DellProAiStudioTokenLimit:
+        process.env.DPAIS_LLM_MODEL_TOKEN_LIMIT ?? 4096,
     };
   },
 

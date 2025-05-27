@@ -10,7 +10,7 @@
 
 <p align="center">
     <b>AnythingLLM:</b> The all-in-one AI app you were looking for.<br />
-    Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no frustrating set up required.
+    Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no frustrating setup required.
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://anythingllm.com/download" target="_blank"> Download Now</a>
 </p>
 
-A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
+A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as a reference during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
 
 ![Chatting](https://github.com/Mintplex-Labs/anything-llm/assets/16845892/cfc5f47c-bd91-4067-986c-f3f49621a859)
 
@@ -63,7 +63,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - 🦾 Agents inside your workspace (browse the web, etc)
 - 💬 [Custom Embeddable Chat widget for your website](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md) _Docker version only_
 - 📖 Multiple document type support (PDF, TXT, DOCX, etc)
-- Simple chat UI with Drag-n-Drop funcitonality and clear citations.
+- Simple chat UI with Drag-n-Drop functionality and clear citations.
 - 100% Cloud deployment ready.
 - Works with all popular [closed and open-source LLM providers](#supported-llms-embedder-models-speech-models-and-vector-databases).
 - Built-in cost & time-saving measures for managing very large documents compared to any other chat UI.
@@ -152,7 +152,7 @@ This monorepo consists of six main sections:
 - `embed`: Submodule for generation & creation of the [web embed widget](https://github.com/Mintplex-Labs/anythingllm-embed).
 - `browser-extension`: Submodule for the [chrome browser extension](https://github.com/Mintplex-Labs/anythingllm-extension).
 
-## 🛳 Self Hosting
+## 🛳 Self-Hosting
 
 Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
@@ -208,9 +208,9 @@ We will only track usage details that help us make product and roadmap decisions
 
 - When a document is added or removed. No information _about_ the document. Just that the event occurred. This gives us an idea of use.
 
-- Type of vector database in use. Let's us know which vector database provider is the most used to prioritize changes when updates arrive for that provider.
+- Type of vector database in use. This helps us prioritize changes when updates arrive for that provider.
 
-- Type of LLM provider & model tag in use. Let's us know the most popular choice and prioritize changes when updates arrive for that provider or model, or combination thereof. eg: reasoning vs regular, multi-modal models, etc.
+- Type of LLM provider & model tag in use. This helps us prioritize changes when updates arrive for that provider or model, or combination thereof. eg: reasoning vs regular, multi-modal models, etc.
 
 - When a chat is sent. This is the most regular "event" and gives us an idea of the daily-activity of this project across all installations. Again, only the **event** is sent - we have no information on the nature or content of the chat itself.
 
@@ -228,6 +228,20 @@ We take privacy very seriously, and we hope you understand that we want to learn
 - create issue
 - create PR with branch name format of `<issue number>-<short name>`
 - LGTM from core-team
+
+## 💖 Sponsors
+
+### Premium Sponsors
+
+<!-- premium-sponsors (reserved for $100/mth sponsors who request to be called out here and/or are non-private sponsors) -->
+<a href="https://www.dcsdigital.co.uk" target="_blank">
+  <img src="https://a8cforagenciesportfolio.wordpress.com/wp-content/uploads/2024/08/logo-image-232621379.png" height="100px" alt="User avatar: DCS DIGITAL" />
+</a>
+<!-- premium-sponsors -->
+
+### All Sponsors
+
+<!-- all-sponsors --><a href="https://github.com/jaschadub"><img src="https:&#x2F;&#x2F;github.com&#x2F;jaschadub.png" width="60px" alt="User avatar: Jascha" /></a><a href="https://github.com/KickingAss2024"><img src="https:&#x2F;&#x2F;github.com&#x2F;KickingAss2024.png" width="60px" alt="User avatar: KickAss" /></a><a href="https://github.com/ShadowArcanist"><img src="https:&#x2F;&#x2F;github.com&#x2F;ShadowArcanist.png" width="60px" alt="User avatar: ShadowArcanist" /></a><a href="https://github.com/AtlasVIA"><img src="https:&#x2F;&#x2F;github.com&#x2F;AtlasVIA.png" width="60px" alt="User avatar: Atlas" /></a><a href="https://github.com/cope"><img src="https:&#x2F;&#x2F;github.com&#x2F;cope.png" width="60px" alt="User avatar: Predrag Stojadinović" /></a><a href="https://github.com/DiegoSpinola"><img src="https:&#x2F;&#x2F;github.com&#x2F;DiegoSpinola.png" width="60px" alt="User avatar: Diego Spinola" /></a><a href="https://github.com/PortlandKyGuy"><img src="https:&#x2F;&#x2F;github.com&#x2F;PortlandKyGuy.png" width="60px" alt="User avatar: Kyle" /></a><a href="https://github.com/peperunas"><img src="https:&#x2F;&#x2F;github.com&#x2F;peperunas.png" width="60px" alt="User avatar: Giulio De Pasquale" /></a><a href="https://github.com/jasoncdavis0"><img src="https:&#x2F;&#x2F;github.com&#x2F;jasoncdavis0.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/macstadium"><img src="https:&#x2F;&#x2F;github.com&#x2F;macstadium.png" width="60px" alt="User avatar: MacStadium" /></a><a href="https://github.com/armlynobinguar"><img src="https:&#x2F;&#x2F;github.com&#x2F;armlynobinguar.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/MikeHago"><img src="https:&#x2F;&#x2F;github.com&#x2F;MikeHago.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/maaisde"><img src="https:&#x2F;&#x2F;github.com&#x2F;maaisde.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/mhollier117"><img src="https:&#x2F;&#x2F;github.com&#x2F;mhollier117.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/pleabargain"><img src="https:&#x2F;&#x2F;github.com&#x2F;pleabargain.png" width="60px" alt="User avatar: Dennis" /></a><a href="https://github.com/broichan"><img src="https:&#x2F;&#x2F;github.com&#x2F;broichan.png" width="60px" alt="User avatar: Michael Hamilton, Ph.D." /></a><a href="https://github.com/azim-charaniya"><img src="https:&#x2F;&#x2F;github.com&#x2F;azim-charaniya.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/gabriellemon"><img src="https:&#x2F;&#x2F;github.com&#x2F;gabriellemon.png" width="60px" alt="User avatar: TernaryLabs" /></a><a href="https://github.com/CelaDaniel"><img src="https:&#x2F;&#x2F;github.com&#x2F;CelaDaniel.png" width="60px" alt="User avatar: Daniel Cela" /></a><a href="https://github.com/altrsadmin"><img src="https:&#x2F;&#x2F;github.com&#x2F;altrsadmin.png" width="60px" alt="User avatar: Alesso" /></a><a href="https://github.com/bitjungle"><img src="https:&#x2F;&#x2F;github.com&#x2F;bitjungle.png" width="60px" alt="User avatar: Rune Mathisen" /></a><a href="https://github.com/pcrossleyAC"><img src="https:&#x2F;&#x2F;github.com&#x2F;pcrossleyAC.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/saroj-pattnaik"><img src="https:&#x2F;&#x2F;github.com&#x2F;saroj-pattnaik.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/techmedic5"><img src="https:&#x2F;&#x2F;github.com&#x2F;techmedic5.png" width="60px" alt="User avatar: Alan" /></a><a href="https://github.com/ddocta"><img src="https:&#x2F;&#x2F;github.com&#x2F;ddocta.png" width="60px" alt="User avatar: Damien Peters" /></a><a href="https://github.com/dcsdigital"><img src="https:&#x2F;&#x2F;github.com&#x2F;dcsdigital.png" width="60px" alt="User avatar: DCS Digital" /></a><a href="https://github.com/pm7y"><img src="https:&#x2F;&#x2F;github.com&#x2F;pm7y.png" width="60px" alt="User avatar: Paul Mcilreavy" /></a><a href="https://github.com/tilwolf"><img src="https:&#x2F;&#x2F;github.com&#x2F;tilwolf.png" width="60px" alt="User avatar: Til Wolf" /></a><a href="https://github.com/ozzyoss77"><img src="https:&#x2F;&#x2F;github.com&#x2F;ozzyoss77.png" width="60px" alt="User avatar: Leopoldo Crhistian Riverin Gomez" /></a><a href="https://github.com/AlphaEcho11"><img src="https:&#x2F;&#x2F;github.com&#x2F;AlphaEcho11.png" width="60px" alt="User avatar: AJEsau" /></a><a href="https://github.com/svanomm"><img src="https:&#x2F;&#x2F;github.com&#x2F;svanomm.png" width="60px" alt="User avatar: Steven VanOmmeren" /></a><a href="https://github.com/socketbox"><img src="https:&#x2F;&#x2F;github.com&#x2F;socketbox.png" width="60px" alt="User avatar: Casey Boettcher" /></a><a href="https://github.com/zebbern"><img src="https:&#x2F;&#x2F;github.com&#x2F;zebbern.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/avineetbespin"><img src="https:&#x2F;&#x2F;github.com&#x2F;avineetbespin.png" width="60px" alt="User avatar: Avineet" /></a><!-- all-sponsors -->
 
 ## 🌟 Contributors
 

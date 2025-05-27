@@ -32,6 +32,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "xai",
   "gemini",
   "ppio",
+  "dpais",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -81,6 +82,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getGeminiModels(apiKey);
     case "ppio":
       return await getPPIOModels(apiKey);
+    case "dpais":
+      return await getDellProAiStudioModels(basePath);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -633,6 +636,43 @@ async function getPPIOModels() {
     };
   });
   return { models, error: null };
+}
+
+async function getDellProAiStudioModels(basePath = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  try {
+    const { origin } = new URL(
+      basePath || process.env.DELL_PRO_AI_STUDIO_BASE_PATH
+    );
+    const openai = new OpenAIApi({
+      baseURL: `${origin}/v1/openai`,
+      apiKey: null,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .then((models) => {
+        return models
+          .filter((model) => model.capability === "TextToText") // Only include text-to-text models for this handler
+          .map((model) => {
+            return {
+              id: model.id,
+              name: model.name,
+              organization: model.owned_by,
+            };
+          });
+      })
+      .catch((e) => {
+        throw new Error(e.message);
+      });
+    return { models, error: null };
+  } catch (e) {
+    console.error(`getDellProAiStudioModels`, e.message);
+    return {
+      models: [],
+      error: "Could not reach Dell Pro Ai Studio from the provided base path",
+    };
+  }
 }
 
 module.exports = {

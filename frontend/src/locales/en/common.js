@@ -452,7 +452,7 @@ const TRANSLATIONS = {
       "These are all the recorded chats and messages that have been sent by users ordered by their creation date.",
     export: "Export",
     table: {
-      id: "Id",
+      id: "ID",
       by: "Sent By",
       workspace: "Workspace",
       prompt: "Prompt",
@@ -721,6 +721,20 @@ const TRANSLATIONS = {
   connectors: {
     "search-placeholder": "Search data connectors",
     "no-connectors": "No data connectors found.",
+    obsidian: {
+      name: "Obsidian",
+      description: "Import Obsidian vault in a single click.",
+      vault_location: "Vault Location",
+      vault_description:
+        "Select your Obsidian vault folder to import all notes and their connections.",
+      selected_files: "Found {{count}} markdown files",
+      importing: "Importing vault...",
+      import_vault: "Import Vault",
+      processing_time:
+        "This may take a while depending on the size of your vault.",
+      vault_warning:
+        "To avoid any conflicts, make sure your Obsidian vault is not currently open.",
+    },
     github: {
       name: "GitHub Repo",
       description:
@@ -911,6 +925,7 @@ const TRANSLATIONS = {
     get_started_default: "To get started",
     upload: "upload a document",
     or: "or",
+    attachments_processing: "Attachments are processing. Please wait...",
     send_chat: "send a chat.",
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",
