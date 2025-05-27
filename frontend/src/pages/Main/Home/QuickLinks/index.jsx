@@ -1,9 +1,4 @@
-import {
-  ChatCenteredDots,
-  FileArrowDown,
-  Plus,
-  Keyboard,
-} from "@phosphor-icons/react";
+import { ChatCenteredDots, FileArrowDown, Plus } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
@@ -14,7 +9,6 @@ import { useNewWorkspaceModal } from "@/components/Modals/NewWorkspace";
 import NewWorkspaceModal from "@/components/Modals/NewWorkspace";
 import showToast from "@/utils/toast";
 import { useTranslation } from "react-i18next";
-import { KEYBOARD_SHORTCUTS_HELP_EVENT } from "@/utils/keyboardShortcuts";
 
 export default function QuickLinks() {
   const { t } = useTranslation();
@@ -58,12 +52,6 @@ export default function QuickLinks() {
     showNewWsModal();
   };
 
-  const showKeyboardShortcuts = () => {
-    window.dispatchEvent(
-      new CustomEvent(KEYBOARD_SHORTCUTS_HELP_EVENT, { detail: { show: true } })
-    );
-  };
-
   return (
     <div>
       <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
@@ -90,13 +78,6 @@ export default function QuickLinks() {
         >
           <Plus size={16} />
           {t("main-page.quickLinks.createWorkspace")}
-        </button>
-        <button
-          onClick={showKeyboardShortcuts}
-          className="h-[45px] text-sm font-semibold bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
-        >
-          <Keyboard size={16} />
-          {t("main-page.quickLinks.keyboardShortcuts")}
         </button>
       </div>
 
