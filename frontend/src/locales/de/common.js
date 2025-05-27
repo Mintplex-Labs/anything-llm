@@ -923,6 +923,20 @@ const TRANSLATIONS = {
         docs: "Dokumentation",
         star: "Auf Github mit Stern versehen",
       },
+      keyboardShortcuts: null,
+    },
+  },
+  "keyboard-shortcuts": {
+    title: null,
+    shortcuts: {
+      settings: null,
+      workspaceSettings: null,
+      home: null,
+      workspaces: null,
+      apiKeys: null,
+      llmPreferences: null,
+      chatSettings: null,
+      help: null,
     },
   },
 };
