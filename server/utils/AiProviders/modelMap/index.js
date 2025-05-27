@@ -36,7 +36,7 @@ class ContextWindowFinder {
     ContextWindowFinder.instance = this;
     if (!fs.existsSync(this.cacheLocation))
       fs.mkdirSync(this.cacheLocation, { recursive: true });
-    this.#pullRemoteModelMap();
+    if (!this.cache) this.#pullRemoteModelMap();
   }
 
   log(text, ...args) {
@@ -54,7 +54,7 @@ class ContextWindowFinder {
   }
 
   get cache() {
-    if (!fs.existsSync(this.cacheFileExpiryPath)) return null;
+    if (!fs.existsSync(this.cacheFilePath)) return null;
     if (!this.isCacheStale)
       return JSON.parse(
         fs.readFileSync(this.cacheFilePath, { encoding: "utf8" })
@@ -67,24 +67,57 @@ class ContextWindowFinder {
    * @returns {Record<string, Record<string, number>>} - The formatted model map
    */
   async #pullRemoteModelMap() {
-    const remoteContexWindowMap = await fetch(ContextWindowFinder.remoteUrl)
-      .then((res) => res.json())
-      .then((data) => {
-        fs.writeFileSync(this.cacheFilePath, JSON.stringify(data, null, 2));
-        fs.writeFileSync(this.cacheFileExpiryPath, Date.now().toString());
-        this.log("Remote model map synced and cached");
-        return data;
-      })
-      .catch((error) => {
-        this.log("Error syncing remote model map", error);
-        return null;
-      });
-    if (!remoteContexWindowMap) return null;
+    try {
+      this.log("Pulling remote model map...");
+      const remoteContexWindowMap = await fetch(ContextWindowFinder.remoteUrl)
+        .then((res) => {
+          if (res.status !== 200)
+            throw new Error(
+              "Failed to fetch remote model map - non 200 status code"
+            );
+          return res.json();
+        })
+        .then((data) => {
+          fs.writeFileSync(this.cacheFilePath, JSON.stringify(data, null, 2));
+          fs.writeFileSync(this.cacheFileExpiryPath, Date.now().toString());
+          this.log("Remote model map synced and cached");
+          return data;
+        })
+        .catch((error) => {
+          this.log("Error syncing remote model map", error);
+          return null;
+        });
+      if (!remoteContexWindowMap) return null;
 
-    const modelMap = this.#formatModelMap(remoteContexWindowMap);
-    fs.writeFileSync(this.cacheFilePath, JSON.stringify(modelMap, null, 2));
-    fs.writeFileSync(this.cacheFileExpiryPath, Date.now().toString());
-    return modelMap;
+      const modelMap = this.#formatModelMap(remoteContexWindowMap);
+      this.#validateModelMap(modelMap);
+      fs.writeFileSync(this.cacheFilePath, JSON.stringify(modelMap, null, 2));
+      fs.writeFileSync(this.cacheFileExpiryPath, Date.now().toString());
+      return modelMap;
+    } catch (error) {
+      this.log("Error syncing remote model map", error);
+      return null;
+    }
+  }
+
+  #validateModelMap(modelMap = {}) {
+    for (const [provider, models] of Object.entries(modelMap)) {
+      // If the models is null/falsey or has no keys, throw an error
+      if (typeof models !== "object")
+        throw new Error(
+          `Invalid model map for ${provider} - models is not an object`
+        );
+      if (!models || Object.keys(models).length === 0)
+        throw new Error(`Invalid model map for ${provider} - no models found!`);
+
+      // Validate that the context window is a number
+      for (const [model, contextWindow] of Object.entries(models)) {
+        if (isNaN(contextWindow) || contextWindow <= 0)
+          throw new Error(
+            `Invalid model map for ${provider} - context window is not a positive number for model ${model}`
+          );
+      }
+    }
   }
 
   /**
