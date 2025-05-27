@@ -85,10 +85,7 @@ function AttachmentItem({ attachment }) {
           <div
             className={`bg-error rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
           >
-            <WarningOctagon
-              size={24}
-              className="text-theme-attachment-icon"
-            />
+            <WarningOctagon size={24} className="text-theme-attachment-icon" />
           </div>
           <div className="flex flex-col w-[125px]">
             <p className="text-theme-attachment-text text-xs font-semibold truncate">
