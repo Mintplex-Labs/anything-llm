@@ -233,6 +233,7 @@ const TRANSLATIONS = {
         docs: "Docs",
         star: "Star on Github",
       },
+      keyboardShortcuts: "Keyboard Shortcuts",
     },
   },
 
@@ -980,6 +981,20 @@ const TRANSLATIONS = {
     update_account: "Update Account",
     theme: "Theme Preference",
     language: "Preferred language",
+  },
+
+  "keyboard-shortcuts": {
+    title: "Keyboard Shortcuts",
+    shortcuts: {
+      settings: "Open Settings",
+      workspaceSettings: "Open Current Workspace Settings",
+      home: "Go to Home",
+      workspaces: "Manage Workspaces",
+      apiKeys: "API Keys Settings",
+      llmPreferences: "LLM Preferences",
+      chatSettings: "Chat Settings",
+      help: "Show keyboard shortcuts help",
+    },
   },
 };
 
