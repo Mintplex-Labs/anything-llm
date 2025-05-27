@@ -1,7 +1,7 @@
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
+import { Plus, CircleNotch, Trash, CaretRight } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
@@ -10,8 +10,10 @@ export const THREAD_RENAME_EVENT = "renameThread";
 export default function ThreadContainer({ workspace }) {
   const { threadSlug = null } = useParams();
   const [threads, setThreads] = useState([]);
+  const [archivedThreads, setArchivedThreads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ctrlPressed, setCtrlPressed] = useState(false);
+  const [showArchivedThreads, setShowArchivedThreads] = useState(false);
 
   useEffect(() => {
     const chatHandler = (event) => {
@@ -37,8 +39,12 @@ export default function ThreadContainer({ workspace }) {
     async function fetchThreads() {
       if (!workspace.slug) return;
       const { threads } = await Workspace.threads.all(workspace.slug);
+      const { threads: archivedThreads } = await Workspace.threads.allArchived(
+        workspace.slug
+      );
       setLoading(false);
       setThreads(threads);
+      setArchivedThreads(archivedThreads);
     }
     fetchThreads();
   }, [workspace.slug]);
@@ -62,6 +68,11 @@ export default function ThreadContainer({ workspace }) {
             return { ...t, deleted: false };
           })
         );
+        setArchivedThreads((prev) =>
+          prev.map((t) => {
+            return { ...t, deleted: false };
+          })
+        );
       }
     };
 
@@ -75,7 +86,16 @@ export default function ThreadContainer({ workspace }) {
   }, []);
 
   const toggleForDeletion = (id) => {
+    // Handle regular threads
     setThreads((prev) =>
+      prev.map((t) => {
+        if (t.id !== id) return t;
+        return { ...t, deleted: !t.deleted };
+      })
+    );
+
+    // Also handle archived threads
+    setArchivedThreads((prev) =>
       prev.map((t) => {
         if (t.id !== id) return t;
         return { ...t, deleted: !t.deleted };
@@ -84,14 +104,38 @@ export default function ThreadContainer({ workspace }) {
   };
 
   const handleDeleteAll = async () => {
-    const slugs = threads.filter((t) => t.deleted === true).map((t) => t.slug);
-    await Workspace.threads.deleteBulk(workspace.slug, slugs);
+    // Get slugs from both regular and archived threads that are marked for deletion
+    const regularSlugs = threads
+      .filter((t) => t.deleted === true)
+      .map((t) => t.slug);
+    const archivedSlugs = archivedThreads
+      .filter((t) => t.deleted === true)
+      .map((t) => t.slug);
+    const allSlugs = [...regularSlugs, ...archivedSlugs];
+    const selectedCount = regularSlugs.length + archivedSlugs.length;
+
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${selectedCount} selected thread${selectedCount > 1 ? "s" : ""}? This cannot be undone.`
+      )
+    ) {
+      return;
+    }
+
+    await Workspace.threads.deleteBulk(workspace.slug, allSlugs);
+
+    // Remove deleted threads from both arrays
     setThreads((prev) => prev.filter((t) => !t.deleted));
+    setArchivedThreads((prev) => prev.filter((t) => !t.deleted));
 
     // Only redirect if current thread is being deleted
-    if (slugs.includes(threadSlug)) {
+    if (allSlugs.includes(threadSlug)) {
       window.location.href = paths.workspace.chat(workspace.slug);
     }
+  };
+
+  const handleViewArchivedThreads = () => {
+    setShowArchivedThreads(!showArchivedThreads);
   };
 
   function removeThread(threadId) {
@@ -102,12 +146,42 @@ export default function ThreadContainer({ workspace }) {
       })
     );
 
+    setArchivedThreads((prev) =>
+      prev.map((_t) => {
+        if (_t.id !== threadId) return _t;
+        return { ..._t, deleted: true };
+      })
+    );
+
     // Show thread was deleted, but then remove from threads entirely so it will
     // not appear in bulk-selection.
     setTimeout(() => {
       setThreads((prev) => prev.filter((t) => !t.deleted));
+      setArchivedThreads((prev) => prev.filter((t) => !t.deleted));
     }, 500);
   }
+
+  const archiveThread = async (thread) => {
+    setThreads((prev) => prev.filter((t) => t.id !== thread.id));
+    setArchivedThreads((prev) => [...prev, { ...thread, archived: true }]);
+    showToast("Thread archived successfully!", "success", { clear: true });
+
+    // Redirect if archiving the active thread
+    if (threadSlug === thread.slug) {
+      window.location.href = paths.workspace.chat(workspace.slug);
+    }
+  };
+
+  const restoreThread = async (thread) => {
+    setArchivedThreads((prev) => prev.filter((t) => t.id !== thread.id));
+    setThreads((prev) => [...prev, { ...thread, archived: false }]);
+    showToast("Thread restored successfully!", "success", { clear: true });
+
+    // Redirect if restoring the active thread
+    if (threadSlug === thread.slug) {
+      window.location.href = paths.workspace.chat(workspace.slug);
+    }
+  };
 
   if (loading) {
     return (
@@ -131,6 +205,7 @@ export default function ThreadContainer({ workspace }) {
         isActive={activeThreadIdx === 0}
         thread={{ slug: null, name: "default" }}
         hasNext={threads.length > 0}
+        workspace={workspace}
       />
       {threads.map((thread, i) => (
         <ThreadItem
@@ -142,16 +217,47 @@ export default function ThreadContainer({ workspace }) {
           isActive={activeThreadIdx === i + 1}
           workspace={workspace}
           onRemove={removeThread}
+          onArchive={archiveThread}
+          onRestore={restoreThread}
           thread={thread}
           hasNext={i !== threads.length - 1}
         />
       ))}
+      <NewThreadButton workspace={workspace} />
+      {archivedThreads.length > 0 && (
+        <div className="hidden group-hover:block">
+          <ViewArchivedThreadsButton
+            handleViewArchivedThreads={handleViewArchivedThreads}
+            showArchivedThreads={showArchivedThreads}
+          />
+          {showArchivedThreads && (
+            <div className="overflow-visible">
+              {archivedThreads.map((thread, i) => (
+                <ThreadItem
+                  key={thread.slug}
+                  idx={threads.length + i + 1}
+                  ctrlPressed={ctrlPressed}
+                  toggleMarkForDeletion={toggleForDeletion}
+                  activeIdx={activeThreadIdx}
+                  isActive={activeThreadIdx === threads.length + i + 1}
+                  workspace={workspace}
+                  onRemove={removeThread}
+                  onArchive={archiveThread}
+                  onRestore={restoreThread}
+                  thread={thread}
+                  hasNext={i !== archivedThreads.length - 1}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       <DeleteAllThreadButton
         ctrlPressed={ctrlPressed}
         threads={threads}
+        archivedThreads={archivedThreads}
         onDelete={handleDeleteAll}
       />
-      <NewThreadButton workspace={workspace} />
     </div>
   );
 }
@@ -207,9 +313,19 @@ function NewThreadButton({ workspace }) {
   );
 }
 
-function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
-  if (!ctrlPressed || threads.filter((t) => t.deleted).length === 0)
+function DeleteAllThreadButton({
+  ctrlPressed,
+  threads,
+  archivedThreads,
+  onDelete,
+}) {
+  if (
+    !ctrlPressed ||
+    (threads.filter((t) => t.deleted).length === 0 &&
+      archivedThreads.filter((t) => t.deleted).length === 0)
+  )
     return null;
+
   return (
     <button
       type="button"
@@ -225,9 +341,38 @@ function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
           />
         </div>
         <p className="text-white light:text-theme-text-secondary text-left text-sm group-hover:text-red-400">
-          Delete Selected
+          Clear
         </p>
       </div>
     </button>
+  );
+}
+
+function ViewArchivedThreadsButton({
+  handleViewArchivedThreads,
+  showArchivedThreads,
+}) {
+  return (
+    <div
+      className="w-full relative flex h-[40px] items-center border-none rounded-lg"
+      role="listitem"
+    >
+      <div className="flex w-full items-center justify-between pr-2 group relative hover:bg-theme-sidebar-subitem-hover rounded-[4px]">
+        <button
+          onClick={handleViewArchivedThreads}
+          className="w-full pl-2 py-1 overflow-hidden text-left flex items-center gap-x-2"
+        >
+          <CaretRight
+            size={18}
+            className={`text-theme-text-primary transition-transform duration-200 ${
+              showArchivedThreads ? "rotate-90" : ""
+            }`}
+          />
+          <p className="text-left text-xs text-theme-text-primary">
+            Archived Threads
+          </p>
+        </button>
+      </div>
+    </div>
   );
 }
