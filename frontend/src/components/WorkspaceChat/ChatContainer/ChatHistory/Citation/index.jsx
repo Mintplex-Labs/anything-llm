@@ -19,6 +19,7 @@ import ConfluenceLogo from "@/media/dataConnectors/confluence.png";
 import DrupalWikiLogo from "@/media/dataConnectors/drupalwiki.png";
 import ObsidianLogo from "@/media/dataConnectors/obsidian.png";
 import { toPercentString } from "@/utils/numbers";
+import { useTranslation } from "react-i18next";
 import pluralize from "pluralize";
 import useTextSize from "@/hooks/useTextSize";
 
@@ -44,6 +45,7 @@ export default function Citations({ sources = [] }) {
   if (sources.length === 0) return null;
   const [open, setOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
+  const { t } = useTranslation();
   const { textSizeClass } = useTextSize();
 
   return (
@@ -54,7 +56,9 @@ export default function Citations({ sources = [] }) {
           open ? "pb-2" : ""
         } hover:text-white/75 hover:light:text-black/75 transition-all duration-300`}
       >
-        {open ? "Hide Citations" : "Show Citations"}
+        {open
+          ? t("chat_window.hide_citations")
+          : t("chat_window.show_citations")}
         <CaretRight
           weight="bold"
           size={14}
