@@ -64,7 +64,7 @@ export default function Citations({ sources = [] }) {
         />
       </button>
       {open && (
-        <div className="flex flex-wrap flex-col items-start overflow-x-scroll mt-1 doc__source ml-14 gap-y-2">
+        <div className="flex flex-wrap flex-col items-start overflow-x-scroll mt-1 ml-14 gap-y-2">
           {combineLikeSources(sources).map((source) => (
             <Citation
               key={v4()}
@@ -96,7 +96,7 @@ const Citation = memo(({ source, onClick, textSizeClass }) => {
 
   return (
     <button
-      className={`flex gap-x-1 ${textSizeClass}`}
+      className={`flex doc__source gap-x-1 ${textSizeClass}`}
       onClick={onClick}
       type="button"
     >
