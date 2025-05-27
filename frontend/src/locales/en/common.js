@@ -198,7 +198,6 @@ const TRANSLATIONS = {
       sendChat: "Send Chat",
       embedDocument: "Embed a Document",
       createWorkspace: "Create Workspace",
-      keyboardShortcuts: "Keyboard Shortcuts",
     },
     exploreMore: {
       title: "Explore more features",
@@ -234,6 +233,7 @@ const TRANSLATIONS = {
         docs: "Docs",
         star: "Star on Github",
       },
+      keyboardShortcuts: "Keyboard Shortcuts",
     },
   },
 

@@ -39,7 +39,7 @@ export default function Resources() {
           onClick={showKeyboardShortcuts}
           className="text-theme-home-text text-sm flex items-center gap-x-2 hover:opacity-70"
         >
-          {t("main-page.quickLinks.keyboardShortcuts")}
+          {t("main-page.resources.keyboardShortcuts")}
           <ArrowCircleUpRight weight="fill" size={16} />
         </button>
       </div>
