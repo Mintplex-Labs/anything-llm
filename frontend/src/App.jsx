@@ -273,9 +273,9 @@ export default function App() {
                   />
                 </Routes>
                 <ToastContainer />
-                <KeyboardShortcutsHelp 
-                  isOpen={showHelp} 
-                  onClose={() => setShowHelp(false)} 
+                <KeyboardShortcutsHelp
+                  isOpen={showHelp}
+                  onClose={() => setShowHelp(false)}
                 />
               </I18nextProvider>
             </PfpProvider>

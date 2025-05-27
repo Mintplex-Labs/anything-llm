@@ -963,8 +963,8 @@ const TRANSLATIONS = {
       security: "Security Settings",
       userManagement: "User Management",
       chatSettings: "Chat Settings",
-      help: "Show keyboard shortcuts help"
-    }
+      help: "Show keyboard shortcuts help",
+    },
   },
 };
 

@@ -1,23 +1,23 @@
-import React from 'react';
-import { X } from '@phosphor-icons/react';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { X } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 const SHORTCUTS = [
-  { key: '⌘ + ,', translationKey: 'settings' },
-  { key: '⌘ + H', translationKey: 'home' },
-  { key: '⌘ + W', translationKey: 'workspaces' },
-  { key: '⌘ + K', translationKey: 'apiKeys' },
-  { key: '⌘ + L', translationKey: 'llmPreferences' },
-  { key: '⌘ + V', translationKey: 'vectorDatabase' },
-  { key: '⌘ + S', translationKey: 'security' },
-  { key: '⌘ + U', translationKey: 'userManagement' },
-  { key: '⌘ + Shift + C', translationKey: 'chatSettings' },
-  { key: '⌘ + ? or F1', translationKey: 'help' },
+  { key: "⌘ + ,", translationKey: "settings" },
+  { key: "⌘ + H", translationKey: "home" },
+  { key: "⌘ + W", translationKey: "workspaces" },
+  { key: "⌘ + K", translationKey: "apiKeys" },
+  { key: "⌘ + L", translationKey: "llmPreferences" },
+  { key: "⌘ + V", translationKey: "vectorDatabase" },
+  { key: "⌘ + S", translationKey: "security" },
+  { key: "⌘ + U", translationKey: "userManagement" },
+  { key: "⌘ + Shift + C", translationKey: "chatSettings" },
+  { key: "⌘ + ? or F1", translationKey: "help" },
 ];
 
 export default function KeyboardShortcutsHelp({ isOpen, onClose }) {
   const { t } = useTranslation();
-  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
 
   if (!isOpen) return null;
 
@@ -26,7 +26,7 @@ export default function KeyboardShortcutsHelp({ isOpen, onClose }) {
       <div className="relative bg-theme-bg-secondary rounded-lg p-6 max-w-2xl w-full mx-4">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-white">
-            {t('keyboard-shortcuts.title')}
+            {t("keyboard-shortcuts.title")}
           </h2>
           <button
             onClick={onClose}
@@ -36,7 +36,7 @@ export default function KeyboardShortcutsHelp({ isOpen, onClose }) {
             <X size={24} />
           </button>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {SHORTCUTS.map((shortcut) => (
             <div
@@ -47,7 +47,7 @@ export default function KeyboardShortcutsHelp({ isOpen, onClose }) {
                 {t(`keyboard-shortcuts.shortcuts.${shortcut.translationKey}`)}
               </span>
               <kbd className="px-2 py-1 bg-theme-bg-secondary text-white rounded border border-gray-600">
-                {isMac ? shortcut.key : shortcut.key.replace('⌘', 'Ctrl')}
+                {isMac ? shortcut.key : shortcut.key.replace("⌘", "Ctrl")}
               </kbd>
             </div>
           ))}
@@ -55,4 +55,4 @@ export default function KeyboardShortcutsHelp({ isOpen, onClose }) {
       </div>
     </div>
   );
-} 
+}
