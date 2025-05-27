@@ -950,6 +950,22 @@ const TRANSLATIONS = {
     theme: "Theme Preference",
     language: "Preferred language",
   },
+
+  "keyboard-shortcuts": {
+    title: "Keyboard Shortcuts",
+    shortcuts: {
+      settings: "Open Settings",
+      home: "Go to Home",
+      workspaces: "Manage Workspaces",
+      apiKeys: "API Keys Settings",
+      llmPreferences: "LLM Preferences",
+      vectorDatabase: "Vector Database Settings",
+      security: "Security Settings",
+      userManagement: "User Management",
+      chatSettings: "Chat Settings",
+      help: "Show keyboard shortcuts help"
+    }
+  },
 };
 
 export default TRANSLATIONS;
