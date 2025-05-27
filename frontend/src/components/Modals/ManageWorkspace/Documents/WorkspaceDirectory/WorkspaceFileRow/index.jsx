@@ -8,6 +8,7 @@ import { ArrowUUpLeft, Eye, File, PushPin } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
+import TagManager from "../TagManager";
 
 export default function WorkspaceFileRow({
   item,
@@ -42,6 +43,16 @@ export default function WorkspaceFileRow({
     setLoading(false);
   };
 
+  const handleUpdateTags = async (documentId, tags) => {
+    try {
+      await Workspace.updateDocumentTags(workspace.slug, documentId, tags);
+      await fetchKeys(true);
+    } catch (error) {
+      console.error("Failed to update document tags:", error);
+      showToast("Failed to update document tags", "error");
+    }
+  };
+
   function toggleRowSelection(e) {
     if (disableSelection) return;
     e.stopPropagation();
@@ -54,48 +65,45 @@ export default function WorkspaceFileRow({
   }
 
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
+
   return (
     <div
-      className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 h-[34px] items-center ${
-        !disableSelection
-          ? "hover:bg-theme-file-picker-hover cursor-pointer"
-          : ""
-      } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${
-        selected ? "selected light:text-white" : ""
+      className={`grid grid-cols-12 py-2 px-3.5 border-b border-white/20 hover:bg-theme-sidebar-subitem-hover ${
+        isMovedItem ? "bg-theme-sidebar-subitem-hover" : ""
       }`}
-      onClick={toggleRowSelection}
+      onClick={handleRowSelection}
     >
-      <div
-        className="col-span-10 w-fit flex gap-x-[2px] items-center relative"
-        data-tooltip-id="ws-directory-item"
-        data-tooltip-content={JSON.stringify({
-          title: item.title,
-          date: formatDate(item?.published),
-          extension: getFileExtension(item.url).toUpperCase(),
-        })}
-      >
-        <div className="shrink-0 w-3 h-3">
-          {!disableSelection ? (
-            <div
-              className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white ${
-                selected ? "text-white" : "text-theme-text-primary light:invert"
-              } flex justify-center items-center cursor-pointer`}
-              role="checkbox"
-              aria-checked={selected}
-              tabIndex={0}
-              onClick={handleRowSelection}
-            >
-              {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+      <div className="col-span-10 flex items-center gap-x-[4px]">
+        {!hasChanges && (
+          <div
+            className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white text-theme-text-primary light:invert flex justify-center items-center cursor-pointer`}
+            role="checkbox"
+            aria-checked={selected}
+            tabIndex={0}
+            onClick={toggleRowSelection}
+          >
+            {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+          </div>
+        )}
+        <div className="flex items-center gap-x-2">
+          <File size={16} className="text-theme-text-primary" />
+          <div className="flex flex-col">
+            <p className="text-theme-text-primary text-sm">
+              {middleTruncate(item.name, 30)}
+            </p>
+            <div className="flex items-center gap-x-2">
+              <span className="text-theme-text-primary text-xs">
+                {formatDate(item.createdAt)}
+              </span>
+              <span className="text-theme-text-primary text-xs">
+                {getFileExtension(item.name)}
+              </span>
             </div>
-          ) : null}
+          </div>
         </div>
-        <File
-          className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-1"
-          weight="fill"
-        />
-        <p className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
-          {middleTruncate(item.title, 50)}
-        </p>
+        <div className="ml-4">
+          <TagManager document={item} onUpdateTags={handleUpdateTags} />
+        </div>
       </div>
       <div className="col-span-2 flex justify-end items-center">
         {hasChanges ? (

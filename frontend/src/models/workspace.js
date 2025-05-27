@@ -509,6 +509,59 @@ const Workspace = {
   },
 
   threads: WorkspaceThread,
+
+  /**
+   * Updates the tags for a document in a workspace
+   * @param {string} slug - workspace slug
+   * @param {string} documentId - document id
+   * @param {string[]} tags - array of tags
+   * @returns {Promise<boolean>}
+   */
+  updateDocumentTags: async function (slug, documentId, tags) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/document/${documentId}/tags`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ tags }),
+        headers: baseHeaders(),
+      }
+    );
+    return response.ok;
+  },
+
+  /**
+   * Creates a new folder in a workspace
+   * @param {string} slug - workspace slug
+   * @param {string} folderName - name of the folder
+   * @returns {Promise<boolean>}
+   */
+  createFolder: async function (slug, folderName) {
+    const response = await fetch(`${API_BASE}/workspace/${slug}/folder`, {
+      method: "POST",
+      body: JSON.stringify({ name: folderName }),
+      headers: baseHeaders(),
+    });
+    return response.ok;
+  },
+
+  /**
+   * Moves a document to a different folder
+   * @param {string} slug - workspace slug
+   * @param {string} documentId - document id
+   * @param {string} targetFolder - target folder name
+   * @returns {Promise<boolean>}
+   */
+  moveDocumentToFolder: async function (slug, documentId, targetFolder) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/document/${documentId}/move`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ targetFolder }),
+        headers: baseHeaders(),
+      }
+    );
+    return response.ok;
+  },
 };
 
 export default Workspace;

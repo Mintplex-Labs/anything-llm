@@ -3,7 +3,7 @@ import { dollarFormat } from "@/utils/numbers";
 import WorkspaceFileRow from "./WorkspaceFileRow";
 import { memo, useEffect, useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
-import { Eye, PushPin, X } from "@phosphor-icons/react";
+import { Eye, PushPin, X, Folder, FolderOpen } from "@phosphor-icons/react";
 import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
@@ -28,6 +28,29 @@ function WorkspaceDirectory({
 }) {
   const { t } = useTranslation();
   const [selectedItems, setSelectedItems] = useState({});
+  const [expandedFolders, setExpandedFolders] = useState({});
+  const [showNewFolderModal, setShowNewFolderModal] = useState(false);
+
+  const toggleFolder = (folderName) => {
+    setExpandedFolders((prev) => ({
+      ...prev,
+      [folderName]: !prev[folderName],
+    }));
+  };
+
+  const createNewFolder = async (folderName) => {
+    setLoading(true);
+    setLoadingMessage("Creating new folder");
+    try {
+      // Add folder creation logic here
+      await fetchKeys(true);
+    } catch (error) {
+      console.error("Failed to create folder:", error);
+    }
+    setLoadingMessage("");
+    setLoading(false);
+    setShowNewFolderModal(false);
+  };
 
   const toggleSelection = (item) => {
     setSelectedItems((prevSelectedItems) => {
@@ -117,10 +140,23 @@ function WorkspaceDirectory({
   return (
     <>
       <div className="px-8">
-        <div className="flex items-center justify-start w-[560px]">
+        <div className="flex items-center justify-between w-[560px]">
           <h3 className="text-white text-base font-bold ml-5">
             {workspace.name}
           </h3>
+          <button
+            className="border-none flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] rounded-lg hover:bg-theme-sidebar-subitem-hover"
+            onClick={() => setShowNewFolderModal(true)}
+          >
+            <Folder
+              size={18}
+              weight="bold"
+              className="text-theme-text-primary"
+            />
+            <div className="text-theme-text-primary text-xs font-bold">
+              {t("connectors.directory.new-folder")}
+            </div>
+          </button>
         </div>
         <div className="relative w-[560px] h-[445px] mt-5">
           <div
@@ -162,29 +198,53 @@ function WorkspaceDirectory({
             <div className="overflow-y-auto h-[calc(100%-40px)]">
               {files.items.some((folder) => folder.items.length > 0) ||
               movedItems.length > 0 ? (
-                <RenderFileRows
-                  files={files}
-                  movedItems={movedItems}
-                  workspace={workspace}
-                >
-                  {({ item, folder }) => (
-                    <WorkspaceFileRow
-                      key={item.id}
-                      item={item}
-                      folderName={folder.name}
-                      workspace={workspace}
-                      setLoading={setLoading}
-                      setLoadingMessage={setLoadingMessage}
-                      fetchKeys={fetchKeys}
-                      hasChanges={hasChanges}
-                      movedItems={movedItems}
-                      selected={selectedItems[item.id]}
-                      toggleSelection={() => toggleSelection(item)}
-                      disableSelection={hasChanges}
-                      setSelectedItems={setSelectedItems}
-                    />
-                  )}
-                </RenderFileRows>
+                files.items.map((folder, index) => (
+                  <div key={index} className="folder-container">
+                    <div
+                      className="folder-header flex items-center px-3 py-2 cursor-pointer hover:bg-theme-sidebar-subitem-hover"
+                      onClick={() => toggleFolder(folder.name)}
+                    >
+                      {expandedFolders[folder.name] ? (
+                        <FolderOpen
+                          size={16}
+                          className="text-theme-text-primary mr-2"
+                        />
+                      ) : (
+                        <Folder
+                          size={16}
+                          className="text-theme-text-primary mr-2"
+                        />
+                      )}
+                      <span className="text-theme-text-primary text-sm">
+                        {folder.name}
+                      </span>
+                      <span className="text-theme-text-primary text-xs ml-2">
+                        ({folder.items.length})
+                      </span>
+                    </div>
+                    {expandedFolders[folder.name] && (
+                      <div className="folder-content">
+                        {folder.items.map((item) => (
+                          <WorkspaceFileRow
+                            key={item.id}
+                            item={item}
+                            folderName={folder.name}
+                            workspace={workspace}
+                            setLoading={setLoading}
+                            setLoadingMessage={setLoadingMessage}
+                            fetchKeys={fetchKeys}
+                            hasChanges={hasChanges}
+                            movedItems={movedItems}
+                            selected={selectedItems[item.id]}
+                            toggleSelection={() => toggleSelection(item)}
+                            disableSelection={hasChanges}
+                            setSelectedItems={setSelectedItems}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <p className="text-white text-opacity-40 text-sm font-medium">
@@ -251,6 +311,12 @@ function WorkspaceDirectory({
       <PinAlert />
       <DocumentWatchAlert />
       <WorkspaceDocumentTooltips />
+      {showNewFolderModal && (
+        <NewFolderModal
+          onClose={() => setShowNewFolderModal(false)}
+          onCreate={createNewFolder}
+        />
+      )}
     </>
   );
 }
