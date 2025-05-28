@@ -92,6 +92,8 @@
   --theme-attachment-text: #ffffff;
   --theme-attachment-text-secondary: rgba(255, 255, 255, 0.8);
   --theme-attachment-icon: #ffffff;
+  --theme-attachment-icon-spinner: #ffffff;
+  --theme-attachment-icon-spinner-bg: #27282a;
 }
 
 [data-theme="light"] {
@@ -177,12 +179,14 @@
 
   --theme-home-button-secondary-border-hover: #293056;
 
-  --theme-attachment-bg: #eaeaea;
+  --theme-attachment-bg: #edf2fa;
   --theme-attachment-error-bg: rgba(180, 35, 24, 0.3);
   --theme-attachment-success-bg: #eaeaea;
   --theme-attachment-text: #0e0f0f;
   --theme-attachment-text-secondary: rgba(0, 0, 0, 0.8);
   --theme-attachment-icon: #ffffff;
+  --theme-attachment-icon-spinner: #7cd4fd;
+  --theme-attachment-icon-spinner-bg: #ffffff;
 }
 
 [data-theme="light"] .text-white {

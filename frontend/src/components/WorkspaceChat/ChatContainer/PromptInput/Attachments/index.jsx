@@ -44,13 +44,23 @@ function AttachmentItem({ attachment }) {
 
   if (status === "in_progress") {
     return (
-      <div className="flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px]">
+      <div className="relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px] group">
+        <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
+          <button
+            onClick={removeFileFromQueue}
+            type="button"
+            className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
+          >
+            <X size={10} className="flex-shrink-0" />
+          </button>
+        </div>
         <div
-          className={`${iconBgColor} rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
+          className={`bg-theme-attachment-icon-spinner-bg rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
         >
           <CircleNotch
-            size={24}
-            className="text-theme-attachment-icon animate-spin"
+            size={18}
+            weight="bold"
+            className="text-theme-attachment-icon-spinner animate-spin"
           />
         </div>
         <div className="flex flex-col w-[125px]">
@@ -118,7 +128,7 @@ function AttachmentItem({ attachment }) {
             <button
               onClick={removeFileFromQueue}
               type="button"
-              className="bg-theme-bg-primary hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-white/40"
+              className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
             >
               <X size={10} className="flex-shrink-0" />
             </button>
@@ -160,13 +170,13 @@ function AttachmentItem({ attachment }) {
       <div
         data-tooltip-id={`attachment-uid-${uid}-success`}
         data-tooltip-content={`${file.name} was uploaded and embedded into this workspace. It will be available for RAG chat now.`}
-        className={`flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px] group`}
+        className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px] group`}
       >
         <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
           <button
             onClick={removeFileFromQueue}
             type="button"
-            className="bg-theme-bg-primary hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-white/40"
+            className="bg-white hover:bg-error hover:text-theme-attachment-text rounded-full p-1 flex items-center justify-center hover:border-transparent border border-theme-attachment-bg"
           >
             <X size={10} className="flex-shrink-0" />
           </button>

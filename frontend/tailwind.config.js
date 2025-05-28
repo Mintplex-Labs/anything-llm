@@ -107,6 +107,8 @@ export default {
             text: 'var(--theme-attachment-text)',
             'text-secondary': 'var(--theme-attachment-text-secondary)',
             'icon': 'var(--theme-attachment-icon)',
+            'icon-spinner': 'var(--theme-attachment-icon-spinner)',
+            'icon-spinner-bg': 'var(--theme-attachment-icon-spinner-bg)',
           },
           home: {
             text: 'var(--theme-home-text)',
