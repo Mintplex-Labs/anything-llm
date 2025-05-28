@@ -89,7 +89,9 @@ export default function EmbedRow({ embed }) {
             onClick={openSnippetModal}
             className="group text-xs font-medium text-theme-button-text px-2 py-1 rounded-lg hover:bg-theme-button-code-hover-bg"
           >
-            <span className="group-hover:text-theme-button-code-hover-text">Code</span>
+            <span className="group-hover:text-theme-button-code-hover-text">
+              Code
+            </span>
           </button>
           <button
             onClick={handleSuspend}
@@ -103,7 +105,9 @@ export default function EmbedRow({ embed }) {
             onClick={handleDelete}
             className="group text-xs font-medium text-theme-button-text px-2 py-1 rounded-lg hover:bg-theme-button-delete-hover-bg"
           >
-            <span className="group-hover:text-theme-button-delete-hover-text">Delete</span>
+            <span className="group-hover:text-theme-button-delete-hover-text">
+              Delete
+            </span>
           </button>
           <button
             onClick={openSettingsModal}

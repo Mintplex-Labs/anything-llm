@@ -72,7 +72,9 @@ export default function ChatRow({ chat, onDelete }) {
             onClick={handleDelete}
             className="group text-xs font-medium text-theme-button-text px-2 py-1 rounded-lg hover:bg-theme-button-delete-hover-bg"
           >
-            <span className="group-hover:text-theme-button-delete-hover-text">Delete</span>
+            <span className="group-hover:text-theme-button-delete-hover-text">
+              Delete
+            </span>
           </button>
         </td>
       </tr>
