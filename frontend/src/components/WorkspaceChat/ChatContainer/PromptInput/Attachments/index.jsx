@@ -72,7 +72,7 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-error`}
           data-tooltip-content={error}
-          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-error-bg border-transparent w-[180px] group`}
+          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-error-bg border-none w-[180px] group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
@@ -113,7 +113,7 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-success`}
           data-tooltip-content={`${file.name} will be attached to this prompt. It will not be embedded into the workspace permanently.`}
-          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-success-bg border border-white/20 w-[180px] group`}
+          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-success-bg border-none w-[180px] group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
