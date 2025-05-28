@@ -142,7 +142,16 @@ export default {
             "button-text": 'var(--theme-checklist-button-text)',
             "button-hover-bg": 'var(--theme-checklist-button-hover-bg)',
             "button-hover-border": 'var(--theme-checklist-button-hover-border)',
-          }
+          },
+          button: {
+            text: 'var(--theme-button-text)',
+            'code-hover-text': 'var(--theme-button-code-hover-text)',
+            'code-hover-bg': 'var(--theme-button-code-hover-bg)',
+            'disable-hover-text': 'var(--theme-button-disable-hover-text)',
+            'disable-hover-bg': 'var(--theme-button-disable-hover-bg)',
+            'delete-hover-text': 'var(--theme-button-delete-hover-text)',
+            'delete-hover-bg': 'var(--theme-button-delete-hover-bg)',
+          },
         },
       },
       backgroundImage: {

@@ -40,28 +40,32 @@ export default function EmbedConfigsView() {
   }
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
+    <div className="flex flex-col w-full p-4">
+      <div className="w-full flex flex-col gap-y-1 pb-6">
         <div className="items-center flex gap-x-4">
           <p className="text-lg leading-6 font-bold text-theme-text-primary">
             {t("embeddable.title")}
           </p>
         </div>
-        <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
-          {t("embeddable.description")}
-        </p>
+
+        <div className="flex gap-x-10 mr-8">
+          <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
+            {t("embeddable.description")}
+          </p>
+
+          <div>
+            <CTAButton onClick={openModal} className="text-theme-bg-chat">
+              <CodeBlock className="h-4 w-4" weight="bold" />{" "}
+              {t("embeddable.create")}
+            </CTAButton>
+          </div>
+        </div>
       </div>
-      <div className="w-full justify-end flex">
-        <CTAButton onClick={openModal} className="mt-3 mr-0 mb-4">
-          <CodeBlock className="h-4 w-4" weight="bold" />{" "}
-          {t("embeddable.create")}
-        </CTAButton>
-      </div>
-      <div className="overflow-x-auto mt-6">
+      <div className="overflow-x-auto">
         <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
-          <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
+          <thead className="text-theme-text-secondary text-xs leading-[18px] uppercase border-white/10 border-b">
             <tr>
-              <th scope="col" className="px-6 py-3 rounded-tl-lg">
+              <th scope="col" className="px-6 py-3">
                 {t("embeddable.table.workspace")}
               </th>
               <th scope="col" className="px-6 py-3">
@@ -70,7 +74,7 @@ export default function EmbedConfigsView() {
               <th scope="col" className="px-6 py-3">
                 {t("embeddable.table.Active")}
               </th>
-              <th scope="col" className="px-6 py-3 rounded-tr-lg">
+              <th scope="col" className="px-6 py-3">
                 {" "}
               </th>
             </tr>

@@ -75,7 +75,7 @@ export default function EmbedRow({ embed }) {
             rel="noreferrer"
             className="text-white flex items-center hover:underline"
           >
-            <LinkSimple className="mr-2 w-5 h-5" /> {embed.workspace.name}
+            {embed.workspace.name}
           </a>
         </th>
         <th scope="row" className="px-6 whitespace-nowrap">
@@ -86,28 +86,30 @@ export default function EmbedRow({ embed }) {
         </th>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
-            onClick={openSettingsModal}
-            className="text-xs font-medium text-white text-opacity-80 rounded-lg hover:text-white hover:light:text-gray-500 px-2 py-1 hover:text-opacity-60 hover:bg-white hover:bg-opacity-10"
-          >
-            <DotsThreeOutline weight="fill" className="h-5 w-5" />
-          </button>
-          <button
             onClick={openSnippetModal}
-            className="text-xs font-medium text-blue-600 dark:text-blue-300 px-2 py-1 rounded-lg hover:bg-blue-50 hover:dark:bg-blue-800 hover:dark:bg-opacity-20"
+            className="group text-xs font-medium text-theme-button-text px-2 py-1 rounded-lg hover:bg-theme-button-code-hover-bg"
           >
-            Show Code
+            <span className="group-hover:text-theme-button-code-hover-text">Code</span>
           </button>
           <button
             onClick={handleSuspend}
-            className="text-xs font-medium text-orange-600 dark:text-orange-300 px-2 py-1 rounded-lg hover:bg-orange-50 hover:dark:bg-orange-800 hover:dark:bg-opacity-20"
+            className="group text-xs font-medium text-theme-button-text px-2 py-1 rounded-lg hover:bg-theme-button-disable-hover-bg"
           >
-            {enabled ? "Disable" : "Enable"}
+            <span className="group-hover:text-theme-button-disable-hover-text">
+              {enabled ? "Disable" : "Enable"}
+            </span>
           </button>
           <button
             onClick={handleDelete}
-            className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
+            className="group text-xs font-medium text-theme-button-text px-2 py-1 rounded-lg hover:bg-theme-button-delete-hover-bg"
           >
-            <Trash className="h-5 w-5" />
+            <span className="group-hover:text-theme-button-delete-hover-text">Delete</span>
+          </button>
+          <button
+            onClick={openSettingsModal}
+            className="text-xs font-medium text-theme-button-text hover:text-theme-text-secondary hover:bg-theme-hover px-2 py-1 rounded-lg"
+          >
+            <DotsThreeOutline weight="fill" className="h-5 w-5" />
           </button>
         </td>
       </tr>

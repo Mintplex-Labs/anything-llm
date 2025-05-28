@@ -127,8 +127,8 @@ export default function EmbedChatsView() {
   }
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="w-full flex flex-col gap-y-1 pb-6 border-white/10 border-b-2">
+    <div className="flex flex-col w-full p-4 overflow-none">
+      <div className="w-full flex flex-col gap-y-1">
         <div className="flex flex-wrap gap-4 items-center">
           <p className="text-lg leading-6 font-bold text-theme-text-primary">
             {t("embed-chats.title")}
@@ -137,7 +137,7 @@ export default function EmbedChatsView() {
             <button
               ref={openMenuButton}
               onClick={toggleMenu}
-              className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:light:bg-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+              className="flex items-center gap-x-2 px-4 py-1 rounded-lg text-theme-bg-chat bg-primary-button hover:bg-secondary hover:text-white text-xs font-semibold h-[34px] w-fit"
             >
               <Download size={18} weight="bold" />
               {t("embed-chats.export")}

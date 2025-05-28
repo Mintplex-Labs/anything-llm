@@ -13,13 +13,12 @@ export function enforceSubmissionSchema(form) {
   }
 
   // Always set value on nullable keys since empty or off will not send anything from form element.
-  if (!Object.prototype.hasOwnProperty.call(data, "allowlist_domains"))
-    data.allowlist_domains = null;
-  if (!Object.prototype.hasOwnProperty.call(data, "allow_model_override"))
+  if (!data.hasOwnProperty("allowlist_domains")) data.allowlist_domains = null;
+  if (!data.hasOwnProperty("allow_model_override"))
     data.allow_model_override = false;
-  if (!Object.prototype.hasOwnProperty.call(data, "allow_temperature_override"))
+  if (!data.hasOwnProperty("allow_temperature_override"))
     data.allow_temperature_override = false;
-  if (!Object.prototype.hasOwnProperty.call(data, "allow_prompt_override"))
+  if (!data.hasOwnProperty("allow_prompt_override"))
     data.allow_prompt_override = false;
   return data;
 }
@@ -151,7 +150,6 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
         {workspaces.map((workspace) => {
           return (
             <option
-              key={workspace.id}
               selected={defaultValue === workspace.id}
               value={workspace.id}
             >
@@ -244,23 +242,39 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
 
 export const PermittedDomains = ({ defaultValue = [] }) => {
   const [domains, setDomains] = useState(defaultValue);
-
   const handleChange = (data) => {
     const validDomains = data
       .map((input) => {
         let url = input;
         if (!url.includes("http://") && !url.includes("https://"))
           url = `https://${url}`;
-
         try {
-          const urlObject = new URL(url);
-          return urlObject.hostname;
-        } catch (e) {
+          new URL(url);
+          return url;
+        } catch {
           return null;
         }
       })
-      .filter((domain) => domain !== null);
+      .filter((u) => !!u);
+    setDomains(validDomains);
+  };
 
+  const handleBlur = (event) => {
+    const currentInput = event.target.value;
+    if (!currentInput) return;
+
+    const validDomains = [...domains, currentInput].map((input) => {
+      let url = input;
+      if (!url.includes("http://") && !url.includes("https://"))
+        url = `https://${url}`;
+      try {
+        new URL(url);
+        return url;
+      } catch {
+        return null;
+      }
+    });
+    event.target.value = "";
     setDomains(validDomains);
   };
 
@@ -268,22 +282,29 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
     <div>
       <div className="flex flex-col mb-2">
         <label
-          className="block text-sm font-medium text-white"
           htmlFor="allowlist_domains"
+          className="block text-sm font-medium text-white"
         >
-          Permitted domains
+          Restrict requests from domains
         </label>
         <p className="text-theme-text-secondary text-xs">
-          List of domains that can use this embed. Leave empty to allow all
-          domains.
+          This filter will block any requests that come from a domain other than
+          the list below.
+          <br />
+          Leaving this empty means anyone can use your embed on any site.
         </p>
       </div>
+      <input type="hidden" name="allowlist_domains" value={domains.join(",")} />
       <TagsInput
         value={domains}
         onChange={handleChange}
-        name="allowlist_domains"
-        placeHolder="Enter domain and press enter"
-        aria-label="Enter domain and press enter"
+        onBlur={handleBlur}
+        placeholder="https://mysite.com, https://anythingllm.com"
+        classNames={{
+          tag: "bg-theme-settings-input-bg light:bg-black/10 bg-blue-300/10 text-zinc-800",
+          input:
+            "flex p-1 !bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
+        }}
       />
     </div>
   );
@@ -293,7 +314,7 @@ export const NumberInput = ({ name, title, hint, defaultValue = 0 }) => {
   return (
     <div>
       <div className="flex flex-col mb-2">
-        <label className="block text-sm font-medium text-white" htmlFor={name}>
+        <label htmlFor={name} className="block text-sm font-medium text-white">
           {title}
         </label>
         <p className="text-theme-text-secondary text-xs">{hint}</p>
@@ -301,31 +322,35 @@ export const NumberInput = ({ name, title, hint, defaultValue = 0 }) => {
       <input
         type="number"
         name={name}
-        defaultValue={defaultValue}
+        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-[15rem] p-2.5"
         min={0}
-        className="min-w-[15rem] rounded-lg bg-theme-settings-input-bg px-4 py-2 text-sm text-white focus:ring-blue-500 focus:border-blue-500"
+        defaultValue={defaultValue}
+        onScroll={(e) => e.target.blur()}
       />
     </div>
   );
 };
 
 export const BooleanInput = ({ name, title, hint, defaultValue = null }) => {
+  const [status, setStatus] = useState(defaultValue ?? false);
+
   return (
     <div>
       <div className="flex flex-col mb-2">
-        <label className="block text-sm font-medium text-white" htmlFor={name}>
+        <label htmlFor={name} className="block text-sm font-medium text-white">
           {title}
         </label>
         <p className="text-theme-text-secondary text-xs">{hint}</p>
       </div>
-      <label className="relative inline-flex items-center cursor-pointer">
+      <label className="relative inline-flex cursor-pointer items-center">
         <input
-          type="checkbox"
           name={name}
-          defaultChecked={defaultValue}
-          className="sr-only peer"
+          type="checkbox"
+          onClick={() => setStatus(!status)}
+          checked={status}
+          className="peer sr-only pointer-events-none"
         />
-        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        <div className="peer-disabled:opacity-50 pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
       </label>
     </div>
   );
