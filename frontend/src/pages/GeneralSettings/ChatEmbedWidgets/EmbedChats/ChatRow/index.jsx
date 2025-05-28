@@ -38,7 +38,7 @@ export default function ChatRow({ chat, onDelete }) {
       <tr className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10">
         <td className="px-6 font-medium whitespace-nowrap text-white">
           <a
-            href={paths.settings.embedSetup()}
+            href={paths.settings.embedChatWidgets()}
             target="_blank"
             rel="noreferrer"
             className="text-white flex items-center hover:underline"
