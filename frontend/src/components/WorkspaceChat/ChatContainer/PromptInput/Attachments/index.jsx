@@ -101,7 +101,7 @@ function AttachmentItem({ attachment }) {
             <p className="text-theme-attachment-text text-xs font-semibold truncate">
               {file.name}
             </p>
-            <p className="text-theme-attachment-text-secondary text-[10px] leading-[14px] font-medium">
+            <p className="text-theme-attachment-text-secondary text-[10px] leading-[14px] font-medium truncate">
               {error ?? "File not embedded!"}
             </p>
           </div>
