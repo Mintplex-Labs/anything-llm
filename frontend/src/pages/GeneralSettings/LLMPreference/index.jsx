@@ -32,6 +32,7 @@ import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
+import FlowiseAiLogo from "@/media/llmprovider/flowiseai.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -65,6 +66,7 @@ import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import FlowiseAiOptions from "@/components/LLMSelection/FlowiseAiOptions";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   {
@@ -314,6 +316,18 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <XAILLMOptions settings={settings} />,
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
     requiredConfig: ["XAIApiKey", "XAIModelPref"],
+  },
+  {
+    name: "FlowiseAi",
+    value: "flowiseai",
+    logo: FlowiseAiLogo,
+    options: (settings) => <FlowiseAiOptions settings={settings} />,
+    description: "Run flows and LLMs using FlowiseAi's powerful platform.",
+    requiredConfig: [
+      "FlowiseLLMBasePath",
+      "FlowiseLLMChatflowId",
+      "FlowiseLLMTokenLimit",
+    ],
   },
 ];
 
