@@ -1,0 +1,158 @@
+{
+  "name": "default",
+  "description": "Default user with lowest level of access",
+  "permissions": {
+    "system": {
+      "update": false,
+      "countVectors": false,
+      "branding": {
+        "update": false,
+        "delete": false
+      },
+      "models": {
+        "read": false
+      }
+    },
+    "systemSettings": {
+      "read": false,
+      "update": false
+    },
+    "apiKeys": {
+      "create": false,
+      "read": false,
+      "delete": false
+    },
+    "browserExtensionKey": {
+      "readAny": false,
+      "create": false,
+      "read": false,
+      "delete": false
+    },
+    "workspace": {
+      "create": false,
+      "read": true,
+      "update": false,
+      "delete": false,
+      "chat": true,
+      "embed": false,
+      "resetVectorDb": false,
+      "documentPinStatus": false,
+      "readAny": false
+    },
+    "workspaceThread": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "workspaceChats": {
+      "create": false,
+      "read": true,
+      "update": true,
+      "delete": true,
+      "export": false,
+      "playTTS": true
+    },
+    "documents": {
+      "read": false,
+      "remove": false,
+      "createFolder": false,
+      "moveFiles": false,
+      "upload": false
+    },
+    "documentSync": {
+      "read": false,
+      "update": false
+    },
+    "users": {
+      "create": false,
+      "read": false,
+      "update": false,
+      "delete": false,
+      "pfp": {
+        "read": true,
+        "update": true,
+        "delete": true
+      }
+    },
+    "chatEmbeds": {
+      "create": false,
+      "read": false,
+      "update": false,
+      "delete": false
+    },
+    "chatEmbedChats": {
+      "read": false,
+      "delete": false
+    },
+    "agentFlows": {
+      "create": false,
+      "read": false,
+      "update": false,
+      "delete": false
+    },
+    "agent": {
+      "imported": {
+        "update": false,
+        "delete": false
+      }
+    },
+    "roles": {
+      "create": false,
+      "read": false,
+      "update": false,
+      "delete": false
+    },
+    "eventLogs": {
+      "read": false,
+      "delete": false
+    },
+    "invite": {
+      "create": false,
+      "read": false,
+      "delete": false
+    },
+    "promptHistory": {
+      "read": false,
+      "delete": false
+    },
+    "slashCommands": {
+      "create": true,
+      "read": true,
+      "update": true,
+      "delete": true
+    },
+    "systemPromptVariables": {
+      "create": false,
+      "read": false,
+      "update": false,
+      "delete": false
+    },
+    "welcomeMessages": {
+      "read": true,
+      "update": false
+    },
+    "workspaceSuggestedMessages": {
+      "read": true,
+      "update": false
+    },
+    "workspaceUsers": {
+      "read": false,
+      "update": false
+    },
+    "communityHub": {
+      "explore": false,
+      "viewItems": false,
+      "importItems": false
+    },
+    "mcp": {
+      "forceReload": false,
+      "read": false,
+      "update": false,
+      "delete": false
+    },
+    "collector": {
+      "useExtension": false
+    }
+  }
+}
