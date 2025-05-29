@@ -238,7 +238,7 @@ class MCPHypervisor {
     // This ensures GUI applications on macOS/Linux get proper PATH inheritance
     let baseEnv = {
       PATH: process.env.PATH || "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
-      NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules"
+      NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules",
     };
 
     // Docker-specific environment setup
@@ -247,7 +247,7 @@ class MCPHypervisor {
         // Fixed: NODE_PATH should point to modules directory, not node binary
         NODE_PATH: "/usr/local/lib/node_modules",
         PATH: "/usr/local/bin:/usr/bin:/bin",
-        ...baseEnv // Allow inheritance to override docker defaults if needed
+        ...baseEnv, // Allow inheritance to override docker defaults if needed
       };
     }
 
@@ -261,8 +261,8 @@ class MCPHypervisor {
     return {
       env: {
         ...baseEnv,
-        ...server.env
-      }
+        ...server.env,
+      },
     };
   }
 
