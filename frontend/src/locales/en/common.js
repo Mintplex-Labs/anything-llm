@@ -657,7 +657,7 @@ const TRANSLATIONS = {
   },
 
   "embed-chats": {
-    title: "Embed Chats",
+    title: "Embed Chat History",
     export: "Export",
     description:
       "These are all the recorded chats and messages from any embed that you have published.",

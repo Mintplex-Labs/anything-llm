@@ -92,6 +92,7 @@ const ScriptTag = ({ embed }) => {
         <a
           href="https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md"
           target="_blank"
+          rel="noreferrer"
           className="text-blue-300 light:text-blue-500 hover:underline"
         >
           View all style and configuration options &rarr;
