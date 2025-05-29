@@ -393,8 +393,6 @@ const TRANSLATIONS = {
       "Indlejring er processen med at omdanne tekst til vektorer. Disse legitimationsoplysninger er nødvendige for at omdanne dine filer og prompts til et format, som AnythingLLM kan bruge til behandling.",
     provider: {
       title: "Indlejringsudbyder",
-      description:
-        "Ingen opsætning er nødvendig, når du bruger AnythingLLM's indbyggede indlejringsmotor.",
     },
   },
   text: {

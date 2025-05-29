@@ -378,8 +378,6 @@ const TRANSLATIONS = {
       "임베딩은 텍스트를 벡터로 변환하는 과정입니다. 파일과 프롬프트를 AnythingLLM이 처리할 수 있는 형식으로 변환하려면 이러한 인증이 필요합니다.",
     provider: {
       title: "임베딩 제공자",
-      description:
-        "AnythingLLM의 기본 임베딩 엔진을 사용할 때는 설정이 필요하지 않습니다.",
     },
   },
   text: {
