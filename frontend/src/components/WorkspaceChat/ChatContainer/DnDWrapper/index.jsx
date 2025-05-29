@@ -10,6 +10,8 @@ export const DndUploaderContext = createContext();
 export const REMOVE_ATTACHMENT_EVENT = "ATTACHMENT_REMOVE";
 export const CLEAR_ATTACHMENTS_EVENT = "ATTACHMENT_CLEAR";
 export const PASTE_ATTACHMENT_EVENT = "ATTACHMENT_PASTED";
+export const ATTACHMENTS_PROCESSING_EVENT = "ATTACHMENTS_PROCESSING";
+export const ATTACHMENTS_PROCESSED_EVENT = "ATTACHMENTS_PROCESSED";
 
 /**
  * File Attachment for automatic upload on the chat container page.
@@ -169,34 +171,44 @@ export function DnDFileUploaderProvider({ workspace, children }) {
    * @param {Attachment[]} newAttachments
    */
   function embedEligibleAttachments(newAttachments = []) {
+    window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSING_EVENT));
+    const promises = [];
+
     for (const attachment of newAttachments) {
       // Images/attachments are chat specific.
       if (attachment.type === "attachment") continue;
 
       const formData = new FormData();
       formData.append("file", attachment.file, attachment.file.name);
-      Workspace.uploadAndEmbedFile(workspace.slug, formData).then(
-        ({ response, data }) => {
-          const updates = {
-            status: response.ok ? "success" : "failed",
-            error: data?.error ?? null,
-            document: data?.document,
-          };
+      promises.push(
+        Workspace.uploadAndEmbedFile(workspace.slug, formData).then(
+          ({ response, data }) => {
+            const updates = {
+              status: response.ok ? "success" : "failed",
+              error: data?.error ?? null,
+              document: data?.document,
+            };
 
-          setFiles((prev) => {
-            return prev.map(
-              (
-                /** @type {Attachment} */
-                prevFile
-              ) => {
-                if (prevFile.uid !== attachment.uid) return prevFile;
-                return { ...prevFile, ...updates };
-              }
-            );
-          });
-        }
+            setFiles((prev) => {
+              return prev.map(
+                (
+                  /** @type {Attachment} */
+                  prevFile
+                ) => {
+                  if (prevFile.uid !== attachment.uid) return prevFile;
+                  return { ...prevFile, ...updates };
+                }
+              );
+            });
+          }
+        )
       );
     }
+
+    // Wait for all promises to resolve in some way before dispatching the event to unlock the send button
+    Promise.all(promises).finally(() =>
+      window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT))
+    );
   }
 
   return (
