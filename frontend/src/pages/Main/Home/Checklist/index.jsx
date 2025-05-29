@@ -154,24 +154,22 @@ export default function Checklist() {
         )}
         <div
           style={{}}
-          className="bg-[rgba(54,70,61,0.5)] light:bg-[rgba(216,243,234,0.5)] w-full h-full flex items-center justify-center bg-theme-checklist-item-completed-bg/50 rounded-lg"
+          className="bg-hemp-primary/20 w-full h-full flex items-center justify-center rounded-lg backdrop-blur-sm"
         >
-          <p className="text-theme-checklist-item-completed-text text-lg font-bold">
+          <p className="text-hemp-text text-lg font-bold">
             {t("main-page.checklist.completed")}
           </p>
         </div>
       </div>
 
-      <div
-        className={`rounded-lg p-4 lg:p-6 bg-theme-home-bg-card relative ${isCompleted ? "blur-sm" : ""}`}
-      >
+      <div className={`card-hemp relative ${isCompleted ? "blur-sm" : ""}`}>
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-x-3">
-            <h1 className="text-theme-home-text uppercase text-sm font-semibold">
+            <h1 className="text-hemp-text uppercase text-sm font-semibold">
               {t("main-page.checklist.title")}
             </h1>
             {CHECKLIST_ITEMS().length - completedCount > 0 && (
-              <p className="text-theme-home-text-secondary text-xs">
+              <p className="text-hemp-earth text-xs">
                 {CHECKLIST_ITEMS().length - completedCount}{" "}
                 {t("main-page.checklist.tasksLeft")}
               </p>
@@ -181,7 +179,7 @@ export default function Checklist() {
           <div className="flex items-center gap-x-2">
             <button
               onClick={handleClose}
-              className="text-theme-home-text-secondary bg-theme-home-bg-button px-3 py-1 rounded-xl hover:bg-white/10 transition-colors text-xs light:bg-black-100"
+              className="text-hemp-earth bg-hemp-warm px-3 py-1 rounded-xl hover:bg-hemp-accent transition-colors text-xs"
             >
               {t("main-page.checklist.dismiss")}
             </button>

@@ -19,7 +19,7 @@ const PromptReply = ({
   sources = [],
   closed = true,
 }) => {
-  const assistantBackgroundColor = "bg-theme-bg-chat";
+  const assistantBackgroundColor = "bg-hemp-neutral";
 
   if (!reply && sources.length === 0 && !pending && !error) return null;
 
@@ -47,7 +47,7 @@ const PromptReply = ({
           <div className="flex gap-x-5">
             <WorkspaceProfileImage workspace={workspace} />
             <span
-              className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
+              className={`inline-block p-4 rounded-xl bg-red-50 border border-red-300 text-red-600 shadow-sm`}
             >
               <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
               respond to message.
@@ -67,10 +67,12 @@ const PromptReply = ({
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <WorkspaceProfileImage workspace={workspace} />
-          <RenderAssistantChatContent
-            key={`${uuid}-prompt-reply-content`}
-            message={reply}
-          />
+          <div className="chat-bubble-assistant">
+            <RenderAssistantChatContent
+              key={`${uuid}-prompt-reply-content`}
+              message={reply}
+            />
+          </div>
         </div>
         <Citations sources={sources} />
       </div>

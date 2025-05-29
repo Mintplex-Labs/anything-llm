@@ -3,6 +3,8 @@ import { useState } from "react";
 import { isMobile } from "react-device-detect";
 import Home from "./Home";
 import LLMPreference from "./LLMPreference";
+import EmbeddingPreference from "./EmbeddingPreference";
+import VectorDatabase from "./VectorDatabase";
 import UserSetup from "./UserSetup";
 import DataHandling from "./DataHandling";
 import Survey from "./Survey";
@@ -11,6 +13,8 @@ import CreateWorkspace from "./CreateWorkspace";
 const OnboardingSteps = {
   home: Home,
   "llm-preference": LLMPreference,
+  "embedding-preference": EmbeddingPreference,
+  "vector-database": VectorDatabase,
   "user-setup": UserSetup,
   "data-handling": DataHandling,
   survey: Survey,
@@ -39,15 +43,15 @@ export function OnboardingLayout({ children }) {
     return (
       <div
         data-layout="onboarding"
-        className="w-screen h-screen overflow-y-auto bg-theme-bg-primary overflow-hidden"
+        className="w-screen h-screen overflow-y-auto bg-hemp-neutral overflow-hidden"
       >
         <div className="flex flex-col">
           <div className="w-full relative py-10 px-2">
             <div className="flex flex-col w-fit mx-auto gap-y-1 mb-[55px]">
-              <h1 className="text-theme-text-primary font-semibold text-center text-2xl">
+              <h1 className="text-hemp-text font-semibold text-center text-2xl">
                 {header.title}
               </h1>
-              <p className="text-theme-text-secondary text-base text-center">
+              <p className="text-hemp-earth text-base text-center">
                 {header.description}
               </p>
             </div>
@@ -59,10 +63,10 @@ export function OnboardingLayout({ children }) {
                 <button
                   disabled={backBtn.disabled}
                   onClick={backBtn.onClick}
-                  className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+                  className="group p-2 rounded-lg border-2 border-hemp-accent disabled:border-hemp-earth h-fit w-fit disabled:not-allowed hover:bg-hemp-warm disabled:hover:bg-transparent transition-all duration-200"
                 >
                   <ArrowLeft
-                    className="text-white group-hover:text-black group-disabled:text-gray-500"
+                    className="text-hemp-text group-hover:text-hemp-primary group-disabled:text-hemp-earth"
                     size={30}
                   />
                 </button>
@@ -74,10 +78,10 @@ export function OnboardingLayout({ children }) {
                 <button
                   disabled={forwardBtn.disabled}
                   onClick={forwardBtn.onClick}
-                  className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-teal disabled:hover:bg-transparent"
+                  className="group p-2 rounded-lg border-2 border-hemp-accent disabled:border-hemp-earth h-fit w-fit disabled:not-allowed hover:bg-hemp-primary disabled:hover:bg-transparent transition-all duration-200"
                 >
                   <ArrowRight
-                    className="text-white group-hover:text-teal group-disabled:text-gray-500"
+                    className="text-hemp-text group-hover:text-white group-disabled:text-hemp-earth"
                     size={30}
                   />
                 </button>
@@ -92,18 +96,18 @@ export function OnboardingLayout({ children }) {
   return (
     <div
       data-layout="onboarding"
-      className="w-screen overflow-y-auto bg-theme-bg-primary flex justify-center overflow-hidden"
+      className="w-screen overflow-y-auto bg-hemp-neutral flex justify-center overflow-hidden"
     >
       <div className="flex w-1/5 h-screen justify-center items-center">
         {backBtn.showing && (
           <button
             disabled={backBtn.disabled}
             onClick={backBtn.onClick}
-            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-theme-bg-secondary disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-hemp-accent h-fit w-fit disabled:cursor-not-allowed hover:bg-hemp-warm disabled:hover:bg-transparent transition-all duration-200"
             aria-label="Back"
           >
             <ArrowLeft
-              className="text-theme-text-secondary group-hover:text-theme-text-primary group-disabled:text-gray-500"
+              className="text-hemp-text group-hover:text-hemp-primary group-disabled:text-hemp-earth"
               size={30}
             />
           </button>
@@ -112,10 +116,10 @@ export function OnboardingLayout({ children }) {
 
       <div className="w-full md:w-3/5 relative h-full py-10">
         <div className="flex flex-col w-fit mx-auto gap-y-1 mb-[55px]">
-          <h1 className="text-theme-text-primary font-semibold text-center text-2xl">
+          <h1 className="text-hemp-text font-semibold text-center text-2xl">
             {header.title}
           </h1>
-          <p className="text-theme-text-secondary text-base text-center">
+          <p className="text-hemp-earth text-base text-center">
             {header.description}
           </p>
         </div>
@@ -127,11 +131,11 @@ export function OnboardingLayout({ children }) {
           <button
             disabled={forwardBtn.disabled}
             onClick={forwardBtn.onClick}
-            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-teal disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-hemp-accent h-fit w-fit disabled:cursor-not-allowed hover:bg-hemp-primary disabled:hover:bg-transparent transition-all duration-200"
             aria-label="Continue"
           >
             <ArrowRight
-              className="text-theme-text-secondary group-hover:text-white group-disabled:text-gray-500"
+              className="text-hemp-text group-hover:text-white group-disabled:text-hemp-earth"
               size={30}
             />
           </button>

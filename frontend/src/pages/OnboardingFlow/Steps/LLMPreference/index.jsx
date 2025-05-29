@@ -308,7 +308,7 @@ export default function LLMPreference({
     const data = {};
     const formData = new FormData(form);
     data.LLMProvider = selectedLLM;
-    // Default to AnythingLLM embedder and LanceDB
+    // Default to HempGPT embedder and LanceDB
     data.EmbeddingEngine = "native";
     data.VectorDB = "lancedb";
     for (var [key, value] of formData.entries()) data[key] = value;
@@ -337,18 +337,20 @@ export default function LLMPreference({
   return (
     <div>
       <form ref={formRef} onSubmit={handleSubmit} className="w-full">
-        <div className="w-full relative border-theme-chat-input-border shadow border-2 rounded-lg text-white">
-          <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
-            <div className="w-full flex items-center sticky top-0">
-              <MagnifyingGlass
-                size={16}
-                weight="bold"
-                className="absolute left-4 z-30 text-theme-text-primary"
-              />
+        <div className="card-hemp w-full shadow-md">
+          <div className="p-4 border-b border-gray-100">
+            <div className="relative w-full">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <MagnifyingGlass
+                  size={16}
+                  weight="bold"
+                  className="text-gray-400"
+                />
+              </div>
               <input
                 type="text"
-                placeholder="Search LLM providers"
-                className="bg-theme-bg-secondary placeholder:text-theme-text-secondary z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border border-theme-chat-input-border outline-none focus:outline-primary-button active:outline-primary-button outline-none text-theme-text-primary"
+                placeholder="Search providers…"
+                className="block w-full pl-11 pr-4 py-3 h-[44px] text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none text-gray-900 placeholder-gray-500 transition-all duration-200 ease-out focus:bg-white focus:border-gray-300 focus:ring-1 focus:ring-gray-200 focus:shadow-sm font-medium leading-5"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoComplete="off"
                 onKeyDown={(e) => {
@@ -357,7 +359,7 @@ export default function LLMPreference({
               />
             </div>
           </div>
-          <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
+          <div className="px-4 py-4 flex flex-col gap-y-1 max-h-[330px] overflow-y-auto no-scroll">
             {filteredLLMs.map((llm) => {
               if (llm.value === "native" && isHosted) return null;
               return (

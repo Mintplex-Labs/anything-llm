@@ -307,7 +307,7 @@ export const VECTOR_DB_PRIVACY = {
   lancedb: {
     name: "LanceDB",
     description: [
-      "Your vectors and document text are stored privately on this instance of AnythingLLM",
+      "Your vectors and document text are stored privately on this instance of HempGPT",
     ],
     logo: LanceDbLogo,
   },
@@ -315,9 +315,9 @@ export const VECTOR_DB_PRIVACY = {
 
 export const EMBEDDING_ENGINE_PRIVACY = {
   native: {
-    name: "AnythingLLM Embedder",
+    name: "HempGPT Embedder",
     description: [
-      "Your document text is embedded privately on this instance of AnythingLLM",
+      "Your document text is embedded privately on this instance of HempGPT",
     ],
     logo: AnythingLLMIcon,
   },
@@ -407,21 +407,21 @@ export const FALLBACKS = {
   LLM: (provider) => ({
     name: "Unknown",
     description: [
-      `"${provider}" has no known data handling policy defined in AnythingLLM`,
+      `"${provider}" has no known data handling policy defined in HempGPT`,
     ],
     logo: AnythingLLMIcon,
   }),
   EMBEDDING: (provider) => ({
     name: "Unknown",
     description: [
-      `"${provider}" has no known data handling policy defined in AnythingLLM`,
+      `"${provider}" has no known data handling policy defined in HempGPT`,
     ],
     logo: AnythingLLMIcon,
   }),
   VECTOR: (provider) => ({
     name: "Unknown",
     description: [
-      `"${provider}" has no known data handling policy defined in AnythingLLM`,
+      `"${provider}" has no known data handling policy defined in HempGPT`,
     ],
     logo: AnythingLLMIcon,
   }),
@@ -477,9 +477,9 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
 
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
-      <div className="p-8 flex flex-col gap-8">
-        <div className="flex flex-col gap-y-2 border-b border-theme-sidebar-border pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
+      <div className="card-hemp flex flex-col gap-8 max-w-2xl w-full">
+        <div className="flex flex-col gap-y-2 border-b border-hemp-accent pb-4">
+          <div className="text-hemp-text text-base font-bold">
             LLM Selection
           </div>
           <div className="flex items-center gap-2.5">
@@ -488,59 +488,63 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
               alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-theme-text-primary text-sm font-bold">
+            <p className="text-hemp-text text-sm font-bold">
               {LLMSelection.name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {LLMSelection.description.map((desc) => (
-              <li className="text-theme-text-primary text-sm">{desc}</li>
+            {LLMSelection.description.map((desc, index) => (
+              <li key={index} className="text-hemp-earth text-sm">
+                {desc}
+              </li>
             ))}
           </ul>
         </div>
-        <div className="flex flex-col gap-y-2 border-b border-theme-sidebar-border pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
+        <div className="flex flex-col gap-y-2 border-b border-hemp-accent pb-4">
+          <div className="text-hemp-text text-base font-bold">
             Embedding Preference
           </div>
           <div className="flex items-center gap-2.5">
             <img
               src={EmbeddingEngine.logo}
-              alt="LLM Logo"
+              alt="Embedding Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-theme-text-primary text-sm font-bold">
+            <p className="text-hemp-text text-sm font-bold">
               {EmbeddingEngine.name}
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {EmbeddingEngine.description.map((desc) => (
-              <li className="text-theme-text-primary text-sm">{desc}</li>
+            {EmbeddingEngine.description.map((desc, index) => (
+              <li key={index} className="text-hemp-earth text-sm">
+                {desc}
+              </li>
             ))}
           </ul>
         </div>
 
         <div className="flex flex-col gap-y-2 pb-4">
-          <div className="text-theme-text-primary text-base font-bold">
+          <div className="text-hemp-text text-base font-bold">
             Vector Database
           </div>
           <div className="flex items-center gap-2.5">
             <img
               src={VectorDb.logo}
-              alt="LLM Logo"
+              alt="Vector DB Logo"
               className="w-8 h-8 rounded"
             />
-            <p className="text-theme-text-primary text-sm font-bold">
-              {VectorDb.name}
-            </p>
+            <p className="text-hemp-text text-sm font-bold">{VectorDb.name}</p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {VectorDb.description.map((desc) => (
-              <li className="text-theme-text-primary text-sm">{desc}</li>
+            {VectorDb.description.map((desc, index) => (
+              <li key={index} className="text-hemp-earth text-sm">
+                {desc}
+              </li>
             ))}
           </ul>
         </div>
       </div>
-      <p className="text-theme-text-secondary text-sm font-medium py-1">
+      <p className="text-hemp-earth text-sm font-medium py-1">
         {t("onboarding.data.settingsHint")}
       </p>
     </div>

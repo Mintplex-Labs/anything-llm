@@ -385,12 +385,12 @@ export default function GeneralLLMPreference() {
     (llm) => llm.value === selectedLLM
   );
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+    <div className="w-screen h-screen overflow-hidden bg-hemp-neutral flex">
       <Sidebar />
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-hemp-neutral w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -399,69 +399,86 @@ export default function GeneralLLMPreference() {
       ) : (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-hemp-neutral w-full h-full overflow-y-scroll p-4 md:p-0"
         >
           <form onSubmit={handleSubmit} className="flex w-full">
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-              <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
+              <div className="card-hemp w-full flex flex-col gap-y-1 pb-6 mb-6">
                 <div className="flex gap-x-4 items-center">
-                  <p className="text-lg leading-6 font-bold text-white">
+                  <p className="text-lg leading-6 font-bold text-hemp-text">
                     {t("llm.title")}
                   </p>
                 </div>
-                <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
+                <p className="text-xs leading-[18px] font-base text-hemp-earth">
                   {t("llm.description")}
                 </p>
               </div>
               <div className="w-full justify-end flex">
                 {hasChanges && (
-                  <CTAButton
+                  <button
                     onClick={() => handleSubmit()}
-                    className="mt-3 mr-0 -mb-14 z-10"
+                    className="btn-hemp mt-3 mr-0 -mb-14 z-10"
                   >
                     {saving ? "Saving..." : "Save changes"}
-                  </CTAButton>
+                  </button>
                 )}
               </div>
-              <div className="text-base font-bold text-white mt-6 mb-4">
+              <div className="text-base font-bold text-hemp-text mt-6 mb-4">
                 {t("llm.provider")}
               </div>
               <div className="relative">
                 {searchMenuOpen && (
                   <div
-                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
+                    className="fixed top-0 left-0 w-full h-full bg-hemp-dark bg-opacity-70 backdrop-blur-sm z-10"
                     onClick={() => setSearchMenuOpen(false)}
                   />
                 )}
                 {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
-                    <div className="w-full flex flex-col gap-y-1">
-                      <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
-                        <MagnifyingGlass
-                          size={20}
-                          weight="bold"
-                          className="absolute left-4 z-30 text-theme-text-primary -ml-4 my-2"
-                        />
-                        <input
-                          type="text"
-                          name="llm-search"
-                          autoComplete="off"
-                          placeholder="Search all LLM providers"
-                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none text-theme-text-primary placeholder:text-theme-text-primary placeholder:font-medium"
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          ref={searchInputRef}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") e.preventDefault();
-                          }}
-                        />
-                        <X
-                          size={20}
-                          weight="bold"
-                          className="cursor-pointer text-white hover:text-x-button"
-                          onClick={handleXButton}
-                        />
+                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto min-h-[64px] z-20 bg-white rounded-2xl border border-gray-200 shadow-xl backdrop-blur-xl mx-auto">
+                    <div className="w-full flex flex-col">
+                      <div className="flex items-center sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 px-4 py-3">
+                      <div className="relative w-full">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <svg
+                      className="h-4 w-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                      >
+                      <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                      </svg>
                       </div>
-                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
+                      <input
+                      type="text"
+                      name="llm-search"
+                      autoComplete="off"
+                      placeholder="Search providers…"
+                      value={searchQuery}
+                      className="block w-full pl-11 pr-11 py-3 h-[44px] text-sm bg-gray-50 border border-gray-200 rounded-lg outline-none text-gray-900 placeholder-gray-500 transition-all duration-200 ease-out focus:bg-white focus:border-gray-300 focus:ring-1 focus:ring-gray-200 focus:shadow-sm font-medium leading-5"
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      ref={searchInputRef}
+                      onKeyDown={(e) => {
+                      if (e.key === "Enter") e.preventDefault();
+                      }}
+                      />
+                      <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center">
+                      <button
+                      type="button"
+                      onClick={handleXButton}
+                      className="h-4 w-4 text-gray-400 hover:text-gray-600 transition-colors duration-150 focus:outline-none"
+                      >
+                      <X size={16} weight="bold" />
+                      </button>
+                      </div>
+                      </div>
+                      </div>
+                      <div className="flex-1 px-4 pb-4 flex flex-col gap-y-2 overflow-y-auto llm-search-scrollbar">
                         {filteredLLMs.map((llm) => {
                           return (
                             <LLMItem
@@ -480,7 +497,7 @@ export default function GeneralLLMPreference() {
                   </div>
                 ) : (
                   <button
-                    className="w-full max-w-[640px] h-[64px] bg-theme-settings-input-bg rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
+                    className="w-full max-w-[640px] h-[64px] flex items-center p-4 justify-between cursor-pointer bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md rounded-2xl transition-all duration-200 ease-out"
                     type="button"
                     onClick={() => setSearchMenuOpen(true)}
                   >
@@ -488,22 +505,22 @@ export default function GeneralLLMPreference() {
                       <img
                         src={selectedLLMObject?.logo || AnythingLLMIcon}
                         alt={`${selectedLLMObject?.name} logo`}
-                        className="w-10 h-10 rounded-md"
+                        className="w-10 h-10 rounded-xl shadow-sm"
                       />
                       <div className="flex flex-col text-left">
-                        <div className="text-sm font-semibold text-white">
+                        <div className="text-sm font-semibold text-gray-900">
                           {selectedLLMObject?.name || "None selected"}
                         </div>
-                        <div className="mt-1 text-xs text-description">
+                        <div className="mt-1 text-xs text-gray-500">
                           {selectedLLMObject?.description ||
                             "You need to select an LLM"}
                         </div>
                       </div>
                     </div>
                     <CaretUpDown
-                      size={24}
-                      weight="bold"
-                      className="text-white"
+                      size={20}
+                      weight="regular"
+                      className="text-gray-400"
                     />
                   </button>
                 )}

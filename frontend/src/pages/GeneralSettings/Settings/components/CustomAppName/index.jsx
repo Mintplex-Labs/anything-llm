@@ -74,7 +74,7 @@ export default function CustomAppName() {
           name="customAppName"
           type="text"
           className="border-none bg-theme-settings-input-bg mt-2 text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-fit py-2 px-4"
-          placeholder="AnythingLLM"
+          placeholder="HempGPT"
           required={true}
           autoComplete="off"
           onChange={handleChange}

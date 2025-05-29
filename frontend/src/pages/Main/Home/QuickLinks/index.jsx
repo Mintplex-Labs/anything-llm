@@ -54,27 +54,27 @@ export default function QuickLinks() {
 
   return (
     <div>
-      <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
+      <h1 className="text-hemp-text uppercase text-sm font-semibold mb-4">
         {t("main-page.quickLinks.title")}
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <button
           onClick={sendChat}
-          className="h-[45px] text-sm font-semibold bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
+          className="btn-hemp-secondary h-[45px] text-sm font-semibold flex items-center justify-center gap-x-2.5"
         >
           <ChatCenteredDots size={16} />
           {t("main-page.quickLinks.sendChat")}
         </button>
         <button
           onClick={embedDocument}
-          className="h-[45px] text-sm font-semibold bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
+          className="btn-hemp-secondary h-[45px] text-sm font-semibold flex items-center justify-center gap-x-2.5"
         >
           <FileArrowDown size={16} />
           {t("main-page.quickLinks.embedDocument")}
         </button>
         <button
           onClick={createWorkspace}
-          className="h-[45px] text-sm font-semibold bg-theme-home-button-secondary rounded-lg text-theme-home-button-secondary-text flex items-center justify-center gap-x-2.5 transition-all duration-200 hover:bg-theme-home-button-secondary-hover hover:text-theme-home-button-secondary-hover-text"
+          className="btn-hemp h-[45px] text-sm font-semibold flex items-center justify-center gap-x-2.5"
         >
           <Plus size={16} />
           {t("main-page.quickLinks.createWorkspace")}
