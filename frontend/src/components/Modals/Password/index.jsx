@@ -13,16 +13,16 @@ import illustration from "@/media/illustrations/login-illustration.svg";
 export default function PasswordModal({ mode = "single" }) {
   const { loginLogo } = useLogo();
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-theme-bg-primary flex flex-col md:flex-row items-center justify-center">
+    <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-hemp-neutral flex flex-col md:flex-row items-center justify-center">
       <div
         style={{
           background: `
-    radial-gradient(circle at center, transparent 40%, black 100%),
-    linear-gradient(180deg, #85F8FF 0%, #65A6F2 100%)
+    radial-gradient(circle at center, transparent 40%, rgba(74, 93, 35, 0.1) 100%),
+    linear-gradient(180deg, rgba(122, 132, 80, 0.2) 0%, rgba(184, 196, 138, 0.15) 100%)
   `,
           width: "575px",
           filter: "blur(150px)",
-          opacity: "0.4",
+          opacity: "0.6",
         }}
         className="absolute left-0 top-0 z-0 h-full w-full"
       />
@@ -33,7 +33,7 @@ export default function PasswordModal({ mode = "single" }) {
           alt="login illustration"
         />
       </div>
-      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative md:-mt-20 mt-0 !border-none bg-theme-bg-secondary md:bg-transparent">
+      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative md:-mt-20 mt-0 !border-none bg-white md:bg-transparent">
         <img
           src={loginLogo}
           alt="Logo"

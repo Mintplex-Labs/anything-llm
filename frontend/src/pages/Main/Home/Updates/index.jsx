@@ -36,7 +36,7 @@ export default function Updates() {
 
   return (
     <div>
-      <h1 className="text-theme-home-text uppercase text-sm font-semibold mb-4">
+      <h1 className="text-hemp-text uppercase text-sm font-semibold mb-4">
         {t("main-page.announcements.title")}
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -80,7 +80,7 @@ function AnnouncementCard({
       rel="noopener noreferrer"
       className="block"
     >
-      <div className="bg-theme-home-update-card-bg rounded-xl p-4 flex gap-x-4 hover:bg-theme-home-update-card-hover transition-colors">
+      <div className="card-hemp p-4 flex gap-x-4 hover:shadow-lg transition-all duration-200">
         <img
           src={thumbnail_url ?? placeHolderImage}
           alt={title}
@@ -89,12 +89,10 @@ function AnnouncementCard({
           className="w-[80px] h-[80px] rounded-lg flex-shrink-0 object-cover"
         />
         <div className="flex flex-col gap-y-1">
-          <h3 className="text-theme-home-text font-medium text-sm">{title}</h3>
-          <p className="text-theme-home-text-secondary text-xs line-clamp-2">
-            {subtitle}
-          </p>
-          <div className="flex items-center gap-x-4 text-xs text-theme-home-text-secondary">
-            <span className="text-theme-home-update-source">{author}</span>
+          <h3 className="text-hemp-text font-medium text-sm">{title}</h3>
+          <p className="text-hemp-earth text-xs line-clamp-2">{subtitle}</p>
+          <div className="flex items-center gap-x-4 text-xs text-hemp-earth">
+            <span className="text-hemp-primary font-medium">{author}</span>
             <span>{date ?? "Recently"}</span>
           </div>
         </div>

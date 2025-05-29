@@ -183,25 +183,29 @@ export default function ChatHistory({
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
-          <p className="text-white/60 text-lg font-base py-4">
+          <p className="text-hemp-earth text-lg font-base py-4">
             {t("chat_window.welcome")}
           </p>
           {!user || user.role !== "default" ? (
-            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+            <p className="w-full items-center text-hemp-earth text-lg font-base flex flex-col md:flex-row gap-x-1">
               {t("chat_window.get_started")}
               <span
-                className="underline font-medium cursor-pointer"
+                className="underline font-medium cursor-pointer text-hemp-primary hover:text-hemp-secondary"
                 onClick={showModal}
               >
                 {t("chat_window.upload")}
               </span>
               {t("chat_window.or")}{" "}
-              <b className="font-medium italic">{t("chat_window.send_chat")}</b>
+              <b className="font-medium italic text-hemp-text">
+                {t("chat_window.send_chat")}
+              </b>
             </p>
           ) : (
-            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+            <p className="w-full items-center text-hemp-earth text-lg font-base flex flex-col md:flex-row gap-x-1">
               {t("chat_window.get_started_default")}{" "}
-              <b className="font-medium italic">{t("chat_window.send_chat")}</b>
+              <b className="font-medium italic text-hemp-text">
+                {t("chat_window.send_chat")}
+              </b>
             </p>
           )}
           <WorkspaceChatSuggestions
@@ -221,7 +225,7 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
+      className={`markdown text-hemp-text font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
       id="chat-history"
       ref={chatHistoryRef}
       onScroll={handleScroll}
@@ -236,13 +240,13 @@ export default function ChatHistory({
         <div className="fixed bottom-40 right-10 md:right-20 z-50 cursor-pointer animate-pulse">
           <div className="flex flex-col items-center">
             <div
-              className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white"
+              className="p-3 rounded-full border border-hemp-accent bg-hemp-neutral hover:bg-hemp-warm hover:shadow-md transition-all duration-200"
               onClick={() => {
                 scrollToBottom(true);
                 setIsUserScrolling(false);
               }}
             >
-              <ArrowDown weight="bold" className="text-white/60 w-5 h-5" />
+              <ArrowDown weight="bold" className="text-hemp-primary w-5 h-5" />
             </div>
           </div>
         </div>
@@ -262,15 +266,15 @@ const getLastMessageInfo = (history) => {
 function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
   if (suggestions.length === 0) return null;
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-theme-text-primary text-xs mt-10 w-full justify-center">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-hemp-text text-xs mt-10 w-full justify-center">
       {suggestions.map((suggestion, index) => (
         <button
           key={index}
-          className="text-left p-2.5 rounded-xl bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover border border-theme-border"
+          className="text-left p-4 rounded-xl bg-white border border-hemp-accent hover:bg-hemp-warm hover:shadow-md transition-all duration-200 shadow-sm"
           onClick={() => sendSuggestion(suggestion.heading, suggestion.message)}
         >
-          <p className="font-semibold">{suggestion.heading}</p>
-          <p>{suggestion.message}</p>
+          <p className="font-semibold text-hemp-text">{suggestion.heading}</p>
+          <p className="text-hemp-earth">{suggestion.message}</p>
         </button>
       ))}
     </div>

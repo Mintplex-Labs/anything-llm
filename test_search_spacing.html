@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Spacing Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-8 text-center">Search Bar Spacing Test</h1>
+        
+        <!-- BEFORE (Original problematic layout) -->
+        <div class="mb-12">
+            <h2 class="text-lg font-semibold mb-4 text-red-600">BEFORE: Asymmetrical spacing (problematic)</h2>
+            <div class="relative w-full max-w-[640px]">
+                <div class="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto min-h-[64px] z-20 bg-white rounded-2xl border border-gray-200 shadow-xl backdrop-blur-xl">
+                    <div class="w-full flex flex-col">
+                        <div class="flex items-center sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 p-4">
+                            <div class="relative w-full">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </div>
+                                <input type="text" placeholder="Search providers…" 
+                                       class="block w-full pl-10 pr-10 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-lg outline-none text-gray-900 placeholder-gray-500 transition-all duration-200 ease-out focus:bg-white focus:border-gray-300 focus:ring-1 focus:ring-gray-200 focus:shadow-sm font-medium">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button class="h-4 w-4 text-gray-400 hover:text-gray-600 transition-colors duration-150 focus:outline-none">×</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-1 px-4 pb-4 flex flex-col gap-y-2 overflow-y-auto">
+                            <div class="p-3 border rounded-lg">Sample Provider 1</div>
+                            <div class="p-3 border rounded-lg">Sample Provider 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AFTER (Fixed layout) -->
+        <div class="mb-12">
+            <h2 class="text-lg font-semibold mb-4 text-green-600">AFTER: Symmetrical spacing (fixed)</h2>
+            <div class="relative w-full max-w-[640px]">
+                <div class="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto min-h-[64px] z-20 bg-white rounded-2xl border border-gray-200 shadow-xl backdrop-blur-xl mx-auto">
+                    <div class="w-full flex flex-col">
+                        <div class="flex items-center sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 px-4 py-3">
+                            <div class="relative w-full">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </div>
+                                <input type="text" placeholder="Search providers…" 
+                                       class="block w-full pl-11 pr-11 py-3 h-[44px] text-sm bg-gray-50 border border-gray-200 rounded-lg outline-none text-gray-900 placeholder-gray-500 transition-all duration-200 ease-out focus:bg-white focus:border-gray-300 focus:ring-1 focus:ring-gray-200 focus:shadow-sm font-medium leading-5">
+                                <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center">
+                                    <button class="h-4 w-4 text-gray-400 hover:text-gray-600 transition-colors duration-150 focus:outline-none">×</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-1 px-4 pb-4 flex flex-col gap-y-2 overflow-y-auto">
+                            <div class="p-3 border rounded-lg">Sample Provider 1</div>
+                            <div class="p-3 border rounded-lg">Sample Provider 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Indicators -->
+        <div class="text-sm text-gray-600 space-y-2">
+            <p><strong>Key Changes:</strong></p>
+            <ul class="list-disc pl-6 space-y-1">
+                <li>Added <code>mx-auto</code> for container centering</li>
+                <li>Changed container padding from <code>p-4</code> to <code>px-4 py-3</code></li>
+                <li>Updated input padding from <code>pl-10 pr-10</code> to <code>pl-11 pr-11</code></li>
+                <li>Improved icon positioning with <code>pl-3.5</code> and <code>pr-3.5</code></li>
+                <li>Added proper height and line-height for better vertical centering</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

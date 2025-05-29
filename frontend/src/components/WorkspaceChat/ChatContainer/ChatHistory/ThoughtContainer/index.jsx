@@ -83,7 +83,7 @@ export const ThoughtChainComponent = forwardRef(
               transition: "all 0.1s ease-in-out",
               borderRadius: "6px",
             }}
-            className={`${isExpanded || autoExpand ? "" : `${canExpand ? "hover:bg-theme-sidebar-item-hover" : ""}`} items-start bg-theme-bg-chat-input py-2 px-4 flex gap-x-2`}
+            className={`${isExpanded || autoExpand ? "" : `${canExpand ? "hover:bg-hemp-warm" : ""}`} items-start bg-hemp-neutral border border-hemp-accent rounded-lg py-3 px-4 flex gap-x-2 shadow-sm`}
           >
             <div
               className={`w-7 h-7 flex justify-center flex-shrink-0 ${!isExpanded && !autoExpand ? "items-center" : "items-start pt-[2px]"}`}

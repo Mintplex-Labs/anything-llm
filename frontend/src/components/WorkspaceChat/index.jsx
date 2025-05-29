@@ -42,8 +42,8 @@ export default function WorkspaceChat({ loading, workspace }) {
       <>
         {loading === false && !workspace && (
           <ModalWrapper isOpen={true}>
-            <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
-              <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+            <div className="w-full max-w-2xl bg-white rounded-lg shadow border-2 border-hemp-accent overflow-hidden">
+              <div className="relative p-6 border-b rounded-t border-hemp-accent">
                 <div className="w-full flex gap-x-2 items-center">
                   <WarningCircle
                     className="text-red-500 w-6 h-6"
@@ -55,16 +55,13 @@ export default function WorkspaceChat({ loading, workspace }) {
                 </div>
               </div>
               <div className="py-7 px-9 space-y-2 flex-col">
-                <p className="text-white text-sm">
+                <p className="text-hemp-text text-sm">
                   The workspace you're looking for is not available. It may have
                   been deleted or you may not have access to it.
                 </p>
               </div>
-              <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">
-                <a
-                  href={paths.home()}
-                  className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
-                >
+              <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-hemp-accent rounded-b">
+                <a href={paths.home()} className="btn-hemp text-sm">
                   Return to homepage
                 </a>
               </div>

@@ -21,31 +21,42 @@ export default {
         "360": "360deg"
       },
       colors: {
+        // Hemp-inspired natural color palette
+        "hemp-primary": "#4A5D23", // Deep forest green
+        "hemp-secondary": "#7A8450", // Sage green
+        "hemp-accent": "#B8C48A", // Light sage
+        "hemp-neutral": "#F5F7F0", // Off-white cream
+        "hemp-warm": "#E8E5DA", // Warm cream
+        "hemp-earth": "#8B7355", // Earth brown
+        "hemp-dark": "#2A3318", // Dark forest
+        "hemp-text": "#3C4A24", // Text green
+        
+        // Legacy colors for compatibility
         "black-900": "#141414",
-        accent: "#3D4147",
-        "sidebar-button": "#31353A",
-        sidebar: "#25272C",
-        "historical-msg-system": "rgba(255, 255, 255, 0.05);",
-        "historical-msg-user": "#2C2F35",
-        outline: "#4E5153",
+        accent: "#4A5D23",
+        "sidebar-button": "#7A8450",
+        sidebar: "#2A3318",
+        "historical-msg-system": "rgba(74, 93, 35, 0.05);",
+        "historical-msg-user": "#F5F7F0",
+        outline: "#B8C48A",
         "primary-button": "var(--theme-button-primary)",
         "cta-button": "var(--theme-button-cta)",
-        secondary: "#2C2F36",
-        "dark-input": "#18181B",
-        "mobile-onboarding": "#2C2F35",
-        "dark-highlight": "#1C1E21",
-        "dark-text": "#222628",
-        description: "#D2D5DB",
-        "x-button": "#9CA3AF",
-        royalblue: "#065986",
-        purple: "#4A1FB8",
-        magenta: "#9E165F",
-        danger: "#F04438",
-        error: "#B42318",
-        warn: "#854708",
-        success: "#05603A",
-        darker: "#F4F4F4",
-        teal: "#0BA5EC",
+        secondary: "#E8E5DA",
+        "dark-input": "#F5F7F0",
+        "mobile-onboarding": "#7A8450",
+        "dark-highlight": "#B8C48A",
+        "dark-text": "#3C4A24",
+        description: "#8B7355",
+        "x-button": "#7A8450",
+        royalblue: "#4A5D23",
+        purple: "#7A8450",
+        magenta: "#B8C48A",
+        danger: "#D97706",
+        error: "#DC2626",
+        warn: "#F59E0B",
+        success: "#059669",
+        darker: "#F5F7F0",
+        teal: "#4A5D23",
 
         // Generic theme colors
         theme: {
@@ -56,6 +67,8 @@ export default {
             container: 'var(--theme-bg-container)',
             chat: 'var(--theme-bg-chat)',
             "chat-input": 'var(--theme-bg-chat-input)',
+            "chat-user": 'var(--theme-bg-chat-user)',
+            "chat-assistant": 'var(--theme-bg-chat-assistant)',
             "popup-menu": 'var(--theme-popup-menu-bg)',
           },
           text: {

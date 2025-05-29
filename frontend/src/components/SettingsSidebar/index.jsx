@@ -47,10 +47,10 @@ export default function SettingsSidebar() {
   if (isMobile) {
     return (
       <>
-        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-white text-theme-text-secondary shadow-lg h-16">
+        <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-hemp-warm light:bg-white text-hemp-text shadow-lg h-16">
           <button
             onClick={() => setShowSidebar(true)}
-            className="rounded-md p-2 flex items-center justify-center text-theme-text-secondary"
+            className="rounded-md p-2 flex items-center justify-center text-hemp-text hover:text-hemp-primary hover:bg-hemp-accent transition-colors"
           >
             <List className="h-6 w-6" />
           </button>
@@ -80,7 +80,7 @@ export default function SettingsSidebar() {
           />
           <div
             ref={sidebarRef}
-            className="h-[100vh] fixed top-0 left-0 rounded-r-[26px] bg-theme-bg-sidebar w-[80%] p-[18px]"
+            className="h-[100vh] fixed top-0 left-0 rounded-r-[26px] bg-hemp-warm w-[80%] p-[18px] border-r border-hemp-accent"
           >
             <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
               {/* Header Information */}
@@ -93,10 +93,10 @@ export default function SettingsSidebar() {
                     style={{ objectFit: "contain" }}
                   />
                 </div>
-                <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
+                <div className="flex gap-x-2 items-center text-hemp-text shrink-0">
                   <a
                     href={paths.home()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-theme-action-menu-bg hover:bg-theme-action-menu-item-hover hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+                    className="transition-all duration-300 p-2 rounded-full text-hemp-text bg-hemp-neutral hover:bg-hemp-accent hover:border-hemp-secondary hover:border-opacity-50 border-transparent border"
                   >
                     <House className="h-4 w-4" />
                   </a>
@@ -108,21 +108,21 @@ export default function SettingsSidebar() {
                 <div className="h-auto md:sidebar-items">
                   <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} t={t} />
-                    <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
+                    <div className="h-[1.5px] bg-hemp-accent mx-3 mt-[14px]" />
                     <SupportEmail />
                     <Link
                       hidden={
                         user?.hasOwnProperty("role") && user.role !== "admin"
                       }
                       to={paths.settings.privacy()}
-                      className="text-theme-text-secondary hover:text-white text-xs leading-[18px] mx-3"
+                      className="text-hemp-text hover:text-hemp-primary text-xs leading-[18px] mx-3"
                     >
                       {t("settings.privacy")}
                     </Link>
                   </div>
                 </div>
               </div>
-              <div className="absolute bottom-2 left-0 right-0 pt-2 bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
+              <div className="absolute bottom-2 left-0 right-0 pt-2 bg-hemp-warm bg-opacity-80 backdrop-filter backdrop-blur-md">
                 <Footer />
               </div>
             </div>

@@ -49,17 +49,17 @@ const HistoricalMessage = ({
     return (
       <div
         key={uuid}
-        className={`flex justify-center items-end w-full bg-theme-bg-chat`}
+        className={`flex justify-center items-end w-full bg-hemp-neutral`}
       >
         <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
           <div className={`flex gap-x-5 ${alignmentCls}`}>
             <ProfileImage role={role} workspace={workspace} />
-            <div className="p-2 rounded-lg bg-red-50 text-red-500">
+            <div className="p-4 rounded-xl bg-red-50 border border-red-300 text-red-600 shadow-sm">
               <span className="inline-block">
                 <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
                 respond to message.
               </span>
-              <p className="text-xs font-mono mt-2 border-l-2 border-red-300 pl-2 bg-red-200 p-2 rounded-sm">
+              <p className="text-xs font-mono mt-2 border-l-2 border-red-300 pl-2 bg-red-100 p-2 rounded-sm">
                 {error}
               </p>
             </div>
@@ -77,7 +77,7 @@ const HistoricalMessage = ({
       onAnimationEnd={onEndAnimation}
       className={`${
         isDeleted ? "animate-remove" : ""
-      } flex justify-center items-end w-full group bg-theme-bg-chat`}
+      } flex justify-center items-end w-full group bg-hemp-neutral`}
     >
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className={`flex gap-x-5 ${alignmentCls}`}>
@@ -103,7 +103,9 @@ const HistoricalMessage = ({
               saveChanges={saveEditedMessage}
             />
           ) : (
-            <div className="break-words">
+            <div
+              className={`break-words ${role === "user" ? "chat-bubble-user" : "chat-bubble-assistant"}`}
+            >
               <RenderChatContent
                 role={role}
                 message={message}
