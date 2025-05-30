@@ -1,4 +1,5 @@
 import { Tooltip } from "react-tooltip";
+import { createPortal } from "react-dom";
 
 /**
  * Set the tooltips for the chat container in bulk.
@@ -54,14 +55,6 @@ export function ChatTooltips() {
         className="tooltip !text-xs"
       />
       <Tooltip
-        id="similarity-score"
-        place="top"
-        delayShow={100}
-        // z-[100] to ensure it renders above the chat history
-        // as the citation modal is z-indexed above the chat history
-        className="tooltip !text-xs z-[100]"
-      />
-      <Tooltip
         id="metrics-visibility"
         place="bottom"
         delayShow={300}
@@ -79,6 +72,29 @@ export function ChatTooltips() {
         delayShow={500}
         className="tooltip !text-xs"
       />
+      <DocumentLevelTooltip />
     </>
+  );
+}
+
+/**
+ * This is a document level tooltip that is rendered at the top most level of the document
+ * to ensure it is rendered above the chat history and other elements. Anytime we have tooltips
+ * in modals the z-indexing can be recalculated and we need to ensure it is rendered at the top most level
+ * so it positions correctly.
+ */
+function DocumentLevelTooltip() {
+  return createPortal(
+    <>
+      <Tooltip
+        id="similarity-score"
+        place="top"
+        delayShow={100}
+        // z-[100] to ensure it renders above the chat history
+        // as the citation modal is z-indexed above the chat history
+        className="tooltip !text-xs z-[100]"
+      />
+    </>,
+    document.body
   );
 }

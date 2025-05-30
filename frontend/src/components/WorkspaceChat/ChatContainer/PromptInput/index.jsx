@@ -256,9 +256,9 @@ export default function PromptInput({
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
       >
         <div className="flex items-center rounded-lg md:mb-4 md:w-full">
-          <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-2xl flex flex-col px-4 overflow-hidden">
+          <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-2xl flex flex-col px-2 overflow-hidden">
             <AttachmentManager attachments={attachments} />
-            <div className="flex items-center w-full border-b-2 border-theme-chat-input-border">
+            <div className="flex items-center border-b border-theme-chat-input-border mx-3">
               <textarea
                 ref={textareaRef}
                 onChange={handleChange}
@@ -311,7 +311,7 @@ export default function PromptInput({
                 </>
               )}
             </div>
-            <div className="flex justify-between py-3.5">
+            <div className="flex justify-between py-3.5 mx-3 mb-1">
               <div className="flex gap-x-2">
                 <AttachItem />
                 <SlashCommandsButton
