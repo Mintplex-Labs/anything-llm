@@ -581,6 +581,24 @@ const TRANSLATIONS = {
     description:
       "These are the credentials and settings for your preferred LLM chat & embedding provider. It is important that these keys are current and correct, or else AnythingLLM will not function properly.",
     provider: "LLM Provider",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: "Azure Service Endpoint",
+        api_key: "API Key",
+        chat_deployment_name: "Chat Deployment Name",
+        chat_model_token_limit: "Chat Model Token Limit",
+        gpt_3_5_turbo: "4,096 (gpt-3.5-turbo)",
+        gpt_3_5_16k: "16,384 (gpt-3.5-16k)", 
+        gpt_4: "8,192 (gpt-4)",
+        gpt_4_32k: "32,768 (gpt-4-32k)",
+        gpt_4_turbo_and_more: "128,000 (gpt-4-turbo,gpt-4o,gpt-4o-mini,o1-mini)",
+        o1_o1_pro_o3_mini: "200,000 (o1,o1-pro,o3-mini)",
+        gpt_4_1: "1,047,576 (gpt-4.1)",
+        model_type: "Model Type",
+        default: "Default",
+        reasoning: "Reasoning",
+      }
+    },
   },
 
   transcription: {
@@ -981,6 +999,17 @@ const TRANSLATIONS = {
     update_account: "Update Account",
     theme: "Theme Preference",
     language: "Preferred language",
+    failed_upload: "Failed to upload profile picture:",
+    upload_success: "Profile picture uploaded.",
+    success: "success",
+    error: "error",
+    failed_remove: "Failed to remove profile picture:",
+    profile_updated: "Profile updated.",
+    failed_update_user: "Failed to update user:",
+    account: "Account",
+    support: "Support",
+    signout: "Sign out",
+    user_profile_picture: "User profile picture",
   },
 
   "keyboard-shortcuts": {
