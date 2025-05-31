@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { titleCase } from "text-case";
-import {
-  BookOpenText,
-  ArrowClockwise,
-  ArrowsClockwise,
-} from "@phosphor-icons/react";
+import { BookOpenText, ArrowsClockwise } from "@phosphor-icons/react";
 import MCPLogo from "@/media/agents/mcp-logo.svg";
 import MCPServers from "@/models/mcpServers";
 import showToast from "@/utils/toast";

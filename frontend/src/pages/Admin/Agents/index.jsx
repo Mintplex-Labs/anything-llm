@@ -9,7 +9,6 @@ import {
   CaretRight,
   Plug,
   Robot,
-  Hammer,
   FlowArrow,
   HeadCircuit,
   Plus,
@@ -21,7 +20,6 @@ import { defaultSkills } from "./skills";
 import { DefaultBadge } from "./Badges/default";
 import ImportedSkillList from "./Imported/SkillList";
 import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
-import { Tooltip } from "react-tooltip";
 import AgentFlowsList from "./AgentFlows";
 import FlowPanel from "./AgentFlows/FlowPanel";
 import { MCPServersList, MCPServerHeader } from "./MCPServers";
