@@ -1,10 +1,13 @@
+import { useTranslation } from "react-i18next";
+
 export default function AzureAiOptions({ settings }) {
+  const { t } = useTranslation();
   return (
     <div className="w-full flex flex-col gap-y-7 mt-1.5">
       <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Azure Service Endpoint
+            {t("llm.providers.azure_openai.azure_service_endpoint")}
           </label>
           <input
             type="url"
@@ -20,7 +23,7 @@ export default function AzureAiOptions({ settings }) {
 
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            API Key
+            {t("llm.providers.azure_openai.api_key")}
           </label>
           <input
             type="password"
@@ -36,7 +39,7 @@ export default function AzureAiOptions({ settings }) {
 
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Chat Deployment Name
+            {t("llm.providers.azure_openai.chat_deployment_name")}
           </label>
           <input
             type="text"
@@ -54,7 +57,7 @@ export default function AzureAiOptions({ settings }) {
       <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Chat Model Token Limit
+            {t("llm.providers.azure_openai.chat_model_token_limit")}
           </label>
           <select
             name="AzureOpenAiTokenLimit"
@@ -62,21 +65,19 @@ export default function AzureAiOptions({ settings }) {
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             required={true}
           >
-            <option value={4096}>4,096 (gpt-3.5-turbo)</option>
-            <option value={16384}>16,384 (gpt-3.5-16k)</option>
-            <option value={8192}>8,192 (gpt-4)</option>
-            <option value={32768}>32,768 (gpt-4-32k)</option>
-            <option value={128000}>
-              128,000 (gpt-4-turbo,gpt-4o,gpt-4o-mini,o1-mini)
-            </option>
-            <option value={200000}>200,000 (o1,o1-pro,o3-mini)</option>
-            <option value={1047576}>1,047,576 (gpt-4.1)</option>
+            <option value={4096}>{t("llm.providers.azure_openai.gpt_3_5_turbo")}</option>
+            <option value={16384}>{t("llm.providers.azure_openai.gpt_3_5_16k")}</option>
+            <option value={8192}>{t("llm.providers.azure_openai.gpt_4")}</option>
+            <option value={32768}>{t("llm.providers.azure_openai.gpt_4_32k")}</option>
+            <option value={128000}>{t("llm.providers.azure_openai.gpt_4_turbo_and_more")}</option>
+            <option value={200000}>{t("llm.providers.azure_openai.o1_o1_pro_o3_mini")}</option>
+            <option value={1047576}>{t("llm.providers.azure_openai.gpt_4_1")}</option>
           </select>
         </div>
 
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Model Type
+            {t("llm.providers.azure_openai.model_type")}
           </label>
           <select
             name="AzureOpenAiModelType"
@@ -84,8 +85,8 @@ export default function AzureAiOptions({ settings }) {
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             required={true}
           >
-            <option value="default">Default</option>
-            <option value="reasoning">Reasoning</option>
+            <option value="default">{t("llm.providers.azure_openai.default")}</option>
+            <option value="reasoning">{t("llm.providers.azure_openai.reasoning")}</option>
           </select>
         </div>
       </div>
