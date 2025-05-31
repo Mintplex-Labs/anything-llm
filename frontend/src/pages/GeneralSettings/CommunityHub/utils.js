@@ -1,6 +1,6 @@
 /**
  * Convert a type to a readable string for the community hub.
- * @param {("agentSkills" | "agentSkill" | "systemPrompts" | "systemPrompt" | "slashCommands" | "slashCommand")} type
+ * @param {("agentSkills" | "agentSkill" | "systemPrompts" | "systemPrompt" | "slashCommands" | "slashCommand" | "agentFlows" | "agentFlow")} type
  * @returns {string}
  */
 export function readableType(type) {
@@ -14,12 +14,15 @@ export function readableType(type) {
     case "slashCommand":
     case "slashCommands":
       return "Slash Commands";
+    case "agentFlows":
+    case "agentFlow":
+      return "Agent Flows";
   }
 }
 
 /**
  * Convert a type to a path for the community hub.
- * @param {("agentSkill" | "agentSkills" | "systemPrompt" | "systemPrompts" | "slashCommand" | "slashCommands")} type
+ * @param {("agentSkill" | "agentSkills" | "systemPrompt" | "systemPrompts" | "slashCommand" | "slashCommands" | "agentFlow" | "agentFlows")} type
  * @returns {string}
  */
 export function typeToPath(type) {
@@ -33,5 +36,8 @@ export function typeToPath(type) {
     case "slashCommand":
     case "slashCommands":
       return "slash-commands";
+    case "agentFlow":
+    case "agentFlows":
+      return "agent-flows";
   }
 }
