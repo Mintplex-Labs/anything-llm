@@ -128,13 +128,13 @@ const TRANSLATIONS = {
   },
   welcomeMessage: {
     part1:
-      "Willkommen! Dieses Open-Source-KI-Tool verwandelt beliebige Inhalte (Dateien, Dokumente, etc.) in einen Chatbot, mit dem Sie kommunizieren können. Es handelt sich um eine BYOK-Software (Bring-Your-Own-Keys) – es fallen keine Abos oder laufenden Gebühren für die Software selbst an.",
+      "Willkommen! Dieses KI-Tool verwandelt beliebige Inhalte (Dateien, Dokumente, etc.) in einen Chatbot, mit dem Sie kommunizieren können.",
     part2:
       "Mit diesem Tool bündeln Sie ganz einfach leistungsstarke KI-Technologien wie OpenAI, GPT-4, LangChain, PineconeDB, ChromaDB und Co. in einer praktischen Lösung für mehr Produktivität.",
     part3:
       "Sie können es komplett lokal auf Ihrem Rechner ohne großen Mehraufwand betreiben – keine GPU nötig. Auch Cloud- und On-Premises-Installationen sind möglich.\nDas KI-Ökosystem entwickelt sich ständig weiter. Diese Lösung macht es Ihnen leicht nutzbar.",
     githubIssue: "GitHub-Issue erstellen",
-    user1: "Wie lege ich los?!",
+    user1: "Wie lege ich los?",
     part4:
       'Ganz einfach: Alle Inhalte werden in sog. "Arbeitsbereichen" organisiert. Ein Arbeitsbereich ist ein Sammelpunkt für Dateien, Dokumente, Bilder, PDFs usw., die für KIs aufbereitet werden.\n\nSie können jederzeit Dateien hinzufügen und entfernen.',
     createWorkspace: "Erstellen Sie Ihren ersten Arbeitsbereich",

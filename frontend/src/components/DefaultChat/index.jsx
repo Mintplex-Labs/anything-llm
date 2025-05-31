@@ -1,46 +1,18 @@
 import React, { useEffect, useState } from "react";
-import {
-  GithubLogo,
-  GitMerge,
-  EnvelopeSimple,
-  Plus,
-} from "@phosphor-icons/react";
-import NewWorkspaceModal, {
-  useNewWorkspaceModal,
-} from "../Modals/NewWorkspace";
-import paths from "@/utils/paths";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../Sidebar";
-import ChatBubble from "../ChatBubble";
-import System from "@/models/system";
 import UserIcon from "../UserIcon";
 import { userFromStorage } from "@/utils/request";
 import useUser from "@/hooks/useUser";
 import { useTranslation, Trans } from "react-i18next";
-import Appearance from "@/models/appearance";
 import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
 export default function DefaultChatContainer() {
   const { getMessageAlignment } = useChatMessageAlignment();
-  const { showScrollbar } = Appearance.getSettings();
   const [mockMsgs, setMockMessages] = useState([]);
   const { user } = useUser();
-  const [fetchedMessages, setFetchedMessages] = useState([]);
-  const {
-    showing: showingNewWsModal,
-    showModal: showNewWsModal,
-    hideModal: hideNewWsModal,
-  } = useNewWorkspaceModal();
-  const popMsg = !window.localStorage.getItem("anythingllm_intro");
   const { t } = useTranslation();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const fetchedMessages = await System.getWelcomeMessages();
-      setFetchedMessages(fetchedMessages);
-    };
-    fetchData();
-  }, []);
+  const popMsg = !window.localStorage.getItem("anythingllm_intro");
 
   const MESSAGES = [
     <React.Fragment key="msg1">
@@ -54,9 +26,9 @@ export default function DefaultChatContainer() {
 
     <React.Fragment key="msg2">
       <MessageContainer>
-        <MessageContent alignmentCls={getMessageAlignment("assistant")}>
-          <UserIcon user={{ uid: "system" }} role={"assistant"} />
-          <MessageText>{t("welcomeMessage.part2")}</MessageText>
+        <MessageContent alignmentCls={getMessageAlignment("user")}>
+          <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
+          <MessageText>{t("welcomeMessage.user1")}</MessageText>
         </MessageContent>
       </MessageContainer>
     </React.Fragment>,
@@ -65,18 +37,7 @@ export default function DefaultChatContainer() {
       <MessageContainer>
         <MessageContent alignmentCls={getMessageAlignment("assistant")}>
           <UserIcon user={{ uid: "system" }} role={"assistant"} />
-          <div>
-            <MessageText>{t("welcomeMessage.part3")}</MessageText>
-            <a
-              href={paths.github()}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-            >
-              <GitMerge className="h-4 w-4" />
-              <p>{t("welcomeMessage.githubIssue")}</p>
-            </a>
-          </div>
+          <MessageText>{t("welcomeMessage.part4")}</MessageText>
         </MessageContent>
       </MessageContainer>
     </React.Fragment>,
@@ -85,7 +46,7 @@ export default function DefaultChatContainer() {
       <MessageContainer>
         <MessageContent alignmentCls={getMessageAlignment("user")}>
           <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
-          <MessageText>{t("welcomeMessage.user1")}</MessageText>
+          <MessageText>{t("welcomeMessage.user2")}</MessageText>
         </MessageContent>
       </MessageContainer>
     </React.Fragment>,
@@ -94,19 +55,12 @@ export default function DefaultChatContainer() {
       <MessageContainer>
         <MessageContent alignmentCls={getMessageAlignment("assistant")}>
           <UserIcon user={{ uid: "system" }} role={"assistant"} />
-          <div>
-            <MessageText>{t("welcomeMessage.part4")}</MessageText>
-
-            {(!user || user?.role !== "default") && (
-              <button
-                onClick={showNewWsModal}
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                <Plus className="h-4 w-4" />
-                <p>{t("welcomeMessage.createWorkspace")}</p>
-              </button>
-            )}
-          </div>
+          <MessageText>
+            <Trans
+              i18nKey="welcomeMessage.part5"
+              components={{ i: <i />, br: <br /> }}
+            />
+          </MessageText>
         </MessageContent>
       </MessageContainer>
     </React.Fragment>,
@@ -115,7 +69,7 @@ export default function DefaultChatContainer() {
       <MessageContainer>
         <MessageContent alignmentCls={getMessageAlignment("user")}>
           <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
-          <MessageText>{t("welcomeMessage.user2")}</MessageText>
+          <MessageText>{t("welcomeMessage.user3")}</MessageText>
         </MessageContent>
       </MessageContainer>
     </React.Fragment>,
@@ -124,54 +78,7 @@ export default function DefaultChatContainer() {
       <MessageContainer>
         <MessageContent alignmentCls={getMessageAlignment("assistant")}>
           <UserIcon user={{ uid: "system" }} role={"assistant"} />
-          <MessageText>
-            <Trans
-              i18nKey="welcomeMessage.part5"
-              components={{
-                i: <i />,
-                br: <br />,
-              }}
-            />
-          </MessageText>
-        </MessageContent>
-      </MessageContainer>
-    </React.Fragment>,
-
-    <React.Fragment key="msg8">
-      <MessageContainer>
-        <MessageContent alignmentCls={getMessageAlignment("user")}>
-          <UserIcon user={{ uid: userFromStorage()?.username }} role={"user"} />
-          <MessageText>{t("welcomeMessage.user3")}</MessageText>
-        </MessageContent>
-      </MessageContainer>
-    </React.Fragment>,
-
-    <React.Fragment key="msg9">
-      <MessageContainer>
-        <MessageContent alignmentCls={getMessageAlignment("assistant")}>
-          <UserIcon user={{ uid: "system" }} role={"assistant"} />
-          <div>
-            <MessageText>{t("welcomeMessage.part6")}</MessageText>
-
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
-              <a
-                href={paths.github()}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                <GithubLogo className="h-4 w-4" />
-                <p>{t("welcomeMessage.starOnGitHub")}</p>
-              </a>
-              <a
-                href={paths.mailToMintplex()}
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white light:border-black/50 light:text-theme-text-primary text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                <EnvelopeSimple className="h-4 w-4" />
-                <p>{t("welcomeMessage.contact")}</p>
-              </a>
-            </div>
-          </div>
+          <MessageText>{t("welcomeMessage.part6")}</MessageText>
         </MessageContent>
       </MessageContainer>
     </React.Fragment>,
@@ -179,23 +86,22 @@ export default function DefaultChatContainer() {
 
   useEffect(() => {
     function processMsgs() {
-      if (!!window.localStorage.getItem("anythingllm_intro")) {
+      if (window.localStorage.getItem("anythingllm_intro")) {
         setMockMessages([...MESSAGES]);
-        return false;
-      } else {
-        setMockMessages([MESSAGES[0]]);
+        return;
       }
 
-      var timer = 500;
-      var messages = [];
+      let timer = 500;
+      let messages = [];
 
-      MESSAGES.map((child) => {
+      MESSAGES.forEach((child) => {
         setTimeout(() => {
-          setMockMessages([...messages, child]);
           messages.push(child);
+          setMockMessages([...messages]);
         }, timer);
-        timer += 2_500;
+        timer += 2500;
       });
+
       window.localStorage.setItem("anythingllm_intro", 1);
     }
 
@@ -205,31 +111,12 @@ export default function DefaultChatContainer() {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className={`transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary light:border-[1px] light:border-theme-sidebar-border w-full h-full overflow-y-scroll ${
-        showScrollbar ? "show-scrollbar" : "no-scroll"
-      }`}
+      className={`transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary light:border-[1px] light:border-theme-sidebar-border w-full h-full overflow-y-scroll`}
     >
       {isMobile && <SidebarMobileHeader />}
-      {fetchedMessages.length === 0
-        ? mockMsgs.map((content, i) => {
-            return <React.Fragment key={i}>{content}</React.Fragment>;
-          })
-        : fetchedMessages.map((fetchedMessage, i) => {
-            return (
-              <React.Fragment key={i}>
-                <ChatBubble
-                  message={
-                    fetchedMessage.user === ""
-                      ? fetchedMessage.response
-                      : fetchedMessage.user
-                  }
-                  type={fetchedMessage.user === "" ? "response" : "user"}
-                  popMsg={popMsg}
-                />
-              </React.Fragment>
-            );
-          })}
-      {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
+      {mockMsgs.map((content, i) => (
+        <React.Fragment key={i}>{content}</React.Fragment>
+      ))}
     </div>
   );
 }
