@@ -11,11 +11,13 @@ import {
   Robot,
   Hammer,
   FlowArrow,
+  HeadCircuit,
+  Plus,
 } from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
 import { FullScreenLoader } from "@/components/Preloader";
-import { defaultSkills, configurableSkills } from "./skills";
+import { defaultSkills } from "./skills";
 import { DefaultBadge } from "./Badges/default";
 import ImportedSkillList from "./Imported/SkillList";
 import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
@@ -181,8 +183,6 @@ export default function AdminAgents() {
     SelectedSkillComponent = ServerPanel;
   } else if (selectedSkill?.imported) {
     SelectedSkillComponent = ImportedSkillConfig;
-  } else if (configurableSkills[selectedSkill]) {
-    SelectedSkillComponent = configurableSkills[selectedSkill]?.component;
   } else {
     SelectedSkillComponent = defaultSkills[selectedSkill]?.component;
   }
@@ -281,13 +281,6 @@ export default function AdminAgents() {
               activeSkills={Object.keys(defaultSkills).filter(
                 (skill) => !disabledAgentSkills.includes(skill)
               )}
-            />
-            {/* Configurable skills */}
-            <SkillList
-              skills={configurableSkills}
-              selectedSkill={selectedSkill}
-              handleClick={handleDefaultSkillClick}
-              activeSkills={agentSkills}
             />
 
             <div className="text-theme-text-primary flex items-center gap-x-2">
@@ -393,14 +386,14 @@ export default function AdminAgents() {
                             ) : (
                               // The selected skill is a configurable skill - show the configurable skill panel
                               <SelectedSkillComponent
-                                skill={configurableSkills[selectedSkill]?.skill}
+                                skill={defaultSkills[selectedSkill]?.skill}
                                 settings={settings}
                                 toggleSkill={toggleAgentSkill}
                                 enabled={agentSkills.includes(
-                                  configurableSkills[selectedSkill]?.skill
+                                  defaultSkills[selectedSkill]?.skill
                                 )}
                                 setHasChanges={setHasChanges}
-                                {...configurableSkills[selectedSkill]}
+                                {...defaultSkills[selectedSkill]}
                               />
                             )}
                           </>
@@ -457,35 +450,33 @@ export default function AdminAgents() {
 
         {/* Skill settings nav - Make this section scrollable */}
         <div className="flex flex-col min-w-[360px] h-[calc(100vh-90px)]">
-          <div className="flex-none mb-4">
+          <div className="flex-none mb-[18px]">
             <div className="text-theme-text-primary flex items-center gap-x-2">
-              <Robot size={24} />
-              <p className="text-lg font-medium">Agent Skills</p>
+              <HeadCircuit size={24} weight="light" />
+              <p className="text-lg font-semibold">Agent Skills</p>
             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2 pb-4">
-            <div className="space-y-4">
+            <div className="space-y-[18px]">
+              <div className="text-theme-text-primary flex items-center gap-x-2">
+                <p className="text-sm font-semibold">Default Skills</p>
+              </div>
               {/* Default skills list */}
               <SkillList
                 skills={defaultSkills}
                 selectedSkill={selectedSkill}
                 handleClick={handleSkillClick}
-                activeSkills={Object.keys(defaultSkills).filter(
-                  (skill) => !disabledAgentSkills.includes(skill)
-                )}
-              />
-              {/* Configurable skills */}
-              <SkillList
-                skills={configurableSkills}
-                selectedSkill={selectedSkill}
-                handleClick={handleSkillClick}
-                activeSkills={agentSkills}
+                activeSkills={[
+                  ...Object.keys(defaultSkills).filter(
+                    (skill) => !disabledAgentSkills.includes(skill)
+                  ),
+                  ...agentSkills,
+                ]}
               />
 
               <div className="text-theme-text-primary flex items-center gap-x-2 mt-4">
-                <Plug size={24} />
-                <p className="text-lg font-medium">Custom Skills</p>
+                <p className="text-sm font-semibold">Custom Skills</p>
               </div>
               <ImportedSkillList
                 skills={importedSkills}
@@ -495,26 +486,15 @@ export default function AdminAgents() {
 
               <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
                 <div className="flex items-center gap-x-2">
-                  <FlowArrow size={24} />
-                  <p className="text-lg font-medium">Agent Flows</p>
+                  <p className="text-sm font-semibold">Agent Flows</p>
                 </div>
-                {agentFlows.length === 0 ? (
-                  <Link
-                    to={paths.agents.builder()}
-                    className="text-cta-button flex items-center gap-x-1 hover:underline"
-                  >
-                    <Hammer size={16} />
-                    <p className="text-sm">Create Flow</p>
-                  </Link>
-                ) : (
-                  <Link
-                    to={paths.agents.builder()}
-                    className="text-theme-text-secondary hover:text-cta-button flex items-center gap-x-1"
-                  >
-                    <Hammer size={16} />
-                    <p className="text-sm">Open Builder</p>
-                  </Link>
-                )}
+                <Link
+                  to={paths.agents.builder()}
+                  className="text-cta-button hover:text-theme-text-secondary flex items-center gap-x-1"
+                >
+                  <Plus size={16} weight="bold" />
+                  <p className="text-sm font-medium">Create</p>
+                </Link>
               </div>
               <AgentFlowsList
                 flows={agentFlows}
@@ -566,35 +546,26 @@ export default function AdminAgents() {
                     setImportedSkills={setImportedSkills}
                   />
                 ) : (
-                  <>
-                    {defaultSkills?.[selectedSkill] ? (
-                      // The selected skill is a default skill - show the default skill panel
-                      <SelectedSkillComponent
-                        skill={defaultSkills[selectedSkill]?.skill}
-                        settings={settings}
-                        toggleSkill={toggleDefaultSkill}
-                        enabled={
-                          !disabledAgentSkills.includes(
+                  <SelectedSkillComponent
+                    skill={defaultSkills[selectedSkill]?.skill}
+                    settings={settings}
+                    toggleSkill={
+                      defaultSkills[selectedSkill]?.isDefault
+                        ? toggleDefaultSkill
+                        : toggleAgentSkill
+                    }
+                    enabled={
+                      defaultSkills[selectedSkill]?.isDefault
+                        ? !disabledAgentSkills.includes(
                             defaultSkills[selectedSkill]?.skill
                           )
-                        }
-                        setHasChanges={setHasChanges}
-                        {...defaultSkills[selectedSkill]}
-                      />
-                    ) : (
-                      // The selected skill is a configurable skill - show the configurable skill panel
-                      <SelectedSkillComponent
-                        skill={configurableSkills[selectedSkill]?.skill}
-                        settings={settings}
-                        toggleSkill={toggleAgentSkill}
-                        enabled={agentSkills.includes(
-                          configurableSkills[selectedSkill]?.skill
-                        )}
-                        setHasChanges={setHasChanges}
-                        {...configurableSkills[selectedSkill]}
-                      />
-                    )}
-                  </>
+                        : agentSkills.includes(
+                            defaultSkills[selectedSkill]?.skill
+                          )
+                    }
+                    setHasChanges={setHasChanges}
+                    {...defaultSkills[selectedSkill]}
+                  />
                 )}
               </>
             ) : (
@@ -621,7 +592,7 @@ function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
+        className="relative md:ml-[2px] md:mr-[16px] md:rounded-[16px] w-full h-full flex"
       >
         {children}
         <ContextualSaveBar
@@ -635,7 +606,6 @@ function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
 }
 
 function SkillList({
-  isDefault = false,
   skills = [],
   selectedSkill = null,
   handleClick = null,
@@ -644,31 +614,34 @@ function SkillList({
   if (skills.length === 0) return null;
 
   return (
-    <>
-      <div
-        className={`bg-theme-bg-secondary text-white rounded-xl ${
-          isMobile ? "w-full" : "min-w-[360px] w-fit"
-        }`}
-      >
-        {Object.entries(skills).map(([skill, settings], index) => (
-          <div
-            key={skill}
-            className={`py-3 px-4 flex items-center justify-between ${
-              index === 0 ? "rounded-t-xl" : ""
-            } ${
-              index === Object.keys(skills).length - 1
-                ? "rounded-b-xl"
-                : "border-b border-white/10"
-            } cursor-pointer transition-all duration-300  hover:bg-theme-bg-primary ${
-              selectedSkill === skill
-                ? "bg-white/10 light:bg-theme-bg-sidebar"
-                : ""
-            }`}
-            onClick={() => handleClick?.(skill)}
-          >
-            <div className="text-sm font-light">{settings.title}</div>
+    <div
+      className={`bg-theme-bg-secondary text-white rounded-xl ${isMobile ? "w-full" : "min-w-[360px] w-fit"}`}
+    >
+      {Object.entries(skills).map(([skill, settings]) => (
+        <div
+          key={skill}
+          onClick={() => handleClick?.(skill)}
+          className={`
+            relative
+            cursor-pointer
+            transition-all duration-300
+            after:content-['']
+            after:absolute
+            after:bottom-0
+            after:left-4
+            after:right-4
+            after:h-[1px]
+            after:bg-theme-action-menu-bg
+            last:after:hidden
+            first:rounded-t-xl
+            last:rounded-b-xl
+            ${selectedSkill === skill ? "bg-white/10 light:bg-theme-bg-sidebar" : "hover:bg-theme-bg-primary"}
+          `}
+        >
+          <div className="flex items-center justify-between h-[36px] px-4">
+            <div className="text-sm font-medium">{settings.title}</div>
             <div className="flex items-center gap-x-2">
-              {isDefault ? (
+              {settings.isDefault ? (
                 <DefaultBadge title={skill} />
               ) : (
                 <div className="text-sm text-theme-text-secondary font-medium">
@@ -682,17 +655,8 @@ function SkillList({
               />
             </div>
           </div>
-        ))}
-      </div>
-      {/* Tooltip for default skills - only render when skill list is passed isDefault */}
-      {isDefault && (
-        <Tooltip
-          id="default-skill"
-          place="bottom"
-          delayShow={300}
-          className="tooltip light:invert-0 !text-xs"
-        />
-      )}
-    </>
+        </div>
+      ))}
+    </div>
   );
 }

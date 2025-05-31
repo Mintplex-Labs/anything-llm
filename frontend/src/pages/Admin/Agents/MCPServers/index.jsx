@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { titleCase } from "text-case";
-import { BookOpenText, ArrowClockwise } from "@phosphor-icons/react";
+import {
+  BookOpenText,
+  ArrowClockwise,
+  ArrowsClockwise,
+} from "@phosphor-icons/react";
 import MCPLogo from "@/media/agents/mcp-logo.svg";
 import MCPServers from "@/models/mcpServers";
 import showToast from "@/utils/toast";
@@ -48,31 +52,28 @@ export function MCPServerHeader({
     <>
       <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
         <div className="flex items-center gap-x-2">
-          <img src={MCPLogo} className="w-6 h-6 light:invert" alt="MCP Logo" />
-          <p className="text-lg font-medium">MCP Servers</p>
+          <img src={MCPLogo} className="w-5 h-5 light:invert" alt="MCP Logo" />
+          <p className="text-sm font-semibold">MCP Servers</p>
         </div>
         <div className="flex items-center gap-x-3">
           <a
             href="https://docs.anythingllm.com/mcp-compatibility/overview"
             target="_blank"
             rel="noopener noreferrer"
-            className="border-none text-theme-text-secondary hover:text-cta-button"
+            className="border-none text-cta-button hover:text-theme-text-secondary"
           >
-            <BookOpenText size={16} />
+            <BookOpenText size={16} weight="bold" />
           </a>
           <button
             type="button"
             onClick={refreshMCPServers}
             disabled={loadingMcpServers}
-            className="border-none text-theme-text-secondary hover:text-cta-button flex items-center gap-x-1"
+            className="border-none text-cta-button hover:text-theme-text-secondary flex items-center gap-x-1"
           >
-            <ArrowClockwise
+            <ArrowsClockwise
               size={16}
               className={loadingMcpServers ? "animate-spin" : ""}
             />
-            <p className="text-sm">
-              {loadingMcpServers ? "Loading..." : "Refresh"}
-            </p>
           </button>
         </div>
       </div>
@@ -121,30 +122,37 @@ export function MCPServersList({
 
   return (
     <div className="bg-theme-bg-secondary text-white rounded-xl w-full md:min-w-[360px]">
-      {servers.map((server, index) => (
+      {servers.map((server) => (
         <div
           key={server.name}
-          className={`py-3 px-4 flex items-center justify-between ${
-            index === 0 ? "rounded-t-xl" : ""
-          } ${
-            index === servers.length - 1
-              ? "rounded-b-xl"
-              : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300 hover:bg-theme-bg-primary ${
-            selectedServer?.name === server.name
-              ? "bg-white/10 light:bg-theme-bg-sidebar"
-              : ""
-          }`}
           onClick={() => handleClick?.(server)}
+          className={`
+            relative
+            cursor-pointer
+            transition-all duration-300
+            after:content-['']
+            after:absolute
+            after:bottom-0
+            after:left-4
+            after:right-4
+            after:h-[1px]
+            after:bg-theme-action-menu-bg
+            last:after:hidden
+            first:rounded-t-xl
+            last:rounded-b-xl
+            ${selectedServer?.name === server.name ? "bg-white/10 light:bg-theme-bg-sidebar" : "hover:bg-theme-bg-primary"}
+          `}
         >
-          <div className="text-sm font-light">
-            {titleCase(server.name.replace(/[_-]/g, " "))}
-          </div>
-          <div className="flex items-center gap-x-2">
-            <div
-              className={`text-sm text-theme-text-secondary font-medium ${server.running ? "text-green-500" : "text-red-500"}`}
-            >
-              {server.running ? "On" : "Stopped"}
+          <div className="flex items-center justify-between h-[36px] px-4">
+            <div className="text-sm font-medium">
+              {titleCase(server.name.replace(/[_-]/g, " "))}
+            </div>
+            <div className="flex items-center gap-x-2">
+              <div
+                className={`text-sm text-theme-text-secondary font-medium ${server.running ? "text-green-500" : "text-red-500"}`}
+              >
+                {server.running ? "On" : "Stopped"}
+              </div>
             </div>
           </div>
         </div>

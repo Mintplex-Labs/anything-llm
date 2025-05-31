@@ -42,9 +42,6 @@ export const defaultSkills = {
     image: ScrapeWebsitesImage,
     skill: "web-scraping",
   },
-};
-
-export const configurableSkills = {
   "save-file-to-browser": {
     title: "Generate & save files to browser",
     description:
