@@ -50,55 +50,36 @@ export default function Footer() {
       <div className="flex justify-center mb-2">
         <div className="flex space-x-4">
           <div className="flex w-fit">
-            <Link
-              to={paths.github()}
-              target="_blank"
-              rel="noreferrer"
+            <a
+              href="mailto:system@prozess-agentur.digital"
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
-              aria-label="Find us on GitHub"
+              aria-label="Contact us via email"
               data-tooltip-id="footer-item"
-              data-tooltip-content="View source code on GitHub"
+              data-tooltip-content="Contact us: system@prozess-agentur.digital"
             >
-              <GithubLogo
+              <Envelope
                 weight="fill"
                 className="h-5 w-5"
                 color="var(--theme-sidebar-footer-icon-fill)"
               />
-            </Link>
+            </a>
           </div>
           <div className="flex w-fit">
-            <Link
-              to={paths.docs()}
+            <a
+              href="https://prozess-agentur.digital"
               target="_blank"
               rel="noreferrer"
               className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
-              aria-label="Docs"
+              aria-label="Visit our website"
               data-tooltip-id="footer-item"
-              data-tooltip-content="Open AnythingLLM help docs"
+              data-tooltip-content="Visit our website: prozess-agentur.digital"
             >
-              <BookOpen
+              <Globe
                 weight="fill"
                 className="h-5 w-5"
                 color="var(--theme-sidebar-footer-icon-fill)"
               />
-            </Link>
-          </div>
-          <div className="flex w-fit">
-            <Link
-              to={paths.discord()}
-              target="_blank"
-              rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full bg-theme-sidebar-footer-icon hover:bg-theme-sidebar-footer-icon-hover"
-              aria-label="Join our Discord server"
-              data-tooltip-id="footer-item"
-              data-tooltip-content="Join the AnythingLLM Discord"
-            >
-              <DiscordLogo
-                weight="fill"
-                className="h-5 w-5"
-                color="var(--theme-sidebar-footer-icon-fill)"
-              />
-            </Link>
+            </a>
           </div>
           {!isMobile && <SettingsButton />}
         </div>

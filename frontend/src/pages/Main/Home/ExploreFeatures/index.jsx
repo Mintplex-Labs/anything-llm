@@ -7,19 +7,7 @@ export default function ExploreFeatures() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const chatWithAgent = async () => {
-    const workspaces = await Workspace.all();
-    if (workspaces.length > 0) {
-      const firstWorkspace = workspaces[0];
-      navigate(
-        paths.workspace.chat(firstWorkspace.slug, {
-          search: { action: "set-agent-chat" },
-        })
-      );
-    }
-  };
 
-  const buildAgentFlow = () => navigate(paths.agents.builder());
   const setSlashCommand = async () => {
     const workspaces = await Workspace.all();
     if (workspaces.length > 0) {
@@ -32,9 +20,7 @@ export default function ExploreFeatures() {
     }
   };
 
-  const exploreSlashCommands = () => {
-    window.open(paths.communityHub.viewMoreOfType("slash-commands"), "_blank");
-  };
+
 
   const setSystemPrompt = async () => {
     const workspaces = await Workspace.all();
@@ -59,21 +45,6 @@ export default function ExploreFeatures() {
       </h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <FeatureCard
-          title={t("main-page.exploreMore.features.customAgents.title")}
-          description={t(
-            "main-page.exploreMore.features.customAgents.description"
-          )}
-          primaryAction={t(
-            "main-page.exploreMore.features.customAgents.primaryAction"
-          )}
-          secondaryAction={t(
-            "main-page.exploreMore.features.customAgents.secondaryAction"
-          )}
-          onPrimaryAction={chatWithAgent}
-          onSecondaryAction={buildAgentFlow}
-          isNew={true}
-        />
-        <FeatureCard
           title={t("main-page.exploreMore.features.slashCommands.title")}
           description={t(
             "main-page.exploreMore.features.slashCommands.description"
@@ -81,11 +52,9 @@ export default function ExploreFeatures() {
           primaryAction={t(
             "main-page.exploreMore.features.slashCommands.primaryAction"
           )}
-          secondaryAction={t(
-            "main-page.exploreMore.features.slashCommands.secondaryAction"
-          )}
+          secondaryAction={null}
           onPrimaryAction={setSlashCommand}
-          onSecondaryAction={exploreSlashCommands}
+          onSecondaryAction={null}
           isNew={false}
         />
         <FeatureCard

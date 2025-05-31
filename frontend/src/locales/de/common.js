@@ -727,7 +727,7 @@ const TRANSLATIONS = {
     hide_citations: "Quellen ausblenden",
     show_citations: "Quellen anzeigen",
     pause_tts_speech_message: "Sprachausgabe pausieren",
-    fork: "Verzweigen",
+    fork: "Chat duplizieren",
     delete: "Löschen",
     save_submit: "Speichern & Absenden",
     cancel: "Abbrechen",
