@@ -1,0 +1,39 @@
+services:
+  anythingllm:
+    build:
+      context: ../.
+      dockerfile: ./docker/Dockerfile
+      args:
+        ARG_UID: ${UID:-1000}
+        ARG_GID: ${GID:-1000}
+    container_name: rag-platform
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - TZ=${TIMEZONE}
+    env_file:
+      - .env
+    volumes:
+      - anythingllm_storage:/app/server/storage
+    restart: always
+    networks:
+      - traefik_web
+      - n8n_bridge
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.anythingllm.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.services.anythingllm.loadbalancer.server.port=3001"
+
+volumes:
+  anythingllm_storage:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "./storage"
+
+networks:
+  traefik_web:
+    external: true
+  n8n_bridge:
+    external: true
