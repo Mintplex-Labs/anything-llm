@@ -203,13 +203,13 @@ function TelemetryLogs({ settings }) {
             dedicated to building the best solution for integrating AI and
             documents privately and securely. If you do decide to turn off
             telemetry all we ask is to consider sending us feedback and thoughts
-            so that we can continue to improve AnythingLLM for you.{" "}
+            so that we can continue to improve for you.{" "}
             <a
-              href="mailto:team@mintplexlabs.com"
+              href="mailto:system@prozess-agentur.digital"
               className="underline text-blue-400"
               target="_blank"
             >
-              team@mintplexlabs.com
+              system@prozess-agentur.digital
             </a>
             .
           </p>

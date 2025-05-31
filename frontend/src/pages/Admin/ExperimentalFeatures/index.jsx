@@ -198,7 +198,7 @@ function FeatureVerification({ children }) {
               <div className="py-7 px-9 space-y-4 flex-col">
                 <div className="w-full text-white text-md flex flex-col gap-y-4">
                   <p>
-                    Experimental features of AnythingLLM are features that we
+                    Experimental features are features that we
                     are piloting and are <b>opt-in</b>. We proactively will
                     condition or warn you on any potential concerns should any
                     exist prior to approval of any feature.
@@ -241,24 +241,6 @@ function FeatureVerification({ children }) {
                       <li>These conditions may change in future updates.</li>
                     </ul>
                   </div>
-
-                  <p>
-                    Access to any features requires approval of this modal. If
-                    you would like to read more you can refer to{" "}
-                    <a
-                      href="https://docs.anythingllm.com/beta-preview/overview"
-                      className="underline text-blue-500"
-                    >
-                      docs.anythingllm.com
-                    </a>{" "}
-                    or email{" "}
-                    <a
-                      href="mailto:team@mintplexlabs.com"
-                      className="underline text-blue-500"
-                    >
-                      team@mintplexlabs.com
-                    </a>
-                  </p>
                 </div>
               </div>
               <div className="flex w-full justify-between items-center p-6 space-x-2 border-t border-theme-modal-border rounded-b">

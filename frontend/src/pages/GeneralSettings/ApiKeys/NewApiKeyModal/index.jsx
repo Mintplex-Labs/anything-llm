@@ -93,7 +93,7 @@ export default function NewApiKeyModal({ closeModal, onSuccess }) {
               )}
               <p className="text-white text-opacity-60 text-xs md:text-sm">
                 Once created the API key can be used to programmatically access
-                and configure this AnythingLLM instance.
+                and configure this instance.
               </p>
               <a
                 href={paths.apiDocs()}

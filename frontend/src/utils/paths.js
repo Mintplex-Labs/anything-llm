@@ -54,7 +54,7 @@ export default {
     return "https://docs.anythingllm.com";
   },
   mailToMintplex: () => {
-    return "mailto:team@mintplexlabs.com";
+    return "mailto:system@prozess-agentur.digital";
   },
   hosting: () => {
     return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
