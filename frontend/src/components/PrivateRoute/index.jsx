@@ -7,6 +7,7 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
 import UserMenu from "../UserMenu";
+import { KeyboardShortcutWrapper } from "@/utils/keyboardShortcuts";
 
 // Used only for Multi-user mode only as we permission specific pages based on auth role.
 // When in single user mode we just bypass any authchecks.
@@ -95,11 +96,15 @@ export function AdminRoute({ Component, hideUserMenu = false }) {
   const user = userFromStorage();
   return isAuthd && (user?.role === "admin" || !multiUserMode) ? (
     hideUserMenu ? (
-      <Component />
-    ) : (
-      <UserMenu>
+      <KeyboardShortcutWrapper>
         <Component />
-      </UserMenu>
+      </KeyboardShortcutWrapper>
+    ) : (
+      <KeyboardShortcutWrapper>
+        <UserMenu>
+          <Component />
+        </UserMenu>
+      </KeyboardShortcutWrapper>
     )
   ) : (
     <Navigate to={paths.home()} />
@@ -119,9 +124,11 @@ export function ManagerRoute({ Component }) {
 
   const user = userFromStorage();
   return isAuthd && (user?.role !== "default" || !multiUserMode) ? (
-    <UserMenu>
-      <Component />
-    </UserMenu>
+    <KeyboardShortcutWrapper>
+      <UserMenu>
+        <Component />
+      </UserMenu>
+    </KeyboardShortcutWrapper>
   ) : (
     <Navigate to={paths.home()} />
   );
@@ -136,9 +143,11 @@ export default function PrivateRoute({ Component }) {
   }
 
   return isAuthd ? (
-    <UserMenu>
-      <Component />
-    </UserMenu>
+    <KeyboardShortcutWrapper>
+      <UserMenu>
+        <Component />
+      </UserMenu>
+    </KeyboardShortcutWrapper>
   ) : (
     <Navigate to={paths.login(true)} />
   );

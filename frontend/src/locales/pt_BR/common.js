@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -20,7 +21,6 @@ const TRANSLATIONS = {
       passwordReq: "Senhas devem ter pelo menos 8 caracteres.",
       passwordWarn:
         "É importante salvar esta senha pois não há método de recuperação.",
-
       adminUsername: "Nome de usuário admin",
       adminUsernameReq:
         "O nome deve ter pelo menos 6 caracteres e conter apenas letras minúsculas, números, sublinhados e hífens, sem espaços.",
@@ -39,7 +39,6 @@ const TRANSLATIONS = {
     survey: {
       title: "Bem-vindo ao AnythingLLM",
       description: "Ajude-nos a melhorar o AnythingLLM. Opcional.",
-
       email: "Qual seu email?",
       useCase: "Como você usará o AnythingLLM?",
       useCaseWork: "Para trabalho",
@@ -70,8 +69,6 @@ const TRANSLATIONS = {
     yes: "Sim",
     no: "Não",
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Configurações da Instância",
     system: "Configurações Gerais",
@@ -104,8 +101,6 @@ const TRANSLATIONS = {
     contact: "Suporte",
     "browser-extension": "Extensão de Navegador",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Bem-vindo ao",
@@ -129,7 +124,6 @@ const TRANSLATIONS = {
       "back-to-login": "Voltar ao Login",
     },
   },
-
   welcomeMessage: {
     part1:
       "Bem-vindo ao AnythingLLM, uma ferramenta de IA open-source da Mintplex Labs que transforma qualquer conteúdo em um chatbot treinado. AnythingLLM é um software BYOK (bring-your-own-keys), sem taxas ou assinaturas.",
@@ -150,7 +144,6 @@ const TRANSLATIONS = {
     starOnGitHub: "Estrelar no GitHub",
     contact: "Contate a Mintplex Labs",
   },
-
   "main-page": {
     noWorkspaceError: "Por favor, crie um workspace antes de iniciar um chat.",
     checklist: {
@@ -231,15 +224,13 @@ const TRANSLATIONS = {
         docs: "Documentação",
         star: "Avalie-nos no Github",
       },
+      keyboardShortcuts: null,
     },
   },
-
   "new-workspace": {
     title: "Novo Workspace",
     placeholder: "Meu Workspace",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Configurações Gerais",
     chat: "Configurações de Chat",
@@ -247,8 +238,6 @@ const TRANSLATIONS = {
     members: "Membros",
     agent: "Configuração de Agente",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Contagem de Vetores",
@@ -283,8 +272,6 @@ const TRANSLATIONS = {
         "workspace. Isso removerá todos os vetores do banco de dados.\n\nOs arquivos originais permanecerão intactos. Esta ação é irreversível.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Provedor de LLM",
@@ -352,8 +339,6 @@ const TRANSLATIONS = {
       hint: "Cada modelo LLM tem faixas de valores válidos. Consulte seu provedor.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Identificador do banco de dados",
     snippets: {
@@ -380,8 +365,6 @@ const TRANSLATIONS = {
       success: "Banco de dados resetado com sucesso!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "O desempenho de LLMs sem suporte a tool-calling varia conforme as capacidades do modelo. Algumas funcionalidades podem ser limitadas.",
@@ -401,7 +384,6 @@ const TRANSLATIONS = {
         "O modelo LLM específico que será usado pelo agente @agent deste workspace.",
       wait: "-- aguardando modelos --",
     },
-
     skill: {
       title: "Habilidades padrão do agente",
       description:
@@ -439,8 +421,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Chats do Workspace",
     description:
@@ -455,7 +435,6 @@ const TRANSLATIONS = {
       at: "Enviado Em",
     },
   },
-
   customization: {
     interface: {
       title: "Preferências de UI",
@@ -549,8 +528,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // API Keys
   api: {
     title: "Chaves API",
     description: "Chaves API permitem acesso programático a esta instância.",
@@ -562,14 +539,12 @@ const TRANSLATIONS = {
       created: "Criado Em",
     },
   },
-
   llm: {
     title: "Preferência de LLM",
     description:
       "Credenciais e configurações do seu provedor de LLM. Essas chaves devem estar corretas para o funcionamento adequado.",
     provider: "Provedor de LLM",
   },
-
   transcription: {
     title: "Preferência de Transcrição",
     description:
@@ -581,7 +556,6 @@ const TRANSLATIONS = {
     "warn-end":
       "O modelo interno será baixado automaticamente no primeiro uso.",
   },
-
   embedding: {
     title: "Preferência de Vínculo",
     "desc-start":
@@ -594,7 +568,6 @@ const TRANSLATIONS = {
         "Nenhuma configuração é necessária ao usar o mecanismo nativo do AnythingLLM.",
     },
   },
-
   text: {
     title: "Preferências de Divisão de Texto",
     "desc-start":
@@ -608,15 +581,12 @@ const TRANSLATIONS = {
       description: "Comprimento máximo de caracteres em um único vetor.",
       recommend: "Tamanho máximo do modelo de vínculo é",
     },
-
     overlap: {
       title: "Sobreposição de Trechos",
       description:
         "Sobreposição máxima de caracteres entre dois trechos adjacentes.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Banco de Dados Vetorial",
     description:
@@ -626,8 +596,6 @@ const TRANSLATIONS = {
       description: "Nenhuma configuração necessária para LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Widgets de Chat vinculado",
     description:
@@ -639,7 +607,6 @@ const TRANSLATIONS = {
       Active: "Domínios Ativos",
     },
   },
-
   "embed-chats": {
     title: "Chats Vinculados",
     export: "Exportar",
@@ -652,7 +619,6 @@ const TRANSLATIONS = {
       at: "Enviado Em",
     },
   },
-
   multi: {
     title: "Modo Multi-Usuário",
     description:
@@ -677,8 +643,6 @@ const TRANSLATIONS = {
       password: "Senha da instância",
     },
   },
-
-  // Event Logs
   event: {
     title: "Logs de Eventos",
     description:
@@ -690,8 +654,6 @@ const TRANSLATIONS = {
       occurred: "Ocorrido Em",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Privacidade & Dados",
     description:
@@ -701,7 +663,6 @@ const TRANSLATIONS = {
     vector: "Banco de Dados Vetorial",
     anonymous: "Telemetria Anônima Ativa",
   },
-
   connectors: {
     "search-placeholder": "Buscar conectores",
     "no-connectors": "Nenhum conector encontrado.",
@@ -832,7 +793,6 @@ const TRANSLATIONS = {
       task_explained:
         "Após conclusão, o conteúdo da página estará disponível para vínculo.",
     },
-
     manage: {
       documents: "Documentos",
       "data-connectors": "Conectores de Dados",
@@ -898,7 +858,6 @@ const TRANSLATIONS = {
       accept: "Ok, entendi",
     },
   },
-
   chat_window: {
     welcome: "Bem-vindo ao novo workspace.",
     get_started: "Para começar,",
@@ -914,8 +873,37 @@ const TRANSLATIONS = {
     text_size: "Alterar tamanho do texto.",
     microphone: "Fale seu prompt.",
     send: "Enviar prompt para o workspace",
+    tts_speak_message: null,
+    copy: null,
+    regenerate: null,
+    regenerate_response: null,
+    good_response: null,
+    more_actions: null,
+    hide_citations: null,
+    show_citations: null,
+    pause_tts_speech_message: null,
+    fork: null,
+    delete: null,
+    save_submit: null,
+    cancel: null,
+    edit_prompt: null,
+    edit_response: null,
+    at_agent: null,
+    default_agent_description: null,
+    custom_agents_coming_soon: null,
+    slash_reset: null,
+    preset_reset_description: null,
+    add_new_preset: null,
+    command: null,
+    your_command: null,
+    placeholder_prompt: null,
+    description: null,
+    placeholder_description: null,
+    save: null,
+    small: null,
+    normal: null,
+    large: null,
   },
-
   profile_settings: {
     edit_account: "Editar conta",
     profile_picture: "Foto de perfil",
@@ -929,6 +917,19 @@ const TRANSLATIONS = {
     update_account: "Atualizar conta",
     theme: "Preferência de tema",
     language: "Idioma preferido",
+  },
+  "keyboard-shortcuts": {
+    title: null,
+    shortcuts: {
+      settings: null,
+      workspaceSettings: null,
+      home: null,
+      workspaces: null,
+      apiKeys: null,
+      llmPreferences: null,
+      chatSettings: null,
+      help: null,
+    },
   },
 };
 

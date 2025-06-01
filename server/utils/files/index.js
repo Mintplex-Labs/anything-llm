@@ -361,9 +361,6 @@ async function fileToPickerData({
   const filename = path.basename(pathToFile);
   const fileStats = fs.statSync(pathToFile);
   const cachedStatus = await cachedVectorInformation(cachefilename, true);
-  const canWatchStatus = liveSyncAvailable
-    ? DocumentSyncQueue.canWatch(metadata)
-    : false;
 
   if (fileStats.size < FILE_READ_SIZE_THRESHOLD) {
     const rawData = fs.readFileSync(pathToFile, "utf8");
@@ -381,7 +378,9 @@ async function fileToPickerData({
       type: "file",
       ...metadata,
       cached: cachedStatus,
-      canWatch: canWatchStatus,
+      canWatch: liveSyncAvailable
+        ? DocumentSyncQueue.canWatch(metadata)
+        : false,
       // pinnedWorkspaces: [], // This is the list of workspaceIds that have pinned this document
       // watched: false, // boolean to indicate if this document is watched in ANY workspace
     };
@@ -429,7 +428,7 @@ async function fileToPickerData({
     type: "file",
     ...metadata,
     cached: cachedStatus,
-    canWatch: canWatchStatus,
+    canWatch: liveSyncAvailable ? DocumentSyncQueue.canWatch(metadata) : false,
   };
 }
 
