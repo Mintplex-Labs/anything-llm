@@ -7,7 +7,6 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
-const axios = require("axios");
 const { v4 } = require("uuid");
 const { Readable } = require("stream");
 
@@ -25,7 +24,6 @@ class FlowiseLLM {
 
     this.basePath = process.env.FLOWISE_LLM_BASE_PATH;
     this.model = "flowise";
-    if (!this.model) throw new Error("FlowiseLLM must have a valid model set.");
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -80,14 +78,13 @@ class FlowiseLLM {
       return userPrompt;
     }
 
-    const content = [{ type: "text", text: userPrompt }];
+    const content = [{ type: "question", text: userPrompt }];
     for (let attachment of attachments) {
       content.push({
-        type: "image_url",
-        image_url: {
-          url: attachment.contentString,
-          detail: "high",
-        },
+        data: attachment.contentString,
+        type: "file",
+        name: attachment.name,
+        mime: attachment.mime,
       });
     }
     return content.flat();
@@ -118,16 +115,17 @@ class FlowiseLLM {
     try {
       const lastMessage = messages[messages.length - 1];
       const result = await LLMPerformanceMonitor.measureAsyncFunction(
-        axios.post(
+        fetch(
           `${this.basePath}/api/v1/prediction/${process.env.FLOWISE_LLM_CHATFLOW_ID}`,
           {
-            question: lastMessage.content,
-            streaming: false,
-          },
-          {
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+              question: lastMessage.content,
+              streaming: false,
+            }),
           }
         )
       );
@@ -162,35 +160,39 @@ class FlowiseLLM {
   async streamGetChatCompletion(messages = null) {
     try {
       const lastMessage = messages[messages.length - 1];
-      const response = await axios.post(
+      const response = await fetch(
         `${this.basePath}/api/v1/prediction/${process.env.FLOWISE_LLM_CHATFLOW_ID}`,
         {
-          question: lastMessage.content,
-          streaming: true,
-        },
-        {
+          method: 'POST',
           headers: {
             "Content-Type": "application/json",
           },
-          responseType: "stream",
+          body: JSON.stringify({
+            question: lastMessage.content,
+            streaming: true,
+            history: messages.slice(1),
+          })
         }
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const stream = new Readable({
         read() {},
       });
 
-      response.data.on("data", (chunk) => {
-        stream.push(chunk);
-      });
-
-      response.data.on("end", () => {
-        stream.push(null);
-      });
-
-      response.data.on("error", (error) => {
-        stream.emit("error", error);
-      });
+      const reader = response.body.getReader();
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          stream.push(null);
+          break;
+        }
+        stream.push(value);
+      }
 
       return stream;
     } catch (error) {
