@@ -58,6 +58,7 @@ const { simpleSSOEnabled } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
+const { getLicenseStatus } = require("../utils/middleware/licenseMiddleware");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -1365,6 +1366,27 @@ function systemEndpoints(app) {
         response.status(500).json({
           success: false,
           error: `Failed to delete system prompt variable: ${error.message}`,
+        });
+      }
+    }
+  );
+
+  // License status endpoint for administrators
+  app.get(
+    "/system/license-status",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_, response) => {
+      try {
+        const licenseStatus = getLicenseStatus();
+        response.status(200).json({
+          success: true,
+          licenseStatus
+        });
+      } catch (error) {
+        console.error("Error fetching license status:", error);
+        response.status(500).json({
+          success: false,
+          error: "Failed to fetch license status"
         });
       }
     }

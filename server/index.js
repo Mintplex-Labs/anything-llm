@@ -28,6 +28,7 @@ const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
+const { licenseMiddleware } = require("./utils/middleware/licenseMiddleware");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -47,6 +48,9 @@ if (!!process.env.ENABLE_HTTPS) {
 } else {
   require("@mintplex-labs/express-ws").default(app); // load WebSockets in non-SSL mode.
 }
+
+// Global license validation middleware - protects all API routes
+app.use("/api", licenseMiddleware);
 
 app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
