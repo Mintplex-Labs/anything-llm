@@ -218,7 +218,7 @@ function FeatureVerification({ children }) {
                         Increased cost or use of any connected LLM or embedding
                         provider.
                       </li>
-                      <li>Potential bugs or issues using AnythingLLM.</li>
+                      <li>Potential bugs or issues.</li>
                     </ul>
                   </div>
 
@@ -232,7 +232,7 @@ function FeatureVerification({ children }) {
                       <li>The feature being used is not currently stable.</li>
                       <li>
                         The feature may not be available in future versions,
-                        configurations, or subscriptions of AnythingLLM.
+                        configurations, or subscriptions.
                       </li>
                       <li>
                         Your privacy settings <b>will be honored</b> with use of

@@ -143,14 +143,14 @@ export default function CommunityHubAuthentication() {
                 </div>
                 <p className="text-sm text-theme-text-secondary">
                   Connecting your Community Hub account allows you
-                  to pull in your <b>private</b> items from the AnythingLLM
+                  to pull in your <b>private</b> items from the
                   Community Hub as well as upload your own items to the
                  Community Hub.
                   <br />
                   <br />
                   <i>
                     You do not need to connect your Community Hub
-                    account to pull in public items from the AnythingLLM
+                    account to pull in public items from the
                     Community Hub.
                   </i>
                 </p>

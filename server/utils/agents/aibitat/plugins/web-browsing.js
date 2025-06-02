@@ -1,5 +1,6 @@
 const { SystemSettings } = require("../../../../models/systemSettings");
 const { TokenManager } = require("../../../helpers/tiktoken");
+const { createT } = require("../../../../locales");
 const tiktoken = new TokenManager();
 
 const webBrowsing = {
@@ -47,11 +48,12 @@ const webBrowsing = {
             additionalProperties: false,
           },
           handler: async function ({ query }) {
+            const t = createT();
             try {
               if (query) return await this.search(query);
-              return "There is nothing we can do. This function call returns no information.";
+              return await t("errors.function_no_info");
             } catch (error) {
-              return `There was an error while calling the function. No data or response was found. Let the user know this was the error: ${error.message}`;
+              return await t("errors.function_error", { error: error.message });
             }
           },
 
@@ -114,11 +116,12 @@ const webBrowsing = {
            * https://programmablesearchengine.google.com/controlpanel/create
            */
           _googleSearchEngine: async function (query) {
+            const t = createT();
             if (!process.env.AGENT_GSE_CTX || !process.env.AGENT_GSE_KEY) {
               this.super.introspect(
-                `${this.caller}: I can't use Google searching because the user has not defined the required API keys.\nVisit: https://programmablesearchengine.google.com/controlpanel/create to create the API keys.`
+                `${this.caller}: ${await t("agents.web_browsing.api_key_missing.google")}`
               );
-              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+              return await t("errors.search_disabled");
             }
 
             const searchURL = new URL(
@@ -128,10 +131,9 @@ const webBrowsing = {
             searchURL.searchParams.append("cx", process.env.AGENT_GSE_CTX);
             searchURL.searchParams.append("q", query);
 
+            const truncatedQuery = query.length > 100 ? `${query.slice(0, 100)}...` : query;
             this.super.introspect(
-              `${this.caller}: Searching on Google for "${
-                query.length > 100 ? `${query.slice(0, 100)}...` : query
-              }"`
+              `${this.caller}: ${await t("agents.web_browsing.searching.google", { query: truncatedQuery })}`
             );
             const data = await fetch(searchURL)
               .then((res) => {
@@ -158,11 +160,11 @@ const webBrowsing = {
               });
 
             if (data.length === 0)
-              return `No information was found online for the search query.`;
+              return await t("errors.no_results");
 
             const result = JSON.stringify(data);
             this.super.introspect(
-              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+              `${this.caller}: ${await t("agents.web_browsing.results_found", { count: data.length, tokens: this.countTokens(result) })}`
             );
             return result;
           },
@@ -173,17 +175,17 @@ const webBrowsing = {
            * https://www.searchapi.io/
            */
           _searchApi: async function (query) {
+            const t = createT();
             if (!process.env.AGENT_SEARCHAPI_API_KEY) {
               this.super.introspect(
-                `${this.caller}: I can't use SearchApi searching because the user has not defined the required API key.\nVisit: https://www.searchapi.io/ to create the API key for free.`
+                `${this.caller}: ${await t("agents.web_browsing.api_key_missing.searchapi")}`
               );
-              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+              return await t("errors.search_disabled");
             }
 
+            const truncatedQuery = query.length > 100 ? `${query.slice(0, 100)}...` : query;
             this.super.introspect(
-              `${this.caller}: Using SearchApi to search for "${
-                query.length > 100 ? `${query.slice(0, 100)}...` : query
-              }"`
+              `${this.caller}: ${await t("agents.web_browsing.searching.searchapi", { query: truncatedQuery })}`
             );
 
             const engine = process.env.AGENT_SEARCHAPI_ENGINE;
@@ -215,7 +217,7 @@ const webBrowsing = {
                 return { response: null, error: e.message };
               });
             if (error)
-              return `There was an error searching for content. ${error}`;
+              return await t("errors.search_error", { error });
 
             const data = [];
             if (response.hasOwnProperty("knowledge_graph"))
@@ -232,11 +234,11 @@ const webBrowsing = {
             });
 
             if (data.length === 0)
-              return `No information was found online for the search query.`;
+              return await t("errors.no_results");
 
             const result = JSON.stringify(data);
             this.super.introspect(
-              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+              `${this.caller}: ${await t("agents.web_browsing.results_found", { count: data.length, tokens: this.countTokens(result) })}`
             );
             return result;
           },

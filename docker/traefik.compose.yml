@@ -11,10 +11,12 @@ services:
       - SYS_ADMIN
     environment:
       - TZ=${TIMEZONE}
+      - HOST_FP_PATH=/host/etc/machine-id
     env_file:
       - .env
     volumes:
       - anythingllm_storage:/app/server/storage
+      - /etc/machine-id:/host/etc/machine-id:ro
     restart: always
     networks:
       - traefik_web

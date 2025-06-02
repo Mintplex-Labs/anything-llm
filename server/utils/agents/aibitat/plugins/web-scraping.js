@@ -1,6 +1,7 @@
 const { CollectorApi } = require("../../../collectorApi");
 const Provider = require("../providers/ai-provider");
 const { summarizeContent } = require("../utils/summarize");
+const { createT } = require("../../../../locales");
 
 const webScraping = {
   name: "web-scraping",
@@ -41,11 +42,12 @@ const webScraping = {
             additionalProperties: false,
           },
           handler: async function ({ url }) {
+            const t = createT();
             try {
               if (url) return await this.scrape(url);
-              return "There is nothing we can do. This function call returns no information.";
+              return await t("errors.function_no_info");
             } catch (error) {
-              return `There was an error while calling the function. No data or response was found. Let the user know this was the error: ${error.message}`;
+              return await t("errors.function_error", { error: error.message });
             }
           },
 
@@ -58,23 +60,24 @@ const webScraping = {
            * @returns
            */
           scrape: async function (url) {
+            const t = createT();
             this.super.introspect(
-              `${this.caller}: Scraping the content of ${url}`
+              `${this.caller}: ${await t("agents.web_scraping.scraping_content", { url })}`
             );
             const { success, content } =
               await new CollectorApi().getLinkContent(url);
 
             if (!success) {
               this.super.introspect(
-                `${this.caller}: could not scrape ${url}. I can't use this page's content.`
+                `${this.caller}: ${await t("agents.web_scraping.scrape_failed", { url })}`
               );
               throw new Error(
-                `URL could not be scraped and no content was found.`
+                await t("agents.web_scraping.scrape_failed_generic", { url })
               );
             }
 
             if (!content || content?.length === 0) {
-              throw new Error("There was no content to be collected or read.");
+              throw new Error(await t("agents.web_scraping.no_content"));
             }
 
             const { TokenManager } = require("../../../helpers/tiktoken");
@@ -86,7 +89,7 @@ const webScraping = {
             }
 
             this.super.introspect(
-              `${this.caller}: This page's content is way too long. I will summarize it right now.`
+              `${this.caller}: ${await t("agents.web_scraping.content_too_long")}`
             );
             this.super.onAbort(() => {
               this.super.handlerProps.log(

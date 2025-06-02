@@ -45,21 +45,21 @@ class MetaGenerator {
       {
         tag: "title",
         props: null,
-        content: "AnythingLLM | Your personal LLM trained on anything",
+        content: "AI Assistant | Your personal AI assistant",
       },
 
       {
         tag: "meta",
         props: {
           name: "title",
-          content: "AnythingLLM | Your personal LLM trained on anything",
+          content: "AI Assistant | Your personal AI assistant",
         },
       },
       {
         tag: "meta",
         props: {
           description: "title",
-          content: "AnythingLLM | Your personal LLM trained on anything",
+          content: "AI Assistant | Your personal AI assistant",
         },
       },
 
@@ -67,30 +67,26 @@ class MetaGenerator {
       { tag: "meta", props: { property: "og:type", content: "website" } },
       {
         tag: "meta",
-        props: { property: "og:url", content: "https://anythingllm.com" },
-      },
-      {
-        tag: "meta",
         props: {
           property: "og:title",
-          content: "AnythingLLM | Your personal LLM trained on anything",
+          content: "AI Assistant | Your personal AI assistant",
         },
       },
       {
         tag: "meta",
         props: {
           property: "og:description",
-          content: "AnythingLLM | Your personal LLM trained on anything",
+          content: "AI Assistant | Your personal AI assistant",
         },
       },
-      {
-        tag: "meta",
-        props: {
-          property: "og:image",
-          content:
-            "https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/master/images/promo.png",
-        },
-      },
+      // {
+      //   tag: "meta",
+      //   props: {
+      //     property: "og:image",
+      //     content:
+      //       "https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/master/images/promo.png",
+      //   },
+      // },
 
       // <!-- Twitter -->
       {
@@ -99,30 +95,26 @@ class MetaGenerator {
       },
       {
         tag: "meta",
-        props: { property: "twitter:url", content: "https://anythingllm.com" },
-      },
-      {
-        tag: "meta",
         props: {
           property: "twitter:title",
-          content: "AnythingLLM | Your personal LLM trained on anything",
+          content: "AI Assistant | Your personal AI assistant",
         },
       },
       {
         tag: "meta",
         props: {
           property: "twitter:description",
-          content: "AnythingLLM | Your personal LLM trained on anything",
+          content: "AI Assistant | Your personal AI assistant",
         },
       },
-      {
-        tag: "meta",
-        props: {
-          property: "twitter:image",
-          content:
-            "https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/master/images/promo.png",
-        },
-      },
+      // {
+      //   tag: "meta",
+      //   props: {
+      //     property: "twitter:image",
+      //     content:
+      //       "https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/master/images/promo.png",
+      //   },
+      // },
 
       { tag: "link", props: { rel: "icon", href: "/favicon.png" } },
       { tag: "link", props: { rel: "apple-touch-icon", href: "/favicon.png" } },
@@ -191,7 +183,7 @@ class MetaGenerator {
           props: null,
           content:
             customTitle ??
-            "AnythingLLM | Your personal LLM trained on anything",
+            "AI Assistant | Your personal AI assistant",
         },
       ];
     }
