@@ -85,7 +85,10 @@ export default function EmbedRow({ embed }) {
         <th scope="row" className="px-6 whitespace-nowrap">
           <ActiveDomains domainList={embed.allowlist_domains} />
         </th>
-        <th scope="row" className="px-6 whitespace-nowrap">
+        <th
+          scope="row"
+          className="px-6 whitespace-nowrap text-theme-text-secondary !font-normal"
+        >
           {
             // If the embed was created more than a day ago, show the date, otherwise show the time ago
             moment(embed.createdAt).diff(moment(), "days") > 0
@@ -96,7 +99,7 @@ export default function EmbedRow({ embed }) {
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
             onClick={openSnippetModal}
-            className="group text-xs font-medium text-theme-button-text px-2 py-1 rounded-lg hover:bg-theme-button-code-hover-bg"
+            className="group text-xs font-medium text-theme-text-secondary px-2 py-1 rounded-lg hover:bg-theme-button-code-hover-bg"
           >
             <span className="group-hover:text-theme-button-code-hover-text">
               Code
@@ -104,7 +107,7 @@ export default function EmbedRow({ embed }) {
           </button>
           <button
             onClick={handleSuspend}
-            className="group text-xs font-medium text-theme-button-text px-2 py-1 rounded-lg hover:bg-theme-button-disable-hover-bg"
+            className="group text-xs font-medium text-theme-text-secondary px-2 py-1 rounded-lg hover:bg-theme-button-disable-hover-bg"
           >
             <span className="group-hover:text-theme-button-disable-hover-text">
               {enabled ? "Disable" : "Enable"}
@@ -112,7 +115,7 @@ export default function EmbedRow({ embed }) {
           </button>
           <button
             onClick={handleDelete}
-            className="group text-xs font-medium text-theme-button-text px-2 py-1 rounded-lg hover:bg-theme-button-delete-hover-bg"
+            className="group text-xs font-medium text-theme-text-secondary px-2 py-1 rounded-lg hover:bg-theme-button-delete-hover-bg"
           >
             <span className="group-hover:text-theme-button-delete-hover-text">
               Delete
