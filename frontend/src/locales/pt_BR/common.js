@@ -544,6 +544,17 @@ const TRANSLATIONS = {
     description:
       "Credenciais e configurações do seu provedor de LLM. Essas chaves devem estar corretas para o funcionamento adequado.",
     provider: "Provedor de LLM",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "Preferência de Transcrição",
@@ -918,6 +929,14 @@ const TRANSLATIONS = {
     update_account: "Atualizar conta",
     theme: "Preferência de tema",
     language: "Idioma preferido",
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   "keyboard-shortcuts": {
     title: "Atalhos de Teclado",
