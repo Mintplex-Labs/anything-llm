@@ -1000,7 +1000,6 @@ const TRANSLATIONS = {
     account: "Account",
     support: "Support",
     signout: "Sign out",
-    user_profile_picture: "User profile picture",
   },
 
   "keyboard-shortcuts": {
