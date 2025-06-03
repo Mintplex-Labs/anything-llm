@@ -556,6 +556,17 @@ const TRANSLATIONS = {
     description:
       "Šie ir akreditācijas dati un iestatījumi jūsu vēlamajam LLM čata un iegulšanas pakalpojuma sniedzējam. Ir svarīgi, lai šīs atslēgas būtu aktuālas un pareizas, pretējā gadījumā AnythingLLM nedarbosies pareizi.",
     provider: "LLM pakalpojuma sniedzējs",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "Transkripcijas modeļa preferences",
@@ -938,6 +949,14 @@ const TRANSLATIONS = {
     update_account: "Atjaunināt kontu",
     theme: "Tēmas preference",
     language: "Vēlamā valoda",
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   "keyboard-shortcuts": {
     title: null,

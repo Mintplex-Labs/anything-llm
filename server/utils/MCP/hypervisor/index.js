@@ -228,20 +228,40 @@ class MCPHypervisor {
   }
 
   /**
-   * Build the MCP server environment variables key - will add back the default environment variables that are required for MCP to function
-   * in the docker context (eg: PATH and NODE_PATH) since when any env is provided to the MCP server it is not merged.
+   * Build the MCP server environment variables - ensures proper PATH and NODE_PATH
+   * inheritance across all platforms and deployment scenarios.
    * @param {Object} server - The server definition
    * @returns {{env: { [key: string]: string } | {}}} - The environment variables
    */
   #buildMCPServerENV(server) {
-    if (!server?.env || Object.keys(server.env).length === 0) return {};
-    if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return server.env;
+    // Start with essential environment variables, inheriting from current process
+    // This ensures GUI applications on macOS/Linux get proper PATH inheritance
+    let baseEnv = {
+      PATH: process.env.PATH || "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+      NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules",
+    };
 
+    // Docker-specific environment setup
+    if (process.env.ANYTHING_LLM_RUNTIME === "docker") {
+      baseEnv = {
+        // Fixed: NODE_PATH should point to modules directory, not node binary
+        NODE_PATH: "/usr/local/lib/node_modules",
+        PATH: "/usr/local/bin:/usr/bin:/bin",
+        ...baseEnv, // Allow inheritance to override docker defaults if needed
+      };
+    }
+
+    // No custom environment specified - return base environment
+    if (!server?.env || Object.keys(server.env).length === 0) {
+      return { env: baseEnv };
+    }
+
+    // Merge user-specified environment with base environment
+    // User environment takes precedence over defaults
     return {
       env: {
-        NODE_PATH: "/usr/bin/node",
-        PATH: "/usr/bin/node:/usr/local/bin:/usr/bin:/bin",
-        ...server.env, // allow overrides
+        ...baseEnv,
+        ...server.env,
       },
     };
   }

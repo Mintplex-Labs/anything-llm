@@ -371,6 +371,17 @@ const TRANSLATIONS = {
     description:
       "これは、お好みのLLMチャットおよび埋め込みプロバイダー用の認証情報と設定です。これらのキーが最新かつ正確でない場合、AnythingLLMは正しく動作しません。",
     provider: "LLMプロバイダー",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "文字起こしモデルの設定",
@@ -743,6 +754,14 @@ const TRANSLATIONS = {
     update_account: "アカウントを更新",
     theme: "テーマ設定",
     language: "優先言語",
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   customization: {
     interface: {
