@@ -23,19 +23,19 @@ export default function AccountModal({ user, hideModal }) {
     formData.append("file", file);
     const { success, error } = await System.uploadPfp(formData);
     if (!success) {
-      showToast(`${t("profile_settings.failed_upload")} ${error} `, t("profile_settings.error"));
+      showToast(t("profile_settings.failed_upload", { error }), "error");
       return;
     }
 
     const pfpUrl = await System.fetchPfp(user.id);
     setPfp(pfpUrl);
-    showToast(t("profile_settings.upload_success"), t("profile_settings.success"));
+    showToast(t("profile_settings.upload_success"), "success");
   };
 
   const handleRemovePfp = async () => {
     const { success, error } = await System.removePfp();
     if (!success) {
-      showToast(`${t("profile_settings.failed_remove")} ${error}`, t("profile_settings.upload_error"));
+      showToast(t("profile_settings.failed_remove", { error }), "error");
       return;
     }
 
@@ -60,10 +60,12 @@ export default function AccountModal({ user, hideModal }) {
         storedUser.bio = data.bio;
         localStorage.setItem(AUTH_USER, JSON.stringify(storedUser));
       }
-      showToast(t("profile_settings.profile_updated"), t("profile_settings.success"), { clear: true });
+      showToast(t("profile_settings.profile_updated"), "success", {
+        clear: true,
+      });
       hideModal();
     } else {
-      showToast(`${t("profile_settings.failed_update_user")} ${error}`, t("profile_settings.error"));
+      showToast(t("profile_settings.failed_update_user", { error }), "error");
     }
   };
   return (

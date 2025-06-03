@@ -77,7 +77,7 @@ export default function UserButton() {
                 onClick={handleOpenAccountModal}
                 className="border-none text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
               >
-               {t("profile_settings.account")}
+                {t("profile_settings.account")}
               </button>
             )}
             <a
@@ -120,7 +120,7 @@ function UserDisplay() {
       <div className="w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden transition-all duration-300 bg-gray-100 hover:border-slate-100 hover:border-opacity-50 border-transparent border hover:opacity-60">
         <img
           src={pfp}
-          alt={t("profile_settings.signout")}
+          alt="User profile picture"
           className="w-full h-full object-cover"
         />
       </div>
