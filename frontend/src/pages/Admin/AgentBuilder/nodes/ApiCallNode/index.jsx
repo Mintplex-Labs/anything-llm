@@ -104,7 +104,7 @@ export default function ApiCallNode({
           onChange={(e) => onConfigChange({ method: e.target.value })}
           className="w-full border-none bg-theme-settings-input-bg text-theme-text-primary text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none p-2.5"
         >
-          {["GET", "POST", "DELETE"].map((method) => (
+          {["GET", "POST", "DELETE", "PUT", "PATCH"].map((method) => (
             <option
               key={method}
               value={method}
