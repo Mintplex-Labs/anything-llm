@@ -7,9 +7,11 @@ import System from "@/models/system";
 import { DotsThree, Plus } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
 export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
+  const { t } = useTranslation();
   const isActiveAgentSession = useIsAgentSessionActive();
   const {
     isOpen: isAddModalOpen,
@@ -130,7 +132,7 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
         <div className="w-full flex-row flex pointer-events-none items-center gap-2">
           <Plus size={24} weight="fill" className="text-theme-text-primary" />
           <div className="text-theme-text-primary text-sm font-medium">
-            Add New Preset
+            {t("chat_window.add_new_preset")}
           </div>
         </div>
       </button>

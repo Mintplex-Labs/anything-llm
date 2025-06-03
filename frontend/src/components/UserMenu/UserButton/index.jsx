@@ -8,8 +8,10 @@ import { Person } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import AccountModal from "../AccountModal";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import { useTranslation } from "react-i18next";
 
 export default function UserButton() {
+  const { t } = useTranslation();
   const mode = useLoginMode();
   const { user } = useUser();
   const menuRef = useRef();
@@ -75,14 +77,14 @@ export default function UserButton() {
                 onClick={handleOpenAccountModal}
                 className="border-none text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
               >
-                Account
+                {t("profile_settings.account")}
               </button>
             )}
             <a
               href={supportEmail}
               className="text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
             >
-              Support
+              {t("profile_settings.support")}
             </a>
             <button
               onClick={() => {
@@ -94,7 +96,7 @@ export default function UserButton() {
               type="button"
               className="text-white hover:bg-theme-action-menu-item-hover w-full text-left px-4 py-1.5 rounded-md"
             >
-              Sign out
+              {t("profile_settings.signout")}
             </button>
           </div>
         </div>
