@@ -630,7 +630,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "Darba vieta",
       chats: "Nosūtītie čati",
-      Active: "Aktīvie domēni",
+      active: "Aktīvie domēni",
+      created: null,
     },
   },
   "embed-chats": {
