@@ -95,15 +95,14 @@ class AnthropicProvider extends Provider {
   // so that the call can run correctly.
   #formatFunctions(functions = []) {
     return functions.map((func) => {
-      const { name, description, parameters, required } = func;
-      const { type, properties } = parameters;
+      const { name, description, parameters } = func;
+      const { "$schema": _discard, ...restParameters } = parameters;
       return {
         name,
         description,
         input_schema: {
-          type,
-          properties,
-          required,
+          $schema: "https://json-schema.org/draft/2020-12/schema",
+          ...restParameters,
         },
       };
     });
@@ -119,6 +118,10 @@ class AnthropicProvider extends Provider {
   async complete(messages, functions = []) {
     try {
       const [systemPrompt, chats] = this.#parseSystemPrompt(messages);
+      let formatedFunctions =
+        Array.isArray(functions) && functions?.length > 0
+          ? { tools: this.#formatFunctions(functions) }
+          : {};
       const response = await this.client.messages.create(
         {
           model: this.model,
@@ -126,9 +129,7 @@ class AnthropicProvider extends Provider {
           system: systemPrompt,
           messages: this.#sanitize(chats),
           stream: false,
-          ...(Array.isArray(functions) && functions?.length > 0
-            ? { tools: this.#formatFunctions(functions) }
-            : {}),
+          ...formatedFunctions,
         },
         { headers: { "anthropic-beta": "tools-2024-04-04" } } // Required to we can use tools.
       );
