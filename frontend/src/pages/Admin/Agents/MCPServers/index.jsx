@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { titleCase } from "text-case";
-import { BookOpenText, ArrowsClockwise } from "@phosphor-icons/react";
+import {
+  BookOpenText,
+  ArrowsClockwise,
+  CaretRight,
+} from "@phosphor-icons/react";
 import MCPLogo from "@/media/agents/mcp-logo.svg";
 import MCPServers from "@/models/mcpServers";
 import showToast from "@/utils/toast";
@@ -79,23 +83,16 @@ export function MCPServerHeader({
 }
 
 export function MCPServersList({
-  isLoading = false,
   servers = [],
-  selectedServer,
-  handleClick,
+  selectedServer = null,
+  handleClick = null,
+  toggleServer = () => {},
+  isLoading = false,
 }) {
   if (isLoading) {
     return (
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
-        <p>Loading MCP Servers from configuration file...</p>
-        <a
-          href="https://docs.anythingllm.com/mcp-compatibility/overview"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-theme-text-secondary underline hover:text-cta-button"
-        >
-          Learn more about MCP Servers.
-        </a>
+        <p>Loading MCP servers...</p>
       </div>
     );
   }
@@ -105,12 +102,12 @@ export function MCPServersList({
       <div className="text-theme-text-secondary text-center text-xs flex flex-col gap-y-2">
         <p>No MCP servers found</p>
         <a
-          href="https://docs.anythingllm.com/mcp-compatibility/overview"
+          href="https://docs.anythingllm.com/mcp/getting-started"
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noreferrer"
           className="text-theme-text-secondary underline hover:text-cta-button"
         >
-          Learn more about MCP Servers.
+          Learn more about MCP.
         </a>
       </div>
     );
@@ -145,10 +142,26 @@ export function MCPServersList({
             </div>
             <div className="flex items-center gap-x-2">
               <div
-                className={`text-sm text-theme-text-secondary font-medium ${server.running ? "text-green-500" : "text-red-500"}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleServer(server.name);
+                }}
+                className="relative inline-flex h-4 w-7 items-center rounded-full transition-colors duration-300"
+                style={{
+                  backgroundColor: server.running ? "#32D583" : "#CFCFD0",
+                }}
               >
-                {server.running ? "On" : "Stopped"}
+                <span
+                  className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${
+                    server.running ? "translate-x-[14px]" : "translate-x-[2px]"
+                  }`}
+                />
               </div>
+              <CaretRight
+                size={14}
+                weight="bold"
+                className="text-theme-text-secondary"
+              />
             </div>
           </div>
         </div>

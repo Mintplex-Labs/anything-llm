@@ -279,6 +279,8 @@ export default function AdminAgents() {
               activeSkills={Object.keys(defaultSkills).filter(
                 (skill) => !disabledAgentSkills.includes(skill)
               )}
+              toggleDefaultSkill={toggleDefaultSkill}
+              toggleAgentSkill={toggleAgentSkill}
             />
 
             <div className="text-theme-text-primary flex items-center gap-x-2">
@@ -289,6 +291,13 @@ export default function AdminAgents() {
               skills={importedSkills}
               selectedSkill={selectedSkill}
               handleClick={handleSkillClick}
+              toggleSkill={(skill) => {
+                const updatedSkills = importedSkills.map((s) =>
+                  s.hubId === skill.hubId ? { ...s, active: !s.active } : s
+                );
+                setImportedSkills(updatedSkills);
+                setHasChanges(true);
+              }}
             />
 
             <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
@@ -299,6 +308,8 @@ export default function AdminAgents() {
               flows={agentFlows}
               selectedFlow={selectedFlow}
               handleClick={handleFlowClick}
+              activeFlowIds={activeFlowIds}
+              toggleFlow={toggleFlow}
             />
             <input
               type="hidden"
@@ -317,6 +328,7 @@ export default function AdminAgents() {
                     servers={mcpServers}
                     selectedServer={selectedMcpServer}
                     handleClick={handleMCPClick}
+                    toggleServer={toggleMCP}
                   />
                 );
               }}
@@ -342,7 +354,7 @@ export default function AdminAgents() {
                     </div>
                   </button>
                 </div>
-                <div className="flex-1 overflow-y-auto p-4">
+                <div className="flex-1 overflow-y-auto p-4 no-scroll">
                   <div className=" bg-theme-bg-secondary text-white rounded-xl p-4 overflow-y-scroll no-scroll">
                     {SelectedSkillComponent ? (
                       <>
@@ -455,7 +467,7 @@ export default function AdminAgents() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-2 pb-4">
+          <div className="flex-1 overflow-y-auto pr-2 pb-4 no-scroll">
             <div className="space-y-[18px]">
               <div className="text-theme-text-primary flex items-center gap-x-2">
                 <p className="text-sm font-semibold">Default Skills</p>
@@ -471,6 +483,8 @@ export default function AdminAgents() {
                   ),
                   ...agentSkills,
                 ]}
+                toggleDefaultSkill={toggleDefaultSkill}
+                toggleAgentSkill={toggleAgentSkill}
               />
 
               <div className="text-theme-text-primary flex items-center gap-x-2 mt-4">
@@ -480,6 +494,13 @@ export default function AdminAgents() {
                 skills={importedSkills}
                 selectedSkill={selectedSkill}
                 handleClick={handleSkillClick}
+                toggleSkill={(skill) => {
+                  const updatedSkills = importedSkills.map((s) =>
+                    s.hubId === skill.hubId ? { ...s, active: !s.active } : s
+                  );
+                  setImportedSkills(updatedSkills);
+                  setHasChanges(true);
+                }}
               />
 
               <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
@@ -498,6 +519,8 @@ export default function AdminAgents() {
                 flows={agentFlows}
                 selectedFlow={selectedFlow}
                 handleClick={handleFlowClick}
+                activeFlowIds={activeFlowIds}
+                toggleFlow={toggleFlow}
               />
 
               <MCPServerHeader
@@ -511,6 +534,7 @@ export default function AdminAgents() {
                       servers={mcpServers}
                       selectedServer={selectedMcpServer}
                       handleClick={handleMCPClick}
+                      toggleServer={toggleMCP}
                     />
                   );
                 }}
@@ -608,6 +632,8 @@ function SkillList({
   selectedSkill = null,
   handleClick = null,
   activeSkills = [],
+  toggleDefaultSkill = () => {},
+  toggleAgentSkill = () => {},
 }) {
   if (skills.length === 0) return null;
 
@@ -642,8 +668,27 @@ function SkillList({
               {settings.isDefault ? (
                 <DefaultBadge title={skill} />
               ) : (
-                <div className="text-sm text-theme-text-secondary font-medium">
-                  {activeSkills.includes(skill) ? "On" : "Off"}
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    settings.isDefault
+                      ? toggleDefaultSkill(skill)
+                      : toggleAgentSkill(skill);
+                  }}
+                  className="relative inline-flex h-4 w-7 items-center rounded-full transition-colors duration-300"
+                  style={{
+                    backgroundColor: activeSkills.includes(skill)
+                      ? "#32D583"
+                      : "#CFCFD0",
+                  }}
+                >
+                  <span
+                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${
+                      activeSkills.includes(skill)
+                        ? "translate-x-[14px]"
+                        : "translate-x-[2px]"
+                    }`}
+                  />
                 </div>
               )}
               <CaretRight

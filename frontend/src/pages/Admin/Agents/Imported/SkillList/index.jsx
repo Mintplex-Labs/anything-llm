@@ -5,6 +5,7 @@ export default function ImportedSkillList({
   skills = [],
   selectedSkill = null,
   handleClick = null,
+  toggleSkill = () => {},
 }) {
   if (skills.length === 0)
     return (
@@ -53,8 +54,21 @@ export default function ImportedSkillList({
               {sentenceCase(config.name)}
             </div>
             <div className="flex items-center gap-x-2">
-              <div className="text-sm text-theme-text-secondary font-medium">
-                {config.active ? "On" : "Off"}
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleSkill(config);
+                }}
+                className="relative inline-flex h-4 w-7 items-center rounded-full transition-colors duration-300"
+                style={{
+                  backgroundColor: config.active ? "#32D583" : "#CFCFD0",
+                }}
+              >
+                <span
+                  className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${
+                    config.active ? "translate-x-[14px]" : "translate-x-[2px]"
+                  }`}
+                />
               </div>
               <CaretRight
                 size={14}
