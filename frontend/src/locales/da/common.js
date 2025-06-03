@@ -373,6 +373,17 @@ const TRANSLATIONS = {
     description:
       "Disse er legitimationsoplysningerne og indstillingerne for din foretrukne LLM chat- og indlejringsudbyder. Det er vigtigt, at disse nøgler er opdaterede og korrekte, ellers vil AnythingLLM ikke fungere korrekt.",
     provider: "LLM-udbyder",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "Foretrukken transskriptionsmodel",
@@ -750,6 +761,14 @@ const TRANSLATIONS = {
     update_account: "Opdater konto",
     theme: "Tema-præference",
     language: "Foretrukket sprog",
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   customization: {
     interface: {
