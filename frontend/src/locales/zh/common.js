@@ -579,7 +579,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "工作区",
       chats: "已发送聊天",
-      Active: "活动域",
+      active: "活动域",
+      created: null,
     },
   },
   "embed-chats": {

@@ -431,7 +431,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "ワークスペース",
       chats: "送信済みチャット",
-      Active: "有効なドメイン",
+      active: "有効なドメイン",
+      created: null,
     },
   },
   "embed-chats": {

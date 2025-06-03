@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { DotsThreeOutline, LinkSimple, Trash } from "@phosphor-icons/react";
+import { DotsThreeOutline } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -8,6 +8,7 @@ import paths from "@/utils/paths";
 import { nFormatter } from "@/utils/numbers";
 import EditEmbedModal from "./EditEmbedModal";
 import CodeSnippetModal from "./CodeSnippetModal";
+import moment from "moment";
 
 export default function EmbedRow({ embed }) {
   const rowRef = useRef(null);
@@ -83,6 +84,14 @@ export default function EmbedRow({ embed }) {
         </th>
         <th scope="row" className="px-6 whitespace-nowrap">
           <ActiveDomains domainList={embed.allowlist_domains} />
+        </th>
+        <th scope="row" className="px-6 whitespace-nowrap">
+          {
+            // If the embed was created more than a day ago, show the date, otherwise show the time ago
+            moment(embed.createdAt).diff(moment(), "days") > 0
+              ? moment(embed.createdAt).format("MMM D, YYYY")
+              : moment(embed.createdAt).fromNow()
+          }
         </th>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button

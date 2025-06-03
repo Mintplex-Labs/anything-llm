@@ -72,7 +72,10 @@ export default function EmbedConfigsView() {
                 {t("embeddable.table.chats")}
               </th>
               <th scope="col" className="px-6 py-3">
-                {t("embeddable.table.Active")}
+                {t("embeddable.table.active")}
+              </th>
+              <th scope="col" className="px-6 py-3">
+                {t("embeddable.table.created")}
               </th>
               <th scope="col" className="px-6 py-3">
                 {" "}
