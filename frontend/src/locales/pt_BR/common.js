@@ -1,4 +1,5 @@
-const TRANSLATIONS = { // Anything with "null" requires a translation. Contribute to translation via a PR!
+const TRANSLATIONS = {
+  // Anything with "null" requires a translation. Contribute to translation via a PR!
   onboarding: {
     home: {
       title: "Bem-vindo ao",
@@ -52,8 +53,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
     },
     workspace: {
       title: "Crie seu primeiro workspace",
-      description: 
-        "Crie seu primeiro workspace e comece a usar o AnythingLLM.",
+      description: "Crie seu primeiro workspace e comece a usar o AnythingLLM.",
     },
   },
   common: {
@@ -142,8 +142,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
     part4:
       'É simples. As coleções são organizadas em "Workspaces". Workspaces são grupos de arquivos, documentos, imagens, PDFs e outros arquivos que serão transformados em algo que os LLMs possam entender e usar em conversas.\n\nVocê pode adicionar ou remover arquivos a qualquer momento.',
     createWorkspace: "Crie seu primeiro workspace",
-    user2: 
-      "Isso é como um Dropbox com IA? E os chats? É um chatbot, certo?",
+    user2: "Isso é como um Dropbox com IA? E os chats? É um chatbot, certo?",
     part5:
       "AnythingLLM é mais que um Dropbox inteligente.\n\nAnythingLLM oferece duas formas de interagir com seus dados:\n\n<i>Consulta:</i> Seus chats retornarão dados encontrados nos documentos do workspace.\n\n<i>Conversacional:</i> Seus documentos + histórico de chat contribuem para o conhecimento do LLM em tempo real.\n\nVocê pode alternar entre os modos <i>durante o chat!</i>",
     user3: "Uau, isso parece incrível, quero testar agora!",
@@ -210,8 +209,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
         },
         slashCommands: {
           title: "Comandos de Barra",
-          description: 
-            "Economize tempo com comandos personalizados de barra.",
+          description: "Economize tempo com comandos personalizados de barra.",
           primaryAction: "Criar Comando",
           secondaryAction: "Explorar no Hub",
         },
@@ -271,8 +269,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
     },
     pfp: {
       title: "Imagem do Assistente",
-      description: 
-        "Personalize a imagem do assistente para este workspace.",
+      description: "Personalize a imagem do assistente para este workspace.",
       image: "Imagem do Workspace",
       remove: "Remover Imagem",
     },
@@ -350,8 +347,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
     },
     temperature: {
       title: "Temperatura do LLM",
-      "desc-start": 
-        'Controla o nível de "criatividade" das respostas.',
+      "desc-start": 'Controla o nível de "criatividade" das respostas.',
       "desc-end":
         "Valores mais altos geram respostas mais criativas, mas para alguns modelos podem se tornar incoerentes.",
       hint: "Cada modelo LLM tem faixas de valores válidos. Consulte seu provedor.",
@@ -433,8 +429,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
       },
       save: {
         title: "Gerar & salvar arquivos",
-        description: 
-          "Permite ao agente gerar e salvar arquivos no navegador.",
+        description: "Permite ao agente gerar e salvar arquivos no navegador.",
       },
       web: {
         title: "Busca na web",
@@ -469,16 +464,14 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
     },
     branding: {
       title: "Marca & Etiqueta Branca",
-      description: 
-        "Personalize sua instância do AnythingLLM com sua marca.",
+      description: "Personalize sua instância do AnythingLLM com sua marca.",
     },
     chat: {
       title: "Chat",
       description: "Defina preferências de chat.",
       auto_submit: {
         title: "Envio Automático",
-        description: 
-          "Envia automaticamente entrada de voz após silêncio.",
+        description: "Envia automaticamente entrada de voz após silêncio.",
       },
       auto_speak: {
         title: "Falar Respostas",
@@ -500,8 +493,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
       },
       "support-email": {
         title: "Email de Suporte",
-        description: 
-          "Defina o email de suporte acessível aos usuários.",
+        description: "Defina o email de suporte acessível aos usuários.",
       },
       "app-name": {
         title: "Nome",
@@ -510,8 +502,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
       },
       "chat-message-alignment": {
         title: "Alinhamento de Mensagens",
-        description: 
-          "Selecione o alinhamento das mensagens no chat.",
+        description: "Selecione o alinhamento das mensagens no chat.",
       },
       "display-language": {
         title: "Idioma",
@@ -540,12 +531,10 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
       },
       "browser-appearance": {
         title: "Aparência no Navegador",
-        description: 
-          "Personalize a aparência da aba e título no navegador.",
+        description: "Personalize a aparência da aba e título no navegador.",
         tab: {
           title: "Título",
-          description: 
-            "Defina um título personalizado para a aba.",
+          description: "Defina um título personalizado para a aba.",
         },
         favicon: {
           title: "Favicon",
@@ -565,8 +554,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
   // API Keys
   api: {
     title: "Chaves API",
-    description: 
-      "Chaves API permitem acesso programático a esta instância.",
+    description: "Chaves API permitem acesso programático a esta instância.",
     link: "Leia a documentação da API",
     generate: "Gerar Nova Chave",
     table: {
@@ -590,8 +578,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
     provider: "Provedor de Transcrição",
     "warn-start":
       "Usar o modelo local whisper em máquinas com RAM ou CPU limitada pode travar o AnythingLLM.",
-    "warn-recommend": 
-      "Recomendamos pelo menos 2GB de RAM e arquivos <10Mb.",
+    "warn-recommend": "Recomendamos pelo menos 2GB de RAM e arquivos <10Mb.",
     "warn-end":
       "O modelo interno será baixado automaticamente no primeiro uso.",
   },
@@ -613,15 +600,13 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
     title: "Preferências de Divisão de Texto",
     "desc-start":
       "Você pode alterar a forma como novos documentos são divididos antes de serem inseridos no banco de dados vetorial.",
-    "desc-end": 
-      "Modifique apenas se entender os efeitos da divisão de texto.",
+    "desc-end": "Modifique apenas se entender os efeitos da divisão de texto.",
     "warn-start": "Alterações afetarão apenas",
     "warn-center": "documentos novos",
     "warn-end": ", não os existentes.",
     size: {
       title: "Tamanho dos Trechos",
-      description: 
-        "Comprimento máximo de caracteres em um único vetor.",
+      description: "Comprimento máximo de caracteres em um único vetor.",
       recommend: "Tamanho máximo do modelo de vínculo é",
     },
 
@@ -659,8 +644,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
   "embed-chats": {
     title: "Chats Vinculados",
     export: "Exportar",
-    description: 
-      "Todos os chats registrados de qualquer vínculo publicado.",
+    description: "Todos os chats registrados de qualquer vínculo publicado.",
     table: {
       embed: "Vínculo",
       sender: "Remetente",
@@ -731,8 +715,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
       selected_files: "Encontrados {{count}} arquivos markdown",
       importing: "Importando cofre...",
       import_vault: "Importar Cofre",
-      processing_time: 
-        "Pode levar algum tempo dependendo do tamanho do cofre.",
+      processing_time: "Pode levar algum tempo dependendo do tamanho do cofre.",
       vault_warning:
         "Para evitar conflitos, certifique-se que seu cofre Obsidian não está aberto.",
     },
@@ -761,8 +744,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
       branch_explained: "Branch para coletar arquivos.",
       token_information:
         "Sem preencher o <b>Token de Acesso</b>, este conector só poderá coletar arquivos <b>do nível superior</b> devido a limitações da API pública.",
-      token_personal: 
-        "Obtenha um Token de Acesso Pessoal gratuito aqui.",
+      token_personal: "Obtenha um Token de Acesso Pessoal gratuito aqui.",
     },
     gitlab: {
       name: "Repositório GitLab",
@@ -773,8 +755,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
       token: "Token de Acesso",
       optional: "opcional",
       token_explained: "Token para evitar limitação de taxa.",
-      token_description: 
-        "Selecione entidades adicionais para buscar na API.",
+      token_description: "Selecione entidades adicionais para buscar na API.",
       token_explained_start: "Sem um ",
       token_explained_link1: "Token de Acesso Pessoal",
       token_explained_middle:
@@ -792,8 +773,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
       branch_explained: "Branch para coletar arquivos.",
       token_information:
         "Sem preencher o <b>Token de Acesso</b>, este conector só poderá coletar arquivos <b>do nível superior</b> devido a limitações da API pública.",
-      token_personal: 
-        "Obtenha um Token de Acesso Pessoal gratuito aqui.",
+      token_personal: "Obtenha um Token de Acesso Pessoal gratuito aqui.",
     },
     youtube: {
       name: "Transcrição do YouTube",
@@ -813,7 +793,8 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
     },
     "website-depth": {
       name: "Coletor de Links",
-      description:"Extraia um site e seus sublinks até uma certa profundidade.",
+      description:
+        "Extraia um site e seus sublinks até uma certa profundidade.",
       URL: "URL do Site",
       URL_explained: "URL do site que deseja extrair.",
       depth: "Profundidade",
@@ -887,8 +868,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
       "processor-offline-desc":
         "Não é possível enviar arquivos agora. O processador de documentos está offline. Tente mais tarde.",
       "click-upload": "Clique para enviar ou arraste e solte",
-      "file-types": 
-        "suporta textos, csv, planilhas, áudios e mais!",
+      "file-types": "suporta textos, csv, planilhas, áudios e mais!",
       "or-submit-link": "ou envie um link",
       "placeholder-link": "https://exemplo.com",
       fetching: "Buscando...",
@@ -958,7 +938,7 @@ const TRANSLATIONS = { // Anything with "null" requires a translation. Contribut
     add_new_preset: " Insere um novo Preset",
     command: "Comando",
     your_command: "seu-comando",
-    placeholder_prompt: 
+    placeholder_prompt:
       "Este é o conteúdo que será injetado a frente do seu prompt.",
     description: "Descrição",
     placeholder_description: "Responde como um poema sobre LLMs.",
