@@ -5,16 +5,22 @@ import paths from "@/utils/paths";
 import { CircleNotch } from "@phosphor-icons/react";
 import { useState } from "react";
 import AgentFlows from "@/models/agentFlows";
+import { safeJsonParse } from "@/utils/request";
 
 export default function AgentFlow({ item, setStep }) {
-  const flow = JSON.parse(item.flow);
+  const flowInfo = safeJsonParse(item.flow, { steps: [] });
   const [loading, setLoading] = useState(false);
 
   async function importAgentFlow() {
     try {
       setLoading(true);
-      const { success, error } = await AgentFlows.saveFlow(item.name, flow);
+      const { success, error, flow } = await AgentFlows.saveFlow(
+        item.name,
+        flowInfo
+      );
       if (!success) throw new Error(error);
+      if (!!flow?.uuid) await AgentFlows.toggleFlow(flow.uuid, true); // Enable the flow automatically after import
+
       showToast(`Agent flow imported successfully!`, "success");
       setStep(CommunityHubImportItemSteps.completed.key);
     } catch (e) {
@@ -53,9 +59,9 @@ export default function AgentFlow({ item, setStep }) {
         <div className="flex flex-col gap-y-2">
           <p className="font-semibold">Flow Details:</p>
           <p>Description: {item.description}</p>
-          <p className="font-semibold">Steps ({flow.steps.length}):</p>
+          <p className="font-semibold">Steps ({flowInfo.steps.length}):</p>
           <ul className="list-disc pl-6">
-            {flow.steps.map((step, index) => (
+            {flowInfo.steps.map((step, index) => (
               <li key={index}>{step.type}</li>
             ))}
           </ul>
