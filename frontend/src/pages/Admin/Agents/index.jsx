@@ -1,23 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import {
   CaretLeft,
-  CaretRight,
   Plug,
   Robot,
   FlowArrow,
   HeadCircuit,
   Plus,
 } from "@phosphor-icons/react";
-import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
 import { FullScreenLoader } from "@/components/Preloader";
 import { defaultSkills } from "./skills";
-import { DefaultBadge } from "./Badges/default";
 import ImportedSkillList from "./Imported/SkillList";
 import ImportedSkillConfig from "./Imported/ImportedSkillConfig";
 import AgentFlowsList from "./AgentFlows";
@@ -27,6 +23,8 @@ import ServerPanel from "./MCPServers/ServerPanel";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import AgentFlows from "@/models/agentFlows";
+import SkillList from "./SkillList";
+import SkillLayout from "./SkillLayout";
 
 export default function AdminAgents() {
   const formEl = useRef(null);
@@ -67,14 +65,12 @@ export default function AdminAgents() {
       const _settings = await System.keys();
       const _preferences = await Admin.systemPreferencesByFields([
         "disabled_agent_skills",
-        "default_agent_skills",
         "imported_agent_skills",
         "active_agent_flows",
       ]);
       const { flows = [] } = await AgentFlows.listFlows();
 
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
-      setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
       setDisabledAgentSkills(
         _preferences.settings?.disabled_agent_skills ?? []
       );
@@ -86,42 +82,71 @@ export default function AdminAgents() {
     fetchSettings();
   }, []);
 
-  const toggleDefaultSkill = (skillName) => {
-    setDisabledAgentSkills((prev) => {
-      const updatedSkills = prev.includes(skillName)
-        ? prev.filter((name) => name !== skillName)
-        : [...prev, skillName];
-      setHasChanges(true);
-      return updatedSkills;
-    });
-  };
+  const toggleFlow = async (flowId) => {
+    const updatedFlowIds = activeFlowIds.includes(flowId)
+      ? activeFlowIds.filter((id) => id !== flowId)
+      : [...activeFlowIds, flowId];
 
-  const toggleAgentSkill = (skillName) => {
-    setAgentSkills((prev) => {
-      const updatedSkills = prev.includes(skillName)
-        ? prev.filter((name) => name !== skillName)
-        : [...prev, skillName];
-      setHasChanges(true);
-      return updatedSkills;
+    const { success, error } = await Admin.updateSystemPreferences({
+      active_agent_flows: updatedFlowIds.join(","),
     });
-  };
 
-  const toggleFlow = (flowId) => {
-    setActiveFlowIds((prev) => {
-      const updatedFlows = prev.includes(flowId)
-        ? prev.filter((id) => id !== flowId)
-        : [...prev, flowId];
-      return updatedFlows;
-    });
-  };
-
-  const toggleMCP = (serverName) => {
-    setMcpServers((prev) => {
-      return prev.map((server) => {
-        if (server.name !== serverName) return server;
-        return { ...server, running: !server.running };
+    if (success) {
+      setActiveFlowIds(updatedFlowIds);
+      showToast(`Flow status updated successfully.`, "success", {
+        clear: true,
       });
+    } else {
+      showToast(`Failed to update flow status: ${error}`, "error", {
+        clear: true,
+      });
+    }
+  };
+
+  const toggleMCP = async (server) => {
+    try {
+      const { success, error } = await Admin.updateSystemPreferences({
+        mcp_servers: JSON.stringify(
+          mcpServers.map((s) =>
+            s.name === server.name ? { ...s, active: !s.active } : s
+          )
+        ),
+      });
+
+      if (!success) throw new Error(error);
+      setMcpServers((prev) =>
+        prev.map((s) =>
+          s.name === server.name ? { ...s, active: !s.active } : s
+        )
+      );
+      showToast(`MCP server status updated successfully.`, "success", {
+        clear: true,
+      });
+    } catch (error) {
+      console.error("Failed to toggle MCP server:", error);
+      showToast(`Failed to update MCP server status: ${error}`, "error", {
+        clear: true,
+      });
+    }
+  };
+
+  const toggleSkill = async (skillName) => {
+    const updatedSkills = disabledAgentSkills.includes(skillName)
+      ? disabledAgentSkills.filter((name) => name !== skillName)
+      : [...disabledAgentSkills, skillName];
+
+    const { success, error } = await Admin.updateSystemPreferences({
+      disabled_agent_skills: updatedSkills.join(","),
     });
+
+    if (success) {
+      setDisabledAgentSkills(updatedSkills);
+      showToast(`Skill ${skillName} updated successfully.`, "success", {
+        clear: true,
+      });
+    } else {
+      showToast(`Failed to update skill: ${error}`, "error", { clear: true });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -155,15 +180,15 @@ export default function AdminAgents() {
       const _settings = await System.keys();
       const _preferences = await Admin.systemPreferencesByFields([
         "disabled_agent_skills",
-        "default_agent_skills",
         "imported_agent_skills",
       ]);
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
-      setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
       setDisabledAgentSkills(
         _preferences.settings?.disabled_agent_skills ?? []
       );
       setImportedSkills(_preferences.settings?.imported_agent_skills ?? []);
+      setActiveFlowIds(_preferences.settings?.active_agent_flows ?? []);
+      setAgentFlows(flows);
       showToast(`Agent preferences saved successfully.`, "success", {
         clear: true,
       });
@@ -227,6 +252,27 @@ export default function AdminAgents() {
     );
   };
 
+  const handleImportedSkillToggle = async (skill) => {
+    const updatedSkills = importedSkills.map((s) =>
+      s.hubId === skill.hubId ? { ...s, active: !s.active } : s
+    );
+
+    const { success, error } = await Admin.updateSystemPreferences({
+      imported_agent_skills: JSON.stringify(updatedSkills),
+    });
+
+    if (success) {
+      setImportedSkills(updatedSkills);
+      showToast(`Imported skill updated successfully.`, "success", {
+        clear: true,
+      });
+    } else {
+      showToast(`Failed to update imported skill: ${error}`, "error", {
+        clear: true,
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -252,11 +298,6 @@ export default function AdminAgents() {
           className="flex flex-col w-full p-4 mt-10"
         >
           <input
-            name="system::default_agent_skills"
-            type="hidden"
-            value={agentSkills.join(",")}
-          />
-          <input
             name="system::disabled_agent_skills"
             type="hidden"
             value={disabledAgentSkills.join(",")}
@@ -276,11 +317,12 @@ export default function AdminAgents() {
               skills={defaultSkills}
               selectedSkill={selectedSkill}
               handleClick={handleDefaultSkillClick}
-              activeSkills={Object.keys(defaultSkills).filter(
-                (skill) => !disabledAgentSkills.includes(skill)
-              )}
-              toggleDefaultSkill={toggleDefaultSkill}
-              toggleAgentSkill={toggleAgentSkill}
+              activeSkills={[
+                ...Object.keys(defaultSkills).filter(
+                  (skill) => !disabledAgentSkills.includes(skill)
+                ),
+              ]}
+              toggleSkill={toggleSkill}
             />
 
             <div className="text-theme-text-primary flex items-center gap-x-2">
@@ -291,13 +333,7 @@ export default function AdminAgents() {
               skills={importedSkills}
               selectedSkill={selectedSkill}
               handleClick={handleSkillClick}
-              toggleSkill={(skill) => {
-                const updatedSkills = importedSkills.map((s) =>
-                  s.hubId === skill.hubId ? { ...s, active: !s.active } : s
-                );
-                setImportedSkills(updatedSkills);
-                setHasChanges(true);
-              }}
+              toggleSkill={handleImportedSkillToggle}
             />
 
             <div className="text-theme-text-primary flex items-center gap-x-2 mt-6">
@@ -384,7 +420,7 @@ export default function AdminAgents() {
                               <SelectedSkillComponent
                                 skill={defaultSkills[selectedSkill]?.skill}
                                 settings={settings}
-                                toggleSkill={toggleDefaultSkill}
+                                toggleSkill={toggleSkill}
                                 enabled={
                                   !disabledAgentSkills.includes(
                                     defaultSkills[selectedSkill]?.skill
@@ -398,10 +434,12 @@ export default function AdminAgents() {
                               <SelectedSkillComponent
                                 skill={defaultSkills[selectedSkill]?.skill}
                                 settings={settings}
-                                toggleSkill={toggleAgentSkill}
-                                enabled={agentSkills.includes(
-                                  defaultSkills[selectedSkill]?.skill
-                                )}
+                                toggleSkill={toggleSkill}
+                                enabled={
+                                  !disabledAgentSkills.includes(
+                                    defaultSkills[selectedSkill]?.skill
+                                  )
+                                }
                                 setHasChanges={setHasChanges}
                                 {...defaultSkills[selectedSkill]}
                               />
@@ -435,17 +473,10 @@ export default function AdminAgents() {
     >
       <form
         onSubmit={handleSubmit}
-        onChange={() =>
-          !selectedSkill?.imported && !selectedFlow && setHasChanges(true)
-        }
+        onChange={() => !selectedFlow && setHasChanges(true)}
         ref={formEl}
         className="flex-1 flex gap-x-6 p-4 mt-10"
       >
-        <input
-          name="system::default_agent_skills"
-          type="hidden"
-          value={agentSkills.join(",")}
-        />
         <input
           name="system::disabled_agent_skills"
           type="hidden"
@@ -481,10 +512,8 @@ export default function AdminAgents() {
                   ...Object.keys(defaultSkills).filter(
                     (skill) => !disabledAgentSkills.includes(skill)
                   ),
-                  ...agentSkills,
                 ]}
-                toggleDefaultSkill={toggleDefaultSkill}
-                toggleAgentSkill={toggleAgentSkill}
+                toggleSkill={toggleSkill}
               />
 
               <div className="text-theme-text-primary flex items-center gap-x-2 mt-4">
@@ -494,13 +523,7 @@ export default function AdminAgents() {
                 skills={importedSkills}
                 selectedSkill={selectedSkill}
                 handleClick={handleSkillClick}
-                toggleSkill={(skill) => {
-                  const updatedSkills = importedSkills.map((s) =>
-                    s.hubId === skill.hubId ? { ...s, active: !s.active } : s
-                  );
-                  setImportedSkills(updatedSkills);
-                  setHasChanges(true);
-                }}
+                toggleSkill={handleImportedSkillToggle}
               />
 
               <div className="text-theme-text-primary flex items-center justify-between gap-x-2 mt-4">
@@ -571,19 +594,11 @@ export default function AdminAgents() {
                   <SelectedSkillComponent
                     skill={defaultSkills[selectedSkill]?.skill}
                     settings={settings}
-                    toggleSkill={
-                      defaultSkills[selectedSkill]?.isDefault
-                        ? toggleDefaultSkill
-                        : toggleAgentSkill
-                    }
+                    toggleSkill={toggleSkill}
                     enabled={
-                      defaultSkills[selectedSkill]?.isDefault
-                        ? !disabledAgentSkills.includes(
-                            defaultSkills[selectedSkill]?.skill
-                          )
-                        : agentSkills.includes(
-                            defaultSkills[selectedSkill]?.skill
-                          )
+                      !disabledAgentSkills.includes(
+                        defaultSkills[selectedSkill]?.skill
+                      )
                     }
                     setHasChanges={setHasChanges}
                     {...defaultSkills[selectedSkill]}
@@ -605,101 +620,94 @@ export default function AdminAgents() {
   );
 }
 
-function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
-  return (
-    <div
-      id="workspace-agent-settings-container"
-      className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
-    >
-      <Sidebar />
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:rounded-[16px] w-full h-full flex"
-      >
-        {children}
-        <ContextualSaveBar
-          showing={hasChanges}
-          onSave={handleSubmit}
-          onCancel={handleCancel}
-        />
-      </div>
-    </div>
-  );
-}
+// function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
+//   return (
+//     <div
+//       id="workspace-agent-settings-container"
+//       className="w-screen h-screen overflow-hidden bg-theme-bg-container flex md:mt-0 mt-6"
+//     >
+//       <Sidebar />
+//       <div
+//         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+//         className="relative md:ml-[2px] md:mr-[16px] md:rounded-[16px] w-full h-full flex"
+//       >
+//         {children}
+//         <ContextualSaveBar
+//           showing={hasChanges}
+//           onSave={handleSubmit}
+//           onCancel={handleCancel}
+//         />
+//       </div>
+//     </div>
+//   );
+// }
 
-function SkillList({
-  skills = [],
-  selectedSkill = null,
-  handleClick = null,
-  activeSkills = [],
-  toggleDefaultSkill = () => {},
-  toggleAgentSkill = () => {},
-}) {
-  if (skills.length === 0) return null;
+// function SkillList({
+//   skills = [],
+//   selectedSkill = null,
+//   handleClick = null,
+//   activeSkills = [],
+//   toggleSkill = () => {},
+// }) {
+//   if (skills.length === 0) return null;
 
-  return (
-    <div
-      className={`bg-theme-bg-secondary text-white rounded-xl ${isMobile ? "w-full" : "min-w-[360px] w-fit"}`}
-    >
-      {Object.entries(skills).map(([skill, settings]) => (
-        <div
-          key={skill}
-          onClick={() => handleClick?.(skill)}
-          className={`
-            relative
-            cursor-pointer
-            transition-all duration-300
-            after:content-['']
-            after:absolute
-            after:bottom-0
-            after:left-4
-            after:right-4
-            after:h-[1px]
-            after:bg-theme-action-menu-bg
-            last:after:hidden
-            first:rounded-t-xl
-            last:rounded-b-xl
-            ${selectedSkill === skill ? "bg-white/10 light:bg-theme-bg-sidebar" : "hover:bg-theme-bg-primary"}
-          `}
-        >
-          <div className="flex items-center justify-between h-[36px] px-4">
-            <div className="text-sm font-medium">{settings.title}</div>
-            <div className="flex items-center gap-x-2">
-              {settings.isDefault ? (
-                <DefaultBadge title={skill} />
-              ) : (
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    settings.isDefault
-                      ? toggleDefaultSkill(skill)
-                      : toggleAgentSkill(skill);
-                  }}
-                  className="relative inline-flex h-4 w-7 items-center rounded-full transition-colors duration-300"
-                  style={{
-                    backgroundColor: activeSkills.includes(skill)
-                      ? "#32D583"
-                      : "#CFCFD0",
-                  }}
-                >
-                  <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${
-                      activeSkills.includes(skill)
-                        ? "translate-x-[14px]"
-                        : "translate-x-[2px]"
-                    }`}
-                  />
-                </div>
-              )}
-              <CaretRight
-                size={14}
-                weight="bold"
-                className="text-theme-text-secondary"
-              />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+//   return (
+//     <div
+//       className={`bg-theme-bg-secondary text-white rounded-xl ${isMobile ? "w-full" : "min-w-[360px] w-fit"}`}
+//     >
+//       {Object.entries(skills).map(([skill, settings]) => (
+//         <div
+//           key={skill}
+//           onClick={() => handleClick?.(skill)}
+//           className={`
+//             relative
+//             cursor-pointer
+//             transition-all duration-300
+//             after:content-['']
+//             after:absolute
+//             after:bottom-0
+//             after:left-4
+//             after:right-4
+//             after:h-[1px]
+//             after:bg-theme-action-menu-bg
+//             last:after:hidden
+//             first:rounded-t-xl
+//             last:rounded-b-xl
+//             ${selectedSkill === skill ? "bg-white/10 light:bg-theme-bg-sidebar" : "hover:bg-theme-bg-primary"}
+//           `}
+//         >
+//           <div className="flex items-center justify-between h-[36px] px-4">
+//             <div className="text-sm font-medium">{settings.title}</div>
+//             <div className="flex items-center gap-x-2">
+//               <div
+//                 onClick={(e) => {
+//                   e.stopPropagation();
+//                   toggleSkill(skill);
+//                 }}
+//                 className="relative inline-flex h-4 w-7 items-center rounded-full transition-colors duration-300"
+//                 style={{
+//                   backgroundColor: activeSkills.includes(skill)
+//                     ? "#32D583"
+//                     : "#CFCFD0",
+//                 }}
+//               >
+//                 <span
+//                   className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${
+//                     activeSkills.includes(skill)
+//                       ? "translate-x-[14px]"
+//                       : "translate-x-[2px]"
+//                   }`}
+//                 />
+//               </div>
+//               <CaretRight
+//                 size={14}
+//                 weight="bold"
+//                 className="text-theme-text-secondary"
+//               />
+//             </div>
+//           </div>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// }
