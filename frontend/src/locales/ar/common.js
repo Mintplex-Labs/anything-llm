@@ -371,6 +371,17 @@ const TRANSLATIONS = {
     description:
       "هذه هي بيانات الاعتماد والإعدادات الخاصة بنموذج التعلم العميق للمحادثة وموفر التضمين المفضلين لديك . من المهم أن تكون هذه المفاتيح حديثة وصحيحة وإلا فلن يعمل برنامج إني ثينك إلْلْم بشكل صحيح.",
     provider: "موفر نموذج التعلم العميق",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "تفضيل نموذج النسخ",
@@ -433,7 +444,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "مساحة العمل",
       chats: "المحادثات المرسلة",
-      Active: "المجالات النشطة",
+      active: "المجالات النشطة",
+      created: null,
     },
   },
   "embed-chats": {
@@ -711,6 +723,14 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   customization: {
     interface: {

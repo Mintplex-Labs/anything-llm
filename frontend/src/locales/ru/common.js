@@ -374,6 +374,17 @@ const TRANSLATIONS = {
     description:
       "Это учетные данные и настройки для вашего предпочтительного поставщика чата и встраивания LLM. Важно, чтобы эти ключи были актуальными и правильными, иначе AnythingLLM не будет работать должным образом.",
     provider: "Поставщик LLM",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "Предпочтение модели транскрипции",
@@ -437,7 +448,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "Рабочее пространство",
       chats: "Отправленные чаты",
-      Active: "Активные домены",
+      active: "Активные домены",
+      created: null,
     },
   },
   "embed-chats": {
@@ -751,6 +763,14 @@ const TRANSLATIONS = {
     update_account: "Обновить учётную запись",
     theme: "Предпочтения темы",
     language: "Предпочитаемый язык",
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   customization: {
     interface: {
