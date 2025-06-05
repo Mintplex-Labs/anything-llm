@@ -1,6 +1,7 @@
 import { Pencil } from "@phosphor-icons/react";
 import { useState, useEffect, useRef } from "react";
 import Appearance from "@/models/appearance";
+import { useTranslation } from "react-i18next";
 
 const EDIT_EVENT = "toggle-message-edit";
 
@@ -30,6 +31,7 @@ export function useEditMessage({ chatId, role }) {
 }
 
 export function EditMessageAction({ chatId = null, role, isEditing }) {
+  const { t } = useTranslation();
   function handleEditClick() {
     window.dispatchEvent(
       new CustomEvent(EDIT_EVENT, { detail: { chatId, role } })
@@ -46,11 +48,13 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
       <button
         onClick={handleEditClick}
         data-tooltip-id="edit-input-text"
-        data-tooltip-content={`Edit ${
-          role === "user" ? "Prompt" : "Response"
+        data-tooltip-content={`${
+          role === "user"
+            ? t("chat_window.edit_prompt")
+            : t("chat_window.edit_response")
         } `}
         className="border-none text-zinc-300"
-        aria-label={`Edit ${role === "user" ? "Prompt" : "Response"}`}
+        aria-label={`Edit ${role === "user" ? t("chat_window.edit_prompt") : t("chat_window.edit_response")}`}
       >
         <Pencil
           color="var(--theme-sidebar-footer-icon-fill)"
@@ -71,6 +75,7 @@ export function EditMessageForm({
   saveChanges,
 }) {
   const formRef = useRef(null);
+  const { t } = useTranslation();
   function handleSaveMessage(e) {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -109,14 +114,14 @@ export function EditMessageForm({
           type="submit"
           className="border-none px-2 py-1 bg-gray-200 text-gray-700 font-medium rounded-md mr-2 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
-          Save & Submit
+          {t("chat_window.save_submit")}
         </button>
         <button
           type="button"
           className="border-none px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 light:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           onClick={cancelEdits}
         >
-          Cancel
+          {t("chat_window.cancel")}
         </button>
       </div>
     </form>

@@ -53,6 +53,8 @@ const DocumentSyncQueue = {
    * @returns {boolean} - true if the document can be watched, false otherwise
    */
   canWatch: function ({ title, chunkSource = null } = {}) {
+    if (!chunkSource) return false;
+
     if (chunkSource.startsWith("link://") && title.endsWith(".html"))
       return true; // If is web-link material (prior to feature most chunkSources were links://)
     if (chunkSource.startsWith("youtube://")) return true; // If is a youtube link

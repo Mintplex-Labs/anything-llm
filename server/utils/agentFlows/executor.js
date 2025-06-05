@@ -6,6 +6,7 @@ const executeCode = require("./executors/code");
 const executeLLMInstruction = require("./executors/llm-instruction");
 const executeWebScraping = require("./executors/web-scraping");
 const { Telemetry } = require("../../models/telemetry");
+const { safeJsonParse } = require("../http");
 
 class FlowExecutor {
   constructor() {
@@ -21,19 +22,101 @@ class FlowExecutor {
     this.logger = loggerFn || console.info;
   }
 
-  // Utility to replace variables in config
+  /**
+   * Resolves nested values from objects using dot notation and array indices
+   * Supports paths like "data.items[0].name" or "response.users[2].address.city"
+   * Returns undefined for invalid paths or errors
+   * @param {Object|string} obj - The object to resolve the value from
+   * @param {string} path - The path to the value
+   * @returns {string} The resolved value
+   */
+  getValueFromPath(obj = {}, path = "") {
+    if (typeof obj === "string") obj = safeJsonParse(obj, {});
+
+    if (
+      !obj ||
+      !path ||
+      typeof obj !== "object" ||
+      Object.keys(obj).length === 0 ||
+      typeof path !== "string"
+    )
+      return "";
+
+    // First split by dots that are not inside brackets
+    const parts = [];
+    let currentPart = "";
+    let inBrackets = false;
+
+    for (let i = 0; i < path.length; i++) {
+      const char = path[i];
+      if (char === "[") {
+        inBrackets = true;
+        if (currentPart) {
+          parts.push(currentPart);
+          currentPart = "";
+        }
+        currentPart += char;
+      } else if (char === "]") {
+        inBrackets = false;
+        currentPart += char;
+        parts.push(currentPart);
+        currentPart = "";
+      } else if (char === "." && !inBrackets) {
+        if (currentPart) {
+          parts.push(currentPart);
+          currentPart = "";
+        }
+      } else {
+        currentPart += char;
+      }
+    }
+
+    if (currentPart) parts.push(currentPart);
+    let current = obj;
+
+    for (const part of parts) {
+      if (current === null || typeof current !== "object") return undefined;
+
+      // Handle bracket notation
+      if (part.startsWith("[") && part.endsWith("]")) {
+        const key = part.slice(1, -1);
+        const cleanKey = key.replace(/^['"]|['"]$/g, "");
+
+        if (!isNaN(cleanKey)) {
+          if (!Array.isArray(current)) return undefined;
+          current = current[parseInt(cleanKey)];
+        } else {
+          if (!(cleanKey in current)) return undefined;
+          current = current[cleanKey];
+        }
+      } else {
+        // Handle dot notation
+        if (!(part in current)) return undefined;
+        current = current[part];
+      }
+
+      if (current === undefined || current === null) return undefined;
+    }
+
+    return typeof current === "object" ? JSON.stringify(current) : current;
+  }
+
+  /**
+   * Replaces variables in the config with their values
+   * @param {Object} config - The config to replace variables in
+   * @returns {Object} The config with variables replaced
+   */
   replaceVariables(config) {
     const deepReplace = (obj) => {
       if (typeof obj === "string") {
         return obj.replace(/\${([^}]+)}/g, (match, varName) => {
-          return this.variables[varName] !== undefined
-            ? this.variables[varName]
-            : match;
+          const value = this.getValueFromPath(this.variables, varName);
+          return value !== undefined ? value : match;
         });
       }
-      if (Array.isArray(obj)) {
-        return obj.map((item) => deepReplace(item));
-      }
+
+      if (Array.isArray(obj)) return obj.map((item) => deepReplace(item));
+
       if (obj && typeof obj === "object") {
         const result = {};
         for (const [key, value] of Object.entries(obj)) {
@@ -47,7 +130,11 @@ class FlowExecutor {
     return deepReplace(config);
   }
 
-  // Main execution method
+  /**
+   * Executes a single step of the flow
+   * @param {Object} step - The step to execute
+   * @returns {Promise<Object>} The result of the step
+   */
   async executeStep(step) {
     const config = this.replaceVariables(step.config);
     let result;
