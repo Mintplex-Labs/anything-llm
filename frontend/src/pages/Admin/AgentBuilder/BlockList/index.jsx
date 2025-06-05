@@ -65,6 +65,7 @@ const BLOCK_INFO = {
       body: "",
       formData: [],
       responseVariable: "",
+      directOutput: false,
     },
     getSummary: (config) =>
       `${config.method || "GET"} ${config.url || "(no URL)"}`,
@@ -116,6 +117,7 @@ const BLOCK_INFO = {
     defaultConfig: {
       instruction: "",
       resultVariable: "",
+      directOutput: false,
     },
     getSummary: (config) => config.instruction || "No instruction",
   },
@@ -128,6 +130,7 @@ const BLOCK_INFO = {
       captureAs: "text",
       querySelector: "",
       resultVariable: "",
+      directOutput: false,
     },
     getSummary: (config) => config.url || "No URL specified",
   },
@@ -152,6 +155,7 @@ export default function BlockList({
   refs,
 }) {
   const renderBlockConfig = (block) => {
+    const isLastConfigurableBlock = blocks[blocks.length - 2]?.id === block.id;
     const props = {
       config: block.config,
       onConfigChange: (config) => updateBlockConfig(block.id, config),
@@ -159,10 +163,9 @@ export default function BlockList({
       onDeleteVariable,
     };
 
-    // Direct output switch to the last block before finish
-    const isLastBeforeFinish = blocks[blocks.length - 2]?.id === block.id;
+    // Direct output switch to the last configurable block before finish
     if (
-      isLastBeforeFinish &&
+      isLastConfigurableBlock &&
       block.type !== BLOCK_TYPES.START &&
       block.type !== BLOCK_TYPES.FLOW_INFO
     ) {
@@ -175,7 +178,10 @@ export default function BlockList({
                 Direct Output
               </label>
               <p className="text-xs text-theme-text-secondary">
-                Return result directly to chat without LLM processing
+                The output of this block will be returned directly to the chat.
+                <br />
+                This will prevent any further tool calls from being also being
+                executed.
               </p>
             </div>
             <label className="relative inline-flex cursor-pointer items-center">

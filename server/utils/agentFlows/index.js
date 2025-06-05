@@ -219,31 +219,29 @@ class AgentFlows {
               }
               aibitat.introspect(`${flow.name} completed successfully`);
 
-              // Send response directly to chat
-              if (result.directOutput !== null) {
-                const content =
-                  typeof result.directOutput === "object"
-                    ? JSON.stringify(result.directOutput, null, 2)
-                    : String(result.directOutput);
-
-                // Prevent LLM from processing response
-                aibitat.newMessage({
-                  from: "FLOW",
-                  to: "USER",
-                  content,
-                });
-                return content;
+              // If the flow result has directOutput, return it
+              // as the aibitat result so that no other processing is done
+              if (!!result.directOutput) {
+                aibitat.skipHandleExecution = true;
+                return AgentFlows.stringifyResult(result.directOutput);
               }
 
-              return typeof result === "object"
-                ? JSON.stringify(result)
-                : String(result);
+              return AgentFlows.stringifyResult(result);
             },
           });
         },
       }),
       flowName: flow.name,
     };
+  }
+
+  /**
+   * Stringify the result of a flow execution or return the input as is
+   * @param {Object|string} input - The result to stringify
+   * @returns {string} The stringified result
+   */
+  static stringifyResult(input) {
+    return typeof input === "object" ? JSON.stringify(input) : String(input);
   }
 }
 

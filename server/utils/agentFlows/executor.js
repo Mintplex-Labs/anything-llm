@@ -187,10 +187,7 @@ class FlowExecutor {
     }
 
     // If directOutput is true, mark this result for direct output
-    if (config.directOutput) {
-      result = { directOutput: true, result };
-    }
-
+    if (config.directOutput) result = { directOutput: true, result };
     return result;
   }
 
@@ -220,10 +217,14 @@ class FlowExecutor {
     for (const step of flow.config.steps) {
       try {
         const result = await this.executeStep(step);
+
+        // If the step has directOutput, stop processing and return the result
+        // so that no other steps are executed or processed
         if (result?.directOutput) {
           directOutputResult = result.result;
-          break; // Stop processing after direct output
+          break;
         }
+
         results.push({ success: true, result });
       } catch (error) {
         results.push({ success: false, error: error.message });
