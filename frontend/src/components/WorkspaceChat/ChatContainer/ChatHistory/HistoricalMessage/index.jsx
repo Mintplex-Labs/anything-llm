@@ -103,7 +103,7 @@ const HistoricalMessage = ({
               saveChanges={saveEditedMessage}
             />
           ) : (
-            <div className="break-words">
+            <div className="break-words overflow-hidden w-full">
               <RenderChatContent
                 role={role}
                 message={message}
@@ -194,7 +194,7 @@ const RenderChatContent = memo(
     if (role !== "assistant")
       return (
         <span
-          className="flex flex-col gap-y-1"
+          className="flex flex-col gap-y-1 whitespace-pre-wrap break-all"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(renderMarkdown(message)),
           }}
@@ -229,7 +229,7 @@ const RenderChatContent = memo(
           <ThoughtChainComponent content={thoughtChain} expanded={expanded} />
         )}
         <span
-          className="flex flex-col gap-y-1"
+          className="flex flex-col gap-y-1 whitespace-pre-wrap break-all"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(renderMarkdown(msgToRender)),
           }}
