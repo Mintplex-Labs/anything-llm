@@ -94,6 +94,14 @@
   --theme-attachment-icon: #ffffff;
   --theme-attachment-icon-spinner: #ffffff;
   --theme-attachment-icon-spinner-bg: #27282a;
+
+  --theme-button-text: #a8a9ab;
+  --theme-button-code-hover-text: #7cd4fd;
+  --theme-button-code-hover-bg: #22343f;
+  --theme-button-disable-hover-text: #fec84b;
+  --theme-button-disable-hover-bg: #3a3128;
+  --theme-button-delete-hover-text: #f97066;
+  --theme-button-delete-hover-bg: #37282b;
 }
 
 [data-theme="light"] {
@@ -187,6 +195,14 @@
   --theme-attachment-icon: #ffffff;
   --theme-attachment-icon-spinner: #7cd4fd;
   --theme-attachment-icon-spinner-bg: #ffffff;
+
+  --theme-button-text: #a8a9ab;
+  --theme-button-code-hover-text: #0ba5ec;
+  --theme-button-code-hover-bg: #e8f7fe;
+  --theme-button-disable-hover-text: #854708;
+  --theme-button-disable-hover-bg: #fef7e6;
+  --theme-button-delete-hover-text: #b42318;
+  --theme-button-delete-hover-bg: #fee4e2;
 }
 
 [data-theme="light"] .text-white {
@@ -856,6 +872,12 @@ dialog::backdrop {
   color: #fff;
 }
 
+.file-row {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+}
+
 .file-row:nth-child(even) {
   @apply bg-theme-bg-primary;
   background-color: var(--theme-file-row-even);
@@ -872,6 +894,11 @@ dialog::backdrop {
 .file-row.selected:nth-child(odd) {
   background-color: var(--theme-file-row-selected-even);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .file-row.selected:nth-child(even),
+[data-theme="light"] .file-row.selected:nth-child(odd) {
+  border-bottom: 1px solid rgba(222, 222, 222, 0.5);
 }
 
 /* Flex upload modal to be a column when on small screens so that the UI
