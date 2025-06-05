@@ -38,18 +38,17 @@ export default function ChatRow({ chat, onDelete }) {
       <tr className="bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10">
         <td className="px-6 font-medium whitespace-nowrap text-white">
           <a
-            href={paths.settings.embedSetup()}
+            href={paths.settings.embedChatWidgets()}
             target="_blank"
             rel="noreferrer"
             className="text-white flex items-center hover:underline"
           >
-            <LinkSimple className="mr-2 w-5 h-5" />{" "}
             {chat.embed_config.workspace.name}
           </a>
         </td>
         <td
           onClick={openConnectionDetailsModal}
-          className="px-6 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          className="px-6 cursor-pointer hover:shadow-lg"
         >
           <div className="flex flex-col">
             <p>{truncate(chat.session_id, 20)}</p>
@@ -57,13 +56,13 @@ export default function ChatRow({ chat, onDelete }) {
         </td>
         <td
           onClick={openPromptModal}
-          className="px-6 border-transparent cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          className="px-6 border-transparent cursor-pointer hover:shadow-lg"
         >
           {truncate(chat.prompt, 40)}
         </td>
         <td
           onClick={openResponseModal}
-          className="px-6 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          className="px-6 cursor-pointer hover:shadow-lg"
         >
           {truncate(JSON.parse(chat.response)?.text, 40)}
         </td>
@@ -71,9 +70,11 @@ export default function ChatRow({ chat, onDelete }) {
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
           <button
             onClick={handleDelete}
-            className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
+            className="group text-xs font-medium text-theme-text-secondary px-2 py-1 rounded-lg hover:bg-theme-button-delete-hover-bg"
           >
-            <Trash className="h-5 w-5" />
+            <span className="group-hover:text-theme-button-delete-hover-text">
+              Delete
+            </span>
           </button>
         </td>
       </tr>
