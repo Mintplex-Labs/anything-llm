@@ -23,6 +23,7 @@ const NvidiaNimProvider = require("./nvidiaNim.js");
 const PPIOProvider = require("./ppio.js");
 const GeminiProvider = require("./gemini.js");
 const DellProAiStudioProvider = require("./dellProAiStudio.js");
+const BurnCloudProvider = require("./burncloud.js");
 
 module.exports = {
   OpenAIProvider,
@@ -50,4 +51,5 @@ module.exports = {
   PPIOProvider,
   GeminiProvider,
   DellProAiStudioProvider,
+  BurnCloudProvider,
 };

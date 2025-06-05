@@ -32,6 +32,7 @@ import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
+import BurnCloudLogo from "@/media/llmprovider/burncloud.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -61,6 +62,7 @@ import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
+import BurnCloudOptions from "@/components/LLMSelection/BurnCloudOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -90,6 +92,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <AnthropicAiOptions settings={settings} />,
     description: "A friendly AI Assistant hosted by Anthropic.",
     requiredConfig: ["AnthropicApiKey"],
+  },
+  {
+    name: "BurnCloud",
+    value: "burncloud",
+    logo: BurnCloudLogo,
+    options: (settings) => <BurnCloudOptions settings={settings} />,
+    description: "Multi-model AI platform supporting Claude, GPT, Gemini, and DeepSeek models.",
+    requiredConfig: ["BurnCloudApiKey"],
   },
   {
     name: "Gemini",
