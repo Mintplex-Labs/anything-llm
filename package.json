@@ -26,10 +26,12 @@
     "prod:frontend": "cd frontend && yarn build",
     "generate:cloudformation": "node cloud-deployments/aws/cloudformation/generate.mjs",
     "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
-    "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs"
+    "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs",
+    "test": "jest"
   },
   "private": false,
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "jest": "^29.7.0"
   }
 }

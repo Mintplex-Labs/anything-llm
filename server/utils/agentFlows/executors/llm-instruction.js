@@ -1,5 +1,3 @@
-const AIbitat = require("../../agents/aibitat");
-
 /**
  * Execute an LLM instruction flow step
  * @param {Object} config Flow step configuration
@@ -15,8 +13,10 @@ async function executeLLMInstruction(config, context) {
   introspect(`Processing data with LLM instruction...`);
 
   if (!variables[inputVariable]) {
-    logger(`Input variable ${inputVariable} not found`);
-    throw new Error(`Input variable ${inputVariable} not found`);
+    logger(`Input variable ${inputVariable} (${inputVariable}) not found`);
+    throw new Error(
+      `Input variable ${inputVariable} (${inputVariable}) not found`
+    );
   }
 
   try {
