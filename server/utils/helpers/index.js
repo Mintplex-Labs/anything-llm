@@ -77,7 +77,7 @@
 
 /**
  * Gets the systems current vector database provider.
- * @param {('pinecone' | 'chroma' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
+ * @param {('pinecone' | 'chroma' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra', | 'llamastack') | null} getExactly - If provided, this will return an explit provider.
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
@@ -110,6 +110,9 @@ function getVectorDbClass(getExactly = null) {
     case "pgvector":
       const { PGVector } = require("../vectorDbProviders/pgvector");
       return PGVector;
+    case "llamastack":
+      const { LlamaStack } = require("../vectorDbProviders/llamastack");
+      return LlamaStack;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }

@@ -32,5 +32,8 @@
   "private": false,
   "devDependencies": {
     "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "llama-stack-client": "^0.2.7"
   }
 }
