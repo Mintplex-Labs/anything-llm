@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['warn-bad-docker-command'] # put your current branch to create a build. Core team only.
+    branches: ['3872-feat-direct-output-to-chat-from-agent-flows'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

@@ -218,15 +218,30 @@ class AgentFlows {
                 return `Flow execution failed: ${result.results[0]?.error || "Unknown error"}`;
               }
               aibitat.introspect(`${flow.name} completed successfully`);
-              return typeof result === "object"
-                ? JSON.stringify(result)
-                : String(result);
+
+              // If the flow result has directOutput, return it
+              // as the aibitat result so that no other processing is done
+              if (!!result.directOutput) {
+                aibitat.skipHandleExecution = true;
+                return AgentFlows.stringifyResult(result.directOutput);
+              }
+
+              return AgentFlows.stringifyResult(result);
             },
           });
         },
       }),
       flowName: flow.name,
     };
+  }
+
+  /**
+   * Stringify the result of a flow execution or return the input as is
+   * @param {Object|string} input - The result to stringify
+   * @returns {string} The stringified result
+   */
+  static stringifyResult(input) {
+    return typeof input === "object" ? JSON.stringify(input) : String(input);
   }
 }
 
