@@ -31,8 +31,7 @@ class FlowExecutor {
    * @returns {string} The resolved value
    */
   getValueFromPath(obj = {}, path = "") {
-    if (typeof obj === "string") obj = safeJsonParse(obj, {}); // If the object is a string, parse it as JSON
-    path = path.replace(/\s+/g, ""); // If the path has spaces (common after pasting) - remove them
+    if (typeof obj === "string") obj = safeJsonParse(obj, {});
 
     if (
       !obj ||
@@ -102,7 +101,11 @@ class FlowExecutor {
     return typeof current === "object" ? JSON.stringify(current) : current;
   }
 
-  // Utility to replace variables in config
+  /**
+   * Replaces variables in the config with their values
+   * @param {Object} config - The config to replace variables in
+   * @returns {Object} The config with variables replaced
+   */
   replaceVariables(config) {
     const deepReplace = (obj) => {
       if (typeof obj === "string") {
@@ -127,7 +130,11 @@ class FlowExecutor {
     return deepReplace(config);
   }
 
-  // Main execution method
+  /**
+   * Executes a single step of the flow
+   * @param {Object} step - The step to execute
+   * @returns {Promise<Object>} The result of the step
+   */
   async executeStep(step) {
     const config = this.replaceVariables(step.config);
     let result;

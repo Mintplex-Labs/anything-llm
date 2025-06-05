@@ -1,22 +1,7 @@
-const { resolve } = require("path");
+const { FlowExecutor } = require("../../../utils/agentFlows/executor");
 
 describe("FlowExecutor: getValueFromPath", () => {
-  let executor;
-  const originalEnv = process.env;
-
-  beforeAll(async () => {
-    process.env = { ...originalEnv };
-    process.env.NODE_ENV = "test";
-    process.env.STORAGE_DIR = resolve(__dirname, "../../../storage");
-
-    const { FlowExecutor } = require("../../../utils/agentFlows/executor");
-    executor = new FlowExecutor();
-    await new Promise(resolve => setTimeout(resolve, 2500)); // wait for the rest of the stuff to be initialized
-  });
-
-  afterAll(() => {
-    process.env = originalEnv;
-  });
+  const executor = new FlowExecutor();
 
   it("can handle invalid objects", () => {
     expect(executor.getValueFromPath(null, "a.b.c")).toBe("");
