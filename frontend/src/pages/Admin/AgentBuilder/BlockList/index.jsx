@@ -65,6 +65,7 @@ const BLOCK_INFO = {
       body: "",
       formData: [],
       responseVariable: "",
+      directOutput: false,
     },
     getSummary: (config) =>
       `${config.method || "GET"} ${config.url || "(no URL)"}`,
@@ -116,6 +117,7 @@ const BLOCK_INFO = {
     defaultConfig: {
       instruction: "",
       resultVariable: "",
+      directOutput: false,
     },
     getSummary: (config) => config.instruction || "No instruction",
   },
@@ -128,6 +130,7 @@ const BLOCK_INFO = {
       captureAs: "text",
       querySelector: "",
       resultVariable: "",
+      directOutput: false,
     },
     getSummary: (config) => config.url || "No URL specified",
   },
@@ -152,6 +155,7 @@ export default function BlockList({
   refs,
 }) {
   const renderBlockConfig = (block) => {
+    const isLastConfigurableBlock = blocks[blocks.length - 2]?.id === block.id;
     const props = {
       config: block.config,
       onConfigChange: (config) => updateBlockConfig(block.id, config),
@@ -159,6 +163,51 @@ export default function BlockList({
       onDeleteVariable,
     };
 
+    // Direct output switch to the last configurable block before finish
+    if (
+      isLastConfigurableBlock &&
+      block.type !== BLOCK_TYPES.START &&
+      block.type !== BLOCK_TYPES.FLOW_INFO
+    ) {
+      return (
+        <div className="space-y-4">
+          {renderBlockConfigContent(block, props)}
+          <div className="flex justify-between items-center pt-4 border-t border-white/10">
+            <div>
+              <label className="block text-sm font-medium text-theme-text-primary">
+                Direct Output
+              </label>
+              <p className="text-xs text-theme-text-secondary">
+                The output of this block will be returned directly to the chat.
+                <br />
+                This will prevent any further tool calls from being also being
+                executed.
+              </p>
+            </div>
+            <label className="relative inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                checked={props.config.directOutput || false}
+                onChange={(e) =>
+                  props.onConfigChange({
+                    ...props.config,
+                    directOutput: e.target.checked,
+                  })
+                }
+                className="peer sr-only"
+                aria-label="Toggle direct output"
+              />
+              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+            </label>
+          </div>
+        </div>
+      );
+    }
+
+    return renderBlockConfigContent(block, props);
+  };
+
+  const renderBlockConfigContent = (block, props) => {
     switch (block.type) {
       case BLOCK_TYPES.FLOW_INFO:
         return <FlowInfoNode {...props} ref={refs} />;

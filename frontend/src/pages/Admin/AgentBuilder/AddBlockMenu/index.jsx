@@ -2,7 +2,23 @@ import React, { useRef, useEffect } from "react";
 import { Plus, CaretDown } from "@phosphor-icons/react";
 import { BLOCK_TYPES, BLOCK_INFO } from "../BlockList";
 
+/**
+ * Check if the last configurable block has direct output disabled or undefined
+ * If this property is true then you cannot add a new block after it.
+ * @param {Array} blocks - The blocks array
+ * @returns {Boolean} True if the last configurable block has direct output disabled, false otherwise
+ */
+function checkIfCanAddBlock(blocks) {
+  const lastConfigurableBlock = blocks[blocks.length - 2];
+  if (!lastConfigurableBlock) return true;
+  return (
+    lastConfigurableBlock?.config?.directOutput === false ||
+    lastConfigurableBlock?.config?.directOutput === undefined
+  );
+}
+
 export default function AddBlockMenu({
+  blocks,
   showBlockMenu,
   setShowBlockMenu,
   addBlock,
@@ -22,6 +38,7 @@ export default function AddBlockMenu({
     };
   }, [setShowBlockMenu]);
 
+  if (checkIfCanAddBlock(blocks) === false) return null;
   return (
     <div className="relative mt-4 w-[280px] mx-auto pb-[50%]" ref={menuRef}>
       <button

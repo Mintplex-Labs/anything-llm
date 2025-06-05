@@ -340,6 +340,7 @@ export default function AgentBuilder() {
             />
 
             <AddBlockMenu
+              blocks={blocks}
               showBlockMenu={showBlockMenu}
               setShowBlockMenu={setShowBlockMenu}
               addBlock={addBlock}
