@@ -104,10 +104,6 @@ const FLOW_TYPES = {
         type: "string",
         description: "The instruction for the LLM to follow",
       },
-      inputVariable: {
-        type: "string",
-        description: "Variable containing the input data to process",
-      },
       resultVariable: {
         type: "string",
         description: "Variable to store the processed result",

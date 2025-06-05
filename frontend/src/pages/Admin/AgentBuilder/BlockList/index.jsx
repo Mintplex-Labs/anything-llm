@@ -115,7 +115,6 @@ const BLOCK_INFO = {
     description: "Process data using LLM instructions",
     defaultConfig: {
       instruction: "",
-      inputVariable: "",
       resultVariable: "",
     },
     getSummary: (config) => config.instruction || "No instruction",

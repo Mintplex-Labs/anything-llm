@@ -1,8 +1,3 @@
-const { CollectorApi } = require("../../collectorApi");
-const { TokenManager } = require("../../helpers/tiktoken");
-const Provider = require("../../agents/aibitat/providers/ai-provider");
-const { summarizeContent } = require("../../agents/aibitat/utils/summarize");
-
 /**
  * Execute a web scraping flow step
  * @param {Object} config Flow step configuration
@@ -10,6 +5,11 @@ const { summarizeContent } = require("../../agents/aibitat/utils/summarize");
  * @returns {Promise<string>} Scraped content
  */
 async function executeWebScraping(config, context) {
+  const { CollectorApi } = require("../../collectorApi");
+  const { TokenManager } = require("../../helpers/tiktoken");
+  const Provider = require("../../agents/aibitat/providers/ai-provider");
+  const { summarizeContent } = require("../../agents/aibitat/utils/summarize");
+
   const { url, captureAs = "text", enableSummarization = true } = config;
   const { introspect, logger, aibitat } = context;
   logger(
