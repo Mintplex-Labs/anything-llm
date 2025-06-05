@@ -152,6 +152,10 @@ export default {
             'delete-hover-text': 'var(--theme-button-delete-hover-text)',
             'delete-hover-bg': 'var(--theme-button-delete-hover-bg)',
           },
+          contextual: {
+            "button-save-text": 'var(--theme-contextual-button-save-text)',
+            "text": 'var(--theme-contextual-text)',
+          },
         },
       },
       backgroundImage: {

@@ -102,6 +102,9 @@
   --theme-button-disable-hover-bg: #3a3128;
   --theme-button-delete-hover-text: #f97066;
   --theme-button-delete-hover-bg: #37282b;
+
+  --theme-contextual-button-save-text: #0e0f0f;
+  --theme-contextual-text: #ffffff;
 }
 
 [data-theme="light"] {
@@ -203,6 +206,9 @@
   --theme-button-disable-hover-bg: #fef7e6;
   --theme-button-delete-hover-text: #b42318;
   --theme-button-delete-hover-bg: #fee4e2;
+
+  --theme-contextual-button-save-text: #0e0f0f;
+  --theme-contextual-text: #ffffff;
 }
 
 [data-theme="light"] .text-white {
