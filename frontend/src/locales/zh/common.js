@@ -522,6 +522,17 @@ const TRANSLATIONS = {
     description:
       "这些是你首选的 LLM 聊天和嵌入提供商的凭据和设置。重要的是，确保这些密钥是最新的和正确的，否则 AnythingLLM 将无法正常运行。",
     provider: "LLM 提供商",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "转录模型首选项",
@@ -579,7 +590,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "工作区",
       chats: "已发送聊天",
-      Active: "活动域",
+      active: "活动域",
+      created: null,
     },
   },
   "embed-chats": {
@@ -877,6 +889,14 @@ const TRANSLATIONS = {
     update_account: "更新帐号",
     theme: "主题偏好",
     language: "语言偏好",
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   "keyboard-shortcuts": {
     title: null,

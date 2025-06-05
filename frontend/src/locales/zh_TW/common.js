@@ -354,6 +354,17 @@ const TRANSLATIONS = {
     description:
       "這些是您偏好的 LLM 對話與嵌入提供者的憑證和設定。確保這些金鑰是最新且正確的，否則 AnythingLLM 將無法正常運作。",
     provider: "LLM 提供者",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "語音轉錄模型偏好設定",
@@ -412,7 +423,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "工作區",
       chats: "已傳送對話",
-      Active: "已啟用網域",
+      active: "已啟用網域",
+      created: null,
     },
   },
   "embed-chats": {
@@ -708,6 +720,14 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   customization: {
     interface: {

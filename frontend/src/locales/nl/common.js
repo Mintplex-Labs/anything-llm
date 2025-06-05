@@ -365,6 +365,17 @@ const TRANSLATIONS = {
     description:
       "Dit zijn de inloggegevens en instellingen voor je voorkeurs LLM-chat & inbeddingprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders zal AnythingLLM niet goed werken.",
     provider: "LLM Provider",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "Transcriptiemodel Voorkeur",
@@ -428,7 +439,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "Werkruimte",
       chats: "Verzonden Chats",
-      Active: "Actieve Domeinen",
+      active: "Actieve Domeinen",
+      created: null,
     },
   },
   "embed-chats": {
@@ -706,6 +718,14 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   customization: {
     interface: {
