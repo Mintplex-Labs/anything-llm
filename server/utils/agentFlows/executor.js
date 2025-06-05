@@ -1,8 +1,5 @@
 const { FLOW_TYPES } = require("./flowTypes");
 const executeApiCall = require("./executors/api-call");
-const executeWebsite = require("./executors/website");
-const executeFile = require("./executors/file");
-const executeCode = require("./executors/code");
 const executeLLMInstruction = require("./executors/llm-instruction");
 const executeWebScraping = require("./executors/web-scraping");
 const { Telemetry } = require("../../models/telemetry");
@@ -160,15 +157,6 @@ class FlowExecutor {
         break;
       case FLOW_TYPES.API_CALL.type:
         result = await executeApiCall(config, context);
-        break;
-      case FLOW_TYPES.WEBSITE.type:
-        result = await executeWebsite(config, context);
-        break;
-      case FLOW_TYPES.FILE.type:
-        result = await executeFile(config, context);
-        break;
-      case FLOW_TYPES.CODE.type:
-        result = await executeCode(config, context);
         break;
       case FLOW_TYPES.LLM_INSTRUCTION.type:
         result = await executeLLMInstruction(config, context);
