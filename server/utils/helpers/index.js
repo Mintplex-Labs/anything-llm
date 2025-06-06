@@ -358,6 +358,72 @@ function getLLMProviderClass({ provider = null } = {}) {
   }
 }
 
+/**
+ * Returns the defined model (if available) for the given provider.
+ * @param {{provider: string | null} | null} params - Initialize params for LLMs provider
+ * @returns {string | null}
+ */
+function getBaseLLMProviderModel({ provider = null } = {}) {
+  switch (provider) {
+    case "openai":
+      return process.env.OPEN_MODEL_PREF;
+    case "azure":
+      return process.env.OPEN_MODEL_PREF;
+    case "anthropic":
+      return process.env.ANTHROPIC_MODEL_PREF;
+    case "gemini":
+      return process.env.GEMINI_LLM_MODEL_PREF;
+    case "lmstudio":
+      return process.env.LMSTUDIO_MODEL_PREF;
+    case "localai":
+      return process.env.LOCAL_AI_MODEL_PREF;
+    case "ollama":
+      return process.env.OLLAMA_MODEL_PREF;
+    case "togetherai":
+      return process.env.TOGETHER_AI_MODEL_PREF;
+    case "fireworksai":
+      return process.env.FIREWORKS_AI_LLM_MODEL_PREF;
+    case "perplexity":
+      return process.env.PERPLEXITY_MODEL_PREF;
+    case "openrouter":
+      return process.env.OPENROUTER_MODEL_PREF;
+    case "mistral":
+      return process.env.MISTRAL_MODEL_PREF;
+    case "huggingface":
+      return null;
+    case "groq":
+      return process.env.GROQ_MODEL_PREF;
+    case "koboldcpp":
+      return process.env.KOBOLD_CPP_MODEL_PREF;
+    case "textgenwebui":
+      return process.env.TEXT_GEN_WEB_UI_API_KEY;
+    case "cohere":
+      return process.env.COHERE_MODEL_PREF;
+    case "litellm":
+      return process.env.LITE_LLM_MODEL_PREF;
+    case "generic-openai":
+      return process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY;
+    case "bedrock":
+      return process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
+    case "deepseek":
+      return process.env.DEEPSEEK_MODEL_PREF;
+    case "apipie":
+      return process.env.APIPIE_LLM_API_KEY;
+    case "novita":
+      return process.env.NOVITA_LLM_MODEL_PREF;
+    case "xai":
+      return process.env.XAI_LLM_MODEL_PREF;
+    case "nvidia-nim":
+      return process.env.NVIDIA_NIM_LLM_MODEL_PREF;
+    case "ppio":
+      return process.env.PPIO_API_KEY;
+    case "dpais":
+      return process.env.DPAIS_LLM_MODEL_PREF;
+    default:
+      return null;
+  }
+}
+
 // Some models have lower restrictions on chars that can be encoded in a single pass
 // and by default we assume it can handle 1,000 chars, but some models use work with smaller
 // chars so here we can override that value when embedding information.
@@ -383,6 +449,7 @@ module.exports = {
   maximumChunkLength,
   getVectorDbClass,
   getLLMProviderClass,
+  getBaseLLMProviderModel,
   getLLMProvider,
   toChunks,
 };

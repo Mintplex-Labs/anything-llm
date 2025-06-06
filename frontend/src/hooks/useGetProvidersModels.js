@@ -61,6 +61,7 @@ export default function useGetProviderModels(provider = null) {
   useEffect(() => {
     async function fetchProviderModels() {
       if (!provider) return;
+      setLoading(true);
       const { models = [] } = await System.customModels(provider);
       if (
         PROVIDER_DEFAULT_MODELS.hasOwnProperty(provider) &&

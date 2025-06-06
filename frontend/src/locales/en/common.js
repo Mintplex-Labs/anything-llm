@@ -978,6 +978,16 @@ const TRANSLATIONS = {
     small: "Small",
     normal: "Normal",
     large: "Large",
+    workspace_llm_manager: {
+      search: "Search LLM providers",
+      loading_workspace_settings: "Loading workspace settings...",
+      available_models: "Available Models for {{provider}}",
+      available_models_description: "Select a model to use for this workspace.",
+      save: "Use this model",
+      saving: "Setting model as workspace default...",
+      missing_credentials: "This provider is missing credentials!",
+      missing_credentials_description: "Click to set up credentials",
+    },
   },
 
   profile_settings: {
@@ -1014,6 +1024,7 @@ const TRANSLATIONS = {
       llmPreferences: "LLM Preferences",
       chatSettings: "Chat Settings",
       help: "Show keyboard shortcuts help",
+      showLLMSelector: "Show workspace LLM Selector",
     },
   },
 };
