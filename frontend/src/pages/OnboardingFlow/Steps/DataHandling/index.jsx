@@ -38,6 +38,7 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
+import JinaAiLogo from "@/media/embeddingprovider/jina.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -186,6 +187,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Data is shared according to the terms of service applicable with your generic endpoint provider.",
     ],
     logo: GenericOpenAiLogo,
+  },
+  jina: {
+    name: "Jina AI",
+    description: [
+      "Your document text is sent to Jina AI's servers for processing",
+      "Your data is handled according to Jina AI's terms of service and privacy policy",
+    ],
+    logo: JinaAiLogo,
   },
   cohere: {
     name: "Cohere",
@@ -393,6 +402,14 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: GenericOpenAiLogo,
   },
+  jina: {
+    name: "Jina AI",
+    description: [
+      "Your document text is sent to Jina AI's servers for processing",
+      "Your data is handled according to Jina AI's terms of service and privacy policy",
+    ],
+    logo: JinaAiLogo,
+  },
   gemini: {
     name: "Google Gemini",
     description: [
@@ -493,8 +510,10 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {LLMSelection.description.map((desc) => (
-              <li className="text-theme-text-primary text-sm">{desc}</li>
+            {LLMSelection.description.map((desc, index) => (
+              <li key={index} className="text-theme-text-secondary text-sm">
+                {desc}
+              </li>
             ))}
           </ul>
         </div>
@@ -513,8 +532,10 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {EmbeddingEngine.description.map((desc) => (
-              <li className="text-theme-text-primary text-sm">{desc}</li>
+            {EmbeddingEngine.description.map((desc, index) => (
+              <li key={index} className="text-theme-text-secondary text-sm">
+                {desc}
+              </li>
             ))}
           </ul>
         </div>
@@ -534,8 +555,10 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
             </p>
           </div>
           <ul className="flex flex-col list-disc ml-4">
-            {VectorDb.description.map((desc) => (
-              <li className="text-theme-text-primary text-sm">{desc}</li>
+            {VectorDb.description.map((desc, index) => (
+              <li key={index} className="text-theme-text-secondary text-sm">
+                {desc}
+              </li>
             ))}
           </ul>
         </div>
