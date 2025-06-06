@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-const { FlowExecutor } = require("./executor");
+const { FlowExecutor, FLOW_TYPES } = require("./executor");
 const { normalizePath } = require("../files");
 const { safeJsonParse } = require("../http");
 
@@ -100,6 +100,20 @@ class AgentFlows {
       if (!uuid) uuid = uuidv4();
       const normalizedUuid = normalizePath(`${uuid}.json`);
       const filePath = path.join(AgentFlows.flowsDir, normalizedUuid);
+
+      // Prevent saving flows with unsupported blocks or importing
+      // flows with unsupported blocks (eg: file writing or code execution on Desktop importing to Docker)
+      const supportedFlowTypes = Object.values(FLOW_TYPES).map(
+        (definition) => definition.type
+      );
+      const supportsAllBlocks = config.steps.every((step) =>
+        supportedFlowTypes.includes(step.type)
+      );
+      if (!supportsAllBlocks)
+        throw new Error(
+          "This flow includes unsupported blocks. They may not be supported by your version of AnythingLLM or are not available on this platform."
+        );
+
       fs.writeFileSync(filePath, JSON.stringify({ ...config, name }, null, 2));
       return { success: true, uuid };
     } catch (error) {
@@ -218,15 +232,30 @@ class AgentFlows {
                 return `Flow execution failed: ${result.results[0]?.error || "Unknown error"}`;
               }
               aibitat.introspect(`${flow.name} completed successfully`);
-              return typeof result === "object"
-                ? JSON.stringify(result)
-                : String(result);
+
+              // If the flow result has directOutput, return it
+              // as the aibitat result so that no other processing is done
+              if (!!result.directOutput) {
+                aibitat.skipHandleExecution = true;
+                return AgentFlows.stringifyResult(result.directOutput);
+              }
+
+              return AgentFlows.stringifyResult(result);
             },
           });
         },
       }),
       flowName: flow.name,
     };
+  }
+
+  /**
+   * Stringify the result of a flow execution or return the input as is
+   * @param {Object|string} input - The result to stringify
+   * @returns {string} The stringified result
+   */
+  static stringifyResult(input) {
+    return typeof input === "object" ? JSON.stringify(input) : String(input);
   }
 }
 

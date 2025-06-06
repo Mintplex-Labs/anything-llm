@@ -224,7 +224,9 @@ export default function AgentBuilder() {
       await loadAvailableFlows();
     } catch (error) {
       console.error("Save error details:", error);
-      showToast("Failed to save agent flow", "error", { clear: true });
+      showToast(`Failed to save agent flow. ${error.message}`, "error", {
+        clear: true,
+      });
     }
   };
 
@@ -338,6 +340,7 @@ export default function AgentBuilder() {
             />
 
             <AddBlockMenu
+              blocks={blocks}
               showBlockMenu={showBlockMenu}
               setShowBlockMenu={setShowBlockMenu}
               addBlock={addBlock}
