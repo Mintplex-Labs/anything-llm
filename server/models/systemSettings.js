@@ -8,7 +8,7 @@ const prisma = require("../utils/prisma");
 const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
-const { getLLMProvider } = require("../utils/helpers");
+const { getBaseLLMProviderModel } = require("../utils/helpers");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -228,7 +228,7 @@ const SystemSettings = {
       // LLM Provider Selection Settings & Configs
       // --------------------------------------------------------
       LLMProvider: llmProvider,
-      LLMModel: getLLMProvider({ provider: llmProvider })?.model || null,
+      LLMModel: getBaseLLMProviderModel({ provider: llmProvider }) || null,
       ...this.llmPreferenceKeys(),
 
       // --------------------------------------------------------
