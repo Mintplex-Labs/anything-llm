@@ -916,6 +916,16 @@ const TRANSLATIONS = {
     small: "Pequeno",
     normal: "Normal",
     large: "Grande",
+    workspace_llm_manager: {
+      search: null,
+      loading_workspace_settings: null,
+      available_models: null,
+      available_models_description: null,
+      save: null,
+      saving: null,
+      missing_credentials: null,
+      missing_credentials_description: null,
+    },
   },
   profile_settings: {
     edit_account: "Editar conta",
@@ -950,6 +960,7 @@ const TRANSLATIONS = {
       llmPreferences: "Preferências do LLM",
       chatSettings: "Ajustes do chat",
       help: "Exibe ajuda e atalhos",
+      showLLMSelector: null,
     },
   },
 };
