@@ -356,7 +356,9 @@ function DirectoryTooltips() {
         if (!data) return null;
         return (
           <div className="text-xs">
-            <p className="text-white light:invert font-medium">{data.title}</p>
+            <p className="text-white light:invert font-medium break-all">
+              {data.title}
+            </p>
             <div className="flex mt-1 gap-x-2">
               <p className="">
                 Date: <b>{data.date}</b>
