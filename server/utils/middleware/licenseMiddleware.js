@@ -6,12 +6,16 @@ const { URL } = require("url");
 // License validation state
 let licenseValid = null; // null = not checked, true = valid, false = invalid
 let lastLicenseCheck = null;
+let lastSuccessfulLicenseCheck = null; // Track last successful server response
 let lastLicenseError = null;
 let licenseCheckInProgress = false;
 let licenseForever = false; // true if license has "forever: true" - no periodic checks needed
 
 // Check license every 3 hours
 const LICENSE_CHECK_INTERVAL = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+
+// Grace period for offline license validation (1 week)
+const OFFLINE_GRACE_PERIOD = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
 
 // Decode paths and URLs from base64 at runtime
 const MACHINE_ID_PATH = Buffer.from("L2hvc3QvZXRjL21hY2hpbmUtaWQ=", 'base64').toString('utf8');
@@ -134,6 +138,15 @@ function shouldCheckLicense() {
 }
 
 /**
+ * Check if we're still within the offline grace period
+ */
+function isWithinGracePeriod() {
+  if (!lastSuccessfulLicenseCheck) return false;
+  const now = Date.now();
+  return (now - lastSuccessfulLicenseCheck) <= OFFLINE_GRACE_PERIOD;
+}
+
+/**
  * Perform license validation check
  */
 async function performLicenseCheck() {
@@ -160,6 +173,9 @@ async function performLicenseCheck() {
     // Update license state
     licenseValid = result.status === "ok";
     lastLicenseCheck = Date.now();
+    
+    // Update successful check timestamp only if server responded successfully
+    lastSuccessfulLicenseCheck = Date.now();
     lastLicenseError = result.message || null;
 
     // Check if this is a "forever" license (no periodic checks needed)
@@ -187,10 +203,24 @@ async function performLicenseCheck() {
       error.message.includes("Invalid machine")) {
       licenseValid = false;
       lastLicenseError = error.message;
+      lastLicenseCheck = Date.now();
     }
-    // For network errors, maintain last known state but log warning
+    // For network errors, check if we're within grace period
     else {
-      console.warn("Network error during license check - maintaining last known state");
+      lastLicenseCheck = Date.now();
+      
+      if (isWithinGracePeriod() && licenseValid === true) {
+        console.warn(`Network error during license check - using cached license (valid for ${Math.ceil((OFFLINE_GRACE_PERIOD - (Date.now() - lastSuccessfulLicenseCheck)) / (24 * 60 * 60 * 1000))} more days)`);
+        // Keep licenseValid as true, don't update lastLicenseError for network issues
+      } else if (isWithinGracePeriod() && licenseValid !== true) {
+        console.warn("Network error during license check - no valid cached license available");
+        licenseValid = false;
+        lastLicenseError = "No valid license cache available and server unreachable";
+      } else {
+        console.error("Network error during license check - grace period expired, server must be reachable");
+        licenseValid = false;
+        lastLicenseError = "License server unreachable and grace period expired (1 week)";
+      }
     }
 
     return { success: false, error: error.message };
@@ -261,11 +291,18 @@ async function licenseMiddleware(request, response, next) {
  * Get current license status (for debugging/monitoring)
  */
 function getLicenseStatus() {
+  const now = Date.now();
+  const gracePeriodRemaining = lastSuccessfulLicenseCheck ? 
+    Math.max(0, OFFLINE_GRACE_PERIOD - (now - lastSuccessfulLicenseCheck)) : 0;
+  
   return {
     valid: licenseValid,
     forever: licenseForever,
     lastCheck: lastLicenseCheck ? new Date(lastLicenseCheck).toISOString() : null,
+    lastSuccessfulCheck: lastSuccessfulLicenseCheck ? new Date(lastSuccessfulLicenseCheck).toISOString() : null,
     nextCheck: licenseForever ? null : (lastLicenseCheck ? new Date(lastLicenseCheck + LICENSE_CHECK_INTERVAL).toISOString() : null),
+    withinGracePeriod: isWithinGracePeriod(),
+    gracePeriodRemainingDays: Math.ceil(gracePeriodRemaining / (24 * 60 * 60 * 1000)),
     error: lastLicenseError,
     checkInProgress: licenseCheckInProgress
   };
