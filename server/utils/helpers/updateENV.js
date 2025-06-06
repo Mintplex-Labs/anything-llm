@@ -301,6 +301,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Jina Embedding Settings
+  JinaApiKey: {
+    envKey: "JINA_API_KEY",
+    checks: [isNotEmpty],
+  },
+  JinaTask: {
+    envKey: "JINA_TASK",
+    checks: [],
+  },
+
   // Generic OpenAI Embedding Settings
   GenericOpenAiEmbeddingApiKey: {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",
@@ -817,6 +827,7 @@ function supportedEmbeddingModel(input = "") {
     "litellm",
     "generic-openai",
     "mistral",
+    "jina",
   ];
   return supported.includes(input)
     ? null

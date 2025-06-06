@@ -211,6 +211,8 @@ const SystemSettings = {
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
+      JinaApiKey: !!process.env.JINA_API_KEY,
+      JinaTask: process.env.JINA_TASK,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
       GenericOpenAiEmbeddingMaxConcurrentChunks:
@@ -336,7 +338,7 @@ const SystemSettings = {
       const updatePromises = [];
       for (const key of Object.keys(updates)) {
         let validatedValue = updates[key];
-        if (this.validations.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(this.validations, key)) {
           if (this.validations[key].constructor.name === "AsyncFunction") {
             validatedValue = await this.validations[key](updates[key]);
           } else {

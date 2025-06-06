@@ -260,6 +260,9 @@ function getEmbeddingEngineSelection() {
     case "gemini":
       const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
       return new GeminiEmbedder();
+    case "jina":
+      const { JinaEmbedder } = require("../EmbeddingEngines/jina");
+      return new JinaEmbedder();
     default:
       return new NativeEmbedder();
   }

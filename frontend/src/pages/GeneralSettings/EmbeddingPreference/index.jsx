@@ -15,6 +15,7 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import MistralAiLogo from "@/media/llmprovider/mistral.jpeg";
+import JinaAiLogo from "@/media/embeddingprovider/jina.png";
 
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -29,6 +30,7 @@ import CohereEmbeddingOptions from "@/components/EmbeddingSelection/CohereOption
 import VoyageAiOptions from "@/components/EmbeddingSelection/VoyageAiOptions";
 import LiteLLMOptions from "@/components/EmbeddingSelection/LiteLLMOptions";
 import GenericOpenAiEmbeddingOptions from "@/components/EmbeddingSelection/GenericOpenAiOptions";
+import JinaOptions from "@/components/EmbeddingSelection/JinaOptions";
 
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -126,6 +128,13 @@ const EMBEDDERS = [
       <GenericOpenAiEmbeddingOptions settings={settings} />
     ),
     description: "Run embedding models from any OpenAI compatible API service.",
+  },
+  {
+    name: "Jina AI",
+    value: "jina",
+    logo: JinaAiLogo,
+    options: (settings) => <JinaOptions settings={settings} />,
+    description: "Run powerful multilingual embedding models from Jina AI.",
   },
 ];
 
