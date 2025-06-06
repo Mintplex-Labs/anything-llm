@@ -1,6 +1,7 @@
 import paths from "./paths";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { userFromStorage } from "./request";
+import { TOGGLE_LLM_SELECTOR_EVENT } from "@/components/WorkspaceChat/ChatContainer/PromptInput/LLMSelector/action";
 
 export const KEYBOARD_SHORTCUTS_HELP_EVENT = "keyboard-shortcuts-help";
 export const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
@@ -59,6 +60,12 @@ export const SHORTCUTS = {
           detail: { show: true },
         })
       );
+    },
+  },
+  "⌘ + Shift + L": {
+    translationKey: "showLLMSelector",
+    action: () => {
+      window.dispatchEvent(new Event(TOGGLE_LLM_SELECTOR_EVENT));
     },
   },
 };

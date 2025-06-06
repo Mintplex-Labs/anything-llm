@@ -9,8 +9,11 @@ import { createPortal } from "react-dom";
  */
 
 /**
+ *
  * @param {ModalWrapperProps} props - ModalWrapperProps to pass
  * @returns {import("react").ReactNode}
+ *
+ * @todo Add a closeModal prop to the ModalWrapper component so we can escape dismiss anywhere this is used
  */
 export default function ModalWrapper({ children, isOpen, noPortal = false }) {
   if (!isOpen) return null;
