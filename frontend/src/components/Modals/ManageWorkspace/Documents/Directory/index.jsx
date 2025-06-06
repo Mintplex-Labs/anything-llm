@@ -350,13 +350,15 @@ function DirectoryTooltips() {
       id="directory-item"
       place="bottom"
       delayShow={800}
-      className="tooltip invert light:invert-0 z-99 max-w-[200px]"
+      className="tooltip invert light:invert-0 z-99 max-w-[400px]"
       render={({ content }) => {
         const data = safeJsonParse(content, null);
         if (!data) return null;
         return (
           <div className="text-xs">
-            <p className="text-white light:invert font-medium">{data.title}</p>
+            <p className="text-white light:invert font-medium break-all">
+              {data.title}
+            </p>
             <div className="flex mt-1 gap-x-2">
               <p className="">
                 Date: <b>{data.date}</b>
