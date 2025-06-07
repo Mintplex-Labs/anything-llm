@@ -30,13 +30,17 @@ class ContextWindowFinder {
   );
   cacheFilePath = path.resolve(this.cacheLocation, "context-windows.json");
   cacheFileExpiryPath = path.resolve(this.cacheLocation, ".cached_at");
+  seenStaleCacheWarning = false;
 
   constructor() {
     if (ContextWindowFinder.instance) return ContextWindowFinder.instance;
     ContextWindowFinder.instance = this;
     if (!fs.existsSync(this.cacheLocation))
       fs.mkdirSync(this.cacheLocation, { recursive: true });
-    if (!this.cache) this.#pullRemoteModelMap();
+
+    // If the cache is stale or not found at all, pull the model map from remote
+    if (this.isCacheStale || !fs.existsSync(this.cacheFilePath))
+      this.#pullRemoteModelMap();
   }
 
   log(text, ...args) {
@@ -53,13 +57,35 @@ class ContextWindowFinder {
     return Date.now() - cachedAt > ContextWindowFinder.expiryMs;
   }
 
-  get cache() {
-    if (!fs.existsSync(this.cacheFilePath)) return null;
-    if (!this.isCacheStale)
-      return JSON.parse(
-        fs.readFileSync(this.cacheFilePath, { encoding: "utf8" })
+  /**
+   * Gets the cached model map.
+   *
+   * Always returns the available model map - even if it is expired since re-pulling
+   * the model map only occurs on container start/system start.
+   * @returns {Record<string, Record<string, number>> | null} - The cached model map
+   */
+  get cachedModelMap() {
+    if (!fs.existsSync(this.cacheFilePath)) {
+      this.log(`\x1b[33m
+--------------------------------
+[WARNING] Model map cache is not found!
+Invalid context windows will be returned leading to inaccurate model responses
+or smaller context windows than expected.
+You can fix this by restarting AnythingLLM so the model map is re-pulled.
+--------------------------------\x1b[0m`);
+      return null;
+    }
+
+    if (this.isCacheStale && !this.seenStaleCacheWarning) {
+      this.log(
+        "Model map cache is stale - some model context windows may be incorrect. This is OK and the model map will be re-pulled on next boot."
       );
-    return null;
+      this.seenStaleCacheWarning = true;
+    }
+
+    return JSON.parse(
+      fs.readFileSync(this.cacheFilePath, { encoding: "utf8" })
+    );
   }
 
   /**
@@ -151,14 +177,21 @@ class ContextWindowFinder {
 
   /**
    * Gets the context window for a given provider and model.
-   * @param {string} provider - The provider to get the context window for
-   * @param {string} model - The model to get the context window for
-   * @returns {number} - The context window for the given provider and model
+   *
+   * If the provider is not found, null is returned.
+   * If the model is not found, the provider's entire model map is returned.
+   *
+   * if both provider and model are provided, the context window for the given model is returned.
+   * @param {string|null} provider - The provider to get the context window for
+   * @param {string|null} model - The model to get the context window for
+   * @returns {number|null} - The context window for the given provider and model
    */
   get(provider = null, model = null) {
-    if (!provider || !this.cache || !this.cache[provider]) return null;
-    if (!model) return this.cache[provider];
-    const modelContextWindow = this.cache[provider][model];
+    if (!provider || !this.cachedModelMap || !this.cachedModelMap[provider])
+      return null;
+    if (!model) return this.cachedModelMap[provider];
+
+    const modelContextWindow = this.cachedModelMap[provider][model];
     if (!modelContextWindow) {
       this.log("Invalid access to model context window - not found in cache", {
         provider,
