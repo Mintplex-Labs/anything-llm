@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['3866-feat-import-agent-flows-from-community-hub'] # put your current branch to create a build. Core team only.
+    branches: ['model-map-staleness'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
