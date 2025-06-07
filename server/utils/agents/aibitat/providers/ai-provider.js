@@ -60,6 +60,14 @@ class Provider {
           apiKey: process.env.ANTHROPIC_API_KEY,
           ...config,
         });
+      case "burncloud":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.BURNCLOUD_BASE_URL || "https://ai.burncloud.com/v1",
+          },
+          apiKey: process.env.BURNCLOUD_API_KEY,
+          ...config,
+        });
       case "groq":
         return new ChatOpenAI({
           configuration: {

@@ -453,6 +453,11 @@ const SystemSettings = {
       AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
       AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
 
+      // BurnCloud Keys
+      BurnCloudApiKey: !!process.env.BURNCLOUD_API_KEY,
+      BurnCloudModelPref: process.env.BURNCLOUD_MODEL_PREF || "claude-3-5-sonnet-20241022",
+      BurnCloudBaseUrl: process.env.BURNCLOUD_BASE_URL || "https://ai.burncloud.com/v1",
+
       // Gemini Keys
       GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
       GeminiLLMModelPref:

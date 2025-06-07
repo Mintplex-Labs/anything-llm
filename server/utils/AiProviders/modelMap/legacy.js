@@ -15,6 +15,29 @@ const LEGACY_MODEL_MAP = {
     "claude-3-7-sonnet-20250219": 200000,
     "claude-3-7-sonnet-latest": 200000,
   },
+  burncloud: {
+    // Claude Models
+    "claude-sonnet-4-20250514": 200000,
+    "claude-3-7-sonnet-20250219": 200000,
+    "claude-3-5-sonnet-20241022": 200000,
+    
+    // GPT Models
+    "gpt-4o": 128000,
+    "gpt-4o-mini": 128000,
+    "o1": 200000,
+    "gpt-4.5-preview": 128000,
+    "o1-mini": 128000,
+    
+    // GPT Image Model
+    "gpt-image-1": 128000,
+    
+    // Gemini Models
+    "gemini-2.5-pro-preview-05-06": 2000000,
+    
+    // DeepSeek Models
+    "deepseek-r1": 64000,
+    "deepseek-v3": 64000,
+  },
   cohere: {
     "command-r": 128000,
     "command-r-plus": 128000,

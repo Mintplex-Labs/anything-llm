@@ -13,6 +13,7 @@ const { GeminiLLM } = require("../AiProviders/gemini");
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
   "anthropic",
+  "burncloud",
   "localai",
   "ollama",
   "togetherai",
@@ -84,6 +85,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPPIOModels(apiKey);
     case "dpais":
       return await getDellProAiStudioModels(basePath);
+    case "burncloud":
+      return await burncloudModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -672,6 +675,62 @@ async function getDellProAiStudioModels(basePath = null) {
       models: [],
       error: "Could not reach Dell Pro Ai Studio from the provided base path",
     };
+  }
+}
+
+async function burncloudModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.BURNCLOUD_API_KEY
+      : _apiKey || process.env.BURNCLOUD_API_KEY || null;
+  
+  if (!apiKey) return { models: [], error: "No API key provided" };
+
+  try {
+    const { OpenAI } = require("openai");
+    const burncloud = new OpenAI({
+      apiKey,
+      baseURL: process.env.BURNCLOUD_BASE_URL || "https://ai.burncloud.com/v1",
+    });
+
+    const models = await burncloud.models
+      .list()
+      .then((results) => results.data)
+      .then((models) => {
+        return models
+          .filter((model) => model.object === "model")
+          .map((model) => {
+            return {
+              id: model.id,
+              name: model.id, // Use model ID as display name
+            };
+          });
+      })
+      .catch((e) => {
+        console.error(`BurnCloud:listModels`, e.message);
+        // Return default models if API call fails
+        return [
+          { id: "claude-sonnet-4-20250514", name: "Claude Sonnet 4" },
+          { id: "claude-3-7-sonnet-20250219", name: "Claude 3.7 Sonnet" },
+          { id: "claude-3-5-sonnet-20241022", name: "Claude 3.5 Sonnet" },
+          { id: "gpt-4o", name: "GPT-4o" },
+          { id: "gpt-4o-mini", name: "GPT-4o Mini" },
+          { id: "o1", name: "GPT-o1" },
+          { id: "gpt-4.5-preview", name: "GPT-4.5 Preview" },
+          { id: "o1-mini", name: "GPT-o1 Mini" },
+          { id: "gpt-image-1", name: "GPT Image 1" },
+          { id: "gemini-2.5-pro-preview-05-06", name: "Gemini 2.5 Pro Preview" },
+          { id: "deepseek-r1", name: "DeepSeek R1" },
+          { id: "deepseek-v3", name: "DeepSeek V3" },
+        ];
+      });
+
+    // Api Key was successful so lets save it for future uses
+    if (models.length > 0 && !!apiKey) process.env.BURNCLOUD_API_KEY = apiKey;
+    return { models, error: null };
+  } catch (error) {
+    console.error(`BurnCloud:listModels`, error.message);
+    return { models: [], error: error.message };
   }
 }
 
