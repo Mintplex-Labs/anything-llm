@@ -119,15 +119,6 @@ const SystemSettings = {
         return null;
       }
     },
-    default_agent_skills: (updates) => {
-      try {
-        const skills = updates.split(",").filter((skill) => !!skill);
-        return JSON.stringify(skills);
-      } catch (e) {
-        console.error(`Could not validate agent skills.`);
-        return JSON.stringify([]);
-      }
-    },
     disabled_agent_skills: (updates) => {
       try {
         const skills = updates.split(",").filter((skill) => !!skill);
