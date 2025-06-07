@@ -21,7 +21,7 @@ class ContextWindowFinder {
   };
   static expiryMs = 1000 * 60 * 60 * 24 * 3; // 3 days
   static remoteUrl =
-    "https://raw22.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json";
+    "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json";
 
   cacheLocation = path.resolve(
     process.env.STORAGE_DIR
