@@ -37,6 +37,8 @@ class ContextWindowFinder {
     ContextWindowFinder.instance = this;
     if (!fs.existsSync(this.cacheLocation))
       fs.mkdirSync(this.cacheLocation, { recursive: true });
+
+    // If the cache is stale or not found at all, pull the model map from remote
     if (this.isCacheStale || !fs.existsSync(this.cacheFilePath))
       this.#pullRemoteModelMap();
   }
@@ -64,16 +66,13 @@ class ContextWindowFinder {
    */
   get cachedModelMap() {
     if (!fs.existsSync(this.cacheFilePath)) {
-      this.log("--------------------------------");
-      this.log("[WARNING] Model map cache is not found!");
-      this.log(
-        "Invalid context windows will be returned leading to inaccurate model responses"
-      );
-      this.log("or smaller context windows than expected.");
-      this.log(
-        "You can fix this by restarting AnythingLLM so the model map is re-pulled."
-      );
-      this.log("--------------------------------");
+      this.log(`\x1b[33m
+--------------------------------
+[WARNING] Model map cache is not found!
+Invalid context windows will be returned leading to inaccurate model responses
+or smaller context windows than expected.
+You can fix this by restarting AnythingLLM so the model map is re-pulled.
+--------------------------------\x1b[0m`);
       return null;
     }
 
