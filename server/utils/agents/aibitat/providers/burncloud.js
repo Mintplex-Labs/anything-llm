@@ -13,7 +13,8 @@ class BurnCloudProvider extends Provider {
     const {
       options = {
         apiKey: process.env.BURNCLOUD_API_KEY,
-        baseURL: process.env.BURNCLOUD_BASE_URL || "https://ai.burncloud.com/v1",
+        baseURL:
+          process.env.BURNCLOUD_BASE_URL || "https://ai.burncloud.com/v1",
       },
       model = "claude-3-5-sonnet-20241022",
     } = config;
@@ -40,11 +41,11 @@ class BurnCloudProvider extends Provider {
         model: this.model,
         messages: this.#cleanMsgs(messages),
         ...(Array.isArray(functions) && functions?.length > 0
-          ? { 
-              tools: functions.map(func => ({
+          ? {
+              tools: functions.map((func) => ({
                 type: "function",
-                function: func
-              }))
+                function: func,
+              })),
             }
           : {}),
       });
@@ -63,7 +64,8 @@ class BurnCloudProvider extends Provider {
       }
 
       return {
-        result: response.choices?.[0]?.message?.content || "No response generated.",
+        result:
+          response.choices?.[0]?.message?.content || "No response generated.",
         cost: 0,
       };
     } catch (error) {
@@ -100,4 +102,4 @@ class BurnCloudProvider extends Provider {
   }
 }
 
-module.exports = BurnCloudProvider; 
+module.exports = BurnCloudProvider;

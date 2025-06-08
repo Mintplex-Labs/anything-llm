@@ -75,6 +75,9 @@ function getModelTag() {
     case "anthropic":
       model = process.env.ANTHROPIC_MODEL_PREF;
       break;
+    case "burncloud":
+      model = process.env.BURNCLOUD_MODEL_PREF;
+      break;
     case "lmstudio":
       model = process.env.LMSTUDIO_MODEL_PREF;
       break;

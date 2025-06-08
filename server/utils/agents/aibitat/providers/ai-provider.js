@@ -63,7 +63,8 @@ class Provider {
       case "burncloud":
         return new ChatOpenAI({
           configuration: {
-            baseURL: process.env.BURNCLOUD_BASE_URL || "https://ai.burncloud.com/v1",
+            baseURL:
+              process.env.BURNCLOUD_BASE_URL || "https://ai.burncloud.com/v1",
           },
           apiKey: process.env.BURNCLOUD_API_KEY,
           ...config,

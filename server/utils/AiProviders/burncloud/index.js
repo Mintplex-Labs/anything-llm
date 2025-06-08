@@ -20,7 +20,7 @@ class BurnCloudLLM {
       apiKey: process.env.BURNCLOUD_API_KEY,
       baseURL: process.env.BURNCLOUD_BASE_URL || "https://ai.burncloud.com/v1",
     });
-    
+
     this.burncloud = burncloud;
     this.model =
       modelPreference ||
@@ -103,7 +103,7 @@ class BurnCloudLLM {
 
       const promptTokens = result.output.usage?.prompt_tokens || 0;
       const completionTokens = result.output.usage?.completion_tokens || 0;
-      
+
       return {
         textResponse: choice.message?.content || "",
         metrics: {
@@ -143,24 +143,24 @@ class BurnCloudLLM {
    */
   #convertToOpenAIFormat(messages = []) {
     if (!Array.isArray(messages) || messages.length === 0) return [];
-    
+
     // Handle system message separately for Anthropic-style models
-    const systemMessage = messages.find(msg => msg.role === "system");
-    const otherMessages = messages.filter(msg => msg.role !== "system");
-    
-    const formattedMessages = otherMessages.map(msg => ({
+    const systemMessage = messages.find((msg) => msg.role === "system");
+    const otherMessages = messages.filter((msg) => msg.role !== "system");
+
+    const formattedMessages = otherMessages.map((msg) => ({
       role: msg.role,
-      content: msg.content
+      content: msg.content,
     }));
 
     // For OpenAI format, system message goes first
     if (systemMessage) {
       return [
         { role: "system", content: systemMessage.content },
-        ...formattedMessages
+        ...formattedMessages,
       ];
     }
-    
+
     return formattedMessages;
   }
 
@@ -197,4 +197,4 @@ class BurnCloudLLM {
 
 module.exports = {
   BurnCloudLLM,
-}; 
+};

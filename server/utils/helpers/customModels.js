@@ -683,7 +683,7 @@ async function burncloudModels(_apiKey = null) {
     _apiKey === true
       ? process.env.BURNCLOUD_API_KEY
       : _apiKey || process.env.BURNCLOUD_API_KEY || null;
-  
+
   if (!apiKey) return { models: [], error: "No API key provided" };
 
   try {
@@ -719,7 +719,10 @@ async function burncloudModels(_apiKey = null) {
           { id: "gpt-4.5-preview", name: "GPT-4.5 Preview" },
           { id: "o1-mini", name: "GPT-o1 Mini" },
           { id: "gpt-image-1", name: "GPT Image 1" },
-          { id: "gemini-2.5-pro-preview-05-06", name: "Gemini 2.5 Pro Preview" },
+          {
+            id: "gemini-2.5-pro-preview-05-06",
+            name: "Gemini 2.5 Pro Preview",
+          },
           { id: "deepseek-r1", name: "DeepSeek R1" },
           { id: "deepseek-v3", name: "DeepSeek V3" },
         ];

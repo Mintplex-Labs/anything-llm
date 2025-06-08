@@ -98,7 +98,8 @@ export const AVAILABLE_LLM_PROVIDERS = [
     value: "burncloud",
     logo: BurnCloudLogo,
     options: (settings) => <BurnCloudOptions settings={settings} />,
-    description: "Multi-model AI platform supporting Claude, GPT, Gemini, and DeepSeek models.",
+    description:
+      "Multi-model AI platform supporting Claude, GPT, Gemini, and DeepSeek models.",
     requiredConfig: ["BurnCloudApiKey"],
   },
   {

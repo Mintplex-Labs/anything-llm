@@ -4,6 +4,7 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
+import BurnCloudLogo from "@/media/llmprovider/burncloud.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
@@ -32,6 +33,7 @@ import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
+import BurnCloudOptions from "@/components/LLMSelection/BurnCloudOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
@@ -84,6 +86,14 @@ const LLMS = [
     logo: AnthropicLogo,
     options: (settings) => <AnthropicAiOptions settings={settings} />,
     description: "A friendly AI Assistant hosted by Anthropic.",
+  },
+  {
+    name: "BurnCloud",
+    value: "burncloud",
+    logo: BurnCloudLogo,
+    options: (settings) => <BurnCloudOptions settings={settings} />,
+    description:
+      "Multi-model AI platform supporting Claude, GPT, Gemini, and DeepSeek models.",
   },
   {
     name: "Gemini",

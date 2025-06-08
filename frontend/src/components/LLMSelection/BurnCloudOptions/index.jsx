@@ -37,7 +37,9 @@ export default function BurnCloudOptions({ settings }) {
             name="BurnCloudBaseUrl"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="https://ai.burncloud.com/v1"
-            defaultValue={settings?.BurnCloudBaseUrl || "https://ai.burncloud.com/v1"}
+            defaultValue={
+              settings?.BurnCloudBaseUrl || "https://ai.burncloud.com/v1"
+            }
             autoComplete="off"
             spellCheck={false}
           />
@@ -167,4 +169,4 @@ function BurnCloudModelSelection({ apiKey, settings }) {
       </select>
     </div>
   );
-} 
+}
