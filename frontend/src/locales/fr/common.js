@@ -139,12 +139,12 @@ const TRANSLATIONS = {
     contact: "Contacter Mintplex Labs",
   },
   "new-workspace": {
-    title: "Nouveau Espace de Travail",
+    title: "Nouvel Espace de Travail",
     placeholder: "Mon Espace de Travail",
   },
   "workspaces—settings": {
     general: "Paramètres généraux",
-    chat: "Paramètres de chat",
+    chat: "Paramètres du chat",
     vector: "Base de données vectorielle",
     members: "Membres",
     agent: "Configuration de l'agent",
