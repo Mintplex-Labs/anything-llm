@@ -82,8 +82,6 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
           model: this.model,
           messages: this.cleanMsgs(messages),
           options: {
-            use_mlock: true,
-            temperature: 0.5,
           },
         });
         completion = response.message;
