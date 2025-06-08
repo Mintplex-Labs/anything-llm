@@ -230,7 +230,7 @@ function Directory({
           </div>
 
           <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
-            <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-md bg-theme-settings-input-bg">
+            <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg">
               <p className="col-span-6">Name</p>
             </div>
 
@@ -356,7 +356,9 @@ function DirectoryTooltips() {
         if (!data) return null;
         return (
           <div className="text-xs">
-            <p className="text-white light:invert font-medium">{data.title}</p>
+            <p className="text-white light:invert font-medium break-all">
+              {data.title}
+            </p>
             <div className="flex mt-1 gap-x-2">
               <p className="">
                 Date: <b>{data.date}</b>
