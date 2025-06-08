@@ -368,6 +368,17 @@ const TRANSLATIONS = {
     description:
       "Queste sono le credenziali e le impostazioni per il tuo provider di chat e embedding LLM preferito. È importante che queste chiavi siano aggiornate e corrette, altrimenti AnythingLLM non funzionerà correttamente.",
     provider: "Provider LLM",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "Preferenza del modello di trascrizione",
@@ -431,7 +442,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "Area di lavoro",
       chats: "Chat inviate",
-      Active: "Domini attivi",
+      active: "Domini attivi",
+      created: null,
     },
   },
   "embed-chats": {
@@ -709,6 +721,14 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   customization: {
     interface: {

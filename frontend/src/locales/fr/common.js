@@ -139,12 +139,12 @@ const TRANSLATIONS = {
     contact: "Contacter Mintplex Labs",
   },
   "new-workspace": {
-    title: "Nouveau Espace de Travail",
+    title: "Nouvel Espace de Travail",
     placeholder: "Mon Espace de Travail",
   },
   "workspaces—settings": {
     general: "Paramètres généraux",
-    chat: "Paramètres de chat",
+    chat: "Paramètres du chat",
     vector: "Base de données vectorielle",
     members: "Membres",
     agent: "Configuration de l'agent",
@@ -370,6 +370,17 @@ const TRANSLATIONS = {
     description:
       "Voici les identifiants et les paramètres de votre fournisseur LLM de chat et d'intégration préféré. Il est important que ces clés soient actuelles et correctes, sinon AnythingLLM ne fonctionnera pas correctement.",
     provider: "Fournisseur LLM",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "Préférence du modèle de transcription",
@@ -433,7 +444,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "Espace de travail",
       chats: "Chats envoyés",
-      Active: "Domaines actifs",
+      active: "Domaines actifs",
+      created: null,
     },
   },
   "embed-chats": {
@@ -711,6 +723,14 @@ const TRANSLATIONS = {
     update_account: null,
     theme: null,
     language: null,
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
   customization: {
     interface: {

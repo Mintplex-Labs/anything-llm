@@ -33,6 +33,11 @@ const FLOW_TYPES = {
         type: "string",
         description: "Variable to store the response",
       },
+      directOutput: {
+        type: "boolean",
+        description:
+          "Whether to return the response directly to the user without LLM processing",
+      },
     },
     examples: [
       {
@@ -42,60 +47,6 @@ const FLOW_TYPES = {
       },
     ],
   },
-  WEBSITE: {
-    type: "website",
-    description: "Interact with a website",
-    parameters: {
-      url: { type: "string", description: "The URL of the website" },
-      selector: {
-        type: "string",
-        description: "CSS selector for targeting elements",
-      },
-      action: {
-        type: "string",
-        description: "Action to perform (read, click, type)",
-      },
-      value: { type: "string", description: "Value to use for type action" },
-      resultVariable: {
-        type: "string",
-        description: "Variable to store the result",
-      },
-    },
-  },
-  FILE: {
-    type: "file",
-    description: "Perform file system operations",
-    parameters: {
-      path: { type: "string", description: "Path to the file" },
-      operation: {
-        type: "string",
-        description: "Operation to perform (read, write, append)",
-      },
-      content: {
-        type: "string",
-        description: "Content for write/append operations",
-      },
-      resultVariable: {
-        type: "string",
-        description: "Variable to store the result",
-      },
-    },
-  },
-  CODE: {
-    type: "code",
-    description: "Execute code in various languages",
-    parameters: {
-      language: {
-        type: "string",
-        description: "Programming language to execute",
-      },
-      code: { type: "string", description: "Code to execute" },
-      resultVariable: {
-        type: "string",
-        description: "Variable to store the result",
-      },
-    },
-  },
   LLM_INSTRUCTION: {
     type: "llmInstruction",
     description: "Process data using LLM instructions",
@@ -103,10 +54,6 @@ const FLOW_TYPES = {
       instruction: {
         type: "string",
         description: "The instruction for the LLM to follow",
-      },
-      inputVariable: {
-        type: "string",
-        description: "Variable containing the input data to process",
       },
       resultVariable: {
         type: "string",
@@ -125,6 +72,11 @@ const FLOW_TYPES = {
       resultVariable: {
         type: "string",
         description: "Variable to store the scraped content",
+      },
+      directOutput: {
+        type: "boolean",
+        description:
+          "Whether to return the scraped content directly to the user without LLM processing",
       },
     },
   },

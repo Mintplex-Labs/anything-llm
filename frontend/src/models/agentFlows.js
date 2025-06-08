@@ -19,7 +19,7 @@ const AgentFlows = {
       body: JSON.stringify({ name, config, uuid }),
     })
       .then((res) => {
-        if (!res.ok) throw new Error(response.error || "Failed to save flow");
+        if (!res.ok) throw new Error(res.error || "Failed to save flow");
         return res;
       })
       .then((res) => res.json())
