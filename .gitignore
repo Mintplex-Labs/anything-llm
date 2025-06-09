@@ -10,3 +10,5 @@ aws_cf_deploy_anything_llm.json
 yarn.lock
 *.bak
 .idea
+
+server/storage/models/Snowflake/
