@@ -10,6 +10,7 @@ import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
 import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 import ObsidianOptions from "./Connectors/Obsidian";
+import GoogleDriveOptions from "./Connectors/GoogleDrive";
 
 export const getDataConnectors = (t) => ({
   github: {
@@ -53,6 +54,12 @@ export const getDataConnectors = (t) => ({
     image: ConnectorImages.obsidian,
     description: "Import Obsidian vault in a single click.",
     options: <ObsidianOptions />,
+  },
+  googledrive: {
+    name: "Google Drive",
+    image: ConnectorImages.googledrive,
+    description: "Sync Google Drive folders with automatic updates.",
+    options: <GoogleDriveOptions />,
   },
 });
 

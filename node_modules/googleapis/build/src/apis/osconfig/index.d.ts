@@ -1,0 +1,32 @@
+/*! THIS FILE IS AUTO-GENERATED */
+import { AuthPlus } from 'googleapis-common';
+import { osconfig_v1 } from './v1';
+import { osconfig_v1alpha } from './v1alpha';
+import { osconfig_v1beta } from './v1beta';
+import { osconfig_v2 } from './v2';
+import { osconfig_v2beta } from './v2beta';
+export declare const VERSIONS: {
+    v1: typeof osconfig_v1.Osconfig;
+    v1alpha: typeof osconfig_v1alpha.Osconfig;
+    v1beta: typeof osconfig_v1beta.Osconfig;
+    v2: typeof osconfig_v2.Osconfig;
+    v2beta: typeof osconfig_v2beta.Osconfig;
+};
+export declare function osconfig(version: 'v1'): osconfig_v1.Osconfig;
+export declare function osconfig(options: osconfig_v1.Options): osconfig_v1.Osconfig;
+export declare function osconfig(version: 'v1alpha'): osconfig_v1alpha.Osconfig;
+export declare function osconfig(options: osconfig_v1alpha.Options): osconfig_v1alpha.Osconfig;
+export declare function osconfig(version: 'v1beta'): osconfig_v1beta.Osconfig;
+export declare function osconfig(options: osconfig_v1beta.Options): osconfig_v1beta.Osconfig;
+export declare function osconfig(version: 'v2'): osconfig_v2.Osconfig;
+export declare function osconfig(options: osconfig_v2.Options): osconfig_v2.Osconfig;
+export declare function osconfig(version: 'v2beta'): osconfig_v2beta.Osconfig;
+export declare function osconfig(options: osconfig_v2beta.Options): osconfig_v2beta.Osconfig;
+declare const auth: AuthPlus;
+export { auth };
+export { osconfig_v1 };
+export { osconfig_v1alpha };
+export { osconfig_v1beta };
+export { osconfig_v2 };
+export { osconfig_v2beta };
+export { AuthPlus, GlobalOptions, APIRequestContext, GoogleConfigurable, StreamMethodOptions, MethodOptions, BodyResponseCallback, } from 'googleapis-common';

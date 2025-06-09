@@ -170,6 +170,28 @@ function extensionEndpoints(app) {
       }
     }
   );
+
+  app.post(
+    "/ext/googledrive",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])], // Admin-only access
+    async (request, response) => {
+      try {
+        const responseFromProcessor =
+          await new CollectorApi().forwardExtensionRequest({
+            endpoint: "/ext/googledrive",
+            method: "POST",
+            body: request.body,
+          });
+        await Telemetry.sendTelemetry("extension_invoked", {
+          type: "googledrive",
+        });
+        response.status(200).json(responseFromProcessor);
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { extensionEndpoints };

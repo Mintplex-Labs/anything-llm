@@ -1,0 +1,37 @@
+/*! THIS FILE IS AUTO-GENERATED */
+import { AuthPlus } from 'googleapis-common';
+import { metastore_v1 } from './v1';
+import { metastore_v1alpha } from './v1alpha';
+import { metastore_v1beta } from './v1beta';
+import { metastore_v2 } from './v2';
+import { metastore_v2alpha } from './v2alpha';
+import { metastore_v2beta } from './v2beta';
+export declare const VERSIONS: {
+    v1: typeof metastore_v1.Metastore;
+    v1alpha: typeof metastore_v1alpha.Metastore;
+    v1beta: typeof metastore_v1beta.Metastore;
+    v2: typeof metastore_v2.Metastore;
+    v2alpha: typeof metastore_v2alpha.Metastore;
+    v2beta: typeof metastore_v2beta.Metastore;
+};
+export declare function metastore(version: 'v1'): metastore_v1.Metastore;
+export declare function metastore(options: metastore_v1.Options): metastore_v1.Metastore;
+export declare function metastore(version: 'v1alpha'): metastore_v1alpha.Metastore;
+export declare function metastore(options: metastore_v1alpha.Options): metastore_v1alpha.Metastore;
+export declare function metastore(version: 'v1beta'): metastore_v1beta.Metastore;
+export declare function metastore(options: metastore_v1beta.Options): metastore_v1beta.Metastore;
+export declare function metastore(version: 'v2'): metastore_v2.Metastore;
+export declare function metastore(options: metastore_v2.Options): metastore_v2.Metastore;
+export declare function metastore(version: 'v2alpha'): metastore_v2alpha.Metastore;
+export declare function metastore(options: metastore_v2alpha.Options): metastore_v2alpha.Metastore;
+export declare function metastore(version: 'v2beta'): metastore_v2beta.Metastore;
+export declare function metastore(options: metastore_v2beta.Options): metastore_v2beta.Metastore;
+declare const auth: AuthPlus;
+export { auth };
+export { metastore_v1 };
+export { metastore_v1alpha };
+export { metastore_v1beta };
+export { metastore_v2 };
+export { metastore_v2alpha };
+export { metastore_v2beta };
+export { AuthPlus, GlobalOptions, APIRequestContext, GoogleConfigurable, StreamMethodOptions, MethodOptions, BodyResponseCallback, } from 'googleapis-common';
