@@ -10,14 +10,18 @@ class NativeEmbedder {
   #fallbackHost = "https://cdn.anythingllm.com/support/models/";
 
   constructor() {
-    // Model Card: https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
-    this.model = "Xenova/all-MiniLM-L6-v2";
+    // Model Card: https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v2.0
+    this.model = "Snowflake/snowflake-arctic-embed-m-v2.0";
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
-        ? path.resolve(process.env.STORAGE_DIR, `models`)
-        : path.resolve(__dirname, `../../../storage/models`)
+        ? path.resolve(process.env.STORAGE_DIR, "models")
+        : path.resolve(__dirname, "../../../storage/models")
     );
-    this.modelPath = path.resolve(this.cacheDir, "Xenova", "all-MiniLM-L6-v2");
+    this.modelPath = path.resolve(
+      this.cacheDir,
+      "Snowflake",
+      "snowflake-arctic-embed-m-v2.0"
+    );
     this.modelDownloaded = fs.existsSync(this.modelPath);
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
