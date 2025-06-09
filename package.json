@@ -34,8 +34,5 @@
   "devDependencies": {
     "concurrently": "^9.1.2",
     "jest": "^29.7.0"
-  },
-  "dependencies": {
-    "wink-bm25-text-search": "^3.1.2"
   }
 }
