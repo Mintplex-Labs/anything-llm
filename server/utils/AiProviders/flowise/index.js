@@ -3,7 +3,6 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const {
-  formatChatHistory,
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
@@ -73,21 +72,22 @@ class FlowiseLLM {
     return true;
   }
 
-  #generateContent({ userPrompt, attachments = [] }) {
-    if (!attachments.length) {
-      return userPrompt;
-    }
+  formatFlowiseChatHistory(chatHistory = []) {
+    return chatHistory.map((message) => {
+      return {
+        role: message.role === "user" ? "userMessage" : "apiMessage",
+        content: message.content,
+      };
+    });
+  }
 
-    const content = [{ type: "question", text: userPrompt }];
-    for (let attachment of attachments) {
-      content.push({
-        data: attachment.contentString,
-        type: "file",
-        name: attachment.name,
-        mime: attachment.mime,
-      });
-    }
-    return content.flat();
+  formatFlowiseAttachments(attachments = []) {
+    return attachments.map((attachment) => ({
+      data: attachment.contentString,
+      type: "file",
+      name: attachment.name,
+      mime: attachment.mime,
+    }));
   }
 
   constructPrompt({
@@ -97,18 +97,20 @@ class FlowiseLLM {
     userPrompt = "",
     attachments = [],
   }) {
-    const prompt = {
-      role: "system",
-      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
+    const historicalAttachments = [];
+    for (const message of chatHistory) {
+      if (message.attachments?.length) {
+        historicalAttachments.push(...message.attachments);
+      }
+    }
+    return {
+      question: userPrompt,
+      history: this.formatFlowiseChatHistory(chatHistory),
+      attachments: this.formatFlowiseAttachments([
+        ...attachments,
+        ...historicalAttachments,
+      ]),
     };
-    return [
-      prompt,
-      ...formatChatHistory(chatHistory, this.#generateContent),
-      {
-        role: "user",
-        content: this.#generateContent({ userPrompt, attachments }),
-      },
-    ];
   }
 
   async getChatCompletion(messages = null) {
@@ -157,21 +159,21 @@ class FlowiseLLM {
     }
   }
 
-  async streamGetChatCompletion(messages = null) {
+  async streamGetChatCompletion({ attachments, history, question }) {
     try {
-      const lastMessage = messages[messages.length - 1];
       const response = await fetch(
         `${this.basePath}/api/v1/prediction/${process.env.FLOWISE_LLM_CHATFLOW_ID}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            question: lastMessage.content,
             streaming: true,
-            history: messages.slice(1),
-          })
+            attachments,
+            question,
+            history,
+          }),
         }
       );
 
@@ -184,7 +186,7 @@ class FlowiseLLM {
       });
 
       const reader = response.body.getReader();
-      
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -304,9 +306,7 @@ class FlowiseLLM {
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
-    const { messageArrayCompressor } = require("../../helpers/chat");
-    const messageArray = this.constructPrompt(promptArgs);
-    return await messageArrayCompressor(this, messageArray, rawHistory);
+    return this.constructPrompt(promptArgs);
   }
 }
 
