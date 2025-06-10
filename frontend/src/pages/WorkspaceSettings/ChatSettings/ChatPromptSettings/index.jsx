@@ -6,6 +6,7 @@ import Highlighter from "react-highlight-words";
 import { Link, useSearchParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import ChatPromptHistory from "./ChatPromptHistory";
+import PublishPromptModal from "./PublishPromptModal";
 
 // TODO: Move to backend and have user-language sensitive default prompt
 const DEFAULT_PROMPT =
@@ -21,6 +22,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const promptHistoryRef = useRef(null);
   const historyButtonRef = useRef(null);
   const [searchParams] = useSearchParams();
+  const [showPublishModal, setShowPublishModal] = useState(false);
 
   const handleRestore = (prompt) => {
     setPrompt(prompt);
@@ -77,6 +79,11 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           setShowPromptHistory(false);
         }}
       />
+      <PublishPromptModal
+        show={showPublishModal}
+        onClose={() => setShowPublishModal(false)}
+        currentPrompt={prompt}
+      />
       <div>
         <div className="flex flex-col">
           <div className="flex items-center justify-between">
@@ -120,7 +127,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           <button
             ref={historyButtonRef}
             type="button"
-            className="text-theme-text-secondary hover:text-white light:hover:text-black text-sm font-medium"
+            className="text-theme-text-secondary hover:text-white light:hover:text-black text-xs font-medium"
             onClick={(e) => {
               e.preventDefault();
               setShowPromptHistory(!showPromptHistory);
@@ -186,13 +193,22 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           </div>
           <div className="w-full flex flex-row items-center justify-between pt-2">
             {prompt !== DEFAULT_PROMPT && (
-              <button
-                type="button"
-                onClick={() => handleRestore(DEFAULT_PROMPT)}
-                className="text-theme-text-primary hover:text-white light:hover:text-black text-sm font-medium"
-              >
-                Clear
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleRestore(DEFAULT_PROMPT)}
+                  className="text-theme-text-primary hover:text-white light:hover:text-black text-xs font-medium"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowPublishModal(true)}
+                  className="text-primary-button hover:text-white light:hover:text-black text-xs font-medium"
+                >
+                  Publish to Community Hub
+                </button>
+              </>
             )}
           </div>
         </div>
