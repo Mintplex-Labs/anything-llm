@@ -69,8 +69,8 @@ async function loadGoogleDrive(
 
     const outFolderPath =
         process.env.NODE_ENV === "development"
-            ? path.resolve(__dirname, `../../../hotdir/${outFolder}`)
-            : path.resolve(process.env.STORAGE_DIR, `collector/hotdir/${outFolder}`);
+            ? path.resolve(__dirname, `../../../../server/storage/documents/${outFolder}`)
+            : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
     if (!fs.existsSync(outFolderPath)) {
         fs.mkdirSync(outFolderPath, { recursive: true });
@@ -85,6 +85,19 @@ async function loadGoogleDrive(
 
         console.log(`-- Working Google Drive document: ${document.metadata.title} --`);
 
+        // Ensure pageContent is a string
+        let pageContent = document.pageContent;
+        if (typeof pageContent !== 'string') {
+            console.log(`Converting non-string content for ${document.metadata.title}`);
+            pageContent = String(pageContent);
+        }
+
+        // Skip if still not valid text content
+        if (!pageContent || pageContent.length === 0) {
+            console.log(`Skipping ${document.metadata.title} - no valid text content`);
+            continue;
+        }
+
         // Generate a unique ID for tracking changes
         const docId = `google-drive-${document.metadata.fileId}`;
         const data = {
@@ -94,27 +107,21 @@ async function loadGoogleDrive(
             docAuthor: "Google Drive",
             description: `Google Drive document: ${document.metadata.title}`,
             docSource: `Google Drive Folder ${folderId}`,
-            chunkSource: response.encryptionWorker.encrypt(
+            chunkSource: response.locals.encryptionWorker.encrypt(
                 JSON.stringify({
                     type: "googledrive",
                     folderId,
                     fileId: document.metadata.fileId,
-                    serviceAccount: response.encryptionWorker.encrypt(JSON.stringify(serviceAccount)),
+                    serviceAccount: response.locals.encryptionWorker.encrypt(JSON.stringify(serviceAccount)),
                     syncFrequency,
                     enableAutoSync,
                     includeSubfolders,
                 })
             ),
             published: new Date().toLocaleString(),
-            wordCount: document.pageContent.split(" ").length,
-            pageContent: document.pageContent,
-            token_count_estimate: tokenizeString(document.pageContent),
-            metadata: {
-                ...document.metadata,
-                syncFrequency,
-                enableAutoSync,
-                includeSubfolders,
-            },
+            wordCount: pageContent.split(" ").length,
+            pageContent: pageContent,
+            token_count_estimate: tokenizeString(pageContent),
         };
 
         const fileName = sanitizeFileName(

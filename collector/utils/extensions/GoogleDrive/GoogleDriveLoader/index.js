@@ -202,13 +202,40 @@ class GoogleDriveLoader {
             alt: "media",
         });
 
-        // For text files, return the content directly
-        if (file.mimeType.startsWith("text/") || file.mimeType === "application/pdf") {
-            return response.data;
+        // Handle PDF files with proper text extraction
+        if (file.mimeType === "application/pdf") {
+            try {
+                const pdfParse = require("pdf-parse");
+                let pdfBuffer;
+
+                // Convert response data to buffer properly
+                if (response.data instanceof Buffer) {
+                    pdfBuffer = response.data;
+                } else if (typeof response.data === 'string') {
+                    pdfBuffer = Buffer.from(response.data, 'binary');
+                } else if (response.data && typeof response.data.arrayBuffer === 'function') {
+                    // Handle Blob/ReadableStream
+                    const arrayBuffer = await response.data.arrayBuffer();
+                    pdfBuffer = Buffer.from(arrayBuffer);
+                } else {
+                    // Fallback - try to convert to buffer
+                    pdfBuffer = Buffer.from(response.data);
+                }
+
+                const pdfData = await pdfParse(pdfBuffer);
+                return pdfData.text;
+            } catch (error) {
+                console.error(`Failed to extract text from PDF ${file.name}:`, error.message);
+                return "";
+            }
         }
 
-        // For other formats, we'll need additional processing
-        // This is a placeholder - in a real implementation, you'd use libraries like pdf-parse, etc.
+        // For text files, return the content directly
+        if (file.mimeType.startsWith("text/")) {
+            return response.data.toString();
+        }
+
+        // For other formats, try to convert to string
         return response.data.toString();
     }
 
