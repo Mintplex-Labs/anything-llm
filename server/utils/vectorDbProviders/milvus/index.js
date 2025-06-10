@@ -3,6 +3,7 @@ const {
   MetricType,
   IndexType,
   MilvusClient,
+  RRFRanker, // ← for hybrid‑search re‑ranking
 } = require("@zilliz/milvus2-sdk-node");
 const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
@@ -48,13 +49,12 @@ const Milvus = {
   totalVectors: async function () {
     const { client } = await this.connect();
     const { collection_names } = await client.listCollections();
-    const total = collection_names.reduce(async (acc, collection_name) => {
+    return collection_names.reduce(async (acc, collection_name) => {
       const statistics = await client.getCollectionStatistics({
         collection_name: this.normalize(collection_name),
       });
       return Number(acc) + Number(statistics?.data?.row_count ?? 0);
     }, 0);
-    return total;
   },
   namespaceCount: async function (_namespace = null) {
     const { client } = await this.connect();
@@ -65,10 +65,9 @@ const Milvus = {
   },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const collection = await client
+    return await client
       .getCollectionStatistics({ collection_name: this.normalize(namespace) })
       .catch(() => null);
-    return collection;
   },
   hasNamespace: async function (namespace = null) {
     if (!namespace) return false;
@@ -105,20 +104,33 @@ const Milvus = {
         fields: [
           {
             name: "id",
-            description: "id",
+            description: "primary id",
             data_type: DataType.VarChar,
             max_length: 255,
             is_primary_key: true,
           },
           {
-            name: "vector",
-            description: "vector",
+            name: "vector", // dense semantic embedding
+            description: "dense embedding vector",
             data_type: DataType.FloatVector,
             dim: dimensions,
           },
           {
+            name: "text", // raw chunk text (BM25 input)
+            description: "raw text",
+            data_type: DataType.VarChar,
+            max_length: 65535,
+            enable_match: true,
+            enable_analyzer: true,
+          },
+          {
+            name: "text_sparse", // auto‑generated BM25 vector
+            description: "sparse BM25 vector",
+            data_type: DataType.SparseFloatVector,
+          },
+          {
             name: "metadata",
-            decription: "metadata",
+            description: "chunk metadata",
             data_type: DataType.JSON,
           },
         ],
@@ -128,6 +140,15 @@ const Milvus = {
         field_name: "vector",
         index_type: IndexType.AUTOINDEX,
         metric_type: MetricType.COSINE,
+      });
+
+      // sparse BM25-style index so hybrid search can combine dense & sparse
+      await client.createIndex({
+        collection_name: this.normalize(namespace),
+        field_name: "text_sparse",
+        index_type: IndexType.SPARSE_INVERTED_INDEX,
+        metric_type: MetricType.IP,
+        extra_params: { inverted_index_algo: "DAAT_MAXSCORE" },
       });
       await client.loadCollectionSync({
         collection_name: this.normalize(namespace),
@@ -144,7 +165,7 @@ const Milvus = {
     try {
       let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
-      if (!pageContent || pageContent.length == 0) return false;
+      if (!pageContent || pageContent.length === 0) return false;
 
       console.log("Adding new vectorized document into namespace", namespace);
       if (skipCache) {
@@ -163,7 +184,13 @@ const Milvus = {
               const newChunks = chunk.map((chunk) => {
                 const id = uuidv4();
                 documentVectors.push({ docId, vectorId: id });
-                return { id, vector: chunk.values, metadata: chunk.metadata };
+                return {
+                  id,
+                  text: chunk.metadata.text,
+                  vector: chunk.values,
+                  text_sparse: { indices: [], values: [] }, // placeholder – TODO: add real BM25
+                  metadata: chunk.metadata,
+                };
               });
               const insertResult = await client.insert({
                 collection_name: this.normalize(namespace),
@@ -244,7 +271,9 @@ const Milvus = {
             collection_name: this.normalize(namespace),
             data: chunk.map((item) => ({
               id: item.id,
+              text: item.metadata.text,
               vector: item.values,
+              text_sparse: { indices: [], values: [] }, // placeholder – TODO
               metadata: item.metadata,
             })),
           });
@@ -330,6 +359,76 @@ const Milvus = {
       message: false,
     };
   },
+  performHybridSearch: async function ({
+    namespace = null,
+    input = "",
+    LLMConnector = null,
+    similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = [],
+  }) {
+    if (!namespace || !input || !LLMConnector)
+      throw new Error("Invalid request to performHybridSearch.");
+
+    const { client } = await this.connect();
+    if (!(await this.namespaceExists(client, namespace))) {
+      return {
+        contextTexts: [],
+        sources: [],
+        message: "Invalid query - no documents found for workspace!",
+      };
+    }
+
+    // Dense embedding for semantic search
+    const queryDense = await LLMConnector.embedTextInput(input);
+
+    // Build two AnnSearch objects – dense & sparse
+    const searchRequests = [
+      {
+        vector_field_name: "vector", // dense field
+        data: [queryDense],
+        params: { nprobe: 10 },
+        limit: topN,
+      },
+      {
+        vector_field_name: "text_sparse", // sparse BM25 field
+        data: [input], // raw text -> EmbeddedText on server
+        params: { drop_ratio_search: 0.2 },
+        limit: topN,
+      },
+    ];
+
+    // RRFRanker balances dense & sparse without weighting
+    const ranker = new RRFRanker(100);
+
+    const response = await client.hybridSearch({
+      collection_name: this.normalize(namespace),
+      searches: searchRequests,
+      ranker,
+      limit: topN,
+    });
+
+    const result = { contextTexts: [], sourceDocuments: [], scores: [] };
+    response.results.forEach((match) => {
+      if (match.score < similarityThreshold) return;
+      if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) return;
+
+      result.contextTexts.push(match.metadata.text);
+      result.sourceDocuments.push(match);
+      result.scores.push(match.score);
+    });
+
+    const sources = result.sourceDocuments.map((metadata, i) => ({
+      ...metadata,
+      text: result.contextTexts[i],
+    }));
+
+    return {
+      contextTexts: result.contextTexts,
+      sources: this.curateSources(sources),
+      message: false,
+    };
+  },
   similarityResponse: async function ({
     client,
     namespace,
@@ -342,6 +441,12 @@ const Milvus = {
       contextTexts: [],
       sourceDocuments: [],
       scores: [],
+    };
+    const denseReq = {
+      anns_field: "vector",
+      data: [queryVector],
+      param: { nprobe: 10 },
+      limit: topN,
     };
     const response = await client.search({
       collection_name: this.normalize(namespace),
