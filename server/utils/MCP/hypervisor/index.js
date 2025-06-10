@@ -19,7 +19,7 @@ const {
 /**
  * @class MCPHypervisor
  * @description A class that manages MCP servers found in the storage/plugins/anythingllm_mcp_servers.json file.
- * This class is responsible for booting, stopping, and reloading MCP servers - it is the user responsiblity for the MCP server definitions
+ * This class is responsible for booting, stopping, and reloading MCP servers - it is the user responsibility for the MCP server definitions
  * to me correct and also functioning tools depending on their deployment (docker vs local) as well as the security of said tools
  * since MCP is basically arbitrary code execution.
  *
