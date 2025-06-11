@@ -81,6 +81,7 @@ model users {
   browser_extension_api_keys  browser_extension_api_keys[]
   temporary_auth_tokens       temporary_auth_tokens[]
   system_prompt_variables     system_prompt_variables[]
+  prompt_history              prompt_history[]
 }
 
 model recovery_codes {
@@ -146,6 +147,7 @@ model workspaces {
   embed_configs                embed_configs[]
   threads                      workspace_threads[]
   workspace_agent_invocations  workspace_agent_invocations[]
+  prompt_history               prompt_history[]
 }
 
 model workspace_threads {
@@ -340,4 +342,16 @@ model system_prompt_variables {
   user        users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model prompt_history {
+  id          Int        @id @default(autoincrement())
+  workspace   workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId Int
+  prompt      String
+  modifiedBy  Int?
+  modifiedAt  DateTime   @default(now())
+  user        users?     @relation(fields: [modifiedBy], references: [id])
+
+  @@index([workspaceId])
 }

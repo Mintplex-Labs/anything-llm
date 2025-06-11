@@ -1,4 +1,4 @@
-const { toChunks } = require("../../helpers");
+const { toChunks, maximumChunkLength } = require("../../helpers");
 
 class GenericOpenAiEmbedder {
   constructor() {
@@ -13,10 +13,19 @@ class GenericOpenAiEmbedder {
       apiKey: process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY ?? null,
     });
     this.model = process.env.EMBEDDING_MODEL_PREF ?? null;
+    this.embeddingMaxChunkLength = maximumChunkLength();
 
     // this.maxConcurrentChunks is delegated to the getter below.
     // Refer to your specific model and provider you use this class with to determine a valid maxChunkLength
-    this.embeddingMaxChunkLength = 8_191;
+    this.log(`Initialized ${this.model}`, {
+      baseURL: this.basePath,
+      maxConcurrentChunks: this.maxConcurrentChunks,
+      embeddingMaxChunkLength: this.embeddingMaxChunkLength,
+    });
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[GenericOpenAiEmbedder]\x1b[0m ${text}`, ...args);
   }
 
   /**

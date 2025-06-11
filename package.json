@@ -10,6 +10,7 @@
     "node": ">=18"
   },
   "scripts": {
+    "test": "jest",
     "lint": "cd server && yarn lint && cd ../frontend && yarn lint && cd ../collector && yarn lint",
     "setup": "cd server && yarn && cd ../collector && yarn && cd ../frontend && yarn && cd .. && yarn setup:envs && yarn prisma:setup && echo \"Please run yarn dev:server, yarn dev:collector, and yarn dev:frontend in separate terminal tabs.\"",
     "setup:envs": "cp -n ./frontend/.env.example ./frontend/.env && cp -n ./server/.env.example ./server/.env.development && cp -n ./collector/.env.example ./collector/.env && cp -n ./docker/.env.example ./docker/.env && echo \"All ENV files copied!\n\"",
@@ -26,10 +27,12 @@
     "prod:frontend": "cd frontend && yarn build",
     "generate:cloudformation": "node cloud-deployments/aws/cloudformation/generate.mjs",
     "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
-    "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs"
+    "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs",
+    "normalize:translations": "cd frontend/src/locales && node normalizeEn.mjs && cd ../../.. && yarn lint && yarn verify:translations"
   },
   "private": false,
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "jest": "^29.7.0"
   }
 }

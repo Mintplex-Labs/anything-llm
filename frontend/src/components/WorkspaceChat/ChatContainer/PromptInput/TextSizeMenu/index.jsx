@@ -43,6 +43,7 @@ export default function TextSizeButton() {
 }
 
 function TextSizeMenu({ showing, setShowing, buttonRef }) {
+  const { t } = useTranslation();
   const formRef = useRef(null);
   const [selectedSize, setSelectedSize] = useState(
     window.localStorage.getItem("anythingllm_text_size") || "normal"
@@ -90,7 +91,9 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-theme-text-primary text-xs">Small</div>
+            <div className="text-theme-text-primary text-xs">
+              {t("chat_window.small")}
+            </div>
           </div>
         </button>
 
@@ -107,7 +110,9 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-theme-text-primary text-sm">Normal</div>
+            <div className="text-theme-text-primary text-sm">
+              {t("chat_window.normal")}
+            </div>
           </div>
         </button>
 
@@ -124,7 +129,9 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
           }`}
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-theme-text-primary text-[16px]">Large</div>
+            <div className="text-theme-text-primary text-[16px]">
+              {t("chat_window.large")}
+            </div>
           </div>
         </button>
       </div>

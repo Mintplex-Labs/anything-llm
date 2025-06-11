@@ -45,11 +45,11 @@ class AnthropicLLM {
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.anthropic[modelName] ?? 100_000;
+    return MODEL_MAP.get("anthropic", modelName) ?? 100_000;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.anthropic[this.model] ?? 100_000;
+    return MODEL_MAP.get("anthropic", this.model) ?? 100_000;
   }
 
   isValidChatCompletionModel(_modelName = "") {

@@ -4,6 +4,10 @@
   <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
 
+<div align='center'>
+<a href="https://trendshift.io/repositories/2415" target="_blank"><img src="https://trendshift.io/api/badge/repositories/2415" alt="Mintplex-Labs%2Fanything-llm | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+</div>
+
 <p align="center">
     <b>AnythingLLM：</b> 您一直在寻找的全方位AI应用程序。<br />
     与您的文档聊天，使用AI代理，高度可配置，多用户，无需繁琐的设置。
@@ -53,17 +57,17 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - 🆕 [**完全兼容 MCP**](https://docs.anythingllm.com/mcp-compatibility/overview)
 - 🆕 [**无代码AI代理构建器**](https://docs.anythingllm.com/agent-flows/overview)
 - 🖼️ **多用户实例支持和权限管理（支持封闭源和开源LLM！）**
+- [**自定义人工智能代理**](https://docs.anythingllm.com/agent/custom/introduction)
 - 👤 多用户实例支持和权限管理 _仅限Docker版本_
-- 🦾 工作区内的智能体Agent（浏览网页、运行代码等）
+- 🦾 工作区内的智能体（浏览网页、运行代码等）
 - 💬 [为您的网站定制的可嵌入聊天窗口](https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md)
 - 📖 支持多种文档类型（PDF、TXT、DOCX等）
-- 通过简单的用户界面管理向量数据库中的文档
-- 两种对话模式：`聊天`和`查询`。聊天模式保留先前的对话记录。查询模式则是针对您的文档做简单问答
-- 聊天中会提供所引用的相应文档内容
+- 带有拖放功能和清晰引用的简洁聊天界面。
 - 100%云部署就绪。
-- “部署你自己的LLM模型”。
-- 管理超大文档时高效、低耗。只需要一次就可以嵌入（Embedding）一个庞大的文档或文字记录。比其他文档聊天机器人解决方案节省90%的成本。
+- 兼容所有主流的[闭源和开源大语言模型提供商](#支持的llm嵌入模型转录模型和向量数据库)。
+- 内置节省成本和时间的机制，用于处理超大文档，优于任何其他聊天界面。
 - 全套的开发人员API，用于自定义集成！
+- 而且还有更多精彩功能……安装后亲自体验吧！
 
 ### 支持的LLM、嵌入模型、转录模型和向量数据库
 
@@ -73,21 +77,28 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - [OpenAI](https://openai.com)
 - [OpenAI (通用)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- [AWS Bedrock](https://aws.amazon.com/bedrock/)
 - [Anthropic](https://www.anthropic.com/)
+- [NVIDIA NIM (聊天模型)](https://build.nvidia.com/explore/discover)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Hugging Face (聊天模型)](https://huggingface.co/)
 - [Ollama (聊天模型)](https://ollama.ai/)
 - [LM Studio (所有模型)](https://lmstudio.ai)
-- [LocalAi (所有模型)](https://localai.io/)
+- [LocalAI (所有模型)](https://localai.io/)
 - [Together AI (聊天模型)](https://www.together.ai/)
 - [Fireworks AI (聊天模型)](https://fireworks.ai/)
 - [Perplexity (聊天模型)](https://www.perplexity.ai/)
 - [OpenRouter (聊天模型)](https://openrouter.ai/)
-- [Novita AI (聊天模型)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
+- [DeepSeek (聊天模型)](https://deepseek.com/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [LiteLLM](https://github.com/BerriAI/litellm)
+- [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
+- [Apipie](https://apipie.ai/)
+- [xAI](https://x.ai/)
+- [Novita AI (聊天模型)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO (聊天模型)](https://ppinfra.com?utm_source=github_anything-llm)
 
 **支持的嵌入模型：**
@@ -95,7 +106,7 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - [AnythingLLM原生嵌入器](/server/storage/models/README.md)（默认）
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- [LocalAi (全部)](https://localai.io/)
+- [LocalAI (全部)](https://localai.io/)
 - [Ollama (全部)](https://ollama.ai/)
 - [LM Studio (全部)](https://lmstudio.ai)
 - [Cohere](https://cohere.com/)
@@ -120,6 +131,7 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 **支持的向量数据库：**
 
 - [LanceDB](https://github.com/lancedb/lancedb) （默认）
+- [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
@@ -164,6 +176,14 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 [了解向量缓存](../server/storage/vector-cache/VECTOR_CACHE.md)
 
+## 外部应用与集成
+
+_以下是一些与 AnythingLLM 兼容的应用程序，但并非由 Mintplex Labs 维护。列在此处并不代表官方背书。_
+
+- [Midori AI 子系统管理器 - 使用 Docker 容器技术高效部署 AI 系统的简化方式](https://io.midori-ai.xyz/subsystem/anythingllm/) - 使用 Docker 容器技术高效部署 AI 系统的简化方式。
+- [Coolify](https://coolify.io/docs/services/anythingllm/) - 一键部署 AnythingLLM。
+- [适用于 Microsoft Word 的 GPTLocalhost](https://gptlocalhost.com/demo/) - 一个本地 Word 插件，让你可以在 Microsoft Word 中使用 AnythingLLM。
+
 ## 远程信息收集与隐私保护
 
 由 Mintplex Labs Inc 开发的 AnythingLLM 包含一个收集匿名使用信息的 Telemetry 功能。
@@ -180,7 +200,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ### 怎样关闭
 
-通过在服务器或 docker 的 `.env` 设置中将 `DISABLE_TELEMETRY` 设置为 “true” 来选择退出 Telemetry 远程信息收集功能。您也可以进入 AnythingLLM 应用 >>> 侧边栏最下方 >>> `隐私和数据` （Privacy&Data） >>> 找到最下方的 Anonymous Telemetry Enabled，点击绿色按钮让它变灰色，从而禁用信息收集功能。
+在服务器或 Docker 的 .env 设置中将 `DISABLE_TELEMETRY` 设置为 "true"，即可选择不参与遥测数据收集。你也可以在应用内通过以下路径操作：侧边栏 > `Privacy` （隐私） > 关闭遥测功能。 
 
 ### 你们跟踪收集哪些信息？
 
@@ -194,15 +214,31 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 您可以通过查找所有调用`Telemetry.sendTelemetry`的位置来验证这些声明。此外，如果启用，这些事件也会被写入输出日志，因此您也可以看到发送了哪些具体数据。**IP或其他识别信息不会被收集**。Telemetry远程信息收集的方案来自[PostHog](https://posthog.com/) - 一个开源的远程信息收集服务。
 
+我们非常重视隐私，且不用烦人的弹窗问卷来获取反馈，希望你能理解为什么我们想要知道该工具的使用情况，这样我们才能打造真正值得使用的产品。所有匿名数据 _绝不会_ 与任何第三方共享。 
+
 [在源代码中查看所有信息收集活动](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
 
 </details>
 
-## 如何贡献
+## 👋 如何贡献
 
 - 创建 issue
 - 创建 PR，分支名称格式为 `<issue number>-<short name>`
 - 合并
+
+## 💖 赞助商
+
+### 高级赞助商
+
+<!-- premium-sponsors (reserved for $100/mth sponsors who request to be called out here and/or are non-private sponsors) -->
+<a href="https://www.dcsdigital.co.uk" target="_blank">
+  <img src="https://a8cforagenciesportfolio.wordpress.com/wp-content/uploads/2024/08/logo-image-232621379.png" height="100px" alt="User avatar: DCS DIGITAL" />
+</a>
+<!-- premium-sponsors -->
+
+### 所有赞助商
+
+<!-- all-sponsors --><a href="https://github.com/jaschadub"><img src="https:&#x2F;&#x2F;github.com&#x2F;jaschadub.png" width="60px" alt="User avatar: Jascha" /></a><a href="https://github.com/KickingAss2024"><img src="https:&#x2F;&#x2F;github.com&#x2F;KickingAss2024.png" width="60px" alt="User avatar: KickAss" /></a><a href="https://github.com/ShadowArcanist"><img src="https:&#x2F;&#x2F;github.com&#x2F;ShadowArcanist.png" width="60px" alt="User avatar: ShadowArcanist" /></a><a href="https://github.com/AtlasVIA"><img src="https:&#x2F;&#x2F;github.com&#x2F;AtlasVIA.png" width="60px" alt="User avatar: Atlas" /></a><a href="https://github.com/cope"><img src="https:&#x2F;&#x2F;github.com&#x2F;cope.png" width="60px" alt="User avatar: Predrag Stojadinović" /></a><a href="https://github.com/DiegoSpinola"><img src="https:&#x2F;&#x2F;github.com&#x2F;DiegoSpinola.png" width="60px" alt="User avatar: Diego Spinola" /></a><a href="https://github.com/PortlandKyGuy"><img src="https:&#x2F;&#x2F;github.com&#x2F;PortlandKyGuy.png" width="60px" alt="User avatar: Kyle" /></a><a href="https://github.com/peperunas"><img src="https:&#x2F;&#x2F;github.com&#x2F;peperunas.png" width="60px" alt="User avatar: Giulio De Pasquale" /></a><a href="https://github.com/jasoncdavis0"><img src="https:&#x2F;&#x2F;github.com&#x2F;jasoncdavis0.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/macstadium"><img src="https:&#x2F;&#x2F;github.com&#x2F;macstadium.png" width="60px" alt="User avatar: MacStadium" /></a><a href="https://github.com/armlynobinguar"><img src="https:&#x2F;&#x2F;github.com&#x2F;armlynobinguar.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/MikeHago"><img src="https:&#x2F;&#x2F;github.com&#x2F;MikeHago.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/maaisde"><img src="https:&#x2F;&#x2F;github.com&#x2F;maaisde.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/mhollier117"><img src="https:&#x2F;&#x2F;github.com&#x2F;mhollier117.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/pleabargain"><img src="https:&#x2F;&#x2F;github.com&#x2F;pleabargain.png" width="60px" alt="User avatar: Dennis" /></a><a href="https://github.com/broichan"><img src="https:&#x2F;&#x2F;github.com&#x2F;broichan.png" width="60px" alt="User avatar: Michael Hamilton, Ph.D." /></a><a href="https://github.com/azim-charaniya"><img src="https:&#x2F;&#x2F;github.com&#x2F;azim-charaniya.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/gabriellemon"><img src="https:&#x2F;&#x2F;github.com&#x2F;gabriellemon.png" width="60px" alt="User avatar: TernaryLabs" /></a><a href="https://github.com/CelaDaniel"><img src="https:&#x2F;&#x2F;github.com&#x2F;CelaDaniel.png" width="60px" alt="User avatar: Daniel Cela" /></a><a href="https://github.com/altrsadmin"><img src="https:&#x2F;&#x2F;github.com&#x2F;altrsadmin.png" width="60px" alt="User avatar: Alesso" /></a><a href="https://github.com/bitjungle"><img src="https:&#x2F;&#x2F;github.com&#x2F;bitjungle.png" width="60px" alt="User avatar: Rune Mathisen" /></a><a href="https://github.com/pcrossleyAC"><img src="https:&#x2F;&#x2F;github.com&#x2F;pcrossleyAC.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/saroj-pattnaik"><img src="https:&#x2F;&#x2F;github.com&#x2F;saroj-pattnaik.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/techmedic5"><img src="https:&#x2F;&#x2F;github.com&#x2F;techmedic5.png" width="60px" alt="User avatar: Alan" /></a><a href="https://github.com/ddocta"><img src="https:&#x2F;&#x2F;github.com&#x2F;ddocta.png" width="60px" alt="User avatar: Damien Peters" /></a><a href="https://github.com/dcsdigital"><img src="https:&#x2F;&#x2F;github.com&#x2F;dcsdigital.png" width="60px" alt="User avatar: DCS Digital" /></a><a href="https://github.com/pm7y"><img src="https:&#x2F;&#x2F;github.com&#x2F;pm7y.png" width="60px" alt="User avatar: Paul Mcilreavy" /></a><a href="https://github.com/tilwolf"><img src="https:&#x2F;&#x2F;github.com&#x2F;tilwolf.png" width="60px" alt="User avatar: Til Wolf" /></a><a href="https://github.com/ozzyoss77"><img src="https:&#x2F;&#x2F;github.com&#x2F;ozzyoss77.png" width="60px" alt="User avatar: Leopoldo Crhistian Riverin Gomez" /></a><a href="https://github.com/AlphaEcho11"><img src="https:&#x2F;&#x2F;github.com&#x2F;AlphaEcho11.png" width="60px" alt="User avatar: AJEsau" /></a><a href="https://github.com/svanomm"><img src="https:&#x2F;&#x2F;github.com&#x2F;svanomm.png" width="60px" alt="User avatar: Steven VanOmmeren" /></a><a href="https://github.com/socketbox"><img src="https:&#x2F;&#x2F;github.com&#x2F;socketbox.png" width="60px" alt="User avatar: Casey Boettcher" /></a><a href="https://github.com/zebbern"><img src="https:&#x2F;&#x2F;github.com&#x2F;zebbern.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/avineetbespin"><img src="https:&#x2F;&#x2F;github.com&#x2F;avineetbespin.png" width="60px" alt="User avatar: Avineet" /></a><!-- all-sponsors -->
 
 ## 🌟 贡献者们
 
@@ -212,12 +248,12 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ## 🔗 更多产品
 
-- **[VectorAdmin][vector-admin]**：一个用于管理向量数据库的全方位GUI和工具套件。
-- **[OpenAI Assistant Swarm][assistant-swarm]**：一个智能体Agent就可以管理您所有的OpenAI助手。
+- **[VectorAdmin][vector-admin]**：一个用于管理向量数据库的全方位图形用户界面和工具套件。
+- **[OpenAI Assistant Swarm][assistant-swarm]**：一个智能体就可以管理您所有的OpenAI助手。
 
 <div align="right">
 
-[![][返回顶部]](#readme-top)
+[![][back-to-top]](#readme-top)
 
 </div>
 

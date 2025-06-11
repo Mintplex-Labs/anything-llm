@@ -233,6 +233,7 @@ const TRANSLATIONS = {
         docs: "Docs",
         star: "Star on Github",
       },
+      keyboardShortcuts: "Keyboard Shortcuts",
     },
   },
 
@@ -325,9 +326,20 @@ const TRANSLATIONS = {
         "Anything more than 45 is likely to lead to continuous chat failures depending on message size.",
     },
     prompt: {
-      title: "Prompt",
+      title: "System Prompt",
       description:
         "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+      history: {
+        title: "System Prompt History",
+        clearAll: "Clear All",
+        noHistory: "No system prompt history available",
+        restore: "Restore",
+        delete: "Delete",
+        deleteConfirm: "Are you sure you want to delete this history item?",
+        clearAllConfirm:
+          "Are you sure you want to clear all history? This action cannot be undone.",
+        expand: "Expand",
+      },
     },
     refusal: {
       title: "Query mode refusal response",
@@ -441,7 +453,7 @@ const TRANSLATIONS = {
       "These are all the recorded chats and messages that have been sent by users ordered by their creation date.",
     export: "Export",
     table: {
-      id: "Id",
+      id: "ID",
       by: "Sent By",
       workspace: "Workspace",
       prompt: "Prompt",
@@ -471,6 +483,10 @@ const TRANSLATIONS = {
       auto_speak: {
         title: "Auto-Speak Responses",
         description: "Automatically speak responses from the AI",
+      },
+      spellcheck: {
+        title: "Enable Spellcheck",
+        description: "Enable or disable spellcheck in the chat input field",
       },
     },
     items: {
@@ -563,8 +579,19 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM Preference",
     description:
-      "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else AnythingLLM will not function properly.",
+      "These are the credentials and settings for your preferred LLM chat & embedding provider. It is important that these keys are current and correct, or else AnythingLLM will not function properly.",
     provider: "LLM Provider",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: "Azure Service Endpoint",
+        api_key: "API Key",
+        chat_deployment_name: "Chat Deployment Name",
+        chat_model_token_limit: "Chat Model Token Limit",
+        model_type: "Model Type",
+        default: "Default",
+        reasoning: "Reasoning",
+      },
+    },
   },
 
   transcription: {
@@ -636,12 +663,13 @@ const TRANSLATIONS = {
     table: {
       workspace: "Workspace",
       chats: "Sent Chats",
-      Active: "Active Domains",
+      active: "Active Domains",
+      created: "Created",
     },
   },
 
   "embed-chats": {
-    title: "Embed Chats",
+    title: "Embed Chat History",
     export: "Export",
     description:
       "These are all the recorded chats and messages from any embed that you have published.",
@@ -706,6 +734,20 @@ const TRANSLATIONS = {
   connectors: {
     "search-placeholder": "Search data connectors",
     "no-connectors": "No data connectors found.",
+    obsidian: {
+      name: "Obsidian",
+      description: "Import Obsidian vault in a single click.",
+      vault_location: "Vault Location",
+      vault_description:
+        "Select your Obsidian vault folder to import all notes and their connections.",
+      selected_files: "Found {{count}} markdown files",
+      importing: "Importing vault...",
+      import_vault: "Import Vault",
+      processing_time:
+        "This may take a while depending on the size of your vault.",
+      vault_warning:
+        "To avoid any conflicts, make sure your Obsidian vault is not currently open.",
+    },
     github: {
       name: "GitHub Repo",
       description:
@@ -896,6 +938,7 @@ const TRANSLATIONS = {
     get_started_default: "To get started",
     upload: "upload a document",
     or: "or",
+    attachments_processing: "Attachments are processing. Please wait...",
     send_chat: "send a chat.",
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",
@@ -904,6 +947,47 @@ const TRANSLATIONS = {
     text_size: "Change text size.",
     microphone: "Speak your prompt.",
     send: "Send prompt message to workspace",
+    tts_speak_message: "TTS Speak message",
+    copy: "Copy",
+    regenerate: "Regenerate",
+    regenerate_response: "Regenerate response",
+    good_response: "Good response",
+    more_actions: "More actions",
+    hide_citations: "Hide citations",
+    show_citations: "Show citations",
+    pause_tts_speech_message: "Pause TTS speech of message",
+    fork: "Fork",
+    delete: "Delete",
+    save_submit: "Save & Submit",
+    cancel: "Cancel",
+    edit_prompt: "Edit prompt",
+    edit_response: "Edit response",
+    at_agent: "@agent",
+    default_agent_description: " - the default agent for this workspace.",
+    custom_agents_coming_soon: "custom agents are coming soon!",
+    slash_reset: "/reset",
+    preset_reset_description: "Clear your chat history and begin a new chat",
+    add_new_preset: " Add New Preset",
+    command: "Command",
+    your_command: "your-command",
+    placeholder_prompt:
+      "This is the content that will be injected in front of your prompt.",
+    description: "Description",
+    placeholder_description: "Responds with a poem about LLMs.",
+    save: "Save",
+    small: "Small",
+    normal: "Normal",
+    large: "Large",
+    workspace_llm_manager: {
+      search: "Search LLM providers",
+      loading_workspace_settings: "Loading workspace settings...",
+      available_models: "Available Models for {{provider}}",
+      available_models_description: "Select a model to use for this workspace.",
+      save: "Use this model",
+      saving: "Setting model as workspace default...",
+      missing_credentials: "This provider is missing credentials!",
+      missing_credentials_description: "Click to set up credentials",
+    },
   },
 
   profile_settings: {
@@ -919,6 +1003,29 @@ const TRANSLATIONS = {
     update_account: "Update Account",
     theme: "Theme Preference",
     language: "Preferred language",
+    failed_upload: "Failed to upload profile picture: {{error}}",
+    upload_success: "Profile picture uploaded.",
+    failed_remove: "Failed to remove profile picture: {{error}}",
+    profile_updated: "Profile updated.",
+    failed_update_user: "Failed to update user: {{error}}",
+    account: "Account",
+    support: "Support",
+    signout: "Sign out",
+  },
+
+  "keyboard-shortcuts": {
+    title: "Keyboard Shortcuts",
+    shortcuts: {
+      settings: "Open Settings",
+      workspaceSettings: "Open Current Workspace Settings",
+      home: "Go to Home",
+      workspaces: "Manage Workspaces",
+      apiKeys: "API Keys Settings",
+      llmPreferences: "LLM Preferences",
+      chatSettings: "Chat Settings",
+      help: "Show keyboard shortcuts help",
+      showLLMSelector: "Show workspace LLM Selector",
+    },
   },
 };
 

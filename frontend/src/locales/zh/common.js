@@ -26,11 +26,11 @@ const TRANSLATIONS = {
       adminPassword: "管理员账户密码",
       adminPasswordReq: "密码必须至少包含 8 个字符。",
       teamHint:
-        "默认情况下，你将是唯一的管理员。完成入职后，你可以创建和邀请其他人成为用户或管理员。不要丢失你的密码，因为只有管理员可以重置密码。",
+        "默认情况下，你将是唯一的管理员。完成初始设置后，你可以创建和邀请其他人成为用户或管理员。不要丢失你的密码，因为只有管理员可以重置密码。",
     },
     data: {
       title: "数据处理与隐私",
-      description: "我们致力于在涉及你的个人数据时提供透明和控制。",
+      description: "我们致力于在涉及你的个人数据时提供透明度和控制权。",
       settingsHint: "这些设置可以随时在设置中重新配置。",
     },
     survey: {
@@ -62,9 +62,9 @@ const TRANSLATIONS = {
     saving: "保存中...",
     previous: "上一页",
     next: "下一页",
-    optional: null,
-    yes: null,
-    no: null,
+    optional: "可选",
+    yes: "是",
+    no: "否",
   },
   settings: {
     title: "设置",
@@ -74,10 +74,13 @@ const TRANSLATIONS = {
     workspaces: "工作区",
     "workspace-chats": "对话历史记录",
     customization: "外观",
-    "api-keys": "API 密钥",
-    llm: "LLM 首选项",
+    interface: "界面偏好",
+    branding: "品牌与白标签化",
+    chat: "聊天",
+    "api-keys": "开发者API",
+    llm: "大语言模型（LLM）",
     transcription: "转录模型",
-    embedder: "Embedder 首选项",
+    embedder: "嵌入器（Embedder）",
     "text-splitting": "文本分割",
     "voice-speech": "语音和讲话",
     "vector-database": "向量数据库",
@@ -94,9 +97,6 @@ const TRANSLATIONS = {
     contact: "联系支持",
     "browser-extension": "浏览器扩展",
     "system-prompt-variables": "系统提示变量",
-    interface: "界面偏好",
-    branding: "品牌与白标签化",
-    chat: "聊天",
   },
   login: {
     "multi-user": {
@@ -104,7 +104,7 @@ const TRANSLATIONS = {
       "placeholder-username": "请输入用户名",
       "placeholder-password": "请输入密码",
       login: "登录",
-      validating: "登录",
+      validating: "正在验证...",
       "forgot-pass": "忘记密码",
       reset: "重置",
     },
@@ -139,6 +139,87 @@ const TRANSLATIONS = {
     part6: "玩得开心！",
     starOnGitHub: "在 GitHub 上加星",
     contact: "联系 Mintplex Labs",
+  },
+  "main-page": {
+    noWorkspaceError: "请在开始聊天前创建一个工作区。",
+    checklist: {
+      title: "入门指南",
+      tasksLeft: "剩余任务",
+      completed: "你正在成为AnythingLLM专家的路上！",
+      dismiss: "关闭",
+      tasks: {
+        create_workspace: {
+          title: "创建工作区",
+          description: "创建你的第一个工作区以开始使用",
+          action: "创建",
+        },
+        send_chat: {
+          title: "发送聊天",
+          description: "开始与你的AI助手对话",
+          action: "聊天",
+        },
+        embed_document: {
+          title: "嵌入文档",
+          description: "添加你的第一个文档到工作区",
+          action: "嵌入",
+        },
+        setup_system_prompt: {
+          title: "设置系统提示",
+          description: "配置你的AI助手的行为",
+          action: "设置",
+        },
+        define_slash_command: {
+          title: "定义斜杠命令",
+          description: "为你的助手创建自定义命令",
+          action: "定义",
+        },
+        visit_community: {
+          title: "访问社区中心",
+          description: "探索社区资源和模板",
+          action: "浏览",
+        },
+      },
+    },
+    quickLinks: {
+      title: "快捷链接",
+      sendChat: "发送聊天",
+      embedDocument: "嵌入文档",
+      createWorkspace: "创建工作区",
+    },
+    exploreMore: {
+      title: "探索更多功能",
+      features: {
+        customAgents: {
+          title: "自定义AI代理",
+          description: "无需编程即可构建强大的AI代理和自动化流程。",
+          primaryAction: "使用@agent聊天",
+          secondaryAction: "构建代理流程",
+        },
+        slashCommands: {
+          title: "斜杠命令",
+          description: "使用自定义斜杠命令节省时间并注入提示。",
+          primaryAction: "创建斜杠命令",
+          secondaryAction: "在中心探索",
+        },
+        systemPrompts: {
+          title: "系统提示",
+          description: "修改系统提示以自定义工作区的AI回复。",
+          primaryAction: "修改系统提示",
+          secondaryAction: "管理提示变量",
+        },
+      },
+    },
+    announcements: {
+      title: "更新与公告",
+    },
+    resources: {
+      title: "资源",
+      links: {
+        docs: "文档",
+        star: "在Github上加星标",
+      },
+      keyboardShortcuts: null,
+    },
   },
   "new-workspace": {
     title: "新工作区",
@@ -206,9 +287,9 @@ const TRANSLATIONS = {
       },
       query: {
         title: "查询",
-        "desc-start": "将",
-        only: "仅",
-        "desc-end": "提供找到的文档上下文的答案。",
+        "desc-start": "将会提供答案",
+        only: "仅当",
+        "desc-end": "找到文档上下文时。",
       },
     },
     history: {
@@ -219,9 +300,19 @@ const TRANSLATIONS = {
         "任何超过 45 的值都可能导致连续聊天失败，具体取决于消息大小。",
     },
     prompt: {
-      title: "聊天提示",
+      title: "系统提示词",
       description:
-        "将在此工作区上使用的提示。定义 AI 生成响应的上下文和指令。你应该提供精心设计的提示，以便人工智能可以生成相关且准确的响应。",
+        "将在此工作区上使用的提示词。定义 AI 生成响应的上下文和指令。你应该提供精心设计的提示，以便人工智能可以生成相关且准确的响应。",
+      history: {
+        title: "系统提示词历史",
+        clearAll: "全部清除",
+        noHistory: "没有可用的系统提示词历史记录",
+        restore: "恢复",
+        delete: "删除",
+        deleteConfirm: "您确定要删除此历史记录吗？",
+        clearAllConfirm: "您确定要清除所有历史记录吗？此操作无法撤消。",
+        expand: "展开",
+      },
     },
     refusal: {
       title: "查询模式拒绝响应",
@@ -284,7 +375,7 @@ const TRANSLATIONS = {
       description:
         "使用这些预构建的技能提高默认代理的自然能力。此设置适用于所有工作区。",
       rag: {
-        title: "RAG 和长期记忆",
+        title: "检索增强生成和长期记忆",
         description:
           '允许代理利用你的本地文档来回答查询，或要求代理"记住"长期记忆检索的内容片段。',
       },
@@ -308,7 +399,7 @@ const TRANSLATIONS = {
       web: {
         title: "实时网络搜索和浏览",
         "desc-start":
-          "通过连接到网络搜索（SERP）提供者，使你的代理能够搜索网络以回答你的问题。",
+          "通过连接到网络搜索（搜索结果页）提供者，使你的代理能够搜索网络以回答你的问题。",
         "desc-end": "在代理会话期间，网络搜索将不起作用，直到此设置完成。",
       },
     },
@@ -318,12 +409,101 @@ const TRANSLATIONS = {
     description: "这些是用户发送的所有聊天记录和消息，按创建日期排序。",
     export: "导出",
     table: {
-      id: "Id",
+      id: "编号",
       by: "发送者",
       workspace: "工作区",
-      prompt: "提示",
+      prompt: "提示词",
       response: "响应",
       at: "发送时间",
+    },
+  },
+  customization: {
+    interface: {
+      title: "界面偏好设置",
+      description: "设置您的 AnythingLLM 界面偏好。",
+    },
+    branding: {
+      title: "品牌与白标设置",
+      description: "使用自定义品牌对白标您的 AnythingLLM 实例。",
+    },
+    chat: {
+      title: "聊天",
+      description: "设置您的 AnythingLLM 聊天偏好。",
+      auto_submit: {
+        title: "自动提交语音输入",
+        description: "在静音一段时间后自动提交语音输入",
+      },
+      auto_speak: {
+        title: "自动语音回复",
+        description: "自动朗读 AI 的回复内容",
+      },
+      spellcheck: {
+        title: "启用拼写检查",
+        description: "在聊天输入框中启用或禁用拼写检查",
+      },
+    },
+    items: {
+      theme: {
+        title: "主题",
+        description: "选择您偏好的应用配色主题。",
+      },
+      "show-scrollbar": {
+        title: "显示滚动条",
+        description: "启用或禁用聊天窗口中的滚动条。",
+      },
+      "support-email": {
+        title: "客服邮箱",
+        description: "设置用户在需要帮助时可联系的客服邮箱地址。",
+      },
+      "app-name": {
+        title: "名称",
+        description: "设置所有用户在登录页面看到的名称。",
+      },
+      "chat-message-alignment": {
+        title: "聊天消息对齐方式",
+        description: "选择在聊天界面中使用的消息对齐模式。",
+      },
+      "display-language": {
+        title: "显示语言",
+        description: "选择显示 AnythingLLM 界面所用的语言（若有翻译可用）。",
+      },
+      logo: {
+        title: "品牌标志",
+        description: "上传您的自定义标志以在所有页面展示。",
+        add: "添加自定义标志",
+        recommended: "推荐尺寸：800 x 200",
+        remove: "移除",
+        replace: "替换",
+      },
+      "welcome-messages": {
+        title: "欢迎信息",
+        description: "自定义显示给用户的欢迎信息。仅非管理员用户可见这些信息。",
+        new: "新建",
+        system: "系统",
+        user: "用户",
+        message: "信息",
+        assistant: "AnythingLLM 聊天助手",
+        "double-click": "双击进行编辑...",
+        save: "保存信息",
+      },
+      "browser-appearance": {
+        title: "浏览器外观",
+        description: "自定义应用打开时浏览器标签和标题的外观。",
+        tab: {
+          title: "标题",
+          description: "设置应用在浏览器中打开时的自定义标签标题。",
+        },
+        favicon: {
+          title: "网站图标",
+          description: "为浏览器标签使用自定义网站图标。",
+        },
+      },
+      "sidebar-footer": {
+        title: "侧边栏底部项目",
+        description: "自定义显示在侧边栏底部的项目。",
+        icon: "图标",
+        link: "链接",
+      },
     },
   },
   api: {
@@ -334,14 +514,25 @@ const TRANSLATIONS = {
     table: {
       key: "API 密钥",
       by: "创建者",
-      created: "创建",
+      created: "创建时间",
     },
   },
   llm: {
     title: "LLM 首选项",
     description:
-      "这些是你首选的 LLM 聊天和嵌入提供商的凭据和设置。重要的是，这些密钥是最新的和正确的，否则 AnythingLLM 将无法正常运行。",
+      "这些是你首选的 LLM 聊天和嵌入提供商的凭据和设置。重要的是，确保这些密钥是最新的和正确的，否则 AnythingLLM 将无法正常运行。",
     provider: "LLM 提供商",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "转录模型首选项",
@@ -399,7 +590,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "工作区",
       chats: "已发送聊天",
-      Active: "活动域",
+      active: "活动域",
+      created: null,
     },
   },
   "embed-chats": {
@@ -625,6 +817,18 @@ const TRANSLATIONS = {
       watch_explained_block3_end: " 管理视图中管理被监控的文档。",
       accept: "好的，知道了",
     },
+    obsidian: {
+      name: "Obsidian",
+      description: "一键导入 Obsidian 仓库。",
+      vault_location: "仓库位置",
+      vault_description:
+        "选择你的 Obsidian 仓库文件夹，以导入所有笔记及其关联。",
+      selected_files: "找到 {{count}} 个 Markdown 文件",
+      importing: "正在导入保险库…",
+      import_vault: "导入保险库",
+      processing_time: "根据你的仓库大小，这可能需要一些时间。",
+      vault_warning: "为避免冲突，请确保你的 Obsidian 仓库当前未被打开。",
+    },
   },
   chat_window: {
     welcome: "欢迎来到你的新工作区。",
@@ -640,183 +844,82 @@ const TRANSLATIONS = {
     text_size: "更改文字大小。",
     microphone: "语音输入你的提示。",
     send: "将提示消息发送到工作区",
+    attachments_processing: "附件正在处理，请稍候……",
+    tts_speak_message: null,
+    copy: null,
+    regenerate: null,
+    regenerate_response: null,
+    good_response: null,
+    more_actions: null,
+    hide_citations: null,
+    show_citations: null,
+    pause_tts_speech_message: null,
+    fork: null,
+    delete: null,
+    save_submit: null,
+    cancel: null,
+    edit_prompt: null,
+    edit_response: null,
+    at_agent: null,
+    default_agent_description: null,
+    custom_agents_coming_soon: null,
+    slash_reset: null,
+    preset_reset_description: null,
+    add_new_preset: null,
+    command: null,
+    your_command: null,
+    placeholder_prompt: null,
+    description: null,
+    placeholder_description: null,
+    save: null,
+    small: null,
+    normal: null,
+    large: null,
+    workspace_llm_manager: {
+      search: null,
+      loading_workspace_settings: null,
+      available_models: null,
+      available_models_description: null,
+      save: null,
+      saving: null,
+      missing_credentials: null,
+      missing_credentials_description: null,
+    },
   },
   profile_settings: {
-    edit_account: null,
-    profile_picture: null,
-    remove_profile_picture: null,
-    username: null,
-    username_description: null,
-    new_password: null,
-    passwort_description: null,
-    cancel: null,
-    update_account: null,
-    theme: null,
-    language: null,
+    edit_account: "编辑帐户",
+    profile_picture: "头像",
+    remove_profile_picture: "移除头像",
+    username: "用户名",
+    username_description:
+      "用户名必须仅包含小写字母、数字、下划线和连字符，且不能包含空格",
+    new_password: "新密码",
+    passwort_description: "密码长度必须至少为 8 个字符",
+    cancel: "取消",
+    update_account: "更新帐号",
+    theme: "主题偏好",
+    language: "语言偏好",
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
   },
-  customization: {
-    interface: {
-      title: "界面偏好设置",
-      description: "设置您的 AnythingLLM 界面偏好。",
-    },
-    branding: {
-      title: "品牌与白标设置",
-      description: "使用自定义品牌对白标您的 AnythingLLM 实例。",
-    },
-    chat: {
-      title: "聊天",
-      description: "设置您的 AnythingLLM 聊天偏好。",
-      auto_submit: {
-        title: "自动提交语音输入",
-        description: "在静音一段时间后自动提交语音输入",
-      },
-      auto_speak: {
-        title: "自动语音回复",
-        description: "自动朗读 AI 的回复内容",
-      },
-    },
-    items: {
-      theme: {
-        title: "主题",
-        description: "选择您偏好的应用配色主题。",
-      },
-      "show-scrollbar": {
-        title: "显示滚动条",
-        description: "启用或禁用聊天窗口中的滚动条。",
-      },
-      "support-email": {
-        title: "支持邮箱",
-        description: "设置用户在需要帮助时可联系的支持邮箱地址。",
-      },
-      "app-name": {
-        title: "名称",
-        description: "设置所有用户在登录页面看到的名称。",
-      },
-      "chat-message-alignment": {
-        title: "聊天消息对齐方式",
-        description: "选择在聊天界面中使用的消息对齐模式。",
-      },
-      "display-language": {
-        title: "显示语言",
-        description: "选择显示 AnythingLLM 界面所用的语言（若有翻译可用）。",
-      },
-      logo: {
-        title: "品牌标志",
-        description: "上传您的自定义标志以在所有页面展示。",
-        add: "添加自定义标志",
-        recommended: "推荐尺寸：800 x 200",
-        remove: "移除",
-        replace: "替换",
-      },
-      "welcome-messages": {
-        title: "欢迎消息",
-        description: "自定义显示给用户的欢迎消息。仅非管理员用户可见这些消息。",
-        new: "新建",
-        system: "系统",
-        user: "用户",
-        message: "消息",
-        assistant: "AnythingLLM 聊天助手",
-        "double-click": "双击进行编辑...",
-        save: "保存消息",
-      },
-      "browser-appearance": {
-        title: "浏览器外观",
-        description: "自定义应用打开时浏览器标签和标题的外观。",
-        tab: {
-          title: "标题",
-          description: "设置应用在浏览器中打开时的自定义标签标题。",
-        },
-        favicon: {
-          title: "网站图标",
-          description: "为浏览器标签使用自定义网站图标。",
-        },
-      },
-      "sidebar-footer": {
-        title: "侧边栏底部项目",
-        description: "自定义显示在侧边栏底部的项目。",
-        icon: "图标",
-        link: "链接",
-      },
-    },
-  },
-  "main-page": {
-    noWorkspaceError: "请在开始聊天前创建一个工作区。",
-    checklist: {
-      title: "入门指南",
-      tasksLeft: "剩余任务",
-      completed: "你正在成为AnythingLLM专家的路上！",
-      dismiss: "关闭",
-      tasks: {
-        create_workspace: {
-          title: "创建工作区",
-          description: "创建你的第一个工作区以开始使用",
-          action: "创建",
-        },
-        send_chat: {
-          title: "发送聊天",
-          description: "开始与你的AI助手对话",
-          action: "聊天",
-        },
-        embed_document: {
-          title: "嵌入文档",
-          description: "添加你的第一个文档到工作区",
-          action: "嵌入",
-        },
-        setup_system_prompt: {
-          title: "设置系统提示",
-          description: "配置你的AI助手的行为",
-          action: "设置",
-        },
-        define_slash_command: {
-          title: "定义斜杠命令",
-          description: "为你的助手创建自定义命令",
-          action: "定义",
-        },
-        visit_community: {
-          title: "访问社区中心",
-          description: "探索社区资源和模板",
-          action: "浏览",
-        },
-      },
-    },
-    quickLinks: {
-      title: "快捷链接",
-      sendChat: "发送聊天",
-      embedDocument: "嵌入文档",
-      createWorkspace: "创建工作区",
-    },
-    exploreMore: {
-      title: "探索更多功能",
-      features: {
-        customAgents: {
-          title: "自定义AI代理",
-          description: "无需编程即可构建强大的AI代理和自动化流程。",
-          primaryAction: "使用@agent聊天",
-          secondaryAction: "构建代理流程",
-        },
-        slashCommands: {
-          title: "斜杠命令",
-          description: "使用自定义斜杠命令节省时间并注入提示。",
-          primaryAction: "创建斜杠命令",
-          secondaryAction: "在中心探索",
-        },
-        systemPrompts: {
-          title: "系统提示",
-          description: "修改系统提示以自定义工作区的AI回复。",
-          primaryAction: "修改系统提示",
-          secondaryAction: "管理提示变量",
-        },
-      },
-    },
-    announcements: {
-      title: "更新与公告",
-    },
-    resources: {
-      title: "资源",
-      links: {
-        docs: "文档",
-        star: "在Github上加星标",
-      },
+  "keyboard-shortcuts": {
+    title: null,
+    shortcuts: {
+      settings: null,
+      workspaceSettings: null,
+      home: null,
+      workspaces: null,
+      apiKeys: null,
+      llmPreferences: null,
+      chatSettings: null,
+      help: null,
+      showLLMSelector: null,
     },
   },
 };

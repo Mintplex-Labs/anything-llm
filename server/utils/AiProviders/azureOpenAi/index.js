@@ -100,7 +100,7 @@ class AzureOpenAiLLM {
     for (let attachment of attachments) {
       content.push({
         type: "image_url",
-        imageUrl: {
+        image_url: {
           url: attachment.contentString,
         },
       });
