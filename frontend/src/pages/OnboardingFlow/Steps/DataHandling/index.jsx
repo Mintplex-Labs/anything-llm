@@ -37,6 +37,7 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import DPAISLogo from "@/media/llmprovider/dpais.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -233,6 +234,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to PPIO",
     ],
     logo: PPIOLogo,
+  },
+  dpais: {
+    name: "Dell Pro AI Studio",
+    description: [
+      "Your model and chat contents are only accessible on the computer running Dell Pro AI Studio",
+    ],
+    logo: DPAISLogo,
   },
 };
 

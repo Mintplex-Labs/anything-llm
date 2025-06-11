@@ -3,7 +3,6 @@ import CommunityHubImportItemSteps from "..";
 import CTAButton from "@/components/lib/CTAButton";
 import { useEffect, useState } from "react";
 import HubItemComponent from "./HubItem";
-import PreLoader from "@/components/Preloader";
 
 function useGetCommunityHubItem({ importId, updateSettings }) {
   const [item, setItem] = useState(null);

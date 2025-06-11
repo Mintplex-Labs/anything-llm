@@ -262,6 +262,20 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Dell Pro AI Studio Settings
+  DellProAiStudioBasePath: {
+    envKey: "DPAIS_LLM_BASE_PATH",
+    checks: [isNotEmpty, validDockerizedUrl],
+  },
+  DellProAiStudioModelPref: {
+    envKey: "DPAIS_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  DellProAiStudioTokenLimit: {
+    envKey: "DPAIS_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
@@ -765,6 +779,7 @@ function supportedLLM(input = "") {
     "xai",
     "nvidia-nim",
     "ppio",
+    "dpais",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

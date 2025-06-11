@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['pg-database-img'] # put your current branch to create a build. Core team only.
+    branches: ['2095-model-swap-in-chat'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

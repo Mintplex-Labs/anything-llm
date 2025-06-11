@@ -7,7 +7,11 @@
 
 const { htmlToText } = require("html-to-text");
 const { tokenizeString } = require("../../../tokenizer");
-const { sanitizeFileName, writeToServerDocuments } = require("../../../files");
+const {
+  sanitizeFileName,
+  writeToServerDocuments,
+  documentsFolder,
+} = require("../../../files");
 const { default: slugify } = require("slugify");
 const path = require("path");
 const fs = require("fs");
@@ -180,10 +184,6 @@ class DrupalWiki {
     // show up (deduplication).
     const targetUUID = `${hostname}.${page.spaceId}.${page.id}.${page.created}`;
     const wordCount = page.processedBody.split(" ").length;
-    const tokenCount =
-      page.processedBody.length > 0
-        ? tokenizeString(page.processedBody).length
-        : 0;
     const data = {
       id: targetUUID,
       url: `drupalwiki://${page.url}`,
@@ -195,7 +195,7 @@ class DrupalWiki {
       published: new Date().toLocaleString(),
       wordCount: wordCount,
       pageContent: page.processedBody,
-      token_count_estimate: tokenCount,
+      token_count_estimate: tokenizeString(page.processedBody),
     };
 
     const fileName = sanitizeFileName(`${slugify(page.title)}-${data.id}`);
@@ -245,18 +245,8 @@ class DrupalWiki {
   #prepareStoragePath(baseUrl) {
     const { hostname } = new URL(baseUrl);
     const subFolder = slugify(`drupalwiki-${hostname}`).toLowerCase();
-
-    const outFolder =
-      process.env.NODE_ENV === "development"
-        ? path.resolve(
-            __dirname,
-            `../../../../server/storage/documents/${subFolder}`
-          )
-        : path.resolve(process.env.STORAGE_DIR, `documents/${subFolder}`);
-
-    if (!fs.existsSync(outFolder)) {
-      fs.mkdirSync(outFolder, { recursive: true });
-    }
+    const outFolder = path.resolve(documentsFolder, subFolder);
+    if (!fs.existsSync(outFolder)) fs.mkdirSync(outFolder, { recursive: true });
     return outFolder;
   }
 
