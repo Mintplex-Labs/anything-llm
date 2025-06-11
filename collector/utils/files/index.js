@@ -135,7 +135,7 @@ async function wipeCollectorStorage() {
         if (file === "__HOTDIR__.md") continue;
         try {
           fs.rmSync(path.join(directory, file));
-        } catch { }
+        } catch {}
       }
       resolve();
     });
@@ -150,7 +150,7 @@ async function wipeCollectorStorage() {
         if (file === ".placeholder") continue;
         try {
           fs.rmSync(path.join(directory, file));
-        } catch { }
+        } catch {}
       }
       resolve();
     });
@@ -188,7 +188,6 @@ function sanitizeFileName(fileName) {
 }
 
 module.exports = {
-  documentsFolder,
   trashFile,
   isTextType,
   createdDate,

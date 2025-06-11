@@ -3,7 +3,11 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { sanitizeFileName, writeToServerDocuments, documentsFolder } = require("../../../files");
+const {
+  sanitizeFileName,
+  writeToServerDocuments,
+  documentsFolder,
+} = require("../../../files");
 const { tokenizeString } = require("../../../tokenizer");
 
 /**
