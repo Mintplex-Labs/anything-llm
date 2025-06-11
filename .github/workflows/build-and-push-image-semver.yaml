@@ -10,7 +10,7 @@ concurrency:
 
 on:
   push:
-    branches: ['master']
+    branches: ['1.8.2']
 
 jobs:
   push_multi_platform_to_registries:
