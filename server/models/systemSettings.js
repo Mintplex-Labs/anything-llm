@@ -7,6 +7,8 @@ const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
 const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
+const { PGVector } = require("../utils/vectorDbProviders/pgvector");
+const { getBaseLLMProviderModel } = require("../utils/helpers");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -226,6 +228,7 @@ const SystemSettings = {
       // LLM Provider Selection Settings & Configs
       // --------------------------------------------------------
       LLMProvider: llmProvider,
+      LLMModel: getBaseLLMProviderModel({ provider: llmProvider }) || null,
       ...this.llmPreferenceKeys(),
 
       // --------------------------------------------------------
@@ -427,6 +430,10 @@ const SystemSettings = {
       // AstraDB Keys
       AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
       AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
+
+      // PGVector Keys
+      PGVectorConnectionString: !!PGVector.connectionString() || false,
+      PGVectorTableName: PGVector.tableName(),
     };
   },
 
@@ -450,7 +457,8 @@ const SystemSettings = {
 
       // Gemini Keys
       GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
-      GeminiLLMModelPref: process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro",
+      GeminiLLMModelPref:
+        process.env.GEMINI_LLM_MODEL_PREF || "gemini-2.0-flash-lite",
       GeminiSafetySetting:
         process.env.GEMINI_SAFETY_SETTING || "BLOCK_MEDIUM_AND_ABOVE",
 
@@ -466,12 +474,12 @@ const SystemSettings = {
       LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
 
       // Ollama LLM Keys
+      OllamaLLMAuthToken: !!process.env.OLLAMA_AUTH_TOKEN,
       OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
       OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
       OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
       OllamaLLMKeepAliveSeconds: process.env.OLLAMA_KEEP_ALIVE_TIMEOUT ?? 300,
       OllamaLLMPerformanceMode: process.env.OLLAMA_PERFORMANCE_MODE ?? "base",
-      OllamaLLMAuthToken: process.env.OLLAMA_AUTH_TOKEN ?? null,
 
       // Novita LLM Keys
       NovitaLLMApiKey: !!process.env.NOVITA_LLM_API_KEY,
@@ -512,6 +520,7 @@ const SystemSettings = {
       KoboldCPPModelPref: process.env.KOBOLD_CPP_MODEL_PREF,
       KoboldCPPBasePath: process.env.KOBOLD_CPP_BASE_PATH,
       KoboldCPPTokenLimit: process.env.KOBOLD_CPP_MODEL_TOKEN_LIMIT,
+      KoboldCPPMaxTokens: process.env.KOBOLD_CPP_MAX_TOKENS,
 
       // Text Generation Web UI Keys
       TextGenWebUIBasePath: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
@@ -538,7 +547,10 @@ const SystemSettings = {
       AwsBedrockLLMSessionToken: !!process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
       AwsBedrockLLMRegion: process.env.AWS_BEDROCK_LLM_REGION,
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
-      AwsBedrockLLMTokenLimit: process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT,
+      AwsBedrockLLMTokenLimit:
+        process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT || 8192,
+      AwsBedrockLLMMaxOutputTokens:
+        process.env.AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS || 4096,
 
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,
@@ -564,6 +576,16 @@ const SystemSettings = {
       NvidiaNimLLMBasePath: process.env.NVIDIA_NIM_LLM_BASE_PATH,
       NvidiaNimLLMModelPref: process.env.NVIDIA_NIM_LLM_MODEL_PREF,
       NvidiaNimLLMTokenLimit: process.env.NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT,
+
+      // PPIO API keys
+      PPIOApiKey: !!process.env.PPIO_API_KEY,
+      PPIOModelPref: process.env.PPIO_MODEL_PREF,
+
+      // Dell Pro AI Studio Keys
+      DellProAiStudioBasePath: process.env.DPAIS_LLM_BASE_PATH,
+      DellProAiStudioModelPref: process.env.DPAIS_LLM_MODEL_PREF,
+      DellProAiStudioTokenLimit:
+        process.env.DPAIS_LLM_MODEL_TOKEN_LIMIT ?? 4096,
     };
   },
 

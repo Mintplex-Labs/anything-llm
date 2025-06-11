@@ -6,9 +6,12 @@ import { useModal } from "@/hooks/useModal";
 import System from "@/models/system";
 import { DotsThree, Plus } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
+import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
-export default function SlashPresets({ setShowing, sendCommand }) {
+export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
+  const { t } = useTranslation();
   const isActiveAgentSession = useIsAgentSessionActive();
   const {
     isOpen: isAddModalOpen,
@@ -22,10 +25,25 @@ export default function SlashPresets({ setShowing, sendCommand }) {
   } = useModal();
   const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     fetchPresets();
   }, []);
+
+  /*
+   * @checklist-item
+   * If the URL has the slash-commands param, open the add modal for the user
+   * automatically when the component mounts.
+   */
+  useEffect(() => {
+    if (
+      searchParams.get("action") === "open-new-slash-command-modal" &&
+      !isAddModalOpen
+    )
+      openAddModal();
+  }, []);
+
   if (isActiveAgentSession) return null;
 
   const fetchPresets = async () => {
@@ -84,6 +102,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
           onClick={() => {
             setShowing(false);
             sendCommand(`${preset.command} `, false);
+            promptRef?.current?.focus();
           }}
           className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-row justify-start"
         >
@@ -113,7 +132,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
         <div className="w-full flex-row flex pointer-events-none items-center gap-2">
           <Plus size={24} weight="fill" className="text-theme-text-primary" />
           <div className="text-theme-text-primary text-sm font-medium">
-            Add New Preset
+            {t("chat_window.add_new_preset")}
           </div>
         </div>
       </button>

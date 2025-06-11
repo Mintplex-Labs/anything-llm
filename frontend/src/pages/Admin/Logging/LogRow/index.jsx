@@ -27,35 +27,35 @@ export default function LogRow({ log }) {
     <>
       <tr
         onClick={handleRowClick}
-        className={`bg-transparent text-white text-opacity-80 text-sm font-medium ${
+        className={`bg-transparent text-white text-opacity-80 text-xs font-medium border-b border-white/10 h-10 ${
           hasMetadata ? "cursor-pointer hover:bg-white/5" : ""
         }`}
       >
         <EventBadge event={log.event} />
-        <td className="px-6 py-4 border-transparent transform transition-transform duration-200">
+        <td className="px-6 border-transparent transform transition-transform duration-200">
           {log.user.username}
         </td>
-        <td className="px-6 py-4 border-transparent transform transition-transform duration-200">
+        <td className="px-6 border-transparent transform transition-transform duration-200">
           {log.occurredAt}
         </td>
         {hasMetadata && (
-          <>
+          <div className="mt-1">
             {expanded ? (
               <td
-                className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
+                className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200`}
               >
                 <CaretUp weight="bold" size={20} />
                 <p className="text-xs text-white/50 w-[20px]">hide</p>
               </td>
             ) : (
               <td
-                className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
+                className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200`}
               >
                 <CaretDown weight="bold" size={20} />
                 <p className="text-xs text-white/50 w-[20px]">show</p>
               </td>
             )}
-          </>
+          </div>
         )}
       </tr>
       <EventMetadata metadata={metadata} expanded={expanded} />
@@ -106,9 +106,9 @@ const EventBadge = ({ event }) => {
     };
 
   return (
-    <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
+    <td className="px-6 py-2 font-medium whitespace-nowrap text-white flex items-center">
       <span
-        className={`rounded-full ${colorTheme.bg} px-2 py-0.5 text-sm font-medium ${colorTheme.text} shadow-sm`}
+        className={`rounded-full ${colorTheme.bg} px-2 py-0.5 text-xs font-medium ${colorTheme.text} shadow-sm`}
       >
         {event}
       </span>

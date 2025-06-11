@@ -1,96 +1,94 @@
-const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
+const { AzureOpenAI } = require("openai");
 const Provider = require("./ai-provider.js");
-const InheritMultiple = require("./helpers/classes.js");
-const UnTooled = require("./helpers/untooled.js");
+const { RetryError } = require("../error.js");
 
 /**
  * The agent provider for the Azure OpenAI API.
  */
-class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
+class AzureOpenAiProvider extends Provider {
   model;
 
-  constructor(_config = {}) {
-    super();
-    const client = new OpenAIClient(
-      process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
-    );
-    this._client = client;
-    this.model = process.env.OPEN_MODEL_PREF ?? "gpt-3.5-turbo";
+  constructor(config = { model: null }) {
+    const client = new AzureOpenAI({
+      apiKey: process.env.AZURE_OPENAI_KEY,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      apiVersion: "2024-12-01-preview",
+    });
+    super(client);
+    this.model = config.model ?? process.env.OPEN_MODEL_PREF;
     this.verbose = true;
   }
-
-  get client() {
-    return this._client;
-  }
-
-  async #handleFunctionCallChat({ messages = [] }) {
-    return await this.client
-      .getChatCompletions(this.model, messages, {
-        temperature: 0,
-      })
-      .then((result) => {
-        if (!result.hasOwnProperty("choices"))
-          throw new Error("Azure OpenAI chat: No results!");
-        if (result.choices.length === 0)
-          throw new Error("Azure OpenAI chat: No results length!");
-        return result.choices[0].message.content;
-      })
-      .catch((_) => {
-        return null;
-      });
-  }
-
   /**
    * Create a completion based on the received messages.
    *
-   * @param messages A list of messages to send to the API.
+   * @param messages A list of messages to send to the OpenAI API.
    * @param functions
    * @returns The completion.
    */
   async complete(messages, functions = []) {
     try {
-      let completion;
-      if (functions.length > 0) {
-        const { toolCall, text } = await this.functionCall(
-          messages,
-          functions,
-          this.#handleFunctionCallChat.bind(this)
-        );
-        if (toolCall !== null) {
-          this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
-          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
-          return {
-            result: null,
-            functionCall: {
-              name: toolCall.name,
-              arguments: toolCall.arguments,
-            },
-            cost: 0,
-          };
+      const response = await this.client.chat.completions.create({
+        model: this.model,
+        // stream: true,
+        messages,
+        ...(Array.isArray(functions) && functions?.length > 0
+          ? { functions }
+          : {}),
+      });
+
+      // Right now, we only support one completion,
+      // so we just take the first one in the list
+      const completion = response.choices[0].message;
+      const cost = this.getCost(response.usage);
+      // treat function calls
+      if (completion.function_call) {
+        let functionArgs = {};
+        try {
+          functionArgs = JSON.parse(completion.function_call.arguments);
+        } catch (error) {
+          // call the complete function again in case it gets a json error
+          return this.complete(
+            [
+              ...messages,
+              {
+                role: "function",
+                name: completion.function_call.name,
+                function_call: completion.function_call,
+                content: error?.message,
+              },
+            ],
+            functions
+          );
         }
-        completion = { content: text };
-      }
-      if (!completion?.content) {
-        this.providerLog(
-          "Will assume chat completion without tool call inputs."
-        );
-        const response = await this.client.getChatCompletions(
-          this.model,
-          this.cleanMsgs(messages),
-          {
-            temperature: 0.7,
-          }
-        );
-        completion = response.choices[0].message;
+
+        // console.log(completion, { functionArgs })
+        return {
+          result: null,
+          functionCall: {
+            name: completion.function_call.name,
+            arguments: functionArgs,
+          },
+          cost,
+        };
       }
 
-      // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
-      // from calling the exact same function over and over in a loop within a single chat exchange
-      // _but_ we should enable it to call previously used tools in a new chat interaction.
-      this.deduplicator.reset("runs");
-      return { result: completion.content, cost: 0 };
+      return {
+        result: completion.content,
+        cost,
+      };
     } catch (error) {
+      // If invalid Auth error we need to abort because no amount of waiting
+      // will make auth better.
+      if (error instanceof AzureOpenAI.AuthenticationError) throw error;
+
+      if (
+        error instanceof AzureOpenAI.RateLimitError ||
+        error instanceof AzureOpenAI.InternalServerError ||
+        error instanceof AzureOpenAI.APIError // Also will catch AuthenticationError!!!
+      ) {
+        throw new RetryError(error.message);
+      }
+
       throw error;
     }
   }

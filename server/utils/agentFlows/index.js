@@ -1,9 +1,18 @@
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-const { FlowExecutor } = require("./executor");
+const { FlowExecutor, FLOW_TYPES } = require("./executor");
 const { normalizePath } = require("../files");
 const { safeJsonParse } = require("../http");
+
+/**
+ * @typedef {Object} LoadedFlow
+ * @property {string} name - The name of the flow
+ * @property {string} uuid - The UUID of the flow
+ * @property {Object} config - The flow configuration details
+ * @property {string} config.description - The description of the flow
+ * @property {Array<{type: string, config: Object, [key: string]: any}>} config.steps - The steps of the flow. Each step has at least a type and config
+ */
 
 class AgentFlows {
   static flowsDir = process.env.STORAGE_DIR
@@ -55,7 +64,7 @@ class AgentFlows {
   /**
    * Load a flow configuration by UUID
    * @param {string} uuid - The UUID of the flow to load
-   * @returns {Object|null} Flow configuration or null if not found
+   * @returns {LoadedFlow|null} Flow configuration or null if not found
    */
   static loadFlow(uuid) {
     try {
@@ -91,6 +100,20 @@ class AgentFlows {
       if (!uuid) uuid = uuidv4();
       const normalizedUuid = normalizePath(`${uuid}.json`);
       const filePath = path.join(AgentFlows.flowsDir, normalizedUuid);
+
+      // Prevent saving flows with unsupported blocks or importing
+      // flows with unsupported blocks (eg: file writing or code execution on Desktop importing to Docker)
+      const supportedFlowTypes = Object.values(FLOW_TYPES).map(
+        (definition) => definition.type
+      );
+      const supportsAllBlocks = config.steps.every((step) =>
+        supportedFlowTypes.includes(step.type)
+      );
+      if (!supportsAllBlocks)
+        throw new Error(
+          "This flow includes unsupported blocks. They may not be supported by your version of AnythingLLM or are not available on this platform."
+        );
+
       fs.writeFileSync(filePath, JSON.stringify({ ...config, name }, null, 2));
       return { success: true, uuid };
     } catch (error) {
@@ -179,11 +202,13 @@ class AgentFlows {
       description: `Execute agent flow: ${flow.name}`,
       plugin: (_runtimeArgs = {}) => ({
         name: `flow_${uuid}`,
-        description: flow.description || `Execute agent flow: ${flow.name}`,
+        description:
+          flow.config.description || `Execute agent flow: ${flow.name}`,
         setup: (aibitat) => {
           aibitat.function({
             name: `flow_${uuid}`,
-            description: flow.description || `Execute agent flow: ${flow.name}`,
+            description:
+              flow.config.description || `Execute agent flow: ${flow.name}`,
             parameters: {
               type: "object",
               properties: variables.reduce((acc, v) => {
@@ -207,15 +232,30 @@ class AgentFlows {
                 return `Flow execution failed: ${result.results[0]?.error || "Unknown error"}`;
               }
               aibitat.introspect(`${flow.name} completed successfully`);
-              return typeof result === "object"
-                ? JSON.stringify(result)
-                : String(result);
+
+              // If the flow result has directOutput, return it
+              // as the aibitat result so that no other processing is done
+              if (!!result.directOutput) {
+                aibitat.skipHandleExecution = true;
+                return AgentFlows.stringifyResult(result.directOutput);
+              }
+
+              return AgentFlows.stringifyResult(result);
             },
           });
         },
       }),
       flowName: flow.name,
     };
+  }
+
+  /**
+   * Stringify the result of a flow execution or return the input as is
+   * @param {Object|string} input - The result to stringify
+   * @returns {string} The stringified result
+   */
+  static stringifyResult(input) {
+    return typeof input === "object" ? JSON.stringify(input) : String(input);
   }
 }
 

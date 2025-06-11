@@ -68,14 +68,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
     if (listening) {
       // Stop the mic if the send button is clicked
-      endTTSSession();
+      endSTTSession();
     }
     setChatHistory(prevChatHistory);
     setMessageEmit("");
     setLoadingResponse(true);
   };
 
-  function endTTSSession() {
+  function endSTTSession() {
     SpeechRecognition.stopListening();
     resetTranscript();
   }
@@ -95,6 +95,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       .catch((e) => console.error(e));
   };
 
+  /**
+   * Send a command to the LLM prompt input.
+   * @param {string} command - The command to send to the LLM
+   * @param {boolean} submit - Whether the command was submitted (default: false)
+   * @param {Object[]} history - The history of the chat
+   * @param {Object[]} attachments - The attachments to send to the LLM
+   * @returns {boolean} - Whether the command was sent successfully
+   */
   const sendCommand = async (
     command,
     submit = false,
@@ -154,6 +162,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       // Override hook for new messages to now go to agents until the connection closes
       if (!!websocket) {
         if (!promptMessage || !promptMessage?.userMessage) return false;
+        window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
         websocket.send(
           JSON.stringify({
             type: "awaitingFeedback",

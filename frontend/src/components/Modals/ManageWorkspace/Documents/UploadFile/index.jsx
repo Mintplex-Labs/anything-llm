@@ -1,5 +1,6 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
@@ -14,6 +15,7 @@ export default function UploadFile({
   setLoading,
   setLoadingMessage,
 }) {
+  const { t } = useTranslation();
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
@@ -92,21 +94,20 @@ export default function UploadFile({
           <div className="flex flex-col items-center justify-center h-full">
             <CloudArrowUp className="w-8 h-8 text-white/80 light:invert" />
             <div className="text-white text-opacity-80 text-sm font-semibold py-1">
-              Document Processor Unavailable
+              {t("connectors.upload.processor-offline")}
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1 px-20 text-center">
-              We can't upload your files right now because the document
-              processor is offline. Please try again later.
+              {t("connectors.upload.processor-offline-desc")}
             </div>
           </div>
         ) : files.length === 0 ? (
           <div className="flex flex-col items-center justify-center">
             <CloudArrowUp className="w-8 h-8 text-white/80 light:invert" />
             <div className="text-white text-opacity-80 text-sm font-semibold py-1">
-              Click to upload or drag and drop
+              {t("connectors.upload.click-upload")}
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              supports text files, csv's, spreadsheets, audio files, and more!
+              {t("connectors.upload.file-types")}
             </div>
           </div>
         ) : (
@@ -130,7 +131,7 @@ export default function UploadFile({
         )}
       </div>
       <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
-        or submit a link
+        {t("connectors.upload.or-submit-link")}
       </div>
       <form onSubmit={handleSendLink} className="flex gap-x-2">
         <input
@@ -138,7 +139,7 @@ export default function UploadFile({
           name="link"
           type="url"
           className="border-none disabled:bg-theme-settings-input-bg disabled:text-theme-settings-input-placeholder bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-3/4 p-2.5"
-          placeholder={"https://example.com"}
+          placeholder={t("connectors.upload.placeholder-link")}
           autoComplete="off"
         />
         <button
@@ -146,13 +147,13 @@ export default function UploadFile({
           type="submit"
           className="disabled:bg-white/20 disabled:text-slate-300 disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-slate-200 hover:text-slate-800 w-auto border border-white light:border-theme-modal-border text-sm text-white p-2.5 rounded-lg"
         >
-          {fetchingUrl ? "Fetching..." : "Fetch website"}
+          {fetchingUrl
+            ? t("connectors.upload.fetching")
+            : t("connectors.upload.fetch-website")}
         </button>
       </form>
       <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
-        These files will be uploaded to the document processor running on this
-        AnythingLLM instance. These files are not sent or shared with a third
-        party.
+        {t("connectors.upload.privacy-notice")}
       </div>
     </div>
   );

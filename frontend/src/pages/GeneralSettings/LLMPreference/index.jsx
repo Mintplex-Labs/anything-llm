@@ -30,6 +30,8 @@ import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
 import APIPieLogo from "@/media/llmprovider/apipie.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
+import PPIOLogo from "@/media/llmprovider/ppio.png";
+import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 
 import PreLoader from "@/components/Preloader";
@@ -58,6 +60,8 @@ import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
 import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
+import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
+import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import GiteeAIOptions from "@/components/LLMSelection/GiteeAIOptions/index.jsx";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -128,13 +132,17 @@ export const AVAILABLE_LLM_PROVIDERS = [
     requiredConfig: ["OllamaLLMBasePath"],
   },
   {
-    name: "Novita AI",
-    value: "novita",
-    logo: NovitaLogo,
-    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    name: "Dell Pro AI Studio",
+    value: "dpais",
+    logo: DellProAiStudioLogo,
+    options: (settings) => <DellProAiStudioOptions settings={settings} />,
     description:
-      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
-    requiredConfig: ["NovitaLLMApiKey"],
+      "Run powerful LLMs quickly on NPU powered by Dell Pro AI Studio.",
+    requiredConfig: [
+      "DellProAiStudioBasePath",
+      "DellProAiStudioModelPref",
+      "DellProAiStudioTokenLimit",
+    ],
   },
   {
     name: "LM Studio",
@@ -152,6 +160,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <LocalAiOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
     requiredConfig: ["LocalAiApiKey", "LocalAiBasePath", "LocalAiTokenLimit"],
+  },
+  {
+    name: "Novita AI",
+    value: "novita",
+    logo: NovitaLogo,
+    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    description:
+      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
+    requiredConfig: ["NovitaLLMApiKey"],
   },
   {
     name: "Together AI",
@@ -247,6 +264,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <DeepSeekOptions settings={settings} />,
     description: "Run DeepSeek's powerful LLMs.",
     requiredConfig: ["DeepSeekApiKey"],
+  },
+  {
+    name: "PPIO",
+    value: "ppio",
+    logo: PPIOLogo,
+    options: (settings) => <PPIOLLMOptions settings={settings} />,
+    description:
+      "Run stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
+    requiredConfig: ["PPIOApiKey"],
   },
   {
     name: "AWS Bedrock",
@@ -418,9 +444,9 @@ export default function GeneralLLMPreference() {
                   />
                 )}
                 {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
+                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
                     <div className="w-full flex flex-col gap-y-1">
-                      <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
+                      <div className="flex items-center sticky top-0 z-10 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
                         <MagnifyingGlass
                           size={20}
                           weight="bold"
@@ -445,7 +471,7 @@ export default function GeneralLLMPreference() {
                           onClick={handleXButton}
                         />
                       </div>
-                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
+                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4 max-h-[245px]">
                         {filteredLLMs.map((llm) => {
                           return (
                             <LLMItem

@@ -25,7 +25,10 @@ import NovitaLogo from "@/media/llmprovider/novita.png";
 import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
+import PPIOLogo from "@/media/llmprovider/ppio.png";
+import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
+
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -51,6 +54,8 @@ import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
 import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
+import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
+import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import GiteeAiOptions from "@/components/LLMSelection/GiteeAIOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -113,12 +118,12 @@ const LLMS = [
     description: "Run LLMs locally on your own machine.",
   },
   {
-    name: "Novita AI",
-    value: "novita",
-    logo: NovitaLogo,
-    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    name: "Dell Pro AI Studio",
+    value: "dpais",
+    logo: DellProAiStudioLogo,
+    options: (settings) => <DellProAiStudioOptions settings={settings} />,
     description:
-      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
+      "Run powerful LLMs quickly on NPU powered by Dell Pro AI Studio.",
   },
   {
     name: "LM Studio",
@@ -134,6 +139,14 @@ const LLMS = [
     logo: LocalAiLogo,
     options: (settings) => <LocalAiOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
+  },
+  {
+    name: "Novita AI",
+    value: "novita",
+    logo: NovitaLogo,
+    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    description:
+      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
   },
   {
     name: "KoboldCPP",
@@ -214,6 +227,14 @@ const LLMS = [
     logo: DeepSeekLogo,
     options: (settings) => <DeepSeekOptions settings={settings} />,
     description: "Run DeepSeek's powerful LLMs.",
+  },
+  {
+    name: "PPIO",
+    value: "ppio",
+    logo: PPIOLogo,
+    options: (settings) => <PPIOLLMOptions settings={settings} />,
+    description:
+      "Run stable and cost-efficient open-source LLM APIs, such as DeepSeek, Llama, Qwen etc.",
   },
   {
     name: "APIpie",

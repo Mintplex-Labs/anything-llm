@@ -8,6 +8,7 @@ const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
+const MCPCompatibilityLayer = require("../MCP");
 
 class AgentHandler {
   #invocationUUID;
@@ -114,10 +115,6 @@ class AgentHandler {
             "LocalAI must have a valid base path to use for the api."
           );
         break;
-      case "gemini":
-        if (!process.env.GEMINI_API_KEY)
-          throw new Error("Gemini API key must be provided to use agents.");
-        break;
       case "openrouter":
         if (!process.env.OPENROUTER_API_KEY)
           throw new Error("OpenRouter API key must be provided to use agents.");
@@ -184,6 +181,24 @@ class AgentHandler {
             "NVIDIA NIM base path must be provided to use agents."
           );
         break;
+      case "ppio":
+        if (!process.env.PPIO_API_KEY)
+          throw new Error("PPIO API Key must be provided to use agents.");
+        break;
+      case "gemini":
+        if (!process.env.GEMINI_API_KEY)
+          throw new Error("Gemini API key must be provided to use agents.");
+        break;
+      case "dpais":
+        if (!process.env.DPAIS_LLM_BASE_PATH)
+          throw new Error(
+            "Dell Pro AI Studio base path must be provided to use agents."
+          );
+        if (!process.env.DPAIS_LLM_MODEL_PREF)
+          throw new Error(
+            "Dell Pro AI Studio model must be set to use agents."
+          );
+        break;
       case "giteeai":
         if (!process.env.GITEE_AI_API_KEY)
           throw new Error("GiteeAI API Key must be provided to use agents.");
@@ -220,11 +235,9 @@ class AgentHandler {
           "mistralai/Mixtral-8x7B-Instruct-v0.1"
         );
       case "azure":
-        return null;
+        return process.env.OPEN_MODEL_PREF;
       case "koboldcpp":
         return process.env.KOBOLD_CPP_MODEL_PREF ?? null;
-      case "gemini":
-        return process.env.GEMINI_MODEL_PREF ?? "gemini-pro";
       case "localai":
         return process.env.LOCAL_AI_MODEL_PREF ?? null;
       case "openrouter":
@@ -253,6 +266,12 @@ class AgentHandler {
         return process.env.NOVITA_LLM_MODEL_PREF ?? "deepseek/deepseek-r1";
       case "nvidia-nim":
         return process.env.NVIDIA_NIM_LLM_MODEL_PREF ?? null;
+      case "ppio":
+        return process.env.PPIO_MODEL_PREF ?? "qwen/qwen2.5-32b-instruct";
+      case "gemini":
+        return process.env.GEMINI_LLM_MODEL_PREF ?? "gemini-2.0-flash-lite";
+      case "dpais":
+        return process.env.DPAIS_LLM_MODEL_PREF;
       default:
         return null;
     }
@@ -262,7 +281,7 @@ class AgentHandler {
    * Attempts to find a fallback provider and model to use if the workspace
    * does not have an explicit `agentProvider` and `agentModel` set.
    * 1. Fallback to the workspace `chatProvider` and `chatModel` if they exist.
-   * 2. Fallback to the system `LLM_PROVIDER` and try to load the the associated default model via ENV params or a base available model.
+   * 2. Fallback to the system `LLM_PROVIDER` and try to load the associated default model via ENV params or a base available model.
    * 3. Otherwise, return null - will likely throw an error the user can act on.
    * @returns {object|null} - An object with provider and model keys.
    */
@@ -406,6 +425,43 @@ class AgentHandler {
         this.log(
           `Attached flow ${plugin.name} (${plugin.flowName}) plugin to Agent cluster`
         );
+        continue;
+      }
+
+      // Load MCP plugin. This is marked by `@@mcp_` in the array of functions to load.
+      // All sub-tools are loaded here and are denoted by `pluginName:toolName` as their identifier.
+      // This will replace the parent MCP server plugin with the sub-tools as child plugins so they
+      // can be called directly by the agent when invoked.
+      // Since to get to this point, the `activeMCPServers` method has already been called, we can
+      // safely assume that the MCP server is running and the tools are available/loaded.
+      if (name.startsWith("@@mcp_")) {
+        const mcpPluginName = name.replace("@@mcp_", "");
+        const plugins =
+          await new MCPCompatibilityLayer().convertServerToolsToPlugins(
+            mcpPluginName,
+            this.aibitat
+          );
+        if (!plugins) {
+          this.log(
+            `MCP ${mcpPluginName} not found in MCP server config. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        // Remove the old function from the agent functions directly
+        // and push the new ones onto the end of the array so that they are loaded properly.
+        this.aibitat.agents.get("@agent").functions = this.aibitat.agents
+          .get("@agent")
+          .functions.filter((f) => f.name !== name);
+        for (const plugin of plugins)
+          this.aibitat.agents.get("@agent").functions.push(plugin.name);
+
+        plugins.forEach((plugin) => {
+          this.aibitat.use(plugin.plugin());
+          this.log(
+            `Attached MCP::${plugin.toolName} MCP tool to Agent cluster`
+          );
+        });
         continue;
       }
 

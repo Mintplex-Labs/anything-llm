@@ -81,6 +81,9 @@ const TRANSLATIONS = {
     workspaces: "Workspaces",
     "workspace-chats": "Workspace Chats",
     customization: "Customization",
+    interface: "UI Preferences",
+    branding: "Branding & Whitelabeling",
+    chat: "Chat",
     "api-keys": "Developer API",
     llm: "LLM",
     transcription: "Transcription",
@@ -97,6 +100,7 @@ const TRANSLATIONS = {
     "agent-skills": "Agent Skills",
     admin: "Admin",
     tools: "Tools",
+    "system-prompt-variables": "System Prompt Variables",
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
@@ -147,6 +151,90 @@ const TRANSLATIONS = {
     part6: "Have Fun!",
     starOnGitHub: "Star on GitHub",
     contact: "Contact Mintplex Labs",
+  },
+
+  "main-page": {
+    noWorkspaceError: "Please create a workspace before starting a chat.",
+    checklist: {
+      title: "Getting Started",
+      tasksLeft: "tasks left",
+      completed: "You're on your way to becoming an AnythingLLM expert!",
+      dismiss: "close",
+      tasks: {
+        create_workspace: {
+          title: "Create a workspace",
+          description: "Create your first workspace to get started",
+          action: "Create",
+        },
+        send_chat: {
+          title: "Send a chat",
+          description: "Start a conversation with your AI assistant",
+          action: "Chat",
+        },
+        embed_document: {
+          title: "Embed a document",
+          description: "Add your first document to your workspace",
+          action: "Embed",
+        },
+        setup_system_prompt: {
+          title: "Set up a system prompt",
+          description: "Configure your AI assistant's behavior",
+          action: "Set Up",
+        },
+        define_slash_command: {
+          title: "Define a slash command",
+          description: "Create custom commands for your assistant",
+          action: "Define",
+        },
+        visit_community: {
+          title: "Visit Community Hub",
+          description: "Explore community resources and templates",
+          action: "Browse",
+        },
+      },
+    },
+    quickLinks: {
+      title: "Quick Links",
+      sendChat: "Send Chat",
+      embedDocument: "Embed a Document",
+      createWorkspace: "Create Workspace",
+    },
+    exploreMore: {
+      title: "Explore more features",
+      features: {
+        customAgents: {
+          title: "Custom AI Agents",
+          description: "Build powerful AI Agents and automations with no code.",
+          primaryAction: "Chat using @agent",
+          secondaryAction: "Build an agent flow",
+        },
+        slashCommands: {
+          title: "Slash Commands",
+          description:
+            "Save time and inject prompts using custom slash commands.",
+          primaryAction: "Create a Slash Command",
+          secondaryAction: "Explore on Hub",
+        },
+        systemPrompts: {
+          title: "System Prompts",
+          description:
+            "Modify the system prompt to customize the AI replies of a workspace.",
+          primaryAction: "Modify a System Prompt",
+          secondaryAction: "Manage prompt variables",
+        },
+      },
+    },
+    announcements: {
+      title: "Updates & Announcements",
+    },
+    resources: {
+      title: "Resources",
+      links: {
+        docs: "Docs",
+        star: "Star on Github",
+      },
+      keyboardShortcuts: "Keyboard Shortcuts",
+    },
   },
 
   "new-workspace": {
@@ -238,9 +326,20 @@ const TRANSLATIONS = {
         "Anything more than 45 is likely to lead to continuous chat failures depending on message size.",
     },
     prompt: {
-      title: "Prompt",
+      title: "System Prompt",
       description:
         "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+      history: {
+        title: "System Prompt History",
+        clearAll: "Clear All",
+        noHistory: "No system prompt history available",
+        restore: "Restore",
+        delete: "Delete",
+        deleteConfirm: "Are you sure you want to delete this history item?",
+        clearAllConfirm:
+          "Are you sure you want to clear all history? This action cannot be undone.",
+        expand: "Expand",
+      },
     },
     refusal: {
       title: "Query mode refusal response",
@@ -354,7 +453,7 @@ const TRANSLATIONS = {
       "These are all the recorded chats and messages that have been sent by users ordered by their creation date.",
     export: "Export",
     table: {
-      id: "Id",
+      id: "ID",
       by: "Sent By",
       workspace: "Workspace",
       prompt: "Prompt",
@@ -363,35 +462,103 @@ const TRANSLATIONS = {
     },
   },
 
-  // Appearance
-  appearance: {
-    title: "Appearance",
-    description: "Customize the appearance settings of your platform.",
-    logo: {
-      title: "Customize Logo",
-      description: "Upload your custom logo to make your chatbot yours.",
-      add: "Add a custom logo",
-      recommended: "Recommended size: 800 x 200",
-      remove: "Remove",
-      replace: "Replace",
+  customization: {
+    interface: {
+      title: "UI Preferences",
+      description: "Set your UI preferences for AnythingLLM.",
     },
-    message: {
-      title: "Customize Messages",
-      description: "Customize the automatic messages displayed to your users.",
-      new: "New",
-      system: "system",
-      user: "user",
-      message: "message",
-      assistant: "AnythingLLM Chat Assistant",
-      "double-click": "Double click to edit...",
-      save: "Save Messages",
-    },
-    icons: {
-      title: "Custom Footer Icons",
+    branding: {
+      title: "Branding & Whitelabeling",
       description:
-        "Customize the footer icons displayed on the bottom of the sidebar.",
-      icon: "Icon",
-      link: "Link",
+        "White-label your AnythingLLM instance with custom branding.",
+    },
+    chat: {
+      title: "Chat",
+      description: "Set your chat preferences for AnythingLLM.",
+      auto_submit: {
+        title: "Auto-Submit Speech Input",
+        description:
+          "Automatically submit speech input after a period of silence",
+      },
+      auto_speak: {
+        title: "Auto-Speak Responses",
+        description: "Automatically speak responses from the AI",
+      },
+      spellcheck: {
+        title: "Enable Spellcheck",
+        description: "Enable or disable spellcheck in the chat input field",
+      },
+    },
+    items: {
+      theme: {
+        title: "Theme",
+        description: "Select your preferred color theme for the application.",
+      },
+      "show-scrollbar": {
+        title: "Show Scrollbar",
+        description: "Enable or disable the scrollbar in the chat window.",
+      },
+      "support-email": {
+        title: "Support Email",
+        description:
+          "Set the support email address that should be accessible by users when they need help.",
+      },
+      "app-name": {
+        title: "Name",
+        description:
+          "Set a name that is displayed on the login page to all users.",
+      },
+      "chat-message-alignment": {
+        title: "Chat Message Alignment",
+        description:
+          "Select the message alignment mode when using the chat interface.",
+      },
+      "display-language": {
+        title: "Display Language",
+        description:
+          "Select the preferred language to render AnythingLLM's UI in - when translations are available.",
+      },
+      logo: {
+        title: "Brand Logo",
+        description: "Upload your custom logo to showcase on all pages.",
+        add: "Add a custom logo",
+        recommended: "Recommended size: 800 x 200",
+        remove: "Remove",
+        replace: "Replace",
+      },
+      "welcome-messages": {
+        title: "Welcome Messages",
+        description:
+          "Customize the welcome messages displayed to your users. Only non-admin users will see these messages.",
+        new: "New",
+        system: "system",
+        user: "user",
+        message: "message",
+        assistant: "AnythingLLM Chat Assistant",
+        "double-click": "Double click to edit...",
+        save: "Save Messages",
+      },
+      "browser-appearance": {
+        title: "Browser Appearance",
+        description:
+          "Customize the appearance of the browser tab and title when the app is open.",
+        tab: {
+          title: "Title",
+          description:
+            "Set a custom tab title when the app is open in a browser.",
+        },
+        favicon: {
+          title: "Favicon",
+          description: "Use a custom favicon for the browser tab.",
+        },
+      },
+      "sidebar-footer": {
+        title: "Sidebar Footer Items",
+        description:
+          "Customize the footer items displayed on the bottom of the sidebar.",
+        icon: "Icon",
+        link: "Link",
+      },
     },
   },
 
@@ -412,8 +579,19 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM Preference",
     description:
-      "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else AnythingLLM will not function properly.",
+      "These are the credentials and settings for your preferred LLM chat & embedding provider. It is important that these keys are current and correct, or else AnythingLLM will not function properly.",
     provider: "LLM Provider",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: "Azure Service Endpoint",
+        api_key: "API Key",
+        chat_deployment_name: "Chat Deployment Name",
+        chat_model_token_limit: "Chat Model Token Limit",
+        model_type: "Model Type",
+        default: "Default",
+        reasoning: "Reasoning",
+      },
+    },
   },
 
   transcription: {
@@ -485,12 +663,13 @@ const TRANSLATIONS = {
     table: {
       workspace: "Workspace",
       chats: "Sent Chats",
-      Active: "Active Domains",
+      active: "Active Domains",
+      created: "Created",
     },
   },
 
   "embed-chats": {
-    title: "Embed Chats",
+    title: "Embed Chat History",
     export: "Export",
     description:
       "These are all the recorded chats and messages from any embed that you have published.",
@@ -550,6 +729,303 @@ const TRANSLATIONS = {
     embedding: "Embedding Preference",
     vector: "Vector Database",
     anonymous: "Anonymous Telemetry Enabled",
+  },
+
+  connectors: {
+    "search-placeholder": "Search data connectors",
+    "no-connectors": "No data connectors found.",
+    obsidian: {
+      name: "Obsidian",
+      description: "Import Obsidian vault in a single click.",
+      vault_location: "Vault Location",
+      vault_description:
+        "Select your Obsidian vault folder to import all notes and their connections.",
+      selected_files: "Found {{count}} markdown files",
+      importing: "Importing vault...",
+      import_vault: "Import Vault",
+      processing_time:
+        "This may take a while depending on the size of your vault.",
+      vault_warning:
+        "To avoid any conflicts, make sure your Obsidian vault is not currently open.",
+    },
+    github: {
+      name: "GitHub Repo",
+      description:
+        "Import an entire public or private GitHub repository in a single click.",
+      URL: "GitHub Repo URL",
+      URL_explained: "Url of the GitHub repo you wish to collect.",
+      token: "GitHub Access Token",
+      optional: "optional",
+      token_explained: "Access Token to prevent rate limiting.",
+      token_explained_start: "Without a ",
+      token_explained_link1: "Personal Access Token",
+      token_explained_middle:
+        ", the GitHub API may limit the number of files that can be collected due to rate limits. You can ",
+      token_explained_link2: "create a temporary Access Token",
+      token_explained_end: " to avoid this issue.",
+      ignores: "File Ignores",
+      git_ignore:
+        "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
+      task_explained:
+        "Once complete, all files will be available for embedding into workspaces in the document picker.",
+      branch: "Branch you wish to collect files from.",
+      branch_loading: "-- loading available branches --",
+      branch_explained: "Branch you wish to collect files from.",
+      token_information:
+        "Without filling out the <b>GitHub Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitHub's public API rate-limits.",
+      token_personal:
+        "Get a free Personal Access Token with a GitHub account here.",
+    },
+    gitlab: {
+      name: "GitLab Repo",
+      description:
+        "Import an entire public or private GitLab repository in a single click.",
+      URL: "GitLab Repo URL",
+      URL_explained: "URL of the GitLab repo you wish to collect.",
+      token: "GitLab Access Token",
+      optional: "optional",
+      token_explained: "Access Token to prevent rate limiting.",
+      token_description:
+        "Select additional entities to fetch from the GitLab API.",
+      token_explained_start: "Without a ",
+      token_explained_link1: "Personal Access Token",
+      token_explained_middle:
+        ", the GitLab API may limit the number of files that can be collected due to rate limits. You can ",
+      token_explained_link2: "create a temporary Access Token",
+      token_explained_end: " to avoid this issue.",
+      fetch_issues: "Fetch Issues as Documents",
+      ignores: "File Ignores",
+      git_ignore:
+        "List in .gitignore format to ignore specific files during collection. Press enter after each entry you want to save.",
+      task_explained:
+        "Once complete, all files will be available for embedding into workspaces in the document picker.",
+      branch: "Branch you wish to collect files from",
+      branch_loading: "-- loading available branches --",
+      branch_explained: "Branch you wish to collect files from.",
+      token_information:
+        "Without filling out the <b>GitLab Access Token</b> this data connector will only be able to collect the <b>top-level</b> files of the repo due to GitLab's public API rate-limits.",
+      token_personal:
+        "Get a free Personal Access Token with a GitLab account here.",
+    },
+    youtube: {
+      name: "YouTube Transcript",
+      description:
+        "Import the transcription of an entire YouTube video from a link.",
+      URL: "YouTube Video URL",
+      URL_explained_start:
+        "Enter the URL of any YouTube video to fetch its transcript. The video must have ",
+      URL_explained_link: "closed captions",
+      URL_explained_end: " available.",
+      task_explained:
+        "Once complete, the transcript will be available for embedding into workspaces in the document picker.",
+      language: "Transcript Language",
+      language_explained:
+        "Select the language of the transcript you want to collect.",
+      loading_languages: "-- loading available languages --",
+    },
+    "website-depth": {
+      name: "Bulk Link Scraper",
+      description: "Scrape a website and its sub-links up to a certain depth.",
+      URL: "Website URL",
+      URL_explained: "URL of the website you want to scrape.",
+      depth: "Crawl Depth",
+      depth_explained:
+        "This is the number of child-links that the worker should follow from the origin URL.",
+      max_pages: "Maximum Pages",
+      max_pages_explained: "Maximum number of links to scrape.",
+      task_explained:
+        "Once complete, all scraped content will be available for embedding into workspaces in the document picker.",
+    },
+    confluence: {
+      name: "Confluence",
+      description: "Import an entire Confluence page in a single click.",
+      deployment_type: "Confluence deployment type",
+      deployment_type_explained:
+        "Determine if your Confluence instance is hosted on Atlassian cloud or self-hosted.",
+      base_url: "Confluence base URL",
+      base_url_explained: "This is the base URL of your Confluence space.",
+      space_key: "Confluence space key",
+      space_key_explained:
+        "This is the spaces key of your confluence instance that will be used. Usually begins with ~",
+      username: "Confluence Username",
+      username_explained: "Your Confluence username",
+      auth_type: "Confluence Auth Type",
+      auth_type_explained:
+        "Select the authentication type you want to use to access your Confluence pages.",
+      auth_type_username: "Username and Access Token",
+      auth_type_personal: "Personal Access Token",
+      token: "Confluence Access Token",
+      token_explained_start:
+        "You need to provide an access token for authentication. You can generate an access token",
+      token_explained_link: "here",
+      token_desc: "Access token for authentication",
+      pat_token: "Confluence Personal Access Token",
+      pat_token_explained: "Your Confluence personal access token.",
+      task_explained:
+        "Once complete, the page content will be available for embedding into workspaces in the document picker.",
+    },
+
+    manage: {
+      documents: "Documents",
+      "data-connectors": "Data Connectors",
+      "desktop-only":
+        "Editing these settings are only available on a desktop device. Please access this page on your desktop to continue.",
+      dismiss: "Dismiss",
+      editing: "Editing",
+    },
+    directory: {
+      "my-documents": "My Documents",
+      "new-folder": "New Folder",
+      "search-document": "Search for document",
+      "no-documents": "No Documents",
+      "move-workspace": "Move to Workspace",
+      name: "Name",
+      "delete-confirmation":
+        "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible.",
+      "removing-message":
+        "Removing {{count}} documents and {{folderCount}} folders. Please wait.",
+      "move-success": "Successfully moved {{count}} documents.",
+      date: "Date",
+      type: "Type",
+      no_docs: "No Documents",
+      select_all: "Select All",
+      deselect_all: "Deselect All",
+      remove_selected: "Remove Selected",
+      costs: "*One time cost for embeddings",
+      save_embed: "Save and Embed",
+    },
+    upload: {
+      "processor-offline": "Document Processor Unavailable",
+      "processor-offline-desc":
+        "We can't upload your files right now because the document processor is offline. Please try again later.",
+      "click-upload": "Click to upload or drag and drop",
+      "file-types":
+        "supports text files, csv's, spreadsheets, audio files, and more!",
+      "or-submit-link": "or submit a link",
+      "placeholder-link": "https://example.com",
+      fetching: "Fetching...",
+      "fetch-website": "Fetch website",
+      "privacy-notice":
+        "These files will be uploaded to the document processor running on this AnythingLLM instance. These files are not sent or shared with a third party.",
+    },
+    pinning: {
+      what_pinning: "What is document pinning?",
+      pin_explained_block1:
+        "When you <b>pin</b> a document in AnythingLLM we will inject the entire content of the document into your prompt window for your LLM to fully comprehend.",
+      pin_explained_block2:
+        "This works best with <b>large-context models</b> or small files that are critical to its knowledge-base.",
+      pin_explained_block3:
+        "If you are not getting the answers you desire from AnythingLLM by default then pinning is a great way to get higher quality answers in a click.",
+      accept: "Okay, got it",
+    },
+    watching: {
+      what_watching: "What does watching a document do?",
+      watch_explained_block1:
+        "When you <b>watch</b> a document in AnythingLLM we will <i>automatically</i> sync your document content from it's original source on regular intervals. This will automatically update the content in every workspace where this file is managed.",
+      watch_explained_block2:
+        "This feature currently supports online-based content and will not be available for manually uploaded documents.",
+      watch_explained_block3_start:
+        "You can manage what documents are watched from the ",
+      watch_explained_block3_link: "File manager",
+      watch_explained_block3_end: " admin view.",
+      accept: "Okay, got it",
+    },
+  },
+
+  chat_window: {
+    welcome: "Welcome to your new workspace.",
+    get_started: "To get started either",
+    get_started_default: "To get started",
+    upload: "upload a document",
+    or: "or",
+    attachments_processing: "Attachments are processing. Please wait...",
+    send_chat: "send a chat.",
+    send_message: "Send a message",
+    attach_file: "Attach a file to this chat",
+    slash: "View all available slash commands for chatting.",
+    agents: "View all available agents you can use for chatting.",
+    text_size: "Change text size.",
+    microphone: "Speak your prompt.",
+    send: "Send prompt message to workspace",
+    tts_speak_message: "TTS Speak message",
+    copy: "Copy",
+    regenerate: "Regenerate",
+    regenerate_response: "Regenerate response",
+    good_response: "Good response",
+    more_actions: "More actions",
+    hide_citations: "Hide citations",
+    show_citations: "Show citations",
+    pause_tts_speech_message: "Pause TTS speech of message",
+    fork: "Fork",
+    delete: "Delete",
+    save_submit: "Save & Submit",
+    cancel: "Cancel",
+    edit_prompt: "Edit prompt",
+    edit_response: "Edit response",
+    at_agent: "@agent",
+    default_agent_description: " - the default agent for this workspace.",
+    custom_agents_coming_soon: "custom agents are coming soon!",
+    slash_reset: "/reset",
+    preset_reset_description: "Clear your chat history and begin a new chat",
+    add_new_preset: " Add New Preset",
+    command: "Command",
+    your_command: "your-command",
+    placeholder_prompt:
+      "This is the content that will be injected in front of your prompt.",
+    description: "Description",
+    placeholder_description: "Responds with a poem about LLMs.",
+    save: "Save",
+    small: "Small",
+    normal: "Normal",
+    large: "Large",
+    workspace_llm_manager: {
+      search: "Search LLM providers",
+      loading_workspace_settings: "Loading workspace settings...",
+      available_models: "Available Models for {{provider}}",
+      available_models_description: "Select a model to use for this workspace.",
+      save: "Use this model",
+      saving: "Setting model as workspace default...",
+      missing_credentials: "This provider is missing credentials!",
+      missing_credentials_description: "Click to set up credentials",
+    },
+  },
+
+  profile_settings: {
+    edit_account: "Edit Account",
+    profile_picture: "Profile Picture",
+    remove_profile_picture: "Remove Profile Picture",
+    username: "Username",
+    username_description:
+      "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+    new_password: "New Password",
+    passwort_description: "Password must be at least 8 characters long",
+    cancel: "Cancel",
+    update_account: "Update Account",
+    theme: "Theme Preference",
+    language: "Preferred language",
+    failed_upload: "Failed to upload profile picture: {{error}}",
+    upload_success: "Profile picture uploaded.",
+    failed_remove: "Failed to remove profile picture: {{error}}",
+    profile_updated: "Profile updated.",
+    failed_update_user: "Failed to update user: {{error}}",
+    account: "Account",
+    support: "Support",
+    signout: "Sign out",
+  },
+
+  "keyboard-shortcuts": {
+    title: "Keyboard Shortcuts",
+    shortcuts: {
+      settings: "Open Settings",
+      workspaceSettings: "Open Current Workspace Settings",
+      home: "Go to Home",
+      workspaces: "Manage Workspaces",
+      apiKeys: "API Keys Settings",
+      llmPreferences: "LLM Preferences",
+      chatSettings: "Chat Settings",
+      help: "Show keyboard shortcuts help",
+      showLLMSelector: "Show workspace LLM Selector",
+    },
   },
 };
 

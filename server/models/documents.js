@@ -4,6 +4,7 @@ const prisma = require("../utils/prisma");
 const { Telemetry } = require("./telemetry");
 const { EventLogs } = require("./eventLogs");
 const { safeJsonParse } = require("../utils/http");
+const { getModelTag } = require("../endpoints/utils");
 
 const Document = {
   writable: ["pinned", "watched", "lastUpdatedAt"],
@@ -130,6 +131,7 @@ const Document = {
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "lancedb",
       TTSSelection: process.env.TTS_PROVIDER || "native",
+      LLMModel: getModelTag(),
     });
     await EventLogs.logEvent(
       "workspace_documents_added",
@@ -169,12 +171,6 @@ const Document = {
       }
     }
 
-    await Telemetry.sendTelemetry("documents_removed_in_workspace", {
-      LLMSelection: process.env.LLM_PROVIDER || "openai",
-      Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-      VectorDbSelection: process.env.VECTOR_DB || "lancedb",
-      TTSSelection: process.env.TTS_PROVIDER || "native",
-    });
     await EventLogs.logEvent(
       "workspace_documents_removed",
       {
@@ -254,6 +250,57 @@ const Document = {
     }
 
     return sourceString;
+  },
+
+  /**
+   * Functions for the backend API endpoints - not to be used by the frontend or elsewhere.
+   * @namespace api
+   */
+  api: {
+    /**
+     * Process a document upload from the API and upsert it into the database. This
+     * functionality should only be used by the backend /v1/documents/upload endpoints for post-upload embedding.
+     * @param {string} wsSlugs - The slugs of the workspaces to embed the document into, will be comma-separated list of workspace slugs
+     * @param {string} docLocation - The location/path of the document that was uploaded
+     * @returns {Promise<boolean>} - True if the document was uploaded successfully, false otherwise
+     */
+    uploadToWorkspace: async function (wsSlugs = "", docLocation = null) {
+      if (!docLocation)
+        return console.log(
+          "No document location provided for embedding",
+          docLocation
+        );
+
+      const slugs = wsSlugs
+        .split(",")
+        .map((slug) => String(slug)?.trim()?.toLowerCase());
+      if (slugs.length === 0)
+        return console.log(`No workspaces provided got: ${wsSlugs}`);
+
+      const { Workspace } = require("./workspace");
+      const workspaces = await Workspace.where({ slug: { in: slugs } });
+      if (workspaces.length === 0)
+        return console.log("No valid workspaces found for slugs: ", slugs);
+
+      // Upsert the document into each workspace - do this sequentially
+      // because the document may be large and we don't want to overwhelm the embedder, plus on the first
+      // upsert we will then have the cache of the document - making n+1 embeds faster. If we parallelize this
+      // we will have to do a lot of extra work to ensure that the document is not embedded more than once.
+      for (const workspace of workspaces) {
+        const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
+          workspace,
+          [docLocation]
+        );
+        if (failedToEmbed.length > 0)
+          return console.log(
+            `Failed to embed document into workspace ${workspace.slug}`,
+            errors
+          );
+        console.log(`Document embedded into workspace ${workspace.slug}...`);
+      }
+
+      return true;
+    },
   },
 };
 

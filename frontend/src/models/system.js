@@ -3,6 +3,7 @@ import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import LiveDocumentSync from "./experimental/liveSync";
 import AgentPlugins from "./experimental/agentPlugins";
+import SystemPromptVariable from "./systemPromptVariable";
 
 const System = {
   cacheKeys: {
@@ -493,8 +494,8 @@ const System = {
         return { apiKey: null, error: e.message };
       });
   },
-  deleteApiKey: async function () {
-    return fetch(`${API_BASE}/system/api-key`, {
+  deleteApiKey: async function (apiKeyId = "") {
+    return fetch(`${API_BASE}/system/api-key/${apiKeyId}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
@@ -637,13 +638,15 @@ const System = {
       headers: baseHeaders(),
       body: JSON.stringify(presetData),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Could not create slash command preset.");
-        return res.json();
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok)
+          throw new Error(
+            data.message || "Error creating slash command preset."
+          );
+        return data;
       })
-      .then((res) => {
-        return { preset: res.preset, error: null };
-      })
+      .then((res) => ({ preset: res.preset, error: null }))
       .catch((e) => {
         console.error(e);
         return { preset: null, error: e.message };
@@ -656,15 +659,18 @@ const System = {
       headers: baseHeaders(),
       body: JSON.stringify(presetData),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Could not update slash command preset.");
-        return res.json();
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok)
+          throw new Error(
+            data.message || "Could not update slash command preset."
+          );
+        return data;
       })
-      .then((res) => {
-        return { preset: res.preset, error: null };
-      })
+      .then((res) => ({ preset: res.preset, error: null }))
       .catch((e) => {
-        return { preset: null, error: "Failed to update this command." };
+        console.error(e);
+        return { preset: null, error: e.message };
       });
   },
 
@@ -740,6 +746,7 @@ const System = {
     liveSync: LiveDocumentSync,
     agentPlugins: AgentPlugins,
   },
+  promptVariables: SystemPromptVariable,
 };
 
 export default System;

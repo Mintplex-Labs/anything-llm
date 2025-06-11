@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  -webkit-font-smoothing: antialiased;
+}
+
 :root {
   /* Default theme */
   --theme-loader: #ffffff;
@@ -19,6 +23,7 @@
   --theme-sidebar-subitem-default: rgba(255, 255, 255, 0.05);
   --theme-sidebar-subitem-selected: rgba(255, 255, 255, 0.05);
   --theme-sidebar-thread-selected: rgba(255, 255, 255, 0.05);
+  --theme-popup-menu-bg: #000000;
 
   --theme-sidebar-subitem-hover: rgba(255, 255, 255, 0.05);
   --theme-sidebar-border: rgba(255, 255, 255, 0.1);
@@ -48,15 +53,64 @@
   --theme-file-row-selected-even: rgba(14, 165, 233, 0.2);
   --theme-file-row-selected-odd: rgba(14, 165, 233, 0.1);
   --theme-file-picker-hover: rgb(14 165 233 / 0.2);
+
+  --theme-home-text: #ffffff;
+  --theme-home-text-secondary: #9f9fa0;
+  --theme-home-bg-card: #1a1b1b;
+  --theme-home-bg-button: #252626;
+  --theme-home-border: rgba(255, 255, 255, 0.2);
+  --theme-home-button-primary: #36bffa;
+  --theme-home-button-primary-hover: rgba(54, 191, 250, 0.9);
+  --theme-home-button-secondary: #27282a;
+  --theme-home-button-secondary-hover: rgba(54, 191, 250, 0.1);
+  --theme-home-button-secondary-text: #ffffff;
+  --theme-home-button-secondary-hover-text: #36bffa;
+  --theme-home-update-card-bg: #1c1c1c;
+  --theme-home-update-card-hover: #252525;
+  --theme-home-update-source: #53b1fd;
+
+  --theme-checklist-item-bg: #203c48;
+  --theme-checklist-item-bg-hover: #255d75;
+  --theme-checklist-item-text: #b9e6fe;
+  --theme-checklist-item-completed-bg: #36463d;
+  --theme-checklist-item-completed-text: #a6f4c5;
+  --theme-checklist-checkbox-fill: #a6f4c5;
+  --theme-checklist-checkbox-text: #36463d;
+  --theme-checklist-item-hover: #36bffa;
+  --theme-checklist-checkbox-border: #ffffff;
+  --theme-checklist-button-border: #36bffa;
+  --theme-checklist-button-text: #36bffa;
+  --theme-checklist-button-hover-bg: rgba(54, 191, 250, 0.2);
+  --theme-checklist-button-hover-border: rgba(54, 191, 250, 0.8);
+
+  --theme-home-button-secondary-border: #acc1e6;
+  --theme-home-button-secondary-border-hover: #293056;
+
+  --theme-attachment-bg: #18191a;
+  --theme-attachment-error-bg: rgba(180, 35, 24, 0.4);
+  --theme-attachment-success-bg: #18191a;
+  --theme-attachment-text: #ffffff;
+  --theme-attachment-text-secondary: rgba(255, 255, 255, 0.8);
+  --theme-attachment-icon: #ffffff;
+  --theme-attachment-icon-spinner: #ffffff;
+  --theme-attachment-icon-spinner-bg: #27282a;
+
+  --theme-button-text: #a8a9ab;
+  --theme-button-code-hover-text: #7cd4fd;
+  --theme-button-code-hover-bg: #22343f;
+  --theme-button-disable-hover-text: #fec84b;
+  --theme-button-disable-hover-bg: #3a3128;
+  --theme-button-delete-hover-text: #f97066;
+  --theme-button-delete-hover-bg: #37282b;
 }
 
 [data-theme="light"] {
   --theme-loader: #000000;
-
   --theme-bg-primary: #ffffff;
   --theme-bg-secondary: #ffffff;
   --theme-bg-sidebar: #edf2fa;
   --theme-bg-container: #f9fbfd;
+  --theme-popup-menu-bg: #c2e7fe;
 
   --theme-bg-chat: #ffffff;
   --theme-bg-chat-input: #eaeaea;
@@ -85,7 +139,7 @@
   --theme-chat-input-border: #cccccc;
   --theme-action-menu-bg: #eaeaea;
   --theme-action-menu-item-hover: rgba(0, 0, 0, 0.1);
-  --theme-settings-input-bg: #f5f5f5;
+  --theme-settings-input-bg: #edf2fa;
   --theme-settings-input-placeholder: rgba(0, 0, 0, 0.5);
   --theme-settings-input-active: rgb(0 0 0 / 0.2);
   --theme-settings-input-text: #0e0f0f;
@@ -101,6 +155,54 @@
   --theme-file-row-selected-even: #0ba5ec;
   --theme-file-row-selected-odd: #0ba5ec;
   --theme-file-picker-hover: #e2e7ee;
+
+  --theme-home-text: #0e0f0f;
+  --theme-home-text-secondary: #6f6f71;
+  --theme-home-bg-card: #edf2fa;
+  --theme-home-bg-button: #f3f4f6;
+  --theme-home-border: rgba(0, 0, 0, 0.1);
+  --theme-home-button-primary: #36bffa;
+  --theme-home-button-primary-hover: rgba(54, 191, 250, 0.9);
+  --theme-home-button-secondary: #dbe8fe;
+  --theme-home-button-secondary-hover: #b0c8f1;
+  --theme-home-button-secondary-text: #293056;
+  --theme-home-button-secondary-hover-text: #293056;
+  --theme-home-update-card-bg: #edf2fa;
+  --theme-home-update-card-hover: #f3f4f6;
+  --theme-home-update-source: #0284c7;
+
+  --theme-checklist-item-bg: #c7e2ee;
+  --theme-checklist-item-bg-hover: #a3d9f1;
+  --theme-checklist-item-text: #0d3851;
+  --theme-checklist-item-completed-bg: #d8f3ea;
+  --theme-checklist-item-completed-text: #039855;
+  --theme-checklist-checkbox-fill: #6ce9a6;
+  --theme-checklist-checkbox-text: #ffffff;
+  --theme-checklist-item-hover: #0ba5ec;
+  --theme-checklist-checkbox-border: #6b7280;
+  --theme-checklist-button-border: #0ba5ec;
+  --theme-checklist-button-text: #0ba5ec;
+  --theme-checklist-button-hover-bg: rgba(11, 165, 236, 0.1);
+  --theme-checklist-button-hover-border: rgba(11, 165, 236, 0.8);
+
+  --theme-home-button-secondary-border-hover: #293056;
+
+  --theme-attachment-bg: #edf2fa;
+  --theme-attachment-error-bg: rgba(180, 35, 24, 0.3);
+  --theme-attachment-success-bg: #eaeaea;
+  --theme-attachment-text: #0e0f0f;
+  --theme-attachment-text-secondary: rgba(0, 0, 0, 0.8);
+  --theme-attachment-icon: #ffffff;
+  --theme-attachment-icon-spinner: #7cd4fd;
+  --theme-attachment-icon-spinner-bg: #ffffff;
+
+  --theme-button-text: #a8a9ab;
+  --theme-button-code-hover-text: #0ba5ec;
+  --theme-button-code-hover-bg: #e8f7fe;
+  --theme-button-disable-hover-text: #854708;
+  --theme-button-disable-hover-bg: #fef7e6;
+  --theme-button-delete-hover-text: #b42318;
+  --theme-button-delete-hover-bg: #fee4e2;
 }
 
 [data-theme="light"] .text-white {
@@ -211,25 +313,22 @@ a {
 }
 
 .doc__source {
-  transform-origin: 0 100%;
-  transform: scale(0);
-  animation: message2 0.15s ease-out 0s forwards;
+  opacity: 0;
   animation-delay: 50ms;
+  animation: citationAnimation 0.15s ease-out 0s forwards;
 }
 
-@keyframes message2 {
+@keyframes citationAnimation {
   0% {
-    max-height: 100%;
+    opacity: 0;
   }
 
   80% {
-    transform: scale(1.1);
+    opacity: 0.5;
   }
 
   100% {
-    transform: scale(1);
-    max-height: 100%;
-    overflow: visible;
+    opacity: 1;
   }
 }
 
@@ -773,6 +872,12 @@ dialog::backdrop {
   color: #fff;
 }
 
+.file-row {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+}
+
 .file-row:nth-child(even) {
   @apply bg-theme-bg-primary;
   background-color: var(--theme-file-row-even);
@@ -789,6 +894,11 @@ dialog::backdrop {
 .file-row.selected:nth-child(odd) {
   background-color: var(--theme-file-row-selected-even);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .file-row.selected:nth-child(even),
+[data-theme="light"] .file-row.selected:nth-child(odd) {
+  border-bottom: 1px solid rgba(222, 222, 222, 0.5);
 }
 
 /* Flex upload modal to be a column when on small screens so that the UI
@@ -990,4 +1100,9 @@ does not extend the close button beyond the viewport. */
 
 .animate-thoughtTransition {
   animation: thoughtTransition 0.5s ease-out forwards;
+}
+
+.checklist-completed {
+  -webkit-animation: fadein 0.3s linear forwards;
+  animation: fadein 0.3s linear forwards;
 }

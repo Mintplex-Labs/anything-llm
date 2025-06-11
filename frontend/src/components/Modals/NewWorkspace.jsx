@@ -62,6 +62,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                     placeholder={t("new-workspace.placeholder")}
                     required={true}
                     autoComplete="off"
+                    autoFocus={true}
                   />
                 </div>
                 {error && (

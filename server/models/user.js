@@ -13,7 +13,7 @@ const { EventLogs } = require("./eventLogs");
  */
 
 const User = {
-  usernameRegex: new RegExp(/^[a-z0-9_-]+$/),
+  usernameRegex: new RegExp(/^[a-z0-9_\-.]+$/),
   writable: [
     // Used for generic updates so we can validate keys in request body
     "username",
@@ -22,6 +22,7 @@ const User = {
     "role",
     "suspended",
     "dailyMessageLimit",
+    "bio",
   ],
   validations: {
     username: (newValue = "") => {
@@ -54,6 +55,12 @@ const User = {
       }
       return limit;
     },
+    bio: (bio = "") => {
+      if (!bio || typeof bio !== "string") return "";
+      if (bio.length > 1000)
+        throw new Error("Bio cannot be longer than 1,000 characters");
+      return String(bio);
+    },
   },
   // validations for the above writable fields.
   castColumnValue: function (key, value) {
@@ -77,6 +84,7 @@ const User = {
     password,
     role = "default",
     dailyMessageLimit = null,
+    bio = "",
   }) {
     const passwordCheck = this.checkPasswordComplexity(password);
     if (!passwordCheck.checkedOK) {
@@ -87,7 +95,7 @@ const User = {
       // Do not allow new users to bypass validation
       if (!this.usernameRegex.test(username))
         throw new Error(
-          "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
+          "Username must only contain lowercase letters, periods, numbers, underscores, and hyphens with no spaces"
         );
 
       const bcrypt = require("bcrypt");
@@ -97,6 +105,7 @@ const User = {
           username: this.validations.username(username),
           password: hashedPassword,
           role: this.validations.role(role),
+          bio: this.validations.bio(bio),
           dailyMessageLimit:
             this.validations.dailyMessageLimit(dailyMessageLimit),
         },
@@ -166,7 +175,7 @@ const User = {
         return {
           success: false,
           error:
-            "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+            "Username must only contain lowercase letters, periods, numbers, underscores, and hyphens with no spaces",
         };
 
       const user = await prisma.users.update({

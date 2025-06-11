@@ -5,9 +5,8 @@ const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const {
-  writeResponseChunk,
-  clientAbortedHandler,
   formatChatHistory,
+  handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
@@ -18,32 +17,31 @@ const cacheFolder = path.resolve(
     : path.resolve(__dirname, `../../../storage/models/gemini`)
 );
 
+const NO_SYSTEM_PROMPT_MODELS = [
+  "gemma-3-1b-it",
+  "gemma-3-4b-it",
+  "gemma-3-12b-it",
+  "gemma-3-27b-it",
+];
+
 class GeminiLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.GEMINI_API_KEY)
       throw new Error("No Gemini API key was set.");
 
-    // Docs: https://ai.google.dev/tutorials/node_quickstart
-    const { GoogleGenerativeAI } = require("@google/generative-ai");
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const { OpenAI: OpenAIApi } = require("openai");
     this.model =
-      modelPreference || process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro";
-    this.gemini = genAI.getGenerativeModel(
-      { model: this.model },
-      {
-        apiVersion:
-          /**
-           * There are some models that are only available in the v1beta API
-           * and some models that are only available in the v1 API
-           * generally, v1beta models have `exp` in the name, but not always
-           * so we check for both against a static list as well.
-           * @see {v1BetaModels}
-           */
-          this.model.includes("exp") || v1BetaModels.includes(this.model)
-            ? "v1beta"
-            : "v1",
-      }
-    );
+      modelPreference ||
+      process.env.GEMINI_LLM_MODEL_PREF ||
+      "gemini-2.0-flash-lite";
+
+    const isExperimental = this.isExperimentalModel(this.model);
+    this.openai = new OpenAIApi({
+      apiKey: process.env.GEMINI_API_KEY,
+      // Even models that are v1 in gemini API can be used with v1beta/openai/ endpoint and nobody knows why.
+      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+    });
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -51,16 +49,25 @@ class GeminiLLM {
     };
 
     this.embedder = embedder ?? new NativeEmbedder();
-    this.defaultTemp = 0.7; // not used for Gemini
-    this.safetyThreshold = this.#fetchSafetyThreshold();
+    this.defaultTemp = 0.7;
 
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
     this.cacheModelPath = path.resolve(cacheFolder, "models.json");
     this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
     this.#log(
-      `Initialized with model: ${this.model} (${this.promptWindowLimit()})`
+      `Initialized with model: ${this.model} ${isExperimental ? "[Experimental v1beta]" : "[Stable v1]"} - ctx: ${this.promptWindowLimit()}`
     );
+  }
+
+  /**
+   * Checks if the model supports system prompts
+   * This is a static list of models that are known to not support system prompts
+   * since this information is not available in the API model response.
+   * @returns {boolean}
+   */
+  get supportsSystemPrompt() {
+    return !NO_SYSTEM_PROMPT_MODELS.includes(this.model);
   }
 
   #log(text, ...args) {
@@ -71,7 +78,7 @@ class GeminiLLM {
   // from the current date. If it is, then we will refetch the API so that all the models are up
   // to date.
   static cacheIsStale() {
-    const MAX_STALE = 6.048e8; // 1 Week in MS
+    const MAX_STALE = 8.64e7; // 1 day in MS
     if (!fs.existsSync(path.resolve(cacheFolder, ".cached_at"))) return true;
     const now = Number(new Date());
     const timestampMs = Number(
@@ -92,41 +99,6 @@ class GeminiLLM {
     );
   }
 
-  // BLOCK_NONE can be a special candidate for some fields
-  // https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/configure-safety-attributes#how_to_remove_automated_response_blocking_for_select_safety_attributes
-  // so if you are wondering why BLOCK_NONE still failed, the link above will explain why.
-  #fetchSafetyThreshold() {
-    const threshold =
-      process.env.GEMINI_SAFETY_SETTING ?? "BLOCK_MEDIUM_AND_ABOVE";
-    const safetyThresholds = [
-      "BLOCK_NONE",
-      "BLOCK_ONLY_HIGH",
-      "BLOCK_MEDIUM_AND_ABOVE",
-      "BLOCK_LOW_AND_ABOVE",
-    ];
-    return safetyThresholds.includes(threshold)
-      ? threshold
-      : "BLOCK_MEDIUM_AND_ABOVE";
-  }
-
-  #safetySettings() {
-    return [
-      {
-        category: "HARM_CATEGORY_HATE_SPEECH",
-        threshold: this.safetyThreshold,
-      },
-      {
-        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-        threshold: this.safetyThreshold,
-      },
-      { category: "HARM_CATEGORY_HARASSMENT", threshold: this.safetyThreshold },
-      {
-        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-        threshold: this.safetyThreshold,
-      },
-    ];
-  }
-
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
@@ -135,7 +107,7 @@ class GeminiLLM {
     try {
       const cacheModelPath = path.resolve(cacheFolder, "models.json");
       if (!fs.existsSync(cacheModelPath))
-        return MODEL_MAP.gemini[modelName] ?? 30_720;
+        return MODEL_MAP.get("gemini", modelName) ?? 30_720;
 
       const models = safeJsonParse(fs.readFileSync(cacheModelPath));
       const model = models.find((model) => model.id === modelName);
@@ -146,15 +118,14 @@ class GeminiLLM {
       return model.contextWindow;
     } catch (e) {
       console.error(`GeminiLLM:promptWindowLimit`, e.message);
-      return MODEL_MAP.gemini[modelName] ?? 30_720;
+      return MODEL_MAP.get("gemini", modelName) ?? 30_720;
     }
   }
 
   promptWindowLimit() {
     try {
       if (!fs.existsSync(this.cacheModelPath))
-        return MODEL_MAP.gemini[this.model] ?? 30_720;
-
+        return MODEL_MAP.get("gemini", this.model) ?? 30_720;
       const models = safeJsonParse(fs.readFileSync(this.cacheModelPath));
       const model = models.find((model) => model.id === this.model);
       if (!model)
@@ -164,8 +135,30 @@ class GeminiLLM {
       return model.contextWindow;
     } catch (e) {
       console.error(`GeminiLLM:promptWindowLimit`, e.message);
-      return MODEL_MAP.gemini[this.model] ?? 30_720;
+      return MODEL_MAP.get("gemini", this.model) ?? 30_720;
     }
+  }
+
+  /**
+   * Checks if a model is experimental by reading from the cache if available, otherwise it will perform
+   * a blind check against the v1BetaModels list - which is manually maintained and updated.
+   * @param {string} modelName - The name of the model to check
+   * @returns {boolean} A boolean indicating if the model is experimental
+   */
+  isExperimentalModel(modelName) {
+    if (
+      fs.existsSync(cacheFolder) &&
+      fs.existsSync(path.resolve(cacheFolder, "models.json"))
+    ) {
+      const models = safeJsonParse(
+        fs.readFileSync(path.resolve(cacheFolder, "models.json"))
+      );
+      const model = models.find((model) => model.id === modelName);
+      if (!model) return false;
+      return model.experimental;
+    }
+
+    return modelName.includes("exp") || v1BetaModels.includes(modelName);
   }
 
   /**
@@ -186,63 +179,125 @@ class GeminiLLM {
       );
     }
 
-    const url = new URL(
-      "https://generativelanguage.googleapis.com/v1beta/models"
-    );
-    url.searchParams.set("pageSize", limit);
-    url.searchParams.set("key", apiKey);
-    if (pageToken) url.searchParams.set("pageToken", pageToken);
-    let success = false;
+    const stableModels = [];
+    const allModels = [];
 
-    const models = await fetch(url.toString(), {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) throw new Error(data.error.message);
-        return data.models ?? [];
+    // Fetch from v1
+    try {
+      const url = new URL(
+        "https://generativelanguage.googleapis.com/v1/models"
+      );
+      url.searchParams.set("pageSize", limit);
+      url.searchParams.set("key", apiKey);
+      if (pageToken) url.searchParams.set("pageToken", pageToken);
+      await fetch(url.toString(), {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       })
-      .then((models) => {
-        success = true;
-        return models
-          .filter(
-            (model) => !model.displayName.toLowerCase().includes("tuning")
-          )
-          .filter((model) =>
-            model.supportedGenerationMethods.includes("generateContent")
-          ) //  Only generateContent is supported
-          .map((model) => {
-            return {
-              id: model.name.split("/").pop(),
-              name: model.displayName,
-              contextWindow: model.inputTokenLimit,
-              experimental: model.name.includes("exp"),
-            };
-          });
-      })
-      .catch((e) => {
-        console.error(`Gemini:getGeminiModels`, e.message);
-        success = false;
-        return defaultGeminiModels;
-      });
-
-    if (success) {
-      console.log(
-        `\x1b[32m[GeminiLLM]\x1b[0m Writing cached models API response to disk.`
-      );
-      if (!fs.existsSync(cacheFolder))
-        fs.mkdirSync(cacheFolder, { recursive: true });
-      fs.writeFileSync(
-        path.resolve(cacheFolder, "models.json"),
-        JSON.stringify(models)
-      );
-      fs.writeFileSync(
-        path.resolve(cacheFolder, ".cached_at"),
-        new Date().getTime().toString()
-      );
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) throw new Error(data.error.message);
+          return data.models ?? [];
+        })
+        .then((models) => {
+          return models
+            .filter(
+              (model) => !model.displayName?.toLowerCase()?.includes("tuning")
+            ) // remove tuning models
+            .filter(
+              (model) =>
+                !model.description?.toLowerCase()?.includes("deprecated")
+            ) // remove deprecated models (in comment)
+            .filter((model) =>
+              //  Only generateContent is supported
+              model.supportedGenerationMethods.includes("generateContent")
+            )
+            .map((model) => {
+              stableModels.push(model.name);
+              allModels.push({
+                id: model.name.split("/").pop(),
+                name: model.displayName,
+                contextWindow: model.inputTokenLimit,
+                experimental: false,
+              });
+            });
+        })
+        .catch((e) => {
+          console.error(`Gemini:getGeminiModelsV1`, e.message);
+          return;
+        });
+    } catch (e) {
+      console.error(`Gemini:getGeminiModelsV1`, e.message);
     }
-    return models;
+
+    // Fetch from v1beta
+    try {
+      const url = new URL(
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      );
+      url.searchParams.set("pageSize", limit);
+      url.searchParams.set("key", apiKey);
+      if (pageToken) url.searchParams.set("pageToken", pageToken);
+      await fetch(url.toString(), {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) throw new Error(data.error.message);
+          return data.models ?? [];
+        })
+        .then((models) => {
+          return models
+            .filter((model) => !stableModels.includes(model.name)) // remove stable models that are already in the v1 list
+            .filter(
+              (model) => !model.displayName?.toLowerCase()?.includes("tuning")
+            ) // remove tuning models
+            .filter(
+              (model) =>
+                !model.description?.toLowerCase()?.includes("deprecated")
+            ) // remove deprecated models (in comment)
+            .filter((model) =>
+              //  Only generateContent is supported
+              model.supportedGenerationMethods.includes("generateContent")
+            )
+            .map((model) => {
+              allModels.push({
+                id: model.name.split("/").pop(),
+                name: model.displayName,
+                contextWindow: model.inputTokenLimit,
+                experimental: true,
+              });
+            });
+        })
+        .catch((e) => {
+          console.error(`Gemini:getGeminiModelsV1beta`, e.message);
+          return;
+        });
+    } catch (e) {
+      console.error(`Gemini:getGeminiModelsV1beta`, e.message);
+    }
+
+    if (allModels.length === 0) {
+      console.error(`Gemini:getGeminiModels - No models found`);
+      return defaultGeminiModels();
+    }
+
+    console.log(
+      `\x1b[32m[GeminiLLM]\x1b[0m Writing cached models API response to disk.`
+    );
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
+    fs.writeFileSync(
+      path.resolve(cacheFolder, "models.json"),
+      JSON.stringify(allModels)
+    );
+    fs.writeFileSync(
+      path.resolve(cacheFolder, ".cached_at"),
+      new Date().getTime().toString()
+    );
+
+    return allModels;
   }
 
   /**
@@ -262,228 +317,120 @@ class GeminiLLM {
    * @returns {string|object[]}
    */
   #generateContent({ userPrompt, attachments = [] }) {
-    if (!attachments.length) {
-      return userPrompt;
-    }
+    if (!attachments.length) return userPrompt;
 
-    const content = [{ text: userPrompt }];
+    const content = [{ type: "text", text: userPrompt }];
     for (let attachment of attachments) {
       content.push({
-        inlineData: {
-          data: attachment.contentString.split("base64,")[1],
-          mimeType: attachment.mime,
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+          detail: "high",
         },
       });
     }
     return content.flat();
   }
 
+  /**
+   * Construct the user prompt for this model.
+   * @param {{attachments: import("../../helpers").Attachment[]}} param0
+   * @returns
+   */
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
-    attachments = [],
+    attachments = [], // This is the specific attachment for only this prompt
   }) {
-    const prompt = {
-      role: "system",
-      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
-    };
+    let prompt = [];
+    if (this.supportsSystemPrompt) {
+      prompt.push({
+        role: "system",
+        content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
+      });
+    } else {
+      this.#log(
+        `${this.model} - does not support system prompts - emulating...`
+      );
+      prompt.push(
+        {
+          role: "user",
+          content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
+        },
+        {
+          role: "assistant",
+          content: "Okay.",
+        }
+      );
+    }
+
     return [
-      prompt,
-      { role: "assistant", content: "Okay." },
+      ...prompt,
       ...formatChatHistory(chatHistory, this.#generateContent),
       {
-        role: "USER_PROMPT",
+        role: "user",
         content: this.#generateContent({ userPrompt, attachments }),
       },
     ];
   }
 
-  // This will take an OpenAi format message array and only pluck valid roles from it.
-  formatMessages(messages = []) {
-    // Gemini roles are either user || model.
-    // and all "content" is relabeled to "parts"
-    const allMessages = messages
-      .map((message) => {
-        if (message.role === "system")
-          return { role: "user", parts: [{ text: message.content }] };
+  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+    const result = await LLMPerformanceMonitor.measureAsyncFunction(
+      this.openai.chat.completions
+        .create({
+          model: this.model,
+          messages,
+          temperature: temperature,
+        })
+        .catch((e) => {
+          console.error(e);
+          throw new Error(e.message);
+        })
+    );
 
-        if (message.role === "user") {
-          // If the content is an array - then we have already formatted the context so return it directly.
-          if (Array.isArray(message.content))
-            return { role: "user", parts: message.content };
-
-          // Otherwise, this was a regular user message with no attachments
-          // so we need to format it for Gemini
-          return { role: "user", parts: [{ text: message.content }] };
-        }
-
-        if (message.role === "assistant")
-          return { role: "model", parts: [{ text: message.content }] };
-        return null;
-      })
-      .filter((msg) => !!msg);
-
-    // Specifically, Google cannot have the last sent message be from a user with no assistant reply
-    // otherwise it will crash. So if the last item is from the user, it was not completed so pop it off
-    // the history.
     if (
-      allMessages.length > 0 &&
-      allMessages[allMessages.length - 1].role === "user"
+      !result.output.hasOwnProperty("choices") ||
+      result.output.choices.length === 0
     )
-      allMessages.pop();
-
-    // Validate that after every user message, there is a model message
-    // sometimes when using gemini we try to compress messages in order to retain as
-    // much context as possible but this may mess up the order of the messages that the gemini model expects
-    // we do this check to work around the edge case where 2 user prompts may be next to each other, in the message array
-    for (let i = 0; i < allMessages.length; i++) {
-      if (
-        allMessages[i].role === "user" &&
-        i < allMessages.length - 1 &&
-        allMessages[i + 1].role !== "model"
-      ) {
-        allMessages.splice(i + 1, 0, {
-          role: "model",
-          parts: [{ text: "Okay." }],
-        });
-      }
-    }
-
-    return allMessages;
-  }
-
-  async getChatCompletion(messages = [], _opts = {}) {
-    const prompt = messages.find(
-      (chat) => chat.role === "USER_PROMPT"
-    )?.content;
-    const chatThread = this.gemini.startChat({
-      history: this.formatMessages(messages),
-      safetySettings: this.#safetySettings(),
-    });
-
-    const { output: result, duration } =
-      await LLMPerformanceMonitor.measureAsyncFunction(
-        chatThread.sendMessage(prompt)
-      );
-    const responseText = result.response.text();
-    if (!responseText) throw new Error("Gemini: No response could be parsed.");
-
-    const promptTokens = LLMPerformanceMonitor.countTokens(messages);
-    const completionTokens = LLMPerformanceMonitor.countTokens([
-      { content: responseText },
-    ]);
+      return null;
 
     return {
-      textResponse: responseText,
+      textResponse: result.output.choices[0].message.content,
       metrics: {
-        prompt_tokens: promptTokens,
-        completion_tokens: completionTokens,
-        total_tokens: promptTokens + completionTokens,
-        outputTps: (promptTokens + completionTokens) / duration,
-        duration,
+        prompt_tokens: result.output.usage.prompt_tokens || 0,
+        completion_tokens: result.output.usage.completion_tokens || 0,
+        total_tokens: result.output.usage.total_tokens || 0,
+        outputTps: result.output.usage.completion_tokens / result.duration,
+        duration: result.duration,
       },
     };
   }
 
-  async streamGetChatCompletion(messages = [], _opts = {}) {
-    const prompt = messages.find(
-      (chat) => chat.role === "USER_PROMPT"
-    )?.content;
-    const chatThread = this.gemini.startChat({
-      history: this.formatMessages(messages),
-      safetySettings: this.#safetySettings(),
-    });
-    const responseStream = await LLMPerformanceMonitor.measureStream(
-      (await chatThread.sendMessageStream(prompt)).stream,
-      messages
+  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+    const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
+      this.openai.chat.completions.create({
+        model: this.model,
+        stream: true,
+        messages,
+        temperature: temperature,
+      }),
+      messages,
+      true
     );
 
-    if (!responseStream)
-      throw new Error("Could not stream response stream from Gemini.");
-    return responseStream;
+    return measuredStreamRequest;
+  }
+
+  handleStream(response, stream, responseProps) {
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);
-  }
-
-  handleStream(response, stream, responseProps) {
-    const { uuid = uuidv4(), sources = [] } = responseProps;
-    // Usage is not available for Gemini streams
-    // so we need to calculate the completion tokens manually
-    // because 1 chunk != 1 token in gemini responses and it buffers
-    // many tokens before sending them to the client as a "chunk"
-
-    return new Promise(async (resolve) => {
-      let fullText = "";
-
-      // Establish listener to early-abort a streaming response
-      // in case things go sideways or the user does not like the response.
-      // We preserve the generated text but continue as if chat was completed
-      // to preserve previously generated content.
-      const handleAbort = () => {
-        stream?.endMeasurement({
-          completion_tokens: LLMPerformanceMonitor.countTokens([
-            { content: fullText },
-          ]),
-        });
-        clientAbortedHandler(resolve, fullText);
-      };
-      response.on("close", handleAbort);
-
-      for await (const chunk of stream) {
-        let chunkText;
-        try {
-          // Due to content sensitivity we cannot always get the function .text();
-          // https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/configure-safety-attributes#gemini-TASK-samples-nodejs
-          // and it is not possible to unblock or disable this safety protocol without being allowlisted by Google.
-          chunkText = chunk.text();
-        } catch (e) {
-          chunkText = e.message;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "abort",
-            textResponse: null,
-            close: true,
-            error: e.message,
-          });
-          stream?.endMeasurement({ completion_tokens: 0 });
-          resolve(e.message);
-          return;
-        }
-
-        fullText += chunkText;
-        writeResponseChunk(response, {
-          uuid,
-          sources: [],
-          type: "textResponseChunk",
-          textResponse: chunk.text(),
-          close: false,
-          error: false,
-        });
-      }
-
-      writeResponseChunk(response, {
-        uuid,
-        sources,
-        type: "textResponseChunk",
-        textResponse: "",
-        close: true,
-        error: false,
-      });
-      response.removeListener("close", handleAbort);
-      stream?.endMeasurement({
-        completion_tokens: LLMPerformanceMonitor.countTokens([
-          { content: fullText },
-        ]),
-      });
-      resolve(fullText);
-    });
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
@@ -497,4 +444,5 @@ class GeminiLLM {
 
 module.exports = {
   GeminiLLM,
+  NO_SYSTEM_PROMPT_MODELS,
 };

@@ -3,7 +3,12 @@ const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
-const { chatPrompt, sourceIdentifier, recentChatHistory } = require("./index");
+const {
+  chatPrompt,
+  sourceIdentifier,
+  recentChatHistory,
+  grepAllSlashCommands,
+} = require("./index");
 const {
   EphemeralAgentHandler,
   EphemeralEventListener,
@@ -31,6 +36,7 @@ const { Telemetry } = require("../../models/telemetry");
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
  *  attachments: { name: string; mime: string; contentString: string }[],
+ *  reset: boolean,
  * }} parameters
  * @returns {Promise<ResponseObject>}
  */
@@ -42,9 +48,38 @@ async function chatSync({
   thread = null,
   sessionId = null,
   attachments = [],
+  reset = false,
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+
+  // If the user wants to reset the chat history we do so pre-flight
+  // and continue execution. If no message is provided then the user intended
+  // to reset the chat history only and we can exit early with a confirmation.
+  if (reset) {
+    await WorkspaceChats.markThreadHistoryInvalidV2({
+      workspaceId: workspace.id,
+      user_id: user?.id,
+      thread_id: thread?.id,
+      api_session_id: sessionId,
+    });
+    if (!message?.length) {
+      return {
+        id: uuid,
+        type: "textResponse",
+        textResponse: "Chat history was reset!",
+        sources: [],
+        close: true,
+        error: null,
+        metrics: {},
+      };
+    }
+  }
+
+  // Process slash commands
+  // Since preset commands are not supported in API calls, we can just process the message here
+  const processedMessage = await grepAllSlashCommands(message);
+  message = processedMessage;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
@@ -80,6 +115,7 @@ async function chatSync({
           response: {
             text: textResponse,
             sources: [],
+            attachments,
             type: chatMode,
             thoughts,
           },
@@ -120,6 +156,7 @@ async function chatSync({
       response: {
         text: textResponse,
         sources: [],
+        attachments: attachments,
         type: chatMode,
         metrics: {},
       },
@@ -232,6 +269,7 @@ async function chatSync({
       response: {
         text: textResponse,
         sources: [],
+        attachments: attachments,
         type: chatMode,
         metrics: {},
       },
@@ -256,7 +294,7 @@ async function chatSync({
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: chatPrompt(workspace),
+      systemPrompt: await chatPrompt(workspace, user),
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -289,6 +327,7 @@ async function chatSync({
     response: {
       text: textResponse,
       sources,
+      attachments,
       type: chatMode,
       metrics: performanceMetrics,
     },
@@ -320,6 +359,7 @@ async function chatSync({
  *  thread: import("@prisma/client").workspace_threads|null,
  *  sessionId: string|null,
  *  attachments: { name: string; mime: string; contentString: string }[],
+ *  reset: boolean,
  * }} parameters
  * @returns {Promise<VoidFunction>}
  */
@@ -332,9 +372,40 @@ async function streamChat({
   thread = null,
   sessionId = null,
   attachments = [],
+  reset = false,
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+
+  // If the user wants to reset the chat history we do so pre-flight
+  // and continue execution. If no message is provided then the user intended
+  // to reset the chat history only and we can exit early with a confirmation.
+  if (reset) {
+    await WorkspaceChats.markThreadHistoryInvalidV2({
+      workspaceId: workspace.id,
+      user_id: user?.id,
+      thread_id: thread?.id,
+      api_session_id: sessionId,
+    });
+    if (!message?.length) {
+      writeResponseChunk(response, {
+        id: uuid,
+        type: "textResponse",
+        textResponse: "Chat history was reset!",
+        sources: [],
+        attachments: [],
+        close: true,
+        error: null,
+        metrics: {},
+      });
+      return;
+    }
+  }
+
+  // Check for and process slash commands
+  // Since preset commands are not supported in API calls, we can just process the message here
+  const processedMessage = await grepAllSlashCommands(message);
+  message = processedMessage;
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
@@ -363,17 +434,18 @@ async function streamChat({
     return eventListener
       .streamAgentEvents(response, uuid)
       .then(async ({ thoughts, textResponse }) => {
-        console.log({ thoughts, textResponse });
         await WorkspaceChats.new({
           workspaceId: workspace.id,
           prompt: String(message),
           response: {
             text: textResponse,
             sources: [],
+            attachments: attachments,
             type: chatMode,
             thoughts,
           },
-          include: false,
+          include: true,
+          threadId: thread?.id || null,
           apiSessionId: sessionId,
         });
         writeResponseChunk(response, {
@@ -419,8 +491,8 @@ async function streamChat({
       response: {
         text: textResponse,
         sources: [],
+        attachments: attachments,
         type: chatMode,
-        attachments: [],
         metrics: {},
       },
       threadId: thread?.id || null,
@@ -543,8 +615,8 @@ async function streamChat({
       response: {
         text: textResponse,
         sources: [],
+        attachments: attachments,
         type: chatMode,
-        attachments: [],
         metrics: {},
       },
       threadId: thread?.id || null,
@@ -559,7 +631,7 @@ async function streamChat({
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: chatPrompt(workspace),
+      systemPrompt: await chatPrompt(workspace, user),
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -604,7 +676,13 @@ async function streamChat({
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: message,
-      response: { text: completeText, sources, type: chatMode, metrics },
+      response: {
+        text: completeText,
+        sources,
+        type: chatMode,
+        metrics,
+        attachments,
+      },
       threadId: thread?.id || null,
       apiSessionId: sessionId,
       user,

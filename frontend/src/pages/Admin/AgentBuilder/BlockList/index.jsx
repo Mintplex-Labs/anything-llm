@@ -35,7 +35,7 @@ const BLOCK_TYPES = {
 
 const BLOCK_INFO = {
   [BLOCK_TYPES.FLOW_INFO]: {
-    label: "Flow Infomation",
+    label: "Flow Information",
     icon: <Info className="w-5 h-5 text-theme-text-primary" />,
     description: "Basic flow information",
     defaultConfig: {
@@ -65,6 +65,7 @@ const BLOCK_INFO = {
       body: "",
       formData: [],
       responseVariable: "",
+      directOutput: false,
     },
     getSummary: (config) =>
       `${config.method || "GET"} ${config.url || "(no URL)"}`,
@@ -115,8 +116,8 @@ const BLOCK_INFO = {
     description: "Process data using LLM instructions",
     defaultConfig: {
       instruction: "",
-      inputVariable: "",
       resultVariable: "",
+      directOutput: false,
     },
     getSummary: (config) => config.instruction || "No instruction",
   },
@@ -129,6 +130,7 @@ const BLOCK_INFO = {
       captureAs: "text",
       querySelector: "",
       resultVariable: "",
+      directOutput: false,
     },
     getSummary: (config) => config.url || "No URL specified",
   },
@@ -153,6 +155,7 @@ export default function BlockList({
   refs,
 }) {
   const renderBlockConfig = (block) => {
+    const isLastConfigurableBlock = blocks[blocks.length - 2]?.id === block.id;
     const props = {
       config: block.config,
       onConfigChange: (config) => updateBlockConfig(block.id, config),
@@ -160,6 +163,51 @@ export default function BlockList({
       onDeleteVariable,
     };
 
+    // Direct output switch to the last configurable block before finish
+    if (
+      isLastConfigurableBlock &&
+      block.type !== BLOCK_TYPES.START &&
+      block.type !== BLOCK_TYPES.FLOW_INFO
+    ) {
+      return (
+        <div className="space-y-4">
+          {renderBlockConfigContent(block, props)}
+          <div className="flex justify-between items-center pt-4 border-t border-white/10">
+            <div>
+              <label className="block text-sm font-medium text-theme-text-primary">
+                Direct Output
+              </label>
+              <p className="text-xs text-theme-text-secondary">
+                The output of this block will be returned directly to the chat.
+                <br />
+                This will prevent any further tool calls from being also being
+                executed.
+              </p>
+            </div>
+            <label className="relative inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                checked={props.config.directOutput || false}
+                onChange={(e) =>
+                  props.onConfigChange({
+                    ...props.config,
+                    directOutput: e.target.checked,
+                  })
+                }
+                className="peer sr-only"
+                aria-label="Toggle direct output"
+              />
+              <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+            </label>
+          </div>
+        </div>
+      );
+    }
+
+    return renderBlockConfigContent(block, props);
+  };
+
+  const renderBlockConfigContent = (block, props) => {
     switch (block.type) {
       case BLOCK_TYPES.FLOW_INFO:
         return <FlowInfoNode {...props} ref={refs} />;
@@ -225,7 +273,7 @@ export default function BlockList({
                             e.stopPropagation();
                             moveBlock(index, index - 1);
                           }}
-                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                           data-tooltip-id="block-action"
                           data-tooltip-content="Move block up"
                         >
@@ -238,7 +286,7 @@ export default function BlockList({
                             e.stopPropagation();
                             moveBlock(index, index + 1);
                           }}
-                          className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-white hover:bg-theme-action-menu-item-hover transition-colors duration-300"
                           data-tooltip-id="block-action"
                           data-tooltip-content="Move block down"
                         >
@@ -250,7 +298,7 @@ export default function BlockList({
                           e.stopPropagation();
                           removeBlock(block.id);
                         }}
-                        className="p-1.5 rounded-lg bg-theme-bg-primary border border-white/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-theme-bg-primary border border-white/5 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors duration-300"
                         data-tooltip-id="block-action"
                         data-tooltip-content="Delete block"
                       >

@@ -35,6 +35,9 @@ import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
+import PPIOLogo from "@/media/llmprovider/ppio.png";
+import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import DPAISLogo from "@/media/llmprovider/dpais.png";
 import GiteeAILogo from "@/media/llmprovider/giteeai.png";
 
 import React, { useState, useEffect } from "react";
@@ -226,6 +229,21 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: XAILogo,
   },
+  ppio: {
+    name: "PPIO",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to PPIO",
+    ],
+    logo: PPIOLogo,
+  },
+  dpais: {
+    name: "Dell Pro AI Studio",
+    description: [
+      "Your model and chat contents are only accessible on the computer running Dell Pro AI Studio",
+    ],
+    logo: DPAISLogo,
+  },
   giteeai: {
     name: "GiteeAI",
     description: [
@@ -236,6 +254,14 @@ export const LLM_SELECTION_PRIVACY = {
 };
 
 export const VECTOR_DB_PRIVACY = {
+  pgvector: {
+    name: "PGVector",
+    description: [
+      "Your vectors and document text are stored on your PostgreSQL instance",
+      "Access to your instance is managed by you",
+    ],
+    logo: PGVectorLogo,
+  },
   chroma: {
     name: "Chroma",
     description: [

@@ -1,9 +1,10 @@
 import { useState, forwardRef, useImperativeHandle } from "react";
 import renderMarkdown from "@/utils/chat/markdown";
-import { Brain, CaretDown } from "@phosphor-icons/react";
+import { CaretDown } from "@phosphor-icons/react";
 import DOMPurify from "dompurify";
-import truncate from "truncate";
 import { isMobile } from "react-device-detect";
+import ThinkingAnimation from "@/media/animations/thinking-animation.webm";
+import ThinkingStatic from "@/media/animations/thinking-static.png";
 
 const THOUGHT_KEYWORDS = ["thought", "thinking", "think", "thought_chain"];
 const CLOSING_TAGS = [...THOUGHT_KEYWORDS, "response", "answer"];
@@ -22,6 +23,21 @@ export const THOUGHT_REGEX_COMPLETE = new RegExp(
 const THOUGHT_PREVIEW_LENGTH = isMobile ? 25 : 50;
 
 /**
+ * Checks if the content has readable content.
+ * @param {string} content - The content to check.
+ * @returns {boolean} - Whether the content has readable content.
+ */
+function contentIsNotEmpty(content = "") {
+  return (
+    content
+      ?.trim()
+      ?.replace(THOUGHT_REGEX_OPEN, "")
+      ?.replace(THOUGHT_REGEX_CLOSE, "")
+      ?.replace(/[\n\s]/g, "")?.length > 0
+  );
+}
+
+/**
  * Component to render a thought chain.
  * @param {string} content - The content of the thought chain.
  * @param {boolean} expanded - Whether the thought chain is expanded.
@@ -30,10 +46,14 @@ const THOUGHT_PREVIEW_LENGTH = isMobile ? 25 : 50;
 export const ThoughtChainComponent = forwardRef(
   ({ content: initialContent, expanded }, ref) => {
     const [content, setContent] = useState(initialContent);
+    const [hasReadableContent, setHasReadableContent] = useState(
+      contentIsNotEmpty(initialContent)
+    );
     const [isExpanded, setIsExpanded] = useState(expanded);
     useImperativeHandle(ref, () => ({
       updateContent: (newContent) => {
         setContent(newContent);
+        setHasReadableContent(contentIsNotEmpty(newContent));
       },
     }));
 
@@ -48,7 +68,7 @@ export const ThoughtChainComponent = forwardRef(
     const autoExpand =
       isThinking && tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
     const canExpand = tagStrippedContent.length > THOUGHT_PREVIEW_LENGTH;
-    if (!content || !content.length) return null;
+    if (!content || !content.length || !hasReadableContent) return null;
 
     function handleExpandClick() {
       if (!canExpand) return;
@@ -61,46 +81,57 @@ export const ThoughtChainComponent = forwardRef(
           <div
             style={{
               transition: "all 0.1s ease-in-out",
-              borderRadius: isExpanded || autoExpand ? "6px" : "24px",
+              borderRadius: "6px",
             }}
-            className={`${isExpanded || autoExpand ? "" : `${canExpand ? "hover:bg-theme-sidebar-item-hover" : ""}`} items-start bg-theme-bg-chat-input py-2 px-4 flex gap-x-2 border border-theme-sidebar-border`}
+            className={`${isExpanded || autoExpand ? "" : `${canExpand ? "hover:bg-theme-sidebar-item-hover" : ""}`} items-start bg-theme-bg-chat-input py-2 px-4 flex gap-x-2`}
           >
-            {isThinking || isComplete ? (
-              <Brain
-                data-tooltip-id="cot-thinking"
-                data-tooltip-content={
-                  isThinking
-                    ? "Model is thinking..."
-                    : "Model has finished thinking"
-                }
-                className={`w-4 h-4 mt-1 ${isThinking ? "text-blue-500 animate-pulse" : "text-green-400"}`}
-                aria-label={
-                  isThinking
-                    ? "Model is thinking..."
-                    : "Model has finished thinking"
-                }
-              />
-            ) : null}
-            <div className="flex-1 overflow-hidden">
-              {!isExpanded && !autoExpand ? (
-                <span
-                  className="text-theme-text-secondary font-mono inline-block w-full"
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(
-                      truncate(tagStrippedContent, THOUGHT_PREVIEW_LENGTH)
-                    ),
-                  }}
-                />
-              ) : (
-                <span
-                  className="text-theme-text-secondary font-mono inline-block w-full"
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(
-                      renderMarkdown(tagStrippedContent)
-                    ),
-                  }}
-                />
-              )}
+            <div
+              className={`w-7 h-7 flex justify-center flex-shrink-0 ${!isExpanded && !autoExpand ? "items-center" : "items-start pt-[2px]"}`}
+            >
+              {isThinking || isComplete ? (
+                <>
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className={`w-7 h-7 transition-opacity duration-200 light:invert light:opacity-50 ${isThinking ? "opacity-100" : "opacity-0 hidden"}`}
+                    data-tooltip-id="cot-thinking"
+                    data-tooltip-content="Model is thinking..."
+                    aria-label="Model is thinking..."
+                  >
+                    <source src={ThinkingAnimation} type="video/webm" />
+                  </video>
+                  <img
+                    src={ThinkingStatic}
+                    alt="Thinking complete"
+                    className={`w-6 h-6 transition-opacity duration-200 light:invert light:opacity-50 ${!isThinking && isComplete ? "opacity-100" : "opacity-0 hidden"}`}
+                    data-tooltip-id="cot-thinking"
+                    data-tooltip-content="Model has finished thinking"
+                    aria-label="Model has finished thinking"
+                  />
+                </>
+              ) : null}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div
+                className={`overflow-hidden transition-all transform duration-300 ease-in-out origin-top ${isExpanded || autoExpand ? "" : "max-h-6"}`}
+              >
+                <div
+                  className={`text-theme-text-secondary font-mono leading-6 ${isExpanded || autoExpand ? "-ml-[5.5px] -mt-[4px]" : "mt-[2px]"}`}
+                >
+                  <span
+                    className={`block w-full ${!isExpanded && !autoExpand ? "truncate" : ""}`}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(
+                        isExpanded || autoExpand
+                          ? renderMarkdown(tagStrippedContent)
+                          : tagStrippedContent
+                      ),
+                    }}
+                  />
+                </div>
+              </div>
             </div>
             <div className="flex items-center gap-x-2">
               {!autoExpand && canExpand ? (
@@ -127,3 +158,4 @@ export const ThoughtChainComponent = forwardRef(
     );
   }
 );
+ThoughtChainComponent.displayName = "ThoughtChainComponent";

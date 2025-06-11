@@ -74,10 +74,10 @@ export function OnboardingLayout({ children }) {
                 <button
                   disabled={forwardBtn.disabled}
                   onClick={forwardBtn.onClick}
-                  className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+                  className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-teal disabled:hover:bg-transparent"
                 >
                   <ArrowRight
-                    className="text-white group-hover:text-black group-disabled:text-gray-500"
+                    className="text-white group-hover:text-teal group-disabled:text-gray-500"
                     size={30}
                   />
                 </button>
@@ -127,11 +127,11 @@ export function OnboardingLayout({ children }) {
           <button
             disabled={forwardBtn.disabled}
             onClick={forwardBtn.onClick}
-            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-theme-bg-secondary disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-theme-sidebar-border h-fit w-fit disabled:cursor-not-allowed hover:bg-teal disabled:hover:bg-transparent"
             aria-label="Continue"
           >
             <ArrowRight
-              className="text-theme-text-secondary group-hover:text-theme-text-primary group-disabled:text-gray-500"
+              className="text-theme-text-secondary group-hover:text-white group-disabled:text-gray-500"
               size={30}
             />
           </button>

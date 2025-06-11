@@ -1,6 +1,7 @@
 import UploadFile from "../UploadFile";
 import PreLoader from "@/components/Preloader";
 import { memo, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import FolderRow from "./FolderRow";
 import System from "@/models/system";
 import { MagnifyingGlass, Plus, Trash } from "@phosphor-icons/react";
@@ -30,6 +31,7 @@ function Directory({
   setLoadingMessage,
   loadingMessage,
 }) {
+  const { t } = useTranslation();
   const [amountSelected, setAmountSelected] = useState(0);
   const [showFolderSelection, setShowFolderSelection] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,11 +52,7 @@ function Directory({
 
   const deleteFiles = async (event) => {
     event.stopPropagation();
-    if (
-      !window.confirm(
-        "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible."
-      )
-    ) {
+    if (!window.confirm(t("connectors.directory.delete-confirmation"))) {
       return false;
     }
 
@@ -83,7 +81,10 @@ function Directory({
 
       setLoading(true);
       setLoadingMessage(
-        `Removing ${toRemove.length} documents and ${foldersToRemove.length} folders. Please wait.`
+        t("connectors.directory.removing-message", {
+          count: toRemove.length,
+          folderCount: foldersToRemove.length,
+        })
       );
       await System.deleteDocuments(toRemove);
       for (const folderName of foldersToRemove) {
@@ -166,7 +167,10 @@ function Directory({
       // show info if some files were not moved due to being embedded
       showToast(message, "info");
     } else {
-      showToast(`Successfully moved ${toMove.length} documents.`, "success");
+      showToast(
+        t("connectors.directory.move-success", { count: toMove.length }),
+        "success"
+      );
     }
     await fetchKeys(true);
     setSelectedItems({});
@@ -194,11 +198,13 @@ function Directory({
       <div className="px-8 pb-8" onContextMenu={handleContextMenu}>
         <div className="flex flex-col gap-y-6">
           <div className="flex items-center justify-between w-[560px] px-5 relative">
-            <h3 className="text-white text-base font-bold">My Documents</h3>
+            <h3 className="text-white text-base font-bold">
+              {t("connectors.directory.my-documents")}
+            </h3>
             <div className="relative">
               <input
                 type="search"
-                placeholder="Search for document"
+                placeholder={t("connectors.directory.search-document")}
                 onChange={handleSearch}
                 className="border-none search-input bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px] light:border-theme-modal-border light:border"
               />
@@ -218,13 +224,13 @@ function Directory({
                 className="text-theme-text-primary light:text-[#0ba5ec]"
               />
               <div className="text-theme-text-primary light:text-[#0ba5ec] text-xs font-bold leading-[18px]">
-                New Folder
+                {t("connectors.directory.new-folder")}
               </div>
             </button>
           </div>
 
           <div className="relative w-[560px] h-[310px] bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
-            <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-md bg-theme-settings-input-bg">
+            <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-theme-text-primary text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg">
               <p className="col-span-6">Name</p>
             </div>
 
@@ -257,7 +263,7 @@ function Directory({
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <p className="text-white text-opacity-40 text-sm font-medium">
-                    No Documents
+                    {t("connectors.directory.no-documents")}
                   </p>
                 </div>
               )}
@@ -272,7 +278,7 @@ function Directory({
                       onMouseLeave={() => setHighlightWorkspace(false)}
                       className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
-                      Move to Workspace
+                      {t("connectors.directory.move-workspace")}
                     </button>
                     <div className="relative">
                       <button
@@ -350,7 +356,9 @@ function DirectoryTooltips() {
         if (!data) return null;
         return (
           <div className="text-xs">
-            <p className="text-white light:invert font-medium">{data.title}</p>
+            <p className="text-white light:invert font-medium break-all">
+              {data.title}
+            </p>
             <div className="flex mt-1 gap-x-2">
               <p className="">
                 Date: <b>{data.date}</b>
