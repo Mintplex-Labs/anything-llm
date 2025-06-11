@@ -25,6 +25,9 @@ const {
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const ImportedPlugin = require("../utils/agents/imported");
+const {
+  simpleSSOLoginDisabledMiddleware,
+} = require("../utils/middleware/simpleSSOEnabled");
 
 function adminEndpoints(app) {
   if (!app) return;
@@ -168,7 +171,11 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/invite/new",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      strictMultiUserRoleValid([ROLES.admin, ROLES.manager]),
+      simpleSSOLoginDisabledMiddleware,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);

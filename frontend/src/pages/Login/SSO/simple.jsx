@@ -39,9 +39,9 @@ export default function SimpleSSOPassthrough() {
 
   if (error)
     return (
-      <div className="w-screen h-screen overflow-hidden bg-sidebar flex items-center justify-center flex-col gap-4">
-        <p className="text-white font-mono text-lg">{error}</p>
-        <p className="text-white/80 font-mono text-sm">
+      <div className="w-screen h-screen overflow-hidden bg-theme-bg-primary flex items-center justify-center flex-col gap-4">
+        <p className="text-theme-text-primary font-mono text-lg">{error}</p>
+        <p className="text-theme-text-secondary font-mono text-sm">
           Please contact the system administrator about this error.
         </p>
       </div>
