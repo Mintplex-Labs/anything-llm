@@ -1,20 +1,56 @@
-import { useState } from "react";
 import { X } from "@phosphor-icons/react";
+import { useState } from "react";
+import CommunityHub from "@/models/communityHub";
+import showToast from "@/utils/toast";
 
 export default function PublishPromptModal({ show, onClose, currentPrompt }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    prompt: currentPrompt || "",
-    tags: "",
-    visibility: "public",
-  });
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
   if (!show) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onClose();
+    setIsSubmitting(true);
+    try {
+      const form = new FormData(e.target.closest("form"));
+      const data = {
+        name: form.get("name"),
+        description: form.get("description"),
+        prompt: form.get("prompt"),
+        tags: tags,
+        visibility: form.get("visibility"),
+      };
+
+      const { success, error } = await CommunityHub.createSystemPrompt(data);
+      if (!success) throw new Error(error);
+      showToast("System prompt published successfully!", "success", {
+        clear: true,
+      });
+      onClose();
+    } catch (error) {
+      console.error("Failed to publish prompt:", error);
+      showToast(`Failed to publish prompt: ${error.message}`, "error", {
+        clear: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const value = tagInput.trim();
+      if (value && !tags.includes(value)) {
+        setTags([...tags, value]);
+        setTagInput("");
+      }
+    }
+  };
+
+  const removeTag = (tagToRemove) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   return (
@@ -35,7 +71,7 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex">
+        <form className="flex">
           <div className="w-1/2 p-6 pt-0 space-y-4">
             <div>
               <label className="block text-sm font-semibold text-white mb-1">
@@ -46,11 +82,10 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
               </div>
               <input
                 type="text"
-                value={formData.name}
+                name="name"
+                required
+                minLength={3}
                 placeholder="My System Prompt"
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
                 className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
               />
             </div>
@@ -64,11 +99,10 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
                 describe the purpose of your system prompt.
               </div>
               <textarea
-                value={formData.description}
+                name="description"
+                required
+                minLength={10}
                 placeholder="This is the description of your system prompt. Use this to describe the purpose of your system prompt."
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
                 className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
               />
             </div>
@@ -81,15 +115,38 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
                 Tags are used to label your system prompt for easier searching.
                 You can add multiple tags.
               </div>
-              <input
-                type="text"
-                value={formData.tags}
-                placeholder="tag1, tag2, tag3"
-                onChange={(e) =>
-                  setFormData({ ...formData, tags: e.target.value })
-                }
-                className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
-              />
+              <div className="flex flex-wrap gap-2 p-2 bg-theme-bg-secondary rounded-lg min-h-[42px]">
+                {tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="flex items-center gap-1 px-2 py-1 text-sm text-white bg-white/10 rounded-md"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="text-white/60 hover:text-white"
+                    >
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 256 256"
+                        fill="currentColor"
+                      >
+                        <path d="M208.49 191.51a12 12 0 0 1-17 17L128 145l-63.51 63.49a12 12 0 0 1-17-17L111 128L47.51 64.49a12 12 0 0 1 17-17L128 111l63.51-63.52a12 12 0 0 1 17 17L145 128Z" />
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type and press Enter to add tags"
+                  className="flex-1 min-w-[200px] border-none bg-transparent text-white placeholder:text-theme-text-placeholder p-0 h-[24px] focus:outline-none"
+                />
+              </div>
             </div>
 
             <div>
@@ -97,40 +154,38 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
                 Visibility
               </label>
               <div className="text-xs text-white/60 mb-2">
-                Public system prompts are visible to everyone. Private system
-                prompts are only visible to you and your team.
+                Public system prompts are visible to everyone.
               </div>
-              <div className="flex items-center space-x-4">
-                <label className="flex items-center">
+              <div className="w-fit h-[42px] bg-theme-bg-secondary rounded-lg p-0.5">
+                <div className="flex items-center" role="group">
                   <input
                     type="radio"
+                    id="public"
                     name="visibility"
                     value="public"
-                    checked={formData.visibility === "public"}
-                    onChange={(e) =>
-                      setFormData({ ...formData, visibility: e.target.value })
-                    }
-                    className="mr-2"
+                    className="peer/public hidden"
+                    defaultChecked
                   />
-                  <span className="text-white text-sm">Public</span>
-                </label>
-                <label className="flex items-center">
                   <input
                     type="radio"
+                    id="private"
                     name="visibility"
                     value="private"
-                    checked={formData.visibility === "private"}
-                    onChange={(e) =>
-                      setFormData({ ...formData, visibility: e.target.value })
-                    }
-                    className="mr-2"
+                    className="peer/private hidden"
                   />
-                  <span className="text-white text-sm">Private</span>
-                </label>
-              </div>
-              <div className="text-xs text-white/60 mt-2">
-                Private system prompts are currently in early access - you can
-                apply via email to contacting support.
+                  <label
+                    htmlFor="public"
+                    className="h-[36px] px-4 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-white/60 hover:text-white peer-checked/public:bg-theme-action-menu-bg peer-checked/public:text-white flex items-center justify-center"
+                  >
+                    Public
+                  </label>
+                  <label
+                    htmlFor="private"
+                    className="h-[36px] px-4 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-white/60 hover:text-white peer-checked/private:bg-theme-action-menu-bg peer-checked/private:text-white flex items-center justify-center"
+                  >
+                    Private
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -145,21 +200,22 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
                 LLM.
               </div>
               <textarea
-                value={formData.prompt}
+                name="prompt"
+                required
+                minLength={10}
+                defaultValue={currentPrompt}
                 placeholder="Enter your system prompt here..."
-                onChange={(e) =>
-                  setFormData({ ...formData, prompt: e.target.value })
-                }
                 className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[300px] placeholder:text-theme-text-placeholder"
               />
             </div>
 
             <button
-              type="submit"
-              form="publish-form"
-              className="w-full bg-cta-button hover:bg-opacity-80 text-theme-bg-primary font-medium py-2 px-4 rounded-lg transition-colors"
+              type="button"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="w-full bg-cta-button hover:bg-opacity-80 text-theme-bg-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create slash command
+              {isSubmitting ? "Publishing..." : "Publish to Community Hub"}
             </button>
           </div>
         </form>

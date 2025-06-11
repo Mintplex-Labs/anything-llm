@@ -181,6 +181,46 @@ function communityHubEndpoints(app) {
       }
     }
   );
+
+  /**
+   * Uploads a new system prompt to the community hub
+   */
+  app.post(
+    "/community-hub/system-prompt/create",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { connectionKey } = await SystemSettings.hubSettings();
+        if (!connectionKey) {
+          throw new Error("Community Hub connection key not found");
+        }
+
+        const data = reqBody(request);
+        const { success, error } = await CommunityHub.createSystemPrompt(
+          data,
+          connectionKey
+        );
+        if (!success) throw new Error(error);
+
+        await Telemetry.sendTelemetry("community_hub_publish", {
+          itemType: "system-prompt",
+          visibility: data.visibility,
+        });
+        await EventLogs.logEvent(
+          "community_hub_publish",
+          {
+            itemType: "system-prompt",
+          },
+          response.locals?.user?.id
+        );
+
+        response.status(200).json({ success: true, error: null });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ success: false, error: error.message });
+      }
+    }
+  );
 }
 
 module.exports = { communityHubEndpoints };

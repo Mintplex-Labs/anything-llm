@@ -172,6 +172,35 @@ const CommunityHub = {
         return { createdByMe: {}, teamItems: [] };
       });
   },
+
+  /**
+   * Create a new system prompt in the community hub
+   * @param {Object} data - The system prompt data
+   * @param {string} connectionKey - The hub connection key
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  createSystemPrompt: async function (data, connectionKey) {
+    if (!connectionKey)
+      return { success: false, error: "Connection key is required" };
+
+    return await fetch(`${this.apiBase}/system-prompts/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${connectionKey}`,
+      },
+      body: JSON.stringify(data),
+    })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || response.statusText);
+        return { success: true, error: null };
+      })
+      .catch((error) => {
+        console.error("Error creating system prompt:", error);
+        return { success: false, error: error.message };
+      });
+  },
 };
 
 module.exports = { CommunityHub };
