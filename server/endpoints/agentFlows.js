@@ -1,10 +1,7 @@
 const { AgentFlows } = require("../utils/agentFlows");
-const {
-  flexUserRoleValid,
-  ROLES,
-} = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
+const AccessManager = require("../utils/AccessManager");
 
 function agentFlowEndpoints(app) {
   if (!app) return;
@@ -12,7 +9,7 @@ function agentFlowEndpoints(app) {
   // Save a flow configuration
   app.post(
     "/agent-flows/save",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["agentFlows.create"])],
     async (request, response) => {
       try {
         const { name, config, uuid } = request.body;
@@ -53,7 +50,7 @@ function agentFlowEndpoints(app) {
   // List all available flows
   app.get(
     "/agent-flows/list",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["agentFlows.read"])],
     async (_request, response) => {
       try {
         const flows = AgentFlows.listFlows();
@@ -74,7 +71,7 @@ function agentFlowEndpoints(app) {
   // Get a specific flow by UUID
   app.get(
     "/agent-flows/:uuid",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["agentFlows.read"])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
@@ -100,44 +97,10 @@ function agentFlowEndpoints(app) {
     }
   );
 
-  // Run a specific flow
-  // app.post(
-  //   "/agent-flows/:uuid/run",
-  //   [validatedRequest, flexUserRoleValid([ROLES.admin])],
-  //   async (request, response) => {
-  //     try {
-  //       const { uuid } = request.params;
-  //       const { variables = {} } = request.body;
-
-  //       // TODO: Implement flow execution
-  //       console.log("Running flow with UUID:", uuid);
-
-  //       await Telemetry.sendTelemetry("agent_flow_executed", {
-  //         variableCount: Object.keys(variables).length,
-  //       });
-
-  //       return response.status(200).json({
-  //         success: true,
-  //         results: {
-  //           success: true,
-  //           results: "test",
-  //           variables: variables,
-  //         },
-  //       });
-  //     } catch (error) {
-  //       console.error("Error running flow:", error);
-  //       return response.status(500).json({
-  //         success: false,
-  //         error: error.message,
-  //       });
-  //     }
-  //   }
-  // );
-
   // Delete a specific flow
   app.delete(
     "/agent-flows/:uuid",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["agentFlows.delete"])],
     async (request, response) => {
       try {
         const { uuid } = request.params;
@@ -166,7 +129,7 @@ function agentFlowEndpoints(app) {
   // Toggle flow active status
   app.post(
     "/agent-flows/:uuid/toggle",
-    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    [validatedRequest, AccessManager.flexibleAC(["agentFlows.update"])],
     async (request, response) => {
       try {
         const { uuid } = request.params;

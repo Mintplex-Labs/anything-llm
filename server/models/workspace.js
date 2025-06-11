@@ -2,10 +2,10 @@ const prisma = require("../utils/prisma");
 const slugifyModule = require("slugify");
 const { Document } = require("./documents");
 const { WorkspaceUser } = require("./workspaceUsers");
-const { ROLES } = require("../utils/middleware/multiUserProtected");
 const { v4: uuidv4 } = require("uuid");
 const { User } = require("./user");
 const { PromptHistory } = require("./promptHistory");
+const AccessManager = require("../utils/AccessManager");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -259,8 +259,10 @@ const Workspace = {
   },
 
   getWithUser: async function (user = null, clause = {}) {
-    if ([ROLES.admin, ROLES.manager].includes(user.role))
-      return this.get(clause);
+    const acm = new AccessManager();
+    const perms = acm.roles?.[user?.role]?.permissions || {};
+    const canViewAll = acm.parsePermissionFromRole(perms, "workspace.readAny");
+    if (canViewAll) return this.get(clause);
 
     try {
       const workspace = await prisma.workspaces.findFirst({
@@ -338,8 +340,10 @@ const Workspace = {
     limit = null,
     orderBy = null
   ) {
-    if ([ROLES.admin, ROLES.manager].includes(user.role))
-      return await this.where(clause, limit, orderBy);
+    const acm = new AccessManager();
+    const perms = acm.roles?.[user?.role]?.permissions || {};
+    const canViewAll = acm.parsePermissionFromRole(perms, "workspace.readAny");
+    if (canViewAll) return await this.where(clause, limit, orderBy);
 
     try {
       const workspaces = await prisma.workspaces.findMany({

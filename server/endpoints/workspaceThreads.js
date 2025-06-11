@@ -6,10 +6,6 @@ const {
 } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
-const {
-  flexUserRoleValid,
-  ROLES,
-} = require("../utils/middleware/multiUserProtected");
 const { EventLogs } = require("../models/eventLogs");
 const { WorkspaceThread } = require("../models/workspaceThread");
 const {
@@ -19,13 +15,18 @@ const {
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { getModelTag } = require("./utils");
+const AccessManager = require("../utils/AccessManager");
 
 function workspaceThreadEndpoints(app) {
   if (!app) return;
 
   app.post(
     "/workspace/:slug/thread/new",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    [
+      validatedRequest,
+      AccessManager.flexibleAC(["workspaceThread.create"]),
+      validWorkspaceSlug,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -64,7 +65,11 @@ function workspaceThreadEndpoints(app) {
 
   app.get(
     "/workspace/:slug/threads",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    [
+      validatedRequest,
+      AccessManager.flexibleAC(["workspaceThread.read"]),
+      validWorkspaceSlug,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -85,7 +90,7 @@ function workspaceThreadEndpoints(app) {
     "/workspace/:slug/thread/:threadSlug",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.all]),
+      AccessManager.flexibleAC(["workspaceThread.delete"]),
       validWorkspaceAndThreadSlug,
     ],
     async (_, response) => {
@@ -102,7 +107,11 @@ function workspaceThreadEndpoints(app) {
 
   app.delete(
     "/workspace/:slug/thread-bulk-delete",
-    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    [
+      validatedRequest,
+      AccessManager.flexibleAC(["workspaceThread.delete"]),
+      validWorkspaceSlug,
+    ],
     async (request, response) => {
       try {
         const { slugs = [] } = reqBody(request);
@@ -127,7 +136,7 @@ function workspaceThreadEndpoints(app) {
     "/workspace/:slug/thread/:threadSlug/chats",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.all]),
+      AccessManager.flexibleAC(["workspaceChats.read"]),
       validWorkspaceAndThreadSlug,
     ],
     async (request, response) => {
@@ -159,7 +168,7 @@ function workspaceThreadEndpoints(app) {
     "/workspace/:slug/thread/:threadSlug/update",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.all]),
+      AccessManager.flexibleAC(["workspaceThread.update"]),
       validWorkspaceAndThreadSlug,
     ],
     async (request, response) => {
@@ -182,7 +191,7 @@ function workspaceThreadEndpoints(app) {
     "/workspace/:slug/thread/:threadSlug/delete-edited-chats",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.all]),
+      AccessManager.flexibleAC(["workspaceChats.delete"]),
       validWorkspaceAndThreadSlug,
     ],
     async (request, response) => {
@@ -211,7 +220,7 @@ function workspaceThreadEndpoints(app) {
     "/workspace/:slug/thread/:threadSlug/update-chat",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.all]),
+      AccessManager.flexibleAC(["workspaceChats.update"]),
       validWorkspaceAndThreadSlug,
     ],
     async (request, response) => {
