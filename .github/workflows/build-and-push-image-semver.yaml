@@ -67,8 +67,8 @@ jobs:
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
             ghcr.io/${{ github.repository }}
           tags: |
-            type=semver,pattern=1.8.2
-            type=semver,pattern=1.8
+            type=raw,value=1.8.2
+            type=raw,value=1.8
           # tags: |
           #   type=semver,pattern={{version}}
           #   type=semver,pattern={{major}}.{{minor}}
