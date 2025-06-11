@@ -1,19 +1,15 @@
 const fs = require("fs");
 const path = require("path");
 const { MimeDetector } = require("./mime");
-const documentsFolder =
-  process.env.NODE_ENV === "production"
-    ? path.resolve("/storage/documents") // hardcoded to Render storage mount.
-    : path.resolve(__dirname, "../../../server/storage/documents");
 
 /**
  * The folder where documents are stored to be stored when
  * processed by the collector.
  */
 const documentsFolder =
-  process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../../server/storage/documents`)
-    : path.resolve(process.env.STORAGE_DIR, `documents`);
+  process.env.NODE_ENV === "production"
+    ? path.resolve("/storage/documents") // hardcoded to Render storage mount.
+    : path.resolve(__dirname, "../../../server/storage/documents");
 
 /**
  * Checks if a file is text by checking the mime type and then falling back to buffer inspection.
@@ -139,7 +135,7 @@ async function wipeCollectorStorage() {
         if (file === "__HOTDIR__.md") continue;
         try {
           fs.rmSync(path.join(directory, file));
-        } catch {}
+        } catch { }
       }
       resolve();
     });
@@ -154,7 +150,7 @@ async function wipeCollectorStorage() {
         if (file === ".placeholder") continue;
         try {
           fs.rmSync(path.join(directory, file));
-        } catch {}
+        } catch { }
       }
       resolve();
     });
