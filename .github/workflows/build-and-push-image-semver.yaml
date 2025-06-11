@@ -4,9 +4,13 @@ concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
+# on:
+#   release:
+#     types: [published]
+
 on:
-  release:
-    types: [published]
+  push:
+    branches: ['master']
 
 jobs:
   push_multi_platform_to_registries:
@@ -63,8 +67,11 @@ jobs:
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
             ghcr.io/${{ github.repository }}
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern=1.8.2
+            type=semver,pattern=1.8
+          # tags: |
+          #   type=semver,pattern={{version}}
+          #   type=semver,pattern={{major}}.{{minor}}
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6
