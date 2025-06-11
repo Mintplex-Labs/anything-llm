@@ -52,11 +52,15 @@ class GiteeAILLM {
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.giteeai[modelName] ?? 8192;
+    // return MODEL_MAP.giteeai[modelName] ?? 8192;
+    // TODO using external API data and caching it
+    return 8192;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.giteeai[this.model] ?? 8192;
+    // return MODEL_MAP.giteeai[this.model] ?? 8192;
+    // TODO using external API data and caching it
+    return 8192;
   }
 
   async isValidChatCompletionModel(modelName = "") {
