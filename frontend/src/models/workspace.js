@@ -136,7 +136,13 @@ const Workspace = {
       mode
     );
   },
-  streamChat: async function ({ slug }, message, handleChat, attachments = [], mode = "chat") {
+  streamChat: async function (
+    { slug },
+    message,
+    handleChat,
+    attachments = [],
+    mode = "chat"
+  ) {
     const ctrl = new AbortController();
 
     // Listen for the ABORT_STREAM_EVENT key to be emitted by the client

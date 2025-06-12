@@ -1,8 +1,12 @@
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 
-export default function EndAgentSession({ setShowing, sendCommand, workspace }) {
+export default function EndAgentSession({
+  setShowing,
+  sendCommand,
+  workspace,
+}) {
   const isActiveAgentSession = useIsAgentSessionActive();
-  
+
   // Only show exit command if there's an active agent session AND workspace is NOT in agent mode
   // If workspace is in agent mode, we don't want users to exit the agent
   if (!isActiveAgentSession || workspace?.chatMode === "agent") return null;

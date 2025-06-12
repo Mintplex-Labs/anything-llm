@@ -10,7 +10,12 @@ import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
-export default function SlashPresets({ setShowing, sendCommand, promptRef, workspace }) {
+export default function SlashPresets({
+  setShowing,
+  sendCommand,
+  promptRef,
+  workspace,
+}) {
   const { t } = useTranslation();
   const isActiveAgentSession = useIsAgentSessionActive();
   const {

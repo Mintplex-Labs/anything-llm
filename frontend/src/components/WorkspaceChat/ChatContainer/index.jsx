@@ -50,7 +50,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!message || message === "") return false;
-    
+
     const prevChatHistory = [
       ...chatHistory,
       {

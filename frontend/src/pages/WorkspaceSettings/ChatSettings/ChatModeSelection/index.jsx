@@ -65,8 +65,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
             </>
           ) : (
             <>
-              <b>{t("chat.mode.agent.title")}</b>{" "}
-              {t("chat.mode.agent.desc")}
+              <b>{t("chat.mode.agent.title")}</b> {t("chat.mode.agent.desc")}
             </>
           )}
         </p>

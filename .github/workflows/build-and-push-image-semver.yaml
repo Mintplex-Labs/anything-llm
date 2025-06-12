@@ -4,13 +4,9 @@ concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
-# on:
-#   release:
-#     types: [published]
-
 on:
-  push:
-    branches: ['1.8.2']
+  release:
+    types: [published]
 
 jobs:
   push_multi_platform_to_registries:

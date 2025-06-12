@@ -26,9 +26,10 @@ async function streamChatWithWorkspace(
 ) {
   const uuid = uuidv4();
   // In agent mode, only process built-in commands, skip SlashPresets
-  const updatedMessage = chatMode === "agent" 
-    ? await grepBuiltInCommand(message) 
-    : await grepCommand(message, user);
+  const updatedMessage =
+    chatMode === "agent"
+      ? await grepBuiltInCommand(message)
+      : await grepCommand(message, user);
 
   // Handle valid built-in commands BEFORE agent processing
   if (Object.keys(VALID_COMMANDS).includes(updatedMessage)) {
