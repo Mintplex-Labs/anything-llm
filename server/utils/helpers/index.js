@@ -77,7 +77,7 @@
 
 /**
  * Gets the systems current vector database provider.
- * @param {('pinecone' | 'chroma' | 'lancedb' | 'weaviate' | 'qdrant' | 'milvus' | 'zilliz' | 'astra') | null} getExactly - If provided, this will return an explit provider.
+ * @param {("pinecone" | "chroma" | "lancedb" | "weaviate" | "qdrant" | "milvus" | "zilliz" | "astra") | null} getExactly - If provided, this will return an explit provider.
  * @returns { BaseVectorDatabaseProvider}
  */
 function getVectorDbClass(getExactly = null) {
@@ -208,7 +208,7 @@ function getLLMProvider({ provider = null, model = null } = {}) {
       return new DellProAiStudioLLM(embedder, model);
     default:
       throw new Error(
-        `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
+        `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`,
       );
   }
 }
@@ -217,10 +217,14 @@ function getLLMProvider({ provider = null, model = null } = {}) {
  * Returns the EmbedderProvider by itself to whatever is currently in the system settings.
  * @returns {BaseEmbedderProvider}
  */
-function getEmbeddingEngineSelection() {
-  const { NativeEmbedder } = require("../EmbeddingEngines/native");
+function getEmbeddingEngineSelection(namespace = "default") {
   const engineSelection = process.env.EMBEDDING_ENGINE;
   switch (engineSelection) {
+    case "hybrid": {
+      // new combined embedder we wrote earlier
+      const { HybridEmbedder } = require("../EmbeddingEngines/hybrid/index");
+      return new HybridEmbedder(namespace);
+    }
     case "openai":
       const { OpenAiEmbedder } = require("../EmbeddingEngines/openAi");
       return new OpenAiEmbedder();
@@ -236,6 +240,7 @@ function getEmbeddingEngineSelection() {
       const { OllamaEmbedder } = require("../EmbeddingEngines/ollama");
       return new OllamaEmbedder();
     case "native":
+      const { NativeEmbedder } = require("../EmbeddingEngines/native");
       return new NativeEmbedder();
     case "lmstudio":
       const { LMStudioEmbedder } = require("../EmbeddingEngines/lmstudio");
@@ -374,7 +379,7 @@ function maximumChunkLength() {
 
 function toChunks(arr, size) {
   return Array.from({ length: Math.ceil(arr.length / size) }, (_v, i) =>
-    arr.slice(i * size, i * size + size)
+    arr.slice(i * size, i * size + size),
   );
 }
 

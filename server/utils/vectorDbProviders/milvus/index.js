@@ -11,6 +11,17 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const { DocumentVectors } = require("../../../models/vectors");
+const { HybridEmbedder } = require("../../EmbeddingEngines/hybrid");
+
+// --------------------------------------------------------------
+// Simple toggle‑able logger for tracing Milvus provider flow.
+// Enable by setting DEBUG_MILVUS_PROVIDER=true in your `.env`
+// --------------------------------------------------------------
+const LOG_ENABLED = process.env.DEBUG_MILVUS_PROVIDER === "true";
+const debugLog = (...args) => {
+  if (LOG_ENABLED) console.log("[MilvusProvider]", ...args);
+};
 
 const Milvus = {
   name: "Milvus",
@@ -25,6 +36,7 @@ const Milvus = {
     return normalized;
   },
   connect: async function () {
+    debugLog("connect() invoked");
     if (process.env.VECTOR_DB !== "milvus")
       throw new Error("Milvus::Invalid ENV settings");
 
@@ -35,6 +47,7 @@ const Milvus = {
     });
 
     const { isHealthy } = await client.checkHealth();
+    debugLog("Milvus health check OK");
     if (!isHealthy)
       throw new Error(
         "MilvusDB::Invalid Heartbeat received - is the instance online?"
@@ -92,8 +105,10 @@ const Milvus = {
   // we pass this in from the first chunk to infer the dimensions like other
   // providers do.
   getOrCreateCollection: async function (client, namespace, dimensions = null) {
+    debugLog("getOrCreateCollection()", { namespace, dimensions });
     const isExists = await this.namespaceExists(client, namespace);
     if (!isExists) {
+      debugLog("Creating new collection (does not exist yet)");
       if (!dimensions)
         throw new Error(
           `Milvus:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on GitHub for support.`
@@ -110,7 +125,7 @@ const Milvus = {
             is_primary_key: true,
           },
           {
-            name: "vector", // dense semantic embedding
+            name: "text_dense", // dense semantic embedding
             description: "dense embedding vector",
             data_type: DataType.FloatVector,
             dim: dimensions,
@@ -137,7 +152,7 @@ const Milvus = {
       });
       await client.createIndex({
         collection_name: this.normalize(namespace),
-        field_name: "vector",
+        field_name: "text_dense",
         index_type: IndexType.AUTOINDEX,
         metric_type: MetricType.COSINE,
       });
@@ -167,6 +182,7 @@ const Milvus = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length === 0) return false;
 
+      debugLog("addDocumentToNamespace()", { namespace, docId });
       console.log("Adding new vectorized document into namespace", namespace);
       if (skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
@@ -178,6 +194,7 @@ const Milvus = {
 
           await this.getOrCreateCollection(client, namespace, vectorDimension);
           try {
+            debugLog("Inserting cached chunks", { chunkBatch: chunks.length });
             for (const chunk of chunks) {
               // Before sending to Milvus and saving the records to our db
               // we need to assign the id of each chunk that is stored in the cached file.
@@ -187,7 +204,7 @@ const Milvus = {
                 return {
                   id,
                   text: chunk.metadata.text,
-                  vector: chunk.values,
+                  text_dense: chunk.values,
                   text_sparse: { indices: [], values: [] }, // placeholder – TODO: add real BM25
                   metadata: chunk.metadata,
                 };
@@ -218,7 +235,7 @@ const Milvus = {
         }
       }
 
-      const EmbedderEngine = getEmbeddingEngineSelection();
+      const EmbedderEngine = getEmbeddingEngineSelection(namespace);
       const textSplitter = new TextSplitter({
         chunkSize: TextSplitter.determineMaxChunkSize(
           await SystemSettings.getValueOrFallback({
@@ -240,18 +257,23 @@ const Milvus = {
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
-        for (const [i, vector] of vectorValues.entries()) {
-          if (!vectorDimension) vectorDimension = vector.length;
-          const vectorRecord = {
-            id: uuidv4(),
-            values: vector,
-            // [DO NOT REMOVE]
-            // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
-            metadata: { ...metadata, text: textChunks[i] },
-          };
+        for (const [i, vec] of vectorValues.entries()) {
+          // vec is either a plain dense array (legacy) or { dense, sparse }
+          const dense = Array.isArray(vec) ? vec : vec.dense;
+          const sparse = Array.isArray(vec)
+            ? { indices: [], values: [] }
+            : vec.sparse;
 
-          vectors.push(vectorRecord);
-          documentVectors.push({ docId, vectorId: vectorRecord.id });
+          if (!vectorDimension) vectorDimension = dense.length;
+
+          vectors.push({
+            id: uuidv4(),
+            values: dense, // ← dense goes here
+            sparse, // ← keep sparse for later insert
+            metadata: { ...metadata, text: textChunks[i] },
+          });
+
+          documentVectors.push({ docId, vectorId: vectors.at(-1).id });
         }
       } else {
         throw new Error(
@@ -266,14 +288,15 @@ const Milvus = {
 
         console.log("Inserting vectorized chunks into Milvus.");
         for (const chunk of toChunks(vectors, 100)) {
+          debugLog("Inserting vector batch", { size: chunk.length });
           chunks.push(chunk);
           const insertResult = await client.insert({
             collection_name: this.normalize(namespace),
             data: chunk.map((item) => ({
               id: item.id,
               text: item.metadata.text,
-              vector: item.values,
-              text_sparse: { indices: [], values: [] }, // placeholder – TODO
+              text_dense: item.values,
+              text_sparse: item.sparse, // placeholder – TODO
               metadata: item.metadata,
             })),
           });
@@ -328,6 +351,7 @@ const Milvus = {
     topN = 4,
     filterIdentifiers = [],
   }) {
+    debugLog("performSimilaritySearch()", { namespace, topN });
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
 
@@ -340,7 +364,13 @@ const Milvus = {
       };
     }
 
-    const queryVector = await LLMConnector.embedTextInput(input);
+    // Always embed with the engine selected for indexing (Native or Hybrid)
+    const EmbedderEngine = new getEmbeddingEngineSelection(namespace);
+    const embedResult = await EmbedderEngine.embedTextInput(input);
+    // Hybrid returns an object { dense, sparse } – we only need the dense part here
+    const queryVector = Array.isArray(embedResult)
+      ? embedResult
+      : embedResult.dense;
     const { contextTexts, sourceDocuments } = await this.similarityResponse({
       client,
       namespace,
@@ -349,6 +379,7 @@ const Milvus = {
       topN,
       filterIdentifiers,
     });
+    debugLog("Similarity search returned", { matches: contextTexts.length });
 
     const sources = sourceDocuments.map((metadata, i) => {
       return { ...metadata, text: contextTexts[i] };
@@ -367,6 +398,7 @@ const Milvus = {
     topN = 4,
     filterIdentifiers = [],
   }) {
+    debugLog("performHybridSearch()", { namespace, topN });
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performHybridSearch.");
 
@@ -379,13 +411,19 @@ const Milvus = {
       };
     }
 
-    // Dense embedding for semantic search
-    const queryDense = await LLMConnector.embedTextInput(input);
+    // Embed with the configured engine (guarantees dense vector matches collection)
+    const EmbedderEngine = getEmbeddingEngineSelection(namespace);
+    debugLog("EmbedderEngine: ", { EmbedderEngine });
+
+    const embedResult = await EmbedderEngine.embedTextInput(input);
+    const queryDense = Array.isArray(embedResult) ? embedResult : embedResult.dense;
+
+    debugLog("Embedder Selection", { EmbedderEngine });
 
     // Build two AnnSearch objects – dense & sparse
     const searchRequests = [
       {
-        vector_field_name: "vector", // dense field
+        vector_field_name: "text_dense", // dense field
         data: [queryDense],
         params: { nprobe: 10 },
         limit: topN,
@@ -398,15 +436,17 @@ const Milvus = {
       },
     ];
 
-    // RRFRanker balances dense & sparse without weighting
-    const ranker = new RRFRanker(100);
+    // RRFRanker is a factory function, not a class – call it directly.
+    const rerank = RRFRanker(100);
+    debugLog("RRFRanker instance created for hybrid search", { k: 100 });
 
     const response = await client.hybridSearch({
       collection_name: this.normalize(namespace),
       searches: searchRequests,
-      ranker,
+      rerank,
       limit: topN,
     });
+    debugLog("Hybrid search raw results", { total: response.results.length });
 
     const result = { contextTexts: [], sourceDocuments: [], scores: [] };
     response.results.forEach((match) => {
@@ -437,20 +477,23 @@ const Milvus = {
     topN = 4,
     filterIdentifiers = [],
   }) {
+    debugLog("similarityResponse()", { topN });
     const result = {
       contextTexts: [],
       sourceDocuments: [],
       scores: [],
     };
     const denseReq = {
-      anns_field: "vector",
+      anns_field: "text_dense",
       data: [queryVector],
       param: { nprobe: 10 },
       limit: topN,
     };
     const response = await client.search({
       collection_name: this.normalize(namespace),
-      vectors: queryVector,
+      anns_field: "text_dense",
+      data: [queryVector],
+      param: { nprobe: 10 },
       limit: topN,
     });
     response.results.forEach((match) => {
@@ -465,6 +508,9 @@ const Milvus = {
       result.contextTexts.push(match.metadata.text);
       result.sourceDocuments.push(match);
       result.scores.push(match.score);
+    });
+    debugLog("Filtered similarityResponse", {
+      kept: result.contextTexts.length,
     });
     return result;
   },

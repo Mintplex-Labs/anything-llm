@@ -38,6 +38,7 @@ class GeminiEmbedder {
    * @returns {Promise<Array<number>>} The embedding values
    */
   async embedTextInput(textInput) {
+    this.log("Gemini embedder called");
     const result = await this.embedChunks(
       Array.isArray(textInput) ? textInput : [textInput]
     );

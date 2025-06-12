@@ -13,7 +13,17 @@ const {
   EphemeralAgentHandler,
   EphemeralEventListener,
 } = require("../agents/ephemeral");
+
 const { Telemetry } = require("../../models/telemetry");
+
+// --------------------------------------------------------------
+// Simple toggle‑able logger for tracing execution.
+// Enable by setting DEBUG_CHAT_HANDLER=true in your `.env`
+// --------------------------------------------------------------
+const LOG_ENABLED = process.env.DEBUG_CHAT_HANDLER === "true";
+const debugLog = (...args) => {
+  if (LOG_ENABLED) console.log("[ApiChatHandler]", ...args);
+};
 
 /**
  * @typedef ResponseObject
@@ -52,6 +62,7 @@ async function chatSync({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+  debugLog("chatSync called", { uuid, mode: chatMode });
 
   // If the user wants to reset the chat history we do so pre-flight
   // and continue execution. If no message is provided then the user intended
@@ -142,6 +153,7 @@ async function chatSync({
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+  debugLog("Namespace stats", { hasVectorizedSpace, embeddingsCount });
 
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
@@ -208,25 +220,48 @@ async function chatSync({
       });
     });
 
+  // Hybrid search support
+  const useHybrid =
+    process.env.VECTOR_DB === "milvus" &&
+    process.env.EMBEDDING_ENGINE === "hybrid";
+
+  debugLog("Search strategy", { useHybrid });
+
   const vectorSearchResults =
     embeddingsCount !== 0
-      ? await VectorDb.performSimilaritySearch({
-          namespace: workspace.slug,
-          input: message,
-          LLMConnector,
-          similarityThreshold: workspace?.similarityThreshold,
-          topN: workspace?.topN,
-          filterIdentifiers: pinnedDocIdentifiers,
-          rerank: workspace?.vectorSearchMode === "rerank",
-        })
+      ? useHybrid
+        ? await VectorDb.performHybridSearch({
+            namespace: workspace.slug,
+            input: message,
+            LLMConnector,
+            similarityThreshold: workspace?.similarityThreshold,
+            topN: workspace?.topN,
+            filterIdentifiers: pinnedDocIdentifiers,
+            rerank: workspace?.vectorSearchMode === "rerank",
+          })
+        : await VectorDb.performSimilaritySearch({
+            namespace: workspace.slug,
+            input: message,
+            LLMConnector,
+            similarityThreshold: workspace?.similarityThreshold,
+            topN: workspace?.topN,
+            filterIdentifiers: pinnedDocIdentifiers,
+            rerank: workspace?.vectorSearchMode === "rerank",
+          })
       : {
           contextTexts: [],
           sources: [],
           message: null,
         };
 
+  debugLog("Vector search results", {
+    ctxCount: vectorSearchResults.contextTexts?.length,
+    srcCount: vectorSearchResults.sources?.length,
+    error: vectorSearchResults.message || null,
+  });
+
   // Failed similarity search if it was run at all and failed.
-  if (!!vectorSearchResults.message) {
+  if (vectorSearchResults.message) {
     return {
       id: uuid,
       type: "abort",
@@ -309,6 +344,11 @@ async function chatSync({
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
 
+  debugLog("LLM completion done", {
+    responseChars: textResponse?.length,
+    metrics: performanceMetrics,
+  });
+
   if (!textResponse) {
     return {
       id: uuid,
@@ -376,6 +416,7 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
+  debugLog("streamChat called", { uuid, mode: chatMode });
 
   // If the user wants to reset the chat history we do so pre-flight
   // and continue execution. If no message is provided then the user intended
@@ -468,6 +509,7 @@ async function streamChat({
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+  debugLog("Namespace stats", { hasVectorizedSpace, embeddingsCount });
 
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
@@ -544,25 +586,49 @@ async function streamChat({
       });
     });
 
+  // Hybrid search support
+  const useHybrid =
+    process.env.VECTOR_DB?.toLowerCase() === "milvus" &&
+    process.env.EMBEDDING_ENGINE?.toLowerCase() === "hybrid"
+
+  debugLog("----IS USING HYBRID: ", useHybrid);
+  debugLog("Search strategy", { useHybrid });
+
   const vectorSearchResults =
     embeddingsCount !== 0
-      ? await VectorDb.performSimilaritySearch({
-          namespace: workspace.slug,
-          input: message,
-          LLMConnector,
-          similarityThreshold: workspace?.similarityThreshold,
-          topN: workspace?.topN,
-          filterIdentifiers: pinnedDocIdentifiers,
-          rerank: workspace?.vectorSearchMode === "rerank",
-        })
+      ? useHybrid
+        ? await VectorDb.performHybridSearch({
+            namespace: workspace.slug,
+            input: message,
+            LLMConnector,
+            similarityThreshold: workspace?.similarityThreshold,
+            topN: workspace?.topN,
+            filterIdentifiers: pinnedDocIdentifiers,
+            rerank: workspace?.vectorSearchMode === "rerank",
+          })
+        : await VectorDb.performSimilaritySearch({
+            namespace: workspace.slug,
+            input: message,
+            LLMConnector,
+            similarityThreshold: workspace?.similarityThreshold,
+            topN: workspace?.topN,
+            filterIdentifiers: pinnedDocIdentifiers,
+            rerank: workspace?.vectorSearchMode === "rerank",
+          })
       : {
           contextTexts: [],
           sources: [],
           message: null,
         };
 
+  debugLog("Vector search results", {
+    ctxCount: vectorSearchResults.contextTexts?.length,
+    srcCount: vectorSearchResults.sources?.length,
+    error: vectorSearchResults.message || null,
+  });
+
   // Failed similarity search if it was run at all and failed.
-  if (!!vectorSearchResults.message) {
+  if (vectorSearchResults.message) {
     writeResponseChunk(response, {
       id: uuid,
       type: "abort",
@@ -688,6 +754,7 @@ async function streamChat({
       user,
     });
 
+    debugLog("Streaming complete", { uuid, metrics });
     writeResponseChunk(response, {
       uuid,
       type: "finalizeResponseStream",
@@ -699,6 +766,7 @@ async function streamChat({
     return;
   }
 
+  debugLog("Streaming complete", { uuid, metrics });
   writeResponseChunk(response, {
     uuid,
     type: "finalizeResponseStream",

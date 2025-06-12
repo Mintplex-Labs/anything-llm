@@ -20,6 +20,9 @@ class BM25Embedder {
   #namespace = null;
   #cacheDir = null;
   #dataPath = null;
+  #vocab = new Map(); // token -> integer id for sparse vectors
+  #nextIdx = 0;
+
 
   constructor(namespace = "default") {
     this.#namespace = namespace;
@@ -30,15 +33,20 @@ class BM25Embedder {
     );
     this.#dataPath = path.resolve(this.#cacheDir, `${namespace}.json`);
 
+    // Align with NativeEmbedder public API
+    this.model = "bm25-lexical";
+    this.maxConcurrentChunks = null;
+    this.embeddingMaxChunkLength = null;
+
     this.#init();
   }
 
-  #log(...args) {
-    console.log(chalk.cyan("[BM25]"), ...args);
+  log(text, ...args) {
+    console.log(chalk.cyan("[BM25]"), text, ...args);
   }
 
-  #error(...args) {
-    console.error(chalk.red("[BM25]"), ...args);
+  error(text, ...args) {
+    console.error(chalk.red("[BM25]"), text, ...args);
   }
 
   #init() {
@@ -52,9 +60,9 @@ class BM25Embedder {
       try {
         const snapshot = JSON.parse(fs.readFileSync(this.#dataPath, "utf8"));
         this.#index.importJSON(snapshot);
-        this.#log(`Loaded BM25 index for '${this.#namespace}' from disk.`);
+        this.log(`Loaded BM25 index for '${this.#namespace}' from disk.`);
       } catch (err) {
-        this.#error(`Failed to load index – rebuilding.`, err);
+        this.error(`Failed to load index – rebuilding.`, err);
       }
     }
   }
@@ -66,6 +74,28 @@ class BM25Embedder {
       .filter(t => t.out(its.type) === "word" && !t.out(its.stopWordFlag))
       .each(t => tokens.push(t.out(its.stem)));
     return tokens;
+  }
+
+  #idFor(token) {
+    if (!this.#vocab.has(token)) this.#vocab.set(token, this.#nextIdx++);
+    return this.#vocab.get(token);
+  }
+
+  /**
+   * Embed a single string and return a sparse vector.
+   * Mirrors NativeEmbedder.embedTextInput but returns { indices, values }.
+   */
+  async embedTextInput(text) {
+    return this.toSparseVector(text);
+  }
+
+  /**
+   * Embed an array of strings, returning aligned sparse vectors.
+   * @param {string[]} textChunks
+   * @returns {Array<{ indices:number[], values:number[] }>}
+   */
+  async embedChunks(textChunks = []) {
+    return textChunks.map((t) => this.toSparseVector(t));
   }
 
   /**
@@ -90,6 +120,33 @@ class BM25Embedder {
   }
 
   /**
+   * Convert arbitrary text into Milvus SparseFloatVector format:
+   * { indices:number[], values:number[] }
+   * Uses the same stemming/stop‑word logic as the index.
+   */
+  toSparseVector(text) {
+    // Tokenize & stem
+    const tokens = this.#tokenizeAndStem(text);
+
+    // Term Frequency table for this document
+    const tf = Object.create(null);
+    tokens.forEach((t) => (tf[t] = (tf[t] || 0) + 1));
+
+    // Build sparse entries and sort by index (Milvus requires ascending order)
+    const entries = Object.keys(tf).map((tok) => {
+      return {
+        id: this.#idFor(tok),
+        w: tf[tok] / tokens.length, // normalised term‑frequency
+      };
+    }).sort((a, b) => a.id - b.id); // ensure ascending order
+
+    const indices = entries.map((e) => e.id);
+    const values  = entries.map((e) => e.w);
+
+    return { indices, values };
+  }
+
+  /**
    * Persist index to disk.
    */
   async #persist() {
@@ -97,7 +154,7 @@ class BM25Embedder {
       fs.mkdirSync(this.#cacheDir, { recursive: true });
     }
     fs.writeFileSync(this.#dataPath, JSON.stringify(this.#index.exportJSON()));
-    this.#log(`Index for '${this.#namespace}' saved to disk.`);
+    this.log(`Index for '${this.#namespace}' saved to disk.`);
   }
 
   /**
@@ -108,8 +165,8 @@ class BM25Embedder {
     this.#index.defineConfig({ fldWeights: { body: 1 }});
     this.#index.definePrepTasks([this.#tokenizeAndStem]);
     await this.#persist();
-    this.#log(`Index for '${this.#namespace}' reset.`);
+    this.log(`Index for '${this.#namespace}' reset.`);
   }
 }
 
-module.exports = BM25Embedder;
+module.exports = { BM25Embedder };
