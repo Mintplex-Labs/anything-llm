@@ -45,7 +45,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
             }}
             className="transition-bg duration-200 px-6 py-1 text-md text-white/60 disabled:text-white bg-transparent disabled:bg-[#687280] rounded-md"
           >
-            Agent
+            {t("chat.mode.agent.title")}
           </button>
         </div>
         <p className="text-sm text-white/60">
@@ -65,7 +65,8 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
             </>
           ) : (
             <>
-              <b>{t("chat.mode.agent.agent_mode")} </b> {t("chat.mode.agent.desc")} 
+              <b>{t("chat.mode.agent.title")}</b>{" "}
+              {t("chat.mode.agent.desc")}
             </>
           )}
         </p>

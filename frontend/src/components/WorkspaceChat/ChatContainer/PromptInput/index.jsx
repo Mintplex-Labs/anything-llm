@@ -28,6 +28,7 @@ export default function PromptInput({
   isStreaming,
   sendCommand,
   attachments = [],
+  workspace,
 }) {
   const { t } = useTranslation();
   const [promptInput, setPromptInput] = useState("");
@@ -237,6 +238,7 @@ export default function PromptInput({
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
         sendCommand={sendCommand}
+        workspace={workspace}
       />
       <AvailableAgents
         showing={showAgents}
