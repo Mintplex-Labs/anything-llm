@@ -14,6 +14,7 @@ export default function PromptHistoryItem({
   user,
   onRestore,
   setHistory,
+  onPublish,
 }) {
   const { t } = useTranslation();
   const [showMenu, setShowMenu] = useState(false);
@@ -82,11 +83,21 @@ export default function PromptHistoryItem({
             {showMenu && (
               <div
                 ref={menuRef}
-                className="absolute right-0 top-6 bg-theme-bg-popup-menu rounded-lg z-50"
+                className="absolute right-0 top-6 bg-theme-bg-popup-menu rounded-lg z-50 min-w-[200px]"
               >
                 <button
                   type="button"
-                  className="px-[10px] py-[6px] text-sm text-white hover:bg-theme-hover cursor-pointer border-none"
+                  className="px-[10px] py-[6px] text-sm text-white hover:bg-theme-hover cursor-pointer border-none w-full text-left whitespace-nowrap"
+                  onClick={() => {
+                    setShowMenu(false);
+                    onPublish(prompt);
+                  }}
+                >
+                  {t("chat.prompt.history.publish")}
+                </button>
+                <button
+                  type="button"
+                  className="px-[10px] py-[6px] text-sm text-white hover:bg-theme-hover cursor-pointer border-none w-full text-left whitespace-nowrap"
                   onClick={() => {
                     setShowMenu(false);
                     deleteHistory(id);

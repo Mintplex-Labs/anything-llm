@@ -194,7 +194,7 @@ const CommunityHub = {
       .then(async (response) => {
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || response.statusText);
-        return { success: true, error: null };
+        return { success: true, error: null, itemId: result.item.id };
       })
       .catch((error) => {
         console.error("Error creating system prompt:", error);

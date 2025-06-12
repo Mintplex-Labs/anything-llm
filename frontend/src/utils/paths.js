@@ -179,6 +179,9 @@ export default {
     viewMoreOfType: function (type) {
       return `${this.website()}/list/${type}`;
     },
+    viewItem: function (type, id) {
+      return `${this.website()}/i/${type}/${id}`;
+    },
     trending: () => {
       return `/settings/community-hub/trending`;
     },

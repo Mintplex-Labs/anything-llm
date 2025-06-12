@@ -1,33 +1,47 @@
 import { X } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import CommunityHub from "@/models/communityHub";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
+import paths from "@/utils/paths";
 
 export default function PublishPromptModal({ show, onClose, currentPrompt }) {
+  const { t } = useTranslation();
+  const formRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
+  const [visibility, setVisibility] = useState("public");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [itemId, setItemId] = useState(null);
   if (!show) return null;
+
+  const handleClose = () => {
+    setIsSuccess(false);
+    setItemId(null);
+    setTags([]);
+    setTagInput("");
+    onClose();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const form = new FormData(e.target.closest("form"));
+      const form = new FormData(formRef.current);
       const data = {
         name: form.get("name"),
         description: form.get("description"),
         prompt: form.get("prompt"),
         tags: tags,
-        visibility: form.get("visibility"),
+        visibility: visibility,
       };
 
-      const { success, error } = await CommunityHub.createSystemPrompt(data);
+      const { success, error, itemId } =
+        await CommunityHub.createSystemPrompt(data);
       if (!success) throw new Error(error);
-      showToast("System prompt published successfully!", "success", {
-        clear: true,
-      });
-      onClose();
+      setItemId(itemId);
+      setIsSuccess(true);
     } catch (error) {
       console.error("Failed to publish prompt:", error);
       showToast(`Failed to publish prompt: ${error.message}`, "error", {
@@ -53,13 +67,50 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
+  if (isSuccess) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+        <div className="relative w-[400px] max-w-full bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
+          <div className="p-6">
+            <button
+              onClick={handleClose}
+              type="button"
+              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+            >
+              <X size={18} weight="bold" className="text-white" />
+            </button>
+            <div className="flex flex-col items-center justify-center gap-y-4">
+              <h3 className="text-lg font-semibold text-theme-checklist-item-completed-text">
+                {t("chat.prompt.publish.success_title")}
+              </h3>
+              <p className="text-lg text-white text-center max-w-[300px]">
+                {t("chat.prompt.publish.success_description")}
+              </p>
+              <p className="text-white/60 text-center text-sm">
+                {t("chat.prompt.publish.success_thank_you")}
+              </p>
+              <a
+                href={paths.communityHub.viewItem("system-prompt", itemId)}
+                target="_blank"
+                rel="noreferrer"
+                className="w-[265px] bg-theme-bg-secondary hover:bg-theme-hover text-white py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
+              >
+                {t("chat.prompt.publish.view_on_hub")}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
       <div className="relative w-[900px] max-w-full bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
         <div className="relative p-6">
           <div className="w-full flex gap-x-2 items-center">
             <h3 className="text-xl font-semibold text-white">
-              Publish System Prompt
+              {t("chat.prompt.publish.modal_title")}
             </h3>
           </div>
           <button
@@ -67,53 +118,51 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
             type="button"
             className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
           >
-            <X size={24} weight="bold" className="text-white" />
+            <X size={18} weight="bold" className="text-white" />
           </button>
         </div>
 
-        <form className="flex">
+        <form ref={formRef} className="flex">
           <div className="w-1/2 p-6 pt-0 space-y-4">
             <div>
               <label className="block text-sm font-semibold text-white mb-1">
-                Name
+                {t("chat.prompt.publish.name_label")}
               </label>
               <div className="text-xs text-white/60 mb-2">
-                This is the display name of your system prompt.
+                {t("chat.prompt.publish.name_description")}
               </div>
               <input
                 type="text"
                 name="name"
                 required
                 minLength={3}
-                placeholder="My System Prompt"
+                placeholder={t("chat.prompt.publish.name_placeholder")}
                 className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
               />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-white mb-1">
-                Description
+                {t("chat.prompt.publish.description_label")}
               </label>
               <div className="text-xs text-white/60 mb-2">
-                This is the description of your system prompt. Use this to
-                describe the purpose of your system prompt.
+                {t("chat.prompt.publish.description_description")}
               </div>
               <textarea
                 name="description"
                 required
                 minLength={10}
-                placeholder="This is the description of your system prompt. Use this to describe the purpose of your system prompt."
+                placeholder={t("chat.prompt.publish.description_description")}
                 className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
               />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-white mb-1">
-                Tags
+                {t("chat.prompt.publish.tags_label")}
               </label>
               <div className="text-xs text-white/60 mb-2">
-                Tags are used to label your system prompt for easier searching.
-                You can add multiple tags.
+                {t("chat.prompt.publish.tags_description")}
               </div>
               <div className="flex flex-wrap gap-2 p-2 bg-theme-bg-secondary rounded-lg min-h-[42px]">
                 {tags.map((tag, index) => (
@@ -143,7 +192,7 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Type and press Enter to add tags"
+                  placeholder={t("chat.prompt.publish.tags_placeholder")}
                   className="flex-1 min-w-[200px] border-none bg-transparent text-white placeholder:text-theme-text-placeholder p-0 h-[24px] focus:outline-none"
                 />
               </div>
@@ -151,10 +200,12 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
 
             <div>
               <label className="block text-sm font-semibold text-white mb-1">
-                Visibility
+                {t("chat.prompt.publish.visibility_label")}
               </label>
               <div className="text-xs text-white/60 mb-2">
-                Public system prompts are visible to everyone.
+                {visibility === "public"
+                  ? t("chat.prompt.publish.public_description")
+                  : t("chat.prompt.publish.private_description")}
               </div>
               <div className="w-fit h-[42px] bg-theme-bg-secondary rounded-lg p-0.5">
                 <div className="flex items-center" role="group">
@@ -165,6 +216,7 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
                     value="public"
                     className="peer/public hidden"
                     defaultChecked
+                    onChange={(e) => setVisibility(e.target.value)}
                   />
                   <input
                     type="radio"
@@ -172,6 +224,7 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
                     name="visibility"
                     value="private"
                     className="peer/private hidden"
+                    onChange={(e) => setVisibility(e.target.value)}
                   />
                   <label
                     htmlFor="public"
@@ -193,18 +246,17 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
           <div className="w-1/2 p-6 pt-0 space-y-4">
             <div>
               <label className="block text-sm font-semibold text-white mb-1">
-                Prompt
+                {t("chat.prompt.publish.prompt_label")}
               </label>
               <div className="text-xs text-white/60 mb-2">
-                This is the actual slash command that will be used to guide the
-                LLM.
+                {t("chat.prompt.publish.prompt_description")}
               </div>
               <textarea
                 name="prompt"
                 required
                 minLength={10}
                 defaultValue={currentPrompt}
-                placeholder="Enter your system prompt here..."
+                placeholder={t("chat.prompt.publish.prompt_placeholder")}
                 className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[300px] placeholder:text-theme-text-placeholder"
               />
             </div>
@@ -215,7 +267,9 @@ export default function PublishPromptModal({ show, onClose, currentPrompt }) {
               disabled={isSubmitting}
               className="w-full bg-cta-button hover:bg-opacity-80 text-theme-bg-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Publishing..." : "Publish to Community Hub"}
+              {isSubmitting
+                ? t("chat.prompt.publish.publishing")
+                : t("chat.prompt.publish.publish_button")}
             </button>
           </div>
         </form>

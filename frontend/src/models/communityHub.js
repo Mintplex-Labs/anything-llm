@@ -174,7 +174,7 @@ const CommunityHub = {
         const response = await res.json();
         if (!res.ok)
           throw new Error(response.error || "Failed to create system prompt");
-        return { success: true, error: null };
+        return { success: true, error: null, itemId: response.item?.id };
       })
       .catch((e) => ({
         success: false,

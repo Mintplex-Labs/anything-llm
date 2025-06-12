@@ -75,6 +75,11 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
         workspaceSlug={workspace.slug}
         show={showPromptHistory}
         onRestore={handleRestore}
+        onPublish={(prompt) => {
+          setPrompt(prompt);
+          setShowPromptHistory(false);
+          setShowPublishModal(true);
+        }}
         onClose={() => {
           setShowPromptHistory(false);
         }}

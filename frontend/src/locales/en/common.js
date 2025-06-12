@@ -335,10 +335,38 @@ const TRANSLATIONS = {
         noHistory: "No system prompt history available",
         restore: "Restore",
         delete: "Delete",
+        publish: "Publish to Community Hub",
         deleteConfirm: "Are you sure you want to delete this history item?",
         clearAllConfirm:
           "Are you sure you want to clear all history? This action cannot be undone.",
         expand: "Expand",
+      },
+      publish: {
+        public_description: "Public system prompts are visible to everyone.",
+        private_description: "Private system prompts are only visible to you.",
+        success_title: "Success!",
+        success_description:
+          "Your System Prompt has been published to the Community Hub!",
+        success_thank_you: "Thank you for sharing to the Community!",
+        view_on_hub: "View on Community Hub",
+        modal_title: "Publish System Prompt",
+        name_label: "Name",
+        name_description: "This is the display name of your system prompt.",
+        name_placeholder: "My System Prompt",
+        description_label: "Description",
+        description_description:
+          "This is the description of your system prompt. Use this to describe the purpose of your system prompt.",
+        tags_label: "Tags",
+        tags_description:
+          "Tags are used to label your system prompt for easier searching. You can add multiple tags.",
+        tags_placeholder: "Type and press Enter to add tags",
+        visibility_label: "Visibility",
+        prompt_label: "Prompt",
+        prompt_description:
+          "This is the actual slash command that will be used to guide the LLM.",
+        prompt_placeholder: "Enter your system prompt here...",
+        publish_button: "Publish to Community Hub",
+        publishing: "Publishing...",
       },
     },
     refusal: {

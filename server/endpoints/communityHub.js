@@ -196,10 +196,8 @@ function communityHubEndpoints(app) {
         }
 
         const data = reqBody(request);
-        const { success, error } = await CommunityHub.createSystemPrompt(
-          data,
-          connectionKey
-        );
+        const { success, error, itemId } =
+          await CommunityHub.createSystemPrompt(data, connectionKey);
         if (!success) throw new Error(error);
 
         await Telemetry.sendTelemetry("community_hub_publish", {
@@ -214,7 +212,9 @@ function communityHubEndpoints(app) {
           response.locals?.user?.id
         );
 
-        response.status(200).json({ success: true, error: null });
+        response
+          .status(200)
+          .json({ success: true, error: null, item: { id: itemId } });
       } catch (error) {
         console.error(error);
         response.status(500).json({ success: false, error: error.message });
