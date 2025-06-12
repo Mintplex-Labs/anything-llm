@@ -89,6 +89,10 @@ const TRANSLATIONS = {
     "experimental-features": "Experimentelle Funktionen",
     contact: "Support kontaktieren",
     "browser-extension": "Browser-Erweiterung",
+    "system-prompt-variables": null,
+    interface: null,
+    branding: null,
+    chat: null,
   },
   login: {
     "multi-user": {
@@ -225,6 +229,16 @@ const TRANSLATIONS = {
       title: "Prompt",
       description:
         "Der Prompt, der in diesem Arbeitsbereich verwendet wird. Definieren Sie den Kontext und die Anweisungen für die KI, um eine Antwort zu generieren. Sie sollten einen sorgfältig formulierten Prompt bereitstellen, damit die KI eine relevante und genaue Antwort generieren kann.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+      },
     },
     refusal: {
       title: "Abfragemodus-Ablehnungsantwort",
@@ -340,38 +354,6 @@ const TRANSLATIONS = {
       at: "Gesendet am",
     },
   },
-  appearance: {
-    title: "Erscheinungsbild",
-    description: "Passen Sie die Erscheinungseinstellungen Ihrer Plattform an.",
-    logo: {
-      title: "Logo anpassen",
-      description:
-        "Laden Sie Ihr eigenes Logo hoch, um Ihren Chatbot zu personalisieren.",
-      add: "Benutzerdefiniertes Logo hinzufügen",
-      recommended: "Empfohlene Größe: 800 x 200",
-      remove: "Entfernen",
-      replace: "Ersetzen",
-    },
-    message: {
-      title: "Nachrichten anpassen",
-      description:
-        "Passen Sie die automatischen Nachrichten an, die Ihren Benutzern angezeigt werden.",
-      new: "Neu",
-      system: "System",
-      user: "Benutzer",
-      message: "Nachricht",
-      assistant: "AnythingLLM Chat-Assistent",
-      "double-click": "Doppelklicken zum Bearbeiten...",
-      save: "Nachrichten speichern",
-    },
-    icons: {
-      title: "Benutzerdefinierte Fußzeilen-Icons",
-      description:
-        "Passen Sie die Fußzeilen-Icons an, die am unteren Rand der Seitenleiste angezeigt werden.",
-      icon: "Icon",
-      link: "Link",
-    },
-  },
   api: {
     title: "API-Schlüssel",
     description:
@@ -389,6 +371,17 @@ const TRANSLATIONS = {
     description:
       "Dies sind die Anmeldeinformationen und Einstellungen für Ihren bevorzugten LLM-Chat- und Einbettungsanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind, sonst wird AnythingLLM nicht richtig funktionieren.",
     provider: "LLM-Anbieter",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
   transcription: {
     title: "Transkriptionsmodell-Präferenz",
@@ -452,7 +445,8 @@ const TRANSLATIONS = {
     table: {
       workspace: "Arbeitsbereich",
       chats: "Gesendete Chats",
-      Active: "Aktive Domains",
+      active: "Aktive Domains",
+      created: null,
     },
   },
   "embed-chats": {
@@ -700,6 +694,17 @@ const TRANSLATIONS = {
         " entscheiden, welche Dokumente du beobachten möchtest.",
       accept: "Alles klar, ich habe es verstanden.",
     },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
   },
   chat_window: {
     welcome: "Willkommen zu deinem Arbeitsbereich.",
@@ -715,6 +720,47 @@ const TRANSLATIONS = {
     text_size: "Ändere die Größe des Textes.",
     microphone: "Spreche deinen Prompt ein.",
     send: "Versende den Prompt an den Arbeitsbereich.",
+    attachments_processing: null,
+    tts_speak_message: null,
+    copy: null,
+    regenerate: null,
+    regenerate_response: null,
+    good_response: null,
+    more_actions: null,
+    hide_citations: null,
+    show_citations: null,
+    pause_tts_speech_message: null,
+    fork: null,
+    delete: null,
+    save_submit: null,
+    cancel: null,
+    edit_prompt: null,
+    edit_response: null,
+    at_agent: null,
+    default_agent_description: null,
+    custom_agents_coming_soon: null,
+    slash_reset: null,
+    preset_reset_description: null,
+    add_new_preset: null,
+    command: null,
+    your_command: null,
+    placeholder_prompt: null,
+    description: null,
+    placeholder_description: null,
+    save: null,
+    small: null,
+    normal: null,
+    large: null,
+    workspace_llm_manager: {
+      search: null,
+      loading_workspace_settings: null,
+      available_models: null,
+      available_models_description: null,
+      save: null,
+      saving: null,
+      missing_credentials: null,
+      missing_credentials_description: null,
+    },
   },
   profile_settings: {
     edit_account: "Account bearbeiten",
@@ -729,6 +775,205 @@ const TRANSLATIONS = {
     update_account: "Account updaten",
     theme: "Bevozugtes Design",
     language: "Bevorzugte Sprache",
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError:
+      "Bitte erstellen Sie einen Arbeitsbereich, bevor Sie einen Chat beginnen.",
+    checklist: {
+      title: "Erste Schritte",
+      tasksLeft: "Aufgaben übrig",
+      completed: "Sie sind auf dem Weg, ein AnythingLLM-Experte zu werden!",
+      dismiss: "schließen",
+      tasks: {
+        create_workspace: {
+          title: "Einen Arbeitsbereich erstellen",
+          description:
+            "Erstellen Sie Ihren ersten Arbeitsbereich, um zu beginnen",
+          action: "Erstellen",
+        },
+        send_chat: {
+          title: "Einen Chat senden",
+          description: "Starten Sie ein Gespräch mit Ihrem KI-Assistenten",
+          action: "Chat",
+        },
+        embed_document: {
+          title: "Ein Dokument einbetten",
+          description:
+            "Fügen Sie Ihr erstes Dokument zu Ihrem Arbeitsbereich hinzu",
+          action: "Einbetten",
+        },
+        setup_system_prompt: {
+          title: "Ein System-Prompt einrichten",
+          description: "Konfigurieren Sie das Verhalten Ihres KI-Assistenten",
+          action: "Einrichten",
+        },
+        define_slash_command: {
+          title: "Einen Slash-Befehl definieren",
+          description:
+            "Erstellen Sie benutzerdefinierte Befehle für Ihren Assistenten",
+          action: "Definieren",
+        },
+        visit_community: {
+          title: "Community Hub besuchen",
+          description: "Entdecken Sie Community-Ressourcen und Vorlagen",
+          action: "Stöbern",
+        },
+      },
+    },
+    quickLinks: {
+      title: "Schnellzugriffe",
+      sendChat: "Chat senden",
+      embedDocument: "Dokument einbetten",
+      createWorkspace: "Arbeitsbereich erstellen",
+    },
+    exploreMore: {
+      title: "Weitere Funktionen erkunden",
+      features: {
+        customAgents: {
+          title: "Benutzerdefinierte KI-Agenten",
+          description:
+            "Erstellen Sie leistungsstarke KI-Agenten und Automatisierungen ohne Code.",
+          primaryAction: "Chatten mit @agent",
+          secondaryAction: "Einen Agenten-Flow erstellen",
+        },
+        slashCommands: {
+          title: "Slash-Befehle",
+          description:
+            "Sparen Sie Zeit und fügen Sie Eingabeaufforderungen mit benutzerdefinierten Slash-Befehlen ein.",
+          primaryAction: "Einen Slash-Befehl erstellen",
+          secondaryAction: "Im Hub erkunden",
+        },
+        systemPrompts: {
+          title: "System-Eingabeaufforderungen",
+          description:
+            "Ändern Sie die System-Eingabeaufforderung, um die KI-Antworten eines Arbeitsbereichs anzupassen.",
+          primaryAction: "Eine System-Eingabeaufforderung ändern",
+          secondaryAction: "Eingabevariablen verwalten",
+        },
+      },
+    },
+    announcements: {
+      title: "Updates & Ankündigungen",
+    },
+    resources: {
+      title: "Ressourcen",
+      links: {
+        docs: "Dokumentation",
+        star: "Auf Github mit Stern versehen",
+      },
+      keyboardShortcuts: null,
+    },
+  },
+  "keyboard-shortcuts": {
+    title: null,
+    shortcuts: {
+      settings: null,
+      workspaceSettings: null,
+      home: null,
+      workspaces: null,
+      apiKeys: null,
+      llmPreferences: null,
+      chatSettings: null,
+      help: null,
+      showLLMSelector: null,
+    },
   },
 };
 

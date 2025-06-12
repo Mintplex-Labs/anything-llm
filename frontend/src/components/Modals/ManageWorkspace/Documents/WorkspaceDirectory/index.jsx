@@ -3,7 +3,7 @@ import { dollarFormat } from "@/utils/numbers";
 import WorkspaceFileRow from "./WorkspaceFileRow";
 import { memo, useEffect, useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
-import { Eye, PushPin, X } from "@phosphor-icons/react";
+import { Eye, PushPin } from "@phosphor-icons/react";
 import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
@@ -96,16 +96,16 @@ function WorkspaceDirectory({
           </h3>
         </div>
         <div className="relative w-[560px] h-[445px] bg-theme-settings-input-bg rounded-2xl mt-5 border border-theme-modal-border">
-          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-theme-settings-input-bg sticky top-0 z-10 rounded-t-2xl shadow-lg">
+          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg sticky top-0 z-10 rounded-t-2xl">
             <div className="col-span-10 flex items-center gap-x-[4px]">
               <div className="shrink-0 w-3 h-3" />
-              <p className="ml-[7px]">Name</p>
+              <p className="ml-[7px] text-theme-text-primary">Name</p>
             </div>
             <p className="col-span-2" />
           </div>
           <div className="w-full h-[calc(100%-40px)] flex items-center justify-center flex-col gap-y-5">
             <PreLoader />
-            <p className="text-white text-sm font-semibold animate-pulse text-center w-1/3">
+            <p className="text-theme-text-primary text-sm font-semibold animate-pulse text-center w-1/3">
               {loadingMessage}
             </p>
           </div>
@@ -129,7 +129,7 @@ function WorkspaceDirectory({
             }`}
           />
           <div className="relative w-full h-full bg-theme-settings-input-bg rounded-2xl overflow-hidden border border-theme-modal-border">
-            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 bg-theme-settings-input-bg sticky top-0 z-10 shadow-md">
+            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-3.5 border-b border-white/20 light:border-theme-modal-border bg-theme-settings-input-bg sticky top-0 z-10">
               <div className="col-span-10 flex items-center gap-x-[4px]">
                 {!hasChanges &&
                 files.items.some((folder) => folder.items.length > 0) ? (
@@ -155,14 +155,18 @@ function WorkspaceDirectory({
                 ) : (
                   <div className="shrink-0 w-3 h-3" />
                 )}
-                <p className="ml-[7px] light:text-theme-text-primary">Name</p>
+                <p className="ml-[7px] text-theme-text-primary">Name</p>
               </div>
               <p className="col-span-2" />
             </div>
             <div className="overflow-y-auto h-[calc(100%-40px)]">
               {files.items.some((folder) => folder.items.length > 0) ||
               movedItems.length > 0 ? (
-                <RenderFileRows files={files} movedItems={movedItems}>
+                <RenderFileRows
+                  files={files}
+                  movedItems={movedItems}
+                  workspace={workspace}
+                >
                   {({ item, folder }) => (
                     <WorkspaceFileRow
                       key={item.id}
@@ -231,7 +235,7 @@ function WorkspaceDirectory({
                     }`}
               </p>
               <p className="mt-2 text-xs italic" hidden={embeddingCosts === 0}>
-                {t("new-workspace.costs")}
+                {t("connectors.directory.costs")}
               </p>
             </div>
 
@@ -345,7 +349,7 @@ const DocumentWatchAlert = memo(() => {
               weight="regular"
             />
             <h3 className="text-xl font-semibold text-white">
-              {t("connectors.pinning.what_watching")}
+              {t("connectors.watching.what_watching")}
             </h3>
           </div>
         </div>
@@ -384,12 +388,19 @@ const DocumentWatchAlert = memo(() => {
   );
 });
 
-function RenderFileRows({ files, movedItems, children }) {
+function RenderFileRows({ files, movedItems, children, workspace }) {
   function sortMovedItemsAndFiles(a, b) {
     const aIsMovedItem = movedItems.some((movedItem) => movedItem.id === a.id);
     const bIsMovedItem = movedItems.some((movedItem) => movedItem.id === b.id);
     if (aIsMovedItem && !bIsMovedItem) return -1;
     if (!aIsMovedItem && bIsMovedItem) return 1;
+
+    // Sort pinned items to the top
+    const aIsPinned = a.pinnedWorkspaces?.includes(workspace.id);
+    const bIsPinned = b.pinnedWorkspaces?.includes(workspace.id);
+    if (aIsPinned && !bIsPinned) return -1;
+    if (!aIsPinned && bIsPinned) return 1;
+
     return 0;
   }
 
@@ -419,7 +430,7 @@ function WorkspaceDocumentTooltips() {
           if (!data) return null;
           return (
             <div className="text-xs">
-              <p className="text-white light:invert font-medium">
+              <p className="text-white light:invert font-medium break-all">
                 {data.title}
               </p>
               <div className="flex mt-1 gap-x-2">

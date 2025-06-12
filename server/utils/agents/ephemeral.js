@@ -1,6 +1,8 @@
 const AIbitat = require("./aibitat");
 const AgentPlugins = require("./aibitat/plugins");
 const ImportedPlugin = require("./imported");
+const MCPCompatibilityLayer = require("../MCP");
+const { AgentFlows } = require("../agentFlows");
 const { httpSocket } = require("./aibitat/plugins/http-socket.js");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
@@ -124,7 +126,7 @@ class EphemeralAgentHandler extends AgentHandler {
    * Attempts to find a fallback provider and model to use if the workspace
    * does not have an explicit `agentProvider` and `agentModel` set.
    * 1. Fallback to the workspace `chatProvider` and `chatModel` if they exist.
-   * 2. Fallback to the system `LLM_PROVIDER` and try to load the the associated default model via ENV params or a base available model.
+   * 2. Fallback to the system `LLM_PROVIDER` and try to load the associated default model via ENV params or a base available model.
    * 3. Otherwise, return null - will likely throw an error the user can act on.
    * @returns {object|null} - An object with provider and model keys.
    */
@@ -186,7 +188,7 @@ class EphemeralAgentHandler extends AgentHandler {
     this.checkSetup();
   }
 
-  #attachPlugins(args) {
+  async #attachPlugins(args) {
     for (const name of this.#funcsToLoad) {
       // Load child plugin
       if (name.includes("#")) {
@@ -217,6 +219,61 @@ class EphemeralAgentHandler extends AgentHandler {
         this.log(
           `Attached ${parent}:${childPluginName} plugin to Agent cluster`
         );
+        continue;
+      }
+
+      // Load flow plugin. This is marked by `@@flow_` in the array of functions to load.
+      if (name.startsWith("@@flow_")) {
+        const uuid = name.replace("@@flow_", "");
+        const plugin = AgentFlows.loadFlowPlugin(uuid, this.aibitat);
+        if (!plugin) {
+          this.log(
+            `Flow ${uuid} not found in flows directory. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        this.aibitat.use(plugin.plugin());
+        this.log(
+          `Attached flow ${plugin.name} (${plugin.flowName}) plugin to Agent cluster`
+        );
+        continue;
+      }
+
+      // Load MCP plugin. This is marked by `@@mcp_` in the array of functions to load.
+      // All sub-tools are loaded here and are denoted by `pluginName:toolName` as their identifier.
+      // This will replace the parent MCP server plugin with the sub-tools as child plugins so they
+      // can be called directly by the agent when invoked.
+      // Since to get to this point, the `activeMCPServers` method has already been called, we can
+      // safely assume that the MCP server is running and the tools are available/loaded.
+      if (name.startsWith("@@mcp_")) {
+        const mcpPluginName = name.replace("@@mcp_", "");
+        const plugins =
+          await new MCPCompatibilityLayer().convertServerToolsToPlugins(
+            mcpPluginName,
+            this.aibitat
+          );
+        if (!plugins) {
+          this.log(
+            `MCP ${mcpPluginName} not found in MCP server config. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        // Remove the old function from the agent functions directly
+        // and push the new ones onto the end of the array so that they are loaded properly.
+        this.aibitat.agents.get("@agent").functions = this.aibitat.agents
+          .get("@agent")
+          .functions.filter((f) => f.name !== name);
+        for (const plugin of plugins)
+          this.aibitat.agents.get("@agent").functions.push(plugin.name);
+
+        plugins.forEach((plugin) => {
+          this.aibitat.use(plugin.plugin());
+          this.log(
+            `Attached MCP::${plugin.toolName} MCP tool to Agent cluster`
+          );
+        });
         continue;
       }
 
@@ -269,11 +326,10 @@ class EphemeralAgentHandler extends AgentHandler {
     );
 
     this.#funcsToLoad = [
-      AgentPlugins.memory.name,
-      AgentPlugins.docSummarizer.name,
-      AgentPlugins.webScraping.name,
       ...(await agentSkillsFromSystemSettings()),
-      ...(await ImportedPlugin.activeImportedPlugins()),
+      ...ImportedPlugin.activeImportedPlugins(),
+      ...AgentFlows.activeFlowPlugins(),
+      ...(await new MCPCompatibilityLayer().activeMCPServers()),
     ];
   }
 
@@ -314,7 +370,7 @@ class EphemeralAgentHandler extends AgentHandler {
     await this.#loadAgents();
 
     // Attach all required plugins for functions to operate.
-    this.#attachPlugins(args);
+    await this.#attachPlugins(args);
   }
 
   startAgentCluster() {

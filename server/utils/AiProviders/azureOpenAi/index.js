@@ -1,29 +1,26 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
+  formatChatHistory,
+  handleDefaultStreamResponseV2,
+} = require("../../helpers/chat/responses");
+const {
   LLMPerformanceMonitor,
 } = require("../../helpers/chat/LLMPerformanceMonitor");
-const {
-  writeResponseChunk,
-  clientAbortedHandler,
-  formatChatHistory,
-} = require("../../helpers/chat/responses");
 
 class AzureOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
+    const { AzureOpenAI } = require("openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
     if (!process.env.AZURE_OPENAI_KEY)
       throw new Error("No Azure API key was set.");
 
     this.apiVersion = "2024-12-01-preview";
-    this.openai = new OpenAIClient(
-      process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY),
-      {
-        apiVersion: this.apiVersion,
-      }
-    );
+    this.openai = new AzureOpenAI({
+      apiKey: process.env.AZURE_OPENAI_KEY,
+      apiVersion: this.apiVersion,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+    });
     this.model = modelPreference ?? process.env.OPEN_MODEL_PREF;
     this.isOTypeModel =
       process.env.AZURE_OPENAI_MODEL_TYPE === "reasoning" || false;
@@ -103,7 +100,7 @@ class AzureOpenAiLLM {
     for (let attachment of attachments) {
       content.push({
         type: "image_url",
-        imageUrl: {
+        image_url: {
           url: attachment.contentString,
         },
       });
@@ -139,7 +136,9 @@ class AzureOpenAiLLM {
       );
 
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
-      this.openai.getChatCompletions(this.model, messages, {
+      this.openai.chat.completions.create({
+        messages,
+        model: this.model,
         ...(this.isOTypeModel ? {} : { temperature }),
       })
     );
@@ -153,10 +152,10 @@ class AzureOpenAiLLM {
     return {
       textResponse: result.output.choices[0].message.content,
       metrics: {
-        prompt_tokens: result.output.usage.promptTokens || 0,
-        completion_tokens: result.output.usage.completionTokens || 0,
-        total_tokens: result.output.usage.totalTokens || 0,
-        outputTps: result.output.usage.completionTokens / result.duration,
+        prompt_tokens: result.output.usage.prompt_tokens || 0,
+        completion_tokens: result.output.usage.completion_tokens || 0,
+        total_tokens: result.output.usage.total_tokens || 0,
+        outputTps: result.output.usage.completion_tokens / result.duration,
         duration: result.duration,
       },
     };
@@ -169,9 +168,12 @@ class AzureOpenAiLLM {
       );
 
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      await this.openai.streamChatCompletions(this.model, messages, {
+      await this.openai.chat.completions.create({
+        messages,
+        model: this.model,
         ...(this.isOTypeModel ? {} : { temperature }),
         n: 1,
+        stream: true,
       }),
       messages
     );
@@ -179,64 +181,8 @@ class AzureOpenAiLLM {
     return measuredStreamRequest;
   }
 
-  /**
-   * Handles the stream response from the AzureOpenAI API.
-   * Azure does not return the usage metrics in the stream response, but 1msg = 1token
-   * so we can estimate the completion tokens by counting the number of messages.
-   * @param {Object} response - the response object
-   * @param {import('../../helpers/chat/LLMPerformanceMonitor').MonitoredStream} stream - the stream response from the AzureOpenAI API w/tracking
-   * @param {Object} responseProps - the response properties
-   * @returns {Promise<string>}
-   */
   handleStream(response, stream, responseProps) {
-    const { uuid = uuidv4(), sources = [] } = responseProps;
-
-    return new Promise(async (resolve) => {
-      let fullText = "";
-      let usage = {
-        completion_tokens: 0,
-      };
-
-      // Establish listener to early-abort a streaming response
-      // in case things go sideways or the user does not like the response.
-      // We preserve the generated text but continue as if chat was completed
-      // to preserve previously generated content.
-      const handleAbort = () => {
-        stream?.endMeasurement(usage);
-        clientAbortedHandler(resolve, fullText);
-      };
-      response.on("close", handleAbort);
-
-      for await (const event of stream) {
-        for (const choice of event.choices) {
-          const delta = choice.delta?.content;
-          if (!delta) continue;
-          fullText += delta;
-          usage.completion_tokens++;
-
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: delta,
-            close: false,
-            error: false,
-          });
-        }
-      }
-
-      writeResponseChunk(response, {
-        uuid,
-        sources,
-        type: "textResponseChunk",
-        textResponse: "",
-        close: true,
-        error: false,
-      });
-      response.removeListener("close", handleAbort);
-      stream?.endMeasurement(usage);
-      resolve(fullText);
-    });
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

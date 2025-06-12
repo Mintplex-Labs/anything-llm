@@ -4,7 +4,6 @@ import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { EnvelopeSimple } from "@phosphor-icons/react";
-import usePrefersDarkMode from "@/hooks/usePrefersDarkMode";
 import Admin from "@/models/admin";
 import InviteRow from "./InviteRow";
 import NewInviteModal from "./NewInviteModal";
@@ -14,6 +13,18 @@ import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminInvites() {
   const { isOpen, openModal, closeModal } = useModal();
+  const [loading, setLoading] = useState(true);
+  const [invites, setInvites] = useState([]);
+
+  const fetchInvites = async () => {
+    const _invites = await Admin.invites();
+    setInvites(_invites);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchInvites();
+  }, []);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
@@ -44,71 +55,58 @@ export default function AdminInvites() {
             </CTAButton>
           </div>
           <div className="overflow-x-auto mt-6">
-            <InvitationsContainer />
+            {loading ? (
+              <Skeleton.default
+                height="80vh"
+                width="100%"
+                highlightColor="var(--theme-bg-primary)"
+                baseColor="var(--theme-bg-secondary)"
+                count={1}
+                className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm"
+                containerClassName="flex w-full"
+              />
+            ) : (
+              <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
+                <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 rounded-tl-lg">
+                      Status
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Accepted By
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Created By
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Created
+                    </th>
+                    <th scope="col" className="px-6 py-3 rounded-tr-lg">
+                      {" "}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invites.length === 0 ? (
+                    <tr className="bg-transparent text-theme-text-secondary text-sm font-medium">
+                      <td colSpan="5" className="px-6 py-4 text-center">
+                        No invitations found
+                      </td>
+                    </tr>
+                  ) : (
+                    invites.map((invite) => (
+                      <InviteRow key={invite.id} invite={invite} />
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
         <ModalWrapper isOpen={isOpen}>
-          <NewInviteModal closeModal={closeModal} />
+          <NewInviteModal closeModal={closeModal} onSuccess={fetchInvites} />
         </ModalWrapper>
       </div>
     </div>
-  );
-}
-
-function InvitationsContainer() {
-  const darkMode = usePrefersDarkMode();
-  const [loading, setLoading] = useState(true);
-  const [invites, setInvites] = useState([]);
-
-  useEffect(() => {
-    async function fetchInvites() {
-      const _invites = await Admin.invites();
-      setInvites(_invites);
-      setLoading(false);
-    }
-    fetchInvites();
-  }, []);
-
-  if (loading) {
-    return (
-      <Skeleton.default
-        height="80vh"
-        width="100%"
-        highlightColor="var(--theme-bg-primary)"
-        baseColor="var(--theme-bg-secondary)"
-        count={1}
-        className="w-full p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm"
-        containerClassName="flex w-full"
-      />
-    );
-  }
-
-  return (
-    <table className="w-full text-sm text-left rounded-lg min-w-[640px] border-spacing-0">
-      <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
-        <tr>
-          <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            Status
-          </th>
-          <th scope="col" className="px-6 py-3">
-            Accepted By
-          </th>
-          <th scope="col" className="px-6 py-3">
-            Created By
-          </th>
-          <th scope="col" className="px-6 py-3">
-            Created
-          </th>
-          <th scope="col" className="px-6 py-3 rounded-tr-lg">
-            {" "}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {invites.map((invite) => (
-          <InviteRow key={invite.id} invite={invite} />
-        ))}
-      </tbody>
-    </table>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Tooltip } from "react-tooltip";
 
 import BlockList, { BLOCK_TYPES, BLOCK_INFO } from "./BlockList";
 import AddBlockMenu from "./AddBlockMenu";
@@ -223,7 +224,9 @@ export default function AgentBuilder() {
       await loadAvailableFlows();
     } catch (error) {
       console.error("Save error details:", error);
-      showToast("Failed to save agent flow", "error", { clear: true });
+      showToast(`Failed to save agent flow. ${error.message}`, "error", {
+        clear: true,
+      });
     }
   };
 
@@ -288,18 +291,6 @@ export default function AgentBuilder() {
     });
   };
 
-  // const runFlow = async (uuid) => {
-  //   try {
-  //     const { success, error, _results } = await AgentFlows.runFlow(uuid);
-  //     if (!success) throw new Error(error);
-
-  //     showToast("Flow executed successfully!", "success", { clear: true });
-  //   } catch (error) {
-  //     console.error(error);
-  //     showToast("Failed to run agent flow", "error", { clear: true });
-  //   }
-  // };
-
   const clearFlow = () => {
     if (!!flowId) navigate(paths.agents.builder());
     setAgentName("");
@@ -349,6 +340,7 @@ export default function AgentBuilder() {
             />
 
             <AddBlockMenu
+              blocks={blocks}
               showBlockMenu={showBlockMenu}
               setShowBlockMenu={setShowBlockMenu}
               addBlock={addBlock}
@@ -356,6 +348,21 @@ export default function AgentBuilder() {
           </div>
         </div>
       </div>
+      <Tooltip
+        id="content-summarization-tooltip"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs z-99"
+      >
+        <p className="text-sm">
+          When enabled, long webpage content will be automatically summarized to
+          reduce token usage.
+          <br />
+          <br />
+          Note: This may affect data quality and remove specific details from
+          the original content.
+        </p>
+      </Tooltip>
     </div>
   );
 }

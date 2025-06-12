@@ -3,6 +3,7 @@ import { Tooltip } from "react-tooltip";
 import { At } from "@phosphor-icons/react";
 import { useIsAgentSessionActive } from "@/utils/chat/agent";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 
 export default function AvailableAgentsButton({ showing, setShowAgents }) {
   const { t } = useTranslation();
@@ -49,6 +50,19 @@ export function AvailableAgents({
 }) {
   const formRef = useRef(null);
   const agentSessionActive = useIsAgentSessionActive();
+  const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
+
+  /*
+   * @checklist-item
+   * If the URL has the agent param, open the agent menu for the user
+   * automatically when the component mounts.
+   */
+  useEffect(() => {
+    if (searchParams.get("action") === "set-agent-chat" && !showing)
+      handleAgentClick();
+  }, [promptRef.current]);
+
   useEffect(() => {
     function listenForOutsideClick() {
       if (!showing || !formRef.current) return false;
@@ -64,6 +78,12 @@ export function AvailableAgents({
     setShowing(false);
   };
 
+  const handleAgentClick = () => {
+    setShowing(false);
+    sendCommand("@agent ", false);
+    promptRef?.current?.focus();
+  };
+
   if (agentSessionActive) return null;
   return (
     <>
@@ -74,16 +94,13 @@ export function AvailableAgents({
             className="w-[600px] p-2 bg-theme-action-menu-bg rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"
           >
             <button
-              onClick={() => {
-                setShowing(false);
-                sendCommand("@agent ", false);
-                promptRef?.current?.focus();
-              }}
+              onClick={handleAgentClick}
               className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start group"
             >
               <div className="w-full flex-col text-left flex pointer-events-none">
                 <div className="text-theme-text-primary text-sm">
-                  <b>@agent</b> - the default agent for this workspace.
+                  <b>{t("chat_window.at_agent")}</b>
+                  {t("chat_window.default_agent_description")}
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <AbilityTag text="rag-search" />
@@ -103,7 +120,7 @@ export function AvailableAgents({
             >
               <div className="w-full flex-col text-center flex pointer-events-none">
                 <div className="text-theme-text-secondary text-xs italic">
-                  custom agents are coming soon!
+                  {t("chat_window.custom_agents_coming_soon")}
                 </div>
               </div>
             </button>

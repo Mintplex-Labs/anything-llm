@@ -81,6 +81,9 @@ const TRANSLATIONS = {
     workspaces: "Workspaces",
     "workspace-chats": "Workspace Chats",
     customization: "Customization",
+    interface: "UI Preferences",
+    branding: "Branding & Whitelabeling",
+    chat: "Chat",
     "api-keys": "Developer API",
     llm: "LLM",
     transcription: "Transcription",
@@ -97,6 +100,7 @@ const TRANSLATIONS = {
     "agent-skills": "Agent Skills",
     admin: "Admin",
     tools: "Tools",
+    "system-prompt-variables": "System Prompt Variables",
     "experimental-features": "Experimental Features",
     contact: "Contact Support",
     "browser-extension": "Browser Extension",
@@ -147,6 +151,90 @@ const TRANSLATIONS = {
     part6: "Have Fun!",
     starOnGitHub: "Star on GitHub",
     contact: "Contact Mintplex Labs",
+  },
+
+  "main-page": {
+    noWorkspaceError: "Please create a workspace before starting a chat.",
+    checklist: {
+      title: "Getting Started",
+      tasksLeft: "tasks left",
+      completed: "You're on your way to becoming an AnythingLLM expert!",
+      dismiss: "close",
+      tasks: {
+        create_workspace: {
+          title: "Create a workspace",
+          description: "Create your first workspace to get started",
+          action: "Create",
+        },
+        send_chat: {
+          title: "Send a chat",
+          description: "Start a conversation with your AI assistant",
+          action: "Chat",
+        },
+        embed_document: {
+          title: "Embed a document",
+          description: "Add your first document to your workspace",
+          action: "Embed",
+        },
+        setup_system_prompt: {
+          title: "Set up a system prompt",
+          description: "Configure your AI assistant's behavior",
+          action: "Set Up",
+        },
+        define_slash_command: {
+          title: "Define a slash command",
+          description: "Create custom commands for your assistant",
+          action: "Define",
+        },
+        visit_community: {
+          title: "Visit Community Hub",
+          description: "Explore community resources and templates",
+          action: "Browse",
+        },
+      },
+    },
+    quickLinks: {
+      title: "Quick Links",
+      sendChat: "Send Chat",
+      embedDocument: "Embed a Document",
+      createWorkspace: "Create Workspace",
+    },
+    exploreMore: {
+      title: "Explore more features",
+      features: {
+        customAgents: {
+          title: "Custom AI Agents",
+          description: "Build powerful AI Agents and automations with no code.",
+          primaryAction: "Chat using @agent",
+          secondaryAction: "Build an agent flow",
+        },
+        slashCommands: {
+          title: "Slash Commands",
+          description:
+            "Save time and inject prompts using custom slash commands.",
+          primaryAction: "Create a Slash Command",
+          secondaryAction: "Explore on Hub",
+        },
+        systemPrompts: {
+          title: "System Prompts",
+          description:
+            "Modify the system prompt to customize the AI replies of a workspace.",
+          primaryAction: "Modify a System Prompt",
+          secondaryAction: "Manage prompt variables",
+        },
+      },
+    },
+    announcements: {
+      title: "Updates & Announcements",
+    },
+    resources: {
+      title: "Resources",
+      links: {
+        docs: "Docs",
+        star: "Star on Github",
+      },
+      keyboardShortcuts: "Keyboard Shortcuts",
+    },
   },
 
   "new-workspace": {
@@ -243,9 +331,20 @@ const TRANSLATIONS = {
         "Anything more than 45 is likely to lead to continuous chat failures depending on message size.",
     },
     prompt: {
-      title: "Prompt",
+      title: "System Prompt",
       description:
         "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+      history: {
+        title: "System Prompt History",
+        clearAll: "Clear All",
+        noHistory: "No system prompt history available",
+        restore: "Restore",
+        delete: "Delete",
+        deleteConfirm: "Are you sure you want to delete this history item?",
+        clearAllConfirm:
+          "Are you sure you want to clear all history? This action cannot be undone.",
+        expand: "Expand",
+      },
     },
     refusal: {
       title: "Query mode refusal response",
@@ -359,7 +458,7 @@ const TRANSLATIONS = {
       "These are all the recorded chats and messages that have been sent by users ordered by their creation date.",
     export: "Export",
     table: {
-      id: "Id",
+      id: "ID",
       by: "Sent By",
       workspace: "Workspace",
       prompt: "Prompt",
@@ -368,35 +467,103 @@ const TRANSLATIONS = {
     },
   },
 
-  // Appearance
-  appearance: {
-    title: "Appearance",
-    description: "Customize the appearance settings of your platform.",
-    logo: {
-      title: "Customize Logo",
-      description: "Upload your custom logo to make your chatbot yours.",
-      add: "Add a custom logo",
-      recommended: "Recommended size: 800 x 200",
-      remove: "Remove",
-      replace: "Replace",
+  customization: {
+    interface: {
+      title: "UI Preferences",
+      description: "Set your UI preferences for AnythingLLM.",
     },
-    message: {
-      title: "Customize Messages",
-      description: "Customize the automatic messages displayed to your users.",
-      new: "New",
-      system: "system",
-      user: "user",
-      message: "message",
-      assistant: "AnythingLLM Chat Assistant",
-      "double-click": "Double click to edit...",
-      save: "Save Messages",
-    },
-    icons: {
-      title: "Custom Footer Icons",
+    branding: {
+      title: "Branding & Whitelabeling",
       description:
-        "Customize the footer icons displayed on the bottom of the sidebar.",
-      icon: "Icon",
-      link: "Link",
+        "White-label your AnythingLLM instance with custom branding.",
+    },
+    chat: {
+      title: "Chat",
+      description: "Set your chat preferences for AnythingLLM.",
+      auto_submit: {
+        title: "Auto-Submit Speech Input",
+        description:
+          "Automatically submit speech input after a period of silence",
+      },
+      auto_speak: {
+        title: "Auto-Speak Responses",
+        description: "Automatically speak responses from the AI",
+      },
+      spellcheck: {
+        title: "Enable Spellcheck",
+        description: "Enable or disable spellcheck in the chat input field",
+      },
+    },
+    items: {
+      theme: {
+        title: "Theme",
+        description: "Select your preferred color theme for the application.",
+      },
+      "show-scrollbar": {
+        title: "Show Scrollbar",
+        description: "Enable or disable the scrollbar in the chat window.",
+      },
+      "support-email": {
+        title: "Support Email",
+        description:
+          "Set the support email address that should be accessible by users when they need help.",
+      },
+      "app-name": {
+        title: "Name",
+        description:
+          "Set a name that is displayed on the login page to all users.",
+      },
+      "chat-message-alignment": {
+        title: "Chat Message Alignment",
+        description:
+          "Select the message alignment mode when using the chat interface.",
+      },
+      "display-language": {
+        title: "Display Language",
+        description:
+          "Select the preferred language to render AnythingLLM's UI in - when translations are available.",
+      },
+      logo: {
+        title: "Brand Logo",
+        description: "Upload your custom logo to showcase on all pages.",
+        add: "Add a custom logo",
+        recommended: "Recommended size: 800 x 200",
+        remove: "Remove",
+        replace: "Replace",
+      },
+      "welcome-messages": {
+        title: "Welcome Messages",
+        description:
+          "Customize the welcome messages displayed to your users. Only non-admin users will see these messages.",
+        new: "New",
+        system: "system",
+        user: "user",
+        message: "message",
+        assistant: "AnythingLLM Chat Assistant",
+        "double-click": "Double click to edit...",
+        save: "Save Messages",
+      },
+      "browser-appearance": {
+        title: "Browser Appearance",
+        description:
+          "Customize the appearance of the browser tab and title when the app is open.",
+        tab: {
+          title: "Title",
+          description:
+            "Set a custom tab title when the app is open in a browser.",
+        },
+        favicon: {
+          title: "Favicon",
+          description: "Use a custom favicon for the browser tab.",
+        },
+      },
+      "sidebar-footer": {
+        title: "Sidebar Footer Items",
+        description:
+          "Customize the footer items displayed on the bottom of the sidebar.",
+        icon: "Icon",
+        link: "Link",
+      },
     },
   },
 
@@ -417,8 +584,19 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM Preference",
     description:
-      "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else AnythingLLM will not function properly.",
+      "These are the credentials and settings for your preferred LLM chat & embedding provider. It is important that these keys are current and correct, or else AnythingLLM will not function properly.",
     provider: "LLM Provider",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: "Azure Service Endpoint",
+        api_key: "API Key",
+        chat_deployment_name: "Chat Deployment Name",
+        chat_model_token_limit: "Chat Model Token Limit",
+        model_type: "Model Type",
+        default: "Default",
+        reasoning: "Reasoning",
+      },
+    },
   },
 
   transcription: {
@@ -490,12 +668,13 @@ const TRANSLATIONS = {
     table: {
       workspace: "Workspace",
       chats: "Sent Chats",
-      Active: "Active Domains",
+      active: "Active Domains",
+      created: "Created",
     },
   },
 
   "embed-chats": {
-    title: "Embed Chats",
+    title: "Embed Chat History",
     export: "Export",
     description:
       "These are all the recorded chats and messages from any embed that you have published.",
@@ -560,6 +739,20 @@ const TRANSLATIONS = {
   connectors: {
     "search-placeholder": "Search data connectors",
     "no-connectors": "No data connectors found.",
+    obsidian: {
+      name: "Obsidian",
+      description: "Import Obsidian vault in a single click.",
+      vault_location: "Vault Location",
+      vault_description:
+        "Select your Obsidian vault folder to import all notes and their connections.",
+      selected_files: "Found {{count}} markdown files",
+      importing: "Importing vault...",
+      import_vault: "Import Vault",
+      processing_time:
+        "This may take a while depending on the size of your vault.",
+      vault_warning:
+        "To avoid any conflicts, make sure your Obsidian vault is not currently open.",
+    },
     github: {
       name: "GitHub Repo",
       description:
@@ -750,6 +943,7 @@ const TRANSLATIONS = {
     get_started_default: "To get started",
     upload: "upload a document",
     or: "or",
+    attachments_processing: "Attachments are processing. Please wait...",
     send_chat: "send a chat.",
     send_message: "Send a message",
     attach_file: "Attach a file to this chat",
@@ -758,6 +952,47 @@ const TRANSLATIONS = {
     text_size: "Change text size.",
     microphone: "Speak your prompt.",
     send: "Send prompt message to workspace",
+    tts_speak_message: "TTS Speak message",
+    copy: "Copy",
+    regenerate: "Regenerate",
+    regenerate_response: "Regenerate response",
+    good_response: "Good response",
+    more_actions: "More actions",
+    hide_citations: "Hide citations",
+    show_citations: "Show citations",
+    pause_tts_speech_message: "Pause TTS speech of message",
+    fork: "Fork",
+    delete: "Delete",
+    save_submit: "Save & Submit",
+    cancel: "Cancel",
+    edit_prompt: "Edit prompt",
+    edit_response: "Edit response",
+    at_agent: "@agent",
+    default_agent_description: " - the default agent for this workspace.",
+    custom_agents_coming_soon: "custom agents are coming soon!",
+    slash_reset: "/reset",
+    preset_reset_description: "Clear your chat history and begin a new chat",
+    add_new_preset: " Add New Preset",
+    command: "Command",
+    your_command: "your-command",
+    placeholder_prompt:
+      "This is the content that will be injected in front of your prompt.",
+    description: "Description",
+    placeholder_description: "Responds with a poem about LLMs.",
+    save: "Save",
+    small: "Small",
+    normal: "Normal",
+    large: "Large",
+    workspace_llm_manager: {
+      search: "Search LLM providers",
+      loading_workspace_settings: "Loading workspace settings...",
+      available_models: "Available Models for {{provider}}",
+      available_models_description: "Select a model to use for this workspace.",
+      save: "Use this model",
+      saving: "Setting model as workspace default...",
+      missing_credentials: "This provider is missing credentials!",
+      missing_credentials_description: "Click to set up credentials",
+    },
   },
 
   profile_settings: {
@@ -773,6 +1008,29 @@ const TRANSLATIONS = {
     update_account: "Update Account",
     theme: "Theme Preference",
     language: "Preferred language",
+    failed_upload: "Failed to upload profile picture: {{error}}",
+    upload_success: "Profile picture uploaded.",
+    failed_remove: "Failed to remove profile picture: {{error}}",
+    profile_updated: "Profile updated.",
+    failed_update_user: "Failed to update user: {{error}}",
+    account: "Account",
+    support: "Support",
+    signout: "Sign out",
+  },
+
+  "keyboard-shortcuts": {
+    title: "Keyboard Shortcuts",
+    shortcuts: {
+      settings: "Open Settings",
+      workspaceSettings: "Open Current Workspace Settings",
+      home: "Go to Home",
+      workspaces: "Manage Workspaces",
+      apiKeys: "API Keys Settings",
+      llmPreferences: "LLM Preferences",
+      chatSettings: "Chat Settings",
+      help: "Show keyboard shortcuts help",
+      showLLMSelector: "Show workspace LLM Selector",
+    },
   },
 };
 

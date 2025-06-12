@@ -6,6 +6,7 @@ const DEFAULT_USER_ITEMS = {
     agentSkills: { items: [] },
     systemPrompts: { items: [] },
     slashCommands: { items: [] },
+    agentFlows: { items: [] },
   },
   teamItems: [],
 };

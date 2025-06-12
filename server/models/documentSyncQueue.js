@@ -10,7 +10,14 @@ const { Telemetry } = require("./telemetry");
 const DocumentSyncQueue = {
   featureKey: "experimental_live_file_sync",
   // update the validFileTypes and .canWatch properties when adding elements here.
-  validFileTypes: ["link", "youtube", "confluence", "github", "gitlab"],
+  validFileTypes: [
+    "link",
+    "youtube",
+    "confluence",
+    "github",
+    "gitlab",
+    "drupalwiki",
+  ],
   defaultStaleAfter: 604800000,
   maxRepeatFailures: 5, // How many times a run can fail in a row before pruning.
   writable: [],
@@ -46,12 +53,15 @@ const DocumentSyncQueue = {
    * @returns {boolean} - true if the document can be watched, false otherwise
    */
   canWatch: function ({ title, chunkSource = null } = {}) {
+    if (!chunkSource) return false;
+
     if (chunkSource.startsWith("link://") && title.endsWith(".html"))
       return true; // If is web-link material (prior to feature most chunkSources were links://)
     if (chunkSource.startsWith("youtube://")) return true; // If is a youtube link
     if (chunkSource.startsWith("confluence://")) return true; // If is a confluence document link
     if (chunkSource.startsWith("github://")) return true; // If is a GitHub file reference
     if (chunkSource.startsWith("gitlab://")) return true; // If is a GitLab file reference
+    if (chunkSource.startsWith("drupalwiki://")) return true; // If is a DrupalWiki document link
     return false;
   },
 
