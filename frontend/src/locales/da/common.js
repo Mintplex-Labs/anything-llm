@@ -219,6 +219,11 @@ const TRANSLATIONS = {
         only: "kun",
         "desc-end": "hvis dokumentkontekst findes.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent-tilstand",
+        desc: "Bruger altid direkte agenten.",
+      },
     },
     history: {
       title: "Chat-historik",
