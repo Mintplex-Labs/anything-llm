@@ -260,6 +260,11 @@ const TRANSLATIONS = {
         prompt_placeholder: null,
         publish_button: null,
         publishing: null,
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
       },
     },
     refusal: {
