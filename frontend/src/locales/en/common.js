@@ -367,6 +367,12 @@ const TRANSLATIONS = {
         prompt_placeholder: "Enter your system prompt here...",
         publish_button: "Publish to Community Hub",
         publishing: "Publishing...",
+        unauthenticated: {
+          title: "Authentication Required",
+          description:
+            "You need to authenticate with the AnythingLLM Community Hub before publishing prompts.",
+          button: "Connect to Community Hub",
+        },
       },
     },
     refusal: {

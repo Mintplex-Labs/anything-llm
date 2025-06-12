@@ -6,7 +6,7 @@ import Highlighter from "react-highlight-words";
 import { Link, useSearchParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import ChatPromptHistory from "./ChatPromptHistory";
-import PublishPromptModal from "./PublishPromptModal";
+import PublishEntityModal from "@/components/PublishEntityModal";
 
 // TODO: Move to backend and have user-language sensitive default prompt
 const DEFAULT_PROMPT =
@@ -23,6 +23,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const historyButtonRef = useRef(null);
   const [searchParams] = useSearchParams();
   const [showPublishModal, setShowPublishModal] = useState(false);
+  const [currentPrompt, setCurrentPrompt] = useState(null);
 
   const handleRestore = (prompt) => {
     setPrompt(prompt);
@@ -68,6 +69,12 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
     };
   }, []);
 
+  const handlePublish = (prompt) => {
+    setCurrentPrompt(prompt);
+    setShowPublishModal(true);
+    setShowPromptHistory(false);
+  };
+
   return (
     <>
       <ChatPromptHistory
@@ -75,19 +82,16 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
         workspaceSlug={workspace.slug}
         show={showPromptHistory}
         onRestore={handleRestore}
-        onPublish={(prompt) => {
-          setPrompt(prompt);
-          setShowPromptHistory(false);
-          setShowPublishModal(true);
-        }}
+        onPublish={handlePublish}
         onClose={() => {
           setShowPromptHistory(false);
         }}
       />
-      <PublishPromptModal
+      <PublishEntityModal
         show={showPublishModal}
         onClose={() => setShowPublishModal(false)}
-        currentPrompt={prompt}
+        entityType="system-prompt"
+        entity={currentPrompt}
       />
       <div>
         <div className="flex flex-col">
@@ -208,7 +212,10 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowPublishModal(true)}
+                  onClick={() => {
+                    setCurrentPrompt(prompt);
+                    setShowPublishModal(true);
+                  }}
                   className="text-primary-button hover:text-white light:hover:text-black text-xs font-medium"
                 >
                   Publish to Community Hub
