@@ -199,6 +199,10 @@ class AgentHandler {
             "Dell Pro AI Studio model must be set to use agents."
           );
         break;
+      case "burncloud":
+        if (!process.env.BURNCLOUD_MODEL_PREF)
+          throw new Error("BurnCloud model must be provided to use agents.");
+        break;
 
       default:
         throw new Error(
@@ -219,6 +223,8 @@ class AgentHandler {
         return process.env.OPEN_MODEL_PREF ?? "gpt-4o";
       case "anthropic":
         return process.env.ANTHROPIC_MODEL_PREF ?? "claude-3-sonnet-20240229";
+      case "burncloud":
+        return process.env.BURNCLOUD_MODEL_PREF ?? "claude-3-5-sonnet-20241022";
       case "lmstudio":
         return process.env.LMSTUDIO_MODEL_PREF ?? "server-default";
       case "ollama":
