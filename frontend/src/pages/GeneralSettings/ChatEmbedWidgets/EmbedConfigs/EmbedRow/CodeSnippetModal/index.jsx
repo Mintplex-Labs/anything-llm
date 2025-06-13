@@ -47,7 +47,7 @@ function createScriptTagSnippet(embed, scriptHost, serverHost) {
   return `<!--
 Paste this script at the bottom of your HTML before the </body> tag.
 See more style and config options on our docs
-https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md
+https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md
 -->
 <script
   data-embed-id="${embed.uuid}"
@@ -90,7 +90,7 @@ const ScriptTag = ({ embed }) => {
           in the corner of your website.
         </p>
         <a
-          href="https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md"
+          href="https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md"
           target="_blank"
           rel="noreferrer"
           className="text-blue-300 light:text-blue-500 hover:underline"
