@@ -61,6 +61,7 @@ export default {
           text: {
             primary: 'var(--theme-text-primary)',
             secondary: 'var(--theme-text-secondary)',
+            placeholder: 'var(--theme-placeholder)',
           },
           sidebar: {
             item: {

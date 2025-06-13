@@ -153,6 +153,34 @@ const CommunityHub = {
         };
       });
   },
+
+  /**
+   * Create a new system prompt in the community hub
+   * @param {Object} data - The system prompt data
+   * @param {string} data.name - The name of the prompt
+   * @param {string} data.description - The description of the prompt
+   * @param {string} data.prompt - The actual system prompt text
+   * @param {string[]} data.tags - Array of tags
+   * @param {string} data.visibility - Either 'public' or 'private'
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  createSystemPrompt: async (data) => {
+    return await fetch(`${API_BASE}/community-hub/system-prompt/create`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then(async (res) => {
+        const response = await res.json();
+        if (!res.ok)
+          throw new Error(response.error || "Failed to create system prompt");
+        return { success: true, error: null, itemId: response.item?.id };
+      })
+      .catch((e) => ({
+        success: false,
+        error: e.message,
+      }));
+  },
 };
 
 export default CommunityHub;
