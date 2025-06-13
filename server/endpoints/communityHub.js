@@ -182,36 +182,29 @@ function communityHubEndpoints(app) {
     }
   );
 
-  /**
-   * Uploads a new system prompt to the community hub
-   */
   app.post(
-    "/community-hub/system-prompt/create",
+    "/community-hub/:communityHubItemType/create",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
+        const { communityHubItemType } = request.params;
         const { connectionKey } = await SystemSettings.hubSettings();
-        if (!connectionKey) {
+        if (!connectionKey)
           throw new Error("Community Hub connection key not found");
-        }
 
         const data = reqBody(request);
-        const { success, error, itemId } =
-          await CommunityHub.createSystemPrompt(data, connectionKey);
+        const { success, error, itemId } = await CommunityHub.createStaticItem(
+          communityHubItemType,
+          data,
+          connectionKey
+        );
         if (!success) throw new Error(error);
 
-        await Telemetry.sendTelemetry("community_hub_publish", {
-          itemType: "system-prompt",
-          visibility: data.visibility,
-        });
         await EventLogs.logEvent(
           "community_hub_publish",
-          {
-            itemType: "system-prompt",
-          },
+          { itemType: communityHubItemType },
           response.locals?.user?.id
         );
-
         response
           .status(200)
           .json({ success: true, error: null, item: { id: itemId } });

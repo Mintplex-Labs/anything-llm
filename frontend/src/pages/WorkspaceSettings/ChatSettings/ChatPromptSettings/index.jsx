@@ -7,6 +7,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import ChatPromptHistory from "./ChatPromptHistory";
 import PublishEntityModal from "@/components/PublishEntityModal";
+import { useModal } from "@/hooks/useModal";
 
 // TODO: Move to backend and have user-language sensitive default prompt
 const DEFAULT_PROMPT =
@@ -22,15 +23,12 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const promptHistoryRef = useRef(null);
   const historyButtonRef = useRef(null);
   const [searchParams] = useSearchParams();
-  const [showPublishModal, setShowPublishModal] = useState(false);
-  const [currentPrompt, setCurrentPrompt] = useState(null);
-
-  const handleRestore = (prompt) => {
-    setPrompt(prompt);
-    setShowPromptHistory(false);
-    setHasChanges(true);
-    // TODO: Autosave on restore
-  };
+  const {
+    isOpen: showPublishModal,
+    closeModal: closePublishModal,
+    openModal: openPublishModal,
+  } = useModal();
+  const [currentPrompt, setCurrentPrompt] = useState(chatPrompt(workspace));
 
   useEffect(() => {
     async function setupVariableHighlighting() {
@@ -69,10 +67,16 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
     };
   }, []);
 
-  const handlePublish = (prompt) => {
-    setCurrentPrompt(prompt);
-    setShowPublishModal(true);
+  const handleRestore = (prompt) => {
+    setPrompt(prompt);
     setShowPromptHistory(false);
+    setHasChanges(true);
+  };
+
+  const handlePublishClick = (prompt) => {
+    setCurrentPrompt(prompt);
+    setShowPromptHistory(false);
+    openPublishModal();
   };
 
   return (
@@ -82,16 +86,10 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
         workspaceSlug={workspace.slug}
         show={showPromptHistory}
         onRestore={handleRestore}
-        onPublish={handlePublish}
+        onPublishClick={handlePublishClick}
         onClose={() => {
           setShowPromptHistory(false);
         }}
-      />
-      <PublishEntityModal
-        show={showPublishModal}
-        onClose={() => setShowPublishModal(false)}
-        entityType="system-prompt"
-        entity={currentPrompt}
       />
       <div>
         <div className="flex flex-col">
@@ -210,21 +208,41 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
                 >
                   Clear
                 </button>
-                <button
-                  type="button"
+                <PublishPromptCTA
+                  hidden={
+                    isEditing ||
+                    prompt === DEFAULT_PROMPT ||
+                    prompt?.trim().length < 10
+                  }
                   onClick={() => {
                     setCurrentPrompt(prompt);
-                    setShowPublishModal(true);
+                    openPublishModal();
                   }}
-                  className="text-primary-button hover:text-white light:hover:text-black text-xs font-medium"
-                >
-                  Publish to Community Hub
-                </button>
+                />
               </>
             )}
           </div>
         </div>
       </div>
+      <PublishEntityModal
+        show={showPublishModal}
+        onClose={closePublishModal}
+        entityType="system-prompt"
+        entity={currentPrompt}
+      />
     </>
+  );
+}
+
+function PublishPromptCTA({ hidden = false, onClick }) {
+  if (hidden) return null;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="border-none text-primary-button hover:text-white light:hover:text-black text-xs font-medium"
+    >
+      Publish to Community Hub
+    </button>
   );
 }

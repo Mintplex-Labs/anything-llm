@@ -358,7 +358,7 @@ const TRANSLATIONS = {
           "This is the description of your system prompt. Use this to describe the purpose of your system prompt.",
         tags_label: "Tags",
         tags_description:
-          "Tags are used to label your system prompt for easier searching. You can add multiple tags.",
+          "Tags are used to label your system prompt for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
         tags_placeholder: "Type and press Enter to add tags",
         visibility_label: "Visibility",
         prompt_label: "Prompt",

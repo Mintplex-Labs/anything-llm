@@ -7,7 +7,7 @@ import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 export default forwardRef(function ChatPromptHistory(
-  { show, workspaceSlug, onRestore, onClose, onPublish },
+  { show, workspaceSlug, onRestore, onClose, onPublishClick },
   ref
 ) {
   const { t } = useTranslation();
@@ -92,7 +92,7 @@ export default forwardRef(function ChatPromptHistory(
               id={item.id}
               {...item}
               onRestore={() => onRestore(item.prompt)}
-              onPublish={onPublish}
+              onPublishClick={onPublishClick}
               setHistory={setHistory}
             />
           ))

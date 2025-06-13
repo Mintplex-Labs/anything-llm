@@ -2,13 +2,14 @@ import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
+import ModalWrapper from "../ModalWrapper";
 
 export default function UnauthenticatedHubModal({ show, onClose }) {
   const { t } = useTranslation();
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <ModalWrapper isOpen={show}>
       <div className="relative w-[400px] max-w-full bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
         <div className="p-6">
           <button
@@ -27,13 +28,13 @@ export default function UnauthenticatedHubModal({ show, onClose }) {
             </p>
             <Link
               to={paths.communityHub.authentication()}
-              className="w-[265px] bg-theme-bg-secondary hover:bg-theme-hover text-white py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
+              className="w-[265px] bg-theme-bg-secondary hover:bg-theme-sidebar-item-hover text-theme-text-primary py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
             >
               {t("chat.prompt.publish.unauthenticated.button")}
             </Link>
           </div>
         </div>
       </div>
-    </div>
+    </ModalWrapper>
   );
 }

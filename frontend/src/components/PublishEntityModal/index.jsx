@@ -1,8 +1,8 @@
 import { X } from "@phosphor-icons/react";
-import SystemPrompts from "./SystemPrompts";
-import UnauthenticatedHubModal from "@/components/UnauthenticatedHubModal";
 import { useCommunityHubAuth } from "@/hooks/useCommunityHubAuth";
-import { useState } from "react";
+import UnauthenticatedHubModal from "@/components/UnauthenticatedHubModal";
+import SystemPrompts from "./SystemPrompts";
+import ModalWrapper from "../ModalWrapper";
 
 export default function PublishEntityModal({
   show,
@@ -11,30 +11,22 @@ export default function PublishEntityModal({
   entity,
 }) {
   const { isAuthenticated, loading } = useCommunityHubAuth();
-  const [isSuccess, setIsSuccess] = useState(false);
-
-  if (!show) return null;
-
-  if (loading) return null;
-  if (!isAuthenticated) {
+  if (!show || loading) return null;
+  if (!isAuthenticated)
     return <UnauthenticatedHubModal show={show} onClose={onClose} />;
-  }
 
   const renderEntityForm = () => {
     switch (entityType) {
       case "system-prompt":
-        return <SystemPrompts entity={entity} onSuccessChange={setIsSuccess} />;
-      // Other entities
+        return <SystemPrompts entity={entity} />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-      <div
-        className={`relative ${isSuccess ? "w-[400px]" : "w-[900px]"} max-w-full bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border`}
-      >
+    <ModalWrapper isOpen={show}>
+      <div className="relative max-w-[900px] bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
         <div className="relative p-6">
           <button
             onClick={onClose}
@@ -46,6 +38,6 @@ export default function PublishEntityModal({
         </div>
         {renderEntityForm()}
       </div>
-    </div>
+    </ModalWrapper>
   );
 }
