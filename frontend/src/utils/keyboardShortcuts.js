@@ -122,20 +122,9 @@ function useKeyboardShortcuts() {
     // since some of the shortcuts are only available in multi-user mode as admin
     const user = userFromStorage();
     if (!!user && user?.role !== "admin") return;
-
-    function handleHelpEvent(e) {
-      setShowHelp(e.detail.show);
-    }
-    window.addEventListener(KEYBOARD_SHORTCUTS_HELP_EVENT, handleHelpEvent);
     const cleanup = initKeyboardShortcuts();
 
-    return () => {
-      cleanup();
-      window.removeEventListener(
-        KEYBOARD_SHORTCUTS_HELP_EVENT,
-        handleHelpEvent
-      );
-    };
+    return () => cleanup();
   }, []);
   return;
 }
