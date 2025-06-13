@@ -49,7 +49,7 @@ jobs:
       - name: Deploy application to server
         run: |
           ssh $SSH_USER@$SSH_HOST "
-            cd $SSH_DIR/${GITHUB_REPOSITORY##*/} &&
+            cd $SSH_DIR/${GITHUB_REPOSITORY##*/}/docker &&
             docker compose down || true &&
             docker compose --profile prod up -d --build
           "
