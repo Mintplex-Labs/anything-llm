@@ -144,10 +144,41 @@ async function resyncDrupalWiki({ chunkSource }, response) {
   }
 }
 
+/**
+ * Fetches the content of a specific Google Drive file via its chunkSource.
+ * Returns the content as a text string of the file in question.
+ * @param {object} data - metadata from document (eg: chunkSource)
+ * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
+ */
+async function resyncGoogleDrive({ chunkSource }, response) {
+  if (!chunkSource) throw new Error('Invalid source property provided');
+  try {
+    const { resyncGoogleDriveDocument } = require("../../utils/extensions/GoogleDrive");
+    const content = await resyncGoogleDriveDocument({ chunkSource });
+
+    if (!content) {
+      console.error('Failed to sync Google Drive file content - file may no longer exist');
+      response.status(200).json({
+        success: false,
+        content: null,
+      });
+    } else {
+      response.status(200).json({ success: true, content });
+    }
+  } catch (e) {
+    console.error(e);
+    response.status(200).json({
+      success: false,
+      content: null,
+    });
+  }
+}
+
 module.exports = {
   link: resyncLink,
   youtube: resyncYouTube,
   confluence: resyncConfluence,
   github: resyncGithub,
   drupalwiki: resyncDrupalWiki,
+  googledrive: resyncGoogleDrive,
 }
