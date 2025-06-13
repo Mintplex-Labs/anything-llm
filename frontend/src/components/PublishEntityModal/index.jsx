@@ -1,8 +1,8 @@
 import { X } from "@phosphor-icons/react";
-import { useTranslation } from "react-i18next";
 import SystemPrompts from "./SystemPrompts";
 import UnauthenticatedHubModal from "@/components/UnauthenticatedHubModal";
 import { useCommunityHubAuth } from "@/hooks/useCommunityHubAuth";
+import { useState } from "react";
 
 export default function PublishEntityModal({
   show,
@@ -10,8 +10,9 @@ export default function PublishEntityModal({
   entityType,
   entity,
 }) {
-  const { t } = useTranslation();
   const { isAuthenticated, loading } = useCommunityHubAuth();
+  const [isSuccess, setIsSuccess] = useState(false);
+
   if (!show) return null;
 
   if (loading) return null;
@@ -22,7 +23,7 @@ export default function PublishEntityModal({
   const renderEntityForm = () => {
     switch (entityType) {
       case "system-prompt":
-        return <SystemPrompts entity={entity} />;
+        return <SystemPrompts entity={entity} onSuccessChange={setIsSuccess} />;
       // Other entities
       default:
         return null;
@@ -31,13 +32,10 @@ export default function PublishEntityModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-      <div className="relative w-[900px] max-w-full bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
+      <div
+        className={`relative ${isSuccess ? "w-[400px]" : "w-[900px]"} max-w-full bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border`}
+      >
         <div className="relative p-6">
-          <div className="w-full flex gap-x-2 items-center">
-            <h3 className="text-xl font-semibold text-white">
-              {t(`chat.prompt.publish.modal_title`)}
-            </h3>
-          </div>
           <button
             onClick={onClose}
             type="button"
