@@ -2,7 +2,7 @@ import { X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
-import ModalWrapper from "../ModalWrapper";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function UnauthenticatedHubModal({ show, onClose }) {
   const { t } = useTranslation();

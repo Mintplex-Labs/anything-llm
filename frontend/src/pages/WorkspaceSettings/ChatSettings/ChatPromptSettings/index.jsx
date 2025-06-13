@@ -6,7 +6,7 @@ import Highlighter from "react-highlight-words";
 import { Link, useSearchParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import ChatPromptHistory from "./ChatPromptHistory";
-import PublishEntityModal from "@/components/PublishEntityModal";
+import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
 import { useModal } from "@/hooks/useModal";
 
 // TODO: Move to backend and have user-language sensitive default prompt

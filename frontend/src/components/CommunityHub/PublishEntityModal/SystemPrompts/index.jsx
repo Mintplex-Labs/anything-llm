@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import CommunityHub from "@/models/communityHub";
 import showToast from "@/utils/toast";
@@ -62,7 +62,7 @@ export default function SystemPrompts({ entity }) {
 
   if (isSuccess) {
     return (
-      <div className="p-6 -mt-12">
+      <div className="p-6 -mt-12 w-[400px]">
         <div className="flex flex-col items-center justify-center gap-y-2">
           <h3 className="text-lg font-semibold text-theme-text-primary">
             {t("chat.prompt.publish.success_title")}

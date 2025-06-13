@@ -1,8 +1,8 @@
 import { X } from "@phosphor-icons/react";
 import { useCommunityHubAuth } from "@/hooks/useCommunityHubAuth";
-import UnauthenticatedHubModal from "@/components/UnauthenticatedHubModal";
+import UnauthenticatedHubModal from "@/components/CommunityHub/UnauthenticatedHubModal";
 import SystemPrompts from "./SystemPrompts";
-import ModalWrapper from "../ModalWrapper";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function PublishEntityModal({
   show,
