@@ -106,7 +106,7 @@ function math_inline(state, silent) {
     match += 1;
   }
 
-  // No closing delimter found.  Consume $ and continue.
+  // No closing delimiter found.  Consume $ and continue.
   if (match === -1) {
     if (!silent) {
       state.pending += "$";
