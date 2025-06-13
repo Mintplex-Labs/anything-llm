@@ -828,6 +828,9 @@ ${this.getHistory({ to: route.to })
         return new Providers.GeminiProvider({ model: config.model });
       case "dpais":
         return new Providers.DellProAiStudioProvider({ model: config.model });
+      case "giteeai":
+        return new Providers.GiteeAIProvider({ model: config.model });
+
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use a valid provider.`
