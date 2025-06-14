@@ -181,6 +181,19 @@ const CommunityHub = {
         error: e.message,
       }));
   },
+
+  createAgentFlow: async (data) => {
+    return await fetch(`${API_BASE}/community-hub/agent-flow/create`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    }).then(async (res) => {
+      const response = await res.json();
+      if (!res.ok)
+        throw new Error(response.error || "Failed to create agent flow");
+      return { success: true, error: null, itemId: response.item?.id };
+    });
+  },
 };
 
 export default CommunityHub;

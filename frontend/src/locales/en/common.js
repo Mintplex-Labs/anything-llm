@@ -373,6 +373,30 @@ const TRANSLATIONS = {
             "You need to authenticate with the AnythingLLM Community Hub before publishing prompts.",
           button: "Connect to Community Hub",
         },
+        agent_flow: {
+          public_description: "Public agent flows are visible to everyone.",
+          private_description: "Private agent flows are only visible to you.",
+          success_title: "Success!",
+          success_description:
+            "Your Agent Flow has been published to the Community Hub!",
+          success_thank_you: "Thank you for sharing to the Community!",
+          view_on_hub: "View on Community Hub",
+          modal_title: "Publish Agent Flow",
+          name_label: "Name",
+          name_description: "This is the display name of your agent flow.",
+          name_placeholder: "My Agent Flow",
+          description_label: "Description",
+          description_description:
+            "This is the description of your agent flow. Use this to describe the purpose of your agent flow.",
+          tags_label: "Tags",
+          tags_description:
+            "Tags are used to label your agent flow for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
+          tags_placeholder: "Type and press Enter to add tags",
+          visibility_label: "Visibility",
+          publish_button: "Publish to Community Hub",
+          submitting: "Publishing...",
+          submit: "Publish to Community Hub",
+        },
       },
     },
     refusal: {

@@ -2,6 +2,7 @@ import { X } from "@phosphor-icons/react";
 import { useCommunityHubAuth } from "@/hooks/useCommunityHubAuth";
 import UnauthenticatedHubModal from "@/components/CommunityHub/UnauthenticatedHubModal";
 import SystemPrompts from "./SystemPrompts";
+import AgentFlow from "./AgentFlow";
 import ModalWrapper from "@/components/ModalWrapper";
 
 export default function PublishEntityModal({
@@ -19,6 +20,8 @@ export default function PublishEntityModal({
     switch (entityType) {
       case "system-prompt":
         return <SystemPrompts entity={entity} />;
+      case "agent-flow":
+        return <AgentFlow entity={entity} />;
       default:
         return null;
     }
