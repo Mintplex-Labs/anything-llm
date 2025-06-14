@@ -10,6 +10,7 @@ export default function HeaderMenu({
   availableFlows = [],
   onNewFlow,
   onSaveFlow,
+  onPublishFlow,
 }) {
   const { flowId = null } = useParams();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -120,6 +121,12 @@ export default function HeaderMenu({
             >
               <Plus className="w-4 h-4" />
               New Flow
+            </button>
+            <button
+              onClick={onPublishFlow}
+              className="flex items-center gap-x-2 text-theme-text-primary text-sm font-medium px-3 py-2 rounded-lg border border-primary-button bg-theme-settings-input-bg hover:bg-primary-button/80 transition-colors duration-300"
+            >
+              Publish Flow
             </button>
             <button
               onClick={onSaveFlow}
