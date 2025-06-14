@@ -118,7 +118,7 @@ const Milvus = {
           },
           {
             name: "metadata",
-            decription: "metadata",
+            description: "metadata",
             data_type: DataType.JSON,
           },
         ],
