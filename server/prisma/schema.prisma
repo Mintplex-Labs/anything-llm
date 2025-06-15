@@ -185,7 +185,7 @@ model workspace_chats {
   include        Boolean  @default(true)
   user_id        Int?
   thread_id      Int? // No relation to prevent whole table migration
-  api_session_id String? // String identifier for only the dev API to parition chats in any mode.
+  api_session_id String? // String identifier for only the dev API to partition chats in any mode.
   createdAt      DateTime @default(now())
   lastUpdatedAt  DateTime @default(now())
   feedbackScore  Boolean?
