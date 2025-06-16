@@ -7,6 +7,7 @@ class BackgroundService {
   name = "BackgroundWorkerService";
   static _instance = null;
   #root = path.resolve(__dirname, "../../jobs");
+  #documentSyncEnabled = false;
 
   constructor() {
     if (BackgroundService._instance) {
@@ -24,10 +25,7 @@ class BackgroundService {
 
   async boot() {
     const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
-    if (!(await DocumentSyncQueue.enabled())) {
-      this.#log("Feature is not enabled and will not be started.");
-      return;
-    }
+    this.#documentSyncEnabled = await DocumentSyncQueue.enabled();
 
     this.#log("Starting...");
     this.bree = new Bree({
@@ -57,9 +55,15 @@ class BackgroundService {
     return [
       // Job for auto-sync of documents
       // https://github.com/breejs/bree
+      ...(this.#documentSyncEnabled ? [
+        {
+          name: "sync-watched-documents",
+          interval: "1hr",
+        },
+      ] : []),
       {
-        name: "sync-watched-documents",
-        interval: "1hr",
+        name: "push-test",
+        interval: "10s",
       },
     ];
   }
