@@ -13,6 +13,13 @@ self.addEventListener('push', function (event) {
   self.registration.showNotification(data.title || 'AnythingLLM', {
     body: data.message,
     icon: '/favicon.png',
-    ...data,
+    data: { ...data }
   });
+});
+
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close();
+  const { onClickUrl = null } = event.notification.data || {};
+  if (!onClickUrl) return;
+  event.waitUntil(clients.openWindow(onClickUrl));
 });

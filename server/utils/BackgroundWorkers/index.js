@@ -27,6 +27,11 @@ class BackgroundService {
     const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
     this.#documentSyncEnabled = await DocumentSyncQueue.enabled();
 
+    if (!this.jobs().length) {
+      this.#log("No jobs to run, schedule, or queue!");
+      return;
+    }
+
     this.#log("Starting...");
     this.bree = new Bree({
       logger: this.logger,
@@ -61,10 +66,11 @@ class BackgroundService {
           interval: "1hr",
         },
       ] : []),
-      {
-        name: "push-test",
-        interval: "10s",
-      },
+      // {
+      //   name: "push-test",
+      //   // interval: "1m",
+      //   timeout: "10s",
+      // },
     ];
   }
 

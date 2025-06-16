@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 class PushNotifications {
+  static mailTo = 'anythingllm@localhost';
   /**
    * @type {PushNotifications}
    */
@@ -30,6 +31,22 @@ class PushNotifications {
 
   #log(text, ...args) {
     console.log(`\x1b[36m[PushNotifications]\x1b[0m ${text}`, ...args);
+  }
+
+  get pushService() {
+    try {
+      const vapidKeys = this.existingVapidKeys;
+      if (!vapidKeys.publicKey || !vapidKeys.privateKey) throw new Error('VAPID keys not found. Make sure they are generated in the main process first.');
+      webpush.setVapidDetails(
+        `mailto:${this.mailTo}`,
+        vapidKeys.publicKey,
+        vapidKeys.privateKey
+      );
+      return webpush;
+    } catch (e) {
+      console.error('Failed to set VAPID details', e);
+      return null;
+    }
   }
 
   get storagePath() {
@@ -85,11 +102,7 @@ class PushNotifications {
     const instance = PushNotifications.instance;
     const existingVapidKeys = instance.existingVapidKeys;
     if (existingVapidKeys.publicKey && existingVapidKeys.privateKey) {
-      webpush.setVapidDetails(
-        'mailto:anythingllm@localhost',
-        existingVapidKeys.publicKey,
-        existingVapidKeys.privateKey
-      );
+      instance.pushService;
       return;
     }
 
@@ -101,11 +114,7 @@ class PushNotifications {
     if (!fs.existsSync(instance.storagePath)) fs.mkdirSync(instance.storagePath, { recursive: true });
     fs.writeFileSync(path.resolve(instance.storagePath, `vapid-keys.json`), JSON.stringify(vapidKeys, null, 2));
 
-    webpush.setVapidDetails(
-      'mailto:anythingllm@localhost',
-      vapidKeys.publicKey,
-      vapidKeys.privateKey
-    );
+    instance.pushService;
     return;
   }
 }
