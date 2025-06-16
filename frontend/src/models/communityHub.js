@@ -182,6 +182,12 @@ const CommunityHub = {
       }));
   },
 
+  /**
+   * Create a new agent flow in the community hub
+   * @param {Object} data - The agent flow data
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+
   createAgentFlow: async (data) => {
     return await fetch(`${API_BASE}/community-hub/agent-flow/create`, {
       method: "POST",

@@ -6,13 +6,12 @@ import paths from "@/utils/paths";
 import { X, CaretRight } from "@phosphor-icons/react/dist/ssr";
 import { BLOCK_INFO } from "@/pages/Admin/AgentBuilder/BlockList";
 
-export default function AgentFlow({ entity }) {
+export default function AgentFlows({ entity }) {
   const { t } = useTranslation();
   const formRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
-  const [visibility, setVisibility] = useState("public");
   const [isSuccess, setIsSuccess] = useState(false);
   const [itemId, setItemId] = useState(null);
   const [expandedStep, setExpandedStep] = useState(null);
@@ -27,13 +26,13 @@ export default function AgentFlow({ entity }) {
         name: form.get("name"),
         description: form.get("description"),
         tags: tags,
-        visibility: visibility,
+        visibility: "private",
         flow: JSON.stringify({
           name: form.get("name"),
           description: form.get("description"),
           steps: entity.steps,
           tags: tags,
-          visibility: visibility,
+          visibility: "private",
         }),
       };
       const { success, error, itemId } =
