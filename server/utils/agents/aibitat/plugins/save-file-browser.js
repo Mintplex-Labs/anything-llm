@@ -15,7 +15,7 @@ const saveFileInBrowser = {
           tracker: new Deduplicator(),
           name: this.name,
           description:
-            "Save content to a file when the user explicity asks for a download of the file.",
+            "Save content to a file when the user explicitly asks for a download of the file.",
           examples: [
             {
               prompt: "Save me that to a file named 'output'",
