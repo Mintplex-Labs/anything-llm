@@ -309,12 +309,10 @@ export default function AgentBuilder() {
     setBlocks(newBlocks);
   };
 
-  // Handler for publish modal
   const handlePublishFlow = () => {
     setShowPublishModal(true);
   };
 
-  // Compose the entity object for publishing (flow config)
   const flowInfoBlock = blocks.find(
     (block) => block.type === BLOCK_TYPES.FLOW_INFO
   );
@@ -342,7 +340,6 @@ export default function AgentBuilder() {
       }}
       className="w-full h-screen flex bg-theme-bg-primary"
     >
-      {/* Publish Modal */}
       <PublishEntityModal
         show={showPublishModal}
         onClose={() => setShowPublishModal(false)}
