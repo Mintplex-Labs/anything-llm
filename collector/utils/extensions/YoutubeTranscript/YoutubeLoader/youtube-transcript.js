@@ -15,81 +15,135 @@ class YoutubeTranscriptError extends Error {
  */
 class YoutubeTranscript {
   /**
-   * Fetch transcript from YTB Video
+   * Manually encode protobuf message for simple two-string structure in order to avoid using protobufjs.
+   * @param {Object} message - The message object with param1 and param2
+   * @returns {string} Base64 encoded protobuf
+   */
+  static #getBase64Protobuf(message) {
+    // Manual protobuf encoding for simple structure:
+    // Field 1 (param1): tag 0x0A (field 1, wire type 2 for string)
+    // Field 2 (param2): tag 0x12 (field 2, wire type 2 for string)
+    
+    const encodeString = (fieldNumber, str) => {
+      const utf8Bytes = Buffer.from(str, 'utf8');
+      const length = utf8Bytes.length;
+      const tag = (fieldNumber << 3) | 2; // wire type 2 for string
+      
+      // Encode varint length
+      const lengthBytes = [];
+      let len = length;
+      while (len >= 0x80) {
+        lengthBytes.push((len & 0xFF) | 0x80);
+        len >>>= 7;
+      }
+      lengthBytes.push(len & 0xFF);
+      
+      return Buffer.concat([
+        Buffer.from([tag]),
+        Buffer.from(lengthBytes),
+        utf8Bytes
+      ]);
+    };
+    
+    const field1 = encodeString(1, message.param1);
+    const field2 = encodeString(2, message.param2);
+    
+    const combined = Buffer.concat([field1, field2]);
+    return combined.toString('base64');
+  }
+
+  /**
+   * Fetch transcript from YTB Video using direct API call
    * @param videoId Video url or video identifier
    * @param config Object with lang param (eg: en, es, hk, uk) format.
-   * Will just the grab first caption if it can find one, so no special lang caption support.
    */
   static async fetchTranscript(videoId, config = {}) {
     const identifier = this.retrieveVideoId(videoId);
     const lang = config?.lang ?? "en";
+    
     try {
-      const transcriptUrl = await fetch(
-        `https://www.youtube.com/watch?v=${identifier}`,
-        {
-          headers: {
-            "User-Agent": USER_AGENT,
+      // Create protobuf messages for the API request
+      const message1 = {
+        param1: 'asr',
+        param2: lang,
+      };
+
+      const protobufMessage1 = this.#getBase64Protobuf(message1);
+
+      const message2 = {
+        param1: identifier,
+        param2: protobufMessage1,
+      };
+
+      const params = this.#getBase64Protobuf(message2);
+
+      // Use Youtube API https://www.youtube.com/youtubei/v1/get_transcript instead of https://www.youtube.com/ptracking from youtube scripts.
+      // Refer to https://github.com/algolia/youtube-captions-scraper/issues/30#issuecomment-2313319115
+
+      // Make direct API call to YouTube's transcript endpoint
+      const url = 'https://www.youtube.com/youtubei/v1/get_transcript';
+      const headers = { 
+        'Content-Type': 'application/json',
+        'User-Agent': USER_AGENT
+      };
+      const data = {
+        context: {
+          client: {
+            clientName: 'WEB',
+            clientVersion: '2.20240826.01.00',
           },
-        }
-      )
-        .then((res) => res.text())
-        .then((html) => parse(html))
-        .then((html) => this.#parseTranscriptEndpoint(html, lang));
+        },
+        params,
+      };
 
-      if (!transcriptUrl)
-        throw new Error("Failed to locate a transcript for this video!");
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(data)
+      });
 
-      // Result is hopefully some XML.
-      const transcriptXML = await fetch(transcriptUrl)
-        .then((res) => res.text())
-        .then((xml) => parse(xml));
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
+      const responseData = await response.json();
+
+      // Check if transcript data exists in the response
+      if (!responseData.actions || 
+          !responseData.actions[0] || 
+          !responseData.actions[0].updateEngagementPanelAction ||
+          !responseData.actions[0].updateEngagementPanelAction.content ||
+          !responseData.actions[0].updateEngagementPanelAction.content.transcriptRenderer) {
+        throw new Error("No transcript data found in response");
+      }
+
+      const transcriptRenderer = responseData.actions[0].updateEngagementPanelAction.content.transcriptRenderer;
+      
+      if (!transcriptRenderer.content ||
+          !transcriptRenderer.content.transcriptSearchPanelRenderer ||
+          !transcriptRenderer.content.transcriptSearchPanelRenderer.body ||
+          !transcriptRenderer.content.transcriptSearchPanelRenderer.body.transcriptSegmentListRenderer ||
+          !transcriptRenderer.content.transcriptSearchPanelRenderer.body.transcriptSegmentListRenderer.initialSegments) {
+        throw new Error("Transcript segments not found in response");
+      }
+
+      const segments = transcriptRenderer.content.transcriptSearchPanelRenderer.body.transcriptSegmentListRenderer.initialSegments;
+
+      // Extract and combine all transcript text
       let transcript = "";
-      const chunks = transcriptXML.getElementsByTagName("text");
-      for (const chunk of chunks) {
-        // Add space after each text chunk
-        transcript += chunk.textContent + " ";
+      for (const segment of segments) {
+        if (segment.transcriptSegmentRenderer && segment.transcriptSegmentRenderer.snippet) {
+          const text = segment.transcriptSegmentRenderer.snippet.runs
+            .map((run) => run.text)
+            .join('');
+          transcript += text + " ";
+        }
       }
 
       // Trim extra whitespace
       return transcript.trim().replace(/\s+/g, " ");
     } catch (e) {
-      throw new YoutubeTranscriptError(e);
-    }
-  }
-
-  static #parseTranscriptEndpoint(document, langCode = null) {
-    try {
-      // Get all script tags on document page
-      const scripts = document.getElementsByTagName("script");
-
-      // find the player data script.
-      const playerScript = scripts.find((script) =>
-        script.textContent.includes("var ytInitialPlayerResponse = {")
-      );
-
-      const dataString =
-        playerScript.textContent
-          ?.split("var ytInitialPlayerResponse = ")?.[1] //get the start of the object {....
-          ?.split("};")?.[0] + // chunk off any code after object closure.
-        "}"; // add back that curly brace we just cut.
-
-      const data = JSON.parse(dataString.trim()); // Attempt a JSON parse
-      const availableCaptions =
-        data?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
-
-      // If languageCode was specified then search for it's code, otherwise get the first.
-      let captionTrack = availableCaptions?.[0];
-      if (langCode)
-        captionTrack =
-          availableCaptions.find((track) =>
-            track.languageCode.includes(langCode)
-          ) ?? availableCaptions?.[0];
-
-      return captionTrack?.baseUrl;
-    } catch (e) {
-      console.error(`YoutubeTranscript.#parseTranscriptEndpoint ${e.message}`);
-      return null;
+      throw new YoutubeTranscriptError(e.message || e);
     }
   }
 
