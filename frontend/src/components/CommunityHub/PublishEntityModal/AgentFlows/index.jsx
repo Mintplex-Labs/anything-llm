@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import CommunityHub from "@/models/communityHub";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
-import { X, CaretRight } from "@phosphor-icons/react/dist/ssr";
+import { X, CaretRight } from "@phosphor-icons/react";
 import { BLOCK_INFO } from "@/pages/Admin/AgentBuilder/BlockList";
 
 export default function AgentFlows({ entity }) {
