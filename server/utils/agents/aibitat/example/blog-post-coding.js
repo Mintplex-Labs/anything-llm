@@ -45,7 +45,7 @@ async function main() {
     content: `We have got this draft of the new blog post, let us start working on it.
     --- BEGIN DRAFT OF POST ---
     
-    Maui is a beautiful island in the state of Hawaii and is world-reknown for its whale watching season. Here are 2 other additional things to do in Maui, HI:
+    Maui is a beautiful island in the state of Hawaii and is world-renowned for its whale watching season. Here are 2 additional things to do in Maui, HI:
     
     --- END DRAFT OF POST ---
     `,
