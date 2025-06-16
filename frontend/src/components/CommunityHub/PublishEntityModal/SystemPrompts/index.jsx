@@ -65,13 +65,13 @@ export default function SystemPrompts({ entity }) {
       <div className="p-6 -mt-12 w-[400px]">
         <div className="flex flex-col items-center justify-center gap-y-2">
           <h3 className="text-lg font-semibold text-theme-text-primary">
-            {t("chat.prompt.publish.success_title")}
+            {t("community_hub.publish.system_prompt.success_title")}
           </h3>
           <p className="text-lg text-theme-text-primary text-center max-w-2xl">
-            {t("chat.prompt.publish.success_description")}
+            {t("community_hub.publish.system_prompt.success_description")}
           </p>
           <p className="text-theme-text-secondary text-center text-sm">
-            {t("chat.prompt.publish.success_thank_you")}
+            {t("community_hub.publish.system_prompt.success_thank_you")}
           </p>
           <a
             href={paths.communityHub.viewItem("system-prompt", itemId)}
@@ -79,7 +79,7 @@ export default function SystemPrompts({ entity }) {
             rel="noreferrer"
             className="w-[265px] bg-theme-bg-secondary hover:bg-theme-sidebar-item-hover text-theme-text-primary py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
           >
-            {t("chat.prompt.publish.view_on_hub")}
+            {t("community_hub.publish.system_prompt.view_on_hub")}
           </a>
         </div>
       </div>
@@ -90,17 +90,17 @@ export default function SystemPrompts({ entity }) {
     <>
       <div className="w-full flex gap-x-2 items-center mb-3 -mt-8">
         <h3 className="text-xl font-semibold text-theme-text-primary px-6 py-3">
-          {t(`chat.prompt.publish.modal_title`)}
+          {t(`community_hub.publish.system_prompt.modal_title`)}
         </h3>
       </div>
       <form ref={formRef} className="flex" onSubmit={handleSubmit}>
         <div className="w-1/2 p-6 pt-0 space-y-4">
           <div>
             <label className="block text-sm font-semibold text-theme-text-primary mb-1">
-              {t("chat.prompt.publish.name_label")}
+              {t("community_hub.publish.system_prompt.name_label")}
             </label>
             <div className="text-xs text-theme-text-secondary mb-2">
-              {t("chat.prompt.publish.name_description")}
+              {t("community_hub.publish.system_prompt.name_description")}
             </div>
             <input
               type="text"
@@ -108,33 +108,37 @@ export default function SystemPrompts({ entity }) {
               required
               minLength={3}
               maxLength={300}
-              placeholder={t("chat.prompt.publish.name_placeholder")}
+              placeholder={t(
+                "community_hub.publish.system_prompt.name_placeholder"
+              )}
               className="w-full bg-theme-bg-secondary rounded-lg p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
             />
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-theme-text-primary mb-1">
-              {t("chat.prompt.publish.description_label")}
+              {t("community_hub.publish.system_prompt.description_label")}
             </label>
             <div className="text-xs text-white/60 mb-2">
-              {t("chat.prompt.publish.description_description")}
+              {t("community_hub.publish.system_prompt.description_description")}
             </div>
             <textarea
               name="description"
               required
               minLength={10}
               maxLength={1000}
-              placeholder={t("chat.prompt.publish.description_description")}
+              placeholder={t(
+                "community_hub.publish.system_prompt.description_description"
+              )}
               className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
             />
           </div>
           <div>
             <label className="block text-sm font-semibold text-white mb-1">
-              {t("chat.prompt.publish.tags_label")}
+              {t("community_hub.publish.system_prompt.tags_label")}
             </label>
             <div className="text-xs text-white/60 mb-2">
-              {t("chat.prompt.publish.tags_description")}
+              {t("community_hub.publish.system_prompt.tags_description")}
             </div>
             <div className="flex flex-wrap gap-2 p-2 bg-theme-bg-secondary rounded-lg min-h-[42px]">
               {tags.map((tag, index) => (
@@ -157,7 +161,9 @@ export default function SystemPrompts({ entity }) {
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={t("chat.prompt.publish.tags_placeholder")}
+                placeholder={t(
+                  "community_hub.publish.system_prompt.tags_placeholder"
+                )}
                 className="flex-1 min-w-[200px] border-none text-sm bg-transparent text-theme-text-primary placeholder:text-theme-text-placeholder p-0 h-[24px] focus:outline-none"
               />
             </div>
@@ -165,12 +171,12 @@ export default function SystemPrompts({ entity }) {
 
           <div>
             <label className="block text-sm font-semibold text-white mb-1">
-              {t("chat.prompt.publish.visibility_label")}
+              {t("community_hub.publish.system_prompt.visibility_label")}
             </label>
             <div className="text-xs text-white/60 mb-2">
               {visibility === "public"
-                ? t("chat.prompt.publish.public_description")
-                : t("chat.prompt.publish.private_description")}
+                ? t("community_hub.publish.system_prompt.public_description")
+                : t("community_hub.publish.system_prompt.private_description")}
             </div>
             <div className="w-fit h-[42px] bg-theme-bg-secondary rounded-lg p-0.5">
               <div className="flex items-center" role="group">
@@ -211,17 +217,19 @@ export default function SystemPrompts({ entity }) {
         <div className="w-1/2 p-6 pt-0 space-y-4">
           <div>
             <label className="block text-sm font-semibold text-white mb-1">
-              {t("chat.prompt.publish.prompt_label")}
+              {t("community_hub.publish.system_prompt.prompt_label")}
             </label>
             <div className="text-xs text-white/60 mb-2">
-              {t("chat.prompt.publish.prompt_description")}
+              {t("community_hub.publish.system_prompt.prompt_description")}
             </div>
             <textarea
               name="prompt"
               required
               minLength={10}
               defaultValue={entity}
-              placeholder={t("chat.prompt.publish.prompt_placeholder")}
+              placeholder={t(
+                "community_hub.publish.system_prompt.prompt_placeholder"
+              )}
               className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[300px] placeholder:text-theme-text-placeholder"
             />
           </div>
@@ -232,8 +240,8 @@ export default function SystemPrompts({ entity }) {
             className="w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting
-              ? t("chat.prompt.publish.publishing")
-              : t("chat.prompt.publish.publish_button")}
+              ? t("community_hub.publish.system_prompt.submitting")
+              : t("community_hub.publish.system_prompt.publish_button")}
           </button>
         </div>
       </form>

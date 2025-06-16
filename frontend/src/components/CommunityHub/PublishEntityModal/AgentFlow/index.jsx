@@ -26,9 +26,15 @@ export default function AgentFlow({ entity }) {
       const data = {
         name: form.get("name"),
         description: form.get("description"),
-        steps: entity.steps,
         tags: tags,
         visibility: visibility,
+        flow: JSON.stringify({
+          name: form.get("name"),
+          description: form.get("description"),
+          steps: entity.steps,
+          tags: tags,
+          visibility: visibility,
+        }),
       };
       const { success, error, itemId } =
         await CommunityHub.createAgentFlow(data);
@@ -66,13 +72,13 @@ export default function AgentFlow({ entity }) {
       <div className="p-6 -mt-12 w-[400px]">
         <div className="flex flex-col items-center justify-center gap-y-2">
           <h3 className="text-lg font-semibold text-theme-text-primary">
-            {t("chat.prompt.publish.agent_flow.success_title")}
+            {t("community_hub.publish.agent_flow.success_title")}
           </h3>
           <p className="text-lg text-theme-text-primary text-center max-w-2xl">
-            {t("chat.prompt.publish.agent_flow.success_description")}
+            {t("community_hub.publish.agent_flow.success_description")}
           </p>
           <p className="text-theme-text-secondary text-center text-sm">
-            {t("chat.prompt.publish.agent_flow.success_thank_you")}
+            {t("community_hub.publish.agent_flow.success_thank_you")}
           </p>
           <a
             href={paths.communityHub.viewItem("agent-flow", itemId)}
@@ -80,7 +86,7 @@ export default function AgentFlow({ entity }) {
             rel="noreferrer"
             className="w-[265px] bg-theme-bg-secondary hover:bg-theme-sidebar-item-hover text-theme-text-primary py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
           >
-            {t("chat.prompt.publish.agent_flow.view_on_hub")}
+            {t("community_hub.publish.agent_flow.view_on_hub")}
           </a>
         </div>
       </div>
@@ -91,17 +97,17 @@ export default function AgentFlow({ entity }) {
     <>
       <div className="w-full flex gap-x-2 items-center mb-3 -mt-8">
         <h3 className="text-xl font-semibold text-theme-text-primary px-6 py-3">
-          {t("chat.prompt.publish.agent_flow.modal_title")}
+          {t("community_hub.publish.agent_flow.modal_title")}
         </h3>
       </div>
       <form ref={formRef} className="flex" onSubmit={handleSubmit}>
         <div className="w-1/2 p-6 pt-0 space-y-4">
           <div>
             <label className="block text-sm font-semibold text-theme-text-primary mb-1">
-              {t("chat.prompt.publish.agent_flow.name_label")}
+              {t("community_hub.publish.agent_flow.name_label")}
             </label>
             <div className="text-xs text-theme-text-secondary mb-2">
-              {t("chat.prompt.publish.agent_flow.name_description")}
+              {t("community_hub.publish.agent_flow.name_description")}
             </div>
             <input
               type="text"
@@ -110,17 +116,19 @@ export default function AgentFlow({ entity }) {
               minLength={3}
               maxLength={300}
               defaultValue={entity.name}
-              placeholder={t("chat.prompt.publish.agent_flow.name_placeholder")}
+              placeholder={t(
+                "community_hub.publish.agent_flow.name_placeholder"
+              )}
               className="w-full bg-theme-bg-secondary rounded-lg p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
             />
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-theme-text-primary mb-1">
-              {t("chat.prompt.publish.agent_flow.description_label")}
+              {t("community_hub.publish.agent_flow.description_label")}
             </label>
             <div className="text-xs text-white/60 mb-2">
-              {t("chat.prompt.publish.agent_flow.description_description")}
+              {t("community_hub.publish.agent_flow.description_description")}
             </div>
             <textarea
               name="description"
@@ -129,17 +137,17 @@ export default function AgentFlow({ entity }) {
               maxLength={1000}
               defaultValue={entity.description}
               placeholder={t(
-                "chat.prompt.publish.agent_flow.description_description"
+                "community_hub.publish.agent_flow.description_description"
               )}
               className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
             />
           </div>
           <div>
             <label className="block text-sm font-semibold text-white mb-1">
-              {t("chat.prompt.publish.agent_flow.tags_label")}
+              {t("community_hub.publish.agent_flow.tags_label")}
             </label>
             <div className="text-xs text-white/60 mb-2">
-              {t("chat.prompt.publish.agent_flow.tags_description")}
+              {t("community_hub.publish.agent_flow.tags_description")}
             </div>
             <div className="flex flex-wrap gap-2 p-2 bg-theme-bg-secondary rounded-lg min-h-[42px]">
               {tags.map((tag, index) => (
@@ -163,54 +171,23 @@ export default function AgentFlow({ entity }) {
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={t(
-                  "chat.prompt.publish.agent_flow.tags_placeholder"
+                  "community_hub.publish.agent_flow.tags_placeholder"
                 )}
                 className="flex-1 min-w-[200px] border-none text-sm bg-transparent text-theme-text-primary placeholder:text-theme-text-placeholder p-0 h-[24px] focus:outline-none"
               />
             </div>
           </div>
-
           <div>
             <label className="block text-sm font-semibold text-white mb-1">
-              {t("chat.prompt.publish.agent_flow.visibility_label")}
+              {t("community_hub.publish.agent_flow.visibility_label")}
             </label>
             <div className="text-xs text-white/60 mb-2">
-              {visibility === "public"
-                ? t("chat.prompt.publish.agent_flow.public_description")
-                : t("chat.prompt.publish.agent_flow.private_description")}
+              {t("community_hub.publish.agent_flow.private_description")}
             </div>
-            <div className="w-fit h-[42px] bg-theme-bg-secondary rounded-lg p-0.5">
-              <div className="flex items-center" role="group">
-                <input
-                  type="radio"
-                  id="public"
-                  name="visibility"
-                  value="public"
-                  className="peer/public hidden"
-                  defaultChecked
-                  onChange={(e) => setVisibility(e.target.value)}
-                />
-                <input
-                  type="radio"
-                  id="private"
-                  name="visibility"
-                  value="private"
-                  className="peer/private hidden"
-                  onChange={(e) => setVisibility(e.target.value)}
-                />
-                <label
-                  htmlFor="public"
-                  className="h-[36px] px-4 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-theme-text-primary hover:text-theme-text-secondary peer-checked/public:bg-theme-sidebar-item-hover peer-checked/public:text-theme-primary-button flex items-center justify-center"
-                >
-                  Public
-                </label>
-                <label
-                  htmlFor="private"
-                  className="h-[36px] px-4 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer text-theme-text-primary hover:text-theme-text-secondary peer-checked/private:bg-theme-sidebar-item-hover peer-checked/private:text-theme-primary-button flex items-center justify-center"
-                >
-                  Private
-                </label>
-              </div>
+            <div className="bg-theme-bg-secondary rounded-lg p-2 mt-2">
+              <span className="text-xs text-theme-text-secondary">
+                {t("community_hub.publish.agent_flow.privacy_note")}
+              </span>
             </div>
           </div>
         </div>
@@ -234,28 +211,30 @@ export default function AgentFlow({ entity }) {
                 return (
                   <div key={idx} className="flex flex-col items-center w-full">
                     <div
-                      className="flex items-center gap-x-3 bg-theme-bg-secondary rounded-lg px-3 py-2 w-full cursor-pointer group"
+                      className="flex flex-col bg-theme-bg-secondary rounded-lg px-3 py-2 w-full cursor-pointer group"
                       onClick={() => setExpandedStep(isExpanded ? null : idx)}
                     >
-                      <span>{info?.icon}</span>
-                      <span className="text-theme-text-primary text-sm font-medium flex-1">
-                        {info?.label || step.type}
-                      </span>
-                      <span
-                        className={
-                          isExpanded
-                            ? "text-theme-text-secondary text-xs ml-2 whitespace-pre-line break-words"
-                            : "text-theme-text-secondary text-xs ml-2 overflow-hidden text-ellipsis whitespace-nowrap max-w-[220px]"
-                        }
-                        style={{ minWidth: 0 }}
-                      >
-                        {summary}
-                      </span>
-                      <span
-                        className={`ml-2 text-theme-text-secondary transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
-                      >
-                        <CaretRight size={16} />
-                      </span>
+                      <div className="flex items-center gap-x-3 w-full">
+                        <span>{info?.icon}</span>
+                        <span className="text-theme-text-primary text-sm font-medium flex-1">
+                          {info?.label || step.type}
+                        </span>
+                        {!isExpanded && (
+                          <span className="text-theme-text-secondary text-xs ml-2 overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px] min-w-0">
+                            {summary}
+                          </span>
+                        )}
+                        <span
+                          className={`ml-2 text-theme-text-secondary transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
+                        >
+                          <CaretRight size={16} />
+                        </span>
+                      </div>
+                      {isExpanded && summary && (
+                        <div className="w-full text-theme-text-secondary text-xs mt-1 whitespace-pre-line break-words">
+                          {summary}
+                        </div>
+                      )}
                     </div>
                     {idx < entity.steps.length - 1 && (
                       <span className="text-theme-text-secondary text-lg my-1">
@@ -274,11 +253,11 @@ export default function AgentFlow({ entity }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full mt-4 bg-primary-button hover:bg-primary-button/80 text-black light:text-white py-2 px-4 rounded-lg transition-colors text-sm font-semibold flex items-center justify-center gap-2"
+            className="mt-4 w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting
-              ? t("chat.prompt.publish.agent_flow.submitting")
-              : t("chat.prompt.publish.agent_flow.submit")}
+              ? t("community_hub.publish.agent_flow.submitting")
+              : t("community_hub.publish.agent_flow.submit")}
           </button>
         </div>
       </form>

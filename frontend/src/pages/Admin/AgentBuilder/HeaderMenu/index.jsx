@@ -124,9 +124,9 @@ export default function HeaderMenu({
             </button>
             <button
               onClick={onPublishFlow}
-              className="flex items-center gap-x-2 text-theme-text-primary text-sm font-medium px-3 py-2 rounded-lg border border-primary-button bg-theme-settings-input-bg hover:bg-primary-button/80 transition-colors duration-300"
+              className="px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 border bg-white text-black hover:bg-gray-100 transition-all duration-300 dark:bg-white dark:text-black dark:hover:bg-gray-200 light:bg-white light:text-black light:border light:hover:bg-gray-100"
             >
-              Publish Flow
+              Publish
             </button>
             <button
               onClick={onSaveFlow}
