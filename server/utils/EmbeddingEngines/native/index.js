@@ -17,7 +17,11 @@ class NativeEmbedder {
         ? path.resolve(process.env.STORAGE_DIR, `models`)
         : path.resolve(__dirname, `../../../storage/models`)
     );
-    this.modelPath = path.resolve(this.cacheDir, "Snowflake", "snowflake-arctic-embed-m-v2.0");
+    this.modelPath = path.resolve(
+      this.cacheDir,
+      "Snowflake",
+      "snowflake-arctic-embed-m-v2.0"
+    );
 
     this.modelDownloaded = fs.existsSync(this.modelPath);
 
