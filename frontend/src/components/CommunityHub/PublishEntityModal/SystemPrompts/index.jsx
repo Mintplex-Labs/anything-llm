@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import CommunityHub from "@/models/communityHub";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
-import { X } from "@phosphor-icons/react/dist/ssr";
+import { X } from "@phosphor-icons/react";
 
 export default function SystemPrompts({ entity }) {
   const { t } = useTranslation();
