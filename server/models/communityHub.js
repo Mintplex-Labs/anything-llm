@@ -187,7 +187,7 @@ const CommunityHub = {
     if (!this.supportedStaticItemTypes.includes(itemType))
       return { success: false, error: "Unsupported item type" };
 
-    // If the item has specical considerations or preprocessing, we can delegate that below before sending the request.
+    // If the item has special considerations or preprocessing, we can delegate that below before sending the request.
     // eg: Agent flow files and such.
 
     return await fetch(`${this.apiBase}/${itemType}/create`, {
