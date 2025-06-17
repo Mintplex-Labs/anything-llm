@@ -554,6 +554,7 @@ async function streamChat({
     filterIdentifiers: pinnedDocIdentifiers,
   });
 
+
   // [FIXED] This is the crucial change. We must combine the context from pinned docs,
   // the current vector search, and the historical search (fillSourceWindow).
   contextTexts = [

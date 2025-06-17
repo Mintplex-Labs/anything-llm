@@ -125,6 +125,7 @@ const Milvus = {
     fullFilePath = null,
     skipCache = false
   ) {
+
     try {
       let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
