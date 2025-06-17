@@ -1,4 +1,57 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    home: {
+      title: "歡迎使用",
+      getStarted: "開始使用",
+    },
+    llm: {
+      title: "LLM 偏好",
+      description:
+        "AnythingLLM 可以與多家 LLM 提供商合作。這將是處理聊天的服務。",
+    },
+    userSetup: {
+      title: "使用者設定",
+      description: "配置您的使用者設定。",
+      howManyUsers: "將有多少使用者使用此實例？",
+      justMe: "只有我",
+      myTeam: "我的團隊",
+      instancePassword: "實例密碼",
+      setPassword: "您想要設定密碼嗎？",
+      passwordReq: "密碼必須至少包含 8 個字元。",
+      passwordWarn: "保存此密碼很重要，因為沒有恢復方法。",
+      adminUsername: "管理員帳號使用者名稱",
+      adminUsernameReq:
+        "使用者名稱必須至少為 6 個字元，並且只能包含小寫字母、數字、底線和連字號，不含空格。",
+      adminPassword: "管理員帳號密碼",
+      adminPasswordReq: "密碼必須至少包含 8 個字元。",
+      teamHint:
+        "預設情況下，您將是唯一的管理員。完成入職後，您可以創建和邀請其他人成為使用者或管理員。不要遺失您的密碼，因為只有管理員可以重置密碼。",
+    },
+    data: {
+      title: "資料處理與隱私",
+      description: "我們致力於在涉及您的個人資料時提供透明和控制。",
+      settingsHint: "這些設定可以隨時在設定中重新配置。",
+    },
+    survey: {
+      title: "歡迎使用 AnythingLLM",
+      description: "幫助我們為您的需求打造 AnythingLLM。可選。",
+      email: "您的電子郵件是什麼？",
+      useCase: "您將如何使用 AnythingLLM？",
+      useCaseWork: "用於工作",
+      useCasePersonal: "用於個人使用",
+      useCaseOther: "其他",
+      comment: "您是如何聽說 AnythingLLM 的？",
+      commentPlaceholder:
+        "Reddit，Twitter，GitHub，YouTube 等 - 讓我們知道您是如何找到我們的！",
+      skip: "跳過調查",
+      thankYou: "感謝您的反饋！",
+    },
+    workspace: {
+      title: "創建您的第一個工作區",
+      description: "創建您的第一個工作區並開始使用 AnythingLLM。",
+    },
+  },
   common: {
     "workspaces-name": "工作區名稱",
     error: "錯誤",
@@ -9,9 +62,10 @@ const TRANSLATIONS = {
     save: "儲存修改",
     previous: "上一頁",
     next: "下一頁",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // 設定側邊欄選單項目
   settings: {
     title: "系統設定",
     system: "一般設定",
@@ -39,9 +93,11 @@ const TRANSLATIONS = {
     "experimental-features": "實驗性功能",
     contact: "聯絡支援",
     "browser-extension": "瀏覽器擴充功能",
+    "system-prompt-variables": "系統提示變數",
+    interface: "使用者介面偏好設定",
+    branding: "品牌與白標設定",
+    chat: "聊天室",
   },
-
-  // 頁面定義
   login: {
     "multi-user": {
       welcome: "歡迎使用",
@@ -64,7 +120,6 @@ const TRANSLATIONS = {
       "back-to-login": "返回登入頁面",
     },
   },
-
   welcomeMessage: {
     part1:
       "歡迎使用 AnythingLLM，AnythingLLM 是由 Mintplex Labs 開發的開源 AI 工具，它能將任何內容轉換成可供查詢和對話的訓練模型對話機器人。AnythingLLM 採用 BYOK（自備金鑰）軟體模式，除了您想使用的服務之外，本軟體不收取任何訂閱費、費用或其他費用。",
@@ -82,16 +137,13 @@ const TRANSLATIONS = {
       "AnythingLLM 不僅是一個更聰明的 Dropbox。\n\nAnythingLLM 提供兩種與您的資料互動的方式：\n\n<i>查詢：</i> 您的對話將會根據工作區中可存取的文件內容，傳回資料或推論。新增更多文件到工作區會讓它變得更聰明！\n\n<i>對話：</i> 您的文件加上持續進行中的對話紀錄，兩者會同時貢獻給 LLM 的知識庫。這非常適合用於附加即時的文字資訊，或是修正 LLM 可能產生的誤解。\n\n您可以在<i>對話過程中</i>隨時切換這兩種模式！",
     user3: "哇，這聽起來很棒，讓我馬上試試看！",
     part6: "祝您使用愉快！",
-    starOnGithub: "在 GitHub 上給我們星星",
+    starOnGitHub: "在 GitHub 上給我們星星",
     contact: "聯絡 Mintplex Labs",
   },
-
   "new-workspace": {
     title: "新增工作區",
     placeholder: "我的工作區",
   },
-
-  // 工作區設定選單項目
   "workspaces—settings": {
     general: "一般設定",
     chat: "對話設定",
@@ -99,8 +151,6 @@ const TRANSLATIONS = {
     members: "成員管理",
     agent: "智慧代理人設定",
   },
-
-  // 一般外觀
   general: {
     vector: {
       title: "向量計數",
@@ -133,8 +183,6 @@ const TRANSLATIONS = {
         "工作區。這將會移除向量資料庫中的所有向量嵌入。\n\n原始檔案將保持不變。此動作無法復原。",
     },
   },
-
-  // 對話設定
   chat: {
     llm: {
       title: "工作區 LLM 提供者",
@@ -173,6 +221,45 @@ const TRANSLATIONS = {
       title: "提示詞",
       description:
         "將在此工作區中使用的提示詞。定義 AI 產生回應的上下文和指示。您應該提供精心設計的提示詞，以便 AI 可以產生相關且準確的回應。",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+        publish: null,
+      },
+      publish: {
+        public_description: null,
+        private_description: null,
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+        publish_button: null,
+        publishing: null,
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
+      },
     },
     refusal: {
       title: "查詢模式拒絕回應",
@@ -188,8 +275,6 @@ const TRANSLATIONS = {
       hint: "大多數 LLM 都有各種可接受的有效值範圍。請查詢您的 LLM 提供者以取得該資訊。",
     },
   },
-
-  // 向量資料庫
   "vector-workspace": {
     identifier: "向量資料庫識別碼",
     snippets: {
@@ -216,8 +301,6 @@ const TRANSLATIONS = {
       success: "工作區向量資料庫已重設！",
     },
   },
-
-  // 智慧代理人設定
   agent: {
     "performance-warning":
       "不直接支援工具呼叫的 LLM 的效能，高度取決於模型的功能和精確度。某些功能可能受限或無法使用。",
@@ -234,7 +317,6 @@ const TRANSLATIONS = {
       description: "此工作區 @agent 智慧代理人將使用的特定 LLM 模型。",
       wait: "-- 等待模型中 --",
     },
-
     skill: {
       title: "預設智慧代理人技能",
       description:
@@ -271,8 +353,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // 工作區對話紀錄
   recorded: {
     title: "工作區對話紀錄",
     description: "這些是所有已記錄的對話和訊息，依建立日期排序。",
@@ -286,39 +366,6 @@ const TRANSLATIONS = {
       at: "傳送時間",
     },
   },
-
-  // 外觀
-  appearance: {
-    title: "外觀",
-    description: "自訂平台的外觀設定。",
-    logo: {
-      title: "自訂 Logo",
-      description: "上傳您的自訂 Logo，讓您的對話機器人更具個人特色。",
-      add: "新增自訂 Logo",
-      recommended: "建議尺寸：800 x 200",
-      remove: "移除",
-      replace: "取代",
-    },
-    message: {
-      title: "自訂訊息",
-      description: "自訂顯示給使用者的自動訊息。",
-      new: "新增",
-      system: "系統",
-      user: "使用者",
-      message: "訊息",
-      assistant: "AnythingLLM 對話助理",
-      "double-click": "點兩下以編輯...",
-      save: "儲存訊息",
-    },
-    icons: {
-      title: "自訂頁尾圖示",
-      description: "自訂顯示在側邊欄底端的頁尾圖示。",
-      icon: "圖示",
-      link: "連結",
-    },
-  },
-
-  // API 金鑰
   api: {
     title: "API 金鑰",
     description:
@@ -331,14 +378,23 @@ const TRANSLATIONS = {
       created: "建立時間",
     },
   },
-
   llm: {
     title: "LLM 偏好設定",
     description:
       "這些是您偏好的 LLM 對話與嵌入提供者的憑證和設定。確保這些金鑰是最新且正確的，否則 AnythingLLM 將無法正常運作。",
     provider: "LLM 提供者",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
-
   transcription: {
     title: "語音轉錄模型偏好設定",
     description:
@@ -349,7 +405,6 @@ const TRANSLATIONS = {
     "warn-recommend": "我們建議至少 2GB 的記憶體，並且上傳小於 10MB 的檔案。",
     "warn-end": "內建模型將會在第一次使用時自動下載。",
   },
-
   embedding: {
     title: "向量嵌入偏好設定",
     "desc-start":
@@ -361,7 +416,6 @@ const TRANSLATIONS = {
       description: "使用 AnythingLLM 的原生嵌入引擎時，不需要任何設定。",
     },
   },
-
   text: {
     title: "文字分割與區塊化偏好設定",
     "desc-start":
@@ -376,14 +430,11 @@ const TRANSLATIONS = {
       description: "這是單一向量中可包含的最大字元長度。",
       recommend: "嵌入模型的最大長度為",
     },
-
     overlap: {
       title: "文字區塊重疊",
       description: "這是區塊化過程中，兩個相鄰文字區塊之間的最大字元重疊數。",
     },
   },
-
-  // 向量資料庫
   vector: {
     title: "向量資料庫",
     description:
@@ -393,8 +444,6 @@ const TRANSLATIONS = {
       description: "使用 LanceDB 不需要任何設定。",
     },
   },
-
-  // 可嵌入對話小工具
   embeddable: {
     title: "可嵌入對話小工具",
     description:
@@ -403,10 +452,10 @@ const TRANSLATIONS = {
     table: {
       workspace: "工作區",
       chats: "已傳送對話",
-      Active: "已啟用網域",
+      active: "已啟用網域",
+      created: null,
     },
   },
-
   "embed-chats": {
     title: "嵌入對話",
     export: "匯出",
@@ -419,7 +468,6 @@ const TRANSLATIONS = {
       at: "傳送時間",
     },
   },
-
   multi: {
     title: "多使用者模式",
     description: "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",
@@ -443,8 +491,6 @@ const TRANSLATIONS = {
       password: "系統密碼",
     },
   },
-
-  // 事件記錄
   event: {
     title: "事件記錄",
     description: "檢視此系統上發生的所有動作和事件，以進行監控。",
@@ -455,8 +501,6 @@ const TRANSLATIONS = {
       occurred: "發生時間",
     },
   },
-
-  // 隱私與資料處理
   privacy: {
     title: "隱私與資料處理",
     description:
@@ -465,6 +509,448 @@ const TRANSLATIONS = {
     embedding: "向量嵌入偏好設定",
     vector: "向量資料庫",
     anonymous: "已啟用匿名統計資訊",
+  },
+  connectors: {
+    "search-placeholder": "搜尋資料連接器",
+    "no-connectors": "未找到資料連接器。",
+    github: {
+      name: "GitHub 倉庫",
+      description: "單擊即可匯入整個公共或私有的 GitHub 倉庫。",
+      URL: "GitHub 倉庫網址",
+      URL_explained: "您希望收集的 GitHub 倉庫網址。",
+      token: "GitHub 存取權杖",
+      optional: "可選",
+      token_explained: "存取權杖以防止速率限制。",
+      token_explained_start: "若沒有 ",
+      token_explained_link1: "個人存取權杖",
+      token_explained_middle:
+        "，GitHub API 可能會因為速率限制而限制可收集的檔案數量。您可以 ",
+      token_explained_link2: "創建一個臨時的存取權杖",
+      token_explained_end: " 來避免此問題。",
+      ignores: "忽略檔案",
+      git_ignore:
+        "以 .gitignore 格式列出以忽略特定檔案。每輸入一個條目後按 Enter 鍵保存。",
+      task_explained: "完成後，所有檔案將可供嵌入到工作區中的檔案選擇器。",
+      branch: "您希望收集檔案的分支。",
+      branch_loading: "-- 載入可用分支 --",
+      branch_explained: "您希望收集檔案的分支。",
+      token_information:
+        "若未填寫 <b>GitHub 存取權杖</b>，此資料連接器僅能收集倉庫的 <b>頂層</b> 檔案，因 GitHub 的公共 API 速率限制。",
+      token_personal: "在此獲取免費的 GitHub 個人存取權杖。",
+    },
+    gitlab: {
+      name: "GitLab 倉庫",
+      description: "單擊即可匯入整個公共或私有的 GitLab 倉庫。",
+      URL: "GitLab 倉庫網址",
+      URL_explained: "您希望收集的 GitLab 倉庫網址。",
+      token: "GitLab 存取權杖",
+      optional: "可選",
+      token_explained: "存取權杖以防止速率限制。",
+      token_description: "選擇要從 GitLab API 中擷取的其他實體。",
+      token_explained_start: "若沒有 ",
+      token_explained_link1: "個人存取權杖",
+      token_explained_middle:
+        "，GitLab API 可能會因為速率限制而限制可收集的檔案數量。您可以 ",
+      token_explained_link2: "創建一個臨時的存取權杖",
+      token_explained_end: " 來避免此問題。",
+      fetch_issues: "擷取問題作為文件",
+      ignores: "忽略檔案",
+      git_ignore:
+        "以 .gitignore 格式列出以忽略特定檔案。每輸入一個條目後按 Enter 鍵保存。",
+      task_explained: "完成後，所有檔案將可供嵌入到工作區中的檔案選擇器。",
+      branch: "您希望收集檔案的分支",
+      branch_loading: "-- 載入可用分支 --",
+      branch_explained: "您希望收集檔案的分支。",
+      token_information:
+        "若未填寫 <b>GitLab 存取權杖</b>，此資料連接器僅能收集倉庫的 <b>頂層</b> 檔案，因 GitLab 的公共 API 速率限制。",
+      token_personal: "在此獲取免費的 GitLab 個人存取權杖。",
+    },
+    youtube: {
+      name: "YouTube 文字稿",
+      description: "從連結匯入整個 YouTube 影片的文字稿。",
+      URL: "YouTube 影片網址",
+      URL_explained_start:
+        "輸入任何 YouTube 影片的網址以擷取其文字稿。該影片必須擁有 ",
+      URL_explained_link: "字幕",
+      URL_explained_end: " 來提供文字稿。",
+      task_explained: "完成後，文字稿將可供嵌入到工作區中的檔案選擇器。",
+      language: "文字稿語言",
+      language_explained: "選擇您希望收集的文字稿語言。",
+      loading_languages: "-- 載入可用語言 --",
+    },
+    "website-depth": {
+      name: "批量鏈接抓取器",
+      description: "抓取網站及其子鏈接，直到設定的深度。",
+      URL: "網站網址",
+      URL_explained: "您希望抓取的網站網址。",
+      depth: "抓取深度",
+      depth_explained: "這是工作人員應從起始網址跟隨的子鏈接數量。",
+      max_pages: "最大頁數",
+      max_pages_explained: "最大抓取鏈接數量。",
+      task_explained:
+        "完成後，所有抓取的內容將可供嵌入到工作區中的檔案選擇器。",
+    },
+    confluence: {
+      name: "Confluence",
+      description: "單擊即可匯入整個 Confluence 頁面。",
+      deployment_type: "Confluence 部署類型",
+      deployment_type_explained:
+        "確定您的 Confluence 實例是託管在 Atlassian 雲端還是自我託管。",
+      base_url: "Confluence 基本網址",
+      base_url_explained: "這是您的 Confluence 空間的基本網址。",
+      space_key: "Confluence 空間金鑰",
+      space_key_explained:
+        "這是您 Confluence 實例使用的空間金鑰，通常以 ~ 開頭。",
+      username: "Confluence 使用者名稱",
+      username_explained: "您的 Confluence 使用者名稱",
+      auth_type: "Confluence 認證類型",
+      auth_type_explained: "選擇您希望用來存取 Confluence 頁面的認證類型。",
+      auth_type_username: "使用者名稱和存取權杖",
+      auth_type_personal: "個人存取權杖",
+      token: "Confluence 存取權杖",
+      token_explained_start:
+        "您需要提供一個存取權杖以進行認證。您可以在此生成存取權杖",
+      token_explained_link: "這裡",
+      token_desc: "用於認證的存取權杖",
+      pat_token: "Confluence 個人存取權杖",
+      pat_token_explained: "您的 Confluence 個人存取權杖。",
+      task_explained: "完成後，頁面內容將可供嵌入到工作區中的檔案選擇器。",
+    },
+    manage: {
+      documents: "文件",
+      "data-connectors": "資料連接器",
+      "desktop-only":
+        "編輯這些設定僅在桌面裝置上可用。請在桌面上訪問此頁面以繼續。",
+      dismiss: "忽略",
+      editing: "編輯中",
+    },
+    directory: {
+      "my-documents": "我的文件",
+      "new-folder": "新資料夾",
+      "search-document": "搜尋文件",
+      "no-documents": "無文件",
+      "move-workspace": "移動到工作區",
+      name: "名稱",
+      "delete-confirmation":
+        "您確定要刪除這些檔案和資料夾嗎？\n這將從系統中刪除這些檔案並自動從任何現有工作區中移除它們。\n此操作無法還原。",
+      "removing-message":
+        "正在刪除 {{count}} 文件和 {{folderCount}} 資料夾。請稍候。",
+      "move-success": "成功移動 {{count}} 文件。",
+      date: "日期",
+      type: "類型",
+      no_docs: "無文件",
+      select_all: "全選",
+      deselect_all: "取消全選",
+      remove_selected: "移除選擇的項目",
+      costs: "*一次性嵌入費用",
+      save_embed: "儲存並嵌入",
+    },
+    upload: {
+      "processor-offline": "文件處理器無法使用",
+      "processor-offline-desc":
+        "目前無法上傳您的檔案，因為文件處理器離線。請稍後再試。",
+      "click-upload": "點擊上傳或拖放檔案",
+      "file-types": "支援文字檔案、CSV、試算表、音頻檔案等！",
+      "or-submit-link": "或提交一個鏈接",
+      "placeholder-link": "https://example.com",
+      fetching: "正在擷取...",
+      "fetch-website": "擷取網站",
+      "privacy-notice":
+        "這些檔案將上傳到此 AnythingLLM 實例中的文件處理器。這些檔案不會發送或共享給第三方。",
+    },
+    pinning: {
+      what_pinning: "什麼是文件固定？",
+      pin_explained_block1:
+        "當您在 AnythingLLM 中<b>固定</b>一個文件時，我們會將該文件的所有內容注入到您的提示窗口中，讓您的 LLM 完全理解。",
+      pin_explained_block2:
+        "這對於<b>大範圍模型</b>或對知識庫至關重要的小型文件效果最佳。",
+      pin_explained_block3:
+        "如果您沒有從 AnythingLLM 預設獲得理想的答案，那麼固定是一個輕鬆獲得更高質量答案的方法。",
+      accept: "好的，明白了",
+    },
+    watching: {
+      what_watching: "觀看文件有何作用？",
+      watch_explained_block1:
+        "當您在 AnythingLLM 中<b>觀看</b>一個文件時，我們會<i>自動</i>定期同步該文件的內容，並在每個管理該文件的工作區中自動更新內容。",
+      watch_explained_block2:
+        "此功能目前僅支持基於線上內容，無法用於手動上傳的文件。",
+      watch_explained_block3_start: "您可以從 ",
+      watch_explained_block3_link: "檔案管理器",
+      watch_explained_block3_end: " 管理觀看的文件。",
+      accept: "好的，明白了",
+    },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
+  },
+  chat_window: {
+    welcome: "歡迎使用您的新工作區。",
+    get_started: "開始使用，您可以",
+    get_started_default: "開始使用",
+    upload: "上傳文件",
+    or: "或",
+    send_chat: "發送訊息。",
+    send_message: "發送訊息",
+    attach_file: "附加檔案到此對話",
+    slash: "查看所有可用的斜線指令。",
+    agents: "查看所有可用的聊天代理。",
+    text_size: "變更文字大小。",
+    microphone: "語音輸入提示。",
+    send: "將提示訊息發送到工作區",
+    attachments_processing: null,
+    tts_speak_message: null,
+    copy: null,
+    regenerate: null,
+    regenerate_response: null,
+    good_response: null,
+    more_actions: null,
+    hide_citations: null,
+    show_citations: null,
+    pause_tts_speech_message: null,
+    fork: null,
+    delete: null,
+    save_submit: null,
+    cancel: null,
+    edit_prompt: null,
+    edit_response: null,
+    at_agent: null,
+    default_agent_description: null,
+    custom_agents_coming_soon: null,
+    slash_reset: null,
+    preset_reset_description: null,
+    add_new_preset: null,
+    command: null,
+    your_command: null,
+    placeholder_prompt: null,
+    description: null,
+    placeholder_description: null,
+    save: null,
+    small: null,
+    normal: null,
+    large: null,
+    workspace_llm_manager: {
+      search: null,
+      loading_workspace_settings: null,
+      available_models: null,
+      available_models_description: null,
+      save: null,
+      saving: null,
+      missing_credentials: null,
+      missing_credentials_description: null,
+    },
+  },
+  profile_settings: {
+    edit_account: null,
+    profile_picture: null,
+    remove_profile_picture: null,
+    username: null,
+    username_description: null,
+    new_password: null,
+    passwort_description: null,
+    cancel: null,
+    update_account: null,
+    theme: null,
+    language: null,
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
+  },
+  customization: {
+    interface: {
+      title: "介面偏好設定",
+      description: "設定你在 AnythingLLM 的使用介面偏好。",
+    },
+    branding: {
+      title: "品牌與白標設定",
+      description: "使用自訂品牌設計將 AnythingLLM 白標化。",
+    },
+    chat: {
+      title: "聊天",
+      description: "設定你在 AnythingLLM 的聊天偏好。",
+      auto_submit: {
+        title: "語音輸入自動送出",
+        description: "在靜音一段時間後自動送出語音輸入內容",
+      },
+      auto_speak: {
+        title: "自動語音回應",
+        description: "自動朗讀 AI 的回應內容",
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: "主題",
+        description: "選擇應用程式的顏色主題。",
+      },
+      "show-scrollbar": {
+        title: "顯示捲軸",
+        description: "在聊天視窗中啟用或停用捲軸。",
+      },
+      "support-email": {
+        title: "支援信箱",
+        description: "設定使用者在需要幫助時可以聯繫的支援電子信箱。",
+      },
+      "app-name": {
+        title: "應用名稱",
+        description: "設定所有使用者在登入頁面上看到的應用名稱。",
+      },
+      "chat-message-alignment": {
+        title: "聊天訊息對齊方式",
+        description: "選擇使用聊天介面時訊息的對齊模式。",
+      },
+      "display-language": {
+        title: "顯示語言",
+        description: "選擇 AnythingLLM 使用者介面的顯示語言（如有提供翻譯）。",
+      },
+      logo: {
+        title: "品牌標誌",
+        description: "上傳自訂標誌，顯示於所有頁面。",
+        add: "新增自訂標誌",
+        recommended: "建議尺寸：800 x 200",
+        remove: "移除",
+        replace: "更換",
+      },
+      "welcome-messages": {
+        title: "歡迎訊息",
+        description: "自訂顯示給使用者的歡迎訊息。只有非管理者會看到這些訊息。",
+        new: "新增",
+        system: "系統",
+        user: "使用者",
+        message: "訊息",
+        assistant: "AnythingLLM 聊天助理",
+        "double-click": "雙擊進行編輯...",
+        save: "儲存訊息",
+      },
+      "browser-appearance": {
+        title: "瀏覽器外觀",
+        description: "自訂應用程式在瀏覽器分頁上的外觀與標題。",
+        tab: {
+          title: "分頁標題",
+          description: "當應用程式在瀏覽器中開啟時設定自訂的分頁標題。",
+        },
+        favicon: {
+          title: "網站圖示 (Favicon)",
+          description: "為瀏覽器分頁設定自訂網站圖示。",
+        },
+      },
+      "sidebar-footer": {
+        title: "側邊欄底部項目",
+        description: "自訂側邊欄底部顯示的項目。",
+        icon: "圖示",
+        link: "連結",
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError: "請先建立工作空間才能開始對話。",
+    checklist: {
+      title: "開始使用",
+      tasksLeft: "個任務未完成",
+      completed: "你已經走在成為AnythingLLM專家的路上！",
+      dismiss: "關閉",
+      tasks: {
+        create_workspace: {
+          title: "建立工作空間",
+          description: "建立你的第一個工作空間來開始使用",
+          action: "建立",
+        },
+        send_chat: {
+          title: "發送對話",
+          description: "開始與你的AI助理對話",
+          action: "對話",
+        },
+        embed_document: {
+          title: "嵌入文件",
+          description: "將你的第一個文件添加到工作空間",
+          action: "嵌入",
+        },
+        setup_system_prompt: {
+          title: "設置系統提示",
+          description: "設定你的AI助理的行為模式",
+          action: "設置",
+        },
+        define_slash_command: {
+          title: "定義斜線命令",
+          description: "為你的助理創建自定義命令",
+          action: "定義",
+        },
+        visit_community: {
+          title: "訪問社群中心",
+          description: "探索社群資源和模板",
+          action: "瀏覽",
+        },
+      },
+    },
+    quickLinks: {
+      title: "快速連結",
+      sendChat: "發送對話",
+      embedDocument: "嵌入文件",
+      createWorkspace: "建立工作空間",
+    },
+    exploreMore: {
+      title: "探索更多功能",
+      features: {
+        customAgents: {
+          title: "自定義AI代理",
+          description: "無需編碼即可建立強大的AI代理和自動化流程。",
+          primaryAction: "使用@代理進行對話",
+          secondaryAction: "建立代理流程",
+        },
+        slashCommands: {
+          title: "斜線命令",
+          description: "節省時間並使用自定義斜線命令注入提示。",
+          primaryAction: "創建斜線命令",
+          secondaryAction: "在中心探索",
+        },
+        systemPrompts: {
+          title: "系統提示",
+          description: "修改系統提示以自定義工作空間的AI回覆。",
+          primaryAction: "修改系統提示",
+          secondaryAction: "管理提示變數",
+        },
+      },
+    },
+    announcements: {
+      title: "更新與公告",
+    },
+    resources: {
+      title: "資源",
+      links: {
+        docs: "文檔",
+        star: "在Github上加星標",
+      },
+      keyboardShortcuts: null,
+    },
+  },
+  "keyboard-shortcuts": {
+    title: null,
+    shortcuts: {
+      settings: null,
+      workspaceSettings: null,
+      home: null,
+      workspaces: null,
+      apiKeys: null,
+      llmPreferences: null,
+      chatSettings: null,
+      help: null,
+      showLLMSelector: null,
+    },
   },
 };
 

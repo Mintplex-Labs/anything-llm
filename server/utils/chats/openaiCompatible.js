@@ -89,6 +89,7 @@ async function chatSync({
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
+          rerank: workspace?.vectorSearchMode === "rerank",
         })
       : {
           contextTexts: [],
@@ -149,7 +150,7 @@ async function chatSync({
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages({
-    systemPrompt: systemPrompt ?? chatPrompt(workspace),
+    systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
     userPrompt: prompt,
     contextTexts,
     chatHistory: history,
@@ -304,6 +305,7 @@ async function streamChat({
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
+          rerank: workspace?.vectorSearchMode === "rerank",
         })
       : {
           contextTexts: [],
@@ -372,7 +374,7 @@ async function streamChat({
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages({
-    systemPrompt: systemPrompt ?? chatPrompt(workspace),
+    systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
     userPrompt: prompt,
     contextTexts,
     chatHistory: history,
@@ -475,10 +477,11 @@ function formatJSON(
   const data = {
     id: chat.uuid ?? chat.id,
     object: "chat.completion",
-    created: Number(new Date()),
+    created: Math.floor(Number(new Date()) / 1000),
     model: model,
     choices: [
       {
+        index: 0,
         [chunked ? "delta" : "message"]: {
           role: "assistant",
           content: chat.textResponse,

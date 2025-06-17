@@ -6,6 +6,7 @@ import showToast from "@/utils/toast";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
+import GeminiAiLogo from "@/media/llmprovider/gemini.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
@@ -19,6 +20,7 @@ import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
+import GeminiOptions from "@/components/EmbeddingSelection/GeminiOptions";
 import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
 import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
 import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
@@ -58,6 +60,13 @@ const EMBEDDERS = [
     logo: AzureOpenAiLogo,
     options: (settings) => <AzureAiOptions settings={settings} />,
     description: "The enterprise option of OpenAI hosted on Azure services.",
+  },
+  {
+    name: "Gemini",
+    value: "gemini",
+    logo: GeminiAiLogo,
+    options: (settings) => <GeminiOptions settings={settings} />,
+    description: "Run powerful embedding models from Google AI.",
   },
   {
     name: "Local AI",
@@ -275,9 +284,9 @@ export default function GeneralEmbeddingPreference() {
                   />
                 )}
                 {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
+                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] min-h-[64px] bg-theme-settings-input-bg rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
                     <div className="w-full flex flex-col gap-y-1">
-                      <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
+                      <div className="flex items-center sticky top-0 z-10 border-b border-[#9CA3AF] mx-4 bg-theme-settings-input-bg">
                         <MagnifyingGlass
                           size={20}
                           weight="bold"
@@ -302,7 +311,7 @@ export default function GeneralEmbeddingPreference() {
                           onClick={handleXButton}
                         />
                       </div>
-                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
+                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4 max-h-[245px]">
                         {filteredEmbedders.map((embedder) => (
                           <EmbedderItem
                             key={embedder.name}

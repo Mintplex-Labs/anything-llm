@@ -1,11 +1,27 @@
 import { API_BASE } from "./constants";
 
+function applyOptions(path, options = {}) {
+  let updatedPath = path;
+  if (!options || Object.keys(options).length === 0) return updatedPath;
+
+  if (options.search) {
+    const searchParams = new URLSearchParams(options.search);
+    updatedPath += `?${searchParams.toString()}`;
+  }
+  return updatedPath;
+}
+
 export default {
   home: () => {
     return "/";
   },
   login: (noTry = false) => {
     return `/login${noTry ? "?nt=1" : ""}`;
+  },
+  sso: {
+    login: () => {
+      return "/sso/simple";
+    },
   },
   onboarding: {
     home: () => {
@@ -49,15 +65,18 @@ export default {
     return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
   },
   workspace: {
-    chat: (slug) => {
-      return `/workspace/${slug}`;
+    chat: (slug, options = {}) => {
+      return applyOptions(`/workspace/${slug}`, options);
     },
     settings: {
       generalAppearance: (slug) => {
         return `/workspace/${slug}/settings/general-appearance`;
       },
-      chatSettings: (slug) => {
-        return `/workspace/${slug}/settings/chat-settings`;
+      chatSettings: function (slug, options = {}) {
+        return applyOptions(
+          `/workspace/${slug}/settings/chat-settings`,
+          options
+        );
       },
       vectorDatabase: (slug) => {
         return `/workspace/${slug}/settings/vector-database`;
@@ -75,9 +94,6 @@ export default {
   },
   apiDocs: () => {
     return `${API_BASE}/docs`;
-  },
-  orderFineTune: () => {
-    return `/fine-tuning`;
   },
   settings: {
     users: () => {
@@ -114,32 +130,44 @@ export default {
     security: () => {
       return "/settings/security";
     },
-    appearance: () => {
-      return "/settings/appearance";
+    interface: () => {
+      return "/settings/interface";
+    },
+    branding: () => {
+      return "/settings/branding";
     },
     agentSkills: () => {
       return "/settings/agents";
     },
+    chat: () => {
+      return "/settings/chat";
+    },
     apiKeys: () => {
       return "/settings/api-keys";
     },
+    systemPromptVariables: () => "/settings/system-prompt-variables",
     logs: () => {
       return "/settings/event-logs";
     },
     privacy: () => {
       return "/settings/privacy";
     },
-    embedSetup: () => {
-      return `/settings/embed-config`;
-    },
-    embedChats: () => {
-      return `/settings/embed-chats`;
+    embedChatWidgets: () => {
+      return `/settings/embed-chat-widgets`;
     },
     browserExtension: () => {
       return `/settings/browser-extension`;
     },
     experimental: () => {
       return `/settings/beta-features`;
+    },
+  },
+  agents: {
+    builder: () => {
+      return `/settings/agents/builder`;
+    },
+    editAgent: (uuid) => {
+      return `/settings/agents/builder/${uuid}`;
     },
   },
   communityHub: {
@@ -155,6 +183,9 @@ export default {
      */
     viewMoreOfType: function (type) {
       return `${this.website()}/list/${type}`;
+    },
+    viewItem: function (type, id) {
+      return `${this.website()}/i/${type}/${id}`;
     },
     trending: () => {
       return `/settings/community-hub/trending`;

@@ -4,6 +4,7 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 
 class MistralLLM {
@@ -26,6 +27,11 @@ class MistralLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.0;
+    this.log("Initialized with model:", this.model);
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -92,7 +98,7 @@ class MistralLLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),

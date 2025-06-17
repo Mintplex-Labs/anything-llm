@@ -2,6 +2,7 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   clientAbortedHandler,
   writeResponseChunk,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const {
   LLMPerformanceMonitor,
@@ -31,6 +32,7 @@ class KoboldCPPLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.maxTokens = Number(process.env.KOBOLD_CPP_MAX_TOKENS) || 2048;
     this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
   }
 
@@ -116,7 +118,7 @@ class KoboldCPPLLM {
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),
@@ -131,6 +133,7 @@ class KoboldCPPLLM {
           model: this.model,
           messages,
           temperature,
+          max_tokens: this.maxTokens,
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -167,6 +170,7 @@ class KoboldCPPLLM {
         stream: true,
         messages,
         temperature,
+        max_tokens: this.maxTokens,
       }),
       messages
     );

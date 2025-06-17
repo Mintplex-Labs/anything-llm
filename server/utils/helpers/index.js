@@ -56,6 +56,7 @@
  * @property {Function} totalVectors - Returns the total number of vectors in the database.
  * @property {Function} namespaceCount - Returns the count of vectors in a given namespace.
  * @property {Function} similarityResponse - Performs a similarity search on a given namespace.
+ * @property {Function} rerankedSimilarityResponse - Performs a similarity search on a given namespace with reranking (if supported by provider).
  * @property {Function} namespace - Retrieves the specified namespace collection.
  * @property {Function} hasNamespace - Checks if a namespace exists.
  * @property {Function} namespaceExists - Verifies if a namespace exists in the client.
@@ -106,6 +107,9 @@ function getVectorDbClass(getExactly = null) {
     case "astra":
       const { AstraDB } = require("../vectorDbProviders/astra");
       return AstraDB;
+    case "pgvector":
+      const { PGVector } = require("../vectorDbProviders/pgvector");
+      return PGVector;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }
@@ -157,9 +161,6 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return new MistralLLM(embedder, model);
-    case "native":
-      const { NativeLLM } = require("../AiProviders/native");
-      return new NativeLLM(embedder, model);
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
       return new HuggingFaceLLM(embedder, model);
@@ -199,6 +200,12 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "nvidia-nim":
       const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
       return new NvidiaNimLLM(embedder, model);
+    case "ppio":
+      const { PPIOLLM } = require("../AiProviders/ppio");
+      return new PPIOLLM(embedder, model);
+    case "dpais":
+      const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
+      return new DellProAiStudioLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
@@ -250,6 +257,9 @@ function getEmbeddingEngineSelection() {
         GenericOpenAiEmbedder,
       } = require("../EmbeddingEngines/genericOpenAi");
       return new GenericOpenAiEmbedder();
+    case "gemini":
+      const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
+      return new GeminiEmbedder();
     default:
       return new NativeEmbedder();
   }
@@ -298,9 +308,6 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return MistralLLM;
-    case "native":
-      const { NativeLLM } = require("../AiProviders/native");
-      return NativeLLM;
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
       return HuggingFaceLLM;
@@ -340,6 +347,78 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "nvidia-nim":
       const { NvidiaNimLLM } = require("../AiProviders/nvidiaNim");
       return NvidiaNimLLM;
+    case "ppio":
+      const { PPIOLLM } = require("../AiProviders/ppio");
+      return PPIOLLM;
+    case "dpais":
+      const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
+      return DellProAiStudioLLM;
+    default:
+      return null;
+  }
+}
+
+/**
+ * Returns the defined model (if available) for the given provider.
+ * @param {{provider: string | null} | null} params - Initialize params for LLMs provider
+ * @returns {string | null}
+ */
+function getBaseLLMProviderModel({ provider = null } = {}) {
+  switch (provider) {
+    case "openai":
+      return process.env.OPEN_MODEL_PREF;
+    case "azure":
+      return process.env.OPEN_MODEL_PREF;
+    case "anthropic":
+      return process.env.ANTHROPIC_MODEL_PREF;
+    case "gemini":
+      return process.env.GEMINI_LLM_MODEL_PREF;
+    case "lmstudio":
+      return process.env.LMSTUDIO_MODEL_PREF;
+    case "localai":
+      return process.env.LOCAL_AI_MODEL_PREF;
+    case "ollama":
+      return process.env.OLLAMA_MODEL_PREF;
+    case "togetherai":
+      return process.env.TOGETHER_AI_MODEL_PREF;
+    case "fireworksai":
+      return process.env.FIREWORKS_AI_LLM_MODEL_PREF;
+    case "perplexity":
+      return process.env.PERPLEXITY_MODEL_PREF;
+    case "openrouter":
+      return process.env.OPENROUTER_MODEL_PREF;
+    case "mistral":
+      return process.env.MISTRAL_MODEL_PREF;
+    case "huggingface":
+      return null;
+    case "groq":
+      return process.env.GROQ_MODEL_PREF;
+    case "koboldcpp":
+      return process.env.KOBOLD_CPP_MODEL_PREF;
+    case "textgenwebui":
+      return process.env.TEXT_GEN_WEB_UI_API_KEY;
+    case "cohere":
+      return process.env.COHERE_MODEL_PREF;
+    case "litellm":
+      return process.env.LITE_LLM_MODEL_PREF;
+    case "generic-openai":
+      return process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY;
+    case "bedrock":
+      return process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE;
+    case "deepseek":
+      return process.env.DEEPSEEK_MODEL_PREF;
+    case "apipie":
+      return process.env.APIPIE_LLM_API_KEY;
+    case "novita":
+      return process.env.NOVITA_LLM_MODEL_PREF;
+    case "xai":
+      return process.env.XAI_LLM_MODEL_PREF;
+    case "nvidia-nim":
+      return process.env.NVIDIA_NIM_LLM_MODEL_PREF;
+    case "ppio":
+      return process.env.PPIO_API_KEY;
+    case "dpais":
+      return process.env.DPAIS_LLM_MODEL_PREF;
     default:
       return null;
   }
@@ -370,6 +449,7 @@ module.exports = {
   maximumChunkLength,
   getVectorDbClass,
   getLLMProviderClass,
+  getBaseLLMProviderModel,
   getLLMProvider,
   toChunks,
 };

@@ -1,6 +1,7 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
+  formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 const {
@@ -24,14 +25,21 @@ class OpenAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.log(
+      `Initialized ${this.model} with context window ${this.promptWindowLimit()}`
+    );
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
   /**
    * Check if the model is an o1 model.
    * @returns {boolean}
    */
-  get isO1Model() {
-    return this.model.startsWith("o1");
+  get isOTypeModel() {
+    return this.model.startsWith("o");
   }
 
   #appendContext(contextTexts = []) {
@@ -47,16 +55,17 @@ class OpenAiLLM {
   }
 
   streamingEnabled() {
-    if (this.isO1Model) return false;
+    // o3-mini is the only o-type model that supports streaming
+    if (this.isOTypeModel && this.model !== "o3-mini") return false;
     return "streamGetChatCompletion" in this;
   }
 
   static promptWindowLimit(modelName) {
-    return MODEL_MAP.openai[modelName] ?? 4_096;
+    return MODEL_MAP.get("openai", modelName) ?? 4_096;
   }
 
   promptWindowLimit() {
-    return MODEL_MAP.openai[this.model] ?? 4_096;
+    return MODEL_MAP.get("openai", this.model) ?? 4_096;
   }
 
   // Short circuit if name has 'gpt' since we now fetch models from OpenAI API
@@ -67,7 +76,7 @@ class OpenAiLLM {
   async isValidChatCompletionModel(modelName = "") {
     const isPreset =
       modelName.toLowerCase().includes("gpt") ||
-      modelName.toLowerCase().includes("o1");
+      modelName.toLowerCase().startsWith("o");
     if (isPreset) return true;
 
     const model = await this.openai.models
@@ -116,12 +125,12 @@ class OpenAiLLM {
     // in order to combat this, we can use the "user" role as a replacement for now
     // https://community.openai.com/t/o1-models-do-not-support-system-role-in-chat-completion/953880
     const prompt = {
-      role: this.isO1Model ? "user" : "system",
+      role: this.isOTypeModel ? "user" : "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [
       prompt,
-      ...chatHistory,
+      ...formatChatHistory(chatHistory, this.#generateContent),
       {
         role: "user",
         content: this.#generateContent({ userPrompt, attachments }),
@@ -140,7 +149,7 @@ class OpenAiLLM {
         .create({
           model: this.model,
           messages,
-          temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
+          temperature: this.isOTypeModel ? 1 : temperature, // o1 models only accept temperature 1
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -176,11 +185,12 @@ class OpenAiLLM {
         model: this.model,
         stream: true,
         messages,
-        temperature: this.isO1Model ? 1 : temperature, // o1 models only accept temperature 1
+        temperature: this.isOTypeModel ? 1 : temperature, // o1 models only accept temperature 1
       }),
       messages
       // runPromptTokenCalculation: true - We manually count the tokens because OpenAI does not provide them in the stream
       // since we are not using the OpenAI API version that supports this `stream_options` param.
+      // TODO: implement this once we upgrade to the OpenAI API version that supports this param.
     );
 
     return measuredStreamRequest;

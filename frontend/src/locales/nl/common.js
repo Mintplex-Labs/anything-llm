@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "Werkruimten Naam",
     error: "fout",
@@ -9,9 +58,10 @@ const TRANSLATIONS = {
     save: "Wijzigingen opslaan",
     previous: "Vorige pagina",
     next: "Volgende pagina",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "Instelling Instanties",
     system: "Algemene Instellingen",
@@ -39,9 +89,11 @@ const TRANSLATIONS = {
     "experimental-features": "Experimentele Functies",
     contact: "Contact Ondersteuning",
     "browser-extension": "Browser Extensie",
+    "system-prompt-variables": null,
+    interface: null,
+    branding: null,
+    chat: null,
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "Welkom bij",
@@ -65,7 +117,6 @@ const TRANSLATIONS = {
       "back-to-login": "Terug naar Inloggen",
     },
   },
-
   welcomeMessage: {
     part1:
       "Welkom bij AnythingLLM, AnythingLLM is een open-source AI-tool van Mintplex Labs die alles omzet in een getrainde chatbot waarmee je kunt vragen en chatten. AnythingLLM is een BYOK (bring-your-own-keys) software, dus er is geen abonnement, vergoeding of kosten voor deze software buiten de diensten die je ermee wilt gebruiken.",
@@ -73,7 +124,7 @@ const TRANSLATIONS = {
       "AnythingLLM is de eenvoudigste manier om krachtige AI-producten zoals OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB en andere diensten samen te voegen in een net pakket zonder gedoe om je productiviteit met 100x te verhogen.",
     part3:
       "AnythingLLM kan volledig lokaal op je machine draaien met weinig overhead, je merkt niet eens dat het er is! Geen GPU nodig. Cloud en on-premises installatie is ook beschikbaar.\nHet AI-tooling ecosysteem wordt elke dag krachtiger. AnythingLLM maakt het gemakkelijk te gebruiken.",
-    githubIssue: "Maak een probleem aan op Github",
+    githubIssue: "Maak een probleem aan op GitHub",
     user1: "Hoe kan ik beginnen?",
     part4:
       "Het is simpel. Alle verzamelingen zijn georganiseerd in buckets die we \"Werkruimten\" noemen. Werkruimten zijn buckets van bestanden, documenten, afbeeldingen, PDF's en andere bestanden die worden omgezet in iets wat LLM's kunnen begrijpen en gebruiken in gesprekken.\n\nJe kunt op elk moment bestanden toevoegen en verwijderen.",
@@ -84,16 +135,13 @@ const TRANSLATIONS = {
       "AnythingLLM is meer dan een slimmere Dropbox.\n\nAnythingLLM biedt twee manieren om met je gegevens te praten:\n\n<i>Query:</i> Je chats zullen gegevens of inferenties retourneren die zijn gevonden met de documenten in je werkruimte waar het toegang toe heeft. Meer documenten toevoegen aan de Werkruimte maakt het slimmer! \n\n<i>Conversational:</i> Je documenten + je lopende chatgeschiedenis dragen beide tegelijkertijd bij aan de LLM-kennis. Geweldig voor het toevoegen van realtime tekstgebaseerde informatie of correcties en misverstanden die de LLM kan hebben. \n\nJe kunt tijdens het chatten tussen beide modi schakelen \n<i>in het midden van de chat!</i>",
     user3: "Wauw, dit klinkt geweldig, laat me het al proberen!",
     part6: "Veel Plezier!",
-    starOnGithub: "Ster op GitHub",
+    starOnGitHub: "Ster op GitHub",
     contact: "Contact Mintplex Labs",
   },
-
   "new-workspace": {
     title: "Nieuwe Werkruimte",
     placeholder: "Mijn Werkruimte",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "Algemene Instellingen",
     chat: "Chat Instellingen",
@@ -101,8 +149,6 @@ const TRANSLATIONS = {
     members: "Leden",
     agent: "Agent Configuratie",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "Vector Teller",
@@ -138,8 +184,6 @@ const TRANSLATIONS = {
         "werkruimte te verwijderen. Dit zal alle vector inbeddingen in je vector database verwijderen.\n\nDe originele bronbestanden blijven onaangetast. Deze actie is onomkeerbaar.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "Werkruimte LLM Provider",
@@ -180,6 +224,45 @@ const TRANSLATIONS = {
       title: "Prompt",
       description:
         "De prompt die in deze werkruimte zal worden gebruikt. Definieer de context en instructies voor de AI om een reactie te genereren. Je moet een zorgvuldig samengestelde prompt geven zodat de AI een relevante en nauwkeurige reactie kan genereren.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+        publish: null,
+      },
+      publish: {
+        public_description: null,
+        private_description: null,
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+        publish_button: null,
+        publishing: null,
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
+      },
     },
     refusal: {
       title: "Afwijzingsreactie in Querymodus",
@@ -197,8 +280,6 @@ const TRANSLATIONS = {
       hint: "De meeste LLM's hebben verschillende acceptabele reeksen van geldige waarden. Raadpleeg je LLM-provider voor die informatie.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "Vector database-identificator",
     snippets: {
@@ -225,8 +306,6 @@ const TRANSLATIONS = {
       success: "Werkruimte vector database is gereset!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "De prestaties van LLM's die geen tool-aanroep expliciet ondersteunen, zijn sterk afhankelijk van de capaciteiten en nauwkeurigheid van het model. Sommige vaardigheden kunnen beperkt of niet-functioneel zijn.",
@@ -246,7 +325,6 @@ const TRANSLATIONS = {
         "Het specifieke LLM-model dat voor het @agent-agent van deze werkruimte zal worden gebruikt.",
       wait: "-- wachten op modellen --",
     },
-
     skill: {
       title: "Standaard agentvaardigheden",
       description:
@@ -285,8 +363,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "Werkruimte Chats",
     description:
@@ -301,41 +377,6 @@ const TRANSLATIONS = {
       at: "Verzonden Om",
     },
   },
-
-  // Appearance
-  appearance: {
-    title: "Verschijning",
-    description: "Pas de verschijningsinstellingen van je platform aan.",
-    logo: {
-      title: "Logo Aanpassen",
-      description: "Upload je aangepaste logo om je chatbot eigen te maken.",
-      add: "Voeg een aangepast logo toe",
-      recommended: "Aanbevolen grootte: 800 x 200",
-      remove: "Verwijderen",
-      replace: "Vervangen",
-    },
-    message: {
-      title: "Berichten Aanpassen",
-      description:
-        "Pas de automatische berichten aan die aan je gebruikers worden weergegeven.",
-      new: "Nieuw",
-      system: "systeem",
-      user: "gebruiker",
-      message: "bericht",
-      assistant: "AnythingLLM Chat Assistent",
-      "double-click": "Dubbelklik om te bewerken...",
-      save: "Berichten Opslaan",
-    },
-    icons: {
-      title: "Aangepaste Voettekstpictogrammen",
-      description:
-        "Pas de voettekstpictogrammen aan die onder aan de zijbalk worden weergegeven.",
-      icon: "Pictogram",
-      link: "Link",
-    },
-  },
-
-  // API Keys
   api: {
     title: "API-sleutels",
     description:
@@ -348,14 +389,23 @@ const TRANSLATIONS = {
       created: "Aangemaakt",
     },
   },
-
   llm: {
     title: "LLM Voorkeur",
     description:
       "Dit zijn de inloggegevens en instellingen voor je voorkeurs LLM-chat & inbeddingprovider. Het is belangrijk dat deze sleutels actueel en correct zijn, anders zal AnythingLLM niet goed werken.",
     provider: "LLM Provider",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
-
   transcription: {
     title: "Transcriptiemodel Voorkeur",
     description:
@@ -368,7 +418,6 @@ const TRANSLATIONS = {
     "warn-end":
       "Het ingebouwde model wordt automatisch gedownload bij het eerste gebruik.",
   },
-
   embedding: {
     title: "Inbedding Voorkeur",
     "desc-start":
@@ -381,7 +430,6 @@ const TRANSLATIONS = {
         "Er is geen instelling vereist bij gebruik van de ingebouwde inbeddingengine van AnythingLLM.",
     },
   },
-
   text: {
     title: "Tekst Splitsen & Chunking Voorkeuren",
     "desc-start":
@@ -397,15 +445,12 @@ const TRANSLATIONS = {
         "Dit is de maximale lengte van tekens die aanwezig kan zijn in een enkele vector.",
       recommend: "Inbed model maximale lengte is",
     },
-
     overlap: {
       title: "Tekst Chunk Overlap",
       description:
         "Dit is de maximale overlap van tekens die optreedt tijdens het chunking tussen twee aangrenzende tekstchunks.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "Vector Database",
     description:
@@ -415,8 +460,6 @@ const TRANSLATIONS = {
       description: "Er is geen configuratie nodig voor LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "Inbedbare Chat Widgets",
     description:
@@ -425,10 +468,10 @@ const TRANSLATIONS = {
     table: {
       workspace: "Werkruimte",
       chats: "Verzonden Chats",
-      Active: "Actieve Domeinen",
+      active: "Actieve Domeinen",
+      created: null,
     },
   },
-
   "embed-chats": {
     title: "Inbedding Chats",
     export: "Exporteren",
@@ -442,7 +485,6 @@ const TRANSLATIONS = {
       at: "Verzonden Om",
     },
   },
-
   multi: {
     title: "Multi-Gebruikersmodus",
     description:
@@ -467,8 +509,6 @@ const TRANSLATIONS = {
       password: "Instantie wachtwoord",
     },
   },
-
-  // Event Logs
   event: {
     title: "Gebeurtenislogboeken",
     description:
@@ -480,8 +520,6 @@ const TRANSLATIONS = {
       occurred: "Opgetreden Op",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "Privacy & Gegevensverwerking",
     description:
@@ -490,6 +528,427 @@ const TRANSLATIONS = {
     embedding: "Inbedding Voorkeur",
     vector: "Vector Database",
     anonymous: "Anonieme Telemetrie Ingeschakeld",
+  },
+  connectors: {
+    "search-placeholder": null,
+    "no-connectors": null,
+    github: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    gitlab: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_description: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      fetch_issues: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    youtube: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained_start: null,
+      URL_explained_link: null,
+      URL_explained_end: null,
+      task_explained: null,
+      language: null,
+      language_explained: null,
+      loading_languages: null,
+    },
+    "website-depth": {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      depth: null,
+      depth_explained: null,
+      max_pages: null,
+      max_pages_explained: null,
+      task_explained: null,
+    },
+    confluence: {
+      name: null,
+      description: null,
+      deployment_type: null,
+      deployment_type_explained: null,
+      base_url: null,
+      base_url_explained: null,
+      space_key: null,
+      space_key_explained: null,
+      username: null,
+      username_explained: null,
+      auth_type: null,
+      auth_type_explained: null,
+      auth_type_username: null,
+      auth_type_personal: null,
+      token: null,
+      token_explained_start: null,
+      token_explained_link: null,
+      token_desc: null,
+      pat_token: null,
+      pat_token_explained: null,
+      task_explained: null,
+    },
+    manage: {
+      documents: null,
+      "data-connectors": null,
+      "desktop-only": null,
+      dismiss: null,
+      editing: null,
+    },
+    directory: {
+      "my-documents": null,
+      "new-folder": null,
+      "search-document": null,
+      "no-documents": null,
+      "move-workspace": null,
+      name: null,
+      "delete-confirmation": null,
+      "removing-message": null,
+      "move-success": null,
+      date: null,
+      type: null,
+      no_docs: null,
+      select_all: null,
+      deselect_all: null,
+      remove_selected: null,
+      costs: null,
+      save_embed: null,
+    },
+    upload: {
+      "processor-offline": null,
+      "processor-offline-desc": null,
+      "click-upload": null,
+      "file-types": null,
+      "or-submit-link": null,
+      "placeholder-link": null,
+      fetching: null,
+      "fetch-website": null,
+      "privacy-notice": null,
+    },
+    pinning: {
+      what_pinning: null,
+      pin_explained_block1: null,
+      pin_explained_block2: null,
+      pin_explained_block3: null,
+      accept: null,
+    },
+    watching: {
+      what_watching: null,
+      watch_explained_block1: null,
+      watch_explained_block2: null,
+      watch_explained_block3_start: null,
+      watch_explained_block3_link: null,
+      watch_explained_block3_end: null,
+      accept: null,
+    },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
+  },
+  chat_window: {
+    welcome: null,
+    get_started: null,
+    get_started_default: null,
+    upload: null,
+    or: null,
+    send_chat: null,
+    send_message: null,
+    attach_file: null,
+    slash: null,
+    agents: null,
+    text_size: null,
+    microphone: null,
+    send: null,
+    attachments_processing: null,
+    tts_speak_message: null,
+    copy: null,
+    regenerate: null,
+    regenerate_response: null,
+    good_response: null,
+    more_actions: null,
+    hide_citations: null,
+    show_citations: null,
+    pause_tts_speech_message: null,
+    fork: null,
+    delete: null,
+    save_submit: null,
+    cancel: null,
+    edit_prompt: null,
+    edit_response: null,
+    at_agent: null,
+    default_agent_description: null,
+    custom_agents_coming_soon: null,
+    slash_reset: null,
+    preset_reset_description: null,
+    add_new_preset: null,
+    command: null,
+    your_command: null,
+    placeholder_prompt: null,
+    description: null,
+    placeholder_description: null,
+    save: null,
+    small: null,
+    normal: null,
+    large: null,
+    workspace_llm_manager: {
+      search: null,
+      loading_workspace_settings: null,
+      available_models: null,
+      available_models_description: null,
+      save: null,
+      saving: null,
+      missing_credentials: null,
+      missing_credentials_description: null,
+    },
+  },
+  profile_settings: {
+    edit_account: null,
+    profile_picture: null,
+    remove_profile_picture: null,
+    username: null,
+    username_description: null,
+    new_password: null,
+    passwort_description: null,
+    cancel: null,
+    update_account: null,
+    theme: null,
+    language: null,
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError: null,
+    checklist: {
+      title: null,
+      tasksLeft: null,
+      completed: null,
+      dismiss: null,
+      tasks: {
+        create_workspace: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        send_chat: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        embed_document: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        setup_system_prompt: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        define_slash_command: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        visit_community: {
+          title: null,
+          description: null,
+          action: null,
+        },
+      },
+    },
+    quickLinks: {
+      title: null,
+      sendChat: null,
+      embedDocument: null,
+      createWorkspace: null,
+    },
+    exploreMore: {
+      title: null,
+      features: {
+        customAgents: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        slashCommands: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        systemPrompts: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+      },
+    },
+    announcements: {
+      title: null,
+    },
+    resources: {
+      title: null,
+      links: {
+        docs: null,
+        star: null,
+      },
+      keyboardShortcuts: null,
+    },
+  },
+  "keyboard-shortcuts": {
+    title: null,
+    shortcuts: {
+      settings: null,
+      workspaceSettings: null,
+      home: null,
+      workspaces: null,
+      apiKeys: null,
+      llmPreferences: null,
+      chatSettings: null,
+      help: null,
+      showLLMSelector: null,
+    },
   },
 };
 

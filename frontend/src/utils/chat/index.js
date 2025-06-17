@@ -1,4 +1,5 @@
 import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
+import { emitAssistantMessageCompleteEvent } from "@/components/contexts/TTSProvider";
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
 
 // For handling of chat responses in the frontend by their various types.
@@ -17,6 +18,7 @@ export default function handleChat(
     sources = [],
     error,
     close,
+    animate = false,
     chatId = null,
     action = null,
     metrics = {},
@@ -34,7 +36,7 @@ export default function handleChat(
         sources,
         closed: true,
         error,
-        animate: false,
+        animate,
         pending: false,
         metrics,
       },
@@ -47,7 +49,7 @@ export default function handleChat(
       sources,
       closed: true,
       error,
-      animate: false,
+      animate,
       pending: false,
       metrics,
     });
@@ -80,6 +82,7 @@ export default function handleChat(
       chatId,
       metrics,
     });
+    emitAssistantMessageCompleteEvent(chatId);
   } else if (
     type === "textResponseChunk" ||
     type === "finalizeResponseStream"
@@ -101,6 +104,7 @@ export default function handleChat(
           metrics,
         };
         setLoadingResponse(false);
+        emitAssistantMessageCompleteEvent(chatId);
       } else {
         updatedHistory = {
           ...existingHistory,

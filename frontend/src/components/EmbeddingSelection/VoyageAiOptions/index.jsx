@@ -38,6 +38,8 @@ export default function VoyageAiOptions({ settings }) {
                 "voyage-2",
                 "voyage-3",
                 "voyage-3-lite",
+                "voyage-3-large",
+                "voyage-code-3",
               ].map((model) => {
                 return (
                   <option key={model} value={model}>

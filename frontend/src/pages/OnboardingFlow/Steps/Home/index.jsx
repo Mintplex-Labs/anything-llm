@@ -6,6 +6,7 @@ import RGroupImgLight from "./r_group-light.png";
 import AnythingLLMLogo from "@/media/logo/anything-llm.png";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/hooks/useTheme";
+import { useTranslation } from "react-i18next";
 
 const IMG_SRCSET = {
   light: {
@@ -21,6 +22,7 @@ const IMG_SRCSET = {
 export default function OnboardingHome() {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const srcSet = IMG_SRCSET?.[theme] || IMG_SRCSET.default;
 
   return (
@@ -39,7 +41,7 @@ export default function OnboardingHome() {
         <div className="relative flex justify-center items-center m-auto">
           <div className="flex flex-col justify-center items-center">
             <p className="text-theme-text-primary font-thin text-[24px]">
-              Welcome to
+              {t("onboarding.home.title")}
             </p>
             <img
               src={AnythingLLMLogo}
@@ -50,7 +52,7 @@ export default function OnboardingHome() {
               onClick={() => navigate(paths.onboarding.llmPreference())}
               className="border-[2px] border-theme-text-primary animate-pulse light:animate-none w-full md:max-w-[350px] md:min-w-[300px] text-center py-3 bg-theme-button-primary hover:bg-theme-bg-secondary text-theme-text-primary font-semibold text-sm my-10 rounded-md "
             >
-              Get started
+              {t("onboarding.home.getStarted")}
             </button>
           </div>
         </div>

@@ -210,16 +210,17 @@ export function BingSearchOptions({ settings }) {
         </li>
         <li>Create a new Azure account or sign in with an existing one.</li>
         <li>
-          Navigate to the "Create a resource" section and search for "Bing
-          Search v7".
+          Navigate to the "Create a resource" section and search for "Grounding
+          with Bing Search".
         </li>
         <li>
-          Select the "Bing Search v7" resource and create a new subscription.
+          Select the "Grounding with Bing Search" resource and create a new
+          subscription.
         </li>
+        <li>Choose the pricing tier that suits your needs.</li>
         <li>
-          Choose the pricing tier that suits your needs (free tier available).
+          Obtain the API key for your Grounding with Bing Search subscription.
         </li>
-        <li>Obtain the API key for your Bing Web Search subscription.</li>
       </ol>
     </>
   );
@@ -265,13 +266,13 @@ export function SearXNGOptions({ settings }) {
     <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          SearXNG API base URL
+          SearXNG API Base URL
         </label>
         <input
           type="url"
           name="env::AgentSearXNGApiUrl"
           className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-          placeholder="SearXNG API Key"
+          placeholder="SearXNG API Base URL"
           defaultValue={settings?.AgentSearXNGApiUrl}
           required={true}
           autoComplete="off"

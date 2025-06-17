@@ -7,10 +7,9 @@ import useQuery from "@/hooks/useQuery";
 import ChatRow from "./ChatRow";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
-import { CaretDown, Download, Sparkle, Trash } from "@phosphor-icons/react";
+import { CaretDown, Download, Trash } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
 import { useTranslation } from "react-i18next";
-import paths from "@/utils/paths";
 import { CanViewChatHistory } from "@/components/CanViewChatHistory";
 
 const exportOptions = {
@@ -163,29 +162,20 @@ export default function WorkspaceChats() {
                   </div>
                 </div>
                 {chats.length > 0 && (
-                  <>
-                    <button
-                      onClick={handleClearAllChats}
-                      className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent light:border-theme-sidebar-border border-white/40 text-white/40 light:text-theme-text-secondary rounded-lg bg-transparent hover:light:text-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
-                    >
-                      <Trash size={18} weight="bold" />
-                      Clear Chats
-                    </button>
-                    <a
-                      href={paths.orderFineTune()}
-                      className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-yellow-300 light:border-yellow-600 text-yellow-300/80 light:text-yellow-600 rounded-lg bg-transparent hover:light:text-yellow-800 hover:text-theme-text-primary text-xs font-semibold hover:bg-yellow-300/75 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
-                    >
-                      <Sparkle size={18} weight="bold" />
-                      Order Fine-Tune Model
-                    </a>
-                  </>
+                  <button
+                    onClick={handleClearAllChats}
+                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent light:border-theme-sidebar-border border-white/40 text-white/40 light:text-theme-text-secondary rounded-lg bg-transparent hover:light:text-theme-bg-primary hover:text-theme-text-primary text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  >
+                    <Trash size={18} weight="bold" />
+                    Clear Chats
+                  </button>
                 )}
               </div>
               <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
                 {t("recorded.description")}
               </p>
             </div>
-            <div className="overflow-x-auto mt-6">
+            <div className="overflow-x-auto">
               <ChatsContainer
                 loading={loading}
                 chats={chats}
@@ -240,8 +230,8 @@ function ChatsContainer({
 
   return (
     <>
-      <table className="w-full text-sm text-left rounded-lg min-w-[640px] border-spacing-0">
-        <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase light:border-theme-sidebar-border border-white/10 border-b">
+      <table className="w-full text-xs text-left rounded-lg min-w-[640px] border-spacing-0">
+        <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
               {t("recorded.table.id")}

@@ -7,6 +7,8 @@ const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
 const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
+const { PGVector } = require("../utils/vectorDbProviders/pgvector");
+const { getBaseLLMProviderModel } = require("../utils/helpers");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -24,6 +26,7 @@ const SystemSettings = {
     "agent_search_provider",
     "agent_sql_connections",
     "default_agent_skills",
+    "disabled_agent_skills",
     "imported_agent_skills",
     "custom_app_name",
     "feature_flags",
@@ -40,6 +43,7 @@ const SystemSettings = {
     "text_splitter_chunk_overlap",
     "agent_search_provider",
     "default_agent_skills",
+    "disabled_agent_skills",
     "agent_sql_connections",
     "custom_app_name",
 
@@ -125,6 +129,15 @@ const SystemSettings = {
         return JSON.stringify([]);
       }
     },
+    disabled_agent_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch (e) {
+        console.error(`Could not validate disabled agent skills.`);
+        return JSON.stringify([]);
+      }
+    },
     agent_sql_connections: async (updates) => {
       const existingConnections = safeJsonParse(
         (await SystemSettings.get({ label: "agent_sql_connections" }))?.value,
@@ -198,10 +211,12 @@ const SystemSettings = {
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
       GenericOpenAiEmbeddingMaxConcurrentChunks:
         process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
+      GeminiEmbeddingApiKey: !!process.env.GEMINI_EMBEDDING_API_KEY,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
@@ -213,6 +228,7 @@ const SystemSettings = {
       // LLM Provider Selection Settings & Configs
       // --------------------------------------------------------
       LLMProvider: llmProvider,
+      LLMModel: getBaseLLMProviderModel({ provider: llmProvider }) || null,
       ...this.llmPreferenceKeys(),
 
       // --------------------------------------------------------
@@ -263,6 +279,12 @@ const SystemSettings = {
       // Disable View Chat History for the whole instance.
       DisableViewChatHistory:
         "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
+
+      // --------------------------------------------------------
+      // Simple SSO Settings
+      // --------------------------------------------------------
+      SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
+      SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
     };
   },
 
@@ -414,6 +436,10 @@ const SystemSettings = {
       // AstraDB Keys
       AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
       AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
+
+      // PGVector Keys
+      PGVectorConnectionString: !!PGVector.connectionString() || false,
+      PGVectorTableName: PGVector.tableName(),
     };
   },
 
@@ -429,6 +455,7 @@ const SystemSettings = {
       AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
       AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
+      AzureOpenAiModelType: process.env.AZURE_OPENAI_MODEL_TYPE || "default",
 
       // Anthropic Keys
       AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
@@ -436,7 +463,8 @@ const SystemSettings = {
 
       // Gemini Keys
       GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
-      GeminiLLMModelPref: process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro",
+      GeminiLLMModelPref:
+        process.env.GEMINI_LLM_MODEL_PREF || "gemini-2.0-flash-lite",
       GeminiSafetySetting:
         process.env.GEMINI_SAFETY_SETTING || "BLOCK_MEDIUM_AND_ABOVE",
 
@@ -452,6 +480,7 @@ const SystemSettings = {
       LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
 
       // Ollama LLM Keys
+      OllamaLLMAuthToken: !!process.env.OLLAMA_AUTH_TOKEN,
       OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
       OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
       OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
@@ -488,10 +517,6 @@ const SystemSettings = {
       GroqApiKey: !!process.env.GROQ_API_KEY,
       GroqModelPref: process.env.GROQ_MODEL_PREF,
 
-      // Native LLM Keys
-      NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
-      NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
-
       // HuggingFace Dedicated Inference
       HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
       HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
@@ -501,6 +526,7 @@ const SystemSettings = {
       KoboldCPPModelPref: process.env.KOBOLD_CPP_MODEL_PREF,
       KoboldCPPBasePath: process.env.KOBOLD_CPP_BASE_PATH,
       KoboldCPPTokenLimit: process.env.KOBOLD_CPP_MODEL_TOKEN_LIMIT,
+      KoboldCPPMaxTokens: process.env.KOBOLD_CPP_MAX_TOKENS,
 
       // Text Generation Web UI Keys
       TextGenWebUIBasePath: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
@@ -527,14 +553,14 @@ const SystemSettings = {
       AwsBedrockLLMSessionToken: !!process.env.AWS_BEDROCK_LLM_SESSION_TOKEN,
       AwsBedrockLLMRegion: process.env.AWS_BEDROCK_LLM_REGION,
       AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
-      AwsBedrockLLMTokenLimit: process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT,
+      AwsBedrockLLMTokenLimit:
+        process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT || 8192,
+      AwsBedrockLLMMaxOutputTokens:
+        process.env.AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS || 4096,
 
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,
       CohereModelPref: process.env.COHERE_MODEL_PREF,
-
-      // VoyageAi API Keys
-      VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
 
       // DeepSeek API Keys
       DeepSeekApiKey: !!process.env.DEEPSEEK_API_KEY,
@@ -548,10 +574,20 @@ const SystemSettings = {
       XAIApiKey: !!process.env.XAI_LLM_API_KEY,
       XAIModelPref: process.env.XAI_LLM_MODEL_PREF,
 
-      // Nvidia NIM Keys
+      // NVIDIA NIM Keys
       NvidiaNimLLMBasePath: process.env.NVIDIA_NIM_LLM_BASE_PATH,
       NvidiaNimLLMModelPref: process.env.NVIDIA_NIM_LLM_MODEL_PREF,
       NvidiaNimLLMTokenLimit: process.env.NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT,
+
+      // PPIO API keys
+      PPIOApiKey: !!process.env.PPIO_API_KEY,
+      PPIOModelPref: process.env.PPIO_MODEL_PREF,
+
+      // Dell Pro AI Studio Keys
+      DellProAiStudioBasePath: process.env.DPAIS_LLM_BASE_PATH,
+      DellProAiStudioModelPref: process.env.DPAIS_LLM_MODEL_PREF,
+      DellProAiStudioTokenLimit:
+        process.env.DPAIS_LLM_MODEL_TOKEN_LIMIT ?? 4096,
     };
   },
 

@@ -7,6 +7,7 @@ import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
 import UserMenu from "../UserMenu";
+import { KeyboardShortcutWrapper } from "@/utils/keyboardShortcuts";
 
 // Used only for Multi-user mode only as we permission specific pages based on auth role.
 // When in single user mode we just bypass any authchecks.
@@ -83,7 +84,7 @@ function useIsAuthenticated() {
 
 // Allows only admin to access the route and if in single user mode,
 // allows all users to access the route
-export function AdminRoute({ Component }) {
+export function AdminRoute({ Component, hideUserMenu = false }) {
   const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
     useIsAuthenticated();
   if (isAuthd === null) return <FullScreenLoader />;
@@ -94,9 +95,17 @@ export function AdminRoute({ Component }) {
 
   const user = userFromStorage();
   return isAuthd && (user?.role === "admin" || !multiUserMode) ? (
-    <UserMenu>
-      <Component />
-    </UserMenu>
+    hideUserMenu ? (
+      <KeyboardShortcutWrapper>
+        <Component />
+      </KeyboardShortcutWrapper>
+    ) : (
+      <KeyboardShortcutWrapper>
+        <UserMenu>
+          <Component />
+        </UserMenu>
+      </KeyboardShortcutWrapper>
+    )
   ) : (
     <Navigate to={paths.home()} />
   );
@@ -115,9 +124,11 @@ export function ManagerRoute({ Component }) {
 
   const user = userFromStorage();
   return isAuthd && (user?.role !== "default" || !multiUserMode) ? (
-    <UserMenu>
-      <Component />
-    </UserMenu>
+    <KeyboardShortcutWrapper>
+      <UserMenu>
+        <Component />
+      </UserMenu>
+    </KeyboardShortcutWrapper>
   ) : (
     <Navigate to={paths.home()} />
   );
@@ -132,9 +143,11 @@ export default function PrivateRoute({ Component }) {
   }
 
   return isAuthd ? (
-    <UserMenu>
-      <Component />
-    </UserMenu>
+    <KeyboardShortcutWrapper>
+      <UserMenu>
+        <Component />
+      </UserMenu>
+    </KeyboardShortcutWrapper>
   ) : (
     <Navigate to={paths.login(true)} />
   );

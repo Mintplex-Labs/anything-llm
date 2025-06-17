@@ -1,3 +1,7 @@
+const { Telemetry } = require("../../models/telemetry");
+const {
+  SUPPORTED_CONNECTION_METHODS,
+} = require("../AiProviders/bedrock/utils");
 const { resetAllVectorStores } = require("../vectorStore/resetAllVectorStores");
 
 const KEY_MAPPING = {
@@ -35,6 +39,15 @@ const KEY_MAPPING = {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  AzureOpenAiModelType: {
+    envKey: "AZURE_OPENAI_MODEL_TYPE",
+    checks: [
+      (input) =>
+        ["default", "reasoning"].includes(input)
+          ? null
+          : "Invalid model type. Must be one of: default, reasoning.",
+    ],
+  },
 
   // Anthropic Settings
   AnthropicApiKey: {
@@ -43,7 +56,7 @@ const KEY_MAPPING = {
   },
   AnthropicModelPref: {
     envKey: "ANTHROPIC_MODEL_PREF",
-    checks: [isNotEmpty, validAnthropicModel],
+    checks: [isNotEmpty],
   },
 
   GeminiLLMApiKey: {
@@ -52,7 +65,7 @@ const KEY_MAPPING = {
   },
   GeminiLLMModelPref: {
     envKey: "GEMINI_LLM_MODEL_PREF",
-    checks: [isNotEmpty, validGeminiModel],
+    checks: [isNotEmpty],
   },
   GeminiSafetySetting: {
     envKey: "GEMINI_SAFETY_SETTING",
@@ -111,6 +124,10 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
     checks: [isInteger],
   },
+  OllamaLLMAuthToken: {
+    envKey: "OLLAMA_AUTH_TOKEN",
+    checks: [],
+  },
 
   // Mistral AI API Settings
   MistralApiKey: {
@@ -120,16 +137,6 @@ const KEY_MAPPING = {
   MistralModelPref: {
     envKey: "MISTRAL_MODEL_PREF",
     checks: [isNotEmpty],
-  },
-
-  // Native LLM Settings
-  NativeLLMModelPref: {
-    envKey: "NATIVE_LLM_MODEL_PREF",
-    checks: [isDownloadedModel],
-  },
-  NativeLLMTokenLimit: {
-    envKey: "NATIVE_LLM_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
   },
 
   // Hugging Face LLM Inference Settings
@@ -157,6 +164,10 @@ const KEY_MAPPING = {
   },
   KoboldCPPTokenLimit: {
     envKey: "KOBOLD_CPP_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  KoboldCPPMaxTokens: {
+    envKey: "KOBOLD_CPP_MAX_TOKENS",
     checks: [nonZero],
   },
 
@@ -219,7 +230,7 @@ const KEY_MAPPING = {
     envKey: "AWS_BEDROCK_LLM_CONNECTION_METHOD",
     checks: [
       (input) =>
-        ["iam", "sessionToken"].includes(input) ? null : "Invalid value",
+        SUPPORTED_CONNECTION_METHODS.includes(input) ? null : "invalid Value",
     ],
   },
   AwsBedrockLLMAccessKeyId: {
@@ -246,6 +257,24 @@ const KEY_MAPPING = {
     envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  AwsBedrockLLMMaxOutputTokens: {
+    envKey: "AWS_BEDROCK_LLM_MAX_OUTPUT_TOKENS",
+    checks: [nonZero],
+  },
+
+  // Dell Pro AI Studio Settings
+  DellProAiStudioBasePath: {
+    envKey: "DPAIS_LLM_BASE_PATH",
+    checks: [isNotEmpty, validDockerizedUrl],
+  },
+  DellProAiStudioModelPref: {
+    envKey: "DPAIS_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  DellProAiStudioTokenLimit: {
+    envKey: "DPAIS_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
 
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
@@ -264,6 +293,12 @@ const KEY_MAPPING = {
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
+  },
+
+  // Gemini Embedding Settings
+  GeminiEmbeddingApiKey: {
+    envKey: "GEMINI_EMBEDDING_API_KEY",
+    checks: [isNotEmpty],
   },
 
   // Generic OpenAI Embedding Settings
@@ -350,7 +385,6 @@ const KEY_MAPPING = {
   },
 
   // Astra DB Options
-
   AstraDBApplicationToken: {
     envKey: "ASTRA_DB_APPLICATION_TOKEN",
     checks: [isNotEmpty],
@@ -358,6 +392,23 @@ const KEY_MAPPING = {
   AstraDBEndpoint: {
     envKey: "ASTRA_DB_ENDPOINT",
     checks: [isNotEmpty],
+  },
+
+  /*
+  PGVector Options
+  - Does very simple validations - we should expand this in the future
+  - to ensure the connection string is valid and the table name is valid
+  - via direct query
+  */
+  PGVectorConnectionString: {
+    envKey: "PGVECTOR_CONNECTION_STRING",
+    checks: [isNotEmpty, looksLikePostgresConnectionString],
+    preUpdate: [validatePGVectorConnectionString],
+  },
+  PGVectorTableName: {
+    envKey: "PGVECTOR_TABLE_NAME",
+    checks: [isNotEmpty],
+    preUpdate: [validatePGVectorTableName],
   },
 
   // Together Ai Options
@@ -468,6 +519,11 @@ const KEY_MAPPING = {
   DisableTelemetry: {
     envKey: "DISABLE_TELEMETRY",
     checks: [],
+    preUpdate: [
+      (_, __, nextValue) => {
+        if (nextValue === "true") Telemetry.sendTelemetry("telemetry_disabled");
+      },
+    ],
   },
 
   // Agent Integration ENVs
@@ -606,6 +662,16 @@ const KEY_MAPPING = {
       },
     ],
   },
+
+  // PPIO Options
+  PPIOApiKey: {
+    envKey: "PPIO_API_KEY",
+    checks: [isNotEmpty],
+  },
+  PPIOModelPref: {
+    envKey: "PPIO_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -694,7 +760,6 @@ function supportedLLM(input = "") {
     "lmstudio",
     "localai",
     "ollama",
-    "native",
     "togetherai",
     "fireworksai",
     "mistral",
@@ -713,6 +778,8 @@ function supportedLLM(input = "") {
     "apipie",
     "xai",
     "nvidia-nim",
+    "ppio",
+    "dpais",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -722,27 +789,6 @@ function supportedTranscriptionProvider(input = "") {
   return validSelection
     ? null
     : `${input} is not a valid transcription model provider.`;
-}
-
-function validGeminiModel(input = "") {
-  const validModels = [
-    "gemini-pro",
-    "gemini-1.0-pro",
-    "gemini-1.5-pro-latest",
-    "gemini-1.5-flash-latest",
-    "gemini-1.5-pro-exp-0801",
-    "gemini-1.5-pro-exp-0827",
-    "gemini-1.5-flash-exp-0827",
-    "gemini-1.5-flash-8b-exp-0827",
-    "gemini-exp-1114",
-    "gemini-exp-1121",
-    "gemini-exp-1206",
-    "learnlm-1.5-pro-experimental",
-    "gemini-2.0-flash-exp",
-  ];
-  return validModels.includes(input)
-    ? null
-    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
 }
 
 function validGeminiSafetySetting(input = "") {
@@ -757,29 +803,11 @@ function validGeminiSafetySetting(input = "") {
     : `Invalid Safety setting. Must be one of ${validModes.join(", ")}.`;
 }
 
-function validAnthropicModel(input = "") {
-  const validModels = [
-    "claude-instant-1.2",
-    "claude-2.0",
-    "claude-2.1",
-    "claude-3-haiku-20240307",
-    "claude-3-sonnet-20240229",
-    "claude-3-opus-latest",
-    "claude-3-5-haiku-latest",
-    "claude-3-5-haiku-20241022",
-    "claude-3-5-sonnet-latest",
-    "claude-3-5-sonnet-20241022",
-    "claude-3-5-sonnet-20240620",
-  ];
-  return validModels.includes(input)
-    ? null
-    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
-}
-
 function supportedEmbeddingModel(input = "") {
   const supported = [
     "openai",
     "azure",
+    "gemini",
     "localai",
     "native",
     "ollama",
@@ -805,6 +833,7 @@ function supportedVectorDB(input = "") {
     "milvus",
     "zilliz",
     "astra",
+    "pgvector",
   ];
   return supported.includes(input)
     ? null
@@ -820,29 +849,11 @@ function validChromaURL(input = "") {
 function validOpenAiTokenLimit(input = "") {
   const tokenLimit = Number(input);
   if (isNaN(tokenLimit)) return "Token limit is not a number";
-  if (![4_096, 16_384, 8_192, 32_768, 128_000].includes(tokenLimit))
-    return "Invalid OpenAI token limit.";
   return null;
 }
 
 function requiresForceMode(_, forceModeEnabled = false) {
   return forceModeEnabled === true ? null : "Cannot set this setting.";
-}
-
-function isDownloadedModel(input = "") {
-  const fs = require("fs");
-  const path = require("path");
-  const storageDir = path.resolve(
-    process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`)
-  );
-  if (!fs.existsSync(storageDir)) return false;
-
-  const files = fs
-    .readdirSync(storageDir)
-    .filter((file) => file.includes(".gguf"));
-  return files.includes(input);
 }
 
 async function validDockerizedUrl(input = "") {
@@ -901,6 +912,70 @@ async function handleVectorStoreReset(key, prevValue, nextValue) {
   return false;
 }
 
+/**
+ * Validates the Postgres connection string for the PGVector options.
+ * @param {string} input - The Postgres connection string to validate.
+ * @returns {string} - An error message if the connection string is invalid, otherwise null.
+ */
+async function looksLikePostgresConnectionString(connectionString = null) {
+  if (!connectionString || !connectionString.startsWith("postgresql://"))
+    return "Invalid Postgres connection string. Must start with postgresql://";
+  if (connectionString.includes(" "))
+    return "Invalid Postgres connection string. Must not contain spaces.";
+  return null;
+}
+
+/**
+ * Validates the Postgres connection string for the PGVector options.
+ * @param {string} key - The ENV key we are validating.
+ * @param {string} prevValue - The previous value of the key.
+ * @param {string} nextValue - The next value of the key.
+ * @returns {string} - An error message if the connection string is invalid, otherwise null.
+ */
+async function validatePGVectorConnectionString(key, prevValue, nextValue) {
+  const envKey = KEY_MAPPING[key].envKey;
+
+  if (prevValue === nextValue) return; // If the value is the same as the previous value, don't validate it.
+  if (!nextValue) return; // If the value is not set, don't validate it.
+  if (nextValue === process.env[envKey]) return; // If the value is the same as the current connection string, don't validate it.
+
+  const { PGVector } = require("../vectorDbProviders/pgvector");
+  const { error, success } = await PGVector.validateConnection({
+    connectionString: nextValue,
+  });
+  if (!success) return error;
+
+  // Set the ENV variable for the PGVector connection string early so we can use it in the table check.
+  process.env[envKey] = nextValue;
+  return null;
+}
+
+/**
+ * Validates the Postgres table name for the PGVector options.
+ * - Table should not already exist in the database.
+ * @param {string} key - The ENV key we are validating.
+ * @param {string} prevValue - The previous value of the key.
+ * @param {string} nextValue - The next value of the key.
+ * @returns {string} - An error message if the table name is invalid, otherwise null.
+ */
+async function validatePGVectorTableName(key, prevValue, nextValue) {
+  const envKey = KEY_MAPPING[key].envKey;
+
+  if (prevValue === nextValue) return; // If the value is the same as the previous value, don't validate it.
+  if (!nextValue) return; // If the value is not set, don't validate it.
+  if (nextValue === process.env[envKey]) return; // If the value is the same as the current table name, don't validate it.
+  if (!process.env.PGVECTOR_CONNECTION_STRING) return; // if connection string is not set, don't validate it since it will fail.
+
+  const { PGVector } = require("../vectorDbProviders/pgvector");
+  const { error, success } = await PGVector.validateConnection({
+    connectionString: process.env.PGVECTOR_CONNECTION_STRING,
+    tableName: nextValue,
+  });
+  if (!success) return error;
+
+  return null;
+}
+
 // This will force update .env variables which for any which reason were not able to be parsed or
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
@@ -914,11 +989,32 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   const newValues = {};
 
   for (const key of ENV_KEYS) {
-    const { envKey, checks, postUpdate = [] } = KEY_MAPPING[key];
+    const {
+      envKey,
+      checks,
+      preUpdate = [],
+      postUpdate = [],
+    } = KEY_MAPPING[key];
     const prevValue = process.env[envKey];
     const nextValue = newENVs[key];
+    let errors = await executeValidationChecks(checks, nextValue, force);
 
-    const errors = await executeValidationChecks(checks, nextValue, force);
+    // If there are any errors from regular simple validation checks
+    // exit early.
+    if (errors.length > 0) {
+      error += errors.join("\n");
+      break;
+    }
+
+    // Accumulate errors from preUpdate functions
+    errors = [];
+    for (const preUpdateFunc of preUpdate) {
+      const errorMsg = await preUpdateFunc(key, prevValue, nextValue);
+      if (!!errorMsg && typeof errorMsg === "string") errors.push(errorMsg);
+    }
+
+    // If there are any errors from preUpdate functions
+    // exit early.
     if (errors.length > 0) {
       error += errors.join("\n");
       break;
@@ -988,11 +1084,18 @@ function dumpENV() {
     "DISABLE_VIEW_CHAT_HISTORY",
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
+    "SIMPLE_SSO_NO_LOGIN",
     // Community Hub
     "COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED",
 
     // Nvidia NIM Keys that are automatically managed
     "NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT",
+
+    // OCR Language Support
+    "TARGET_OCR_LANG",
+
+    // Collector API common ENV - allows bypassing URL validation checks
+    "COLLECTOR_ALLOW_ANY_IP",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

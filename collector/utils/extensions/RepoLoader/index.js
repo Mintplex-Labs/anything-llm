@@ -1,6 +1,6 @@
 /**
  * Dynamically load the correct repository loader from a specific platform
- * by default will return Github.
+ * by default will return GitHub.
  * @param {('github'|'gitlab')} platform
  * @returns {import("./GithubRepo/RepoLoader")|import("./GitlabRepo/RepoLoader")} the repo loader class for provider
  */

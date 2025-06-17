@@ -83,7 +83,7 @@ async function validateTablePragmas(force = false) {
 // Telemetry is anonymized and your data is never read. This can be disabled by setting
 // DISABLE_TELEMETRY=true in the `.env` of however you setup. Telemetry helps us determine use
 // of how AnythingLLM is used and how to improve this product!
-// You can see all Telemetry events by ctrl+f `Telemetry.sendEvent` calls to verify this claim.
+// You can see all Telemetry events by ctrl+f `Telemetry.sendTelemetry` calls to verify this claim.
 async function setupTelemetry() {
   if (process.env.DISABLE_TELEMETRY === "true") {
     console.log(

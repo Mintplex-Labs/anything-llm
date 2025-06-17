@@ -29,6 +29,7 @@ export default {
         "historical-msg-user": "#2C2F35",
         outline: "#4E5153",
         "primary-button": "var(--theme-button-primary)",
+        "cta-button": "var(--theme-button-cta)",
         secondary: "#2C2F36",
         "dark-input": "#18181B",
         "mobile-onboarding": "#2C2F35",
@@ -44,6 +45,7 @@ export default {
         warn: "#854708",
         success: "#05603A",
         darker: "#F4F4F4",
+        teal: "#0BA5EC",
 
         // Generic theme colors
         theme: {
@@ -54,10 +56,12 @@ export default {
             container: 'var(--theme-bg-container)',
             chat: 'var(--theme-bg-chat)',
             "chat-input": 'var(--theme-bg-chat-input)',
+            "popup-menu": 'var(--theme-popup-menu-bg)',
           },
           text: {
             primary: 'var(--theme-text-primary)',
             secondary: 'var(--theme-text-secondary)',
+            placeholder: 'var(--theme-placeholder)',
           },
           sidebar: {
             item: {
@@ -96,7 +100,59 @@ export default {
           },
           "file-picker": {
             hover: 'var(--theme-file-picker-hover)',
-          }
+          },
+          attachment: {
+            bg: 'var(--theme-attachment-bg)',
+            'error-bg': 'var(--theme-attachment-error-bg)',
+            'success-bg': 'var(--theme-attachment-success-bg)',
+            text: 'var(--theme-attachment-text)',
+            'text-secondary': 'var(--theme-attachment-text-secondary)',
+            'icon': 'var(--theme-attachment-icon)',
+            'icon-spinner': 'var(--theme-attachment-icon-spinner)',
+            'icon-spinner-bg': 'var(--theme-attachment-icon-spinner-bg)',
+          },
+          home: {
+            text: 'var(--theme-home-text)',
+            "text-secondary": 'var(--theme-home-text-secondary)',
+            "bg-card": 'var(--theme-home-bg-card)',
+            "bg-button": 'var(--theme-home-bg-button)',
+            border: 'var(--theme-home-border)',
+            "button-primary": 'var(--theme-home-button-primary)',
+            "button-primary-hover": 'var(--theme-home-button-primary-hover)',
+            "button-secondary": 'var(--theme-home-button-secondary)',
+            "button-secondary-hover": 'var(--theme-home-button-secondary-hover)',
+            "button-secondary-text": 'var(--theme-home-button-secondary-text)',
+            "button-secondary-hover-text": 'var(--theme-home-button-secondary-hover-text)',
+            "button-secondary-border": 'var(--theme-home-button-secondary-border)',
+            "button-secondary-border-hover": 'var(--theme-home-button-secondary-border-hover)',
+            "update-card-bg": 'var(--theme-home-update-card-bg)',
+            "update-card-hover": 'var(--theme-home-update-card-hover)',
+            "update-source": 'var(--theme-home-update-source)',
+          },
+          checklist: {
+            "item-bg": 'var(--theme-checklist-item-bg)',
+            "item-bg-hover": 'var(--theme-checklist-item-bg-hover)',
+            "item-text": 'var(--theme-checklist-item-text)',
+            "item-completed-bg": 'var(--theme-checklist-item-completed-bg)',
+            "item-completed-text": 'var(--theme-checklist-item-completed-text)',
+            "item-hover": 'var(--theme-checklist-item-hover)',
+            "checkbox-border": 'var(--theme-checklist-checkbox-border)',
+            "checkbox-fill": 'var(--theme-checklist-checkbox-fill)',
+            "checkbox-text": 'var(--theme-checklist-checkbox-text)',
+            "button-border": 'var(--theme-checklist-button-border)',
+            "button-text": 'var(--theme-checklist-button-text)',
+            "button-hover-bg": 'var(--theme-checklist-button-hover-bg)',
+            "button-hover-border": 'var(--theme-checklist-button-hover-border)',
+          },
+          button: {
+            text: 'var(--theme-button-text)',
+            'code-hover-text': 'var(--theme-button-code-hover-text)',
+            'code-hover-bg': 'var(--theme-button-code-hover-bg)',
+            'disable-hover-text': 'var(--theme-button-disable-hover-text)',
+            'disable-hover-bg': 'var(--theme-button-disable-hover-bg)',
+            'delete-hover-text': 'var(--theme-button-delete-hover-text)',
+            'delete-hover-bg': 'var(--theme-button-delete-hover-bg)',
+          },
         },
       },
       backgroundImage: {
@@ -141,7 +197,10 @@ export default {
       },
       animation: {
         sweep: "sweep 0.5s ease-in-out",
-        "pulse-glow": "pulse-glow 1.5s infinite"
+        "pulse-glow": "pulse-glow 1.5s infinite",
+        'fade-in': 'fade-in 0.3s ease-out',
+        'slide-up': 'slide-up 0.4s ease-out forwards',
+        'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite'
       },
       keyframes: {
         sweep: {
@@ -175,6 +234,18 @@ export default {
             boxShadow: "0 0 0 rgba(255, 255, 255, 0.0)",
             backgroundColor: "rgba(255, 255, 255, 0.0)"
           }
+        },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' }
+        },
+        'slide-up': {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' }
+        },
+        'bounce-subtle': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-2px)' }
         }
       }
     }

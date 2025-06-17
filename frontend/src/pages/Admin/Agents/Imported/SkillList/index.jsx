@@ -1,5 +1,4 @@
 import { CaretRight } from "@phosphor-icons/react";
-import { isMobile } from "react-device-detect";
 import { sentenceCase } from "text-case";
 
 export default function ImportedSkillList({
@@ -16,7 +15,7 @@ export default function ImportedSkillList({
           <a
             href="https://docs.anythingllm.com/agent/custom/developer-guide"
             target="_blank"
-            className="text-theme-text-secondary light:underline hover:underline"
+            className="text-theme-text-secondary underline hover:text-cta-button"
           >
             AnythingLLM Agent Docs
           </a>
@@ -27,9 +26,7 @@ export default function ImportedSkillList({
 
   return (
     <div
-      className={`bg-theme-bg-secondary text-white rounded-xl ${
-        isMobile ? "w-full" : "min-w-[360px] w-fit"
-      }`}
+      className={`bg-theme-bg-secondary text-white rounded-xl w-full md:min-w-[360px]`}
     >
       {skills.map((config, index) => (
         <div

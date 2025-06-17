@@ -11,12 +11,19 @@ import AvailableAgentsButton, {
   useAvailableAgents,
 } from "./AgentMenu";
 import TextSizeButton from "./TextSizeMenu";
+import LLMSelectorAction from "./LLMSelector/action";
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
 import AttachItem from "./AttachItem";
-import { PASTE_ATTACHMENT_EVENT } from "../DnDWrapper";
+import {
+  ATTACHMENTS_PROCESSED_EVENT,
+  ATTACHMENTS_PROCESSING_EVENT,
+  PASTE_ATTACHMENT_EVENT,
+} from "../DnDWrapper";
 import useTextSize from "@/hooks/useTextSize";
+import { useTranslation } from "react-i18next";
+import Appearance from "@/models/appearance";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 const MAX_EDIT_STACK_SIZE = 100;
@@ -24,11 +31,12 @@ const MAX_EDIT_STACK_SIZE = 100;
 export default function PromptInput({
   submit,
   onChange,
-  inputDisabled,
-  buttonDisabled,
+  isStreaming,
   sendCommand,
   attachments = [],
 }) {
+  const { t } = useTranslation();
+  const { isDisabled } = useIsDisabled();
   const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
@@ -49,11 +57,6 @@ export default function PromptInput({
     setPromptInput(e?.detail ?? "");
   }
 
-  function resetTextAreaHeight() {
-    if (!textareaRef.current) return;
-    textareaRef.current.style.height = "auto";
-  }
-
   useEffect(() => {
     if (!!window)
       window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
@@ -62,9 +65,9 @@ export default function PromptInput({
   }, []);
 
   useEffect(() => {
-    if (!inputDisabled && textareaRef.current) textareaRef.current.focus();
+    if (!isStreaming && textareaRef.current) textareaRef.current.focus();
     resetTextAreaHeight();
-  }, [inputDisabled]);
+  }, [isStreaming]);
 
   /**
    * Save the current state before changes
@@ -115,6 +118,7 @@ export default function PromptInput({
     // Is simple enter key press w/o shift key
     if (event.keyCode === 13 && !event.shiftKey) {
       event.preventDefault();
+      if (isStreaming || isDisabled) return; // Prevent submission if streaming or disabled
       return submit(event);
     }
 
@@ -240,6 +244,7 @@ export default function PromptInput({
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
         sendCommand={sendCommand}
+        promptRef={textareaRef}
       />
       <AvailableAgents
         showing={showAgents}
@@ -251,10 +256,10 @@ export default function PromptInput({
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
       >
-        <div className="flex items-center rounded-lg md:mb-4">
-          <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-2xl flex flex-col px-4 overflow-hidden">
+        <div className="flex items-center rounded-lg md:mb-4 md:w-full">
+          <div className="w-[95vw] md:w-[635px] bg-theme-bg-chat-input light:bg-white light:border-solid light:border-[1px] light:border-theme-chat-input-border shadow-sm rounded-2xl flex flex-col px-2 overflow-hidden">
             <AttachmentManager attachments={attachments} />
-            <div className="flex items-center w-full border-b-2 border-theme-chat-input-border">
+            <div className="flex items-center border-b border-theme-chat-input-border mx-3">
               <textarea
                 ref={textareaRef}
                 onChange={handleChange}
@@ -264,31 +269,36 @@ export default function PromptInput({
                   handlePasteEvent(e);
                 }}
                 required={true}
-                disabled={inputDisabled}
                 onFocus={() => setFocused(true)}
                 onBlur={(e) => {
                   setFocused(false);
                   adjustTextArea(e);
                 }}
                 value={promptInput}
+                spellCheck={Appearance.get("enableSpellCheck")}
                 className={`border-none cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 pt-[12px] w-full leading-5 md:text-md text-white bg-transparent placeholder:text-white/60 light:placeholder:text-theme-text-primary resize-none active:outline-none focus:outline-none flex-grow ${textSizeClass}`}
-                placeholder={"Send a message"}
+                placeholder={t("chat_window.send_message")}
               />
-              {buttonDisabled ? (
+              {isStreaming ? (
                 <StopGenerationButton />
               ) : (
                 <>
                   <button
                     ref={formRef}
                     type="submit"
-                    className="border-none inline-flex justify-center rounded-2xl cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ml-4"
+                    disabled={isDisabled}
+                    className="border-none inline-flex justify-center rounded-2xl cursor-pointer opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 ml-4 disabled:cursor-not-allowed group"
                     data-tooltip-id="send-prompt"
-                    data-tooltip-content="Send prompt message to workspace"
-                    aria-label="Send prompt message to workspace"
+                    data-tooltip-content={
+                      isDisabled
+                        ? t("chat_window.attachments_processing")
+                        : t("chat_window.send")
+                    }
+                    aria-label={t("chat_window.send")}
                   >
                     <PaperPlaneRight
                       color="var(--theme-sidebar-footer-icon-fill)"
-                      className="w-[22px] h-[22px] pointer-events-none text-theme-text-primary"
+                      className="w-[22px] h-[22px] pointer-events-none text-theme-text-primary group-disabled:opacity-[25%]"
                       weight="fill"
                     />
                     <span className="sr-only">Send message</span>
@@ -302,7 +312,7 @@ export default function PromptInput({
                 </>
               )}
             </div>
-            <div className="flex justify-between py-3.5">
+            <div className="flex justify-between py-3.5 mx-3 mb-1">
               <div className="flex gap-x-2">
                 <AttachItem />
                 <SlashCommandsButton
@@ -314,6 +324,7 @@ export default function PromptInput({
                   setShowAgents={setShowAgents}
                 />
                 <TextSizeButton />
+                <LLMSelectorAction />
               </div>
               <div className="flex gap-x-2">
                 <SpeechToText sendCommand={sendCommand} />
@@ -324,4 +335,38 @@ export default function PromptInput({
       </form>
     </div>
   );
+}
+
+/**
+ * Handle event listeners to prevent the send button from being used
+ * for whatever reason that may we may want to prevent the user from sending a message.
+ */
+function useIsDisabled() {
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  /**
+   * Handle attachments processing and processed events
+   * to prevent the send button from being clicked when attachments are processing
+   * or else the query may not have relevant context since RAG is not yet ready.
+   */
+  useEffect(() => {
+    if (!window) return;
+    window.addEventListener(ATTACHMENTS_PROCESSING_EVENT, () =>
+      setIsDisabled(true)
+    );
+    window.addEventListener(ATTACHMENTS_PROCESSED_EVENT, () =>
+      setIsDisabled(false)
+    );
+
+    return () => {
+      window?.removeEventListener(ATTACHMENTS_PROCESSING_EVENT, () =>
+        setIsDisabled(true)
+      );
+      window?.removeEventListener(ATTACHMENTS_PROCESSED_EVENT, () =>
+        setIsDisabled(false)
+      );
+    };
+  }, []);
+
+  return { isDisabled };
 }

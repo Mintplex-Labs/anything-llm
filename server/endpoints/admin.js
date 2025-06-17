@@ -25,6 +25,9 @@ const {
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const ImportedPlugin = require("../utils/agents/imported");
+const {
+  simpleSSOLoginDisabledMiddleware,
+} = require("../utils/middleware/simpleSSOEnabled");
 
 function adminEndpoints(app) {
   if (!app) return;
@@ -168,7 +171,11 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/invite/new",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [
+      validatedRequest,
+      strictMultiUserRoleValid([ROLES.admin, ROLES.manager]),
+      simpleSSOLoginDisabledMiddleware,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -374,6 +381,9 @@ function adminEndpoints(app) {
             case "default_agent_skills":
               requestedSettings[label] = safeJsonParse(setting?.value, []);
               break;
+            case "disabled_agent_skills":
+              requestedSettings[label] = safeJsonParse(setting?.value, []);
+              break;
             case "imported_agent_skills":
               requestedSettings[label] = ImportedPlugin.listImportedPlugins();
               break;
@@ -437,6 +447,12 @@ function adminEndpoints(app) {
           default_agent_skills:
             safeJsonParse(
               (await SystemSettings.get({ label: "default_agent_skills" }))
+                ?.value,
+              []
+            ) || [],
+          disabled_agent_skills:
+            safeJsonParse(
+              (await SystemSettings.get({ label: "disabled_agent_skills" }))
                 ?.value,
               []
             ) || [],
@@ -504,8 +520,6 @@ function adminEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const { apiKey, error } = await ApiKey.create(user.id);
-
-        await Telemetry.sendTelemetry("api_key_created");
         await EventLogs.logEvent(
           "api_key_created",
           { createdBy: user?.username },
@@ -528,6 +542,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
+        if (!id || isNaN(Number(id))) return response.sendStatus(400).end();
         await ApiKey.delete({ id: Number(id) });
 
         await EventLogs.logEvent(

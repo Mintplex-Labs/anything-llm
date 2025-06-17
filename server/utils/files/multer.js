@@ -2,6 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { v4 } = require("uuid");
+const { normalizePath } = require(".");
 
 /**
  * Handle File uploads for auto-uploading.
@@ -16,8 +17,8 @@ const fileUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = Buffer.from(file.originalname, "latin1").toString(
-      "utf8"
+    file.originalname = normalizePath(
+      Buffer.from(file.originalname, "latin1").toString("utf8")
     );
     cb(null, file.originalname);
   },
@@ -36,6 +37,9 @@ const fileAPIUploadStorage = multer.diskStorage({
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
+    file.originalname = normalizePath(
+      Buffer.from(file.originalname, "latin1").toString("utf8")
+    );
     cb(null, file.originalname);
   },
 });
@@ -51,8 +55,8 @@ const assetUploadStorage = multer.diskStorage({
     return cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
-    file.originalname = Buffer.from(file.originalname, "latin1").toString(
-      "utf8"
+    file.originalname = normalizePath(
+      Buffer.from(file.originalname, "latin1").toString("utf8")
     );
     cb(null, file.originalname);
   },
@@ -71,7 +75,9 @@ const pfpUploadStorage = multer.diskStorage({
     return cb(null, uploadOutput);
   },
   filename: function (req, file, cb) {
-    const randomFileName = `${v4()}${path.extname(file.originalname)}`;
+    const randomFileName = `${v4()}${path.extname(
+      normalizePath(file.originalname)
+    )}`;
     req.randomFileName = randomFileName;
     cb(null, randomFileName);
   },

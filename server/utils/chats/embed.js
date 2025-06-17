@@ -93,6 +93,7 @@ async function streamChatWithForEmbed(
           similarityThreshold: embed.workspace?.similarityThreshold,
           topN: embed.workspace?.topN,
           filterIdentifiers: pinnedDocIdentifiers,
+          rerank: embed.workspace?.vectorSearchMode === "rerank",
         })
       : {
           contextTexts: [],
@@ -151,7 +152,7 @@ async function streamChatWithForEmbed(
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
-      systemPrompt: chatPrompt(embed.workspace),
+      systemPrompt: await chatPrompt(embed.workspace, username),
       userPrompt: message,
       contextTexts,
       chatHistory,
@@ -209,7 +210,7 @@ async function streamChatWithForEmbed(
  * @param {string} sessionId the session id of the user from embed widget
  * @param {Object} embed the embed config object
  * @param {Number} messageLimit the number of messages to return
- * @returns {Promise<{rawHistory: import("@prisma/client").embed_chats[], chatHistory: {role: string, content: string}[]}>
+ * @returns {Promise<{rawHistory: import("@prisma/client").embed_chats[], chatHistory: {role: string, content: string, attachments?: Object[]}[]}>
  */
 async function recentEmbedChatHistory(sessionId, embed, messageLimit = 20) {
   const rawHistory = (

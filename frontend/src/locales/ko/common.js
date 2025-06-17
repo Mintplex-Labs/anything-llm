@@ -1,4 +1,53 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
+  onboarding: {
+    survey: {
+      email: null,
+      useCase: null,
+      useCaseWork: null,
+      useCasePersonal: null,
+      useCaseOther: null,
+      comment: null,
+      commentPlaceholder: null,
+      skip: null,
+      thankYou: null,
+      title: null,
+      description: null,
+    },
+    home: {
+      title: null,
+      getStarted: null,
+    },
+    llm: {
+      title: null,
+      description: null,
+    },
+    userSetup: {
+      title: null,
+      description: null,
+      howManyUsers: null,
+      justMe: null,
+      myTeam: null,
+      instancePassword: null,
+      setPassword: null,
+      passwordReq: null,
+      passwordWarn: null,
+      adminUsername: null,
+      adminUsernameReq: null,
+      adminPassword: null,
+      adminPasswordReq: null,
+      teamHint: null,
+    },
+    data: {
+      title: null,
+      description: null,
+      settingsHint: null,
+    },
+    workspace: {
+      title: null,
+      description: null,
+    },
+  },
   common: {
     "workspaces-name": "워크스페이스 이름",
     error: "오류",
@@ -9,9 +58,10 @@ const TRANSLATIONS = {
     save: "저장",
     previous: "이전",
     next: "다음",
+    optional: null,
+    yes: null,
+    no: null,
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "인스턴스 설정",
     system: "일반 설정",
@@ -39,9 +89,11 @@ const TRANSLATIONS = {
     "experimental-features": "실험적 기능",
     contact: "지원팀 연락",
     "browser-extension": "브라우저 확장 프로그램",
+    "system-prompt-variables": null,
+    interface: null,
+    branding: null,
+    chat: null,
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "웰컴!",
@@ -64,13 +116,10 @@ const TRANSLATIONS = {
       "back-to-login": "로그인으로 돌아가기",
     },
   },
-
   "new-workspace": {
     title: "새 워크스페이스",
     placeholder: "내 워크스페이스",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "일반 설정",
     chat: "채팅 설정",
@@ -78,7 +127,6 @@ const TRANSLATIONS = {
     members: "구성원",
     agent: "에이전트 구성",
   },
-
   welcomeMessage: {
     part1:
       "AnythingLLM에 오신 것을 환영합니다. AnythingLLM은 Mintplex Labs에서 개발한 오픈 소스 AI 도구로, 어떤 것이든 훈련된 챗봇으로 변환하여 쿼리하고 대화할 수 있습니다. AnythingLLM은 BYOK(Bring Your Own Key) 소프트웨어이므로 사용하려는 서비스 외에는 구독료나 기타 비용이 없습니다.",
@@ -86,7 +134,7 @@ const TRANSLATIONS = {
       "AnythingLLM은 OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB 등 강력한 AI 제품을 번거로움 없이 깔끔하게 패키지로 묶어 생산성을 100배 향상시키는 가장 쉬운 방법입니다.",
     part3:
       "AnythingLLM은 로컬 컴퓨터에서 완전히 작동하며, 거의 리소스를 사용하지 않으므로 존재조차 느끼지 못할 것입니다! GPU가 필요하지 않습니다. 클라우드 및 온프레미스 설치도 가능합니다.\nAI 도구 생태계는 날로 강력해지고 있습니다. AnythingLLM은 이를 쉽게 사용할 수 있게 해줍니다.",
-    githubIssue: "Github에 이슈 생성하기",
+    githubIssue: "GitHub에 이슈 생성하기",
     user1: "어떻게 시작하나요?!",
     part4:
       '간단합니다. 모든 컬렉션은 "워크스페이스"라고 부르는 버킷으로 구성됩니다. 워크스페이스는 문서, 이미지, PDF 및 기타 파일의 버킷으로, LLM이 이해하고 대화에서 사용할 수 있는 형태로 변환합니다.\n\n언제든지 파일을 추가하고 삭제할 수 있습니다.',
@@ -97,11 +145,9 @@ const TRANSLATIONS = {
       "AnythingLLM은 더 스마트한 Dropbox 이상의 것입니다.\n\nAnythingLLM은 데이터와 대화할 수 있는 두 가지 방법을 제공합니다:\n\n<i>쿼리:</i> 워크스페이스 내 문서에서 찾아낸 데이터나 추론 결과만 채팅으로 제공합니다. 워크스페이스에 문서를 더 많이 추가할수록 더 똑똑해집니다!\n\n<i>대화:</i> 문서와 실시간 채팅 기록이 동시에 LLM의 지식에 기여합니다. 실시간 텍스트 정보나 LLM의 오해를 바로잡는 데 매우 유용합니다.\n\n채팅 중간에 <i>모드를 전환할 수 있습니다!</i>",
     user3: "와, 이거 정말 놀랍네요, 당장 사용해보고 싶어요!",
     part6: "즐기세요!",
-    starOnGithub: "GitHub에 별표 달기",
+    starOnGitHub: "GitHub에 별표 달기",
     contact: "Mintplex Labs에 연락하기",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "벡터 수",
@@ -135,8 +181,6 @@ const TRANSLATIONS = {
         "워크스페이스 전체를 삭제합니다. 이 작업은 벡터 데이터베이스에 있는 모든 벡터 임베딩을 제거합니다.\n\n원본 소스 파일은 그대로 유지됩니다. 이 작업은 되돌릴 수 없습니다.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "워크스페이스 LLM 제공자",
@@ -176,6 +220,45 @@ const TRANSLATIONS = {
       title: "프롬프트",
       description:
         "이 워크스페이스에서 사용할 프롬프트입니다. AI가 응답을 생성하기 위해 문맥과 지침을 정의합니다. AI가 질문에 대하여 정확한 응답을 생성할 수 있도록 신중하게 프롬프트를 제공해야 합니다.",
+      history: {
+        title: null,
+        clearAll: null,
+        noHistory: null,
+        restore: null,
+        delete: null,
+        deleteConfirm: null,
+        clearAllConfirm: null,
+        expand: null,
+        publish: null,
+      },
+      publish: {
+        public_description: null,
+        private_description: null,
+        success_title: null,
+        success_description: null,
+        success_thank_you: null,
+        view_on_hub: null,
+        modal_title: null,
+        name_label: null,
+        name_description: null,
+        name_placeholder: null,
+        description_label: null,
+        description_description: null,
+        tags_label: null,
+        tags_description: null,
+        tags_placeholder: null,
+        visibility_label: null,
+        prompt_label: null,
+        prompt_description: null,
+        prompt_placeholder: null,
+        publish_button: null,
+        publishing: null,
+        unauthenticated: {
+          title: null,
+          description: null,
+          button: null,
+        },
+      },
     },
     refusal: {
       title: "쿼리 모드 거부 응답 메시지",
@@ -191,8 +274,6 @@ const TRANSLATIONS = {
       hint: "대부분의 LLM은 유효한 값의 다양한 허용 범위를 가지고 있습니다. 해당 정보는 LLM 제공자에게 문의하세요.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "벡터 데이터베이스 식별자",
     snippets: {
@@ -219,8 +300,6 @@ const TRANSLATIONS = {
       success: "워크스페이스 벡터 데이터베이스가 재설정되었습니다!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "도구 호출을 명시적으로 지원하지 않는 LLM의 성능은 모델의 기능과 정확도에 크게 좌우됩니다. 일부 기능은 제한되거나 작동하지 않을 수 있습니다.",
@@ -240,7 +319,6 @@ const TRANSLATIONS = {
         "이 워크스페이스의 @agent 에이전트에 사용할 특정 LLM 모델입니다.",
       wait: "-- 모델 기다리는 중 --",
     },
-
     skill: {
       title: "기본 에이전트 스킬",
       description:
@@ -279,8 +357,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "워크스페이스 채팅",
     description:
@@ -295,40 +371,6 @@ const TRANSLATIONS = {
       at: "보낸 시각",
     },
   },
-
-  // Appearance
-  appearance: {
-    title: "외관",
-    description: "플랫폼의 외관 설정을 수정합니다.",
-    logo: {
-      title: "사용자 로고",
-      description:
-        "사용자의 로고를 업로드하여 챗봇을 자신의 것으로 만드십시오.",
-      add: "사용자 로고 추가",
-      recommended: "추천 크기: 800 x 200",
-      remove: "제거",
-      replace: "교체",
-    },
-    message: {
-      title: "사용자 메시지",
-      description: "사용자에게 표시되는 자동 메시지를 작성합니다.",
-      new: "새로운",
-      system: "시스템",
-      user: "사용자",
-      message: "메시지",
-      assistant: "AnythingLLM 채팅 어시스턴트",
-      "double-click": "더블 클릭하여 편집...",
-      save: "메시지 저장",
-    },
-    icons: {
-      title: "맞춤형 바닥글 아이콘",
-      description: "사이드바 하단에 표시되는 아이콘을 수정합니다.",
-      icon: "아이콘",
-      link: "링크",
-    },
-  },
-
-  // API Keys
   api: {
     title: "API 키",
     description:
@@ -341,14 +383,23 @@ const TRANSLATIONS = {
       created: "생성일",
     },
   },
-
   llm: {
     title: "LLM 기본 설정",
     description:
       "이것은 채팅과 임베딩을 하기 위한 선호하는 LLM 제공자의 인증입니다. 이 키가 현재 활성 상태이고 정확해야 AnythingLLM이 제대로 작동합니다.",
     provider: "LLM 제공자",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: null,
+        api_key: null,
+        chat_deployment_name: null,
+        chat_model_token_limit: null,
+        model_type: null,
+        default: null,
+        reasoning: null,
+      },
+    },
   },
-
   transcription: {
     title: "텍스트 변환 모델 기본 설정",
     description:
@@ -359,7 +410,6 @@ const TRANSLATIONS = {
     "warn-recommend": "최소 2GB RAM과 10Mb 보다 작은 파일 업로드를 권장합니다.",
     "warn-end": "내장된 모델은 첫 번째 사용 시 자동으로 다운로드됩니다.",
   },
-
   embedding: {
     title: "임베딩 기본 설정",
     "desc-start":
@@ -372,7 +422,6 @@ const TRANSLATIONS = {
         "AnythingLLM의 기본 임베딩 엔진을 사용할 때는 설정이 필요하지 않습니다.",
     },
   },
-
   text: {
     title: "텍스트 분할 및 청킹 기본 설정",
     "desc-start":
@@ -387,15 +436,12 @@ const TRANSLATIONS = {
       description: "단일 벡터에 들어갈 수 있는 최대 문자 길이입니다.",
       recommend: "임베드 모델 최대 길이는",
     },
-
     overlap: {
       title: "텍스트 청크 겹침",
       description:
         "청킹 동안 두 인접 텍스트 청크 간에 겹칠 수 있는 최대 문자 수입니다.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "벡터 데이터베이스",
     description:
@@ -405,8 +451,6 @@ const TRANSLATIONS = {
       description: "LanceDB를 선택하면 설정이 필요 없습니다.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "임베드 가능한 채팅 위젯",
     description:
@@ -415,10 +459,10 @@ const TRANSLATIONS = {
     table: {
       workspace: "워크스페이스",
       chats: "보낸 채팅",
-      Active: "활성 도메인",
+      active: "활성 도메인",
+      created: null,
     },
   },
-
   "embed-chats": {
     title: "임베드 채팅",
     export: "내보내기",
@@ -431,7 +475,6 @@ const TRANSLATIONS = {
       at: "보낸 시각",
     },
   },
-
   multi: {
     title: "다중 사용자 모드",
     description:
@@ -456,8 +499,6 @@ const TRANSLATIONS = {
       password: "인스턴스 비밀번호",
     },
   },
-
-  // Event Logs
   event: {
     title: "이벤트 로그",
     description:
@@ -469,8 +510,6 @@ const TRANSLATIONS = {
       occurred: "발생 시각",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "개인정보와 데이터 처리",
     description:
@@ -479,6 +518,427 @@ const TRANSLATIONS = {
     embedding: "임베딩 기본 설정",
     vector: "벡터 데이터베이스",
     anonymous: "익명 원격 분석 활성화",
+  },
+  connectors: {
+    "search-placeholder": null,
+    "no-connectors": null,
+    github: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    gitlab: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      token: null,
+      optional: null,
+      token_explained: null,
+      token_description: null,
+      token_explained_start: null,
+      token_explained_link1: null,
+      token_explained_middle: null,
+      token_explained_link2: null,
+      token_explained_end: null,
+      fetch_issues: null,
+      ignores: null,
+      git_ignore: null,
+      task_explained: null,
+      branch: null,
+      branch_loading: null,
+      branch_explained: null,
+      token_information: null,
+      token_personal: null,
+    },
+    youtube: {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained_start: null,
+      URL_explained_link: null,
+      URL_explained_end: null,
+      task_explained: null,
+      language: null,
+      language_explained: null,
+      loading_languages: null,
+    },
+    "website-depth": {
+      name: null,
+      description: null,
+      URL: null,
+      URL_explained: null,
+      depth: null,
+      depth_explained: null,
+      max_pages: null,
+      max_pages_explained: null,
+      task_explained: null,
+    },
+    confluence: {
+      name: null,
+      description: null,
+      deployment_type: null,
+      deployment_type_explained: null,
+      base_url: null,
+      base_url_explained: null,
+      space_key: null,
+      space_key_explained: null,
+      username: null,
+      username_explained: null,
+      auth_type: null,
+      auth_type_explained: null,
+      auth_type_username: null,
+      auth_type_personal: null,
+      token: null,
+      token_explained_start: null,
+      token_explained_link: null,
+      token_desc: null,
+      pat_token: null,
+      pat_token_explained: null,
+      task_explained: null,
+    },
+    manage: {
+      documents: null,
+      "data-connectors": null,
+      "desktop-only": null,
+      dismiss: null,
+      editing: null,
+    },
+    directory: {
+      "my-documents": null,
+      "new-folder": null,
+      "search-document": null,
+      "no-documents": null,
+      "move-workspace": null,
+      name: null,
+      "delete-confirmation": null,
+      "removing-message": null,
+      "move-success": null,
+      date: null,
+      type: null,
+      no_docs: null,
+      select_all: null,
+      deselect_all: null,
+      remove_selected: null,
+      costs: null,
+      save_embed: null,
+    },
+    upload: {
+      "processor-offline": null,
+      "processor-offline-desc": null,
+      "click-upload": null,
+      "file-types": null,
+      "or-submit-link": null,
+      "placeholder-link": null,
+      fetching: null,
+      "fetch-website": null,
+      "privacy-notice": null,
+    },
+    pinning: {
+      what_pinning: null,
+      pin_explained_block1: null,
+      pin_explained_block2: null,
+      pin_explained_block3: null,
+      accept: null,
+    },
+    watching: {
+      what_watching: null,
+      watch_explained_block1: null,
+      watch_explained_block2: null,
+      watch_explained_block3_start: null,
+      watch_explained_block3_link: null,
+      watch_explained_block3_end: null,
+      accept: null,
+    },
+    obsidian: {
+      name: null,
+      description: null,
+      vault_location: null,
+      vault_description: null,
+      selected_files: null,
+      importing: null,
+      import_vault: null,
+      processing_time: null,
+      vault_warning: null,
+    },
+  },
+  chat_window: {
+    welcome: null,
+    get_started: null,
+    get_started_default: null,
+    upload: null,
+    or: null,
+    send_chat: null,
+    send_message: null,
+    attach_file: null,
+    slash: null,
+    agents: null,
+    text_size: null,
+    microphone: null,
+    send: null,
+    attachments_processing: null,
+    tts_speak_message: null,
+    copy: null,
+    regenerate: null,
+    regenerate_response: null,
+    good_response: null,
+    more_actions: null,
+    hide_citations: null,
+    show_citations: null,
+    pause_tts_speech_message: null,
+    fork: null,
+    delete: null,
+    save_submit: null,
+    cancel: null,
+    edit_prompt: null,
+    edit_response: null,
+    at_agent: null,
+    default_agent_description: null,
+    custom_agents_coming_soon: null,
+    slash_reset: null,
+    preset_reset_description: null,
+    add_new_preset: null,
+    command: null,
+    your_command: null,
+    placeholder_prompt: null,
+    description: null,
+    placeholder_description: null,
+    save: null,
+    small: null,
+    normal: null,
+    large: null,
+    workspace_llm_manager: {
+      search: null,
+      loading_workspace_settings: null,
+      available_models: null,
+      available_models_description: null,
+      save: null,
+      saving: null,
+      missing_credentials: null,
+      missing_credentials_description: null,
+    },
+  },
+  profile_settings: {
+    edit_account: null,
+    profile_picture: null,
+    remove_profile_picture: null,
+    username: null,
+    username_description: null,
+    new_password: null,
+    passwort_description: null,
+    cancel: null,
+    update_account: null,
+    theme: null,
+    language: null,
+    failed_upload: null,
+    upload_success: null,
+    failed_remove: null,
+    profile_updated: null,
+    failed_update_user: null,
+    account: null,
+    support: null,
+    signout: null,
+  },
+  customization: {
+    interface: {
+      title: null,
+      description: null,
+    },
+    branding: {
+      title: null,
+      description: null,
+    },
+    chat: {
+      title: null,
+      description: null,
+      auto_submit: {
+        title: null,
+        description: null,
+      },
+      auto_speak: {
+        title: null,
+        description: null,
+      },
+      spellcheck: {
+        title: null,
+        description: null,
+      },
+    },
+    items: {
+      theme: {
+        title: null,
+        description: null,
+      },
+      "show-scrollbar": {
+        title: null,
+        description: null,
+      },
+      "support-email": {
+        title: null,
+        description: null,
+      },
+      "app-name": {
+        title: null,
+        description: null,
+      },
+      "chat-message-alignment": {
+        title: null,
+        description: null,
+      },
+      "display-language": {
+        title: null,
+        description: null,
+      },
+      logo: {
+        title: null,
+        description: null,
+        add: null,
+        recommended: null,
+        remove: null,
+        replace: null,
+      },
+      "welcome-messages": {
+        title: null,
+        description: null,
+        new: null,
+        system: null,
+        user: null,
+        message: null,
+        assistant: null,
+        "double-click": null,
+        save: null,
+      },
+      "browser-appearance": {
+        title: null,
+        description: null,
+        tab: {
+          title: null,
+          description: null,
+        },
+        favicon: {
+          title: null,
+          description: null,
+        },
+      },
+      "sidebar-footer": {
+        title: null,
+        description: null,
+        icon: null,
+        link: null,
+      },
+    },
+  },
+  "main-page": {
+    noWorkspaceError: null,
+    checklist: {
+      title: null,
+      tasksLeft: null,
+      completed: null,
+      dismiss: null,
+      tasks: {
+        create_workspace: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        send_chat: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        embed_document: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        setup_system_prompt: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        define_slash_command: {
+          title: null,
+          description: null,
+          action: null,
+        },
+        visit_community: {
+          title: null,
+          description: null,
+          action: null,
+        },
+      },
+    },
+    quickLinks: {
+      title: null,
+      sendChat: null,
+      embedDocument: null,
+      createWorkspace: null,
+    },
+    exploreMore: {
+      title: null,
+      features: {
+        customAgents: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        slashCommands: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+        systemPrompts: {
+          title: null,
+          description: null,
+          primaryAction: null,
+          secondaryAction: null,
+        },
+      },
+    },
+    announcements: {
+      title: null,
+    },
+    resources: {
+      title: null,
+      links: {
+        docs: null,
+        star: null,
+      },
+      keyboardShortcuts: null,
+    },
+  },
+  "keyboard-shortcuts": {
+    title: null,
+    shortcuts: {
+      settings: null,
+      workspaceSettings: null,
+      home: null,
+      workspaces: null,
+      apiKeys: null,
+      llmPreferences: null,
+      chatSettings: null,
+      help: null,
+      showLLMSelector: null,
+    },
   },
 };
 

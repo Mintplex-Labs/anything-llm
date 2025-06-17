@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
+import StatusResponse from "./StatusResponse";
 import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
 import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
@@ -12,6 +13,9 @@ import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import Appearance from "@/models/appearance";
 import useTextSize from "@/hooks/useTextSize";
+import { v4 } from "uuid";
+import { useTranslation } from "react-i18next";
+import { useChatMessageAlignment } from "@/hooks/useChatMessageAlignment";
 
 export default function ChatHistory({
   history = [],
@@ -21,6 +25,7 @@ export default function ChatHistory({
   regenerateAssistantMessage,
   hasAttachments = false,
 }) {
+  const { t } = useTranslation();
   const lastScrollTopRef = useRef(0);
   const { user } = useUser();
   const { threadSlug = null } = useParams();
@@ -31,6 +36,7 @@ export default function ChatHistory({
   const isStreaming = history[history.length - 1]?.animate;
   const { showScrollbar } = Appearance.getSettings();
   const { textSizeClass } = useTextSize();
+  const { getMessageAlignment } = useChatMessageAlignment();
 
   useEffect(() => {
     if (!isUserScrolling && (isAtBottom || isStreaming)) {
@@ -136,27 +142,66 @@ export default function ChatHistory({
     );
   };
 
+  const compiledHistory = useMemo(
+    () =>
+      buildMessages({
+        workspace,
+        history,
+        regenerateAssistantMessage,
+        saveEditedMessage,
+        forkThread,
+        getMessageAlignment,
+      }),
+    [
+      workspace,
+      history,
+      regenerateAssistantMessage,
+      saveEditedMessage,
+      forkThread,
+    ]
+  );
+  const lastMessageInfo = useMemo(() => getLastMessageInfo(history), [history]);
+  const renderStatusResponse = useCallback(
+    (item, index) => {
+      const hasSubsequentMessages = index < compiledHistory.length - 1;
+      return (
+        <StatusResponse
+          key={`status-group-${index}`}
+          messages={item}
+          isThinking={!hasSubsequentMessages && lastMessageInfo.isAnimating}
+          showCheckmark={
+            hasSubsequentMessages ||
+            (!lastMessageInfo.isAnimating && !lastMessageInfo.isStatusResponse)
+          }
+        />
+      );
+    },
+    [compiledHistory.length, lastMessageInfo]
+  );
+
   if (history.length === 0 && !hasAttachments) {
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
           <p className="text-white/60 text-lg font-base py-4">
-            Welcome to your new workspace.
+            {t("chat_window.welcome")}
           </p>
           {!user || user.role !== "default" ? (
             <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
-              To get started either{" "}
+              {t("chat_window.get_started")}
               <span
                 className="underline font-medium cursor-pointer"
                 onClick={showModal}
               >
-                upload a document
+                {t("chat_window.upload")}
               </span>
-              or <b className="font-medium italic">send a chat.</b>
+              {t("chat_window.or")}{" "}
+              <b className="font-medium italic">{t("chat_window.send_chat")}</b>
             </p>
           ) : (
             <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
-              To get started <b className="font-medium italic">send a chat.</b>
+              {t("chat_window.get_started_default")}{" "}
+              <b className="font-medium italic">{t("chat_window.send_chat")}</b>
             </p>
           )}
           <WorkspaceChatSuggestions
@@ -176,61 +221,14 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${
-        showScrollbar ? "show-scrollbar" : "no-scroll"
-      }`}
+      className={`markdown text-white/80 light:text-theme-text-primary font-light ${textSizeClass} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start ${showScrollbar ? "show-scrollbar" : "no-scroll"}`}
       id="chat-history"
       ref={chatHistoryRef}
       onScroll={handleScroll}
     >
-      {history.map((props, index) => {
-        const isLastBotReply =
-          index === history.length - 1 && props.role === "assistant";
-
-        if (props?.type === "statusResponse" && !!props.content) {
-          return <StatusResponse key={props.uuid} props={props} />;
-        }
-
-        if (props.type === "rechartVisualize" && !!props.content) {
-          return (
-            <Chartable key={props.uuid} workspace={workspace} props={props} />
-          );
-        }
-
-        if (isLastBotReply && props.animate) {
-          return (
-            <PromptReply
-              key={props.uuid}
-              uuid={props.uuid}
-              reply={props.content}
-              pending={props.pending}
-              sources={props.sources}
-              error={props.error}
-              workspace={workspace}
-              closed={props.closed}
-            />
-          );
-        }
-
-        return (
-          <HistoricalMessage
-            key={index}
-            message={props.content}
-            role={props.role}
-            workspace={workspace}
-            sources={props.sources}
-            feedbackScore={props.feedbackScore}
-            chatId={props.chatId}
-            error={props.error}
-            attachments={props.attachments}
-            regenerateMessage={regenerateAssistantMessage}
-            isLastMessage={isLastBotReply}
-            saveEditedMessage={saveEditedMessage}
-            forkThread={forkThread}
-            metrics={props.metrics}
-          />
-        );
-      })}
+      {compiledHistory.map((item, index) =>
+        Array.isArray(item) ? renderStatusResponse(item, index) : item
+      )}
       {showing && (
         <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
       )}
@@ -253,21 +251,13 @@ export default function ChatHistory({
   );
 }
 
-function StatusResponse({ props }) {
-  return (
-    <div className="flex justify-center items-end w-full">
-      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
-        <div className="flex gap-x-5">
-          <span
-            className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line`}
-          >
-            {props.content}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
+const getLastMessageInfo = (history) => {
+  const lastMessage = history?.[history.length - 1] || {};
+  return {
+    isAnimating: lastMessage?.animate,
+    isStatusResponse: lastMessage?.type === "statusResponse",
+  };
+};
 
 function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
   if (suggestions.length === 0) return null;
@@ -285,4 +275,82 @@ function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
       ))}
     </div>
   );
+}
+
+/**
+ * Builds the history of messages for the chat.
+ * This is mostly useful for rendering the history in a way that is easy to understand.
+ * as well as compensating for agent thinking and other messages that are not part of the history, but
+ * are still part of the chat.
+ *
+ * @param {Object} param0 - The parameters for building the messages.
+ * @param {Array} param0.history - The history of messages.
+ * @param {Object} param0.workspace - The workspace object.
+ * @param {Function} param0.regenerateAssistantMessage - The function to regenerate the assistant message.
+ * @param {Function} param0.saveEditedMessage - The function to save the edited message.
+ * @param {Function} param0.forkThread - The function to fork the thread.
+ * @param {Function} param0.getMessageAlignment - The function to get the alignment of the message (returns class).
+ * @returns {Array} The compiled history of messages.
+ */
+function buildMessages({
+  history,
+  workspace,
+  regenerateAssistantMessage,
+  saveEditedMessage,
+  forkThread,
+  getMessageAlignment,
+}) {
+  return history.reduce((acc, props, index) => {
+    const isLastBotReply =
+      index === history.length - 1 && props.role === "assistant";
+
+    if (props?.type === "statusResponse" && !!props.content) {
+      if (acc.length > 0 && Array.isArray(acc[acc.length - 1])) {
+        acc[acc.length - 1].push(props);
+      } else {
+        acc.push([props]);
+      }
+      return acc;
+    }
+
+    if (props.type === "rechartVisualize" && !!props.content) {
+      acc.push(
+        <Chartable key={props.uuid} workspace={workspace} props={props} />
+      );
+    } else if (isLastBotReply && props.animate) {
+      acc.push(
+        <PromptReply
+          key={props.uuid || v4()}
+          uuid={props.uuid}
+          reply={props.content}
+          pending={props.pending}
+          sources={props.sources}
+          error={props.error}
+          workspace={workspace}
+          closed={props.closed}
+        />
+      );
+    } else {
+      acc.push(
+        <HistoricalMessage
+          key={index}
+          message={props.content}
+          role={props.role}
+          workspace={workspace}
+          sources={props.sources}
+          feedbackScore={props.feedbackScore}
+          chatId={props.chatId}
+          error={props.error}
+          attachments={props.attachments}
+          regenerateMessage={regenerateAssistantMessage}
+          isLastMessage={isLastBotReply}
+          saveEditedMessage={saveEditedMessage}
+          forkThread={forkThread}
+          metrics={props.metrics}
+          alignmentCls={getMessageAlignment?.(props.role)}
+        />
+      );
+    }
+    return acc;
+  }, []);
 }
