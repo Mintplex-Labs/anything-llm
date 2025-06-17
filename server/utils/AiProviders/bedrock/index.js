@@ -107,7 +107,7 @@ class AWSBedrockLLM {
       // IAM role is used for long-term credentials implied by system process
       // is filled by the AWS SDK automatically if we pass in no credentials
       case "iam_role":
-        return {};
+        return undefined; // No explicit credentials needed, AWS SDK will use the IAM role of the instance or local credential if returning undefined.
       default:
         return {};
     }
