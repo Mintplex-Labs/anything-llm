@@ -164,8 +164,7 @@ const Milvus = {
       for (const [i, vec] of vectorValues.entries()) {
         // **INTELLIGENT VECTOR DETECTION**
         // Detects if the vector is from the old engine (simple array) or the new hybrid engine (object).
-        const isHybrid =
-          typeof vec === "object" && vec.hasOwnProperty("dense");
+        const isHybrid = typeof vec === "object" && vec.hasOwnProperty("dense");
         const denseVector = isHybrid ? vec.dense : vec;
         const sparseVector = isHybrid
           ? vec.sparse
@@ -216,13 +215,13 @@ const Milvus = {
   },
 
   performSimilaritySearch: async function ({
-                                             namespace = null,
-                                             input = "",
-                                             LLMConnector = null,
-                                             similarityThreshold = 0.25,
-                                             topN = 4,
-                                             filterIdentifiers = [],
-                                           }) {
+    namespace = null,
+    input = "",
+    LLMConnector = null,
+    similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = [],
+  }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
 
@@ -265,13 +264,13 @@ const Milvus = {
   },
 
   performHybridSearch: async function ({
-                                         namespace = null,
-                                         input = "",
-                                         LLMConnector = null,
-                                         similarityThreshold = 0.25,
-                                         topN = 4,
-                                         filterIdentifiers = [],
-                                       }) {
+    namespace = null,
+    input = "",
+    LLMConnector = null,
+    similarityThreshold = 0.25,
+    topN = 10,
+    filterIdentifiers = [],
+  }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performHybridSearch.");
 
@@ -285,6 +284,8 @@ const Milvus = {
     }
 
     const EmbedderEngine = getEmbeddingEngineSelection(namespace);
+
+    debugLog(EmbedderEngine.model);
     if (typeof EmbedderEngine.embedTextInput !== "function") {
       return {
         contextTexts: [],
@@ -301,29 +302,31 @@ const Milvus = {
     // Build two AnnSearch objects – one for dense, one for sparse.
     const searchRequests = [
       {
-        vector_field_name: "text_dense",
+        anns_field: "text_dense",
         data: [queryDense], // Wrap vector in array
         params: { nprobe: 10 },
         limit: topN,
       },
       {
-        vector_field_name: "text_sparse",
+        anns_field: "text_sparse",
         data: [input], // Pass raw text for server-side BM25
         params: { drop_ratio_search: 0.2 },
         limit: topN,
       },
     ];
-
     const rerank = RRFRanker(60); // Standard k value for RRFRanker
     const searchResponse = await client.hybridSearch({
       collection_name: this.normalize(namespace),
-      searches: searchRequests,
+      data: searchRequests,
       rerank,
       limit: topN,
       output_fields: ["metadata", "text"],
     });
 
-    debugLog(`Hybrid search returned ${searchResponse.results.length} results.`);
+    debugLog(
+      `Hybrid search returned ${searchResponse.results.length} results.`
+    );
+    debugLog(searchResponse.results);
     const { contextTexts, sources } = this._processSearchResults(
       searchResponse,
       similarityThreshold,
@@ -340,26 +343,66 @@ const Milvus = {
     filterIdentifiers
   ) {
     const contextTexts = [];
-    const sourceDocuments = [];
+    const sources = [];
+
+    // [DEBUG] Log initial state
+    debugLog(
+      `_processSearchResults called with ${searchResponse.results?.length ?? 0} results.`
+    );
+    debugLog(
+      `similarityThreshold: ${similarityThreshold}, filterIdentifiers:`,
+      filterIdentifiers
+    );
+
     if (!searchResponse.results || searchResponse.results.length === 0) {
-      return { contextTexts, sourceDocuments };
+      return { contextTexts, sources };
     }
 
-    searchResponse.results.forEach((match) => {
-      if (match.score < similarityThreshold) return;
-      if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
+    searchResponse.results.forEach((match, index) => {
+      debugLog(`\n--- Processing Match #${index} ---`);
+      debugLog(`Match ID: ${match.id}, Score: ${match.score}`);
+
+      // [FIXED] The similarity check was inverted for a distance metric like COSINE.
+      // We should discard results where the distance (score) is GREATER than the threshold.
+      // A lower score is a better match.
+      if (match.score > similarityThreshold) {
         debugLog(
-          "A source was filtered from context as its parent document is pinned."
+          `-> DISCARDING: Score ${match.score} is > threshold ${similarityThreshold}`
         );
-        return;
+        return; // Skip this result
       }
-      contextTexts.push(match.metadata?.text || "");
-      sourceDocuments.push({ ...match.metadata, score: match.score });
+
+      // [DEBUG] Check for pinned document filtering
+      const sourceId = sourceIdentifier(match.metadata);
+      const isFiltered = filterIdentifiers.includes(sourceId);
+      debugLog(`Source Identifier for filtering: "${sourceId}"`);
+      debugLog(`Is filtered by pinned docs: ${isFiltered}`);
+      if (isFiltered) {
+        debugLog("-> DISCARDING: Source is a pinned document.");
+        return; // Skip this result
+      }
+
+      debugLog("-> KEEPING: Match passed all filters.");
+      // Populate contextTexts for the LLM, using the explicit `text` field.
+      contextTexts.push(match.text || "");
+
+      // Construct the source object to match the desired output format.
+      const source = {
+        id: match.id,
+        score: match.score,
+        metadata: match.metadata,
+        text: match.text, // The Milvus SDK provides the `text` field at the top level.
+      };
+      sources.push(source);
     });
 
+    // [DEBUG] Log final state
+    debugLog(
+      `_processSearchResults finished. Returning ${sources.length} sources and ${contextTexts.length} context texts.`
+    );
     return {
       contextTexts,
-      sources: this.curateSources(sourceDocuments),
+      sources, // Return the sources array directly, correctly formatted.
     };
   },
 
@@ -394,7 +437,9 @@ const Milvus = {
     const { collection_names } = await client.listCollections();
     let total = 0;
     for (const collection_name of collection_names) {
-      const statistics = await client.getCollectionStatistics({ collection_name });
+      const statistics = await client.getCollectionStatistics({
+        collection_name,
+      });
       total += Number(statistics?.data?.row_count ?? 0);
     }
     return total;

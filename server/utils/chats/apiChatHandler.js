@@ -13,13 +13,9 @@ const {
   EphemeralAgentHandler,
   EphemeralEventListener,
 } = require("../agents/ephemeral");
-
 const { Telemetry } = require("../../models/telemetry");
 
-// --------------------------------------------------------------
-// Simple toggle‑able logger for tracing execution.
-// Enable by setting DEBUG_CHAT_HANDLER=true in your `.env`
-// --------------------------------------------------------------
+// Simple toggle-able logger for tracing execution.
 const LOG_ENABLED = process.env.DEBUG_CHAT_HANDLER === "true";
 const debugLog = (...args) => {
   if (LOG_ENABLED) console.log("[ApiChatHandler]", ...args);
@@ -39,14 +35,14 @@ const debugLog = (...args) => {
 /**
  * Handle synchronous chats with your workspace via the developer API endpoint
  * @param {{
- *  workspace: import("@prisma/client").workspaces,
- *  message:string,
- *  mode: "chat"|"query",
- *  user: import("@prisma/client").users|null,
- *  thread: import("@prisma/client").workspace_threads|null,
- *  sessionId: string|null,
- *  attachments: { name: string; mime: string; contentString: string }[],
- *  reset: boolean,
+ * workspace: import("@prisma/client").workspaces,
+ * message:string,
+ * mode: "chat"|"query",
+ * user: import("@prisma/client").users|null,
+ * thread: import("@prisma/client").workspace_threads|null,
+ * sessionId: string|null,
+ * attachments: { name: string; mime: string; contentString: string }[],
+ * reset: boolean,
  * }} parameters
  * @returns {Promise<ResponseObject>}
  */
@@ -62,11 +58,7 @@ async function chatSync({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
-  debugLog("chatSync called", { uuid, mode: chatMode });
 
-  // If the user wants to reset the chat history we do so pre-flight
-  // and continue execution. If no message is provided then the user intended
-  // to reset the chat history only and we can exit early with a confirmation.
   if (reset) {
     await WorkspaceChats.markThreadHistoryInvalidV2({
       workspaceId: workspace.id,
@@ -87,16 +79,10 @@ async function chatSync({
     }
   }
 
-  // Process slash commands
-  // Since preset commands are not supported in API calls, we can just process the message here
-  const processedMessage = await grepAllSlashCommands(message);
-  message = processedMessage;
+  message = await grepAllSlashCommands(message);
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
-
-    // Initialize the EphemeralAgentHandler to handle non-continuous
-    // conversations with agents since this is over REST.
     const agentHandler = new EphemeralAgentHandler({
       uuid,
       workspace,
@@ -105,44 +91,34 @@ async function chatSync({
       threadId: thread?.id || null,
       sessionId,
     });
-
-    // Establish event listener that emulates websocket calls
-    // in Aibitat so that we can keep the same interface in Aibitat
-    // but use HTTP.
     const eventListener = new EphemeralEventListener();
     await agentHandler.init();
     await agentHandler.createAIbitat({ handler: eventListener });
     agentHandler.startAgentCluster();
 
-    // The cluster has started and now we wait for close event since
-    // this is a synchronous call for an agent, so we return everything at once.
-    // After this, we conclude the call as we normally do.
-    return await eventListener
-      .waitForClose()
-      .then(async ({ thoughts, textResponse }) => {
-        await WorkspaceChats.new({
-          workspaceId: workspace.id,
-          prompt: String(message),
-          response: {
-            text: textResponse,
-            sources: [],
-            attachments,
-            type: chatMode,
-            thoughts,
-          },
-          include: false,
-          apiSessionId: sessionId,
-        });
-        return {
-          id: uuid,
-          type: "textResponse",
-          sources: [],
-          close: true,
-          error: null,
-          textResponse,
-          thoughts,
-        };
-      });
+    const { thoughts, textResponse } = await eventListener.waitForClose();
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: String(message),
+      response: {
+        text: textResponse,
+        sources: [],
+        attachments,
+        type: chatMode,
+        thoughts,
+      },
+      include: false,
+      apiSessionId: sessionId,
+    });
+    return {
+      id: uuid,
+      type: "textResponse",
+      sources: [],
+      close: true,
+      error: null,
+      textResponse,
+      thoughts,
+    };
   }
 
   const LLMConnector = getLLMProvider({
@@ -153,29 +129,24 @@ async function chatSync({
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-  debugLog("Namespace stats", { hasVectorizedSpace, embeddingsCount });
 
-  // User is trying to query-mode chat a workspace that has no data in it - so
-  // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
     const textResponse =
       workspace?.queryRefusalResponse ??
       "There is no relevant information in this workspace to answer your query.";
-
     await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: String(message),
       response: {
         text: textResponse,
         sources: [],
-        attachments: attachments,
+        attachments,
         type: chatMode,
         metrics: {},
       },
       include: false,
       apiSessionId: sessionId,
     });
-
     return {
       id: uuid,
       type: "textResponse",
@@ -187,9 +158,6 @@ async function chatSync({
     };
   }
 
-  // If we are here we know that we are in a workspace that is:
-  // 1. Chatting in "chat" mode and may or may _not_ have embeddings
-  // 2. Chatting in "query" mode and has at least 1 embedding
   let contextTexts = [];
   let sources = [];
   let pinnedDocIdentifiers = [];
@@ -201,66 +169,54 @@ async function chatSync({
     apiSessionId: sessionId,
   });
 
-  await new DocumentManager({
+  const documentManager = new DocumentManager({
     workspace,
     maxTokens: LLMConnector.promptWindowLimit(),
-  })
-    .pinnedDocs()
-    .then((pinnedDocs) => {
-      pinnedDocs.forEach((doc) => {
-        const { pageContent, ...metadata } = doc;
-        pinnedDocIdentifiers.push(sourceIdentifier(doc));
-        contextTexts.push(doc.pageContent);
-        sources.push({
-          text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
-          ...metadata,
-        });
-      });
+  });
+  const pinnedDocs = await documentManager.pinnedDocs();
+  pinnedDocs.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    pinnedDocIdentifiers.push(sourceIdentifier(doc));
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
     });
+  });
 
-  // Hybrid search support
   const useHybrid =
     process.env.VECTOR_DB === "milvus" &&
     process.env.EMBEDDING_ENGINE === "hybrid";
-
   debugLog("Search strategy", { useHybrid });
 
   const vectorSearchResults =
     embeddingsCount !== 0
-      ? useHybrid
-        ? await VectorDb.performHybridSearch({
-            namespace: workspace.slug,
-            input: message,
-            LLMConnector,
-            similarityThreshold: workspace?.similarityThreshold,
-            topN: workspace?.topN,
-            filterIdentifiers: pinnedDocIdentifiers,
-            rerank: workspace?.vectorSearchMode === "rerank",
-          })
-        : await VectorDb.performSimilaritySearch({
-            namespace: workspace.slug,
-            input: message,
-            LLMConnector,
-            similarityThreshold: workspace?.similarityThreshold,
-            topN: workspace?.topN,
-            filterIdentifiers: pinnedDocIdentifiers,
-            rerank: workspace?.vectorSearchMode === "rerank",
-          })
+      ? await (useHybrid
+          ? VectorDb.performHybridSearch({
+              namespace: workspace.slug,
+              input: message,
+              LLMConnector,
+              similarityThreshold: workspace?.similarityThreshold,
+              topN: workspace?.topN,
+              filterIdentifiers: pinnedDocIdentifiers,
+              rerank: workspace?.vectorSearchMode === "rerank",
+            })
+          : VectorDb.performSimilaritySearch({
+              namespace: workspace.slug,
+              input: message,
+              LLMConnector,
+              similarityThreshold: workspace?.similarityThreshold,
+              topN: workspace?.topN,
+              filterIdentifiers: pinnedDocIdentifiers,
+              rerank: workspace?.vectorSearchMode === "rerank",
+            }))
       : {
           contextTexts: [],
           sources: [],
           message: null,
         };
 
-  debugLog("Vector search results", {
-    ctxCount: vectorSearchResults.contextTexts?.length,
-    srcCount: vectorSearchResults.sources?.length,
-    error: vectorSearchResults.message || null,
-  });
-
-  // Failed similarity search if it was run at all and failed.
   if (vectorSearchResults.message) {
     return {
       id: uuid,
@@ -281,30 +237,29 @@ async function chatSync({
     filterIdentifiers: pinnedDocIdentifiers,
   });
 
-  // Why does contextTexts get all the info, but sources only get current search?
-  // This is to give the ability of the LLM to "comprehend" a contextual response without
-  // populating the Citations under a response with documents the user "thinks" are irrelevant
-  // due to how we manage backfilling of the context to keep chats with the LLM more correct in responses.
-  // If a past citation was used to answer the question - that is visible in the history so it logically makes sense
-  // and does not appear to the user that a new response used information that is otherwise irrelevant for a given prompt.
-  // TLDR; reduces GitHub issues for "LLM citing document that has no answer in it" while keep answers highly accurate.
-  contextTexts = [...contextTexts, ...filledSources.contextTexts];
+  // [FIXED] This is the crucial change. We must combine the context from pinned docs,
+  // the current vector search, and the historical search (fillSourceWindow).
+  contextTexts = [
+    ...contextTexts,
+    ...vectorSearchResults.contextTexts,
+    ...filledSources.contextTexts,
+  ];
   sources = [...sources, ...vectorSearchResults.sources];
+  debugLog(
+    `Assembled ${contextTexts.length} total context chunks for LLM prompt.`
+  );
 
-  // If in query mode and no context chunks are found from search, backfill, or pins -  do not
-  // let the LLM try to hallucinate a response or use general knowledge and exit early
   if (chatMode === "query" && contextTexts.length === 0) {
     const textResponse =
       workspace?.queryRefusalResponse ??
       "There is no relevant information in this workspace to answer your query.";
-
     await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: message,
       response: {
         text: textResponse,
         sources: [],
-        attachments: attachments,
+        attachments,
         type: chatMode,
         metrics: {},
       },
@@ -313,7 +268,6 @@ async function chatSync({
       apiSessionId: sessionId,
       user,
     });
-
     return {
       id: uuid,
       type: "textResponse",
@@ -325,8 +279,6 @@ async function chatSync({
     };
   }
 
-  // Compress & Assemble message to ensure prompt passes token limit with room for response
-  // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: await chatPrompt(workspace, user),
@@ -338,16 +290,10 @@ async function chatSync({
     rawHistory
   );
 
-  // Send the text completion.
   const { textResponse, metrics: performanceMetrics } =
     await LLMConnector.getChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
-
-  debugLog("LLM completion done", {
-    responseChars: textResponse?.length,
-    metrics: performanceMetrics,
-  });
 
   if (!textResponse) {
     return {
@@ -392,14 +338,14 @@ async function chatSync({
  * Handle streamable HTTP chunks for chats with your workspace via the developer API endpoint
  * @param {{
  * response: import("express").Response,
- *  workspace: import("@prisma/client").workspaces,
- *  message:string,
- *  mode: "chat"|"query",
- *  user: import("@prisma/client").users|null,
- *  thread: import("@prisma/client").workspace_threads|null,
- *  sessionId: string|null,
- *  attachments: { name: string; mime: string; contentString: string }[],
- *  reset: boolean,
+ * workspace: import("@prisma/client").workspaces,
+ * message:string,
+ * mode: "chat"|"query",
+ * user: import("@prisma/client").users|null,
+ * thread: import("@prisma/client").workspace_threads|null,
+ * sessionId: string|null,
+ * attachments: { name: string; mime: string; contentString: string }[],
+ * reset: boolean,
  * }} parameters
  * @returns {Promise<VoidFunction>}
  */
@@ -416,11 +362,7 @@ async function streamChat({
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
-  debugLog("streamChat called", { uuid, mode: chatMode });
 
-  // If the user wants to reset the chat history we do so pre-flight
-  // and continue execution. If no message is provided then the user intended
-  // to reset the chat history only and we can exit early with a confirmation.
   if (reset) {
     await WorkspaceChats.markThreadHistoryInvalidV2({
       workspaceId: workspace.id,
@@ -443,16 +385,10 @@ async function streamChat({
     }
   }
 
-  // Check for and process slash commands
-  // Since preset commands are not supported in API calls, we can just process the message here
-  const processedMessage = await grepAllSlashCommands(message);
-  message = processedMessage;
+  message = await grepAllSlashCommands(message);
 
   if (EphemeralAgentHandler.isAgentInvocation({ message })) {
     await Telemetry.sendTelemetry("agent_chat_started");
-
-    // Initialize the EphemeralAgentHandler to handle non-continuous
-    // conversations with agents since this is over REST.
     const agentHandler = new EphemeralAgentHandler({
       uuid,
       workspace,
@@ -461,58 +397,49 @@ async function streamChat({
       threadId: thread?.id || null,
       sessionId,
     });
-
-    // Establish event listener that emulates websocket calls
-    // in Aibitat so that we can keep the same interface in Aibitat
-    // but use HTTP.
     const eventListener = new EphemeralEventListener();
     await agentHandler.init();
     await agentHandler.createAIbitat({ handler: eventListener });
     agentHandler.startAgentCluster();
 
-    // The cluster has started and now we wait for close event since
-    // and stream back any results we get from agents as they come in.
-    return eventListener
-      .streamAgentEvents(response, uuid)
-      .then(async ({ thoughts, textResponse }) => {
-        await WorkspaceChats.new({
-          workspaceId: workspace.id,
-          prompt: String(message),
-          response: {
-            text: textResponse,
-            sources: [],
-            attachments: attachments,
-            type: chatMode,
-            thoughts,
-          },
-          include: true,
-          threadId: thread?.id || null,
-          apiSessionId: sessionId,
-        });
-        writeResponseChunk(response, {
-          uuid,
-          type: "finalizeResponseStream",
-          textResponse,
-          thoughts,
-          close: true,
-          error: false,
-        });
-      });
+    const { thoughts, textResponse } = await eventListener.streamAgentEvents(
+      response,
+      uuid
+    );
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: String(message),
+      response: {
+        text: textResponse,
+        sources: [],
+        attachments,
+        type: chatMode,
+        thoughts,
+      },
+      include: true,
+      threadId: thread?.id || null,
+      apiSessionId: sessionId,
+    });
+    writeResponseChunk(response, {
+      uuid,
+      type: "finalizeResponseStream",
+      textResponse,
+      thoughts,
+      close: true,
+      error: false,
+    });
+    return;
   }
 
   const LLMConnector = getLLMProvider({
     provider: workspace?.chatProvider,
     model: workspace?.chatModel,
   });
-
   const VectorDb = getVectorDbClass();
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-  debugLog("Namespace stats", { hasVectorizedSpace, embeddingsCount });
 
-  // User is trying to query-mode chat a workspace that has no data in it - so
-  // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
     const textResponse =
       workspace?.queryRefusalResponse ??
@@ -533,7 +460,7 @@ async function streamChat({
       response: {
         text: textResponse,
         sources: [],
-        attachments: attachments,
+        attachments,
         type: chatMode,
         metrics: {},
       },
@@ -545,9 +472,6 @@ async function streamChat({
     return;
   }
 
-  // If we are here we know that we are in a workspace that is:
-  // 1. Chatting in "chat" mode and may or may _not_ have embeddings
-  // 2. Chatting in "query" mode and has at least 1 embedding
   let completeText;
   let metrics = {};
   let contextTexts = [];
@@ -561,73 +485,54 @@ async function streamChat({
     apiSessionId: sessionId,
   });
 
-  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
-  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
-  // However we limit the maximum of appended context to 80% of its overall size, mostly because if it expands beyond this
-  // it will undergo prompt compression anyway to make it work. If there is so much pinned that the context here is bigger than
-  // what the model can support - it would get compressed anyway and that really is not the point of pinning. It is really best
-  // suited for high-context models.
-  await new DocumentManager({
+  const documentManager = new DocumentManager({
     workspace,
     maxTokens: LLMConnector.promptWindowLimit(),
-  })
-    .pinnedDocs()
-    .then((pinnedDocs) => {
-      pinnedDocs.forEach((doc) => {
-        const { pageContent, ...metadata } = doc;
-        pinnedDocIdentifiers.push(sourceIdentifier(doc));
-        contextTexts.push(doc.pageContent);
-        sources.push({
-          text:
-            pageContent.slice(0, 1_000) +
-            "...continued on in source document...",
-          ...metadata,
-        });
-      });
+  });
+  const pinnedDocs = await documentManager.pinnedDocs();
+  pinnedDocs.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    pinnedDocIdentifiers.push(sourceIdentifier(doc));
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
     });
+  });
 
-  // Hybrid search support
   const useHybrid =
     process.env.VECTOR_DB?.toLowerCase() === "milvus" &&
-    process.env.EMBEDDING_ENGINE?.toLowerCase() === "hybrid"
-
-  debugLog("----IS USING HYBRID: ", useHybrid);
+    process.env.EMBEDDING_ENGINE?.toLowerCase() === "hybrid";
   debugLog("Search strategy", { useHybrid });
 
   const vectorSearchResults =
     embeddingsCount !== 0
-      ? useHybrid
-        ? await VectorDb.performHybridSearch({
-            namespace: workspace.slug,
-            input: message,
-            LLMConnector,
-            similarityThreshold: workspace?.similarityThreshold,
-            topN: workspace?.topN,
-            filterIdentifiers: pinnedDocIdentifiers,
-            rerank: workspace?.vectorSearchMode === "rerank",
-          })
-        : await VectorDb.performSimilaritySearch({
-            namespace: workspace.slug,
-            input: message,
-            LLMConnector,
-            similarityThreshold: workspace?.similarityThreshold,
-            topN: workspace?.topN,
-            filterIdentifiers: pinnedDocIdentifiers,
-            rerank: workspace?.vectorSearchMode === "rerank",
-          })
+      ? await (useHybrid
+          ? VectorDb.performHybridSearch({
+              namespace: workspace.slug,
+              input: message,
+              LLMConnector,
+              similarityThreshold: workspace?.similarityThreshold,
+              topN: workspace?.topN,
+              filterIdentifiers: pinnedDocIdentifiers,
+              rerank: workspace?.vectorSearchMode === "rerank",
+            })
+          : VectorDb.performSimilaritySearch({
+              namespace: workspace.slug,
+              input: message,
+              LLMConnector,
+              similarityThreshold: workspace?.similarityThreshold,
+              topN: workspace?.topN,
+              filterIdentifiers: pinnedDocIdentifiers,
+              rerank: workspace?.vectorSearchMode === "rerank",
+            }))
       : {
           contextTexts: [],
           sources: [],
           message: null,
         };
 
-  debugLog("Vector search results", {
-    ctxCount: vectorSearchResults.contextTexts?.length,
-    srcCount: vectorSearchResults.sources?.length,
-    error: vectorSearchResults.message || null,
-  });
-
-  // Failed similarity search if it was run at all and failed.
   if (vectorSearchResults.message) {
     writeResponseChunk(response, {
       id: uuid,
@@ -649,18 +554,18 @@ async function streamChat({
     filterIdentifiers: pinnedDocIdentifiers,
   });
 
-  // Why does contextTexts get all the info, but sources only get current search?
-  // This is to give the ability of the LLM to "comprehend" a contextual response without
-  // populating the Citations under a response with documents the user "thinks" are irrelevant
-  // due to how we manage backfilling of the context to keep chats with the LLM more correct in responses.
-  // If a past citation was used to answer the question - that is visible in the history so it logically makes sense
-  // and does not appear to the user that a new response used information that is otherwise irrelevant for a given prompt.
-  // TLDR; reduces GitHub issues for "LLM citing document that has no answer in it" while keep answers highly accurate.
-  contextTexts = [...contextTexts, ...filledSources.contextTexts];
+  // [FIXED] This is the crucial change. We must combine the context from pinned docs,
+  // the current vector search, and the historical search (fillSourceWindow).
+  contextTexts = [
+    ...contextTexts,
+    ...vectorSearchResults.contextTexts,
+    ...filledSources.contextTexts,
+  ];
   sources = [...sources, ...vectorSearchResults.sources];
+  debugLog(
+    `Assembled ${contextTexts.length} total context chunks for LLM prompt.`
+  );
 
-  // If in query mode and no context chunks are found from search, backfill, or pins -  do not
-  // let the LLM try to hallucinate a response or use general knowledge and exit early
   if (chatMode === "query" && contextTexts.length === 0) {
     const textResponse =
       workspace?.queryRefusalResponse ??
@@ -681,7 +586,7 @@ async function streamChat({
       response: {
         text: textResponse,
         sources: [],
-        attachments: attachments,
+        attachments,
         type: chatMode,
         metrics: {},
       },
@@ -692,9 +597,8 @@ async function streamChat({
     });
     return;
   }
+  debugLog("--DEBUG LOG: CONTEXT LOGS", contextTexts);
 
-  // Compress & Assemble message to ensure prompt passes token limit with room for response
-  // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: await chatPrompt(workspace, user),
@@ -706,8 +610,6 @@ async function streamChat({
     rawHistory
   );
 
-  // If streaming is not explicitly enabled for connector
-  // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
     console.log(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
@@ -754,7 +656,6 @@ async function streamChat({
       user,
     });
 
-    debugLog("Streaming complete", { uuid, metrics });
     writeResponseChunk(response, {
       uuid,
       type: "finalizeResponseStream",
@@ -766,7 +667,6 @@ async function streamChat({
     return;
   }
 
-  debugLog("Streaming complete", { uuid, metrics });
   writeResponseChunk(response, {
     uuid,
     type: "finalizeResponseStream",

@@ -11,3 +11,4 @@ yarn.lock
 *.bak
 .idea
 .secrets
+server/storage/models/*
