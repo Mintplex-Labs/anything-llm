@@ -118,7 +118,6 @@ const Milvus = {
       collection_name: this.normalize(namespace),
     });
   },
-
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
