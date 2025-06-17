@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 import { ContextWrapper } from "@/AuthContext";
@@ -18,6 +18,7 @@ import { LogoProvider } from "./LogoContext";
 import { FullScreenLoader } from "./components/Preloader";
 import { ThemeProvider } from "./ThemeContext";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
+import { API_BASE } from "./utils/constants";
 
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
@@ -90,7 +91,46 @@ const SystemPromptVariables = lazy(
   () => import("@/pages/Admin/SystemPromptVariables")
 );
 
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return new Uint8Array([...rawData].map((char) => char.charCodeAt(0)));
+}
+
+function usePushNotifications() {
+  useEffect(() => {
+
+    async function setupPushNotifications() {
+      const { publicKey } = await fetch(`${API_BASE}/push-public-key`).then(res => res.json());
+      console.log('WPPK', publicKey);
+
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        navigator.serviceWorker.register('/service-workers/push.js').then(swReg => {
+          swReg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicKey)
+          }).then(subscription => {
+            fetch(`${API_BASE}/subscribe`, {
+              method: 'POST',
+              body: JSON.stringify(subscription),
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+          });
+        });
+      } else {
+        console.log('Push notifications are not supported in this browser');
+      }
+    }
+    setupPushNotifications();
+  }, []);
+}
+
 export default function App() {
+  usePushNotifications();
+
   return (
     <ThemeProvider>
       <Suspense fallback={<FullScreenLoader />}>
