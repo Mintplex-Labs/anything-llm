@@ -9,7 +9,7 @@ const CommunityHub = {
     process.env.NODE_ENV === "development"
       ? "http://127.0.0.1:5001/anythingllm-hub/us-central1/external/v1"
       : "https://hub.external.anythingllm.com/v1",
-  supportedStaticItemTypes: ["system-prompt"],
+  supportedStaticItemTypes: ["system-prompt", "agent-flow", "slash-command"],
 
   /**
    * Validate an import ID and return the entity type and ID.
