@@ -194,19 +194,78 @@ class MetaGenerator {
     if (customTitle === null && faviconURL === null) {
       this.#customConfig = this.#defaultMeta();
     } else {
-      this.#customConfig = [
-        {
-          tag: "link",
-          props: { rel: "icon", href: this.#validUrl(faviconURL) },
-        },
-        {
-          tag: "title",
-          props: null,
-          content:
-            customTitle ??
-            "AnythingLLM | Your personal LLM trained on anything",
-        },
-      ];
+      // When custom settings exist, include all default meta tags but override specific ones
+      this.#customConfig = this.#defaultMeta().map((tag) => {
+        // Override favicon link
+        if (tag.tag === "link" && tag.props?.rel === "icon") {
+          return {
+            tag: "link",
+            props: { rel: "icon", href: this.#validUrl(faviconURL) },
+          };
+        }
+        // Override page title
+        if (tag.tag === "title") {
+          return {
+            tag: "title",
+            props: null,
+            content:
+              customTitle ??
+              "AnythingLLM | Your personal LLM trained on anything",
+          };
+        }
+        // Override meta title
+        if (tag.tag === "meta" && tag.props?.name === "title") {
+          return {
+            tag: "meta",
+            props: {
+              name: "title",
+              content:
+                customTitle ??
+                "AnythingLLM | Your personal LLM trained on anything",
+            },
+          };
+        }
+        // Override og:title
+        if (tag.tag === "meta" && tag.props?.property === "og:title") {
+          return {
+            tag: "meta",
+            props: {
+              property: "og:title",
+              content:
+                customTitle ??
+                "AnythingLLM | Your personal LLM trained on anything",
+            },
+          };
+        }
+        // Override twitter:title
+        if (tag.tag === "meta" && tag.props?.property === "twitter:title") {
+          return {
+            tag: "meta",
+            props: {
+              property: "twitter:title",
+              content:
+                customTitle ??
+                "AnythingLLM | Your personal LLM trained on anything",
+            },
+          };
+        }
+        // Override apple-touch-icon if custom favicon is set
+        if (
+          tag.tag === "link" &&
+          tag.props?.rel === "apple-touch-icon" &&
+          faviconURL
+        ) {
+          return {
+            tag: "link",
+            props: {
+              rel: "apple-touch-icon",
+              href: this.#validUrl(faviconURL),
+            },
+          };
+        }
+        // Return original tag for everything else (including PWA tags)
+        return tag;
+      });
     }
 
     return this.#customConfig;
