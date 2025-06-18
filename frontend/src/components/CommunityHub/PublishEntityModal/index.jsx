@@ -4,6 +4,7 @@ import UnauthenticatedHubModal from "@/components/CommunityHub/UnauthenticatedHu
 import SystemPrompts from "./SystemPrompts";
 import ModalWrapper from "@/components/ModalWrapper";
 import AgentFlows from "./AgentFlows";
+import SlashCommands from "./SlashCommands";
 
 export default function PublishEntityModal({
   show,
@@ -22,6 +23,8 @@ export default function PublishEntityModal({
         return <SystemPrompts entity={entity} />;
       case "agent-flow":
         return <AgentFlows entity={entity} />;
+      case "slash-command":
+        return <SlashCommands entity={entity} />;
       default:
         return null;
     }
