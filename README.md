@@ -33,6 +33,19 @@
 </p>
 
 <p align="center">
+  Transted by readme-i18n:
+  <!-- Keep these links. Translations will automatically update with the README. -->
+  <a href="https://www.readme-i18n.com/Mintplex-Labs/anything-llm?lang=de">Deutsch</a> | 
+  <a href="https://www.readme-i18n.com/Mintplex-Labs/anything-llm?lang=es">Español</a> | 
+  <a href="https://www.readme-i18n.com/Mintplex-Labs/anything-llm?lang=fr">français</a> | 
+  <a href="https://www.readme-i18n.com/Mintplex-Labs/anything-llm?lang=ja">日本語</a> | 
+  <a href="https://www.readme-i18n.com/Mintplex-Labs/anything-llm?lang=ko">한국어</a> | 
+  <a href="https://www.readme-i18n.com/Mintplex-Labs/anything-llm?lang=pt">Português</a> | 
+  <a href="https://www.readme-i18n.com/Mintplex-Labs/anything-llm?lang=ru">Русский</a> | 
+  <a href="https://www.readme-i18n.com/Mintplex-Labs/anything-llm?lang=zh">中文</a>
+</p>
+
+<p align="center">
 👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://anythingllm.com/download" target="_blank"> Download Now</a>
 </p>
 
