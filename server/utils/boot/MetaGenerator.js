@@ -181,10 +181,19 @@ class MetaGenerator {
   async #fetchConfg() {
     this.#log(`fetching custom meta tag settings...`);
     const { SystemSettings } = require("../../models/systemSettings");
-    const customTitle = await SystemSettings.getValueOrFallback(
+
+    let customTitle = await SystemSettings.getValueOrFallback(
       { label: "meta_page_title" },
       null
     );
+
+    if (!customTitle) {
+      customTitle = await SystemSettings.getValueOrFallback(
+        { label: "custom_app_name" },
+        null
+      );
+    }
+
     const faviconURL = await SystemSettings.getValueOrFallback(
       { label: "meta_page_favicon" },
       null
