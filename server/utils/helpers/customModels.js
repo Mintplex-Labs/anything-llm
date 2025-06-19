@@ -1,6 +1,7 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
 const { fetchApiPieModels } = require("../AiProviders/apipie");
 const { perplexityModels } = require("../AiProviders/perplexity");
+const { sambanovaModels } = require("../AiProviders/sambanova");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
@@ -15,6 +16,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "anthropic",
   "localai",
   "ollama",
+  "sambanova",
   "togetherai",
   "fireworksai",
   "nvidia-nim",
@@ -48,6 +50,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await localAIModels(basePath, apiKey);
     case "ollama":
       return await ollamaAIModels(basePath, apiKey);
+    case "sambanova":
+      return await getSambaNovaModels(apiKey);
     case "togetherai":
       return await getTogetherAiModels(apiKey);
     case "fireworksai":
@@ -370,6 +374,23 @@ async function ollamaAIModels(basePath = null, _authToken = null) {
   if (models.length > 0 && !!authToken)
     process.env.OLLAMA_AUTH_TOKEN = authToken;
   return { models, error: null };
+}
+
+async function getSambaNovaModels(apiKey = null) {
+  const _apiKey =
+    apiKey === true
+      ? process.env.SAMBANOVA_API_KEY
+      : apiKey || process.env.SAMBANOVA_API_KEY || null;
+  try {
+    const { sambanovaModels } = require("../AiProviders/sambanova");
+    const models = await sambanovaModels(_apiKey);
+    if (models.length > 0 && !!_apiKey)
+      process.env.SAMBANOVA_API_KEY = _apiKey;
+    return { models, error: null };
+  } catch (error) {
+    console.error("Error in getSambaNovaModels:", error);
+    return { models: [], error: "Failed to fetch SambaNova models" };
+  }
 }
 
 async function getTogetherAiModels(apiKey = null) {

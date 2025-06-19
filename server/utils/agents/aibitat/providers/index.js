@@ -3,6 +3,7 @@ const AnthropicProvider = require("./anthropic.js");
 const LMStudioProvider = require("./lmstudio.js");
 const OllamaProvider = require("./ollama.js");
 const GroqProvider = require("./groq.js");
+const SambaNovaProvider = require("./sambanova.js");
 const TogetherAIProvider = require("./togetherai.js");
 const AzureOpenAiProvider = require("./azure.js");
 const KoboldCPPProvider = require("./koboldcpp.js");
@@ -30,6 +31,7 @@ module.exports = {
   LMStudioProvider,
   OllamaProvider,
   GroqProvider,
+  SambaNovaProvider,
   TogetherAIProvider,
   AzureOpenAiProvider,
   KoboldCPPProvider,

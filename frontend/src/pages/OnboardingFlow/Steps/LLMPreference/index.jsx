@@ -8,6 +8,7 @@ import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
+import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
@@ -38,6 +39,7 @@ import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
+import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
@@ -159,6 +161,13 @@ const LLMS = [
     logo: TextGenWebUILogo,
     options: (settings) => <TextGenWebUIOptions settings={settings} />,
     description: "Run local LLMs using Oobabooga's Text Generation Web UI.",
+  },
+  {
+    name: "SambaNova",
+    value: "sambanova",
+    logo: SambaNovaLogo,
+    options: (settings) => <SambaNovaOptions settings={settings} />,
+    description: "Run open source models from SambaNova.",
   },
   {
     name: "Together AI",

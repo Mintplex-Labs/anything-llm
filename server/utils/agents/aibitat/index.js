@@ -788,6 +788,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.OllamaProvider({ model: config.model });
       case "groq":
         return new Providers.GroqProvider({ model: config.model });
+      case "sambanova":
+        return new Providers.SambaNovaProvider({ model: config.model });
       case "togetherai":
         return new Providers.TogetherAIProvider({ model: config.model });
       case "azure":

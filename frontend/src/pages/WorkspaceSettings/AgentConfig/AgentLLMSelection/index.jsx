@@ -15,6 +15,7 @@ const ENABLED_PROVIDERS = [
   "groq",
   "azure",
   "koboldcpp",
+  "sambanova",
   "togetherai",
   "openrouter",
   "novita",

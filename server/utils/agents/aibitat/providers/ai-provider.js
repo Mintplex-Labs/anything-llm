@@ -96,6 +96,14 @@ class Provider {
           apiKey: process.env.PERPLEXITY_API_KEY ?? null,
           ...config,
         });
+      case "sambanova":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.sambanova.ai/v1/",
+          },
+          apiKey: process.env.SAMBANOVA_API_KEY ?? null,
+          ...config,
+        });
       case "togetherai":
         return new ChatOpenAI({
           configuration: {
