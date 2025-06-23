@@ -24,7 +24,6 @@ export default function ImportFromCurlModal({ isOpen, onClose, onImport }) {
     try {
       const parsedConfig = parseCurlCommand(curlInput);
 
-      // Call the parent's onImport function with parsed values
       onImport({
         url: parsedConfig.url,
         method: parsedConfig.method,
