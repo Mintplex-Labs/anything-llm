@@ -120,6 +120,9 @@ function getModelTag() {
     case "fireworksai":
       model = process.env.FIREWORKS_AI_LLM_MODEL_PREF;
       break;
+    case "sambanova":
+      model = process.env.SAMBANOVA_MODEL_PREF;
+      break;
     case "deepseek":
       model = process.env.DEEPSEEK_MODEL_PREF;
       break;

@@ -88,6 +88,7 @@ AnythingLLM, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen 
 - [LocalAi (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
 - [Fireworks AI  (chat models)](https://fireworks.ai/)
+- [SambaNova Cloud (chat models)](https://cloud.sambanova.ai/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [DeepSeek (chat models)](https://deepseek.com/)
