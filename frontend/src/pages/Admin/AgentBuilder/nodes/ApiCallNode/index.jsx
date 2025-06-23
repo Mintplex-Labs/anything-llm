@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
-import { Plus, X, CaretDown } from "@phosphor-icons/react";
+import { Plus, X, CaretDown, Download } from "@phosphor-icons/react";
+import ImportFromCurlModal from "./ImportFromCurlModal";
 
 export default function ApiCallNode({
   config,
@@ -8,6 +9,7 @@ export default function ApiCallNode({
 }) {
   const urlInputRef = useRef(null);
   const [showVarMenu, setShowVarMenu] = useState(false);
+  const [showCurlModal, setShowCurlModal] = useState(false);
   const varButtonRef = useRef(null);
 
   const handleHeaderChange = (index, field, value) => {
@@ -54,12 +56,27 @@ export default function ApiCallNode({
     }, 0);
   };
 
+  const handleCurlImport = (parsedConfig) => {
+    onConfigChange(parsedConfig);
+    setShowCurlModal(false);
+  };
+
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-theme-text-primary mb-2">
-          URL
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-sm font-medium text-theme-text-primary">
+            URL
+          </label>
+          <button
+            onClick={() => setShowCurlModal(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border-none bg-theme-settings-input-bg text-theme-text-primary hover:bg-theme-action-menu-item-hover transition-colors duration-300"
+            title="Import from cURL"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Import cURL
+          </button>
+        </div>
         <div className="flex gap-2">
           <input
             ref={urlInputRef}
@@ -288,6 +305,11 @@ export default function ApiCallNode({
           "Select or create variable"
         )}
       </div>
+      <ImportFromCurlModal
+        isOpen={showCurlModal}
+        onClose={() => setShowCurlModal(false)}
+        onImport={handleCurlImport}
+      />
     </div>
   );
 }
