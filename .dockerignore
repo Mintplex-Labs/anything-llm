@@ -16,3 +16,9 @@
 **/.log
 !docker/.env.example
 !frontend/.env.production
+
+**/storage/documents/**
+**/storage/vector-cache/**
+**/storage/*.db
+**/storage/lancedb
+**/storage/astra
