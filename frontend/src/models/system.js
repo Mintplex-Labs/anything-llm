@@ -11,6 +11,7 @@ const System = {
     supportEmail: "anythingllm_support_email",
     customAppName: "anythingllm_custom_app_name",
     canViewChatHistory: "anythingllm_can_view_chat_history",
+    appVersion: "anythingllm_app_version",
   },
   ping: async function () {
     return await fetch(`${API_BASE}/ping`)
@@ -309,6 +310,40 @@ const System = {
       JSON.stringify({ email: supportEmail, lastFetched: Date.now() })
     );
     return { email: supportEmail, error: null };
+  },
+
+  fetchAppVersion: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.appVersion);
+    const { version, lastFetched } = cache
+      ? safeJsonParse(cache, { version: "unknown", lastFetched: 0 })
+      : { version: "unknown", lastFetched: 0 };
+
+    if (
+      !!version &&
+      version !== "unknown" &&
+      Date.now() - lastFetched < 3_600_000
+    )
+      return version;
+
+    const newVersion = await fetch(`${API_BASE}/utils/version`, {
+      method: "GET",
+      cache: "no-cache",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch app version.");
+        return res.json();
+      })
+      .then((res) => res?.version || "unknown")
+      .catch((e) => {
+        console.error(e);
+        return "unknown";
+      });
+
+    window.localStorage.setItem(
+      this.cacheKeys.appVersion,
+      JSON.stringify({ version: newVersion, lastFetched: Date.now() })
+    );
+    return newVersion;
   },
 
   fetchCustomAppName: async function () {

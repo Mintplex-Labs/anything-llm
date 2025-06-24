@@ -30,6 +30,7 @@ export default function SettingsSidebar() {
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
+  const [appVersion, setAppVersion] = useState("");
 
   useEffect(() => {
     function handleBg() {
@@ -43,6 +44,14 @@ export default function SettingsSidebar() {
     }
     handleBg();
   }, [showSidebar]);
+
+  useEffect(() => {
+    const fetchVersion = async () => {
+      const version = await System.fetchAppVersion();
+      setAppVersion(version);
+    };
+    fetchVersion();
+  }, []);
 
   if (isMobile) {
     return (
@@ -115,10 +124,13 @@ export default function SettingsSidebar() {
                         user?.hasOwnProperty("role") && user.role !== "admin"
                       }
                       to={paths.settings.privacy()}
-                      className="text-theme-text-secondary hover:text-white text-xs leading-[18px] mx-3"
+                      className="text-theme-text-secondary hover:text-white hover:light:text-theme-text-primary text-xs leading-[18px] mx-3"
                     >
                       {t("settings.privacy")}
                     </Link>
+                    <div className="text-theme-text-secondary hover:text-white text-xs leading-[18px] mx-3">
+                      v{appVersion}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -169,6 +181,9 @@ export default function SettingsSidebar() {
                   >
                     {t("settings.privacy")}
                   </Link>
+                  <div className="text-theme-text-secondary hover:text-white text-xs leading-[18px] mx-3">
+                    v{appVersion}
+                  </div>
                 </div>
               </div>
             </div>

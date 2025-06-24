@@ -1,4 +1,5 @@
 const { SystemSettings } = require("../models/systemSettings");
+const path = require("path");
 
 function utilEndpoints(app) {
   if (!app) return;
@@ -20,6 +21,26 @@ function utilEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.get("/utils/version", async (_, response) => {
+    try {
+      response.status(200).json({ version: getAppVersion() });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
+    }
+  });
+}
+
+function getAppVersion() {
+  try {
+    const packageJsonPath = path.join(__dirname, "../../package.json");
+    const packageJson = require(packageJsonPath);
+    return packageJson.version;
+  } catch (e) {
+    console.error("getAppVersion", e.message);
+    return "unknown";
+  }
 }
 
 function getGitVersion() {
