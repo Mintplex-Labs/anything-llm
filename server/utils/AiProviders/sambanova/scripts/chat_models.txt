@@ -1,0 +1,7 @@
+| Organization | Model Name | Model String for API | Context length |
+|--------------|------------|----------------------|----------------|
+| Meta | Llama 3.1 405B Instruct | Meta-Llama-3.1-405B-Instruct | 16384 |
+| Meta | Llama 3.3 70B Instruct | Meta-Llama-3.3-70B-Instruct | 16384 |
+| Meta | Llama 3.1 8B Instruct | Meta-Llama-3.1-8B-Instruct | 16384 |
+| Meta | Llama 4 Scout | Llama-4-Scout-17B-16E-Instruct | 8912 |
+| Meta | Llama 4 Maverick | Llama-4-Maverick-17B-128E-Instruct | 131072 |

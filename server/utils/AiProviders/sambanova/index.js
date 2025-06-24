@@ -15,106 +15,9 @@ const cacheFolder = path.resolve(
     : path.resolve(__dirname, `../../../storage/models/sambanova`)
 );
 
-// async function sambanovaModels(apiKey = null) {
-//   console.log('trying to get models from cloud api')
-//   // const cacheModelPath = path.resolve(cacheFolder, "models.json");
-//   // const cacheAtPath = path.resolve(cacheFolder, ".cached_at");
-
-//   // // If cache exists and is less than 1 week old, use it
-//   // if (fs.existsSync(cacheModelPath) && fs.existsSync(cacheAtPath)) {
-//   //   const now = Number(new Date());
-//   //   const timestampMs = Number(fs.readFileSync(cacheAtPath));
-//   //   if (now - timestampMs <= 6.048e8) {
-//   //     // 1 Week in MS
-//   //     return safeJsonParse(
-//   //       fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
-//   //       []
-//   //     );
-//   //   }
-//   // }
-
-//   try {
-//     // const { OpenAI: OpenAIApi } = require("openai");
-//     // const openai = new OpenAIApi({
-//     //   baseURL: "https://api.sambanova.ai/v1",
-//     //   apiKey: apiKey || process.env.SAMBANOVA_API_KEY || null,
-//     // });
-
-//     // const response = await openai.models.list();
-
-//     // // Filter and transform models into the expected format
-//     // // Only include chat models
-//     // const validModels = response.body
-//     //   .filter((model) => ["chat"].includes(model.type))
-//     //   .map((model) => ({
-//     //     id: model.id,
-//     //     name: model.display_name || model.id,
-//     //     organization: model.organization || "Unknown",
-//     //     type: model.type,
-//     //     maxLength: model.context_length || 4096,
-//     //   }));
-
-//     // // Cache the results
-//     // if (!fs.existsSync(cacheFolder))
-//     //   fs.mkdirSync(cacheFolder, { recursive: true });
-//     // fs.writeFileSync(cacheModelPath, JSON.stringify(validModels), {
-//     //   encoding: "utf-8",
-//     // });
-//     // fs.writeFileSync(cacheAtPath, String(Number(new Date())), {
-//     //   encoding: "utf-8",
-//     // });
-
-//     return validModels;
-//   } catch (error) {
-//     console.error("Error fetching SambaNova models:", error);
-//     // If cache exists but is stale, still use it as fallback
-//     // if (fs.existsSync(cacheModelPath)) {
-//     //   return safeJsonParse(
-//     //     fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
-//     //     []
-//     //   );
-//     // }
-//     return [];
-//   }
-// }
-
-async function sambanovaModels(apiKey = null) {
-  console.log('Trying to get models from SambaNova Cloud API');
-
-  const endpoint = 'https://api.sambanova.ai/v1/models';
-  const headers = {
-    'Content-Type': 'application/json',
-  };
-
-  if (apiKey) {
-    headers['Authorization'] = `Bearer ${apiKey}`;
-  }
-
-  try {
-    const response = await fetch(endpoint, {
-      method: 'GET',
-      headers: headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (!data || !Array.isArray(data.data)) {
-      throw new Error("Unexpected response structure");
-    }
-
-    const modelIds = data.data.map(model => model.id);
-
-    console.log("Fetched models:", modelIds);
-
-    return modelIds;
-  } catch (error) {
-    console.error("Error fetching SambaNova models:", error);
-    return [];
-  }
+function sambanovaModels() {
+    const { MODELS } = require("./models.js");
+    return MODELS || {};
 }
 
 class SambaNovaLLM {
@@ -166,34 +69,27 @@ class SambaNovaLLM {
     return content.flat();
   }
 
-  async allModelInformation() {
-    const models = await sambanovaModels();
-    return models.reduce((acc, model) => {
-      acc[model.id] = model;
-      return acc;
-    }, {});
+  allModelInformation() {
+    return sambanovaModels();
   }
 
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
 
-  static async promptWindowLimit(modelName) {
-    const models = await sambanovaModels();
-    const model = models.find((m) => m.id === modelName);
-    return model?.maxLength || 4096;
+  static promptWindowLimit(modelName) {
+    const availableModels = sambanovaModels();
+    return availableModels[modelName]?.maxLength || 4096;
   }
 
-  async promptWindowLimit() {
-    const models = await sambanovaModels();
-    const model = models.find((m) => m.id === this.model);
-    return model?.maxLength || 4096;
+  promptWindowLimit() {
+    const availableModels = this.allModelInformation();
+    return availableModels[this.model]?.maxLength || 4096;
   }
 
   async isValidChatCompletionModel(model = "") {
-    const models = await sambanovaModels();
-    const foundModel = models.find((m) => m.id === model);
-    return foundModel && foundModel.type === "chat";
+    const availableModels = this.allModelInformation();
+    return availableModels.hasOwnProperty(model);
   }
 
   constructPrompt({

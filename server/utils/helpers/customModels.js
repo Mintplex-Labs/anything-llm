@@ -376,23 +376,6 @@ async function ollamaAIModels(basePath = null, _authToken = null) {
   return { models, error: null };
 }
 
-async function getSambaNovaModels(apiKey = null) {
-  const _apiKey =
-    apiKey === true
-      ? process.env.SAMBANOVA_API_KEY
-      : apiKey || process.env.SAMBANOVA_API_KEY || null;
-  try {
-    const { sambanovaModels } = require("../AiProviders/sambanova");
-    const models = await sambanovaModels(_apiKey);
-    if (models.length > 0 && !!_apiKey)
-      process.env.SAMBANOVA_API_KEY = _apiKey;
-    return { models, error: null };
-  } catch (error) {
-    console.error("Error in getSambaNovaModels:", error);
-    return { models: [], error: "Failed to fetch SambaNova models" };
-  }
-}
-
 async function getTogetherAiModels(apiKey = null) {
   const _apiKey =
     apiKey === true
@@ -412,6 +395,21 @@ async function getTogetherAiModels(apiKey = null) {
 
 async function getFireworksAiModels() {
   const knownModels = fireworksAiModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getSambaNovaModels() {
+  const knownModels = sambanovaModels();
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 
