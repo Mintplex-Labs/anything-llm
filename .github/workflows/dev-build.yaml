@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['3982-disable-login-simple-sso'] # put your current branch to create a build. Core team only.
+    branches: ['4034-version-control'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
