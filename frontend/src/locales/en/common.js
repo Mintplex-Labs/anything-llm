@@ -1084,6 +1084,37 @@ const TRANSLATIONS = {
         privacy_note:
           "Agent flows are always uploaded as private to protect any sensitive data. You can change the visibility in the Community Hub after publishing. Please verify your flow does not contain any sensitive or private information before publishing.",
       },
+      slash_command: {
+        success_title: "Success!",
+        success_description:
+          "Your Slash Command has been published to the Community Hub!",
+        success_thank_you: "Thank you for sharing to the Community!",
+        view_on_hub: "View on Community Hub",
+        modal_title: "Publish Slash Command",
+        name_label: "Name",
+        name_description: "This is the display name of your slash command.",
+        name_placeholder: "My Slash Command",
+        description_label: "Description",
+        description_description:
+          "This is the description of your slash command. Use this to describe the purpose of your slash command.",
+        command_label: "Command",
+        command_description:
+          "This is the slash command that users will type to trigger this preset.",
+        command_placeholder: "my-command",
+        tags_label: "Tags",
+        tags_description:
+          "Tags are used to label your slash command for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
+        tags_placeholder: "Type and press Enter to add tags",
+        visibility_label: "Visibility",
+        public_description: "Public slash commands are visible to everyone.",
+        private_description: "Private slash commands are only visible to you.",
+        publish_button: "Publish to Community Hub",
+        submitting: "Publishing...",
+        prompt_label: "Prompt",
+        prompt_description:
+          "This is the prompt that will be used when the slash command is triggered.",
+        prompt_placeholder: "Enter your prompt here...",
+      },
       generic: {
         unauthenticated: {
           title: "Authentication Required",
