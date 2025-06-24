@@ -28,6 +28,7 @@ const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
+const { pushNotificationService } = require("./utils/PushNotifications");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -65,6 +66,18 @@ developerEndpoints(app, apiRouter);
 communityHubEndpoints(apiRouter);
 agentFlowEndpoints(apiRouter);
 mcpServersEndpoints(apiRouter);
+
+// Testing
+apiRouter.post("/subscribe", (req, res) => {
+  const subscription = req.body;
+  pushNotificationService.subscribe(subscription);
+  res.status(201).json({});
+});
+
+apiRouter.get("/push-public-key", (_req, res) => {
+  const publicKey = pushNotificationService.publicVapidKey;
+  res.status(200).json({ publicKey });
+});
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
