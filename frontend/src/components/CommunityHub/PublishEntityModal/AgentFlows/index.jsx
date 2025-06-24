@@ -177,17 +177,12 @@ export default function AgentFlows({ entity }) {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-white mb-1">
+            <label className="block text-sm font-semibold text-white">
               {t("community_hub.publish.agent_flow.visibility_label")}
             </label>
-            <div className="text-xs text-white/60 mb-2">
-              {t("community_hub.publish.agent_flow.private_description")}
-            </div>
-            <div className="bg-theme-bg-secondary rounded-lg p-2 mt-2">
-              <span className="text-xs text-theme-text-secondary">
-                {t("community_hub.publish.agent_flow.privacy_note")}
-              </span>
-            </div>
+            <span className="text-xs text-theme-text-secondary">
+              {t("community_hub.publish.agent_flow.privacy_note")}
+            </span>
           </div>
         </div>
         <div className="w-1/2 p-6 pt-0 flex flex-col gap-y-4">
