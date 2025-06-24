@@ -24,7 +24,7 @@ export default function SlashCommands({ entity }) {
       const data = {
         name: form.get("name"),
         description: form.get("description"),
-        command: form.get("command"),
+        command: entity.command,
         prompt: form.get("prompt"),
         tags: tags,
         visibility: visibility,
@@ -90,8 +90,11 @@ export default function SlashCommands({ entity }) {
   return (
     <>
       <div className="w-full flex gap-x-2 items-center mb-3 -mt-8">
-        <h3 className="text-xl font-semibold text-theme-text-primary px-6 py-3">
+        <h3 className="text-xl font-semibold text-theme-text-primary px-6 py-3 flex items-center gap-x-2">
           {t("community_hub.publish.slash_command.modal_title")}
+          <code className="bg-theme-bg-secondary rounded-lg px-1 text-theme-text-secondary text-lg font-mono">
+            {entity.command}
+          </code>
         </h3>
       </div>
       <form ref={formRef} className="flex" onSubmit={handleSubmit}>
@@ -136,28 +139,6 @@ export default function SlashCommands({ entity }) {
               className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
             />
           </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-theme-text-primary mb-1">
-              {t("community_hub.publish.slash_command.command_label")}
-            </label>
-            <div className="text-xs text-white/60 mb-2">
-              {t("community_hub.publish.slash_command.command_description")}
-            </div>
-            <input
-              type="text"
-              name="command"
-              required
-              minLength={1}
-              maxLength={50}
-              defaultValue={entity.command}
-              placeholder={t(
-                "community_hub.publish.slash_command.command_placeholder"
-              )}
-              className="w-full bg-theme-bg-secondary rounded-lg p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
-            />
-          </div>
-
           <div>
             <label className="block text-sm font-semibold text-white mb-1">
               {t("community_hub.publish.slash_command.tags_label")}
