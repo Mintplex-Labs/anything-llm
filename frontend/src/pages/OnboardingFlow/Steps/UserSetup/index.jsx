@@ -284,7 +284,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
                   htmlFor="name"
                   className="block mb-3 text-sm font-medium text-white"
                 >
-                  {t("common.adminUsername")}
+                  {t("onboarding.userSetup.adminUsername")}
                 </label>
                 <input
                   name="username"

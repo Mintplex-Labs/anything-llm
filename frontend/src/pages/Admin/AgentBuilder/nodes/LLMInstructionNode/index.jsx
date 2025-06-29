@@ -9,17 +9,6 @@ export default function LLMInstructionNode({
     <div className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-theme-text-primary mb-2">
-          Input Variable
-        </label>
-        {renderVariableSelect(
-          config.inputVariable,
-          (value) => onConfigChange({ ...config, inputVariable: value }),
-          "Select input variable"
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-theme-text-primary mb-2">
           Instruction
         </label>
         <textarea

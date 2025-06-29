@@ -9,6 +9,7 @@ const CommunityHub = {
     process.env.NODE_ENV === "development"
       ? "http://127.0.0.1:5001/anythingllm-hub/us-central1/external/v1"
       : "https://hub.external.anythingllm.com/v1",
+  supportedStaticItemTypes: ["system-prompt", "agent-flow", "slash-command"],
 
   /**
    * Validate an import ID and return the entity type and ID.
@@ -170,6 +171,41 @@ const CommunityHub = {
       .catch((error) => {
         console.error("Error fetching user items:", error);
         return { createdByMe: {}, teamItems: [] };
+      });
+  },
+
+  /**
+   * Create a new item in the community hub - Only supports STATIC items for now.
+   * @param {string} itemType - The type of item to create
+   * @param {object} data - The item data
+   * @param {string} connectionKey - The hub connection key
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  createStaticItem: async function (itemType, data, connectionKey) {
+    if (!connectionKey)
+      return { success: false, error: "Connection key is required" };
+    if (!this.supportedStaticItemTypes.includes(itemType))
+      return { success: false, error: "Unsupported item type" };
+
+    // If the item has special considerations or preprocessing, we can delegate that below before sending the request.
+    // eg: Agent flow files and such.
+
+    return await fetch(`${this.apiBase}/${itemType}/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${connectionKey}`,
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (!!result.error) throw new Error(result.error || "Unknown error");
+        return { success: true, error: null, itemId: result.item.id };
+      })
+      .catch((error) => {
+        console.error(`Error creating ${itemType}:`, error);
+        return { success: false, error: error.message };
       });
   },
 };

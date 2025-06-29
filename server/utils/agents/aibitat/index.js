@@ -12,6 +12,19 @@ const { Telemetry } = require("../../../models/telemetry.js");
 class AIbitat {
   emitter = new EventEmitter();
 
+  /**
+   * Temporary flag to skip the handleExecution function
+   * This is used to return the result of a flow execution directly to the chat
+   * without going through the handleExecution function (resulting in more LLM processing)
+   *
+   * Setting Skip execution to true will prevent any further tool calls from being executed.
+   * This is useful for flow executions that need to return a result directly to the chat but
+   * can also prevent tool-call chaining.
+   *
+   * @type {boolean}
+   */
+  skipHandleExecution = false;
+
   provider = null;
   defaultProvider = null;
   defaultInterrupt;
@@ -618,19 +631,35 @@ ${this.getHistory({ to: route.to })
       // Execute the function and return the result to the provider
       fn.caller = byAgent || "agent";
 
-      // For OSS LLMs we really need to keep tabs on what they are calling
-      // so we can log it here.
+      // If provider is verbose, log the tool call to the frontend
       if (provider?.verbose) {
         this?.introspect?.(
           `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
         );
-        this.handlerProps.log(
-          `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
-        );
       }
+
+      // Always log the tool call to the console for debugging purposes
+      this.handlerProps?.log?.(
+        `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
+      );
 
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
+
+      // If the tool call has direct output enabled, return the result directly to the chat
+      // without any further processing and no further tool calls will be run.
+      if (this.skipHandleExecution) {
+        this.skipHandleExecution = false; // reset the flag to prevent next tool call from being skipped
+        this?.introspect?.(
+          `The tool call has direct output enabled! The result will be returned directly to the chat without any further processing and no further tool calls will be run.`
+        );
+        this?.introspect?.(`Tool use completed.`);
+        this.handlerProps?.log?.(
+          `${fn.caller} tool call resulted in direct output! Returning raw result as string. NO MORE TOOL CALLS WILL BE EXECUTED.`
+        );
+        return result;
+      }
+
       return await this.handleExecution(
         provider,
         [

@@ -63,10 +63,10 @@ const GeneralBrowserExtension = lazy(
   () => import("@/pages/GeneralSettings/BrowserExtensionApiKey")
 );
 const WorkspaceSettings = lazy(() => import("@/pages/WorkspaceSettings"));
-const EmbedConfigSetup = lazy(
-  () => import("@/pages/GeneralSettings/EmbedConfigs")
+
+const ChatEmbedWidgets = lazy(
+  () => import("@/pages/GeneralSettings/ChatEmbedWidgets")
 );
-const EmbedChats = lazy(() => import("@/pages/GeneralSettings/EmbedChats"));
 const PrivacyAndData = lazy(
   () => import("@/pages/GeneralSettings/PrivacyAndData")
 );
@@ -178,12 +178,8 @@ export default function App() {
                     element={<AdminRoute Component={AdminLogs} />}
                   />
                   <Route
-                    path="/settings/embed-config"
-                    element={<AdminRoute Component={EmbedConfigSetup} />}
-                  />
-                  <Route
-                    path="/settings/embed-chats"
-                    element={<AdminRoute Component={EmbedChats} />}
+                    path="/settings/embed-chat-widgets"
+                    element={<AdminRoute Component={ChatEmbedWidgets} />}
                   />
                   {/* Manager */}
                   <Route

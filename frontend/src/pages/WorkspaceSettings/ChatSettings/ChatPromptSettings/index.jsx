@@ -6,6 +6,8 @@ import Highlighter from "react-highlight-words";
 import { Link, useSearchParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import ChatPromptHistory from "./ChatPromptHistory";
+import PublishEntityModal from "@/components/CommunityHub/PublishEntityModal";
+import { useModal } from "@/hooks/useModal";
 
 // TODO: Move to backend and have user-language sensitive default prompt
 const DEFAULT_PROMPT =
@@ -21,13 +23,12 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   const promptHistoryRef = useRef(null);
   const historyButtonRef = useRef(null);
   const [searchParams] = useSearchParams();
-
-  const handleRestore = (prompt) => {
-    setPrompt(prompt);
-    setShowPromptHistory(false);
-    setHasChanges(true);
-    // TODO: Autosave on restore
-  };
+  const {
+    isOpen: showPublishModal,
+    closeModal: closePublishModal,
+    openModal: openPublishModal,
+  } = useModal();
+  const [currentPrompt, setCurrentPrompt] = useState(chatPrompt(workspace));
 
   useEffect(() => {
     async function setupVariableHighlighting() {
@@ -66,6 +67,18 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
     };
   }, []);
 
+  const handleRestore = (prompt) => {
+    setPrompt(prompt);
+    setShowPromptHistory(false);
+    setHasChanges(true);
+  };
+
+  const handlePublishClick = (prompt) => {
+    setCurrentPrompt(prompt);
+    setShowPromptHistory(false);
+    openPublishModal();
+  };
+
   return (
     <>
       <ChatPromptHistory
@@ -73,6 +86,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
         workspaceSlug={workspace.slug}
         show={showPromptHistory}
         onRestore={handleRestore}
+        onPublishClick={handlePublishClick}
         onClose={() => {
           setShowPromptHistory(false);
         }}
@@ -120,7 +134,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           <button
             ref={historyButtonRef}
             type="button"
-            className="text-theme-text-secondary hover:text-white light:hover:text-black text-sm font-medium"
+            className="text-theme-text-secondary hover:text-white light:hover:text-black text-xs font-medium"
             onClick={(e) => {
               e.preventDefault();
               setShowPromptHistory(!showPromptHistory);
@@ -186,17 +200,49 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
           </div>
           <div className="w-full flex flex-row items-center justify-between pt-2">
             {prompt !== DEFAULT_PROMPT && (
-              <button
-                type="button"
-                onClick={() => handleRestore(DEFAULT_PROMPT)}
-                className="text-theme-text-primary hover:text-white light:hover:text-black text-sm font-medium"
-              >
-                Clear
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleRestore(DEFAULT_PROMPT)}
+                  className="text-theme-text-primary hover:text-white light:hover:text-black text-xs font-medium"
+                >
+                  Clear
+                </button>
+                <PublishPromptCTA
+                  hidden={
+                    isEditing ||
+                    prompt === DEFAULT_PROMPT ||
+                    prompt?.trim().length < 10
+                  }
+                  onClick={() => {
+                    setCurrentPrompt(prompt);
+                    openPublishModal();
+                  }}
+                />
+              </>
             )}
           </div>
         </div>
       </div>
+      <PublishEntityModal
+        show={showPublishModal}
+        onClose={closePublishModal}
+        entityType="system-prompt"
+        entity={currentPrompt}
+      />
     </>
+  );
+}
+
+function PublishPromptCTA({ hidden = false, onClick }) {
+  if (hidden) return null;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="border-none text-primary-button hover:text-white light:hover:text-black text-xs font-medium"
+    >
+      Publish to Community Hub
+    </button>
   );
 }

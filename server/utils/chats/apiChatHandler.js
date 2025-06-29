@@ -434,7 +434,6 @@ async function streamChat({
     return eventListener
       .streamAgentEvents(response, uuid)
       .then(async ({ thoughts, textResponse }) => {
-        console.log({ thoughts, textResponse });
         await WorkspaceChats.new({
           workspaceId: workspace.id,
           prompt: String(message),
@@ -445,7 +444,8 @@ async function streamChat({
             type: chatMode,
             thoughts,
           },
-          include: false,
+          include: true,
+          threadId: thread?.id || null,
           apiSessionId: sessionId,
         });
         writeResponseChunk(response, {
