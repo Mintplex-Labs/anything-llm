@@ -13,6 +13,7 @@ function utilEndpoints(app) {
           : "single-user",
         vectorDB: process.env.VECTOR_DB || "lancedb",
         storage: await getDiskStorage(),
+        version: getDeploymentVersion(),
       };
       response.status(200).json(metrics);
     } catch (e) {
@@ -146,6 +147,20 @@ function getModelTag() {
       break;
   }
   return model;
+}
+
+/**
+ * Returns the deployment version.
+ * - Dev: reads from package.json
+ * - Prod: reads from ENV
+ * expected format: major.minor.patch
+ * @returns {string|null} The deployment version.
+ */
+function getDeploymentVersion() {
+  if (process.env.NODE_ENV === "development")
+    return require("../../package.json").version;
+  if (process.env.DEPLOYMENT_VERSION) return process.env.DEPLOYMENT_VERSION;
+  return null;
 }
 
 module.exports = {

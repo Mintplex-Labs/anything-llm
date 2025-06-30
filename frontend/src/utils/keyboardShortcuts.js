@@ -1,6 +1,7 @@
 import paths from "./paths";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { userFromStorage } from "./request";
+import { TOGGLE_LLM_SELECTOR_EVENT } from "@/components/WorkspaceChat/ChatContainer/PromptInput/LLMSelector/action";
 
 export const KEYBOARD_SHORTCUTS_HELP_EVENT = "keyboard-shortcuts-help";
 export const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
@@ -61,6 +62,12 @@ export const SHORTCUTS = {
       );
     },
   },
+  "⌘ + Shift + L": {
+    translationKey: "showLLMSelector",
+    action: () => {
+      window.dispatchEvent(new Event(TOGGLE_LLM_SELECTOR_EVENT));
+    },
+  },
 };
 
 const LISTENERS = {};
@@ -115,20 +122,9 @@ function useKeyboardShortcuts() {
     // since some of the shortcuts are only available in multi-user mode as admin
     const user = userFromStorage();
     if (!!user && user?.role !== "admin") return;
-
-    function handleHelpEvent(e) {
-      setShowHelp(e.detail.show);
-    }
-    window.addEventListener(KEYBOARD_SHORTCUTS_HELP_EVENT, handleHelpEvent);
     const cleanup = initKeyboardShortcuts();
 
-    return () => {
-      cleanup();
-      window.removeEventListener(
-        KEYBOARD_SHORTCUTS_HELP_EVENT,
-        handleHelpEvent
-      );
-    };
+    return () => cleanup();
   }, []);
   return;
 }

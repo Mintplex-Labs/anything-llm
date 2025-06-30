@@ -56,11 +56,11 @@ export default function WorkspaceFileRow({
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
   return (
     <div
-      className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 h-[34px] items-center ${
+      className={`text-theme-text-primary text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 h-[34px] items-center file-row ${
         !disableSelection
           ? "hover:bg-theme-file-picker-hover cursor-pointer"
           : ""
-      } ${isMovedItem ? "bg-green-800/40" : "file-row"} ${
+      } ${isMovedItem ? "selected light:text-white" : ""} ${
         selected ? "selected light:text-white" : ""
       }`}
       onClick={toggleRowSelection}

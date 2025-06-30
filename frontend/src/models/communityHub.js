@@ -153,6 +153,81 @@ const CommunityHub = {
         };
       });
   },
+
+  /**
+   * Create a new system prompt in the community hub
+   * @param {Object} data - The system prompt data
+   * @param {string} data.name - The name of the prompt
+   * @param {string} data.description - The description of the prompt
+   * @param {string} data.prompt - The actual system prompt text
+   * @param {string[]} data.tags - Array of tags
+   * @param {string} data.visibility - Either 'public' or 'private'
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  createSystemPrompt: async (data) => {
+    return await fetch(`${API_BASE}/community-hub/system-prompt/create`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then(async (res) => {
+        const response = await res.json();
+        if (!res.ok)
+          throw new Error(response.error || "Failed to create system prompt");
+        return { success: true, error: null, itemId: response.item?.id };
+      })
+      .catch((e) => ({
+        success: false,
+        error: e.message,
+      }));
+  },
+
+  /**
+   * Create a new agent flow in the community hub
+   * @param {Object} data - The agent flow data
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  createAgentFlow: async (data) => {
+    return await fetch(`${API_BASE}/community-hub/agent-flow/create`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    }).then(async (res) => {
+      const response = await res.json();
+      if (!res.ok)
+        throw new Error(response.error || "Failed to create agent flow");
+      return { success: true, error: null, itemId: response.item?.id };
+    });
+  },
+
+  /**
+   * Create a new slash command in the community hub
+   * @param {Object} data - The slash command data
+   * @param {string} data.name - The name of the command
+   * @param {string} data.description - The description of the command
+   * @param {string} data.command - The actual command text
+   * @param {string} data.prompt - The prompt for the command
+   * @param {string[]} data.tags - Array of tags
+   * @param {string} data.visibility - Either 'public' or 'private'
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
+  createSlashCommand: async (data) => {
+    return await fetch(`${API_BASE}/community-hub/slash-command/create`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then(async (res) => {
+        const response = await res.json();
+        if (!res.ok)
+          throw new Error(response.error || "Failed to create slash command");
+        return { success: true, error: null, itemId: response.item?.id };
+      })
+      .catch((e) => ({
+        success: false,
+        error: e.message,
+      }));
+  },
 };
 
 export default CommunityHub;

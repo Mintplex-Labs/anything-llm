@@ -20,7 +20,7 @@ In the project root's `package.json`, there are several scripts set up to help y
 - **prisma:migrate**: Runs the migrations to ensure the database is in sync with the schema.
 - **prisma:seed**: Seeds the database with initial data.
 - **prisma:setup**: A convenience script that runs `prisma:generate`, `prisma:migrate`, and `prisma:seed` in sequence.
-- **sqlite:migrate**: (To be run from the `server` directory) This script is for users transitioning from the old SQLite custom ORM setup to Prisma and will migrate all exisiting data over to Prisma. If you're a new user, your setup will already use Prisma.
+- **sqlite:migrate**: (To be run from the `server` directory) This script is for users transitioning from the old SQLite custom ORM setup to Prisma and will migrate all existing data over to Prisma. If you're a new user, your setup will already use Prisma.
 
 To run any of these scripts, use `yarn` followed by the script name from the project root directory. For example:
 

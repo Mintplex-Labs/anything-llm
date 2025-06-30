@@ -1,5 +1,7 @@
 import CommunityHubImportItemSteps from "..";
 import CTAButton from "@/components/lib/CTAButton";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
 
 export default function Completed({ settings, setSettings, setStep }) {
   return (
@@ -15,6 +17,14 @@ export default function Completed({ settings, setSettings, setStep }) {
               imported successfully! It is now available in your AnythingLLM
               instance.
             </p>
+            {settings.item.itemType === "agent-flow" && (
+              <Link
+                to={paths.settings.agentSkills()}
+                className="text-theme-text-primary hover:text-blue-500 hover:underline"
+              >
+                View "{settings.item.name}" in Agent Skills
+              </Link>
+            )}
             <p>
               Any changes you make to this {settings.item.itemType} will not be
               reflected in the community hub. You can now modify as needed.
