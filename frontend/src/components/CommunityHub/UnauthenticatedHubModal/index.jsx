@@ -21,16 +21,16 @@ export default function UnauthenticatedHubModal({ show, onClose }) {
           </button>
           <div className="flex flex-col items-center justify-center gap-y-4">
             <h3 className="text-lg font-semibold text-white">
-              {t("chat.prompt.publish.unauthenticated.title")}
+              {t("community_hub.publish.generic.unauthenticated.title")}
             </h3>
             <p className="text-lg text-white text-center max-w-[300px]">
-              {t("chat.prompt.publish.unauthenticated.description")}
+              {t("community_hub.publish.generic.unauthenticated.description")}
             </p>
             <Link
               to={paths.communityHub.authentication()}
               className="w-[265px] bg-theme-bg-secondary hover:bg-theme-sidebar-item-hover text-theme-text-primary py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
             >
-              {t("chat.prompt.publish.unauthenticated.button")}
+              {t("community_hub.publish.generic.unauthenticated.button")}
             </Link>
           </div>
         </div>

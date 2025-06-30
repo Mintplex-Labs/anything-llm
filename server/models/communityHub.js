@@ -9,7 +9,7 @@ const CommunityHub = {
     process.env.NODE_ENV === "development"
       ? "http://127.0.0.1:5001/anythingllm-hub/us-central1/external/v1"
       : "https://hub.external.anythingllm.com/v1",
-  supportedStaticItemTypes: ["system-prompt"],
+  supportedStaticItemTypes: ["system-prompt", "agent-flow", "slash-command"],
 
   /**
    * Validate an import ID and return the entity type and ID.
@@ -187,7 +187,7 @@ const CommunityHub = {
     if (!this.supportedStaticItemTypes.includes(itemType))
       return { success: false, error: "Unsupported item type" };
 
-    // If the item has specical considerations or preprocessing, we can delegate that below before sending the request.
+    // If the item has special considerations or preprocessing, we can delegate that below before sending the request.
     // eg: Agent flow files and such.
 
     return await fetch(`${this.apiBase}/${itemType}/create`, {
