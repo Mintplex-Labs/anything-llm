@@ -170,7 +170,7 @@ class FlowiseLLM {
           },
           body: JSON.stringify({
             streaming: true,
-            attachments,
+            uploads: attachments,
             question,
             history,
           }),
