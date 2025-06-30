@@ -72,6 +72,13 @@ export function ChatTooltips() {
         delayShow={500}
         className="tooltip !text-xs"
       />
+      <Tooltip
+        id="query-refusal-info"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs max-w-[350px]"
+        float={true}
+      />
       <DocumentLevelTooltip />
     </>
   );

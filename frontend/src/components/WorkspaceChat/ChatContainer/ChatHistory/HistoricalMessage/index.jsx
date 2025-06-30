@@ -16,6 +16,7 @@ import {
   THOUGHT_REGEX_OPEN,
   ThoughtChainComponent,
 } from "../ThoughtContainer";
+import paths from "@/utils/paths";
 
 const HistoricalMessage = ({
   uuid = v4(),
@@ -44,6 +45,12 @@ const HistoricalMessage = ({
     element.style.height = "auto";
     element.style.height = element.scrollHeight + "px";
   };
+
+  const isRefusalMessage =
+    role === "assistant" &&
+    message ===
+      (workspace?.queryRefusalResponse ||
+        "There is no relevant information in this workspace to answer your query.");
 
   if (!!error) {
     return (
@@ -109,6 +116,16 @@ const HistoricalMessage = ({
                 message={message}
                 expanded={isLastMessage}
               />
+              {isRefusalMessage && (
+                <div
+                  data-tooltip-id="query-refusal-info"
+                  data-tooltip-content="You are seeing this because you are in query mode. Where the LLM will refuse any prompts that do not explicitly have any document citations. You should switch to chat mode instead."
+                  className="text-white text-opacity-60 text-xs ml-2 cursor-pointer hover:text-opacity-80"
+                  onClick={() => window.open(paths.chatModes(), "_blank")}
+                >
+                  Why am I seeing this?
+                </div>
+              )}
               <ChatAttachments attachments={attachments} />
             </div>
           )}
