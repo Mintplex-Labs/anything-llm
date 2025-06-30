@@ -240,6 +240,8 @@ const TRANSLATIONS = {
       query: "پرس‌وجو",
       "desc-end":
         "ممکن است بخواهید هنگامی که هیچ محتوایی یافت نمی‌شود، یک پاسخ رد سفارشی برگردانید.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "دمای LLM",

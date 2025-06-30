@@ -244,6 +244,8 @@ const TRANSLATIONS = {
       query: "consulta",
       "desc-end":
         "modo, es posible que desees devolver una respuesta de rechazo personalizada cuando no se encuentre contexto.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "Temperatura de LLM",

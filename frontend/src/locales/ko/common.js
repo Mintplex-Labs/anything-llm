@@ -237,6 +237,8 @@ const TRANSLATIONS = {
       "desc-start": "쿼리 모드에서",
       query: "응답에 사용할 수 있는",
       "desc-end": "컨텍스트를 찾을 수 없을 때 거부 응답 내용을 작성합니다.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM 온도",

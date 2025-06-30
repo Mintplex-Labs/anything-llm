@@ -327,6 +327,8 @@ const TRANSLATIONS = {
       query: "päringu",
       "desc-end":
         "režiimis, võib määrata kohandatud vastuse, kui konteksti ei leita.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM-i temperatuur",

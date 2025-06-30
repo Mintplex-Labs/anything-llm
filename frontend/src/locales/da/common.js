@@ -250,6 +250,8 @@ const TRANSLATIONS = {
       query: "forespørgsels-tilstand",
       "desc-end":
         "tilstand, kan du vælge at returnere et brugerdefineret afvisningssvar, når der ikke findes nogen kontekst.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM-temperatur",

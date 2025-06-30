@@ -320,6 +320,8 @@ const TRANSLATIONS = {
       "desc-start": "当处于",
       query: "查询",
       "desc-end": "模式时，当未找到上下文时，你可能希望返回自定义拒绝响应。",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM 温度",

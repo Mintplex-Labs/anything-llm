@@ -17,6 +17,7 @@ import {
   ThoughtChainComponent,
 } from "../ThoughtContainer";
 import paths from "@/utils/paths";
+import { useTranslation } from "react-i18next";
 
 const HistoricalMessage = ({
   uuid = v4(),
@@ -35,6 +36,7 @@ const HistoricalMessage = ({
   metrics = {},
   alignmentCls = "",
 }) => {
+  const { t } = useTranslation();
   const { isEditing } = useEditMessage({ chatId, role });
   const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
     chatId,
@@ -119,11 +121,11 @@ const HistoricalMessage = ({
               {isRefusalMessage && (
                 <div
                   data-tooltip-id="query-refusal-info"
-                  data-tooltip-content="You are seeing this because you are in query mode. Where the LLM will refuse any prompts that do not explicitly have any document citations. You should switch to chat mode instead."
+                  data-tooltip-content={`${t("chat.refusal.tooltip-description")}`}
                   className="text-white text-opacity-60 text-xs ml-2 cursor-pointer hover:text-opacity-80"
                   onClick={() => window.open(paths.chatModes(), "_blank")}
                 >
-                  Why am I seeing this?
+                  {t("chat.refusal.tooltip-title")}
                 </div>
               )}
               <ChatAttachments attachments={attachments} />
