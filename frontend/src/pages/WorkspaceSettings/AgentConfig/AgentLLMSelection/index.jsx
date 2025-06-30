@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 const ENABLED_PROVIDERS = [
   "openai",
   "anthropic",
+  "burncloud",
   "lmstudio",
   "ollama",
   "localai",
