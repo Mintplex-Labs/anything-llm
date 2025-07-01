@@ -35,6 +35,8 @@ class GenericOpenAiLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
+    this.streamingDisabled =
+      process.env.GENERIC_OPENAI_STREAMING_DISABLED || false;
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
@@ -57,6 +59,7 @@ class GenericOpenAiLLM {
   }
 
   streamingEnabled() {
+    if (this.streamingDisabled) return false;
     return "streamGetChatCompletion" in this;
   }
 
