@@ -761,8 +761,8 @@ const TRANSLATIONS = {
         description: "自動朗讀 AI 的回應內容",
       },
       spellcheck: {
-        title: null,
-        description: null,
+        title: "拼字檢查功能",
+        description: "在聊天輸入框中啟用或停用拼字檢查",
       },
     },
     items: {
