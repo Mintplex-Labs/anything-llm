@@ -18,6 +18,7 @@ const PROVIDER_DEFAULT_MODELS = {
   ollama: [],
   togetherai: [],
   fireworksai: [],
+  sambanova: [],
   "nvidia-nim": [],
   groq: [],
   cohere: [
@@ -48,6 +49,7 @@ function groupModels(models) {
 const groupedProviders = [
   "togetherai",
   "fireworksai",
+  "sambanova",
   "openai",
   "novita",
   "openrouter",

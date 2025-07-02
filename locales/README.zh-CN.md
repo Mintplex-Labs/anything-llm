@@ -87,6 +87,7 @@ AnythingLLM将您的文档划分为称为`workspaces` (工作区)的对象。工
 - [LocalAI (所有模型)](https://localai.io/)
 - [Together AI (聊天模型)](https://www.together.ai/)
 - [Fireworks AI (聊天模型)](https://fireworks.ai/)
+- [SambaNova Cloud (聊天模型)](https://cloud.sambanova.ai/)
 - [Perplexity (聊天模型)](https://www.perplexity.ai/)
 - [OpenRouter (聊天模型)](https://openrouter.ai/)
 - [DeepSeek (聊天模型)](https://deepseek.com/)

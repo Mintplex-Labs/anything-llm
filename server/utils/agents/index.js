@@ -93,6 +93,10 @@ class AgentHandler {
         if (!process.env.GROQ_API_KEY)
           throw new Error("Groq API key must be provided to use agents.");
         break;
+      case "sambanova":
+        if (!process.env.SAMBANOVA_API_KEY)
+          throw new Error("SambaNova API key must be provided to use agents.");
+        break;
       case "togetherai":
         if (!process.env.TOGETHER_AI_API_KEY)
           throw new Error("TogetherAI API key must be provided to use agents.");
@@ -225,6 +229,8 @@ class AgentHandler {
         return process.env.OLLAMA_MODEL_PREF ?? "llama3:latest";
       case "groq":
         return process.env.GROQ_MODEL_PREF ?? "llama3-70b-8192";
+      case "sambanova":
+        return process.env.SAMBANOVA_MODEL_PREF ?? "Meta-Llama-3.3-70B-Instruct";
       case "togetherai":
         return (
           process.env.TOGETHER_AI_MODEL_PREF ??

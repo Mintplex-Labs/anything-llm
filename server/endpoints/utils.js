@@ -85,6 +85,9 @@ function getModelTag() {
     case "groq":
       model = process.env.GROQ_MODEL_PREF;
       break;
+    case "sambanova":
+      model = process.env.SAMBANOVA_MODEL_PREF;
+      break;
     case "togetherai":
       model = process.env.TOGETHER_AI_MODEL_PREF;
       break;
@@ -117,6 +120,9 @@ function getModelTag() {
       break;
     case "fireworksai":
       model = process.env.FIREWORKS_AI_LLM_MODEL_PREF;
+      break;
+    case "sambanova":
+      model = process.env.SAMBANOVA_MODEL_PREF;
       break;
     case "deepseek":
       model = process.env.DEEPSEEK_MODEL_PREF;

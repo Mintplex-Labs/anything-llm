@@ -492,6 +492,10 @@ const SystemSettings = {
       NovitaLLMModelPref: process.env.NOVITA_LLM_MODEL_PREF,
       NovitaLLMTimeout: process.env.NOVITA_LLM_TIMEOUT_MS,
 
+      // SambaNova Keys
+      SambaNovaApiKey: !!process.env.SAMBANOVA_API_KEY,
+      SambaNovaModelPref: process.env.SAMBANOVA_MODEL_PREF,
+
       // TogetherAI Keys
       TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
       TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,

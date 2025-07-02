@@ -411,6 +411,16 @@ const KEY_MAPPING = {
     preUpdate: [validatePGVectorTableName],
   },
 
+  // SambaNova Options
+  SambaNovaApiKey: {
+    envKey: "SAMBANOVA_API_KEY",
+    checks: [isNotEmpty],
+  },
+  SambaNovaModelPref: {
+    envKey: "SAMBANOVA_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -760,6 +770,7 @@ function supportedLLM(input = "") {
     "lmstudio",
     "localai",
     "ollama",
+    "sambanova",
     "togetherai",
     "fireworksai",
     "mistral",
