@@ -13,7 +13,7 @@ class SambaNovaProvider extends InheritMultiple([Provider, UnTooled]) {
     const { model = "Meta-Llama-3.3-70B-Instruct" } = config;
     super();
     const client = new OpenAI({
-      baseURL: "hhttps://api.sambanova.ai/v1",
+      baseURL: "https://api.sambanova.ai/v1",
       apiKey: process.env.SAMBANOVA_API_KEY,
       maxRetries: 3,
     });
