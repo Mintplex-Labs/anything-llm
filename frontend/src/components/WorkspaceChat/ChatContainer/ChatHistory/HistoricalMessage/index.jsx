@@ -19,6 +19,7 @@ import {
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { chatQueryRefusalResponse } from "@/utils/chat";
 
 const HistoricalMessage = ({
   uuid = v4(),
@@ -51,9 +52,7 @@ const HistoricalMessage = ({
 
   const isRefusalMessage =
     role === "assistant" &&
-    message ===
-      (workspace?.queryRefusalResponse ||
-        "There is no relevant information in this workspace to answer your query.");
+    message === chatQueryRefusalResponse(workspace);
 
   if (!!error) {
     return (
@@ -85,9 +84,8 @@ const HistoricalMessage = ({
     <div
       key={uuid}
       onAnimationEnd={onEndAnimation}
-      className={`${
-        isDeleted ? "animate-remove" : ""
-      } flex justify-center items-end w-full group bg-theme-bg-chat`}
+      className={`${isDeleted ? "animate-remove" : ""
+        } flex justify-center items-end w-full group bg-theme-bg-chat`}
     >
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className={`flex gap-x-5 ${alignmentCls}`}>
