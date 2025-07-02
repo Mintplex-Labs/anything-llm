@@ -335,6 +335,7 @@ const TRANSLATIONS = {
         noHistory: "No system prompt history available",
         restore: "Restore",
         delete: "Delete",
+        publish: "Publish to Community Hub",
         deleteConfirm: "Are you sure you want to delete this history item?",
         clearAllConfirm:
           "Are you sure you want to clear all history? This action cannot be undone.",
@@ -347,6 +348,9 @@ const TRANSLATIONS = {
       query: "query",
       "desc-end":
         "mode, you may want to return a custom refusal response when no context is found.",
+      "tooltip-title": "Why am I seeing this?",
+      "tooltip-description":
+        "You are in query mode, which only uses information from your documents. Switch to chat mode for more flexible conversations, or click here to visit our documentation to learn more about chat modes.",
     },
     temperature: {
       title: "LLM Temperature",
@@ -581,6 +585,17 @@ const TRANSLATIONS = {
     description:
       "These are the credentials and settings for your preferred LLM chat & embedding provider. It is important that these keys are current and correct, or else AnythingLLM will not function properly.",
     provider: "LLM Provider",
+    providers: {
+      azure_openai: {
+        azure_service_endpoint: "Azure Service Endpoint",
+        api_key: "API Key",
+        chat_deployment_name: "Chat Deployment Name",
+        chat_model_token_limit: "Chat Model Token Limit",
+        model_type: "Model Type",
+        default: "Default",
+        reasoning: "Reasoning",
+      },
+    },
   },
 
   transcription: {
@@ -650,12 +665,13 @@ const TRANSLATIONS = {
     table: {
       workspace: "Workspace",
       chats: "Sent Chats",
-      Active: "Active Domains",
+      active: "Active Domains",
+      created: "Created",
     },
   },
 
   "embed-chats": {
-    title: "Embed Chats",
+    title: "Embed Chat History",
     export: "Export",
     description:
       "These are all the recorded chats and messages from any embed that you have published.",
@@ -964,6 +980,16 @@ const TRANSLATIONS = {
     small: "Small",
     normal: "Normal",
     large: "Large",
+    workspace_llm_manager: {
+      search: "Search LLM providers",
+      loading_workspace_settings: "Loading workspace settings...",
+      available_models: "Available Models for {{provider}}",
+      available_models_description: "Select a model to use for this workspace.",
+      save: "Use this model",
+      saving: "Setting model as workspace default...",
+      missing_credentials: "This provider is missing credentials!",
+      missing_credentials_description: "Click to set up credentials",
+    },
   },
 
   profile_settings: {
@@ -979,6 +1005,14 @@ const TRANSLATIONS = {
     update_account: "Update Account",
     theme: "Theme Preference",
     language: "Preferred language",
+    failed_upload: "Failed to upload profile picture: {{error}}",
+    upload_success: "Profile picture uploaded.",
+    failed_remove: "Failed to remove profile picture: {{error}}",
+    profile_updated: "Profile updated.",
+    failed_update_user: "Failed to update user: {{error}}",
+    account: "Account",
+    support: "Support",
+    signout: "Sign out",
   },
 
   "keyboard-shortcuts": {
@@ -992,6 +1026,104 @@ const TRANSLATIONS = {
       llmPreferences: "LLM Preferences",
       chatSettings: "Chat Settings",
       help: "Show keyboard shortcuts help",
+      showLLMSelector: "Show workspace LLM Selector",
+    },
+  },
+  community_hub: {
+    publish: {
+      system_prompt: {
+        success_title: "Success!",
+        success_description:
+          "Your System Prompt has been published to the Community Hub!",
+        success_thank_you: "Thank you for sharing to the Community!",
+        view_on_hub: "View on Community Hub",
+        modal_title: "Publish System Prompt",
+        name_label: "Name",
+        name_description: "This is the display name of your system prompt.",
+        name_placeholder: "My System Prompt",
+        description_label: "Description",
+        description_description:
+          "This is the description of your system prompt. Use this to describe the purpose of your system prompt.",
+        tags_label: "Tags",
+        tags_description:
+          "Tags are used to label your system prompt for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
+        tags_placeholder: "Type and press Enter to add tags",
+        visibility_label: "Visibility",
+        public_description: "Public system prompts are visible to everyone.",
+        private_description: "Private system prompts are only visible to you.",
+        publish_button: "Publish to Community Hub",
+        submitting: "Publishing...",
+        submit: "Publish to Community Hub",
+        prompt_label: "Prompt",
+        prompt_description:
+          "This is the actual system prompt that will be used to guide the LLM.",
+        prompt_placeholder: "Enter your system prompt here...",
+      },
+      agent_flow: {
+        public_description: "Public agent flows are visible to everyone.",
+        private_description: "Private agent flows are only visible to you.",
+        success_title: "Success!",
+        success_description:
+          "Your Agent Flow has been published to the Community Hub!",
+        success_thank_you: "Thank you for sharing to the Community!",
+        view_on_hub: "View on Community Hub",
+        modal_title: "Publish Agent Flow",
+        name_label: "Name",
+        name_description: "This is the display name of your agent flow.",
+        name_placeholder: "My Agent Flow",
+        description_label: "Description",
+        description_description:
+          "This is the description of your agent flow. Use this to describe the purpose of your agent flow.",
+        tags_label: "Tags",
+        tags_description:
+          "Tags are used to label your agent flow for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
+        tags_placeholder: "Type and press Enter to add tags",
+        visibility_label: "Visibility",
+        publish_button: "Publish to Community Hub",
+        submitting: "Publishing...",
+        submit: "Publish to Community Hub",
+        privacy_note:
+          "Agent flows are always uploaded as private to protect any sensitive data. You can change the visibility in the Community Hub after publishing. Please verify your flow does not contain any sensitive or private information before publishing.",
+      },
+      slash_command: {
+        success_title: "Success!",
+        success_description:
+          "Your Slash Command has been published to the Community Hub!",
+        success_thank_you: "Thank you for sharing to the Community!",
+        view_on_hub: "View on Community Hub",
+        modal_title: "Publish Slash Command",
+        name_label: "Name",
+        name_description: "This is the display name of your slash command.",
+        name_placeholder: "My Slash Command",
+        description_label: "Description",
+        description_description:
+          "This is the description of your slash command. Use this to describe the purpose of your slash command.",
+        command_label: "Command",
+        command_description:
+          "This is the slash command that users will type to trigger this preset.",
+        command_placeholder: "my-command",
+        tags_label: "Tags",
+        tags_description:
+          "Tags are used to label your slash command for easier searching. You can add multiple tags. Max 5 tags. Max 20 characters per tag.",
+        tags_placeholder: "Type and press Enter to add tags",
+        visibility_label: "Visibility",
+        public_description: "Public slash commands are visible to everyone.",
+        private_description: "Private slash commands are only visible to you.",
+        publish_button: "Publish to Community Hub",
+        submitting: "Publishing...",
+        prompt_label: "Prompt",
+        prompt_description:
+          "This is the prompt that will be used when the slash command is triggered.",
+        prompt_placeholder: "Enter your prompt here...",
+      },
+      generic: {
+        unauthenticated: {
+          title: "Authentication Required",
+          description:
+            "You need to authenticate with the AnythingLLM Community Hub before publishing items.",
+          button: "Connect to Community Hub",
+        },
+      },
     },
   },
 };

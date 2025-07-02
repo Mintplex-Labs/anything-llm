@@ -13,6 +13,7 @@ import { Tooltip } from "react-tooltip";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
+  const { t } = useTranslation();
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -22,19 +23,19 @@ export default function AccountModal({ user, hideModal }) {
     formData.append("file", file);
     const { success, error } = await System.uploadPfp(formData);
     if (!success) {
-      showToast(`Failed to upload profile picture: ${error}`, "error");
+      showToast(t("profile_settings.failed_upload", { error }), "error");
       return;
     }
 
     const pfpUrl = await System.fetchPfp(user.id);
     setPfp(pfpUrl);
-    showToast("Profile picture uploaded.", "success");
+    showToast(t("profile_settings.upload_success"), "success");
   };
 
   const handleRemovePfp = async () => {
     const { success, error } = await System.removePfp();
     if (!success) {
-      showToast(`Failed to remove profile picture: ${error}`, "error");
+      showToast(t("profile_settings.failed_remove", { error }), "error");
       return;
     }
 
@@ -59,13 +60,14 @@ export default function AccountModal({ user, hideModal }) {
         storedUser.bio = data.bio;
         localStorage.setItem(AUTH_USER, JSON.stringify(storedUser));
       }
-      showToast("Profile updated.", "success", { clear: true });
+      showToast(t("profile_settings.profile_updated"), "success", {
+        clear: true,
+      });
       hideModal();
     } else {
-      showToast(`Failed to update user: ${error}`, "error");
+      showToast(t("profile_settings.failed_update_user", { error }), "error");
     }
   };
-  const { t } = useTranslation();
   return (
     <ModalWrapper isOpen={true}>
       <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">

@@ -18,6 +18,11 @@ export default {
   login: (noTry = false) => {
     return `/login${noTry ? "?nt=1" : ""}`;
   },
+  sso: {
+    login: () => {
+      return "/sso/simple";
+    },
+  },
   onboarding: {
     home: () => {
       return "/onboarding";
@@ -52,6 +57,9 @@ export default {
   },
   docs: () => {
     return "https://docs.anythingllm.com";
+  },
+  chatModes: () => {
+    return "https://docs.anythingllm.com/features/chat-modes";
   },
   mailToMintplex: () => {
     return "mailto:team@mintplexlabs.com";
@@ -147,11 +155,8 @@ export default {
     privacy: () => {
       return "/settings/privacy";
     },
-    embedSetup: () => {
-      return `/settings/embed-config`;
-    },
-    embedChats: () => {
-      return `/settings/embed-chats`;
+    embedChatWidgets: () => {
+      return `/settings/embed-chat-widgets`;
     },
     browserExtension: () => {
       return `/settings/browser-extension`;
@@ -181,6 +186,9 @@ export default {
      */
     viewMoreOfType: function (type) {
       return `${this.website()}/list/${type}`;
+    },
+    viewItem: function (type, id) {
+      return `${this.website()}/i/${type}/${id}`;
     },
     trending: () => {
       return `/settings/community-hub/trending`;
