@@ -251,6 +251,8 @@ const TRANSLATIONS = {
       query: "запроса",
       "desc-end":
         "вы можете вернуть пользовательский ответ об отказе, если контекст не найден.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "Температура LLM",

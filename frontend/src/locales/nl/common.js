@@ -242,6 +242,8 @@ const TRANSLATIONS = {
       query: "query",
       "desc-end":
         "modus, wil je wellicht een aangepaste afwijzingsreactie geven wanneer er geen context wordt gevonden.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM Temperatuur",

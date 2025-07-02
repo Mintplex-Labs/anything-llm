@@ -249,6 +249,8 @@ const TRANSLATIONS = {
       query: "クエリ",
       "desc-end":
         "の場合、コンテキストが見つからないときにカスタム拒否応答を返すことができます。",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM温度",

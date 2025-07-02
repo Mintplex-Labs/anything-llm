@@ -238,6 +238,8 @@ const TRANSLATIONS = {
       "desc-start": "在",
       query: "查詢",
       "desc-end": "模式下，當找不到內容時，您可能需要傳回自訂的拒絕回應。",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM 溫度值",
