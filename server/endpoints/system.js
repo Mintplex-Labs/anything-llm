@@ -1283,7 +1283,6 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
         const { key, value, description = null } = reqBody(request);
 
         if (!key || !value) {
@@ -1297,7 +1296,8 @@ function systemEndpoints(app) {
           key,
           value,
           description,
-          userId: user?.id || null,
+          type: "static",
+          userId: null, // No user association needed for static variables
         });
 
         response.status(200).json({

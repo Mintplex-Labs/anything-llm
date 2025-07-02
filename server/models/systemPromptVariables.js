@@ -96,11 +96,22 @@ const SystemPromptVariables = {
    * @returns {Promise<SystemPromptVariable[]>}
    */
   getAll: async function (userId = null) {
-    const dbVariables = await prisma.system_prompt_variables.findMany({
-      where: userId ? { userId: Number(userId) } : {},
+    // Get all static variables (they should be available to everyone)
+    const staticVariables = await prisma.system_prompt_variables.findMany({
+      where: { type: "static" },
     });
 
-    const formattedDbVars = dbVariables.map((v) => ({
+    // Get user-specific variables if userId provided
+    const userVariables = userId
+      ? await prisma.system_prompt_variables.findMany({
+          where: {
+            type: { not: "static" },
+            userId: Number(userId),
+          },
+        })
+      : [];
+
+    const formattedDbVars = [...staticVariables, ...userVariables].map((v) => ({
       id: v.id,
       key: v.key,
       value: v.value,
