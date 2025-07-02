@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Warning } from "@phosphor-icons/react";
+import { Info, Warning } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
@@ -18,6 +18,7 @@ import {
 } from "../ThoughtContainer";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const HistoricalMessage = ({
   uuid = v4(),
@@ -119,14 +120,20 @@ const HistoricalMessage = ({
                 expanded={isLastMessage}
               />
               {isRefusalMessage && (
-                <div
+                <Link
                   data-tooltip-id="query-refusal-info"
                   data-tooltip-content={`${t("chat.refusal.tooltip-description")}`}
-                  className="text-white text-opacity-60 text-xs ml-2 cursor-pointer hover:text-opacity-80"
-                  onClick={() => window.open(paths.chatModes(), "_blank")}
+                  className="!no-underline group !flex w-fit"
+                  to={paths.chatModes()}
+                  target="_blank"
                 >
-                  {t("chat.refusal.tooltip-title")}
-                </div>
+                  <div className="flex flex-row items-center gap-x-1 group-hover:opacity-100 opacity-60 w-fit">
+                    <Info className="text-theme-text-secondary" />
+                    <p className="!m-0 !p-0 text-theme-text-secondary !no-underline text-xs cursor-pointer">
+                      {t("chat.refusal.tooltip-title")}
+                    </p>
+                  </div>
+                </Link>
               )}
               <ChatAttachments attachments={attachments} />
             </div>
