@@ -411,6 +411,28 @@ const KEY_MAPPING = {
     preUpdate: [validatePGVectorTableName],
   },
 
+  // openGauss Options
+  OpenGaussHost: {
+    envKey: "OPENGAUSS_HOST",
+    checks: [isNotEmpty],
+  },
+  OpenGaussPort: {
+    envKey: "OPENGAUSS_PORT",
+    checks: [isNotEmpty],
+  },
+  OpenGaussUsername: {
+    envKey: "OPENGAUSS_USERNAME",
+    checks: [isNotEmpty],
+  },
+  OpenGaussPassword: {
+    envKey: "OPENGAUSS_PASSWORD",
+    checks: [isNotEmpty],
+  },
+  OpenGaussDatabase: {
+    envKey: "OPENGAUSS_DATABASE",
+    checks: [isNotEmpty],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -834,6 +856,7 @@ function supportedVectorDB(input = "") {
     "zilliz",
     "astra",
     "pgvector",
+    "openGauss",
   ];
   return supported.includes(input)
     ? null

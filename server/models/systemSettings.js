@@ -434,6 +434,13 @@ const SystemSettings = {
       // PGVector Keys
       PGVectorConnectionString: !!PGVector.connectionString() || false,
       PGVectorTableName: PGVector.tableName(),
+
+      // openGauss DB Keys
+      OpenGaussHost: process.env.OPENGAUSS_HOST,
+      OpenGaussPort: process.env.OPENGAUSS_PORT,
+      OpenGaussUsername: process.env.OPENGAUSS_USERNAME,
+      OpenGaussPassword: process.env.OPENGAUSS_PASSWORD,
+      OpenGaussDatabase: process.env.OPENGAUSS_DATABASE,
     };
   },
 

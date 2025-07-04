@@ -21,6 +21,7 @@ import MilvusLogo from "@/media/vectordbs/milvus.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
+import OpenGaussLogo from "@/media/vectordbs/opengauss.png";
 
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
@@ -29,6 +30,7 @@ import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions"
 import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
 import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
+import OpenGaussDBOptions from "@/components/VectorDBSelection/OpenGaussDBOptions";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import PGVectorOptions from "@/components/VectorDBSelection/PGVectorOptions";
 
@@ -176,6 +178,13 @@ export default function GeneralVectorDatabase() {
       logo: AstraDBLogo,
       options: <AstraDBOptions settings={settings} />,
       description: "Vector Search for Real-world GenAI.",
+    },
+    {
+      name: "openGauss",
+      value: "openGauss",
+      logo: OpenGaussLogo,
+      options: <OpenGaussDBOptions settings={settings} />,
+      description: "Open source vector database.",
     },
   ];
 
