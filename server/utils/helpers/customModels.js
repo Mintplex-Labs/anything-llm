@@ -33,6 +33,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "gemini",
   "ppio",
   "dpais",
+  "giteeai",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -84,6 +85,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPPIOModels(apiKey);
     case "dpais":
       return await getDellProAiStudioModels(basePath);
+    case "giteeai":
+      return await getGiteeAIModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -547,6 +550,31 @@ async function getDeepSeekModels(apiKey = null) {
           organization: "deepseek",
         },
       ];
+    });
+
+  if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function getGiteeAIModels(apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://ai.gitee.com/v1",
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .then((models) =>
+      models.map((model) => ({
+        id: model.id,
+        name: model.id,
+        organization: model.owned_by,
+      }))
+    )
+    .catch((e) => {
+      console.error(`GiteeAI:listModels`, e.message);
+      return [];
     });
 
   if (models.length > 0 && !!apiKey) process.env.DEEPSEEK_API_KEY = apiKey;
