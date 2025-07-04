@@ -38,6 +38,7 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
+import OpenGaussLogo from "@/media/vectordbs/opengauss.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -310,6 +311,13 @@ export const VECTOR_DB_PRIVACY = {
       "Your vectors and document text are stored privately on this instance of AnythingLLM",
     ],
     logo: LanceDbLogo,
+  },
+  openGauss: {
+    name: "openGauss",
+    description: [
+      "Your vectors and document text are stored on this openGauss instance (cloud or self-hosted)",
+    ],
+    logo: OpenGaussLogo,
   },
 };
 
