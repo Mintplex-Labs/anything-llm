@@ -50,6 +50,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!message || message === "") return false;
+
     const prevChatHistory = [
       ...chatHistory,
       {
@@ -183,6 +184,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         workspaceSlug: workspace.slug,
         threadSlug,
         prompt: promptMessage.userMessage,
+        mode: workspace.chatMode || "chat",
         chatHandler: (chatResult) =>
           handleChat(
             chatResult,
@@ -209,7 +211,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         );
 
         window.addEventListener(ABORT_STREAM_EVENT, () => {
-          window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+          // Only end agent session if we're not in agent chat mode
+          if (workspace?.chatMode !== "agent") {
+            window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+          }
           websocket.close();
         });
 
@@ -226,21 +231,24 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         });
 
         socket.addEventListener("close", (_event) => {
-          window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          setChatHistory((prev) => [
-            ...prev.filter((msg) => !!msg.content),
-            {
-              uuid: v4(),
-              type: "statusResponse",
-              content: "Agent session complete.",
-              role: "assistant",
-              sources: [],
-              closed: true,
-              error: null,
-              animate: false,
-              pending: false,
-            },
-          ]);
+          // Don't end agent session if we're in agent chat mode
+          if (workspace?.chatMode !== "agent") {
+            window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+            setChatHistory((prev) => [
+              ...prev.filter((msg) => !!msg.content),
+              {
+                uuid: v4(),
+                type: "statusResponse",
+                content: "Agent session complete.",
+                role: "assistant",
+                sources: [],
+                closed: true,
+                error: null,
+                animate: false,
+                pending: false,
+              },
+            ]);
+          }
           setLoadingResponse(false);
           setWebsocket(null);
           setSocketId(null);
@@ -294,6 +302,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           isStreaming={loadingResponse}
           sendCommand={sendCommand}
           attachments={files}
+          workspace={workspace}
         />
       </DnDFileUploaderWrapper>
       <ChatTooltips />
