@@ -265,12 +265,9 @@ class DrupalWiki {
     const plainTextContent = htmlToText(textContent, {
       wordwrap: false,
       preserveNewlines: true,
-      selectors: [ { selector: 'table.class#id', format: 'dataTable' } ],
     });
-    // preserve structure
-    const plainBody = plainTextContent.replace(/\n{3,}/g, "\n\n");
     // add the link to the document
-    return `Link/URL: ${url}\n\n${plainBody}`;
+    return `Link/URL: ${url}\n\n${plainTextContent}`;
   }
 
   async #downloadAndProcessAttachments(pageId) {
