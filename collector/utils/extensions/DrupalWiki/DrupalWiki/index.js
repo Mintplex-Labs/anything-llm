@@ -219,7 +219,7 @@ class DrupalWiki {
       pageId: pageId,
       accessToken: this.accessToken,
     };
-    return `drupalwiki://${this.baseUrl}node/${pageId}?payload=${encryptionWorker.encrypt(
+    return `drupalwiki://${this.baseUrl}/node/${pageId}?payload=${encryptionWorker.encrypt(
       JSON.stringify(payload)
     )}`;
   }
