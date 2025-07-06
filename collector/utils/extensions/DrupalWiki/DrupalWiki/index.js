@@ -265,19 +265,13 @@ class DrupalWiki {
       wordwrap: false,
       preserveNewlines: true,
       selectors: [
-        { selector: 'table', format: 'dataTable' }
+        { selector: 'table', format: 'dataTable', options: {
+          colSpacing: 3,
+          rowSpacing: 1,
+          uppercaseHeaderCells: true,
+          maxColumnWidth: Infinity
+        } }
       ],
-      formatters: {
-        dataTable: (elem, walk, builder, formatOptions) => {
-          return htmlToText.formatters.dataTable(elem, walk, builder, {
-            ...formatOptions,
-            colSpacing: 3,
-            rowSpacing: 1,
-            uppercaseHeaderCells: true,
-            maxColumnWidth: Infinity
-          });
-        }
-      }
     });
 
     const plainBody = plainTextContent.replace(/\n{3,}/g, "\n\n");
