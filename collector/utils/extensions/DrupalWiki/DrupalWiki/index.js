@@ -259,15 +259,29 @@ class DrupalWiki {
    * @private
    */
   #processPageBody({ body, url, title, lastModified }) {
-    // use the title as content if there is none
     const textContent = body.trim() !== "" ? body : title;
 
     const plainTextContent = htmlToText(textContent, {
       wordwrap: false,
       preserveNewlines: true,
+      selectors: [
+        { selector: 'table', format: 'dataTable' }
+      ],
+      formatters: {
+        dataTable: (elem, walk, builder, formatOptions) => {
+          return htmlToText.formatters.dataTable(elem, walk, builder, {
+            ...formatOptions,
+            colSpacing: 3,
+            rowSpacing: 1,
+            uppercaseHeaderCells: true,
+            maxColumnWidth: Infinity
+          });
+        }
+      }
     });
-    // add the link to the document
-    return `Link/URL: ${url}\n\n${plainTextContent}`;
+
+    const plainBody = plainTextContent.replace(/\n{3,}/g, "\n\n");
+    return `Link/URL: ${url}\n\n${plainBody}`;
   }
 
   async #downloadAndProcessAttachments(pageId) {
