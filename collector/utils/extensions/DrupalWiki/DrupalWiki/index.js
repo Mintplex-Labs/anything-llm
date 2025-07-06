@@ -219,7 +219,7 @@ class DrupalWiki {
       pageId: pageId,
       accessToken: this.accessToken,
     };
-    return `drupalwiki://${this.baseUrl}?payload=${encryptionWorker.encrypt(
+    return `drupalwiki://${this.baseUrl}node/${this.pageId}?payload=${encryptionWorker.encrypt(
       JSON.stringify(payload)
     )}`;
   }
@@ -275,7 +275,7 @@ class DrupalWiki {
     });
 
     const plainBody = plainTextContent.replace(/\n{3,}/g, "\n\n");
-    return `Link/URL: ${url}\n\n${plainBody}`;
+    return plainBody;
   }
 
   async #downloadAndProcessAttachments(pageId) {
