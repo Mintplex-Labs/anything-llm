@@ -92,15 +92,14 @@ const SystemPromptVariables = {
   /**
    * Retrieves all system prompt variables with dynamic variables as well
    * as user defined variables
-   * @param {number|null} userId - the user ID to filter variables by
+   * @param {number|null} userId - the current user ID (determines if in multi-user mode)
    * @returns {Promise<SystemPromptVariable[]>}
    */
   getAll: async function (userId = null) {
-    const dbVariables = await prisma.system_prompt_variables.findMany({
-      where: userId ? { userId: Number(userId) } : {},
-    });
-
-    const formattedDbVars = dbVariables.map((v) => ({
+    // All user-defined system variables are available to everyone globally since only admins can create them.
+    const userDefinedSystemVariables =
+      await prisma.system_prompt_variables.findMany();
+    const formattedDbVars = userDefinedSystemVariables.map((v) => ({
       id: v.id,
       key: v.key,
       value: v.value,
@@ -109,12 +108,13 @@ const SystemPromptVariables = {
       userId: v.userId,
     }));
 
-    // If userId is not provided, filter the default variables to only include non-multiUserRequired ones
-    const filteredSystemVars = !userId
+    // If userId is not provided, filter the default variables to only include non-multiUserRequired variables
+    // since we wont be able to dynamically inject user-related content.
+    const defaultSystemVariables = !userId
       ? this.DEFAULT_VARIABLES.filter((v) => !v.multiUserRequired)
       : this.DEFAULT_VARIABLES;
 
-    return [...filteredSystemVars, ...formattedDbVars];
+    return [...defaultSystemVariables, ...formattedDbVars];
   },
 
   /**

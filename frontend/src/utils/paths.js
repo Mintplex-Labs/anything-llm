@@ -58,6 +58,9 @@ export default {
   docs: () => {
     return "https://docs.anythingllm.com";
   },
+  chatModes: () => {
+    return "https://docs.anythingllm.com/features/chat-modes";
+  },
   mailToMintplex: () => {
     return "mailto:team@mintplexlabs.com";
   },
@@ -183,6 +186,9 @@ export default {
      */
     viewMoreOfType: function (type) {
       return `${this.website()}/list/${type}`;
+    },
+    viewItem: function (type, id) {
+      return `${this.website()}/i/${type}/${id}`;
     },
     trending: () => {
       return `/settings/community-hub/trending`;
