@@ -219,7 +219,9 @@ class DrupalWiki {
       pageId: pageId,
       accessToken: this.accessToken,
     };
-    return `drupalwiki://${this.baseUrl}/node/${pageId}?payload=${encryptionWorker.encrypt(
+    return `drupalwiki://${
+      this.baseUrl
+    }/node/${pageId}?payload=${encryptionWorker.encrypt(
       JSON.stringify(payload)
     )}`;
   }
@@ -265,12 +267,16 @@ class DrupalWiki {
       wordwrap: false,
       preserveNewlines: true,
       selectors: [
-        { selector: 'table', format: 'dataTable', options: {
-          colSpacing: 3,
-          rowSpacing: 1,
-          uppercaseHeaderCells: true,
-          maxColumnWidth: Infinity
-        } }
+        {
+          selector: "table",
+          format: "dataTable",
+          options: {
+            colSpacing: 3,
+            rowSpacing: 1,
+            uppercaseHeaderCells: true,
+            maxColumnWidth: Infinity,
+          },
+        },
       ],
     });
 
