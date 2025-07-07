@@ -1002,7 +1002,7 @@ const TRANSLATIONS = {
     username_description:
       "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
     new_password: "New Password",
-    passwort_description: "Password must be at least 8 characters long",
+    password_description: "Password must be at least 8 characters long",
     cancel: "Cancel",
     update_account: "Update Account",
     theme: "Theme Preference",
