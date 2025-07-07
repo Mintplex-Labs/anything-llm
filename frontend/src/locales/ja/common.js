@@ -219,6 +219,11 @@ const TRANSLATIONS = {
         only: "のみ",
         "desc-end": "ドキュメントコンテキストが見つかった場合のみ。",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "エージェントモード",
+        desc: "常にエージェントを直接使用します。",
+      },
     },
     history: {
       title: "チャット履歴",

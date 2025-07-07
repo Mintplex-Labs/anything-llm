@@ -211,6 +211,11 @@ const TRANSLATIONS = {
         only: "sadece",
         "desc-end": "belge bağlamı bulunduğunda sunar.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "Sohbet Geçmişi",
