@@ -938,7 +938,7 @@ const TRANSLATIONS = {
     username_description:
       "Somente letras minúsculas, números, sublinhados e hífens. Sem espaços.",
     new_password: "Nova senha",
-    passwort_description: "A senha deve ter no mínimo 8 caracteres",
+    password_description: "A senha deve ter no mínimo 8 caracteres",
     cancel: "Cancelar",
     update_account: "Atualizar conta",
     theme: "Preferência de tema",

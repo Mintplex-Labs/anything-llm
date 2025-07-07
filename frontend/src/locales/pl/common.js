@@ -963,7 +963,7 @@ const TRANSLATIONS = {
     username_description:
       "Nazwa użytkownika musi zawierać tylko małe litery, cyfry, podkreślenia i myślniki bez spacji.",
     new_password: "Nowe hasło",
-    passwort_description: null,
+    password_description: null,
     cancel: "Anuluj",
     update_account: "Zaktualizuj konto",
     theme: "Preferencje dotyczące motywu",
