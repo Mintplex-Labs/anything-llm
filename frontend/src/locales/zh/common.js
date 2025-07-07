@@ -897,7 +897,7 @@ const TRANSLATIONS = {
     username_description:
       "用户名必须仅包含小写字母、数字、下划线和连字符，且不能包含空格",
     new_password: "新密码",
-    passwort_description: "密码长度必须至少为 8 个字符",
+    password_description: "密码长度必须至少为 8 个字符",
     cancel: "取消",
     update_account: "更新帐号",
     theme: "主题偏好",
