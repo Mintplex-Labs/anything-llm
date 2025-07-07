@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -37,7 +38,6 @@ const TRANSLATIONS = {
       title: "AnythingLLM에 오신 것을 환영합니다",
       description:
         "여러분의 필요에 맞는 AnythingLLM을 만들 수 있도록 도와주세요. (선택 사항)",
-
       email: "이메일을 입력해 주세요",
       useCase: "AnythingLLM을 어떤 용도로 사용하실 예정인가요?",
       useCaseWork: "업무용",
@@ -69,8 +69,6 @@ const TRANSLATIONS = {
     yes: "예",
     no: "아니오",
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "인스턴스 설정",
     system: "일반 설정",
@@ -103,8 +101,6 @@ const TRANSLATIONS = {
     branding: "브랜딩 및 화이트라벨링",
     chat: "채팅",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "웰컴!",
@@ -127,7 +123,6 @@ const TRANSLATIONS = {
       "back-to-login": "로그인으로 돌아가기",
     },
   },
-
   welcomeMessage: {
     part1:
       "AnythingLLM에 오신 것을 환영합니다! AnythingLLM은 Mintplex Labs에서 개발한 오픈소스 AI 도구로, 어떤 것이든 학습된 챗봇으로 만들어 대화하고 질문할 수 있습니다. AnythingLLM은 BYOK(키 직접 제공) 방식의 소프트웨어로, 사용자가 원하는 외부 서비스 이용료 외에는 별도의 구독이나 비용이 없습니다.",
@@ -148,7 +143,6 @@ const TRANSLATIONS = {
     starOnGitHub: "GitHub에 스타 누르기",
     contact: "Mintplex Labs에 문의하기",
   },
-
   "main-page": {
     noWorkspaceError: "채팅을 시작하기 전에 워크스페이스를 먼저 만들어주세요.",
     checklist: {
@@ -232,13 +226,10 @@ const TRANSLATIONS = {
       keyboardShortcuts: "단축키 안내",
     },
   },
-
   "new-workspace": {
     title: "새 워크스페이스",
     placeholder: "내 워크스페이스",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "일반 설정",
     chat: "채팅 설정",
@@ -246,8 +237,6 @@ const TRANSLATIONS = {
     members: "구성원",
     agent: "에이전트 구성",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "벡터 수",
@@ -281,8 +270,6 @@ const TRANSLATIONS = {
         "워크스페이스 전체를 삭제합니다. 이 작업은 벡터 데이터베이스에 있는 모든 벡터 임베딩을 제거합니다.\n\n원본 소스 파일은 그대로 유지됩니다. 이 작업은 되돌릴 수 없습니다.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "워크스페이스 LLM 제공자",
@@ -352,8 +339,6 @@ const TRANSLATIONS = {
       hint: "대부분의 LLM은 유효한 값의 다양한 허용 범위를 가지고 있습니다. 해당 정보는 LLM 제공자에게 문의하세요.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "벡터 데이터베이스 식별자",
     snippets: {
@@ -380,8 +365,6 @@ const TRANSLATIONS = {
       success: "워크스페이스 벡터 데이터베이스가 재설정되었습니다!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "도구 호출을 명시적으로 지원하지 않는 LLM의 성능은 모델의 기능과 정확도에 크게 좌우됩니다. 일부 기능은 제한되거나 작동하지 않을 수 있습니다.",
@@ -439,8 +422,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "워크스페이스 채팅",
     description:
@@ -455,7 +436,6 @@ const TRANSLATIONS = {
       at: "보낸 시각",
     },
   },
-
   customization: {
     interface: {
       title: "UI 환경 설정",
@@ -553,7 +533,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
   api: {
     title: "API 키",
     description:
@@ -566,7 +545,6 @@ const TRANSLATIONS = {
       created: "생성일",
     },
   },
-
   llm: {
     title: "LLM 기본 설정",
     description:
@@ -584,7 +562,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
   transcription: {
     title: "텍스트 변환 모델 기본 설정",
     description:
@@ -595,7 +572,6 @@ const TRANSLATIONS = {
     "warn-recommend": "최소 2GB RAM과 10Mb 보다 작은 파일 업로드를 권장합니다.",
     "warn-end": "내장된 모델은 첫 번째 사용 시 자동으로 다운로드됩니다.",
   },
-
   embedding: {
     title: "임베딩 기본 설정",
     "desc-start":
@@ -608,7 +584,6 @@ const TRANSLATIONS = {
         "AnythingLLM의 기본 임베딩 엔진을 사용할 때는 설정이 필요하지 않습니다.",
     },
   },
-
   text: {
     title: "텍스트 분할 및 청킹 기본 설정",
     "desc-start":
@@ -623,14 +598,12 @@ const TRANSLATIONS = {
       description: "단일 벡터에 들어갈 수 있는 최대 문자 길이입니다.",
       recommend: "임베드 모델 최대 길이는",
     },
-
     overlap: {
       title: "텍스트 청크 겹침",
       description:
         "청킹 동안 두 인접 텍스트 청크 간에 겹칠 수 있는 최대 문자 수입니다.",
     },
   },
-
   vector: {
     title: "벡터 데이터베이스",
     description:
@@ -640,8 +613,6 @@ const TRANSLATIONS = {
       description: "LanceDB를 선택하면 설정이 필요 없습니다.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "임베드 가능한 채팅 위젯",
     description:
@@ -654,7 +625,6 @@ const TRANSLATIONS = {
       created: "생성일",
     },
   },
-
   "embed-chats": {
     title: "임베드 채팅",
     export: "내보내기",
@@ -667,7 +637,6 @@ const TRANSLATIONS = {
       at: "보낸 시각",
     },
   },
-
   multi: {
     title: "다중 사용자 모드",
     description:
@@ -692,8 +661,6 @@ const TRANSLATIONS = {
       password: "인스턴스 비밀번호",
     },
   },
-
-  // Event Logs
   event: {
     title: "이벤트 로그",
     description:
@@ -705,8 +672,6 @@ const TRANSLATIONS = {
       occurred: "발생 시각",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "개인정보와 데이터 처리",
     description:
@@ -716,7 +681,6 @@ const TRANSLATIONS = {
     vector: "벡터 데이터베이스",
     anonymous: "익명 원격 분석 활성화",
   },
-
   connectors: {
     "search-placeholder": "데이터 커넥터 검색",
     "no-connectors": "데이터 커넥터를 찾을 수 없습니다.",
@@ -847,7 +811,6 @@ const TRANSLATIONS = {
       task_explained:
         "가져오기가 완료되면 페이지 내용이 문서 선택기에서 워크스페이스에 임베딩할 수 있도록 제공됩니다.",
     },
-
     manage: {
       documents: "문서 관리",
       "data-connectors": "데이터 커넥터",
@@ -913,7 +876,6 @@ const TRANSLATIONS = {
       accept: "확인했습니다",
     },
   },
-
   chat_window: {
     welcome: "새 워크스페이스에 오신 것을 환영합니다.",
     get_started: "시작하려면",
@@ -972,7 +934,6 @@ const TRANSLATIONS = {
       missing_credentials_description: "클릭하여 인증 정보를 설정하세요",
     },
   },
-
   profile_settings: {
     edit_account: "계정 정보 수정",
     profile_picture: "프로필 사진",
@@ -995,7 +956,6 @@ const TRANSLATIONS = {
     support: "지원",
     signout: "로그아웃",
   },
-
   "keyboard-shortcuts": {
     title: "단축키 안내",
     shortcuts: {
@@ -1010,7 +970,6 @@ const TRANSLATIONS = {
       showLLMSelector: "워크스페이스 LLM 선택기 열기",
     },
   },
-
   community_hub: {
     publish: {
       system_prompt: {
