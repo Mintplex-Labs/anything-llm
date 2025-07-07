@@ -2,6 +2,7 @@ import System from "@/models/system";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
+import { userFromStorage } from "@/utils/request";
 import { useEffect, useRef, useState } from "react";
 import ChatHistorySettings from "./ChatHistorySettings";
 import ChatPromptSettings from "./ChatPromptSettings";
@@ -17,6 +18,10 @@ export default function ChatSettings({ workspace }) {
   const [saving, setSaving] = useState(false);
 
   const formEl = useRef(null);
+  
+  const user = userFromStorage();
+  const userRole = user?.role;
+
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
@@ -60,11 +65,13 @@ export default function ChatSettings({ workspace }) {
             </CTAButton>
           </div>
         )}
+        {["admin", "manager"].includes(userRole) && (
         <WorkspaceLLMSelection
-          settings={settings}
+          settings={settings} 
           workspace={workspace}
           setHasChanges={setHasChanges}
-        />
+          />
+        )}
         <ChatModeSelection
           workspace={workspace}
           setHasChanges={setHasChanges}

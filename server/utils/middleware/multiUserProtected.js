@@ -4,6 +4,7 @@ const ROLES = {
   all: "<all>",
   admin: "admin",
   manager: "manager",
+  creator: "creator",
   default: "default",
 };
 const DEFAULT_ROLES = [ROLES.admin, ROLES.admin];

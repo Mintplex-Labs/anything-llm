@@ -110,11 +110,13 @@ function ShowWorkspaceChat() {
             to={paths.workspace.settings.members(slug)}
             visible={["admin", "manager"].includes(user?.role)}
           />
+          {["admin", "manager"].includes(user?.role) && (
           <TabItem
             title={t("workspaces—settings.agent")}
             icon={<Robot className="h-6 w-6" />}
             to={paths.workspace.settings.agentConfig(slug)}
           />
+          )}
         </div>
         <div className="px-16 py-6">
           <TabContent slug={slug} workspace={workspace} />

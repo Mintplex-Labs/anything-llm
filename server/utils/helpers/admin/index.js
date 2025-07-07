@@ -9,7 +9,7 @@ function validRoleSelection(currentUser = {}, newUserParams = {}) {
     return { valid: true, error: null }; // not updating role, so skip.
   if (currentUser.role === ROLES.admin) return { valid: true, error: null };
   if (currentUser.role === ROLES.manager) {
-    const validRoles = [ROLES.manager, ROLES.default];
+    const validRoles = [ROLES.manager, ROLES.default, ROLES.creator];
     if (!validRoles.includes(newUserParams.role))
       return { valid: false, error: "Invalid role selection for user." };
     return { valid: true, error: null };

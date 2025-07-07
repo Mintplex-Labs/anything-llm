@@ -123,7 +123,7 @@ export function ManagerRoute({ Component }) {
   }
 
   const user = userFromStorage();
-  return isAuthd && (user?.role !== "default" || !multiUserMode) ? (
+  return isAuthd && (!["default"].includes(user?.role) || !multiUserMode) ? (
     <KeyboardShortcutWrapper>
       <UserMenu>
         <Component />

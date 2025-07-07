@@ -37,7 +37,7 @@ const User = {
       }
     },
     role: (role = "default") => {
-      const VALID_ROLES = ["default", "admin", "manager"];
+      const VALID_ROLES = ["default", "admin", "manager", "creator"];
       if (!VALID_ROLES.includes(role)) {
         throw new Error(
           `Invalid role. Allowed roles are: ${VALID_ROLES.join(", ")}`
