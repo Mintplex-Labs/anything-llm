@@ -147,7 +147,7 @@ export function CreatorRoute({ Component }) {
 
   const user = userFromStorage();
   console.log(user?.role);
-  return isAuthd && (!(user?.role === "default") || !multiUserMode) ? (
+  return isAuthd && (user?.role !== "default" || !multiUserMode) ? (
     <KeyboardShortcutWrapper>
       <UserMenu>
         <Component />
