@@ -5,6 +5,7 @@ import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import { X, CaretRight } from "@phosphor-icons/react";
 import { BLOCK_INFO } from "@/pages/Admin/AgentBuilder/BlockList";
+import { Link } from "react-router-dom";
 
 export default function AgentFlows({ entity }) {
   const { t } = useTranslation();
@@ -79,14 +80,14 @@ export default function AgentFlows({ entity }) {
           <p className="text-theme-text-secondary text-center text-sm">
             {t("community_hub.publish.agent_flow.success_thank_you")}
           </p>
-          <a
-            href={paths.communityHub.viewItem("agent-flow", itemId)}
+          <Link
+            to={paths.communityHub.viewItem("agent-flow", itemId)}
             target="_blank"
             rel="noreferrer"
             className="w-[265px] bg-theme-bg-secondary hover:bg-theme-sidebar-item-hover text-theme-text-primary py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
           >
             {t("community_hub.publish.agent_flow.view_on_hub")}
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -118,7 +119,7 @@ export default function AgentFlows({ entity }) {
               placeholder={t(
                 "community_hub.publish.agent_flow.name_placeholder"
               )}
-              className="w-full bg-theme-bg-secondary rounded-lg p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
             />
           </div>
 
@@ -138,7 +139,7 @@ export default function AgentFlows({ entity }) {
               placeholder={t(
                 "community_hub.publish.agent_flow.description_description"
               )}
-              className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
             />
           </div>
           <div>
@@ -247,7 +248,7 @@ export default function AgentFlows({ entity }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="mt-4 w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="border-none mt-4 w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting
               ? t("community_hub.publish.agent_flow.submitting")
