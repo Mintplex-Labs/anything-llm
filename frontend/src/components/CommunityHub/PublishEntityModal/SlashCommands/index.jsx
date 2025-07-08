@@ -135,7 +135,7 @@ export default function SlashCommands({ entity }) {
               maxLength={1000}
               defaultValue={entity.description}
               placeholder={t(
-                "community_hub.publish.slash_command.description_placeholder"
+                "community_hub.publish.slash_command.description_description"
               )}
               className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
             />
