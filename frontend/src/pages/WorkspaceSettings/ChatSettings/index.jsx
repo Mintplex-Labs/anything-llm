@@ -18,7 +18,7 @@ export default function ChatSettings({ workspace }) {
   const [saving, setSaving] = useState(false);
 
   const formEl = useRef(null);
-  
+
   const user = userFromStorage();
   const userRole = user?.role;
 
@@ -66,10 +66,10 @@ export default function ChatSettings({ workspace }) {
           </div>
         )}
         {["admin", "manager"].includes(userRole) && (
-        <WorkspaceLLMSelection
-          settings={settings} 
-          workspace={workspace}
-          setHasChanges={setHasChanges}
+          <WorkspaceLLMSelection
+            settings={settings}
+            workspace={workspace}
+            setHasChanges={setHasChanges}
           />
         )}
         <ChatModeSelection

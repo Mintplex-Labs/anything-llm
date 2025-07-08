@@ -364,7 +364,10 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/system-vectors",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (request, response) => {
       try {
         const query = queryParams(request);
@@ -427,7 +430,10 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/local-files",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (_, response) => {
       try {
         const localFiles = await viewLocalFiles();

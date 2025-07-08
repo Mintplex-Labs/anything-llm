@@ -43,7 +43,10 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/new",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -82,7 +85,10 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/update",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -162,7 +168,10 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload-link",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (request, response) => {
       try {
         const Collector = new CollectorApi();
@@ -205,7 +214,10 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/update-embeddings",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -249,7 +261,10 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -292,7 +307,10 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug/reset-vector-db",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -536,7 +554,10 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/suggested-messages",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (request, response) => {
       try {
         const { messages = [] } = reqBody(request);
@@ -726,7 +747,10 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug/remove-pfp",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async function (request, response) {
       try {
         const { slug } = request.params;

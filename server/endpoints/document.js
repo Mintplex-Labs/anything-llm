@@ -13,7 +13,10 @@ function documentEndpoints(app) {
   if (!app) return;
   app.post(
     "/document/create-folder",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (request, response) => {
       try {
         const { name } = reqBody(request);
@@ -43,7 +46,10 @@ function documentEndpoints(app) {
 
   app.post(
     "/document/move-files",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator])],
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager, ROLES.creator]),
+    ],
     async (request, response) => {
       try {
         const { files } = reqBody(request);
