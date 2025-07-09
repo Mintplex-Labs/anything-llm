@@ -34,7 +34,8 @@ async function streamChatWithForEmbed(
   });
   const VectorDb = getVectorDbClass();
 
-  const messageLimit = 20;
+  const messageLimit = embed.message_limit;
+  console.log("messageLimit", messageLimit);
   const hasVectorizedSpace = await VectorDb.hasNamespace(embed.workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(embed.workspace.slug);
 

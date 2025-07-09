@@ -70,6 +70,12 @@ export default function EditEmbedModal({ embed, closeModal }) {
                 hint="Limit the amount of chats a session user can send with this embed in a 24 hour period. Zero is unlimited."
                 defaultValue={embed.max_chats_per_session}
               />
+              <NumberInput
+                name="message_limit"
+                title="Message History Limit"
+                hint="The number of previous messages to include in the chat context. Default is 20."
+                defaultValue={embed.message_limit}
+              />
               <BooleanInput
                 name="allow_model_override"
                 title="Enable dynamic model use"
