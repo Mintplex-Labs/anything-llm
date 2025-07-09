@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Private Web Scraping",
+    "short_description": "You can now easily push and pull Agent Flows, System Prompts, and more to the AnythingLLM Community Hub.",
+    "goto": "https://hub.anythingllm.com",
+    "author": "AnythingLLM",
+    "date": "July 8, 2025"
+  },
+  {
+    "thumbnail_url": "https://cdn.anythingllm.com/support/announcements/assets/mobile.jpg",
+    "title": "AnythingLLM Mobile Beta",
+    "short_description": "AnythingLLM on-device, offline, and private. Syncs with the desktop app.",
+    "goto": "https://docs.google.com/forms/d/e/1FAIpQLSdrMRCUXVDWKrtNTcHzVcHQk_SRoiT8X8tiawTFtAhjMq_L6Q/viewform",
+    "author": "AnythingLLM",
+    "date": "July 3, 2025"
+  },
+  {
+    "title": "Community Hub updates",
+    "short_description": "You can now easily push and pull Agent Flows, System Prompts, and more to the AnythingLLM Community Hub.",
+    "goto": "https://hub.anythingllm.com",
+    "author": "AnythingLLM",
+    "date": "June 25, 2025"
+  }
+]
