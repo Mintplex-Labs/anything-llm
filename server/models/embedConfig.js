@@ -236,10 +236,10 @@ function validatedCreationData(value, field) {
   }
 
   if (NUMBER_KEYS.includes(field)) {
-    if (field === "message_limit") {
-      return !isNaN(value) && Number(value) >= 0 ? Number(value) : 20;
-    }
-    return isNaN(value) || Number(value) <= 0 ? null : Number(value);
+    const num = Number(value);
+    if (isNaN(num)) return null;
+    if (field === "message_limit") return num >= 0 ? num : null;
+    return num <= 0 ? null : num;
   }
 
   return null;
