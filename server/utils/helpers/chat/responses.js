@@ -208,14 +208,27 @@ function convertToPromptHistory(history = []) {
 }
 
 /**
- * Safely stringifies an object containing BigInt values
- * @param {Object} obj - Object to stringify
+ * Safely stringifies any object containing BigInt values
+ * @param {*} obj - Anything to stringify that might contain BigInt values
  * @returns {string} JSON string with BigInt values converted to strings
  */
 function safeJSONStringify(obj) {
-  return JSON.stringify(obj, (_, value) =>
-    typeof value === 'bigint' ? value.toString() : value
-  );
+  // Temporarily extend BigInt prototype for this stringify operation
+  const originalToJSON = BigInt.prototype.toJSON;
+  BigInt.prototype.toJSON = function () {
+    return this.toString();
+  };
+
+  try {
+    return JSON.stringify(obj);
+  } finally {
+    // Restore original behavior
+    if (originalToJSON) {
+      BigInt.prototype.toJSON = originalToJSON;
+    } else {
+      delete BigInt.prototype.toJSON;
+    }
+  }
 }
 
 function writeResponseChunk(response, data) {
