@@ -59,6 +59,20 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // BurnCloud Settings
+  BurnCloudApiKey: {
+    envKey: "BURNCLOUD_API_KEY",
+    checks: [isNotEmpty],
+  },
+  BurnCloudModelPref: {
+    envKey: "BURNCLOUD_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  BurnCloudBaseUrl: {
+    envKey: "BURNCLOUD_BASE_URL",
+    checks: [isValidURL],
+  },
+
   GeminiLLMApiKey: {
     envKey: "GEMINI_API_KEY",
     checks: [isNotEmpty],
@@ -756,6 +770,7 @@ function supportedLLM(input = "") {
     "openai",
     "azure",
     "anthropic",
+    "burncloud",
     "gemini",
     "lmstudio",
     "localai",
