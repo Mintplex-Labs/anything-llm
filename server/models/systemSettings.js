@@ -284,6 +284,12 @@ const SystemSettings = {
       // Disable View Chat History for the whole instance.
       DisableViewChatHistory:
         "DISABLE_VIEW_CHAT_HISTORY" in process.env || false,
+
+      // --------------------------------------------------------
+      // Simple SSO Settings
+      // --------------------------------------------------------
+      SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
+      SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
     };
   },
 

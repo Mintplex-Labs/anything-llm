@@ -181,6 +181,39 @@ function communityHubEndpoints(app) {
       }
     }
   );
+
+  app.post(
+    "/community-hub/:communityHubItemType/create",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { communityHubItemType } = request.params;
+        const { connectionKey } = await SystemSettings.hubSettings();
+        if (!connectionKey)
+          throw new Error("Community Hub connection key not found");
+
+        const data = reqBody(request);
+        const { success, error, itemId } = await CommunityHub.createStaticItem(
+          communityHubItemType,
+          data,
+          connectionKey
+        );
+        if (!success) throw new Error(error);
+
+        await EventLogs.logEvent(
+          "community_hub_publish",
+          { itemType: communityHubItemType },
+          response.locals?.user?.id
+        );
+        response
+          .status(200)
+          .json({ success: true, error: null, item: { id: itemId } });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ success: false, error: error.message });
+      }
+    }
+  );
 }
 
 module.exports = { communityHubEndpoints };

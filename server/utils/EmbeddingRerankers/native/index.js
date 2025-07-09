@@ -5,6 +5,7 @@ class NativeEmbeddingReranker {
   static #model = null;
   static #tokenizer = null;
   static #transformers = null;
+  static #initializationPromise = null;
 
   // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
   // endpoint for various reasons. This endpoint is not guaranteed to be active or maintained
@@ -71,13 +72,25 @@ class NativeEmbeddingReranker {
   }
 
   async initClient() {
-    if (NativeEmbeddingReranker.#transformers) {
-      this.log(`Reranker suite already initialized - reusing.`);
+    if (
+      NativeEmbeddingReranker.#transformers &&
+      NativeEmbeddingReranker.#model &&
+      NativeEmbeddingReranker.#tokenizer
+    ) {
+      this.log(`Reranker suite already fully initialized - reusing.`);
       return;
     }
 
-    await import("@xenova/transformers").then(
-      async ({ AutoModelForSequenceClassification, AutoTokenizer, env }) => {
+    if (NativeEmbeddingReranker.#initializationPromise) {
+      this.log(`Waiting for existing initialization to complete...`);
+      await NativeEmbeddingReranker.#initializationPromise;
+      return;
+    }
+
+    NativeEmbeddingReranker.#initializationPromise = (async () => {
+      try {
+        const { AutoModelForSequenceClassification, AutoTokenizer, env } =
+          await import("@xenova/transformers");
         this.log(`Loading reranker suite...`);
         NativeEmbeddingReranker.#transformers = {
           AutoModelForSequenceClassification,
@@ -90,9 +103,12 @@ class NativeEmbeddingReranker {
         // 3. Download and cache from fallback host (cdn.anythingllm.com)
         await this.#getPreTrainedModel();
         await this.#getPreTrainedTokenizer();
+      } finally {
+        NativeEmbeddingReranker.#initializationPromise = null;
       }
-    );
-    return;
+    })();
+
+    await NativeEmbeddingReranker.#initializationPromise;
   }
 
   /**
