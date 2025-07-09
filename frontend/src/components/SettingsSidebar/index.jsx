@@ -22,6 +22,7 @@ import showToast from "@/utils/toast";
 import System from "@/models/system";
 import Option from "./MenuOption";
 import { CanViewChatHistoryProvider } from "../CanViewChatHistory";
+import useAppVersion from "@/hooks/useAppVersion";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -119,6 +120,7 @@ export default function SettingsSidebar() {
                     >
                       {t("settings.privacy")}
                     </Link>
+                    <AppVersion />
                   </div>
                 </div>
               </div>
@@ -169,6 +171,7 @@ export default function SettingsSidebar() {
                   >
                     {t("settings.privacy")}
                   </Link>
+                  <AppVersion />
                 </div>
               </div>
             </div>
@@ -450,4 +453,19 @@ function HoldToReveal({ children, holdForMs = 3_000 }) {
 
   if (!showing) return null;
   return children;
+}
+
+function AppVersion() {
+  const { version, isLoading } = useAppVersion();
+  if (isLoading) return null;
+  return (
+    <Link
+      to={`https://github.com/Mintplex-Labs/anything-llm/releases/tag/v${version}`}
+      target="_blank"
+      rel="noreferrer"
+      className="text-theme-text-secondary light:opacity-80 opacity-50 text-xs mx-3"
+    >
+      v{version}
+    </Link>
+  );
 }

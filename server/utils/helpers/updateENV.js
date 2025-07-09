@@ -1084,6 +1084,7 @@ function dumpENV() {
     "DISABLE_VIEW_CHAT_HISTORY",
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
+    "SIMPLE_SSO_NO_LOGIN",
     // Community Hub
     "COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED",
 
@@ -1095,6 +1096,9 @@ function dumpENV() {
 
     // Collector API common ENV - allows bypassing URL validation checks
     "COLLECTOR_ALLOW_ANY_IP",
+
+    // Allow disabling of streaming for generic openai
+    "GENERIC_OPENAI_STREAMING_DISABLED",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

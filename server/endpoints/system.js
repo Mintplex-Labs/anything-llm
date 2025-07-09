@@ -54,7 +54,10 @@ const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
 const {
   chatHistoryViewable,
 } = require("../utils/middleware/chatHistoryViewable");
-const { simpleSSOEnabled } = require("../utils/middleware/simpleSSOEnabled");
+const {
+  simpleSSOEnabled,
+  simpleSSOLoginDisabled,
+} = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
@@ -116,6 +119,17 @@ function systemEndpoints(app) {
       const bcrypt = require("bcrypt");
 
       if (await SystemSettings.isMultiUserMode()) {
+        if (simpleSSOLoginDisabled()) {
+          response.status(403).json({
+            user: null,
+            valid: false,
+            token: null,
+            message:
+              "[005] Login via credentials has been disabled by the administrator.",
+          });
+          return;
+        }
+
         const { username, password } = reqBody(request);
         const existingUser = await User._get({ username: String(username) });
 

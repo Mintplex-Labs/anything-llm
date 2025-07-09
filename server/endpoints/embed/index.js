@@ -39,9 +39,9 @@ function embeddedEndpoints(app) {
         response.flushHeaders();
 
         await streamChatWithForEmbed(response, embed, message, sessionId, {
-          prompt,
-          model,
-          temperature,
+          promptOverride: prompt,
+          modelOverride: model,
+          temperatureOverride: temperature,
           username,
         });
         await Telemetry.sendTelemetry("embed_sent_chat", {
