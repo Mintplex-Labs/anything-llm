@@ -256,6 +256,11 @@ async function streamChatWithWorkspace(
   }
 
   if (completeText?.length > 0) {
+    // BigInt test
+    if (process.env.NODE_ENV === 'development') {
+      metrics.test_bigint = BigInt(Number.MAX_SAFE_INTEGER) + BigInt(1);
+    }
+
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: message,
@@ -275,7 +280,7 @@ async function streamChatWithWorkspace(
       type: "finalizeResponseStream",
       close: true,
       error: false,
-      chatId: chat.id,
+      chatId: chat?.id || null,
       metrics,
     });
     return;

@@ -207,8 +207,19 @@ function convertToPromptHistory(history = []) {
   return formattedHistory.flat();
 }
 
+/**
+ * Safely stringifies an object containing BigInt values
+ * @param {Object} obj - Object to stringify
+ * @returns {string} JSON string with BigInt values converted to strings
+ */
+function safeJSONStringify(obj) {
+  return JSON.stringify(obj, (_, value) =>
+    typeof value === 'bigint' ? value.toString() : value
+  );
+}
+
 function writeResponseChunk(response, data) {
-  response.write(`data: ${JSON.stringify(data)}\n\n`);
+  response.write(`data: ${safeJSONStringify(data)}\n\n`);
   return;
 }
 
@@ -262,4 +273,5 @@ module.exports = {
   writeResponseChunk,
   clientAbortedHandler,
   formatChatHistory,
+  safeJSONStringify,
 };
