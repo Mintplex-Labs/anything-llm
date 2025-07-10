@@ -14,7 +14,7 @@ import { useMatch } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import showToast from "@/utils/toast";
 
-export default function ActiveWorkspaces() {
+export default function ActiveWorkspaces({ searchTerm }) {
   const navigate = useNavigate();
   const { slug } = useParams();
   const [loading, setLoading] = useState(true);
@@ -29,9 +29,10 @@ export default function ActiveWorkspaces() {
       const workspaces = await Workspace.all();
       setLoading(false);
       setWorkspaces(Workspace.orderWorkspaces(workspaces));
+      setWorkspaces(Workspace.filterWorkspaces(workspaces, searchTerm));
     }
     getWorkspaces();
-  }, []);
+  }, [searchTerm]);
 
   if (loading) {
     return (
@@ -198,6 +199,13 @@ export default function ActiveWorkspaces() {
                 </Draggable>
               );
             })}
+            {workspaces.length === 0 && searchTerm.length > 0 && (
+              <div className="flex flex-col gap-y-2">
+                <p className="text-white">
+                  We couldn't find any workspaces matching your search.
+                </p>
+              </div>
+            )}
             {provided.placeholder}
             {showing && (
               <ManageWorkspace

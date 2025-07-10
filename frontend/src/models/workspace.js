@@ -508,6 +508,18 @@ const Workspace = {
     return orderedWorkspaces;
   },
 
+  /**
+   * Filters workspaces based on the input into search bar
+   * @param {Array} workspaces - array of workspace JSON objects
+   * @param {string} searchTerm - search term to filter workspaces
+   * @returns {Array} - filtered workspaces
+   */
+  filterWorkspaces: function (workspaces = [], searchTerm = "") {
+    return workspaces.filter((workspace) =>
+      workspace.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  },
+
   threads: WorkspaceThread,
 };
 

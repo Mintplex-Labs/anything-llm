@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import { useSidebarToggle, ToggleSidebarButton } from "./SidebarToggle";
+import SearchBar from "./SearchBar.jsx";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -24,7 +25,7 @@ export default function Sidebar() {
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
   const { t } = useTranslation();
-
+  const [searchTerm, setSearchTerm] = useState("");
   return (
     <>
       <div
@@ -59,6 +60,10 @@ export default function Sidebar() {
             <div className="flex-grow flex flex-col min-w-[235px]">
               <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
                 <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
+                  <SearchBar
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                  />
                   <div className="flex gap-x-2 items-center justify-between">
                     {(!user || user?.role !== "default") && (
                       <button
@@ -72,7 +77,7 @@ export default function Sidebar() {
                       </button>
                     )}
                   </div>
-                  <ActiveWorkspaces />
+                  <ActiveWorkspaces searchTerm={searchTerm} />
                 </div>
               </div>
               <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-1">
