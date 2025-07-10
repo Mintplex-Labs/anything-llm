@@ -117,12 +117,12 @@ async function loadPaperlessNgx({ baseUrl = null, apiToken = null }, response) {
  * @returns {string}
  */
 function generateChunkSource({ doc, baseUrl, apiToken }, encryptionWorker) {
-  const payload = {
+  const payload = new URLSearchParams({
     baseUrl,
     token: apiToken,
-  };
-  return `paperless-ngx://${doc.metadata.id}?payload=${encryptionWorker.encrypt(
-    JSON.stringify(payload)
+  }).toString();
+  return `paperless-ngx://${doc.metadata.id}?${encryptionWorker.encrypt(
+    payload
   )}`;
 }
 
