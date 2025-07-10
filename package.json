@@ -1,6 +1,6 @@
 {
   "name": "anything-llm",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "The best solution for turning private documents into a chat bot using off-the-shelf tools and commercially viable AI technologies.",
   "main": "index.js",
   "type": "module",
