@@ -231,15 +231,16 @@ function validatedCreationData(value, field) {
     }
   }
 
+  if (field === "message_limit") {
+    return isNaN(value) || Number(value) <= 0 ? 20 : Number(value);
+  }
+
   if (BOOLEAN_KEYS.includes(field)) {
     return value === true || value === false ? value : false;
   }
 
   if (NUMBER_KEYS.includes(field)) {
-    const num = Number(value);
-    if (isNaN(num)) return null;
-    if (field === "message_limit") return num >= 0 ? num : null;
-    return num <= 0 ? null : num;
+    return isNaN(value) || Number(value) <= 0 ? null : Number(value);
   }
 
   return null;
