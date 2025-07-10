@@ -5,6 +5,7 @@ const fastLevenshtein = require("fast-levenshtein");
 // allow a pretty loose levenshtein distance for the search
 // since we would rather show a few more results than less
 const FAST_LEVENSHTEIN_DISTANCE = 3;
+
 /**
  * Search for workspaces and threads based on a search term with optional user context.
  * For each type of item we are looking at the `name` field.
