@@ -51,7 +51,7 @@ export default function SearchBox({ user, showNewWsModal }) {
   }, []);
 
   return (
-    <div className="flex gap-x-[5px] w-full items-center max-h-[32px]">
+    <div className="flex gap-x-[5px] w-full items-center h-[32px]">
       <div className="relative h-full w-full flex">
         <input
           ref={searchRef}
