@@ -31,7 +31,7 @@ const WorkspaceThread = {
     return slugifyModule(...args);
   },
 
-  new: async function (workspace, userId = null, data = {}) {
+  new: async function (workspace, userId = null, data = {}, user_pseudo_id = null) {
     try {
       const thread = await prisma.workspace_threads.create({
         data: {
@@ -41,6 +41,7 @@ const WorkspaceThread = {
             : uuidv4(),
           user_id: userId ? Number(userId) : null,
           workspace_id: workspace.id,
+          user_pseudo_id: user_pseudo_id,
         },
       });
 

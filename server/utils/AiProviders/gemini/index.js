@@ -6,7 +6,8 @@ const {
 } = require("../../helpers/chat/LLMPerformanceMonitor");
 const {
   formatChatHistory,
-  handleDefaultStreamResponseV2,
+  writeResponseChunk,
+  clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
 const { defaultGeminiModels, v1BetaModels } = require("./defaultModels");
@@ -424,7 +425,100 @@ class GeminiLLM {
   }
 
   handleStream(response, stream, responseProps) {
-    return handleDefaultStreamResponseV2(response, stream, responseProps);
+    const {
+      uuid = uuidv4(),
+      sources = [],
+      related_questions = {},
+      engine_sources = {},
+    } = responseProps;
+
+    // This is a copy of the handleDefaultStreamResponseV2 function from
+    // helpers/chat/responses.js with the addition of passing
+    // related_questions and engine_sources to the writeResponseChunk function.
+    let hasUsageMetrics = false;
+    let usage = {
+      completion_tokens: 0,
+    };
+
+    return new Promise(async (resolve) => {
+      let fullText = "";
+
+      const handleAbort = () => {
+        stream?.endMeasurement(usage);
+        clientAbortedHandler(resolve, fullText);
+      };
+      response.on("close", handleAbort);
+
+      try {
+        for await (const chunk of stream) {
+          const message = chunk?.choices?.[0];
+          const token = message?.delta?.content;
+
+          if (
+            chunk.hasOwnProperty("usage") &&
+            !!chunk.usage &&
+            Object.values(chunk.usage).length > 0
+          ) {
+            if (chunk.usage.hasOwnProperty("prompt_tokens")) {
+              usage.prompt_tokens = Number(chunk.usage.prompt_tokens);
+            }
+
+            if (chunk.usage.hasOwnProperty("completion_tokens")) {
+              hasUsageMetrics = true;
+              usage.completion_tokens = Number(chunk.usage.completion_tokens);
+            }
+          }
+
+          if (token) {
+            fullText += token;
+            if (!hasUsageMetrics) usage.completion_tokens++;
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: token,
+              close: false,
+              error: false,
+              related_questions,
+              engine_sources,
+            });
+          }
+
+          if (
+            message?.hasOwnProperty("finish_reason") &&
+            message.finish_reason !== "" &&
+            message.finish_reason !== null
+          ) {
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: "",
+              close: true,
+              error: false,
+              related_questions,
+              engine_sources,
+            });
+            response.removeListener("close", handleAbort);
+            stream?.endMeasurement(usage);
+            resolve(fullText);
+            break;
+          }
+        }
+      } catch (e) {
+        console.log(`\x1b[43m\x1b[34m[STREAMING ERROR]\x1b[0m ${e.message}`);
+        writeResponseChunk(response, {
+          uuid,
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: e.message,
+        });
+        stream?.endMeasurement(usage);
+        resolve(fullText);
+      }
+    });
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {

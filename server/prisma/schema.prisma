@@ -156,6 +156,7 @@ model workspace_threads {
   slug          String     @unique
   workspace_id  Int
   user_id       Int?
+  user_pseudo_id String?
   createdAt     DateTime   @default(now())
   lastUpdatedAt DateTime   @default(now())
   workspace     workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
@@ -186,6 +187,7 @@ model workspace_chats {
   user_id        Int?
   thread_id      Int? // No relation to prevent whole table migration
   api_session_id String? // String identifier for only the dev API to partition chats in any mode.
+  user_pseudo_id String?
   createdAt      DateTime @default(now())
   lastUpdatedAt  DateTime @default(now())
   feedbackScore  Boolean?
