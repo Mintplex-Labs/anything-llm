@@ -15,6 +15,7 @@ const DEFAULT_SEARCH_RESULTS = {
 
 const SEARCH_RESULT_SELECTED = "search-result-selected";
 export default function SearchBox({ user, showNewWsModal }) {
+  const { t } = useTranslation();
   const searchRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -56,7 +57,7 @@ export default function SearchBox({ user, showNewWsModal }) {
         <input
           ref={searchRef}
           type="search"
-          placeholder="Search"
+          placeholder={t("common.search")}
           onChange={handleSearch}
           onReset={handleReset}
           onFocus={(e) => e.target.select()}
