@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     optional: "선택 사항",
     yes: "예",
     no: "아니오",
+    search: null,
   },
   settings: {
     title: "인스턴스 설정",

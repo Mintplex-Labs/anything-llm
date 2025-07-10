@@ -70,6 +70,7 @@ const TRANSLATIONS = {
     optional: "Optional",
     yes: "Yes",
     no: "No",
+    search: "Search",
   },
 
   // Setting Sidebar menu items.

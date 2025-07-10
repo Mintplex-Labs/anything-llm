@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     optional: "Opcional",
     yes: "Sim",
     no: "Não",
+    search: null,
   },
   settings: {
     title: "Configurações da Instância",

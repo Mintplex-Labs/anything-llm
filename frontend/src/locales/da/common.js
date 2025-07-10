@@ -70,6 +70,7 @@ const TRANSLATIONS = {
     optional: "Valgfrit",
     yes: "Ja",
     no: "Nej",
+    search: null,
   },
   settings: {
     title: "Instansindstillinger",

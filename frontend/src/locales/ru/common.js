@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     optional: "Необязательный",
     yes: "Да",
     no: "Нет",
+    search: null,
   },
   settings: {
     title: "Настройки экземпляра",
