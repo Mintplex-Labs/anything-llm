@@ -56,7 +56,7 @@ export default function SearchBox({ user, showNewWsModal }) {
         <input
           ref={searchRef}
           type="search"
-          placeholder="Search workspaces"
+          placeholder="Search"
           onChange={handleSearch}
           onReset={handleReset}
           onFocus={(e) => e.target.select()}
