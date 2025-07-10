@@ -4,6 +4,7 @@ import CommunityHub from "@/models/communityHub";
 import showToast from "@/utils/toast";
 import paths from "@/utils/paths";
 import { X } from "@phosphor-icons/react";
+import { Link } from "react-router-dom";
 
 export default function SystemPrompts({ entity }) {
   const { t } = useTranslation();
@@ -73,14 +74,14 @@ export default function SystemPrompts({ entity }) {
           <p className="text-theme-text-secondary text-center text-sm">
             {t("community_hub.publish.system_prompt.success_thank_you")}
           </p>
-          <a
-            href={paths.communityHub.viewItem("system-prompt", itemId)}
+          <Link
+            to={paths.communityHub.viewItem("system-prompt", itemId)}
             target="_blank"
             rel="noreferrer"
             className="w-[265px] bg-theme-bg-secondary hover:bg-theme-sidebar-item-hover text-theme-text-primary py-2 px-4 rounded-lg transition-colors mt-4 text-sm font-semibold text-center"
           >
             {t("community_hub.publish.system_prompt.view_on_hub")}
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -111,7 +112,7 @@ export default function SystemPrompts({ entity }) {
               placeholder={t(
                 "community_hub.publish.system_prompt.name_placeholder"
               )}
-              className="w-full bg-theme-bg-secondary rounded-lg p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-theme-text-primary text-sm focus:outline-primary-button active:outline-primary-button outline-none placeholder:text-theme-text-placeholder"
             />
           </div>
 
@@ -130,7 +131,7 @@ export default function SystemPrompts({ entity }) {
               placeholder={t(
                 "community_hub.publish.system_prompt.description_description"
               )}
-              className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[80px] placeholder:text-theme-text-placeholder"
             />
           </div>
           <div>
@@ -230,14 +231,14 @@ export default function SystemPrompts({ entity }) {
               placeholder={t(
                 "community_hub.publish.system_prompt.prompt_placeholder"
               )}
-              className="w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[300px] placeholder:text-theme-text-placeholder"
+              className="border-none w-full bg-theme-bg-secondary rounded-lg p-2 text-white text-sm focus:outline-primary-button active:outline-primary-button outline-none min-h-[300px] placeholder:text-theme-text-placeholder"
             />
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="border-none w-full bg-cta-button hover:opacity-80 text-theme-text-primary font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting
               ? t("community_hub.publish.system_prompt.submitting")

@@ -314,8 +314,8 @@ const Zilliz = {
       filterIdentifiers,
     });
 
-    const sources = sourceDocuments.map((metadata, i) => {
-      return { ...metadata, text: contextTexts[i] };
+    const sources = sourceDocuments.map((doc, i) => {
+      return { metadata: doc, text: contextTexts[i] };
     });
     return {
       contextTexts,
@@ -350,7 +350,10 @@ const Zilliz = {
         return;
       }
       result.contextTexts.push(match.metadata.text);
-      result.sourceDocuments.push(match);
+      result.sourceDocuments.push({
+        ...match.metadata,
+        score: match.score,
+      });
       result.scores.push(match.score);
     });
     return result;
@@ -386,9 +389,7 @@ const Zilliz = {
       if (Object.keys(metadata).length > 0) {
         documents.push({
           ...metadata,
-          ...(source.hasOwnProperty("pageContent")
-            ? { text: source.pageContent }
-            : {}),
+          ...(source.text ? { text: source.text } : {}),
         });
       }
     }

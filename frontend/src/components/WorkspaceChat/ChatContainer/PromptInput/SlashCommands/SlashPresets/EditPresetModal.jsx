@@ -127,7 +127,7 @@ export default function EditPresetModal({
                 disabled={deleting}
                 onClick={handleDelete}
                 type="button"
-                className="transition-all duration-300 bg-transparent text-red-500 hover:bg-red-500/25 px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+                className="border-none transition-all duration-300 bg-transparent text-red-500 hover:bg-red-500/25 px-4 py-2 rounded-lg text-sm disabled:opacity-50"
               >
                 {deleting ? "Deleting..." : "Delete Preset"}
               </button>
@@ -135,7 +135,7 @@ export default function EditPresetModal({
                 <button
                   onClick={onClose}
                   type="button"
-                  className="transition-all duration-300 bg-transparent text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  className="border-none transition-all duration-300 bg-transparent text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
                 >
                   Cancel
                 </button>
