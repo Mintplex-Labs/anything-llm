@@ -14,6 +14,8 @@ const { WorkspaceChats } = require("../../../models/workspaceChats");
 const { User } = require("../../../models/user");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { getModelTag } = require("../../utils");
+const { createSessionForEngines } = require("../../../aiapplications_utils/sessionManagement");
+const { getEngineResponse } = require("../../../aiapplications_utils/responseGenerator");
 
 function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
@@ -71,7 +73,7 @@ function apiWorkspaceThreadEndpoints(app) {
       */
       try {
         const wslug = request.params.slug;
-        let { userId = null, name = null, slug = null } = reqBody(request);
+        let { userId = null, name = null, slug = null, user_pseudo_id = null } = reqBody(request);
         const workspace = await Workspace.get({ slug: wslug });
 
         if (!workspace) {
@@ -87,7 +89,8 @@ function apiWorkspaceThreadEndpoints(app) {
         const { thread, message } = await WorkspaceThread.new(
           workspace,
           userId ? Number(userId) : null,
-          { name, slug }
+          { name, slug },
+          user_pseudo_id,
         );
 
         await Telemetry.sendTelemetry("workspace_thread_created", {
@@ -100,7 +103,8 @@ function apiWorkspaceThreadEndpoints(app) {
         await EventLogs.logEvent("api_workspace_thread_created", {
           workspaceName: workspace?.name || "Unknown Workspace",
         });
-        response.status(200).json({ thread, message });
+        const engines_session_ids = await createSessionForEngines(user_pseudo_id);
+        response.status(201).json({ thread, message, engines_session_ids });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -188,6 +192,21 @@ function apiWorkspaceThreadEndpoints(app) {
       }
     }
   );
+
+  // get workspace threads
+  app.get(
+    "/v1/workspace/:slug/threads/:user_pseudo_id",
+    [validApiKey],
+    async (request, response) => {
+      const { slug, user_pseudo_id } = request.params;
+      const workspace = await Workspace.get({ slug });
+      const threads = await WorkspaceThread.where({
+        workspace_id: workspace.id,
+        user_pseudo_id: user_pseudo_id,
+      });
+      response.status(200).json({ threads });
+    }
+  )
 
   app.delete(
     "/v1/workspace/:slug/thread/:threadSlug",
@@ -550,6 +569,8 @@ function apiWorkspaceThreadEndpoints(app) {
           message,
           mode = "query",
           userId,
+          user_pseudo_id,
+          engines_session_ids,
           attachments = [],
           reset = false,
         } = reqBody(request);
@@ -587,6 +608,27 @@ function apiWorkspaceThreadEndpoints(app) {
 
         const user = userId ? await User.get({ id: Number(userId) }) : null;
 
+        // get responses from ai applications engines
+        let related_questions = {};
+        let answers = {};
+        let sources = {};
+        const engine_ids = Object.keys(engines_session_ids);
+        const promises = engine_ids.map(engine_id => {
+          const session_id = engines_session_ids[engine_id];
+          return getEngineResponse(engine_id, message, session_id);
+        });
+
+        const responses = await Promise.all(promises);
+
+        responses.forEach((response, index) => {
+            const engine_id = engine_ids[index];
+            related_questions[engine_id] = response.related_questions;
+            answers[engine_id] = response.answer;
+            sources[engine_id] = response.sources;
+        });
+        answers["user_query"] = message;
+        const main_llm_query = JSON.stringify(answers);
+
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Content-Type", "text/event-stream");
         response.setHeader("Access-Control-Allow-Origin", "*");
@@ -596,12 +638,16 @@ function apiWorkspaceThreadEndpoints(app) {
         await ApiChatHandler.streamChat({
           response,
           workspace,
-          message,
+          message: main_llm_query,
+          message_db_save: message,
           mode,
           user,
+          user_pseudo_id,
           thread,
           attachments,
           reset,
+          related_questions: related_questions,
+          engine_sources: sources,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",

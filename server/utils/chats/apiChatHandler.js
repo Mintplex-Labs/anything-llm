@@ -367,12 +367,16 @@ async function streamChat({
   response,
   workspace,
   message = null,
+  message_db_save = null,
   mode = "chat",
   user = null,
+  user_pseudo_id = null,
   thread = null,
   sessionId = null,
   attachments = [],
   reset = false,
+  related_questions = {},
+  engine_sources = {},
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
@@ -487,7 +491,7 @@ async function streamChat({
     });
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: message,
+      prompt: message_db_save,
       response: {
         text: textResponse,
         sources: [],
@@ -495,6 +499,7 @@ async function streamChat({
         type: chatMode,
         metrics: {},
       },
+      user_pseudo_id: user_pseudo_id,
       threadId: thread?.id || null,
       apiSessionId: sessionId,
       include: false,
@@ -611,7 +616,7 @@ async function streamChat({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: message,
+      prompt: message_db_save,
       response: {
         text: textResponse,
         sources: [],
@@ -668,6 +673,8 @@ async function streamChat({
     completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
       sources,
+      related_questions,
+      engine_sources,
     });
     metrics = stream.metrics;
   }

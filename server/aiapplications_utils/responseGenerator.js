@@ -1,0 +1,96 @@
+const { ConversationalSearchServiceClient } = require('@google-cloud/discoveryengine').v1;
+const { VertexAI } = require('@google-cloud/vertexai');
+const { project_id, location } = require('./config');
+
+const searchClient = new ConversationalSearchServiceClient({
+    apiEndpoint: `${location}-discoveryengine.googleapis.com`,
+});
+
+const vertexAI = new VertexAI({ project: project_id, location: 'us-central1' });
+const generativeModel = vertexAI.getGenerativeModel({
+    model: 'gemini-2.5-flash',
+    systemInstruction: {
+        role: 'system',
+        parts: [{ "text": "You are a main model, that receives responses from other smmaller models and user query. Each of these smaller models respond to the user query based on different data sources. You are responsible for summarizing the responses from the smaller models and returning a final response to the user. You should use the responses from the smaller models to create a final response that is a combination of the responses from the smaller models. You should also use the user query to create a final response that is a combination of the responses from the smaller models and the user query." }]
+    },
+});
+
+async function getEngineResponse(engine_id, query, session_id) {
+    const serving_config = `projects/${project_id}/locations/${location}/collections/default_collection/engines/${engine_id}/servingConfigs/default_serving_config`;
+    const full_session_id = `projects/${project_id}/locations/${location}/collections/default_collection/engines/${engine_id}/sessions/${session_id}`;
+
+    const request = {
+        servingConfig: serving_config,
+        query: { text: query },
+        session: full_session_id,
+        queryUnderstandingSpec: {
+            queryRephraserSpec: {
+                disable: false,
+                maxRephraseSteps: 1,
+            },
+            queryClassificationSpec: {
+                types: [
+                    'ADVERSARIAL_QUERY',
+                    'NON_ANSWER_SEEKING_QUERY'
+                ]
+            },
+        },
+        answerGenerationSpec: {
+            ignoreAdversarialQuery: false,
+            ignoreNonAnswerSeekingQuery: false,
+            ignoreLowRelevantContent: false,
+            answerLanguageCode: "en",
+            includeCitations: true,
+            modelSpec: {
+                modelVersion: "gemini-2.5-flash/answer_gen/v1",
+            },
+            promptSpec: {
+                preamble: "Given the conversation between a user and a helpful assistant and some search results, create a final answer for the assistant. The answer should use all relevant information from the search results, not introduce any additional information, and use exactly the same words as the search results when possible. The assistant's answer should be no more than 20 sentences. The user is a member of the general public who doesn't have in-depth knowledge of the subject matter. The assistant should avoid using specialized knowledge, and instead answer in a non-technical manner that anyone can understand. Provide a summary, details in bullet points and a conclusion",
+            },
+        },
+        relatedQuestionsSpec: { enable: true },
+        searchSpec: {
+            searchParams: {
+                maxReturnResults: 4,
+            },
+        },
+    };
+
+    const [response] = await searchClient.answerQuery(request);
+    // console.log(JSON.stringify(twójObiekt, null, 2));
+    // console.log(response)
+    // console.log("--------------------------------")
+    // for (const reference of response.answer.references) {
+    //     console.log(JSON.stringify(reference, null, 2));
+    //     console.log("--------------------------------")
+    // }
+    // console.log("--------------------------------")
+    // console.log("--------------------------------")
+    // console.log("--------------------------------")
+    const full_references = response.answer.references;
+    const vaild_references = [];
+    for (const reference of full_references) {
+        vaild_references.push(reference.chunkInfo.documentMetadata.uri)
+    }
+    // console.log(vaild_references)
+    const unique_references = [...new Set(vaild_references)];
+
+    // console.log(response.answer.answerText)
+    // console.log(response.answer.references)
+    // console.log(response.answer.relatedQuestions)
+    return {
+        answer: response.answer.answerText,
+        related_questions: response.answer.relatedQuestions,
+        sources: unique_references,
+    };
+}
+
+async function getSummaryResponse(query) {
+    const result = await generativeModel.generateContent(query);
+    return result.response.candidates[0].content.parts[0].text;
+}
+
+module.exports = {
+    getEngineResponse,
+    getSummaryResponse,
+}; 

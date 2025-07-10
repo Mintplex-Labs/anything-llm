@@ -15,6 +15,7 @@ const {
 } = require("../../../utils/helpers/chat/responses");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { getModelTag } = require("../../utils");
+const { getEngineResponse } = require("../../../aiapplications_utils/responseGenerator");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -795,6 +796,8 @@ function apiWorkspaceEndpoints(app) {
           sessionId = null,
           attachments = [],
           reset = false,
+          user_pseudo_id = null,
+          engines_session_ids = null,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
@@ -809,6 +812,25 @@ function apiWorkspaceEndpoints(app) {
           });
           return;
         }
+
+        // get responses from ai applications engines
+        let related_questions = {};
+        let answers = {};
+        const promises = engines_session_ids.map(engine_id => {
+          const session_id = engines_session_ids[engine_id];
+          return getEngineResponse(engine_id, message, session_id);
+        });
+
+        const responses = await Promise.all(promises);
+
+        responses.forEach((response, index) => {
+            const engine_id = engines_session_ids[index];
+            related_questions[engine_id] = response.related_questions;
+            answers[engine_id] = response.answer;
+        });
+        answers["user_query"] = message;
+        const main_llm_query = JSON.stringify(answers);
+
 
         if ((!message?.length || !VALID_CHAT_MODE.includes(mode)) && !reset) {
           response.status(400).json({
@@ -833,7 +855,8 @@ function apiWorkspaceEndpoints(app) {
         await ApiChatHandler.streamChat({
           response,
           workspace,
-          message,
+          message: main_llm_query,
+          message_db_save: message,
           mode,
           user: null,
           thread: null,

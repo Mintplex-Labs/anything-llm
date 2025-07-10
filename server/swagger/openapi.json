@@ -2801,7 +2801,6 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2818,7 +2817,11 @@
                   }
                 }
               }
-            }
+            },
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
           },
           "400": {
             "description": "Bad Request"
@@ -2935,6 +2938,37 @@
                 "name": "Updated Thread Name"
               }
             }
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/threads/{user_pseudo_id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "user_pseudo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
