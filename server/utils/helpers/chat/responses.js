@@ -213,22 +213,10 @@ function convertToPromptHistory(history = []) {
  * @returns {string} JSON string with BigInt values converted to strings
  */
 function safeJSONStringify(obj) {
-  // Temporarily extend BigInt prototype for this stringify operation
-  const originalToJSON = BigInt.prototype.toJSON;
-  BigInt.prototype.toJSON = function () {
-    return this.toString();
-  };
-
-  try {
-    return JSON.stringify(obj);
-  } finally {
-    // Restore original behavior
-    if (originalToJSON) {
-      BigInt.prototype.toJSON = originalToJSON;
-    } else {
-      delete BigInt.prototype.toJSON;
-    }
-  }
+  return JSON.stringify(obj, (_, value) => {
+    if (typeof value === "bigint") return value.toString();
+    return value;
+  });
 }
 
 function writeResponseChunk(response, data) {

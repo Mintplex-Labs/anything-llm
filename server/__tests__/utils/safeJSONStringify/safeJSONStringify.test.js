@@ -37,11 +37,24 @@ describe("safeJSONStringify", () => {
       nested: {
         more: { huge: BigInt(Number.MAX_SAFE_INTEGER) + BigInt(1) }
       },
-      normal: { str: "test", num: 42, bool: true, nil: null }
+      normal: { str: "test", num: 42, bool: true, nil: null, sub_arr: ["alpha", "beta", "gamma", 1, 2, BigInt(Number.MAX_SAFE_INTEGER) + BigInt(1), { map: { a: BigInt(Number.MAX_SAFE_INTEGER) + BigInt(1) } }] }
     };
     const result = JSON.parse(safeJSONStringify(obj)); // Should parse back without errors
     expect(typeof result.bigNums[0]).toBe("string");
+    expect(result.bigNums[0]).toEqual("123");
     expect(typeof result.nested.more.huge).toBe("string");
-    expect(result.normal).toEqual({ str: "test", num: 42, bool: true, nil: null });
+    expect(result.normal).toEqual({ str: "test", num: 42, bool: true, nil: null, sub_arr: ["alpha", "beta", "gamma", 1, 2, (BigInt(Number.MAX_SAFE_INTEGER) + BigInt(1)).toString(), { map: { a: (BigInt(Number.MAX_SAFE_INTEGER) + BigInt(1)).toString() } }] });
+    expect(result.normal.sub_arr[6].map.a).toEqual((BigInt(Number.MAX_SAFE_INTEGER) + BigInt(1)).toString());
+  });
+
+  test("handles invariants", () => {
+    expect(safeJSONStringify({})).toBe("{}");
+    expect(safeJSONStringify(null)).toBe("null");
+    expect(safeJSONStringify(undefined)).toBe(undefined);
+    expect(safeJSONStringify(true)).toBe("true");
+    expect(safeJSONStringify(false)).toBe("false");
+    expect(safeJSONStringify(0)).toBe("0");
+    expect(safeJSONStringify(1)).toBe("1");
+    expect(safeJSONStringify(-1)).toBe("-1");
   });
 });
