@@ -22,6 +22,8 @@
     "@anthropic-ai/sdk": "^0.39.0",
     "@aws-sdk/client-bedrock-runtime": "^3.775.0",
     "@datastax/astra-db-ts": "^0.1.3",
+    "@google-cloud/discoveryengine": "^2.3.0",
+    "@google-cloud/vertexai": "^1.10.0",
     "@ladjs/graceful": "^3.2.2",
     "@lancedb/lancedb": "0.15.0",
     "@langchain/anthropic": "0.1.16",
