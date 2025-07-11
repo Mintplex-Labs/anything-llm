@@ -65,6 +65,7 @@ const TRANSLATIONS = {
     optional: "可选",
     yes: "是",
     no: "否",
+    search: null,
   },
   settings: {
     title: "设置",

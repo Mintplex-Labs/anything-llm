@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     optional: "Neobligāti",
     yes: "Jā",
     no: "Nē",
+    search: null,
   },
   settings: {
     title: "Instances iestatījumi",
