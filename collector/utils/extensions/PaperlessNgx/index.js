@@ -121,7 +121,9 @@ function generateChunkSource({ doc, baseUrl, apiToken }, encryptionWorker) {
     baseUrl,
     token: apiToken,
   };
-  return `paperless-ngx://${doc.metadata.id}?payload=${encryptionWorker.encrypt(JSON.stringify(payload))}`;
+  return `paperless-ngx://${doc.metadata.id}?payload=${encryptionWorker.encrypt(
+    JSON.stringify(payload)
+  )}`;
 }
 
 module.exports = {
