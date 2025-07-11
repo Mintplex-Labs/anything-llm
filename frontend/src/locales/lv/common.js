@@ -592,8 +592,6 @@ const TRANSLATIONS = {
       "Iegulšana ir process, ar kuru teksts tiek pārveidots vektoros. Šie akreditācijas dati ir nepieciešami, lai pārveidotu jūsu failus un vaicājumus formātā, kuru AnythingLLM var izmantot apstrādei.",
     provider: {
       title: "Iegulšanas pakalpojuma sniedzējs",
-      description:
-        "Nav nepieciešama iestatīšana, izmantojot AnythingLLM iebūvēto iegulšanas dzinēju.",
     },
   },
   text: {
