@@ -240,7 +240,8 @@ const TRANSLATIONS = {
       query: "查詢",
       "desc-end": "模式下，當找不到內容時，您可能需要傳回自訂的拒絕回應。",
       "tooltip-title": "我為什麼會看到這個?",
-      "tooltip-description": "您處於查詢模式，此模式僅使用您文件中的資訊。切換到聊天模式以進行更靈活的對話，或點擊此處訪問我們的文件以了解更多關於聊天模式的資訊。",
+      "tooltip-description":
+        "您處於查詢模式，此模式僅使用您文件中的資訊。切換到聊天模式以進行更靈活的對話，或點擊此處訪問我們的文件以了解更多關於聊天模式的資訊。",
     },
     temperature: {
       title: "LLM 溫度值",
@@ -658,7 +659,8 @@ const TRANSLATIONS = {
       name: "Obsidian",
       description: "一鍵匯入 Obsidian 保險庫。",
       vault_location: "保險庫位置",
-      vault_description: "選擇您的 Obsidian 保險庫資料夾以匯入所有筆記及其連接。",
+      vault_description:
+        "選擇您的 Obsidian 保險庫資料夾以匯入所有筆記及其連接。",
       selected_files: "找到 {{count}} 個 Markdown 檔案",
       importing: "正在匯入保險庫...",
       import_vault: "匯入保險庫",
@@ -727,7 +729,8 @@ const TRANSLATIONS = {
     profile_picture: "個人資料圖片",
     remove_profile_picture: "移除個人資料圖片",
     username: "使用者名稱",
-    username_description: "使用者名稱必須只包含小寫字母、數字、底線和連字號，且沒有空格",
+    username_description:
+      "使用者名稱必須只包含小寫字母、數字、底線和連字號，且沒有空格",
     new_password: "新密碼",
     password_description: "密碼長度必須至少為 8 個字元",
     cancel: "取消",
@@ -939,9 +942,11 @@ const TRANSLATIONS = {
         name_description: "這是您系統提示的顯示名稱。",
         name_placeholder: "我的系統提示",
         description_label: "描述",
-        description_description: "這是您系統提示的描述。用它來描述您系統提示的目的。",
+        description_description:
+          "這是您系統提示的描述。用它來描述您系統提示的目的。",
         tags_label: "標籤",
-        tags_description: "標籤用於標記您的系統提示，以便於搜尋。您可以添加多個標籤。最多 5 個標籤。每個標籤最多 20 個字元。",
+        tags_description:
+          "標籤用於標記您的系統提示，以便於搜尋。您可以添加多個標籤。最多 5 個標籤。每個標籤最多 20 個字元。",
         tags_placeholder: "輸入並按 Enter 鍵添加標籤",
         visibility_label: "可見性",
         public_description: "公共系統提示對所有人可見。",
@@ -965,20 +970,24 @@ const TRANSLATIONS = {
         name_description: "這是您代理流程的顯示名稱。",
         name_placeholder: "我的代理流程",
         description_label: "描述",
-        description_description: "這是您代理流程的描述。用它來描述您代理流程的目的。",
+        description_description:
+          "這是您代理流程的描述。用它來描述您代理流程的目的。",
         tags_label: "標籤",
-        tags_description: "標籤用於標記您的代理流程，以便於搜尋。您可以添加多個標籤。最多 5 個標籤。每個標籤最多 20 個字元。",
+        tags_description:
+          "標籤用於標記您的代理流程，以便於搜尋。您可以添加多個標籤。最多 5 個標籤。每個標籤最多 20 個字元。",
         tags_placeholder: "輸入並按 Enter 鍵添加標籤",
         visibility_label: "可見性",
         publish_button: "發布到社群中心",
         submitting: "發布中...",
         submit: "發布到社群中心",
-        privacy_note: "代理流程始終以上傳為私有，以保護任何敏感資料。您可以在發布後在社群中心更改可見性。請在發布前驗證您的流程不包含任何敏感或私人資訊。",
+        privacy_note:
+          "代理流程始終以上傳為私有，以保護任何敏感資料。您可以在發布後在社群中心更改可見性。請在發布前驗證您的流程不包含任何敏感或私人資訊。",
       },
       generic: {
         unauthenticated: {
           title: "需要驗證",
-          description: "在發布項目之前，您需要通過 AnythingLLM 社群中心進行驗證。",
+          description:
+            "在發布項目之前，您需要通過 AnythingLLM 社群中心進行驗證。",
           button: "連接到社群中心",
         },
       },
@@ -992,12 +1001,14 @@ const TRANSLATIONS = {
         name_description: "這是您斜線指令的顯示名稱。",
         name_placeholder: "我的斜線指令",
         description_label: "描述",
-        description_description: "這是您斜線指令的描述。用它來描述您斜線指令的目的。",
+        description_description:
+          "這是您斜線指令的描述。用它來描述您斜線指令的目的。",
         command_label: "指令",
         command_description: "這是使用者將輸入以觸發此預設的斜線指令。",
         command_placeholder: "我的命令",
         tags_label: "標籤",
-        tags_description: "標籤用於標記您的斜線指令，以便於搜尋。您可以添加多個標籤。最多 5 個標籤。每個標籤最多 20 個字元。",
+        tags_description:
+          "標籤用於標記您的斜線指令，以便於搜尋。您可以添加多個標籤。最多 5 個標籤。每個標籤最多 20 個字元。",
         tags_placeholder: "輸入並按 Enter 鍵添加標籤",
         visibility_label: "可見性",
         public_description: "公共斜線指令對所有人可見。",

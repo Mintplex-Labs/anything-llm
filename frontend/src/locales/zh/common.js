@@ -322,7 +322,8 @@ const TRANSLATIONS = {
       query: "查询",
       "desc-end": "模式时，当未找到上下文时，你可能希望返回自定义拒绝响应。",
       "tooltip-title": "我为什麽会看到这个?",
-      "tooltip-description": "您处于查询模式，此模式仅使用您文件中的资讯。切换到聊天模式以进行更灵活的对话，或点击此处访问我们的文件以了解更多关于聊天模式的资讯。",
+      "tooltip-description":
+        "您处于查询模式，此模式仅使用您文件中的资讯。切换到聊天模式以进行更灵活的对话，或点击此处访问我们的文件以了解更多关于聊天模式的资讯。",
     },
     temperature: {
       title: "LLM 温度",
@@ -938,9 +939,11 @@ const TRANSLATIONS = {
         name_description: "这是您系统提示的显示名称。",
         name_placeholder: "我的系统提示",
         description_label: "描述",
-        description_description: "这是您系统提示的描述。用它来描述您系统提示的目的。",
+        description_description:
+          "这是您系统提示的描述。用它来描述您系统提示的目的。",
         tags_label: "标籤",
-        tags_description: "标籤用于标记您的系统提示，以便于搜寻。您可以添加多个标籤。最多 5 个标籤。每个标籤最多 20 个字元。",
+        tags_description:
+          "标籤用于标记您的系统提示，以便于搜寻。您可以添加多个标籤。最多 5 个标籤。每个标籤最多 20 个字元。",
         tags_placeholder: "输入并按 Enter 键添加标籤",
         visibility_label: "可见性",
         public_description: "公共系统提示对所有人可见。",
@@ -964,20 +967,24 @@ const TRANSLATIONS = {
         name_description: "这是您代理流程的显示名称。",
         name_placeholder: "我的代理流程",
         description_label: "描述",
-        description_description: "这是您代理流程的描述。用它来描述您代理流程的目的。",
+        description_description:
+          "这是您代理流程的描述。用它来描述您代理流程的目的。",
         tags_label: "标籤",
-        tags_description: "标籤用于标记您的代理流程，以便于搜寻。您可以添加多个标籤。最多 5 个标籤。每个标籤最多 20 个字元。",
+        tags_description:
+          "标籤用于标记您的代理流程，以便于搜寻。您可以添加多个标籤。最多 5 个标籤。每个标籤最多 20 个字元。",
         tags_placeholder: "输入并按 Enter 键添加标籤",
         visibility_label: "可见性",
         publish_button: "发布到社区中心",
         submitting: "发布中...",
         submit: "发布到社区中心",
-        privacy_note: "代理流程始终以上传为私有，以保护任何敏感资料。您可以在发布后在社区中心更改可见性。请在发布前验证您的流程不包含任何敏感或私人资讯。",
+        privacy_note:
+          "代理流程始终以上传为私有，以保护任何敏感资料。您可以在发布后在社区中心更改可见性。请在发布前验证您的流程不包含任何敏感或私人资讯。",
       },
       generic: {
         unauthenticated: {
           title: "需要验证",
-          description: "在发布项目之前，您需要通过 AnythingLLM 社区中心进行验证。",
+          description:
+            "在发布项目之前，您需要通过 AnythingLLM 社区中心进行验证。",
           button: "连接到社区中心",
         },
       },
@@ -991,12 +998,14 @@ const TRANSLATIONS = {
         name_description: "这是您斜线指令的显示名称。",
         name_placeholder: "我的斜线指令",
         description_label: "描述",
-        description_description: "这是您斜线指令的描述。用它来描述您斜线指令的目的。",
+        description_description:
+          "这是您斜线指令的描述。用它来描述您斜线指令的目的。",
         command_label: "指令",
         command_description: "这是使用者将输入以触发此预设的斜线指令。",
         command_placeholder: "我的命令",
         tags_label: "标籤",
-        tags_description: "标籤用于标记您的斜线指令，以便于搜寻。您可以添加多个标籤。最多 5 个标籤。每个标籤最多 20 个字元。",
+        tags_description:
+          "标籤用于标记您的斜线指令，以便于搜寻。您可以添加多个标籤。最多 5 个标籤。每个标籤最多 20 个字元。",
         tags_placeholder: "输入并按 Enter 键添加标籤",
         visibility_label: "可见性",
         public_description: "公共斜线指令对所有人可见。",
