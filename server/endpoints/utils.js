@@ -1,7 +1,4 @@
 const { SystemSettings } = require("../models/systemSettings");
-const { reqBody } = require("../utils/http");
-const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { pushNotificationService } = require("../utils/PushNotifications");
 
 function utilEndpoints(app) {
   if (!app) return;
@@ -23,17 +20,6 @@ function utilEndpoints(app) {
       console.error(e);
       response.sendStatus(500).end();
     }
-  });
-
-  app.post("/utils/web-push/subscribe", [validatedRequest], async (request, response) => {
-    const subscription = reqBody(request);
-    await pushNotificationService.registerSubscription(response.locals.user, subscription);
-    response.status(201).json({});
-  });
-
-  app.get("/utils/web-push/pubkey", [validatedRequest], (request, response) => {
-    const publicKey = pushNotificationService.publicVapidKey;
-    res.status(200).json({ publicKey });
   });
 }
 

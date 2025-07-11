@@ -8,14 +8,13 @@ function parseEventData(event) {
 }
 
 self.addEventListener('push', function (event) {
-  const data = parseEventData(event);
-  if (!data) return;
+  const payload = parseEventData(event);
+  if (!payload) return;
 
   // options: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/showNotification#options
-  self.registration.showNotification(data.title || 'AnythingLLM', {
-    body: data.message,
+  self.registration.showNotification(payload.title || 'AnythingLLM', {
+    ...payload,
     icon: '/favicon.png',
-    data: { ...data }
   });
 });
 

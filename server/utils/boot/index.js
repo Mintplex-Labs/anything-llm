@@ -64,11 +64,6 @@ function bootHTTP(app, port = 3001) {
       new BackgroundService().boot();
       await PushNotifications.setupPushNotificationService();
       console.log(`Primary server in HTTP mode listening on port ${port}`);
-      // setTimeout(() => {
-      //   PushNotifications.instance.pushService.sendNotification(
-
-      //   )
-      // }, 1000);
     })
     .on("error", catchSigTerms);
 
