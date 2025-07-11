@@ -165,7 +165,7 @@ class NativeEmbedder {
 
       data = JSON.stringify(output.tolist());
       await this.#writeToTempfile(tmpFilePath, data);
-      this.log(`Embedded Chunk ${idx + 1} of ${chunkLen}`);
+      this.log(`Embedded Chunk Group ${idx + 1} of ${chunkLen}`);
       if (chunkLen - 1 !== idx) await this.#writeToTempfile(tmpFilePath, ",");
       if (chunkLen - 1 === idx) await this.#writeToTempfile(tmpFilePath, "]");
       pipeline = null;

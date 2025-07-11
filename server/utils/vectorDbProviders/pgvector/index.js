@@ -539,7 +539,7 @@ const PGVector = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      this.log("Chunks created from document:", textChunks.length);
+      this.log("Snippets created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
