@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 
 const WorkspaceThread = {
   defaultName: "Thread",
-  writable: ["name"],
+  writable: ["name", "archived"],
 
   /**
    * The default Slugify module requires some additional mapping to prevent downstream issues
