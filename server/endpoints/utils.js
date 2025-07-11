@@ -1,4 +1,5 @@
 const { SystemSettings } = require("../models/systemSettings");
+const { pushNotificationService } = require("../utils/PushNotifications");
 
 function utilEndpoints(app) {
   if (!app) return;
@@ -20,6 +21,17 @@ function utilEndpoints(app) {
       console.error(e);
       response.sendStatus(500).end();
     }
+  });
+
+  app.post("/subscribe", (req, res) => {
+    const subscription = req.body;
+    pushNotificationService.subscribe(subscription);
+    res.status(201).json({});
+  });
+
+  app.get("/push-public-key", (_req, res) => {
+    const publicKey = pushNotificationService.publicVapidKey;
+    res.status(200).json({ publicKey });
   });
 }
 

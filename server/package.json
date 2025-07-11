@@ -80,6 +80,7 @@
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
     "weaviate-ts-client": "^1.4.0",
+    "web-push": "^3.6.7",
     "winston": "^3.13.0"
   },
   "devDependencies": {
