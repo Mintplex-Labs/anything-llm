@@ -1,4 +1,6 @@
 const { SystemSettings } = require("../models/systemSettings");
+const { reqBody } = require("../utils/http");
+const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { pushNotificationService } = require("../utils/PushNotifications");
 
 function utilEndpoints(app) {
@@ -23,13 +25,13 @@ function utilEndpoints(app) {
     }
   });
 
-  app.post("/subscribe", (req, res) => {
-    const subscription = req.body;
-    pushNotificationService.subscribe(subscription);
-    res.status(201).json({});
+  app.post("/utils/web-push/subscribe", [validatedRequest], async (request, response) => {
+    const subscription = reqBody(request);
+    await pushNotificationService.registerSubscription(response.locals.user, subscription);
+    response.status(201).json({});
   });
 
-  app.get("/push-public-key", (_req, res) => {
+  app.get("/utils/web-push/pubkey", [validatedRequest], (request, response) => {
     const publicKey = pushNotificationService.publicVapidKey;
     res.status(200).json({ publicKey });
   });

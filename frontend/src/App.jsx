@@ -18,6 +18,7 @@ import { LogoProvider } from "./LogoContext";
 import { FullScreenLoader } from "./components/Preloader";
 import { ThemeProvider } from "./ThemeContext";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
+import useWebPushNotifications from "./hooks/useWebPushNotifications";
 
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
@@ -91,6 +92,8 @@ const SystemPromptVariables = lazy(
 );
 
 export default function App() {
+  useWebPushNotifications();
+
   return (
     <ThemeProvider>
       <Suspense fallback={<FullScreenLoader />}>

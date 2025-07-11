@@ -1,6 +1,7 @@
 const webpush = require("web-push");
 const fs = require("fs");
 const path = require("path");
+const { safeJsonParse } = require("../../utils/http");
 
 class PushNotifications {
   static mailTo = "anythingllm@localhost";
@@ -20,9 +21,9 @@ class PushNotifications {
 
   /**
    * The subscriptions for the push notification service.
-   * @type {Array<{Object}>}
+   * @type {Map<string, Object>}
    */
-  #subscriptions = [];
+  #subscriptions = new Map();
 
   constructor() {
     if (PushNotifications.instance) return PushNotifications.instance;
@@ -58,6 +59,10 @@ class PushNotifications {
       : path.resolve(process.env.STORAGE_DIR, "push-notifications");
   }
 
+  get primarySubscriptionPath() {
+    return path.resolve(this.storagePath, `primary-subscription.json`);
+  }
+
   get existingVapidKeys() {
     // Already loaded and binded to the instance
     if (this.#vapidKeys.publicKey && this.#vapidKeys.privateKey)
@@ -80,41 +85,76 @@ class PushNotifications {
     return this.existingVapidKeys.publicKey;
   }
 
-  get subscriptions() {
-    if (!fs.existsSync(path.resolve(this.storagePath, `subscriptions.json`)))
-      return [];
-    const currentSubscriptions = JSON.parse(
-      fs.readFileSync(
-        path.resolve(this.storagePath, `subscriptions.json`),
-        "utf8"
-      )
-    );
-    this.#subscriptions = currentSubscriptions;
-    return this.#subscriptions || [];
+  /**
+   * Load the subscriptions for the push notification service.
+   * In single user mode, the subscription is stored in the primary-subscription.json file.
+   * In multi user mode, the subscriptions are stored in the database so we grab them from there
+   * and store them in the #subscriptions map for reference later.
+   * @returns {Promise<void>}
+   */
+  async loadSubscriptions() {
+    const { User } = require("../../models/user");
+    const { SystemSettings } = require("../../models/systemSettings");
+
+    const isMultiUserMode = await SystemSettings.isMultiUserMode();
+    if (isMultiUserMode) {
+      const users = await User._where({ web_push_subscription_config: { not: null } });
+      for (const user of users) {
+        const subscription = safeJsonParse(user.web_push_subscription_config, null);
+        if (subscription) this.#subscriptions.set(user.id, subscription);
+      }
+      this.#log(`Loaded ${this.#subscriptions.size} existing subscriptions.`);
+      return;
+    }
+
+    this.#log('Loading single user mode subscriptions...');
+    if (!fs.existsSync(this.primarySubscriptionPath)) return;
+    const subscription = JSON.parse(fs.readFileSync(this.primarySubscriptionPath, "utf8"));
+    if (subscription) this.#subscriptions.set('primary', subscription);
+    this.#log(`Loaded primary user's existing subscription.`);
   }
 
-  subscribe(subscription) {
-    console.log("new subscription ===================");
-    console.log(subscription);
-    console.log("end subscription ===================");
-    this.#subscriptions.push(subscription);
+  /**
+   * Register a new subscription for a user.
+   * In single user mode, the userId is mapped to "primary"
+   * In multi user mode, the userId is the user's id in the database
+   * 
+   * @param {Object|null} user - The user to register the subscription for.
+   * @param {Object} subscription - The subscription to register.
+   * @returns {Promise<PushNotifications>}
+   */
+  async registerSubscription(user = null, subscription) {
+    let userId = user?.id || 'primary';
+    this.#subscriptions.set(userId, subscription);
 
-    //tmp write this
-    let currentSubscriptions = [];
-    currentSubscriptions.push(subscription);
-    fs.writeFileSync(
-      path.resolve(this.storagePath, `subscriptions.json`),
-      JSON.stringify(currentSubscriptions, null, 2)
-    );
-    this.#subscriptions = currentSubscriptions;
+    // If this was a real user, write the subscriptions to the database
+    if (!!user) {
+      const { User } = require("../../models/user");
+      await User._update(user.id, { web_push_subscription_config: JSON.stringify(subscription) });
+      this.#log(`Registered subscription for user - ${user.id}`);
+    } else {
+      if (!fs.existsSync(this.primarySubscriptionPath)) fs.mkdirSync(this.primarySubscriptionPath, { recursive: true });
+      fs.writeFileSync(this.primarySubscriptionPath, JSON.stringify(subscription, null, 2));
+      this.#log(`Registered primary user's subscription.`);
+    }
     return this;
+  }
+
+  /**
+   * Send a push notification to all subscribed clients.
+   * @param {"all"|number} to - The subscription to send the notification to. "all" sends to all subscriptions, a number sends subscription to specific user
+   * @param {Object} payload - The payload to send to the clients.
+   * @returns {void}
+   */
+  sendNotification(to = null, payload = {}) {
+    // this.pushService.sendNotification(to || this.subscriptions, payload);
   }
 
   /**
    * Setup the push notification service.
    * This will generate new VAPID keys if they don't exist and save them to the storage path.
    */
-  static setupPushNotificationService() {
+  static async setupPushNotificationService() {
     const instance = PushNotifications.instance;
     const existingVapidKeys = instance.existingVapidKeys;
     if (existingVapidKeys.publicKey && existingVapidKeys.privateKey) {
@@ -127,12 +167,23 @@ class PushNotifications {
     instance.#vapidKeys.publicKey = vapidKeys.publicKey;
     instance.#vapidKeys.privateKey = vapidKeys.privateKey;
     instance.#log(`New VAPID keys generated!`);
-    if (!fs.existsSync(instance.storagePath))
-      fs.mkdirSync(instance.storagePath, { recursive: true });
+    if (!fs.existsSync(instance.storagePath)) fs.mkdirSync(instance.storagePath, { recursive: true });
     fs.writeFileSync(
       path.resolve(instance.storagePath, `vapid-keys.json`),
       JSON.stringify(vapidKeys, null, 2)
     );
+
+
+    const isMultiUserMode = await SystemSettings.isMultiUserMode();
+    if (isMultiUserMode) {
+      const users = await User.where({ web_push_subscription_config: { not: null } });
+      // for (const user of users) {
+      //   const subscription = JSON.parse(user.web_push_subscription_config);
+      //   if (subscription) instance.registerSubscription(user, subscription);
+      // }
+    } else {
+
+    }
 
     instance.pushService;
     return;
