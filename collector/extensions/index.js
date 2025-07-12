@@ -201,6 +201,29 @@ function extensions(app) {
       return;
     }
   );
+
+  app.post(
+    "/ext/googledrive",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { loadGoogleDrive } = require("../utils/extensions/GoogleDrive");
+        const { success, reason, data } = await loadGoogleDrive(
+          reqBody(request),
+          response
+        );
+        response.status(200).json({ success, reason, data });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: null,
+        });
+      }
+      return;
+    }
+  );
 }
 
 
