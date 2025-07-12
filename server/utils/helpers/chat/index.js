@@ -353,9 +353,9 @@ function cannonball({
 function extractTextContent(content) {
   if (!Array.isArray(content)) return content;
   return content
-    .filter(item => item.type === 'text')
-    .map(item => item.text)
-    .join('\n');
+    .filter((item) => item.type === "text")
+    .map((item) => item.text)
+    .join("\n");
 }
 
 /**
