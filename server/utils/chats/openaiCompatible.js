@@ -4,6 +4,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
+const { extractTextContent } = require("../helpers/chat");
 
 const { PassThrough } = require("stream");
 
@@ -84,7 +85,7 @@ async function chatSync({
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: prompt,
+          input: extractTextContent(prompt),
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
@@ -125,7 +126,7 @@ async function chatSync({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: prompt,
+      prompt: String(extractTextContent(prompt)),
       response: {
         text: textResponse,
         sources: [],
@@ -181,7 +182,7 @@ async function chatSync({
 
   const { chat } = await WorkspaceChats.new({
     workspaceId: workspace.id,
-    prompt: prompt,
+    prompt: String(extractTextContent(prompt)),
     response: { text: textResponse, sources, type: chatMode, metrics },
   });
 
@@ -300,7 +301,7 @@ async function streamChat({
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: prompt,
+          input: extractTextContent(prompt),
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
@@ -345,7 +346,7 @@ async function streamChat({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: prompt,
+      prompt: String(extractTextContent(prompt)),
       response: {
         text: textResponse,
         sources: [],
@@ -418,7 +419,7 @@ async function streamChat({
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: prompt,
+      prompt: String(extractTextContent(prompt)),
       response: {
         text: completeText,
         sources,
