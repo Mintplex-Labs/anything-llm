@@ -14,6 +14,7 @@ import OllamaLogo from "@/media/llmprovider/ollama.png";
 import NovitaLogo from "@/media/llmprovider/novita.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
+import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
@@ -43,6 +44,7 @@ import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
+import SambaNovaOptions from "@/components/LLMSelection/SambaNovaOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
@@ -167,6 +169,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description:
       "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
     requiredConfig: ["NovitaLLMApiKey"],
+  },
+  {
+    name: "SambaNova",
+    value: "sambanova",
+    logo: SambaNovaLogo,
+    options: (settings) => <SambaNovaOptions settings={settings} />,
+    description: "Run the fastest LLMs from SambaNova.",
+    requiredConfig: ["SambaNovaApiKey"],
   },
   {
     name: "Together AI",

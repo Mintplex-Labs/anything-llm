@@ -1,6 +1,7 @@
 const { fetchOpenRouterModels } = require("../AiProviders/openRouter");
 const { fetchApiPieModels } = require("../AiProviders/apipie");
 const { perplexityModels } = require("../AiProviders/perplexity");
+const { sambanovaModels } = require("../AiProviders/sambanova");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
 const { fireworksAiModels } = require("../AiProviders/fireworksAi");
 const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
@@ -15,6 +16,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "anthropic",
   "localai",
   "ollama",
+  "sambanova",
   "togetherai",
   "fireworksai",
   "nvidia-nim",
@@ -48,6 +50,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await localAIModels(basePath, apiKey);
     case "ollama":
       return await ollamaAIModels(basePath, apiKey);
+    case "sambanova":
+      return await getSambaNovaModels(apiKey);
     case "togetherai":
       return await getTogetherAiModels(apiKey);
     case "fireworksai":
@@ -391,6 +395,21 @@ async function getTogetherAiModels(apiKey = null) {
 
 async function getFireworksAiModels() {
   const knownModels = fireworksAiModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getSambaNovaModels() {
+  const knownModels = sambanovaModels();
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 
