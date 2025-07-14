@@ -203,6 +203,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return new PPIOLLM(embedder, model);
+    case "aimlapi":
+      const { AimlApiLLM } = require("../AiProviders/aimlapi");
+      return new AimlApiLLM(embedder, model);
     case "dpais":
       const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
       return new DellProAiStudioLLM(embedder, model);
@@ -260,6 +263,9 @@ function getEmbeddingEngineSelection() {
     case "gemini":
       const { GeminiEmbedder } = require("../EmbeddingEngines/gemini");
       return new GeminiEmbedder();
+    case "aimlapi":
+      const { AimlApiEmbedder } = require("../EmbeddingEngines/aimlapi");
+      return new AimlApiEmbedder();
     default:
       return new NativeEmbedder();
   }
@@ -350,6 +356,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return PPIOLLM;
+    case "aimlapi":
+      const { AimlApiLLM } = require("../AiProviders/aimlapi");
+      return AimlApiLLM;
     case "dpais":
       const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
       return DellProAiStudioLLM;
@@ -417,6 +426,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.NVIDIA_NIM_LLM_MODEL_PREF;
     case "ppio":
       return process.env.PPIO_API_KEY;
+    case "aimlapi":
+      return process.env.AIML_MODEL_PREF;
     case "dpais":
       return process.env.DPAIS_LLM_MODEL_PREF;
     default:

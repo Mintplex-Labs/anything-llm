@@ -826,6 +826,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.PPIOProvider({ model: config.model });
       case "gemini":
         return new Providers.GeminiProvider({ model: config.model });
+      case "aimlapi":
+        return new Providers.AimlApiProvider({ model: config.model });
       case "dpais":
         return new Providers.DellProAiStudioProvider({ model: config.model });
       default:

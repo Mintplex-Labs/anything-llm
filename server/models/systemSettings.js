@@ -583,6 +583,10 @@ const SystemSettings = {
       PPIOApiKey: !!process.env.PPIO_API_KEY,
       PPIOModelPref: process.env.PPIO_MODEL_PREF,
 
+      // AI/ML API Keys
+      AimlApiKey: !!process.env.AIML_API_KEY,
+      AimlModelPref: process.env.AIML_MODEL_PREF,
+
       // Dell Pro AI Studio Keys
       DellProAiStudioBasePath: process.env.DPAIS_LLM_BASE_PATH,
       DellProAiStudioModelPref: process.env.DPAIS_LLM_MODEL_PREF,

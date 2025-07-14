@@ -38,6 +38,7 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
+import AimlApiLogo from "@/media/llmprovider/aimlapi.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -234,6 +235,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to PPIO",
     ],
     logo: PPIOLogo,
+  },
+  aimlapi: {
+    name: "AI/ML API",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to AI/ML API",
+    ],
+    logo: AimlApiLogo,
   },
   dpais: {
     name: "Dell Pro AI Studio",
