@@ -11,7 +11,9 @@ export default function TextSizeButton() {
 
   const toggleTooltip = () => {
     if (!tooltipRef.current) return;
-    tooltipRef.current.isOpen ? tooltipRef.current.close() : tooltipRef.current.open();
+    tooltipRef.current.isOpen
+      ? tooltipRef.current.close()
+      : tooltipRef.current.open();
   };
 
   return (
