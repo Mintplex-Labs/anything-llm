@@ -78,7 +78,7 @@ function TextSizeMenu({ tooltipRef }) {
             : "hover:bg-theme-action-menu-item-hover"
         }`}
       >
-        <div className="text-theme-text-primary text-sm">
+        <div className="text-theme-text-primary text-xs">
           {t("chat_window.small")}
         </div>
       </button>
@@ -110,7 +110,7 @@ function TextSizeMenu({ tooltipRef }) {
             : "hover:bg-theme-action-menu-item-hover"
         }`}
       >
-        <div className="text-theme-text-primary text-sm">
+        <div className="text-theme-text-primary text-[16px]">
           {t("chat_window.large")}
         </div>
       </button>
