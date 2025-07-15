@@ -48,6 +48,15 @@ class MySQLConnector {
     return result;
   }
 
+  async validateConnection() {
+    try {
+      const result = await this.runQuery("SELECT 1");
+      return { success: !result.error, error: result.error };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
   getTablesSql() {
     return `SELECT table_name FROM information_schema.tables WHERE table_schema = '${this.database_id}'`;
   }

@@ -41,6 +41,15 @@ class PostgresSQLConnector {
     return result;
   }
 
+  async validateConnection() {
+    try {
+      const result = await this.runQuery("SELECT 1");
+      return { success: !result.error, error: result.error };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
   getTablesSql() {
     return `SELECT * FROM pg_catalog.pg_tables WHERE schemaname = 'public'`;
   }

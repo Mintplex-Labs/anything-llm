@@ -54,7 +54,23 @@ async function listSQLConnections() {
   );
 }
 
+/**
+ * Validates a SQL connection by attempting to connect and run a simple query
+ * @param {SQLEngine} identifier - The SQL engine type
+ * @param {object} connectionConfig - The connection configuration
+ * @returns {Promise<{success: boolean, error: string|null}>}
+ */
+async function validateConnection(identifier = "", connectionConfig = {}) {
+  try {
+    const client = getDBClient(identifier, connectionConfig);
+    return await client.validateConnection();
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
 module.exports = {
   getDBClient,
   listSQLConnections,
+  validateConnection,
 };

@@ -9,6 +9,9 @@ const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
+const {
+  validateConnection,
+} = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -144,7 +147,7 @@ const SystemSettings = {
         []
       );
       try {
-        const updatedConnections = mergeConnections(
+        const updatedConnections = await mergeConnections(
           existingConnections,
           safeJsonParse(updates, [])
         );
@@ -629,7 +632,7 @@ const SystemSettings = {
   },
 };
 
-function mergeConnections(existingConnections = [], updates = []) {
+async function mergeConnections(existingConnections = [], updates = []) {
   let updatedConnections = [...existingConnections];
   const existingDbIds = existingConnections.map((conn) => conn.database_id);
 
@@ -641,28 +644,31 @@ function mergeConnections(existingConnections = [], updates = []) {
     (conn) => !toRemove.includes(conn.database_id)
   );
 
-  // Next add all 'action:add' candidates into the updatedConnections; We DO NOT validate the connection strings.
-  // but we do validate their database_id is unique.
-  updates
-    .filter((conn) => conn.action === "add")
-    .forEach((update) => {
-      if (!update.connectionString) return; // invalid connection string
+  // Next add all 'action:add' candidates into the updatedConnections
+  for (const update of updates.filter((conn) => conn.action === "add")) {
+    if (!update.connectionString) continue; // invalid connection string
 
-      // Remap name to be unique to entire set.
-      if (existingDbIds.includes(update.database_id)) {
-        update.database_id = slugify(
-          `${update.database_id}-${v4().slice(0, 4)}`
-        );
-      } else {
-        update.database_id = slugify(update.database_id);
-      }
-
-      updatedConnections.push({
-        engine: update.engine,
-        database_id: update.database_id,
-        connectionString: update.connectionString,
-      });
+    // Validate the connection before adding it
+    const { success, error } = await validateConnection(update.engine, {
+      connectionString: update.connectionString,
     });
+    if (!success) {
+      throw new Error(`Failed to validate connection: ${error}`);
+    }
+
+    // Remap name to be unique to entire set.
+    if (existingDbIds.includes(update.database_id)) {
+      update.database_id = slugify(`${update.database_id}-${v4().slice(0, 4)}`);
+    } else {
+      update.database_id = slugify(update.database_id);
+    }
+
+    updatedConnections.push({
+      engine: update.engine,
+      database_id: update.database_id,
+      connectionString: update.connectionString,
+    });
+  }
 
   return updatedConnections;
 }
