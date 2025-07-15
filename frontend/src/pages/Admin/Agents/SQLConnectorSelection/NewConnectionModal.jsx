@@ -11,6 +11,7 @@ function assembleConnectionString({
   host = "",
   port = "",
   database = "",
+  encrypt = false,
 }) {
   if ([username, password, host, database].every((i) => !!i) === false)
     return `Please fill out all the fields above.`;
@@ -20,7 +21,7 @@ function assembleConnectionString({
     case "mysql":
       return `mysql://${username}:${password}@${host}:${port}/${database}`;
     case "sql-server":
-      return `mssql://${username}:${password}@${host}:${port}/${database}`;
+      return `mssql://${username}:${password}@${host}:${port}/${database}?encrypt=${encrypt}`;
     default:
       return null;
   }
@@ -33,6 +34,7 @@ const DEFAULT_CONFIG = {
   host: null,
   port: null,
   database: null,
+  encrypt: false,
 };
 
 export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
@@ -54,6 +56,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
       host: form.get("host").trim(),
       port: form.get("port").trim(),
       database: form.get("database").trim(),
+      encrypt: form.get("encrypt") === "true",
     });
   }
 
@@ -226,6 +229,26 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     spellCheck={false}
                   />
                 </div>
+
+                {engine === "sql-server" && (
+                  <div className="flex items-center justify-between">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="encrypt"
+                        value="true"
+                        className="sr-only peer"
+                        onChange={onFormChange}
+                        checked={config.encrypt}
+                      />
+                      <div className="w-11 h-6 bg-theme-settings-input-bg peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      <span className="ml-3 text-sm font-medium text-white">
+                        Enable Encryption
+                      </span>
+                    </label>
+                  </div>
+                )}
+
                 <p className="text-theme-text-secondary text-sm">
                   {assembleConnectionString({ engine, ...config })}
                 </p>
