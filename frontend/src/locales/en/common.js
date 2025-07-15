@@ -753,6 +753,25 @@ const TRANSLATIONS = {
       vault_warning:
         "To avoid any conflicts, make sure your Obsidian vault is not currently open.",
     },
+    webdav: {
+      name: "WebDAV",
+      description: "Import files from a WebDAV server in a single click.",
+      url: "WebDAV URL",
+      url_explained: "The URL of your WebDAV server (e.g., https://webdav.example.com).",
+      username: "Username",
+      password: "Password",
+      path: "Path",
+      path_explained: "The path on the WebDAV server to start collecting from (default: /).",
+      recursive: "Recursive Collection",
+      recursive_explained: "Collect files from subdirectories as well.",
+      file_types: "File Types to Collect",
+      file_types_explained: "Select which file types to collect from the WebDAV server.",
+      connect: "Connect to WebDAV",
+      connecting: "Connecting...",
+      success: "Successfully connected to WebDAV server and imported files.",
+      info_title: "WebDAV Connection",
+      info_description: "This will connect to your WebDAV server and import all supported files. Large directories may take some time to process.",
+    },
     github: {
       name: "GitHub Repo",
       description:
