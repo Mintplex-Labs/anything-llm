@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { writeToServerDocuments } = require("../../files");
+const { writeToServerDocuments, sanitizeFileName } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const { YoutubeLoader } = require("./YoutubeLoader");
 
@@ -89,9 +89,9 @@ async function loadYouTubeTranscript({ url }) {
     };
   }
   const { content, metadata } = transcriptResults;
-  const outFolder = slugify(
-    `${metadata.author} YouTube transcripts`
-  ).toLowerCase();
+  const outFolder = sanitizeFileName(
+    slugify(`${metadata.author} YouTube transcripts`).toLowerCase()
+  );
 
   const outFolderPath =
     process.env.NODE_ENV === "development"
@@ -121,7 +121,7 @@ async function loadYouTubeTranscript({ url }) {
   console.log(`[YouTube Loader]: Saving ${metadata.title} to ${outFolder}`);
   writeToServerDocuments(
     data,
-    `${slugify(metadata.title)}-${data.id}`,
+    sanitizeFileName(`${slugify(metadata.title)}-${data.id}`),
     outFolderPath
   );
 

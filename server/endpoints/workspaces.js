@@ -35,6 +35,7 @@ const { WorkspaceThread } = require("../models/workspaceThread");
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
+const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -1033,6 +1034,28 @@ function workspaceEndpoints(app) {
         });
       } catch (error) {
         console.error("Error deleting prompt history:", error);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  /**
+   * Searches for workspaces and threads by thread name or workspace name.
+   * Only returns assets owned by the user (if multi-user mode is enabled).
+   */
+  app.post(
+    "/workspace/search",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { searchTerm } = reqBody(request);
+        const searchResults = await searchWorkspaceAndThreads(
+          searchTerm,
+          response.locals?.user
+        );
+        response.status(200).json(searchResults);
+      } catch (error) {
+        console.error("Error searching for workspaces:", error);
         response.sendStatus(500).end();
       }
     }

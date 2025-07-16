@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     optional: "اختياري",
     yes: "نعم",
     no: "لا",
+    search: null,
   },
   settings: {
     title: "إعدادات المثيل",

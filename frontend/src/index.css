@@ -1023,6 +1023,10 @@ does not extend the close button beyond the viewport. */
   filter: grayscale(100%) invert(1) brightness(100) opacity(0.5);
 }
 
+[data-theme="light"] .search-input::-webkit-search-cancel-button {
+  filter: grayscale(100%) invert(0) brightness(0) opacity(0.5);
+}
+
 .animate-remove {
   animation: fadeAndShrink 800ms forwards;
 }

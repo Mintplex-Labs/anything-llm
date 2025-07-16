@@ -1383,6 +1383,42 @@ function systemEndpoints(app) {
       }
     }
   );
+
+  app.post(
+    "/system/validate-sql-connection",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { engine, connectionString } = reqBody(request);
+        if (!engine || !connectionString) {
+          return response.status(400).json({
+            success: false,
+            error: "Both engine and connection details are required.",
+          });
+        }
+
+        const {
+          validateConnection,
+        } = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors");
+        const result = await validateConnection(engine, { connectionString });
+
+        if (!result.success) {
+          return response.status(200).json({
+            success: false,
+            error: `Unable to connect to ${engine}. Please verify your connection details.`,
+          });
+        }
+
+        response.status(200).json(result);
+      } catch (error) {
+        console.error("SQL validation error:", error);
+        response.status(500).json({
+          success: false,
+          error: `Unable to connect to ${engine}. Please verify your connection details.`,
+        });
+      }
+    }
+  );
 }
 
 module.exports = { systemEndpoints };
