@@ -59,9 +59,24 @@ export default function WebDAVConnector({ onSuccess }) {
       // Debug: Log the form data being sent
       console.log("Saving WebDAV settings:", formData);
       
-      // Validate required fields before sending
+      // Enhanced validation for required fields
       if (!formData.url || !formData.username) {
         showToast("URL and username are required", "error");
+        setSaving(false);
+        return;
+      }
+      
+      // Validate URL format
+      try {
+        const url = new URL(formData.url);
+        if (!['http:', 'https:'].includes(url.protocol)) {
+          showToast("Invalid URL protocol. Only HTTP and HTTPS are supported.", "error");
+          setSaving(false);
+          return;
+        }
+      } catch (error) {
+        showToast("Invalid URL format. Please provide a valid WebDAV server URL.", "error");
+        setSaving(false);
         return;
       }
       
@@ -93,9 +108,23 @@ export default function WebDAVConnector({ onSuccess }) {
         password: formData.password ? "***" : "(empty)"
       });
       
-      // Validate required fields before testing
+      // Enhanced validation for test connection
       if (!formData.url || !formData.username || !formData.password) {
         setTestResult({ success: false, message: "URL, username, and password are required for testing." });
+        setTesting(false);
+        return;
+      }
+      
+      // Validate URL format
+      try {
+        const url = new URL(formData.url);
+        if (!['http:', 'https:'].includes(url.protocol)) {
+          setTestResult({ success: false, message: "Invalid URL protocol. Only HTTP and HTTPS are supported." });
+          setTesting(false);
+          return;
+        }
+      } catch (error) {
+        setTestResult({ success: false, message: "Invalid URL format. Please provide a valid WebDAV server URL." });
         setTesting(false);
         return;
       }

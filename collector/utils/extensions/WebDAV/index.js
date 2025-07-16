@@ -18,21 +18,57 @@ async function loadWebDAV(options, response) {
       };
     }
 
-    console.log(`[WebDAV Loader]: Connecting to ${url}`);
-    
-    // Create WebDAV client
-    const client = createClient(url, {
-      username,
-      password,
-    });
-
-    // Test connection
+    // Validate and normalize URL
+    let normalizedUrl;
     try {
-      await client.getDirectoryContents("/");
+      normalizedUrl = new URL(url);
+      if (!['http:', 'https:'].includes(normalizedUrl.protocol)) {
+        return {
+          success: false,
+          reason: "Invalid URL protocol. Only HTTP and HTTPS are supported.",
+          data: null,
+        };
+      }
     } catch (error) {
       return {
         success: false,
-        reason: `Failed to connect to WebDAV server: ${error.message}`,
+        reason: "Invalid URL format. Please provide a valid WebDAV server URL.",
+        data: null,
+      };
+    }
+
+    console.log(`[WebDAV Loader]: Connecting to ${url}`);
+    
+    // Create WebDAV client with timeout configuration
+    const client = createClient(url, {
+      username,
+      password,
+      timeout: 30000, // 30 second timeout
+      maxBodyLength: 100 * 1024 * 1024, // 100MB max file size
+    });
+
+    // Test connection with detailed error handling
+    try {
+      await client.getDirectoryContents("/");
+    } catch (error) {
+      console.error(`[WebDAV Loader]: Connection failed - ${error.message}`);
+      
+      // Provide specific error messages based on common issues
+      let errorMessage = `Failed to connect to WebDAV server: ${error.message}`;
+      
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        errorMessage = "Authentication failed. Please check your username and password.";
+      } else if (error.message.includes('404') || error.message.includes('Not Found')) {
+        errorMessage = "WebDAV server not found. Please check the URL.";
+      } else if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
+        errorMessage = "Cannot connect to server. Please check the URL and network connection.";
+      } else if (error.message.includes('certificate') || error.message.includes('SSL')) {
+        errorMessage = "SSL/Certificate error. The server may have an invalid SSL certificate.";
+      }
+      
+      return {
+        success: false,
+        reason: errorMessage,
         data: null,
       };
     }
@@ -185,15 +221,54 @@ async function loadWebDAVTest(options) {
         message: "WebDAV URL, username, and password are required.",
       };
     }
-    const client = createClient(url, { username, password });
-    let contents;
+
+    // Validate URL format
     try {
-      contents = await client.getDirectoryContents("/");
+      const normalizedUrl = new URL(url);
+      if (!['http:', 'https:'].includes(normalizedUrl.protocol)) {
+        return {
+          success: false,
+          folders: [],
+          message: "Invalid URL protocol. Only HTTP and HTTPS are supported.",
+        };
+      }
     } catch (error) {
       return {
         success: false,
         folders: [],
-        message: `Failed to connect to WebDAV server: ${error.message}`,
+        message: "Invalid URL format. Please provide a valid WebDAV server URL.",
+      };
+    }
+    const client = createClient(url, { 
+      username, 
+      password,
+      timeout: 15000, // 15 second timeout for test connection
+    });
+    let contents;
+    try {
+      contents = await client.getDirectoryContents("/");
+    } catch (error) {
+      console.error(`[WebDAV Test]: Connection failed - ${error.message}`);
+      
+      // Provide specific error messages for common authentication issues
+      let errorMessage = `Failed to connect to WebDAV server: ${error.message}`;
+      
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        errorMessage = "Authentication failed. Please verify your username and password are correct.";
+      } else if (error.message.includes('404') || error.message.includes('Not Found')) {
+        errorMessage = "WebDAV server not found at this URL. Please check the server address.";
+      } else if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
+        errorMessage = "Cannot reach the server. Please check the URL and ensure the server is accessible.";
+      } else if (error.message.includes('certificate') || error.message.includes('SSL')) {
+        errorMessage = "SSL certificate error. The server may have an invalid or self-signed certificate.";
+      } else if (error.message.includes('timeout')) {
+        errorMessage = "Connection timeout. The server may be slow or unreachable.";
+      }
+      
+      return {
+        success: false,
+        folders: [],
+        message: errorMessage,
       };
     }
     // List only folders at root
