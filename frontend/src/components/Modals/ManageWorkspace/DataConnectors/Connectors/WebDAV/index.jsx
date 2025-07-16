@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useWorkspaceContext } from "@/contexts/WorkspaceContext";
 import DataConnector from "@/models/dataConnector";
 import showToast from "@/utils/toast";
 import { CheckCircle, Warning, FloppyDisk } from "@phosphor-icons/react";
-import System from "@/models/system";
 
 export default function WebDAVConnector({ onSuccess }) {
   const { t } = useTranslation();
-  const { refreshWorkspace } = useWorkspaceContext();
   const [formData, setFormData] = useState({
     url: "",
     username: "",
@@ -197,8 +194,12 @@ export default function WebDAVConnector({ onSuccess }) {
         return;
       }
       if (data) {
-        showToast(t("connectors.webdav.success"), "success");
-        await refreshWorkspace();
+        showToast(
+          `Successfully imported ${data.files || 'documents'} from WebDAV server`,
+          "success",
+          { clear: true }
+        );
+        if (onSuccess) onSuccess();
       }
     } catch (error) {
       console.error("WebDAV connection error:", error);
