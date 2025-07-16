@@ -120,9 +120,10 @@ export default function AgentSQLConnectorSelection({
       <NewSQLConnection
         isOpen={isOpen}
         closeModal={closeModal}
-        onSubmit={(newDb) =>
-          setConnections((prev) => [...prev, { action: "add", ...newDb }])
-        }
+        onSubmit={(newDb) => {
+          setConnections((prev) => [...prev, { action: "add", ...newDb }]);
+        }}
+        setHasChanges={setHasChanges}
       />
     </>
   );

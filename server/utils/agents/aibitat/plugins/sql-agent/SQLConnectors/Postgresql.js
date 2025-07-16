@@ -35,8 +35,11 @@ class PostgresSQLConnector {
       console.log(this.constructor.name, err);
       result.error = err.message;
     } finally {
-      await this._client.end();
-      this.#connected = false;
+      // Check client is connected before closing since we use this for validation
+      if (this._client) {
+        await this._client.end();
+        this.#connected = false;
+      }
     }
     return result;
   }
