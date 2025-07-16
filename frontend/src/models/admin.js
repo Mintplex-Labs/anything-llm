@@ -195,9 +195,15 @@ const Admin = {
       headers: baseHeaders(),
       body: JSON.stringify(updates),
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || "Failed to update system preferences");
+        }
+        return data;
+      })
       .catch((e) => {
-        console.error(e);
+        console.error("Failed to update system preferences:", e);
         return { success: false, error: e.message };
       });
   },

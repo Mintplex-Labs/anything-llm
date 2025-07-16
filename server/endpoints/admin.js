@@ -484,11 +484,14 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const updates = reqBody(request);
-        await SystemSettings.updateSettings(updates);
+        const { success, error } = await SystemSettings.updateSettings(updates);
+        if (!success) {
+          return response.status(400).json({ success: false, error });
+        }
         response.status(200).json({ success: true, error: null });
       } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
+        console.error("FAILED TO UPDATE SYSTEM SETTINGS", e.message);
+        response.status(500).json({ success: false, error: e.message });
       }
     }
   );

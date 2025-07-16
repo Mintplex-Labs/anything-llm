@@ -153,8 +153,8 @@ const SystemSettings = {
         );
         return JSON.stringify(updatedConnections);
       } catch (e) {
-        console.error(`Failed to merge connections`);
-        return JSON.stringify(existingConnections ?? []);
+        console.error(`Failed to merge connections`, e);
+        throw new Error(e.message);
       }
     },
     experimental_live_file_sync: (update) => {
@@ -648,26 +648,32 @@ async function mergeConnections(existingConnections = [], updates = []) {
   for (const update of updates.filter((conn) => conn.action === "add")) {
     if (!update.connectionString) continue; // invalid connection string
 
-    // Validate the connection before adding it
-    const { success, error } = await validateConnection(update.engine, {
-      connectionString: update.connectionString,
-    });
-    if (!success) {
-      throw new Error(`Failed to validate connection: ${error}`);
-    }
+    try {
+      // Validate the connection before adding it
+      const { success, error } = await validateConnection(update.engine, {
+        connectionString: update.connectionString,
+      });
+      if (!success) {
+        throw new Error(`Failed to connect to database: ${error}`);
+      }
 
-    // Remap name to be unique to entire set.
-    if (existingDbIds.includes(update.database_id)) {
-      update.database_id = slugify(`${update.database_id}-${v4().slice(0, 4)}`);
-    } else {
-      update.database_id = slugify(update.database_id);
-    }
+      // Remap name to be unique to entire set.
+      if (existingDbIds.includes(update.database_id)) {
+        update.database_id = slugify(
+          `${update.database_id}-${v4().slice(0, 4)}`
+        );
+      } else {
+        update.database_id = slugify(update.database_id);
+      }
 
-    updatedConnections.push({
-      engine: update.engine,
-      database_id: update.database_id,
-      connectionString: update.connectionString,
-    });
+      updatedConnections.push({
+        engine: update.engine,
+        database_id: update.database_id,
+        connectionString: update.connectionString,
+      });
+    } catch (error) {
+      throw new Error(`Failed to validate connection: ${error.message}`);
+    }
   }
 
   return updatedConnections;

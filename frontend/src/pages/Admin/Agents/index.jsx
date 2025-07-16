@@ -148,16 +148,22 @@ export default function AdminAgents() {
       data.workspace[key] = castToType(key, value);
     }
 
-    const { success } = await Admin.updateSystemPreferences(data.system);
-    await System.updateSystem(data.env);
+    try {
+      const { success, error } = await Admin.updateSystemPreferences(
+        data.system
+      );
+      if (!success) {
+        throw new Error(error);
+      }
 
-    if (success) {
+      await System.updateSystem(data.env);
       const _settings = await System.keys();
       const _preferences = await Admin.systemPreferencesByFields([
         "disabled_agent_skills",
         "default_agent_skills",
         "imported_agent_skills",
       ]);
+
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
       setDisabledAgentSkills(
@@ -167,11 +173,27 @@ export default function AdminAgents() {
       showToast(`Agent preferences saved successfully.`, "success", {
         clear: true,
       });
-    } else {
-      showToast(`Agent preferences failed to save.`, "error", { clear: true });
-    }
+      setHasChanges(false);
+    } catch (error) {
+      console.error("Failed to save preferences:", error);
+      const isDbError = error.message
+        ?.toLowerCase()
+        .includes("failed to connect to database");
 
-    setHasChanges(false);
+      // Send event to SQL Agent component to show error message
+      if (isDbError) {
+        window.dispatchEvent(
+          new CustomEvent("sql_validation_error", {
+            detail: { error: error.message },
+          })
+        );
+      }
+      const errorMessage = isDbError
+        ? "Failed to save: Invalid database connection. Please check your connection details and try again."
+        : error.message || "Failed to save agent preferences.";
+      showToast(errorMessage, "error", { clear: true });
+      setHasChanges(true);
+    }
   };
 
   let SelectedSkillComponent = null;
