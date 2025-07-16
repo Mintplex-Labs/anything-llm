@@ -21,25 +21,6 @@ export default function AgentSQLConnectorSelection({
       .catch(() => setConnections([]));
   }, []);
 
-  // Update connections state when validation fails
-  useEffect(() => {
-    const handleValidationError = (event) => {
-      if (
-        event.detail?.error
-          ?.toLowerCase()
-          ?.includes("failed to connect to database")
-      ) {
-        // Remove any connections marked as "add" since they failed validation
-        setConnections((prev) => prev.filter((conn) => conn.action !== "add"));
-        setHasChanges(false);
-      }
-    };
-
-    window.addEventListener("sql_validation_error", handleValidationError);
-    return () =>
-      window.removeEventListener("sql_validation_error", handleValidationError);
-  }, []);
-
   return (
     <>
       <div className="p-2">

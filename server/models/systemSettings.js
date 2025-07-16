@@ -9,9 +9,6 @@ const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
-const {
-  validateConnection,
-} = require("../utils/agents/aibitat/plugins/sql-agent/SQLConnectors");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -147,14 +144,14 @@ const SystemSettings = {
         []
       );
       try {
-        const updatedConnections = await mergeConnections(
+        const updatedConnections = mergeConnections(
           existingConnections,
           safeJsonParse(updates, [])
         );
         return JSON.stringify(updatedConnections);
       } catch (e) {
-        console.error(`Failed to merge connections`, e);
-        throw new Error(e.message);
+        console.error(`Failed to merge connections`);
+        return JSON.stringify(existingConnections ?? []);
       }
     },
     experimental_live_file_sync: (update) => {
@@ -632,7 +629,7 @@ const SystemSettings = {
   },
 };
 
-async function mergeConnections(existingConnections = [], updates = []) {
+function mergeConnections(existingConnections = [], updates = []) {
   let updatedConnections = [...existingConnections];
   const existingDbIds = existingConnections.map((conn) => conn.database_id);
 
@@ -644,18 +641,12 @@ async function mergeConnections(existingConnections = [], updates = []) {
     (conn) => !toRemove.includes(conn.database_id)
   );
 
-  // Next add all 'action:add' candidates into the updatedConnections
-  for (const update of updates.filter((conn) => conn.action === "add")) {
-    if (!update.connectionString) continue; // invalid connection string
-
-    try {
-      // Validate the connection before adding it
-      const { success, error } = await validateConnection(update.engine, {
-        connectionString: update.connectionString,
-      });
-      if (!success) {
-        throw new Error(`Failed to connect to database: ${error}`);
-      }
+  // Next add all 'action:add' candidates into the updatedConnections; We DO NOT validate the connection strings.
+  // but we do validate their database_id is unique.
+  updates
+    .filter((conn) => conn.action === "add")
+    .forEach((update) => {
+      if (!update.connectionString) return; // invalid connection string
 
       // Remap name to be unique to entire set.
       if (existingDbIds.includes(update.database_id)) {
@@ -671,10 +662,7 @@ async function mergeConnections(existingConnections = [], updates = []) {
         database_id: update.database_id,
         connectionString: update.connectionString,
       });
-    } catch (error) {
-      throw new Error(`Failed to validate connection: ${error.message}`);
-    }
-  }
+    });
 
   return updatedConnections;
 }
