@@ -1386,7 +1386,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/validate-sql-connection",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { engine, connectionString } = reqBody(request);

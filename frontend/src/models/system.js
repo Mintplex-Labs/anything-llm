@@ -773,6 +773,12 @@ const System = {
     return newVersion;
   },
 
+  /**
+   * Validates a SQL connection string.
+   * @param {'postgresql'|'mysql'|'sql-server'} engine - the database engine identifier
+   * @param {string} connectionString - the connection string to validate
+   * @returns {Promise<{success: boolean, error: string | null}>}
+   */
   validateSQLConnection: async function (engine, connectionString) {
     return fetch(`${API_BASE}/system/validate-sql-connection`, {
       method: "POST",

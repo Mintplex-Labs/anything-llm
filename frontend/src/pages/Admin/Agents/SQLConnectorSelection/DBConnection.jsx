@@ -16,9 +16,8 @@ export default function DBConnection({ connection, onRemove }) {
       !window.confirm(
         `Delete ${database_id} from the list of available SQL connections? This cannot be undone.`
       )
-    ) {
+    )
       return false;
-    }
     onRemove(database_id);
   }
 

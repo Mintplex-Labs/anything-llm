@@ -61,7 +61,7 @@ class MSSQLConnector {
   /**
    *
    * @param {string} queryString the SQL query to be run
-   * @returns {import(".").QueryResult}
+   * @returns {Promise<import(".").QueryResult>}
    */
   async runQuery(queryString = "") {
     const result = { rows: [], count: 0, error: null };
