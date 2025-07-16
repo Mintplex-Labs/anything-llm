@@ -5,8 +5,11 @@ import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
-import { nFormatter, numberWithCommas } from "@/utils/numbers";
+import { numberWithCommas } from "@/utils/numbers";
 import { useTranslation } from "react-i18next";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
+import ChangeWarningModal from "@/components/ChangeWarning";
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -18,6 +21,7 @@ export default function EmbeddingTextSplitterPreference() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
@@ -35,6 +39,13 @@ export default function EmbeddingTextSplitterPreference() {
       return;
     }
 
+    openModal();
+  };
+
+  const handleSaveSettings = async () => {
+    const form = new FormData(
+      document.getElementById("text-splitter-chunking-form")
+    );
     setSaving(true);
     await Admin.updateSystemPreferences({
       text_splitter_chunk_size: isNullOrNaN(
@@ -50,6 +61,7 @@ export default function EmbeddingTextSplitterPreference() {
     });
     setSaving(false);
     setHasChanges(false);
+    closeModal();
     showToast("Text chunking strategy settings saved.", "success");
   };
 
@@ -83,6 +95,7 @@ export default function EmbeddingTextSplitterPreference() {
             onSubmit={handleSubmit}
             onChange={() => setHasChanges(true)}
             className="flex w-full"
+            id="text-splitter-chunking-form"
           >
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-4 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
@@ -172,6 +185,14 @@ export default function EmbeddingTextSplitterPreference() {
           </form>
         </div>
       )}
+
+      <ModalWrapper isOpen={isOpen}>
+        <ChangeWarningModal
+          warningText="Changing text splitter settings will clear the document cache.\n\nYour uploaded documents are safe and won't be deleted. To use the new settings:\n- New documents will automatically use the new settings\n- For existing documents, just re-embed them to apply the new settings"
+          onClose={closeModal}
+          onConfirm={handleSaveSettings}
+        />
+      </ModalWrapper>
     </div>
   );
 }
