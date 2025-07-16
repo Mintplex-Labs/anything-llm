@@ -1,4 +1,5 @@
 const prisma = require("../utils/prisma");
+const { safeJSONStringify } = require("../utils/helpers/chat/responses");
 
 const WorkspaceChats = {
   new: async function ({
@@ -15,7 +16,7 @@ const WorkspaceChats = {
         data: {
           workspaceId,
           prompt,
-          response: JSON.stringify(response),
+          response: safeJSONStringify(response),
           user_id: user?.id || null,
           thread_id: threadId,
           api_session_id: apiSessionId,

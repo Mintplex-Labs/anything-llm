@@ -240,6 +240,7 @@ model embed_configs {
   allow_prompt_override      Boolean       @default(false)
   max_chats_per_day          Int?
   max_chats_per_session      Int?
+  message_limit              Int?          @default(20)
   workspace_id               Int
   createdBy                  Int?
   usersId                    Int?

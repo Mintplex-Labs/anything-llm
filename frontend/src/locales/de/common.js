@@ -70,6 +70,7 @@ const TRANSLATIONS = {
     optional: "Optional",
     yes: "Ja",
     no: "Nein",
+    search: null,
   },
   settings: {
     title: "Instanzeinstellungen",

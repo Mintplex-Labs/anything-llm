@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     optional: "任意",
     yes: "はい",
     no: "いいえ",
+    search: null,
   },
   settings: {
     title: "インスタンス設定",

@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     optional: "Valikuline",
     yes: "Jah",
     no: "Ei",
+    search: null,
   },
   settings: {
     title: "Instantsi seaded",
