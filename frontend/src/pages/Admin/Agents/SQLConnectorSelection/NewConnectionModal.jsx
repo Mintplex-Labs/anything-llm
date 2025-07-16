@@ -84,7 +84,8 @@ export default function NewSQLConnection({
         showToast(
           error ||
             "Failed to establish database connection. Please check your connection details.",
-          "error"
+          "error",
+          { clear: true }
         );
         setIsValidating(false);
         return;
@@ -102,7 +103,8 @@ export default function NewSQLConnection({
       showToast(
         error?.message ||
           "Failed to validate connection. Please check your connection details.",
-        "error"
+        "error",
+        { clear: true }
       );
     } finally {
       setIsValidating(false);
