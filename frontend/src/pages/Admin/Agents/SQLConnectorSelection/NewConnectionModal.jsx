@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import ModalWrapper from "@/components/ModalWrapper";
 import { WarningOctagon, X } from "@phosphor-icons/react";
 import { DB_LOGOS } from "./DBConnection";
+import System from "@/models/system";
+import showToast from "@/utils/toast";
 
 function assembleConnectionString({
   engine,
@@ -37,9 +39,15 @@ const DEFAULT_CONFIG = {
   encrypt: false,
 };
 
-export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
+export default function NewSQLConnection({
+  isOpen,
+  closeModal,
+  onSubmit,
+  setHasChanges,
+}) {
   const [engine, setEngine] = useState(DEFAULT_ENGINE);
   const [config, setConfig] = useState(DEFAULT_CONFIG);
+  const [isValidating, setIsValidating] = useState(false);
   if (!isOpen) return null;
 
   function handleClose() {
@@ -48,8 +56,8 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
     closeModal();
   }
 
-  function onFormChange() {
-    const form = new FormData(document.getElementById("sql-connection-form"));
+  function onFormChange(e) {
+    const form = new FormData(e.target.form);
     setConfig({
       username: form.get("username").trim(),
       password: form.get("password"),
@@ -64,12 +72,41 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
     e.preventDefault();
     e.stopPropagation();
     const form = new FormData(e.target);
-    onSubmit({
-      engine,
-      database_id: form.get("name"),
-      connectionString: assembleConnectionString({ engine, ...config }),
-    });
-    handleClose();
+    const connectionString = assembleConnectionString({ engine, ...config });
+
+    setIsValidating(true);
+    try {
+      const { success, error } = await System.validateSQLConnection(
+        engine,
+        connectionString
+      );
+      if (!success) {
+        showToast(
+          error ||
+            "Failed to establish database connection. Please check your connection details.",
+          "error"
+        );
+        setIsValidating(false);
+        return;
+      }
+
+      onSubmit({
+        engine,
+        database_id: form.get("name"),
+        connectionString,
+      });
+      setHasChanges(true);
+      handleClose();
+    } catch (error) {
+      console.error("Error validating connection:", error);
+      showToast(
+        error?.message ||
+          "Failed to validate connection. Please check your connection details.",
+        "error"
+      );
+    } finally {
+      setIsValidating(false);
+    }
     return false;
   }
 
@@ -95,8 +132,8 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
           </div>
           <form
             id="sql-connection-form"
-            onSubmit={handleUpdate}
             onChange={onFormChange}
+            onSubmit={handleUpdate}
           >
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
@@ -238,7 +275,6 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                         name="encrypt"
                         value="true"
                         className="sr-only peer"
-                        onChange={onFormChange}
                         checked={config.encrypt}
                       />
                       <div className="w-11 h-6 bg-theme-settings-input-bg peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -265,9 +301,10 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
               <button
                 type="submit"
                 form="sql-connection-form"
-                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                disabled={isValidating}
+                className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm disabled:opacity-50"
               >
-                Save connection
+                {isValidating ? "Validating..." : "Save connection"}
               </button>
             </div>
           </form>
