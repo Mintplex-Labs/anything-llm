@@ -1,34 +1,52 @@
 import React, { createContext, useContext, useState } from "react";
+import Workspace from "@/models/workspace";
 
 const WorkspaceContext = createContext();
 
-export function WorkspaceProvider({ children }) {
-  const [workspaces, setWorkspaces] = useState([]);
-  const [currentWorkspace, setCurrentWorkspace] = useState(null);
-
-  const refreshWorkspace = async () => {
-    // This function will be implemented to refresh workspace data
-    // For now, it's a placeholder to prevent errors
-    console.log("Refreshing workspace...");
-  };
-
-  const value = {
-    workspaces,
-    setWorkspaces,
-    currentWorkspace,
-    setCurrentWorkspace,
-    refreshWorkspace,
-  };
-
-  return (
-    <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>
-  );
-}
-
-export function useWorkspaceContext() {
+export const useWorkspaceContext = () => {
   const context = useContext(WorkspaceContext);
   if (!context) {
     throw new Error("useWorkspaceContext must be used within a WorkspaceProvider");
   }
   return context;
-} 
+};
+
+export const WorkspaceProvider = ({ children }) => {
+  const [currentWorkspace, setCurrentWorkspace] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const refreshWorkspace = async () => {
+    if (!currentWorkspace) return;
+    
+    setLoading(true);
+    try {
+      const { workspace } = await Workspace.bySlug(currentWorkspace.slug);
+      if (workspace) {
+        setCurrentWorkspace(workspace);
+      }
+    } catch (error) {
+      console.error("Failed to refresh workspace:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateWorkspace = (workspace) => {
+    setCurrentWorkspace(workspace);
+  };
+
+  const value = {
+    currentWorkspace,
+    loading,
+    refreshWorkspace,
+    updateWorkspace,
+  };
+
+  return (
+    <WorkspaceContext.Provider value={value}>
+      {children}
+    </WorkspaceContext.Provider>
+  );
+};
+
+export default WorkspaceContext; 

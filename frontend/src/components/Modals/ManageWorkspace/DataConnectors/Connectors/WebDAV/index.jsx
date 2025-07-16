@@ -3,8 +3,10 @@ import { useTranslation } from "react-i18next";
 import DataConnector from "@/models/dataConnector";
 import showToast from "@/utils/toast";
 import { CheckCircle, Warning, FloppyDisk } from "@phosphor-icons/react";
+import { useWorkspaceContext } from "@/contexts/WorkspaceContext";
 
 export default function WebDAVConnector({ onSuccess }) {
+  const { refreshWorkspace } = useWorkspaceContext();
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     url: "",
@@ -199,6 +201,7 @@ export default function WebDAVConnector({ onSuccess }) {
           "success",
           { clear: true }
         );
+        await refreshWorkspace();
         if (onSuccess) onSuccess();
       }
     } catch (error) {
