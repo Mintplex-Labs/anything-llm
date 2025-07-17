@@ -43,26 +43,31 @@ export default function EmbeddingTextSplitterPreference() {
   };
 
   const handleSaveSettings = async () => {
-    const form = new FormData(
-      document.getElementById("text-splitter-chunking-form")
-    );
     setSaving(true);
-    await Admin.updateSystemPreferences({
-      text_splitter_chunk_size: isNullOrNaN(
-        form.get("text_splitter_chunk_size")
-      )
-        ? 1000
-        : Number(form.get("text_splitter_chunk_size")),
-      text_splitter_chunk_overlap: isNullOrNaN(
-        form.get("text_splitter_chunk_overlap")
-      )
-        ? 1000
-        : Number(form.get("text_splitter_chunk_overlap")),
-    });
-    setSaving(false);
-    setHasChanges(false);
-    closeModal();
-    showToast("Text chunking strategy settings saved.", "success");
+    try {
+      const form = new FormData(
+        document.getElementById("text-splitter-chunking-form")
+      );
+      await Admin.updateSystemPreferences({
+        text_splitter_chunk_size: isNullOrNaN(
+          form.get("text_splitter_chunk_size")
+        )
+          ? 1000
+          : Number(form.get("text_splitter_chunk_size")),
+        text_splitter_chunk_overlap: isNullOrNaN(
+          form.get("text_splitter_chunk_overlap")
+        )
+          ? 1000
+          : Number(form.get("text_splitter_chunk_overlap")),
+      });
+      setHasChanges(false);
+      closeModal();
+      showToast("Text chunking strategy settings saved.", "success");
+    } catch (error) {
+      showToast("Failed to save text chunking strategy settings.", "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
   useEffect(() => {
