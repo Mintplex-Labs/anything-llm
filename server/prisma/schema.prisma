@@ -356,3 +356,14 @@ model prompt_history {
 
   @@index([workspaceId])
 }
+
+// Schema specific to mobile app <> Desktop app connection
+model desktop_mobile_devices {
+  id         Int      @id @default(autoincrement())
+  deviceOs   String
+  deviceName String
+  token      String   @unique
+  approved   Boolean  @default(false)
+  userId     Int?
+  createdAt  DateTime @default(now())
+}
