@@ -588,9 +588,6 @@ const TRANSLATIONS = {
     "desc-start":
       "Você pode alterar a forma como novos documentos são divididos antes de serem inseridos no banco de dados vetorial.",
     "desc-end": "Modifique apenas se entender os efeitos da divisão de texto.",
-    "warn-start": "Alterações afetarão apenas",
-    "warn-center": "documentos novos",
-    "warn-end": ", não os existentes.",
     size: {
       title: "Tamanho dos Trechos",
       description: "Comprimento máximo de caracteres em um único vetor.",

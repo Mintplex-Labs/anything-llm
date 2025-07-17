@@ -411,9 +411,6 @@ const TRANSLATIONS = {
       "Soms wil je misschien de standaard manier wijzigen waarop nieuwe documenten worden gesplitst en gechunkt voordat ze in je vector database worden ingevoerd.",
     "desc-end":
       "Je moet deze instelling alleen wijzigen als je begrijpt hoe tekstsplitsing werkt en de bijbehorende effecten.",
-    "warn-start": "Wijzigingen hier zijn alleen van toepassing op",
-    "warn-center": "nieuw ingebedde documenten",
-    "warn-end": ", niet op bestaande documenten.",
     size: {
       title: "Tekst Chunk Grootte",
       description:
