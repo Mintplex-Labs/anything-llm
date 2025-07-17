@@ -260,6 +260,7 @@ const SystemSettings = {
         process.env.TTS_PIPER_VOICE_MODEL ?? "en_US-hfc_female-medium",
       // OpenAI Generic TTS
       TTSOpenAICompatibleKey: !!process.env.TTS_OPEN_AI_COMPATIBLE_KEY,
+      TTSOpenAICompatibleModel: process.env.TTS_OPEN_AI_COMPATIBLE_MODEL,
       TTSOpenAICompatibleVoiceModel:
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,
