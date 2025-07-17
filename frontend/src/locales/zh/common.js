@@ -565,9 +565,6 @@ const TRANSLATIONS = {
     "desc-start":
       "有时，你可能希望更改新文档在插入到矢量数据库之前拆分和分块的默认方式。",
     "desc-end": "只有在了解文本拆分的工作原理及其副作用时，才应修改此设置。",
-    "warn-start": "此处的更改仅适用于",
-    "warn-center": "新嵌入的文档",
-    "warn-end": "，而不是现有文档。",
     size: {
       title: "文本块大小",
       description: "这是单个向量中可以存在的字符的最大长度。",

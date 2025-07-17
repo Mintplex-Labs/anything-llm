@@ -607,9 +607,6 @@ const TRANSLATIONS = {
       "Czasami może zaistnieć potrzeba zmiany domyślnego sposobu, w jaki nowe dokumenty są dzielone i fragmentowane przed wstawieniem ich do wektorowej bazy danych.",
     "desc-end":
       "Powinieneś modyfikować to ustawienie tylko wtedy, gdy rozumiesz, jak działa dzielenie tekstu i jakie są jego skutki uboczne.",
-    "warn-start": "Zmiany tutaj będą miały zastosowanie tylko do",
-    "warn-center": "nowo osadzone dokumenty",
-    "warn-end": "a nie istniejące dokumenty.",
     size: {
       title: "Rozmiar fragmentu tekstu",
       description:

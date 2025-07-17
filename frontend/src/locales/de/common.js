@@ -607,9 +607,6 @@ const TRANSLATIONS = {
       "Manchmal möchten Sie vielleicht die Standardmethode ändern, wie neue Dokumente gesplittet und gechunkt werden, bevor sie in Ihre Vektordatenbank eingefügt werden.",
     "desc-end":
       "Sie sollten diese Einstellung nur ändern, wenn Sie verstehen, wie Textsplitting funktioniert und welche Nebenwirkungen es hat.",
-    "warn-start": "Änderungen hier gelten nur für",
-    "warn-center": "neu eingebettete Dokumente",
-    "warn-end": ", nicht für bestehende Dokumente.",
     size: {
       title: "Textchunk-Größe",
       description:

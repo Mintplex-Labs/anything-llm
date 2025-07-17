@@ -582,9 +582,6 @@ const TRANSLATIONS = {
     "desc-start":
       "Vahel soovid muuta, kuidas uued dokumendid enne vektoriandmebaasi lisamist tükeldatakse.",
     "desc-end": "Muuda seda ainult siis, kui mõistad tekstilõike mõju.",
-    "warn-start": "Muudatused kehtivad ainult",
-    "warn-center": "uutele dokumentidele",
-    "warn-end": ", mitte olemasolevatele.",
     size: {
       title: "Tekstitüki suurus",
       description: "Maksimaalne märgipikkus ühes vektoris.",

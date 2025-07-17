@@ -416,9 +416,6 @@ const TRANSLATIONS = {
       "Parfois, vous voudrez peut-être changer la façon dont les nouveaux documents sont divisés et découpés avant d'être insérés dans votre base de données vectorielle.",
     "desc-end":
       "Vous ne devez modifier ce paramètre que si vous comprenez comment fonctionne la division du texte et ses effets secondaires.",
-    "warn-start": "Les changements ici s'appliqueront uniquement aux",
-    "warn-center": "nouveaux documents intégrés",
-    "warn-end": ", pas aux documents existants.",
     size: {
       title: "Taille des segments de texte",
       description:
