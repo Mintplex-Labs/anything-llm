@@ -98,6 +98,18 @@ const websocket = {
         aibitat.onInterrupt(async (node) => {
           const feedback = await socket.askForFeedback(socket, node);
           if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
+            // Handle reset command specially
+            if (feedback === "/reset") {
+              socket.send(
+                JSON.stringify({
+                  type: "chatReset",
+                  content:
+                    "Chat has been reset and conversation history cleared.",
+                  animate: false,
+                  action: "reset_chat",
+                })
+              );
+            }
             socket.close();
             return;
           }

@@ -210,6 +210,11 @@ const TRANSLATIONS = {
         only: "فقط",
         "desc-end": "در صورت یافتن محتوای اسناد ارائه می‌دهد.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "تاریخچه گفتگو",
