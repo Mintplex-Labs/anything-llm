@@ -380,6 +380,12 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin", "manager"],
             },
+            {
+              btnText: "AnythingLLM Mobile",
+              href: paths.settings.mobileConnections(),
+              flex: true,
+              roles: ["admin"],
+            },
           ]}
         />
         <Option
