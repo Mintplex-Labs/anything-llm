@@ -601,6 +601,10 @@ const KEY_MAPPING = {
     envKey: "TTS_OPEN_AI_COMPATIBLE_KEY",
     checks: [],
   },
+  TTSOpenAICompatibleModel: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_MODEL",
+    checks: [],
+  },
   TTSOpenAICompatibleVoiceModel: {
     envKey: "TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL",
     checks: [isNotEmpty],

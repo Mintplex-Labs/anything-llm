@@ -9,18 +9,16 @@ export const DB_LOGOS = {
   "sql-server": MSSQLLogo,
 };
 
-export default function DBConnection({ connection, onRemove, setHasChanges }) {
+export default function DBConnection({ connection, onRemove }) {
   const { database_id, engine } = connection;
   function removeConfirmation() {
     if (
       !window.confirm(
         `Delete ${database_id} from the list of available SQL connections? This cannot be undone.`
       )
-    ) {
+    )
       return false;
-    }
     onRemove(database_id);
-    setHasChanges(true);
   }
 
   return (
