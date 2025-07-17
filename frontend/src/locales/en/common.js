@@ -631,9 +631,6 @@ const TRANSLATIONS = {
       "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
     "desc-end":
       "You should only modify this setting if you understand how text splitting works and it's side effects.",
-    "warn-start": "Changes here will only apply to",
-    "warn-center": "newly embedded documents",
-    "warn-end": ", not existing documents.",
     size: {
       title: "Text Chunk Size",
       description:

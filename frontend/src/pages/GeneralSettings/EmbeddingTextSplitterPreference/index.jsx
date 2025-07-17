@@ -108,10 +108,6 @@ export default function EmbeddingTextSplitterPreference() {
                   {t("text.desc-start")} <br />
                   {t("text.desc-end")}
                 </p>
-                <p className="text-xs leading-[18px] font-semibold text-white/80">
-                  {t("text.warn-start")} <i>{t("text.warn-center")}</i>
-                  {t("text.warn-end")}
-                </p>
               </div>
               <div className="w-full justify-end flex">
                 {hasChanges && (
@@ -188,7 +184,7 @@ export default function EmbeddingTextSplitterPreference() {
 
       <ModalWrapper isOpen={isOpen}>
         <ChangeWarningModal
-          warningText="Changing text splitter settings will clear the document cache.\n\nYour uploaded documents are safe and won't be deleted. To use the new settings:\n- New documents will automatically use the new settings\n- For existing documents, just re-embed them to apply the new settings"
+          warningText="Changing text splitter settings will clear any previously cached documents.\n\nThese new settings will be applied to all documents when embedding them into a workspace."
           onClose={closeModal}
           onConfirm={handleSaveSettings}
         />
