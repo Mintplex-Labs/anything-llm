@@ -31,10 +31,10 @@ jobs:
         with:
           cmd: install
 
-      - name: Run setup script
-        run: yarn && cd server && yarn && cd ../collector && yarn && cd .. && yarn setup:envs && yarn prisma:setup
+      - name: Install backend deps
+        run: cd server && yarn && cd ../collector && yarn && cd .. && yarn setup:envs && yarn prisma:setup
 
-      - name: Run tests
+      - name: Run test suites
         run: yarn test
 
       - name: Fail job on error
