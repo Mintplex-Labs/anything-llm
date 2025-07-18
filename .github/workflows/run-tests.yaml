@@ -1,0 +1,37 @@
+name: Run backendtests
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "server/**.js"
+      - "collector/**.js"
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install yarn
+        uses: borales/actions-yarn@v4
+
+      - name: Run setup script
+        run: yarn && yarn setup
+
+      - name: Run tests
+        run: yarn test
+
+      - name: Fail job on error
+        if: failure()
+        run: exit 1
