@@ -346,19 +346,6 @@ function cannonball({
 }
 
 /**
- * Extracts text content from a multimodal message
- * @param {string|Array} content - Message content that could be string or array of content objects
- * @returns {string} - The text content
- */
-function extractTextContent(content) {
-  if (!Array.isArray(content)) return content;
-  return content
-    .filter((item) => item.type === "text")
-    .map((item) => item.text)
-    .join("\n");
-}
-
-/**
  * Fill the sources window with the priority of
  * 1. Pinned documents (handled prior to function)
  * 2. VectorSearch results
@@ -458,5 +445,4 @@ module.exports = {
   messageArrayCompressor,
   messageStringCompressor,
   fillSourceWindow,
-  extractTextContent,
 };
