@@ -32,7 +32,7 @@ jobs:
           cmd: install
 
       - name: Run setup script
-        run: yarn && yarn setup
+        run: yarn && cd server && yarn && cd ../collector && yarn && cd .. && yarn setup:envs && yarn prisma:setup
 
       - name: Run tests
         run: yarn test
