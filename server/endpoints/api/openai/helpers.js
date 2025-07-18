@@ -47,5 +47,4 @@ function extractAttachments(content) {
 module.exports = {
   extractTextContent,
   extractAttachments,
-  getMimeTypeFromDataUrl,
 };

@@ -1,26 +1,7 @@
 /* eslint-env jest, node */
-const { extractTextContent, extractAttachments, getMimeTypeFromDataUrl } = require('../../../endpoints/api/openai/helpers');
+const { extractTextContent, extractAttachments } = require('../../../endpoints/api/openai/helpers');
 
 describe('OpenAI Helper Functions', () => {
-  describe('getMimeTypeFromDataUrl', () => {
-    test('should extract mime type from data URL', () => {
-      expect(getMimeTypeFromDataUrl('data:image/png;base64,abc123')).toBe('image/png');
-      expect(getMimeTypeFromDataUrl('data:image/jpeg;base64,abc123')).toBe('image/jpeg');
-      expect(getMimeTypeFromDataUrl('data:image/webp;base64,abc123')).toBe('image/webp');
-    });
-
-    test('should convert mime type to lowercase', () => {
-      expect(getMimeTypeFromDataUrl('data:IMAGE/PNG;base64,abc123')).toBe('image/png');
-    });
-
-    test('should default to image/png for invalid data URLs', () => {
-      expect(getMimeTypeFromDataUrl('invalid-data-url')).toBe('image/png');
-      expect(getMimeTypeFromDataUrl('')).toBe('image/png');
-      expect(getMimeTypeFromDataUrl(null)).toBe('image/png');
-      expect(getMimeTypeFromDataUrl(undefined)).toBe('image/png');
-    });
-  });
-
   describe('extractTextContent', () => {
     test('should return string content as-is when not an array', () => {
       const content = 'Hello world';

@@ -2,6 +2,7 @@
 const { OpenAICompatibleChat } = require('../../../utils/chats/openaiCompatible');
 const { WorkspaceChats } = require('../../../models/workspaceChats');
 const { getVectorDbClass, getLLMProvider } = require('../../../utils/helpers');
+const { extractTextContent, extractAttachments } = require('../../../endpoints/api/openai/helpers');
 
 // Mock dependencies
 jest.mock('../../../models/workspaceChats');
@@ -87,9 +88,12 @@ describe('OpenAICompatibleChat', () => {
         }
       ];
 
+      const prompt = extractTextContent(multiModalPrompt);
+      const attachments = extractAttachments(multiModalPrompt);
       const result = await OpenAICompatibleChat.chatSync({
         workspace: mockWorkspace,
-        prompt: multiModalPrompt,
+        prompt,
+        attachments,
         systemPrompt: 'You are a helpful assistant',
         history: [
           { role: 'user', content: 'Previous message' },
@@ -102,13 +106,13 @@ describe('OpenAICompatibleChat', () => {
       expect(WorkspaceChats.new).toHaveBeenCalledWith(
         expect.objectContaining({
           workspaceId: mockWorkspace.id,
-          prompt: 'What do you see in this image?',
+          prompt: multiModalPrompt[0].text,
           response: expect.objectContaining({
             text: 'Mock response',
             attachments: [{
               name: 'uploaded_image_0',
               mime: 'image/png',
-              contentString: 'data:image/png;base64,abc123'
+              contentString: multiModalPrompt[1].image_url.url
             }]
           })
         })
@@ -131,9 +135,10 @@ describe('OpenAICompatibleChat', () => {
     });
 
     test('should handle regular text messages in OpenAI format', async () => {
+      const promptString = 'Hello world';
       const result = await OpenAICompatibleChat.chatSync({
         workspace: mockWorkspace,
-        prompt: 'Hello world',
+        prompt: promptString,
         systemPrompt: 'You are a helpful assistant',
         history: [
           { role: 'user', content: 'Previous message' },
@@ -146,7 +151,7 @@ describe('OpenAICompatibleChat', () => {
       expect(WorkspaceChats.new).toHaveBeenCalledWith(
         expect.objectContaining({
           workspaceId: mockWorkspace.id,
-          prompt: 'Hello world',
+          prompt: promptString,
           response: expect.objectContaining({
             text: 'Mock response',
             attachments: []
@@ -174,10 +179,13 @@ describe('OpenAICompatibleChat', () => {
         }
       ];
 
+      const prompt = extractTextContent(multiModalPrompt);
+      const attachments = extractAttachments(multiModalPrompt);
       await OpenAICompatibleChat.streamChat({
         workspace: mockWorkspace,
         response: mockResponse,
-        prompt: multiModalPrompt,
+        prompt,
+        attachments,
         systemPrompt: 'You are a helpful assistant',
         history: [
           { role: 'user', content: 'Previous message' },
@@ -194,13 +202,13 @@ describe('OpenAICompatibleChat', () => {
       expect(WorkspaceChats.new).toHaveBeenCalledWith(
         expect.objectContaining({
           workspaceId: mockWorkspace.id,
-          prompt: 'What do you see in this image?',
+          prompt: multiModalPrompt[0].text,
           response: expect.objectContaining({
             text: 'Mock streamed response',
             attachments: [{
               name: 'uploaded_image_0',
               mime: 'image/png',
-              contentString: 'data:image/png;base64,abc123'
+              contentString: multiModalPrompt[1].image_url.url
             }]
           })
         })
@@ -208,10 +216,11 @@ describe('OpenAICompatibleChat', () => {
     });
 
     test('should handle regular text messages in streaming mode', async () => {
+      const promptString = 'Hello world';
       await OpenAICompatibleChat.streamChat({
         workspace: mockWorkspace,
         response: mockResponse,
-        prompt: 'Hello world',
+        prompt: promptString,
         systemPrompt: 'You are a helpful assistant',
         history: [
           { role: 'user', content: 'Previous message' },
@@ -228,7 +237,7 @@ describe('OpenAICompatibleChat', () => {
       expect(WorkspaceChats.new).toHaveBeenCalledWith(
         expect.objectContaining({
           workspaceId: mockWorkspace.id,
-          prompt: 'Hello world',
+          prompt: promptString,
           response: expect.objectContaining({
             text: 'Mock streamed response',
             attachments: []
