@@ -26,13 +26,50 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install yarn
-        uses: borales/actions-yarn@v4
+      - name: Cache root dependencies
+        uses: actions/cache@v3
         with:
-          cmd: install
+          path: |
+            node_modules
+            ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-root-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-root-
 
-      - name: Install backend deps
-        run: cd server && yarn && cd ../collector && yarn && cd .. && yarn setup:envs && yarn prisma:setup
+      - name: Cache server dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            server/node_modules
+            ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-server-${{ hashFiles('server/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-server-
+
+      - name: Cache collector dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            collector/node_modules
+            ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-collector-${{ hashFiles('collector/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-collector-
+
+      - name: Install root dependencies
+        if: steps.cache-root.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Install server dependencies
+        if: steps.cache-server.outputs.cache-hit != 'true'
+        run: cd server && yarn install --frozen-lockfile
+
+      - name: Install collector dependencies
+        if: steps.cache-collector.outputs.cache-hit != 'true'
+        run: cd collector && yarn install --frozen-lockfile
+
+      - name: Setup environment and Prisma
+        run: yarn setup:envs && yarn prisma:setup
 
       - name: Run test suites
         run: yarn test
