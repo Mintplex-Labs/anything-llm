@@ -222,12 +222,9 @@ We take privacy very seriously, and we hope you understand that we want to learn
 
 </details>
 
-
 ## 👋 Contributing
 
-- create issue
-- create PR with branch name format of `<issue number>-<short name>`
-- LGTM from core-team
+- [Contributing to AnythingLLM](./CONTRIBUTING.md) - How to contribute to AnythingLLM.
 
 ## 💖 Sponsors
 

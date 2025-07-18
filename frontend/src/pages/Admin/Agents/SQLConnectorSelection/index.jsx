@@ -21,6 +21,17 @@ export default function AgentSQLConnectorSelection({
       .catch(() => setConnections([]));
   }, []);
 
+  function handleRemoveConnection(databaseId) {
+    setHasChanges(true);
+    setConnections((prev) =>
+      prev.map((conn) => {
+        if (conn.database_id === databaseId)
+          return { ...conn, action: "remove" };
+        return conn;
+      })
+    );
+  }
+
   return (
     <>
       <div className="p-2">
@@ -81,16 +92,7 @@ export default function AgentSQLConnectorSelection({
                       <DBConnection
                         key={connection.database_id}
                         connection={connection}
-                        onRemove={(databaseId) => {
-                          setHasChanges(true);
-                          setConnections((prev) =>
-                            prev.map((conn) => {
-                              if (conn.database_id === databaseId)
-                                return { ...conn, action: "remove" };
-                              return conn;
-                            })
-                          );
-                        }}
+                        onRemove={handleRemoveConnection}
                       />
                     ))}
                   <button
@@ -120,6 +122,7 @@ export default function AgentSQLConnectorSelection({
       <NewSQLConnection
         isOpen={isOpen}
         closeModal={closeModal}
+        setHasChanges={setHasChanges}
         onSubmit={(newDb) =>
           setConnections((prev) => [...prev, { action: "add", ...newDb }])
         }

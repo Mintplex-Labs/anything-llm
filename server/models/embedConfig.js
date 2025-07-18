@@ -14,6 +14,7 @@ const EmbedConfig = {
     "max_chats_per_session",
     "chat_mode",
     "workspace_id",
+    "message_limit",
   ],
 
   new: async function (data, creatorId = null) {
@@ -46,6 +47,10 @@ const EmbedConfig = {
           max_chats_per_session: validatedCreationData(
             data?.max_chats_per_session,
             "max_chats_per_session"
+          ),
+          message_limit: validatedCreationData(
+            data?.message_limit,
+            "message_limit"
           ),
           createdBy: Number(creatorId) ?? null,
           workspace: {
@@ -190,6 +195,7 @@ const NUMBER_KEYS = [
   "max_chats_per_day",
   "max_chats_per_session",
   "workspace_id",
+  "message_limit",
 ];
 
 // Helper to validate a data object strictly into the proper format

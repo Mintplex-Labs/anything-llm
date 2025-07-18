@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "Paramètres de l'instance",
@@ -413,9 +414,6 @@ const TRANSLATIONS = {
       "Parfois, vous voudrez peut-être changer la façon dont les nouveaux documents sont divisés et découpés avant d'être insérés dans votre base de données vectorielle.",
     "desc-end":
       "Vous ne devez modifier ce paramètre que si vous comprenez comment fonctionne la division du texte et ses effets secondaires.",
-    "warn-start": "Les changements ici s'appliqueront uniquement aux",
-    "warn-center": "nouveaux documents intégrés",
-    "warn-end": ", pas aux documents existants.",
     size: {
       title: "Taille des segments de texte",
       description:
@@ -729,7 +727,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,

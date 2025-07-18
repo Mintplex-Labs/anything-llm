@@ -20,6 +20,7 @@ export function enforceSubmissionSchema(form) {
     data.allow_temperature_override = false;
   if (!data.hasOwnProperty("allow_prompt_override"))
     data.allow_prompt_override = false;
+  if (!data.hasOwnProperty("message_limit")) data.message_limit = 20;
   return data;
 }
 
@@ -68,6 +69,12 @@ export default function NewEmbedModal({ closeModal }) {
                 name="max_chats_per_session"
                 title="Max chats per session"
                 hint="Limit the amount of chats a session user can send with this embed in a 24 hour period. Zero is unlimited."
+              />
+              <NumberInput
+                name="message_limit"
+                title="Message History Limit"
+                hint="The number of previous messages to include in the chat context. Default is 20."
+                defaultValue={20}
               />
               <BooleanInput
                 name="allow_model_override"
@@ -150,6 +157,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
         {workspaces.map((workspace) => {
           return (
             <option
+              key={workspace.id}
               selected={defaultValue === workspace.id}
               value={workspace.id}
             >

@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "Configuración de instancia",
@@ -412,9 +413,6 @@ const TRANSLATIONS = {
       "A veces, es posible que desees cambiar la forma predeterminada en que los nuevos documentos se dividen y fragmentan antes de ser insertados en tu base de datos de vectores.",
     "desc-end":
       "Solo debes modificar esta configuración si entiendes cómo funciona la división de texto y sus efectos secundarios.",
-    "warn-start": "Los cambios aquí solo se aplicarán a",
-    "warn-center": "documentos recién incrustados",
-    "warn-end": ", no a los documentos existentes.",
     size: {
       title: "Tamaño del fragmento de texto",
       description:
@@ -728,7 +726,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,

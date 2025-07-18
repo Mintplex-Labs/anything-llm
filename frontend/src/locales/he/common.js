@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "הגדרות מופע",
@@ -401,9 +402,6 @@ const TRANSLATIONS = {
       "לפעמים, ייתכן שתרצה לשנות את הדרך ברירת המחדל שבה מסמכים חדשים מחולקים ומופרדים לפני שהם מוכנסים לבסיס הנתונים הווקטורי שלך.",
     "desc-end":
       "עליך לשנות הגדרה זו רק אם אתה מבין כיצד חלוקת טקסט פועלת והשפעותיה.",
-    "warn-start": "שינויים כאן יחולו רק על",
-    "warn-center": "מסמכים שהוטמעו לאחרונה",
-    "warn-end": ", לא על מסמכים קיימים.",
     size: {
       title: "גודל קטע טקסט",
       description: "זהו אורך הדמויות המרבי שיכול להיות נוכח בקטור יחיד.",
@@ -714,7 +712,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,

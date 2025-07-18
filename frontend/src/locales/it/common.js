@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "Impostazioni istanza",
@@ -411,9 +412,6 @@ const TRANSLATIONS = {
       "A volte, potresti voler cambiare il modo predefinito in cui i nuovi documenti vengono suddivisi e spezzettati in blocchi prima di essere inseriti nel tuo database vettoriale.",
     "desc-end":
       "Dovresti modificare questa impostazione solo se capisci come funziona la suddivisione del testo e i suoi effetti collaterali.",
-    "warn-start": "Le modifiche qui si applicheranno solo a",
-    "warn-center": "nuovi documenti incorporati",
-    "warn-end": ", non documenti esistenti.",
     size: {
       title: "Dimensioni blocco di testo",
       description:
@@ -727,7 +725,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,

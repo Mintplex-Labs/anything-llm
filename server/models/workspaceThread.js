@@ -100,12 +100,18 @@ const WorkspaceThread = {
     }
   },
 
-  where: async function (clause = {}, limit = null, orderBy = null) {
+  where: async function (
+    clause = {},
+    limit = null,
+    orderBy = null,
+    include = null
+  ) {
     try {
       const results = await prisma.workspace_threads.findMany({
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
+        ...(include !== null ? { include } : {}),
       });
       return results;
     } catch (error) {

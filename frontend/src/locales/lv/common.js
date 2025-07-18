@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     optional: "Neobligāti",
     yes: "Jā",
     no: "Nē",
+    search: null,
   },
   settings: {
     title: "Instances iestatījumi",
@@ -599,9 +600,6 @@ const TRANSLATIONS = {
       "Dažreiz jūs, iespējams, vēlēsieties mainīt noklusējuma veidu, kā jauni dokumenti tiek sadalīti un sagatavoti pirms ievietošanas vektoru datubāzē.",
     "desc-end":
       "Jums vajadzētu mainīt šo iestatījumu tikai tad, ja saprotat, kā darbojas teksta sadalīšana un tās blakusefekti.",
-    "warn-start": "Šeit veiktās izmaiņas attieksies tikai uz",
-    "warn-center": "jauniem iegultajiem dokumentiem",
-    "warn-end": ", nevis esošajiem dokumentiem.",
     size: {
       title: "Teksta gabala izmērs",
       description:
@@ -955,7 +953,7 @@ const TRANSLATIONS = {
     username_description:
       "Lietotājvārdam jāsatur tikai mazie burti, cipari, pasvītrojumi un defises bez atstarpēm",
     new_password: "Jauna parole",
-    passwort_description: "Parolei jābūt vismaz 8 rakstzīmes garai",
+    password_description: "Parolei jābūt vismaz 8 rakstzīmes garai",
     cancel: "Atcelt",
     update_account: "Atjaunināt kontu",
     theme: "Tēmas preference",

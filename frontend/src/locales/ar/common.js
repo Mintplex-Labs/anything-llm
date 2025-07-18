@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     optional: "اختياري",
     yes: "نعم",
     no: "لا",
+    search: null,
   },
   settings: {
     title: "إعدادات المثيل",
@@ -413,9 +414,6 @@ const TRANSLATIONS = {
       "في بعض الأحيان، قد ترغب في تغيير الطريقة الافتراضية التي يتم بها تقسيم المستندات الجديدة وتقطيعها قبل إدراجها في قاعدة بيانات المتجهة الخاصة بك.",
     "desc-end":
       "يجب عليك فقط تعديل هذا الإعداد إذا كنت تفهم كيفية عمل تقسيم النص وتأثيراته الجانبية.",
-    "warn-start": "التغييرات هنا سوف تنطبق فقط على",
-    "warn-center": "المستندات المضمنة حديثًا",
-    "warn-end": "، وليس على المستندات الموجودة.",
     size: {
       title: "حجم قطعة النص",
       description:
@@ -729,7 +727,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,

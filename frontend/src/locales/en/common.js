@@ -70,6 +70,7 @@ const TRANSLATIONS = {
     optional: "Optional",
     yes: "Yes",
     no: "No",
+    search: "Search",
   },
 
   // Setting Sidebar menu items.
@@ -628,9 +629,6 @@ const TRANSLATIONS = {
       "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
     "desc-end":
       "You should only modify this setting if you understand how text splitting works and it's side effects.",
-    "warn-start": "Changes here will only apply to",
-    "warn-center": "newly embedded documents",
-    "warn-end": ", not existing documents.",
     size: {
       title: "Text Chunk Size",
       description:
@@ -1000,7 +998,7 @@ const TRANSLATIONS = {
     username_description:
       "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
     new_password: "New Password",
-    passwort_description: "Password must be at least 8 characters long",
+    password_description: "Password must be at least 8 characters long",
     cancel: "Cancel",
     update_account: "Update Account",
     theme: "Theme Preference",
