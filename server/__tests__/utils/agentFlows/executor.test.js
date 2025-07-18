@@ -55,8 +55,7 @@ describe("FlowExecutor: getValueFromPath", () => {
 
   it("should return empty string if the object is invalid", () => {
     const result = executor.getValueFromPath(null, "a.b.c");
-    // expect(result).toBe("");
-    expect(result).toBe(null);
+    expect(result).toBe("");
   });
 
   it("can return a stringified item if the path target is not an object or array", () => {
