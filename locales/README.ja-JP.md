@@ -83,6 +83,7 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 - [LocalAi (すべてのモデル)](https://localai.io/)
 - [Together AI (チャットモデル)](https://www.together.ai/)
 - [Fireworks AI (チャットモデル)](https://fireworks.ai/)
+- [SambaNova Cloud (チャットモデル)](https://cloud.sambanova.ai/)
 - [Perplexity (チャットモデル)](https://www.perplexity.ai/)
 - [OpenRouter (チャットモデル)](https://openrouter.ai/)
 - [Novita AI (チャットモデル)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)

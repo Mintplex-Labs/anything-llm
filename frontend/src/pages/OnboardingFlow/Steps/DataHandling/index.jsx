@@ -7,6 +7,7 @@ import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
+import SambaNovaLogo from "@/media/llmprovider/sambanova.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
@@ -103,6 +104,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on the machine running Ollama models",
     ],
     logo: OllamaLogo,
+  },
+  sambanova: {
+    name: "SambaNova",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to SambaNova",
+    ],
+    logo: SambaNovaLogo,
   },
   togetherai: {
     name: "TogetherAI",
