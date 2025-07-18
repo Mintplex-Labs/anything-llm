@@ -1,4 +1,4 @@
-name: Run backendtests
+name: Run backend tests
 
 concurrency:
   group: build-${{ github.ref }}
@@ -10,7 +10,7 @@ on:
     paths:
       - "server/**.js"
       - "collector/**.js"
-      
+
 jobs:
   run-script:
     runs-on: ubuntu-latest
