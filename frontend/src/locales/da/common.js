@@ -418,9 +418,6 @@ const TRANSLATIONS = {
       "Nogle gange vil du måske ændre den standardmåde, som nye dokumenter deles og opdeles i bidder, inden de indsættes i din vektordatabase.",
     "desc-end":
       "Du bør kun ændre denne indstilling, hvis du forstår, hvordan tekstopdeling fungerer og dens bivirkninger.",
-    "warn-start": "Ændringer her vil kun gælde for",
-    "warn-center": "nyligt indlejrede dokumenter",
-    "warn-end": ", ikke eksisterende dokumenter.",
     size: {
       title: "Størrelse på tekstbidder",
       description:
