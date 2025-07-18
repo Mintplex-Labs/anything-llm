@@ -10,6 +10,7 @@ on:
     paths:
       - "server/**.js"
       - "collector/**.js"
+      
 jobs:
   run-script:
     runs-on: ubuntu-latest
@@ -25,6 +26,8 @@ jobs:
 
       - name: Install yarn
         uses: borales/actions-yarn@v4
+        with:
+          cmd: install
 
       - name: Run setup script
         run: yarn && yarn setup
