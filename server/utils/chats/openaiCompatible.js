@@ -4,7 +4,10 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
-const { extractTextContent, extractAttachments } = require("../../endpoints/api/openai/helpers");
+const {
+  extractTextContent,
+  extractAttachments,
+} = require("../../endpoints/api/openai/helpers");
 
 const { PassThrough } = require("stream");
 
