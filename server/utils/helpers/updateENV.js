@@ -203,6 +203,16 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // AI/ML API Options
+  AimlApiKey: {
+    envKey: "AIML_API_KEY",
+    checks: [isNotEmpty],
+  },
+  AimlModelPref: {
+    envKey: "AIML_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Generic OpenAI InferenceSettings
   GenericOpenAiBasePath: {
     envKey: "GENERIC_OPEN_AI_BASE_PATH",
