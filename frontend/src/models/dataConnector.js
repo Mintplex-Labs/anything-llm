@@ -207,6 +207,97 @@ const DataConnector = {
         });
     },
   },
+  webdav: {
+    collect: async function ({ url, username, password, path, recursive = true, fileTypes = [] }) {
+      return await fetch(`${API_BASE}/ext/webdav`, {
+        method: "POST",
+        headers: {
+          ...baseHeaders(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url,
+          username,
+          password,
+          path,
+          recursive,
+          fileTypes,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+    // Save WebDAV settings
+    saveSettings: async function (settings) {
+      console.log("Sending WebDAV settings with headers:", baseHeaders());
+      console.log("Settings data:", settings);
+      return await fetch(`${API_BASE}/ext/webdav/settings`, {
+        method: "POST",
+        headers: {
+          ...baseHeaders(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(settings),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason || "Failed to save settings");
+          return { success: true, error: null };
+        })
+        .catch((e) => {
+          console.error("WebDAV save settings error:", e);
+          return { success: false, error: e.message };
+        });
+    },
+    // Load WebDAV settings
+    loadSettings: async function () {
+      return await fetch(`${API_BASE}/ext/webdav/settings`, {
+        method: "GET",
+        headers: {
+          ...baseHeaders(),
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason || "Failed to load settings");
+          return { settings: res.settings, error: null };
+        })
+        .catch((e) => {
+          console.error("WebDAV load settings error:", e);
+          return { settings: null, error: e.message };
+        });
+    },
+    // Test WebDAV connection
+    testConnection: async function ({ url, username, password }) {
+      console.log("Sending WebDAV test with headers:", baseHeaders());
+      console.log("Test data:", { url, username, password: password ? "***" : "(empty)" });
+      return await fetch(`${API_BASE}/ext/webdav/test`, {
+        method: "POST",
+        headers: {
+          ...baseHeaders(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url, username, password }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.message || res.reason || "Connection failed");
+          return { success: true, folders: res.folders || [], error: null };
+        })
+        .catch((e) => {
+          console.error("WebDAV test connection error:", e);
+          return { success: false, folders: [], error: e.message };
+        });
+    },
+  },
 };
 
 export default DataConnector;

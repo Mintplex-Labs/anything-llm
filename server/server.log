@@ -1,0 +1,269 @@
+
+> anything-llm-server@1.8.3 dev
+> cross-env NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js
+
+[33m[nodemon] 2.0.22[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,json[39m
+[32m[nodemon] starting `node --trace-warnings index.js`[39m
+yarn run v1.22.22
+$ node ./swagger/init.js
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[35m[TokenManager][0m Initialized new TokenManager instance for model: gpt-3.5-turbo
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Done in 0.42s.
+[35m[TokenManager][0m Returning existing instance for model: gpt-3.5-turbo
+[33m[TELEMETRY STUBBED][0m Anonymous Telemetry stubbed in development.
+[36m[CommunicationKey][0m RSA key pair generated for signed payloads within AnythingLLM services.
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+Primary server in HTTP mode listening on port 3001
+prisma:info Starting a sqlite pool with 17 connections.
+[36m[BackgroundWorkerService][0m Feature is not enabled and will not be started.
+[32m[Event Logged][0m - login_event
+WebDAV test request received: { url: 'https://test.com', username: 'test', hasPassword: true }
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+WebDAV test response from collector: {
+  success: false,
+  folders: [],
+  message: 'Failed to connect to WebDAV server: request to https://test.com/ failed, reason: unable to verify the first certificate; if the root CA is installed locally, try running Node.js with --use-system-ca'
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --trace-warnings index.js`[39m
+yarn run v1.22.22
+yarn run v1.22.22
+$ node ./swagger/init.js
+$ node ./swagger/init.js
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[35m[TokenManager][0m Initialized new TokenManager instance for model: gpt-3.5-turbo
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Done in 0.47s.
+Done in 0.47s.
+[35m[TokenManager][0m Returning existing instance for model: gpt-3.5-turbo
+[33m[TELEMETRY STUBBED][0m Anonymous Telemetry stubbed in development.
+[36m[CommunicationKey][0m RSA key pair generated for signed payloads within AnythingLLM services.
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+Primary server in HTTP mode listening on port 3001
+prisma:info Starting a sqlite pool with 17 connections.
+[36m[BackgroundWorkerService][0m Feature is not enabled and will not be started.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --trace-warnings index.js`[39m
+yarn run v1.22.22
+yarn run v1.22.22
+$ node ./swagger/init.js
+$ node ./swagger/init.js
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[35m[TokenManager][0m Initialized new TokenManager instance for model: gpt-3.5-turbo
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Done in 0.43s.
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+[35m[TokenManager][0m Returning existing instance for model: gpt-3.5-turbo
+Done in 0.43s.
+[33m[TELEMETRY STUBBED][0m Anonymous Telemetry stubbed in development.
+[36m[CommunicationKey][0m RSA key pair generated for signed payloads within AnythingLLM services.
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+Primary server in HTTP mode listening on port 3001
+prisma:info Starting a sqlite pool with 17 connections.
+[36m[BackgroundWorkerService][0m Feature is not enabled and will not be started.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --trace-warnings index.js`[39m
+yarn run v1.22.22
+yarn run v1.22.22
+$ node ./swagger/init.js
+$ node ./swagger/init.js
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[35m[TokenManager][0m Initialized new TokenManager instance for model: gpt-3.5-turbo
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Done in 0.43s.
+[35m[TokenManager][0m Returning existing instance for model: gpt-3.5-turbo
+[33m[TELEMETRY STUBBED][0m Anonymous Telemetry stubbed in development.
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Done in 0.48s.
+[36m[CommunicationKey][0m RSA key pair generated for signed payloads within AnythingLLM services.
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+Primary server in HTTP mode listening on port 3001
+prisma:info Starting a sqlite pool with 17 connections.
+[36m[BackgroundWorkerService][0m Feature is not enabled and will not be started.
+WebDAV test request received: { url: 'https://test.com', username: 'test', hasPassword: true }
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+WebDAV test response from collector: {
+  success: false,
+  folders: [],
+  message: 'Failed to connect to WebDAV server: request to https://test.com/ failed, reason: unable to verify the first certificate; if the root CA is installed locally, try running Node.js with --use-system-ca'
+}
+[32m[Event Logged][0m - login_event
+WebDAV settings validation failed: { url: false, username: false }
+WebDAV test request received: { url: undefined, username: undefined, hasPassword: false }
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[36m[CollectorApi][0m Response could not be completed
+WebDAV test response from collector: { success: false, data: {}, reason: 'Response could not be completed' }
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[36m[CollectorApi][0m Response could not be completed
+WebDAV settings validation failed: { url: false, username: false }
+[32m[Event Logged][0m - user_created
+[32m[Event Logged][0m - login_event
+WebDAV settings validation failed: { url: false, username: false }
+WebDAV test request received: { url: undefined, username: undefined, hasPassword: false }
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[36m[CollectorApi][0m Response could not be completed
+WebDAV test response from collector: { success: false, data: {}, reason: 'Response could not be completed' }
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[36m[CollectorApi][0m Response could not be completed
+WebDAV test request received: {
+  url: 'https://servicelc.com/remote.php/dav/files/aardel',
+  username: 'aardel',
+  hasPassword: true
+}
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+WebDAV test response from collector: {
+  success: false,
+  folders: [],
+  message: 'Failed to connect to WebDAV server: Invalid response: 401 Unauthorized'
+}
+WebDAV test request received: {
+  url: 'https://servicelc.com/remote.php/dav/files/aardel',
+  username: 'aardel',
+  hasPassword: true
+}
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+WebDAV test response from collector: {
+  success: false,
+  folders: [],
+  message: 'Failed to connect to WebDAV server: Invalid response: 401 Unauthorized'
+}
+WebDAV test request received: {
+  url: 'https://servicelc.com/remote.php/dav/files/aardel',
+  username: 'aardel',
+  hasPassword: true
+}
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+WebDAV test response from collector: {
+  success: false,
+  folders: [],
+  message: 'Failed to connect to WebDAV server: Invalid response: 401 Unauthorized'
+}
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[36m[CollectorApi][0m Response could not be completed
+WebDAV test request received: {
+  url: 'https://servicelc.com/remote.php/dav/files/aardel',
+  username: 'aardel',
+  hasPassword: true
+}
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+WebDAV test response from collector: {
+  success: true,
+  folders: [ 'AI_Documents', 'Maps', 'Notes', 'Photos', 'Shared Documents' ],
+  message: 'Connection successful!'
+}
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[36m[CollectorApi][0m Response could not be completed
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[36m[CollectorApi][0m Response could not be completed
+WebDAV test request received: {
+  url: 'https://servicelc.com/remote.php/dav/files/aardel',
+  username: 'aardel',
+  hasPassword: true
+}
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+WebDAV test response from collector: {
+  success: true,
+  folders: [ 'AI_Documents', 'Maps', 'Notes', 'Photos', 'Shared Documents' ],
+  message: 'Connection successful!'
+}
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[36m[CollectorApi][0m Response could not be completed
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+WebDAV test request received: {
+  url: 'https://servicelc.com/remote.php/dav/files/aardel',
+  username: 'aardel',
+  hasPassword: true
+}
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+WebDAV test response from collector: {
+  success: true,
+  folders: [ 'AI_Documents', 'Maps', 'Notes', 'Photos', 'Shared Documents' ],
+  message: 'Connection successful!'
+}
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+Adding new vectorized document into namespace test
+[35m[RecursiveSplitter][0m Will split with { chunkSize: 8192, chunkOverlap: 20 }
+Snippets created from document: 1
+[36m[LMStudioEmbedder][0m Embedding 1 chunks of text with text-embedding-nomic-embed-text-v1.5.
+Embedding length: 768
+Inserting vectorized chunks into LanceDB collection.
+Caching vectorized results of servicelc.com-4fd2/nextcloud_desktop_setup_instructions.md.json to prevent duplicated embedding.
+[32m[Event Logged][0m - workspace_documents_added
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --trace-warnings index.js`[39m
+yarn run v1.22.22
+$ node ./swagger/init.js
+yarn run v1.22.22
+$ node ./swagger/init.js
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[35m[TokenManager][0m Initialized new TokenManager instance for model: gpt-3.5-turbo
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Done in 0.82s.
+Done in 0.85s.
+[35m[TokenManager][0m Returning existing instance for model: gpt-3.5-turbo
+[33m[TELEMETRY STUBBED][0m Anonymous Telemetry stubbed in development.
+[36m[CommunicationKey][0m RSA key pair generated for signed payloads within AnythingLLM services.
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+Primary server in HTTP mode listening on port 3001
+prisma:info Starting a sqlite pool with 17 connections.
+[36m[BackgroundWorkerService][0m Feature is not enabled and will not be started.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --trace-warnings index.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+yarn run v1.22.22
+[32m[nodemon] starting `node --trace-warnings index.js`[39m
+$ node ./swagger/init.js
+yarn run v1.22.22
+$ node ./swagger/init.js
+yarn run v1.22.22
+yarn run v1.22.22
+$ node ./swagger/init.js
+yarn run v1.22.22
+$ node ./swagger/init.js
+yarn run v1.22.22
+$ node ./swagger/init.js
+$ node ./swagger/init.js
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+[35m[TokenManager][0m Initialized new TokenManager instance for model: gpt-3.5-turbo
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Done in 1.63s.
+Done in 1.51s.
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Done in 1.51s.
+Done in 1.44s.
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Done in 1.52s.
+[35m[TokenManager][0m Returning existing instance for model: gpt-3.5-turbo
+Swagger-autogen: [32m Success ✔ [0m
+Swagger-autogen:  [32mPatched servers.url ✔[0m
+Done in 1.49s.
+[33m[TELEMETRY STUBBED][0m Anonymous Telemetry stubbed in development.
+[36m[CommunicationKey][0m RSA key pair generated for signed payloads within AnythingLLM services.
+[36m[EncryptionManager][0m Loaded existing key & salt for encrypting arbitrary data.
+Primary server in HTTP mode listening on port 3001
+prisma:info Starting a sqlite pool with 17 connections.
+[36m[BackgroundWorkerService][0m Feature is not enabled and will not be started.

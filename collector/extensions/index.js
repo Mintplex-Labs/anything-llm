@@ -201,6 +201,46 @@ function extensions(app) {
       return;
     }
   );
+
+  app.post(
+    "/ext/webdav",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { loadWebDAV } = require("../utils/extensions/WebDAV");
+        const { success, reason, data } = await loadWebDAV(
+          reqBody(request),
+          response
+        );
+        response.status(200).json({ success, reason, data });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: null,
+        });
+      }
+      return;
+    }
+  );
+
+  console.log("Registering WebDAV test endpoint...");
+  app.post(
+    "/ext/webdav/test",
+    async function (request, response) {
+      console.log("WebDAV test endpoint hit!");
+      try {
+        const { loadWebDAVTest } = require("../utils/extensions/WebDAV");
+        const { success, folders, message } = await loadWebDAVTest(reqBody(request));
+        response.status(200).json({ success, folders, message });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({ success: false, folders: [], message: e.message });
+      }
+      return;
+    }
+  );
 }
 
 

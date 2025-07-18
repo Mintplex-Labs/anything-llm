@@ -10,6 +10,7 @@ import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
 import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 import ObsidianOptions from "./Connectors/Obsidian";
+import WebDAVOptions from "./Connectors/WebDAV";
 
 export const getDataConnectors = (t) => ({
   github: {
@@ -53,6 +54,12 @@ export const getDataConnectors = (t) => ({
     image: ConnectorImages.obsidian,
     description: "Import Obsidian vault in a single click.",
     options: <ObsidianOptions />,
+  },
+  webdav: {
+    name: t("connectors.webdav.name"),
+    image: ConnectorImages.webdav,
+    description: t("connectors.webdav.description"),
+    options: <WebDAVOptions />,
   },
 });
 

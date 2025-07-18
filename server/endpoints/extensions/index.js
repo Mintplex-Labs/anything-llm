@@ -94,7 +94,7 @@ function extensionEndpoints(app) {
           await new CollectorApi().forwardExtensionRequest({
             endpoint: "/ext/confluence",
             method: "POST",
-            body: request.body,
+            body: JSON.stringify(request.body),
           });
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "confluence",
@@ -115,7 +115,7 @@ function extensionEndpoints(app) {
           await new CollectorApi().forwardExtensionRequest({
             endpoint: "/ext/website-depth",
             method: "POST",
-            body: request.body,
+            body: JSON.stringify(request.body),
           });
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "website_depth",
@@ -136,7 +136,7 @@ function extensionEndpoints(app) {
           await new CollectorApi().forwardExtensionRequest({
             endpoint: "/ext/drupalwiki",
             method: "POST",
-            body: request.body,
+            body: JSON.stringify(request.body),
           });
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "drupalwiki",
@@ -158,7 +158,7 @@ function extensionEndpoints(app) {
           await new CollectorApi().forwardExtensionRequest({
             endpoint: "/ext/obsidian/vault",
             method: "POST",
-            body: request.body,
+            body: JSON.stringify(request.body),
           });
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "obsidian_vault",
@@ -167,6 +167,125 @@ function extensionEndpoints(app) {
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/ext/webdav",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const responseFromProcessor =
+          await new CollectorApi().forwardExtensionRequest({
+            endpoint: "/ext/webdav",
+            method: "POST",
+            body: JSON.stringify(request.body),
+          });
+        await Telemetry.sendTelemetry("extension_invoked", {
+          type: "webdav",
+        });
+        response.status(200).json(responseFromProcessor);
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/ext/webdav/test",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        console.log("WebDAV test request received:", { 
+          url: request.body.url, 
+          username: request.body.username,
+          hasPassword: !!request.body.password
+        });
+        
+        // Forward to collector with a 'test' action
+        const responseFromProcessor = await new CollectorApi().forwardExtensionRequest({
+          endpoint: "/ext/webdav/test",
+          method: "POST",
+          body: JSON.stringify(request.body),
+        });
+        
+        console.log("WebDAV test response from collector:", responseFromProcessor);
+        response.status(200).json(responseFromProcessor);
+      } catch (e) {
+        console.error("WebDAV test error:", e);
+        response.status(500).json({ message: e.message || "WebDAV test failed." });
+      }
+    }
+  );
+
+  // WebDAV Settings endpoints
+  app.get(
+    "/ext/webdav/settings",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { SystemSettings } = require("../../models/systemSettings");
+        const settings = await SystemSettings.get({ label: "webdav_settings" });
+        const parsedSettings = settings ? JSON.parse(settings.value) : {};
+        
+        // Don't return the password for security
+        const { password, ...safeSettings } = parsedSettings;
+        
+        response.status(200).json({
+          success: true,
+          settings: safeSettings,
+        });
+      } catch (e) {
+        console.error(e);
+        response.status(500).json({ 
+          success: false, 
+          reason: e.message || "Failed to load WebDAV settings" 
+        });
+      }
+    }
+  );
+
+  app.post(
+    "/ext/webdav/settings",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { SystemSettings } = require("../../models/systemSettings");
+        const { url, username, password, path, recursive, fileTypes } = request.body;
+        
+        // Validate required fields
+        if (!url || !username) {
+          console.log("WebDAV settings validation failed:", { url: !!url, username: !!username });
+          return response.status(400).json({
+            success: false,
+            reason: "URL and username are required",
+          });
+        }
+
+        const settings = {
+          url,
+          username,
+          password, // Store password for convenience (encrypted in database)
+          path: path || "/",
+          recursive: recursive !== undefined ? recursive : true,
+          fileTypes: fileTypes || [],
+        };
+
+        await SystemSettings._updateSettings({
+          webdav_settings: JSON.stringify(settings),
+        });
+
+        response.status(200).json({
+          success: true,
+        });
+      } catch (e) {
+        console.error(e);
+        response.status(500).json({ 
+          success: false, 
+          reason: e.message || "Failed to save WebDAV settings" 
+        });
       }
     }
   );
