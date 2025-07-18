@@ -8,8 +8,6 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  push:
-    branches: ['run-tests']
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
