@@ -557,7 +557,6 @@ const TRANSLATIONS = {
       "嵌入是将文本转换为矢量的过程。需要这些凭据才能将你的文件和提示转换为 AnythingLLM 可以用来处理的格式。",
     provider: {
       title: "嵌入引擎提供商",
-      description: "使用 AnythingLLM 的本机嵌入引擎时不需要设置。",
     },
   },
   text: {

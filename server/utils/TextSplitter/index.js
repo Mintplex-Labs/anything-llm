@@ -20,22 +20,16 @@ function isNullOrNaN(value) {
 
 class TextSplitter {
   #splitter;
+
+  /**
+   * Creates a new TextSplitter instance.
+   * @param {Object} config
+   * @param {string} [config.chunkPrefix = ""] - Prefix to be added to the start of each chunk.
+   * @param {number} [config.chunkSize = 1000] - The size of each chunk.
+   * @param {number} [config.chunkOverlap = 20] - The overlap between chunks.
+   * @param {Object} [config.chunkHeaderMeta = null] - Metadata to be added to the start of each chunk - will come after the prefix.
+   */
   constructor(config = {}) {
-    /*
-      config can be a ton of things depending on what is required or optional by the specific splitter.
-      Non-splitter related keys
-      {
-        splitByFilename: string, // TODO
-      }
-      ------
-      Default: "RecursiveCharacterTextSplitter"
-      Config: {
-        chunkSize: number,
-        chunkOverlap: number,
-        chunkHeaderMeta: object | null, // Gets appended to top of each chunk as metadata
-      }
-      ------
-    */
     this.config = config;
     this.#splitter = this.#setSplitter(config);
   }
@@ -124,20 +118,41 @@ class TextSplitter {
   }
 
   /**
-   *  Creates a string of metadata to be prepended to each chunk.
+   * Apply the chunk prefix to the text if it is present.
+   * @param {string} text - The text to apply the prefix to.
+   * @returns {string} The text with the embedder model prefix applied.
+   */
+  #applyPrefix(text = "") {
+    if (!this.config.chunkPrefix) return text;
+    return `${this.config.chunkPrefix}${text}`;
+  }
+
+  /**
+   * Creates a string of metadata to be prepended to each chunk.
+   * Will additionally prepend a prefix to the text if it was provided (requirement for some embedders).
+   * @returns {string} The text with the embedder model prefix applied.
    */
   stringifyHeader() {
-    if (!this.config.chunkHeaderMeta) return null;
     let content = "";
+    if (!this.config.chunkHeaderMeta) return this.#applyPrefix(content);
     Object.entries(this.config.chunkHeaderMeta).map(([key, value]) => {
       if (!key || !value) return;
       content += `${key}: ${value}\n`;
     });
 
-    if (!content) return null;
-    return `<document_metadata>\n${content}</document_metadata>\n\n`;
+    if (!content) return this.#applyPrefix(content);
+    return this.#applyPrefix(
+      `<document_metadata>\n${content}</document_metadata>\n\n`
+    );
   }
 
+  /**
+   * Sets the splitter to use a defined config passes to other subclasses.
+   * @param {Object} config
+   * @param {string} [config.chunkPrefix = ""] - Prefix to be added to the start of each chunk.
+   * @param {number} [config.chunkSize = 1000] - The size of each chunk.
+   * @param {number} [config.chunkOverlap = 20] - The overlap between chunks.
+   */
   #setSplitter(config = {}) {
     // if (!config?.splitByFilename) {// TODO do something when specific extension is present? }
     return new RecursiveSplitter({
@@ -160,7 +175,11 @@ class RecursiveSplitter {
     const {
       RecursiveCharacterTextSplitter,
     } = require("@langchain/textsplitters");
-    this.log(`Will split with`, { chunkSize, chunkOverlap });
+    this.log(`Will split with`, {
+      chunkSize,
+      chunkOverlap,
+      chunkHeader: chunkHeader ? `${chunkHeader?.slice(0, 50)}...` : null,
+    });
     this.chunkHeader = chunkHeader;
     this.engine = new RecursiveCharacterTextSplitter({
       chunkSize,

@@ -389,7 +389,6 @@ const TRANSLATIONS = {
       "嵌入是將文字轉換成向量的過程。這些憑證是用於將您的檔案和提示詞轉換成 AnythingLLM 可以處理的格式。",
     provider: {
       title: "向量嵌入提供者",
-      description: "使用 AnythingLLM 的原生嵌入引擎時，不需要任何設定。",
     },
   },
   text: {

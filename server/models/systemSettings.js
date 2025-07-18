@@ -8,6 +8,7 @@ const prisma = require("../utils/prisma");
 const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
+const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
 
 function isNullOrNaN(value) {
@@ -194,6 +195,7 @@ const SystemSettings = {
     const { hasVectorCachedFiles } = require("../utils/files");
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
+    const embeddingEngine = process.env.EMBEDDING_ENGINE ?? "native";
     return {
       // --------------------------------------------------------
       // General Settings
@@ -208,11 +210,14 @@ const SystemSettings = {
       // --------------------------------------------------------
       // Embedder Provider Selection Settings & Configs
       // --------------------------------------------------------
-      EmbeddingEngine: process.env.EMBEDDING_ENGINE,
+      EmbeddingEngine: embeddingEngine,
       HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
       HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
-      EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+      EmbeddingModelPref:
+        embeddingEngine === "native"
+          ? NativeEmbedder._getEmbeddingModel()
+          : process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,

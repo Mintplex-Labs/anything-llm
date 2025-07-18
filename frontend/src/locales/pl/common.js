@@ -597,8 +597,6 @@ const TRANSLATIONS = {
       "Embedding to proces przekształcania tekstu na wektory. Poświadczenia są wymagane do przekształcenia plików i tekstu za pomocą wybranego modelu.",
     provider: {
       title: "Model używany do tworzenia embeddingów",
-      description:
-        "Podczas korzystania z natywnego silnika osadzania AnythingLLM nie jest wymagana żadna konfiguracja.",
     },
   },
   text: {

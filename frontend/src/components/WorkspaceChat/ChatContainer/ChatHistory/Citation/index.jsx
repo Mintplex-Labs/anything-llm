@@ -122,7 +122,7 @@ const Citation = memo(({ source, onClick, textSizeClass }) => {
 });
 
 function omitChunkHeader(text) {
-  if (!text.startsWith("<document_metadata>")) return text;
+  if (!text.includes("<document_metadata>")) return text;
   return text.split("</document_metadata>")[1].trim();
 }
 
