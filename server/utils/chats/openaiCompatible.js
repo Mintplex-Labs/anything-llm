@@ -4,6 +4,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
+const { extractTextContent, extractAttachments } = require("../../endpoints/api/openai/helpers");
 
 const { PassThrough } = require("stream");
 
@@ -25,6 +26,11 @@ async function chatSync({
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
+  // Extract text and attachments from multimodal content if present
+  const promptText = extractTextContent(prompt);
+  const promptAttachments = extractAttachments(prompt);
+  attachments = [...attachments, ...promptAttachments];
+
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
@@ -34,7 +40,7 @@ async function chatSync({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: String(prompt),
+      prompt: promptText,
       response: {
         text: textResponse,
         sources: [],
@@ -86,7 +92,7 @@ async function chatSync({
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: String(prompt),
+          input: promptText,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
@@ -127,7 +133,7 @@ async function chatSync({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: String(prompt),
+      prompt: promptText,
       response: {
         text: textResponse,
         sources: [],
@@ -154,7 +160,7 @@ async function chatSync({
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages({
     systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
-    userPrompt: prompt,
+    userPrompt: promptText,
     contextTexts,
     chatHistory: history,
     attachments,
@@ -185,7 +191,7 @@ async function chatSync({
 
   const { chat } = await WorkspaceChats.new({
     workspaceId: workspace.id,
-    prompt: String(prompt),
+    prompt: promptText,
     response: {
       text: textResponse,
       sources,
@@ -228,6 +234,11 @@ async function streamChat({
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
 
+  // Extract text and attachments from multimodal content if present
+  const promptText = extractTextContent(prompt);
+  const promptAttachments = extractAttachments(prompt);
+  attachments = [...attachments, ...promptAttachments];
+
   // We don't want to write a new method for every LLM to support openAI calls
   // via the `handleStreamResponseV2` method handler. So here we create a passthrough
   // that on writes to the main response, transforms the chunk to OpenAI format.
@@ -256,7 +267,7 @@ async function streamChat({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: String(prompt),
+      prompt: promptText,
       response: {
         text: textResponse,
         sources: [],
@@ -312,7 +323,7 @@ async function streamChat({
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: String(prompt),
+          input: promptText,
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
@@ -357,7 +368,7 @@ async function streamChat({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: String(prompt),
+      prompt: promptText,
       response: {
         text: textResponse,
         sources: [],
@@ -388,7 +399,7 @@ async function streamChat({
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages({
     systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
-    userPrompt: prompt,
+    userPrompt: promptText,
     contextTexts,
     chatHistory: history,
     attachments,
@@ -432,7 +443,7 @@ async function streamChat({
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: String(prompt),
+      prompt: promptText,
       response: {
         text: completeText,
         sources,

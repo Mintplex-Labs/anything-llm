@@ -13,6 +13,20 @@ function extractTextContent(content) {
 }
 
 /**
+ * Detects mime type from a base64 data URL string, defaults to PNG if not detected
+ * @param {string} dataUrl - The data URL string (e.g. data:image/jpeg;base64,...)
+ * @returns {string} - The mime type or 'image/png' if not detected
+ */
+function getMimeTypeFromDataUrl(dataUrl) {
+  try {
+    const matches = dataUrl.match(/^data:([^;]+);base64,/);
+    return matches ? matches[1].toLowerCase() : 'image/png';
+  } catch (e) {
+    return 'image/png';
+  }
+}
+
+/**
  * Extracts attachments from a multimodal message
  * The attachments provided are in OpenAI format since this util is used in the OpenAI compatible chat.
  * However, our backend internal chat uses the Attachment type we use elsewhere in the app so we have to convert it.
@@ -25,7 +39,7 @@ function extractAttachments(content) {
     .filter((item) => item.type === "image_url")
     .map((item, index) => ({
       name: `uploaded_image_${index}`,
-      mime: "image/png",
+      mime: getMimeTypeFromDataUrl(item.image_url.url),
       contentString: item.image_url.url,
     }));
 }
@@ -33,4 +47,5 @@ function extractAttachments(content) {
 module.exports = {
   extractTextContent,
   extractAttachments,
+  getMimeTypeFromDataUrl,
 };
