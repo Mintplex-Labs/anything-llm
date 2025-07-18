@@ -207,7 +207,7 @@ class NativeEmbedder {
    * @param {string|string[]} textInput - The text to embed.
    * @returns {string|string[]} The text with the prefix applied.
    */
-  #applyPrefix(textInput) {
+  #applyQueryPrefix(textInput) {
     if (!this.queryPrefix) return textInput;
     if (Array.isArray(textInput))
       textInput = textInput.map((text) => `${this.queryPrefix}${text}`);
@@ -221,7 +221,7 @@ class NativeEmbedder {
    * @returns {Promise<Array<number>>} The embedded text.
    */
   async embedTextInput(textInput) {
-    textInput = this.#applyPrefix(textInput);
+    textInput = this.#applyQueryPrefix(textInput);
     const result = await this.embedChunks(
       Array.isArray(textInput) ? textInput : [textInput]
     );

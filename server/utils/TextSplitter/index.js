@@ -149,7 +149,7 @@ class TextSplitter {
   /**
    * Sets the splitter to use a defined config passes to other subclasses.
    * @param {Object} config
-   * @param {string} [config.chunkPrefix = ""] - Prefix to be added to the top of each chunk.
+   * @param {string} [config.chunkPrefix = ""] - Prefix to be added to the start of each chunk.
    * @param {number} [config.chunkSize = 1000] - The size of each chunk.
    * @param {number} [config.chunkOverlap = 20] - The overlap between chunks.
    */
@@ -175,7 +175,11 @@ class RecursiveSplitter {
     const {
       RecursiveCharacterTextSplitter,
     } = require("@langchain/textsplitters");
-    this.log(`Will split with`, { chunkSize, chunkOverlap });
+    this.log(`Will split with`, {
+      chunkSize,
+      chunkOverlap,
+      chunkHeader: chunkHeader ? `${chunkHeader?.slice(0, 50)}...` : null,
+    });
     this.chunkHeader = chunkHeader;
     this.engine = new RecursiveCharacterTextSplitter({
       chunkSize,
