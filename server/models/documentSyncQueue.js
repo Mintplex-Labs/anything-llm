@@ -17,6 +17,7 @@ const DocumentSyncQueue = {
     "github",
     "gitlab",
     "drupalwiki",
+    "googledrive",
   ],
   defaultStaleAfter: 604800000,
   maxRepeatFailures: 5, // How many times a run can fail in a row before pruning.
@@ -62,6 +63,7 @@ const DocumentSyncQueue = {
     if (chunkSource.startsWith("github://")) return true; // If is a GitHub file reference
     if (chunkSource.startsWith("gitlab://")) return true; // If is a GitLab file reference
     if (chunkSource.startsWith("drupalwiki://")) return true; // If is a DrupalWiki document link
+    if (chunkSource.startsWith("googledrive://")) return true; // If is a Google Drive document link
     return false;
   },
 
