@@ -142,6 +142,9 @@ function getModelTag() {
     case "gemini":
       model = process.env.GEMINI_LLM_MODEL_PREF;
       break;
+    case "moonshotai":
+      model = process.env.MOONSHOT_AI_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;
