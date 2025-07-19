@@ -88,6 +88,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [LocalAI (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
 - [Fireworks AI  (chat models)](https://fireworks.ai/)
+- [AI/ML API (chat models)](https://aimlapi.com/)
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [DeepSeek (chat models)](https://deepseek.com/)

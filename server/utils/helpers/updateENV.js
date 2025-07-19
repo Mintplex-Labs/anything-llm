@@ -203,6 +203,16 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // AI/ML API Options
+  AimlApiKey: {
+    envKey: "AIML_API_KEY",
+    checks: [isNotEmpty],
+  },
+  AimlModelPref: {
+    envKey: "AIML_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Generic OpenAI InferenceSettings
   GenericOpenAiBasePath: {
     envKey: "GENERIC_OPEN_AI_BASE_PATH",
@@ -784,6 +794,7 @@ function supportedLLM(input = "") {
     "nvidia-nim",
     "ppio",
     "dpais",
+    "aimlapi",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -821,6 +832,7 @@ function supportedEmbeddingModel(input = "") {
     "litellm",
     "generic-openai",
     "mistral",
+    "aimlapi",
   ];
   return supported.includes(input)
     ? null

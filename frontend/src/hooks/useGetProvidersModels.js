@@ -52,6 +52,7 @@ const groupedProviders = [
   "novita",
   "openrouter",
   "ppio",
+  "aimlapi",
 ];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);
