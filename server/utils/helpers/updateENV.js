@@ -676,6 +676,16 @@ const KEY_MAPPING = {
     envKey: "PPIO_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // Moonshot AI Options
+  MoonshotAiApiKey: {
+    envKey: "MOONSHOT_AI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  MoonshotAiModelPref: {
+    envKey: "MOONSHOT_AI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -784,6 +794,7 @@ function supportedLLM(input = "") {
     "nvidia-nim",
     "ppio",
     "dpais",
+    "moonshotai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

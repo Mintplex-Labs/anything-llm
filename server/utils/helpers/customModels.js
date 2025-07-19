@@ -33,6 +33,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "gemini",
   "ppio",
   "dpais",
+  "moonshotai",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -84,6 +85,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPPIOModels(apiKey);
     case "dpais":
       return await getDellProAiStudioModels(basePath);
+    case "moonshotai":
+      return await getMoonshotAiModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -675,6 +678,31 @@ async function getDellProAiStudioModels(basePath = null) {
   }
 }
 
+async function getMoonshotAiModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.MOONSHOT_AI_API_KEY
+      : _apiKey || process.env.MOONSHOT_AI_API_KEY || null;
+
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    baseURL: "https://api.moonshot.ai/v1",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`MoonshotAi:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0) process.env.MOONSHOT_AI_API_KEY = apiKey;
+  return { models, error: null };
+}
+
 module.exports = {
   getCustomModels,
+  SUPPORT_CUSTOM_MODELS,
 };

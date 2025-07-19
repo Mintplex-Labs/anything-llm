@@ -544,6 +544,11 @@ const SystemSettings = {
       LiteLLMBasePath: process.env.LITE_LLM_BASE_PATH,
       LiteLLMApiKey: !!process.env.LITE_LLM_API_KEY,
 
+      // Moonshot AI Keys
+      MoonshotAiApiKey: !!process.env.MOONSHOT_AI_API_KEY,
+      MoonshotAiModelPref:
+        process.env.MOONSHOT_AI_MODEL_PREF || "moonshot-v1-32k",
+
       // Generic OpenAI Keys
       GenericOpenAiBasePath: process.env.GENERIC_OPEN_AI_BASE_PATH,
       GenericOpenAiModelPref: process.env.GENERIC_OPEN_AI_MODEL_PREF,

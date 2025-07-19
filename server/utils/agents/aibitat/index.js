@@ -812,6 +812,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.FireworksAIProvider({ model: config.model });
       case "nvidia-nim":
         return new Providers.NvidiaNimProvider({ model: config.model });
+      case "moonshotai":
+        return new Providers.MoonshotAiProvider({ model: config.model });
       case "deepseek":
         return new Providers.DeepSeekProvider({ model: config.model });
       case "litellm":
