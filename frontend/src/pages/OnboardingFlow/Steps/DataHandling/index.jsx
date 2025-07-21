@@ -247,7 +247,7 @@ export const LLM_SELECTION_PRIVACY = {
   moonshotai: {
     name: "Moonshot AI",
     description: [
-      "Your chats will not be used for training",
+      "Your chats may be used by Moonshot AI for training and model refinement",
       "Your prompts and document text used in response creation are visible to Moonshot AI",
     ],
     logo: MoonshotAiLogo,
