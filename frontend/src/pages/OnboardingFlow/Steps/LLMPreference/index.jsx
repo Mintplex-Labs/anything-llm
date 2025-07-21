@@ -270,7 +270,7 @@ const LLMS = [
     value: "janai",
     logo: JanAiLogo,
     options: (settings) => <JanAiOptions settings={settings} />,
-    description: "Run Jan AI's powerful LLMs.",
+    description: "Run models from local Jan AI server.",
   },
 ];
 

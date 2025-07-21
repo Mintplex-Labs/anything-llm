@@ -142,6 +142,9 @@ function getModelTag() {
     case "gemini":
       model = process.env.GEMINI_LLM_MODEL_PREF;
       break;
+    case "janai":
+      model = process.env.JAN_AI_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;

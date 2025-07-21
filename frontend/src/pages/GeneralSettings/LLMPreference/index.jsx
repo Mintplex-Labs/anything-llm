@@ -32,6 +32,7 @@ import XAILogo from "@/media/llmprovider/xai.png";
 import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
+import JanAiLogo from "@/media/llmprovider/janai.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -61,6 +62,7 @@ import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
+import JanAiOptions from "@/components/LLMSelection/JanAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -292,6 +294,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <ApiPieLLMOptions settings={settings} />,
     description: "A unified API of AI services from leading providers",
     requiredConfig: ["ApipieLLMApiKey", "ApipieLLMModelPref"],
+  },
+  {
+    name: "Jan AI",
+    value: "janai",
+    logo: JanAiLogo,
+    options: (settings) => <JanAiOptions settings={settings} />,
+    description: "Run Jan AI's local LLMs.",
+    requiredConfig: ["JanAiApiKey"],
   },
   {
     name: "Generic OpenAI",

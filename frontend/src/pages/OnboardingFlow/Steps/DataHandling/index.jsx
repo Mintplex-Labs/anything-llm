@@ -38,6 +38,7 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
+import JanAiLogo from "@/media/llmprovider/janai.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -241,6 +242,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chat contents are only accessible on the computer running Dell Pro AI Studio",
     ],
     logo: DPAISLogo,
+  },
+  janai: {
+    name: "Jan AI",
+    description: [
+      "Your chats stay local and are not used for training",
+      "Your prompts and document text stay on your local machine",
+    ],
+    logo: JanAiLogo,
   },
 };
 

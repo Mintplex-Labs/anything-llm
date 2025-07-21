@@ -184,6 +184,14 @@ class Provider {
           apiKey: process.env.GEMINI_API_KEY ?? null,
           ...config,
         });
+      case "janai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "http://127.0.0.1:1337/v1",
+          },
+          apiKey: process.env.JAN_AI_API_KEY ?? null,
+          ...config,
+        });
 
       // OSS Model Runners
       // case "anythingllm_ollama":

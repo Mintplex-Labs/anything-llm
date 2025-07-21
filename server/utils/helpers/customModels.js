@@ -33,6 +33,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "gemini",
   "ppio",
   "dpais",
+  "janai",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -84,6 +85,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPPIOModels(apiKey);
     case "dpais":
       return await getDellProAiStudioModels(basePath);
+    case "janai":
+      return await getJanAiModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -673,6 +676,29 @@ async function getDellProAiStudioModels(basePath = null) {
       error: "Could not reach Dell Pro Ai Studio from the provided base path",
     };
   }
+}
+
+async function getJanAiModels(_apiKey = null) {
+  const apiKey =
+    _apiKey === true
+      ? process.env.JAN_AI_API_KEY
+      : _apiKey || process.env.JAN_AI_API_KEY || null;
+
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    baseURL: "http://127.0.0.1:1337/v1",
+    apiKey,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`JanAi:listModels`, e.message);
+      return [];
+    });
+
+  if (models.length > 0) process.env.JAN_AI_API_KEY = apiKey;
+  return { models, error: null };
 }
 
 module.exports = {

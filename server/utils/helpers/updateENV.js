@@ -676,6 +676,16 @@ const KEY_MAPPING = {
     envKey: "PPIO_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // Jan AI Options
+  JanAiApiKey: {
+    envKey: "JAN_AI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  JanAiModelPref: {
+    envKey: "JAN_AI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -784,6 +794,7 @@ function supportedLLM(input = "") {
     "nvidia-nim",
     "ppio",
     "dpais",
+    "janai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
