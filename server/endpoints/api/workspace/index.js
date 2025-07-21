@@ -891,6 +891,38 @@ function apiWorkspaceEndpoints(app) {
     }
   );
 
+
+// chat feedback
+app.post(
+  "/v1/workspace/:slug/chat-feedback/:chatId",
+  [validApiKey],
+  async (request, response) => {
+    try {
+      const { chatId, slug } = request.params;
+      const { feedback = null } = reqBody(request);
+      const workspaceId = await Workspace.get({ slug: String(slug) });
+      const existingChat = await WorkspaceChats.get({
+        id: Number(chatId),
+        workspaceId: workspaceId.id,
+      });
+
+      if (!existingChat) {
+        response.status(404).end();
+        return;
+      }
+
+      const result = await WorkspaceChats.updateFeedbackScore(
+        chatId,
+        feedback
+      );
+      response.status(200).json({ success: result });
+    } catch (error) {
+      console.error("Error updating chat feedback:", error);
+      response.status(500).end();
+    }
+  }
+);
+
   app.post(
     "/v1/workspace/:slug/vector-search",
     [validApiKey],
