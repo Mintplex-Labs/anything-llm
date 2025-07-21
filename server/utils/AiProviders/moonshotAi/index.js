@@ -53,6 +53,40 @@ class MoonshotAiLLM {
     console.log(`[Moonshot AI] ${message}`);
   }
 
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
+  }
+
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+    return content.flat();
+  }
+
   // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
   // from the current date. If it is, then we will refetch the API so that all the models are up
   // to date.
@@ -114,32 +148,18 @@ class MoonshotAiLLM {
     userPrompt = "",
     attachments = [],
   }) {
-    const messages = [];
-
-    if (systemPrompt) {
-      messages.push({
-        role: "system",
-        content: systemPrompt,
-      });
-    }
-
-    if (contextTexts?.length > 0) {
-      messages.push({
-        role: "system",
-        content: `Context:\n${contextTexts.join("\n")}`,
-      });
-    }
-
-    messages.push(...formatChatHistory(chatHistory));
-
-    if (userPrompt) {
-      messages.push({
+    const prompt = {
+      role: "system",
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
+    };
+    return [
+      prompt,
+      ...formatChatHistory(chatHistory, this.#generateContent),
+      {
         role: "user",
-        content: userPrompt,
-      });
-    }
-
-    return messages;
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
@@ -213,27 +233,6 @@ class MoonshotAiLLM {
   }
   async embedChunks(textChunks = []) {
     return await this.embedder.embedChunks(textChunks);
-  }
-
-  async sendChat(chatHistory, prompt, workspace = null) {
-    try {
-      const messages = formatChatHistory(chatHistory, prompt, {
-        systemPrompt: workspace?.openAiSystemPrompt,
-      });
-
-      const stream = await this.openai.chat.completions.create({
-        model: this.model,
-        messages,
-        temperature: this.defaultTemp,
-        stream: true,
-      });
-
-      return await handleDefaultStreamResponseV2(stream);
-    } catch (error) {
-      throw new Error(
-        `[Moonshot AI] ${error?.error?.message || error?.message || error}`
-      );
-    }
   }
 }
 
