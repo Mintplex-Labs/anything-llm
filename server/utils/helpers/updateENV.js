@@ -203,6 +203,16 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // AI/ML API Options
+  AimlLlmApiKey: {
+    envKey: "AIML_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  AimlModelPref: {
+    envKey: "AIML_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Generic OpenAI InferenceSettings
   GenericOpenAiBasePath: {
     envKey: "GENERIC_OPEN_AI_BASE_PATH",
@@ -309,6 +319,11 @@ const KEY_MAPPING = {
   GenericOpenAiEmbeddingMaxConcurrentChunks: {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS",
     checks: [nonZero],
+  },
+
+  AimlEmbedderApiKey: {
+    envKey: "AIML_EMBEDDER_API_KEY",
+    checks: [isNotEmpty],
   },
 
   // Vector Database Selection Settings
@@ -784,6 +799,7 @@ function supportedLLM(input = "") {
     "nvidia-nim",
     "ppio",
     "dpais",
+    "aimlapi",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -821,6 +837,7 @@ function supportedEmbeddingModel(input = "") {
     "litellm",
     "generic-openai",
     "mistral",
+    "aimlapi",
   ];
   return supported.includes(input)
     ? null

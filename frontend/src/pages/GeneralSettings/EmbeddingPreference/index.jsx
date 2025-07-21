@@ -37,6 +37,8 @@ import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
 import MistralAiOptions from "@/components/EmbeddingSelection/MistralAiOptions";
+import AimlApiLogo from "@/media/llmprovider/aimlapi.png";
+import AimlApiOptions from "@/components/EmbeddingSelection/AimlApiOptions";
 
 const EMBEDDERS = [
   {
@@ -117,6 +119,13 @@ const EMBEDDERS = [
     logo: MistralAiLogo,
     options: (settings) => <MistralAiOptions settings={settings} />,
     description: "Run powerful embedding models from Mistral AI.",
+  },
+  {
+    name: "AI/ML API",
+    value: "aimlapi",
+    logo: AimlApiLogo,
+    options: (settings) => <AimlApiOptions settings={settings} />,
+    description: "Use embedding models hosted on AI/ML API.",
   },
   {
     name: "Generic OpenAI",

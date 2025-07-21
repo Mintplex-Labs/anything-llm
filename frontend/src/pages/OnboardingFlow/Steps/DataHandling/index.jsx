@@ -38,6 +38,7 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
+import AimlApiLogo from "@/media/llmprovider/aimlapi.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -235,6 +236,14 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: PPIOLogo,
   },
+  aimlapi: {
+    name: "AI/ML API",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to AI/ML API",
+    ],
+    logo: AimlApiLogo,
+  },
   dpais: {
     name: "Dell Pro AI Studio",
     description: [
@@ -378,6 +387,14 @@ export const EMBEDDING_ENGINE_PRIVACY = {
       "Data sent to Mistral AI's servers is shared according to the terms of service of https://mistral.ai.",
     ],
     logo: MistralLogo,
+  },
+  aimlapi: {
+    name: "AI/ML API",
+    description: [
+      "Your document text is visible to AI/ML API",
+      "Your documents are not used for training",
+    ],
+    logo: AimlApiLogo,
   },
   litellm: {
     name: "LiteLLM",
