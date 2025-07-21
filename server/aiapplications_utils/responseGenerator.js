@@ -7,13 +7,13 @@ const searchClient = new ConversationalSearchServiceClient({
 });
 
 const vertexAI = new VertexAI({ project: project_id, location: 'us-central1' });
-const generativeModel = vertexAI.getGenerativeModel({
-    model: 'gemini-2.5-flash',
-    systemInstruction: {
-        role: 'system',
-        parts: [{ "text": "You are a main model, that receives responses from other smmaller models and user query. Each of these smaller models respond to the user query based on different data sources. You are responsible for summarizing the responses from the smaller models and returning a final response to the user. You should use the responses from the smaller models to create a final response that is a combination of the responses from the smaller models. You should also use the user query to create a final response that is a combination of the responses from the smaller models and the user query." }]
-    },
-});
+// const generativeModel = vertexAI.getGenerativeModel({
+//     model: 'gemini-2.5-flash',
+//     systemInstruction: {
+//         role: 'system',
+//         parts: [{ "text": "You are a main model, that receives responses from other smmaller models and user query. Each of these smaller models respond to the user query based on different data sources. You are responsible for summarizing the responses from the smaller models and returning a final response to the user. You should use the responses from the smaller models to create a final response that is a combination of the responses from the smaller models. You should also use the user query to create a final response that is a combination of the responses from the smaller models and the user query." }]
+//     },
+// });
 
 async function getEngineResponse(engine_id, query, session_id) {
     const serving_config = `projects/${project_id}/locations/${location}/collections/default_collection/engines/${engine_id}/servingConfigs/default_serving_config`;
@@ -36,9 +36,9 @@ async function getEngineResponse(engine_id, query, session_id) {
             },
         },
         answerGenerationSpec: {
-            ignoreAdversarialQuery: false,
+            ignoreAdversarialQuery: true,
             ignoreNonAnswerSeekingQuery: false,
-            ignoreLowRelevantContent: false,
+            ignoreLowRelevantContent: true,
             answerLanguageCode: "en",
             includeCitations: true,
             modelSpec: {
@@ -58,8 +58,6 @@ async function getEngineResponse(engine_id, query, session_id) {
 
     const [response] = await searchClient.answerQuery(request);
     // console.log(JSON.stringify(twójObiekt, null, 2));
-    // console.log(response)
-    // console.log("--------------------------------")
     // for (const reference of response.answer.references) {
     //     console.log(JSON.stringify(reference, null, 2));
     //     console.log("--------------------------------")
@@ -67,6 +65,7 @@ async function getEngineResponse(engine_id, query, session_id) {
     // console.log("--------------------------------")
     // console.log("--------------------------------")
     // console.log("--------------------------------")
+    const full_citations = response.answer.citations;
     const full_references = response.answer.references;
     const vaild_references = [];
     for (const reference of full_references) {
@@ -80,17 +79,13 @@ async function getEngineResponse(engine_id, query, session_id) {
     // console.log(response.answer.relatedQuestions)
     return {
         answer: response.answer.answerText,
+        citations: full_citations,
+        references: full_references,
         related_questions: response.answer.relatedQuestions,
         sources: unique_references,
     };
 }
 
-async function getSummaryResponse(query) {
-    const result = await generativeModel.generateContent(query);
-    return result.response.candidates[0].content.parts[0].text;
-}
-
 module.exports = {
     getEngineResponse,
-    getSummaryResponse,
 }; 

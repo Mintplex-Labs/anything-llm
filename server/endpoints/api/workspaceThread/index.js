@@ -16,6 +16,7 @@ const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { getModelTag } = require("../../utils");
 const { createSessionForEngines } = require("../../../aiapplications_utils/sessionManagement");
 const { getEngineResponse } = require("../../../aiapplications_utils/responseGenerator");
+const { parseEngineResponses } = require("../../../aiapplications_utils/referenceHandler");
 
 function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
@@ -609,9 +610,6 @@ function apiWorkspaceThreadEndpoints(app) {
         const user = userId ? await User.get({ id: Number(userId) }) : null;
 
         // get responses from ai applications engines
-        let related_questions = {};
-        let answers = {};
-        let sources = {};
         const engine_ids = Object.keys(engines_session_ids);
         const promises = engine_ids.map(engine_id => {
           const session_id = engines_session_ids[engine_id];
@@ -619,13 +617,11 @@ function apiWorkspaceThreadEndpoints(app) {
         });
 
         const responses = await Promise.all(promises);
+        const data = await parseEngineResponses(responses);
+        answers = data.answers;
+        citationsMapping = data.citationsMapping;
+        related_questions = data.related_questions;
 
-        responses.forEach((response, index) => {
-            const engine_id = engine_ids[index];
-            related_questions[engine_id] = response.related_questions;
-            answers[engine_id] = response.answer;
-            sources[engine_id] = response.sources;
-        });
         answers["user_query"] = message;
         const main_llm_query = JSON.stringify(answers);
 
@@ -647,7 +643,7 @@ function apiWorkspaceThreadEndpoints(app) {
           attachments,
           reset,
           related_questions: related_questions,
-          engine_sources: sources,
+          engine_sources: citationsMapping,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
