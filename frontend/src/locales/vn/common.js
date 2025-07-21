@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "Cài đặt hệ thống",
@@ -241,6 +242,8 @@ const TRANSLATIONS = {
       query: "query",
       "desc-end":
         "mode, you may want to return a custom refusal response when no context is found.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM Temperature",
@@ -407,9 +410,6 @@ const TRANSLATIONS = {
       "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
     "desc-end":
       "You should only modify this setting if you understand how text splitting works and it's side effects.",
-    "warn-start": "Changes here will only apply to",
-    "warn-center": "newly embedded documents",
-    "warn-end": ", not existing documents.",
     size: {
       title: "Text Chunk Size",
       description:
@@ -723,7 +723,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,

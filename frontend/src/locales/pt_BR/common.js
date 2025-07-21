@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     optional: "Opcional",
     yes: "Sim",
     no: "Não",
+    search: null,
   },
   settings: {
     title: "Configurações da Instância",
@@ -331,6 +332,8 @@ const TRANSLATIONS = {
       query: "consulta",
       "desc-end":
         "modo, você pode definir uma resposta personalizada quando nenhum contexto for encontrado.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "Temperatura do LLM",
@@ -585,9 +588,6 @@ const TRANSLATIONS = {
     "desc-start":
       "Você pode alterar a forma como novos documentos são divididos antes de serem inseridos no banco de dados vetorial.",
     "desc-end": "Modifique apenas se entender os efeitos da divisão de texto.",
-    "warn-start": "Alterações afetarão apenas",
-    "warn-center": "documentos novos",
-    "warn-end": ", não os existentes.",
     size: {
       title: "Tamanho dos Trechos",
       description: "Comprimento máximo de caracteres em um único vetor.",
@@ -936,7 +936,7 @@ const TRANSLATIONS = {
     username_description:
       "Somente letras minúsculas, números, sublinhados e hífens. Sem espaços.",
     new_password: "Nova senha",
-    passwort_description: "A senha deve ter no mínimo 8 caracteres",
+    password_description: "A senha deve ter no mínimo 8 caracteres",
     cancel: "Cancelar",
     update_account: "Atualizar conta",
     theme: "Preferência de tema",

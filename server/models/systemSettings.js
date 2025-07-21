@@ -73,6 +73,8 @@ const SystemSettings = {
       try {
         if (isNullOrNaN(update)) throw new Error("Value is not a number.");
         if (Number(update) <= 0) throw new Error("Value must be non-zero.");
+        const { purgeEntireVectorCache } = require("../utils/files");
+        purgeEntireVectorCache();
         return Number(update);
       } catch (e) {
         console.error(
@@ -86,6 +88,8 @@ const SystemSettings = {
       try {
         if (isNullOrNaN(update)) throw new Error("Value is not a number");
         if (Number(update) < 0) throw new Error("Value cannot be less than 0.");
+        const { purgeEntireVectorCache } = require("../utils/files");
+        purgeEntireVectorCache();
         return Number(update);
       } catch (e) {
         console.error(
@@ -256,6 +260,7 @@ const SystemSettings = {
         process.env.TTS_PIPER_VOICE_MODEL ?? "en_US-hfc_female-medium",
       // OpenAI Generic TTS
       TTSOpenAICompatibleKey: !!process.env.TTS_OPEN_AI_COMPATIBLE_KEY,
+      TTSOpenAICompatibleModel: process.env.TTS_OPEN_AI_COMPATIBLE_MODEL,
       TTSOpenAICompatibleVoiceModel:
         process.env.TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL,
       TTSOpenAICompatibleEndpoint: process.env.TTS_OPEN_AI_COMPATIBLE_ENDPOINT,

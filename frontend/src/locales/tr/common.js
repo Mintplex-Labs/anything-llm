@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "Instance Ayarları",
@@ -242,6 +243,8 @@ const TRANSLATIONS = {
       query: "sorgu",
       "desc-end":
         "modunda bağlam bulunamazsa, özel bir ret yanıtı döndürmek isteyebilirsiniz.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM Sıcaklığı",
@@ -408,9 +411,6 @@ const TRANSLATIONS = {
       "Bazı durumlarda, yeni belgelerin vektör veritabanınıza eklenmeden önce hangi varsayılan yöntemle bölünüp parçalanacağını değiştirmek isteyebilirsiniz.",
     "desc-end":
       "Metin bölmenin nasıl çalıştığını ve olası yan etkilerini tam olarak bilmiyorsanız bu ayarı değiştirmemelisiniz.",
-    "warn-start": "Buradaki değişiklikler yalnızca",
-    "warn-center": "yeni eklenen belgeler",
-    "warn-end": "için geçerli olacak, mevcut belgelere uygulanmaz.",
     size: {
       title: "Metin Parça Boyutu",
       description:
@@ -724,7 +724,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,

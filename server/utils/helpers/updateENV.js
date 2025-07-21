@@ -601,6 +601,10 @@ const KEY_MAPPING = {
     envKey: "TTS_OPEN_AI_COMPATIBLE_KEY",
     checks: [],
   },
+  TTSOpenAICompatibleModel: {
+    envKey: "TTS_OPEN_AI_COMPATIBLE_MODEL",
+    checks: [],
+  },
   TTSOpenAICompatibleVoiceModel: {
     envKey: "TTS_OPEN_AI_COMPATIBLE_VOICE_MODEL",
     checks: [isNotEmpty],
@@ -1113,6 +1117,9 @@ function dumpENV() {
 
     // Collector API common ENV - allows bypassing URL validation checks
     "COLLECTOR_ALLOW_ANY_IP",
+
+    // Allow disabling of streaming for generic openai
+    "GENERIC_OPENAI_STREAMING_DISABLED",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

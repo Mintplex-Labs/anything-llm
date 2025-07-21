@@ -86,7 +86,7 @@ curl -I "http://localhost:3001/api/env-dump" | head -n 1|cut -d$' ' -f2
 echo "Rebuilding Frontend"
 cd $HOME/anything-llm/frontend && yarn && yarn build && cd $HOME/anything-llm
 
-echo "Copying to Sever Public"
+echo "Copying to Server Public"
 rm -rf server/public
 cp -r frontend/dist server/public
 

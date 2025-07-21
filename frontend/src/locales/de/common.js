@@ -70,6 +70,7 @@ const TRANSLATIONS = {
     optional: "Optional",
     yes: "Ja",
     no: "Nein",
+    search: null,
   },
   settings: {
     title: "Instanzeinstellungen",
@@ -338,6 +339,8 @@ const TRANSLATIONS = {
       query: "Abfrage",
       "desc-end":
         "modus, möchten Sie vielleicht eine benutzerdefinierte Ablehnungsantwort zurückgeben, wenn kein Kontext gefunden wird.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM-Temperatur",
@@ -604,9 +607,6 @@ const TRANSLATIONS = {
       "Manchmal möchten Sie vielleicht die Standardmethode ändern, wie neue Dokumente gesplittet und gechunkt werden, bevor sie in Ihre Vektordatenbank eingefügt werden.",
     "desc-end":
       "Sie sollten diese Einstellung nur ändern, wenn Sie verstehen, wie Textsplitting funktioniert und welche Nebenwirkungen es hat.",
-    "warn-start": "Änderungen hier gelten nur für",
-    "warn-center": "neu eingebettete Dokumente",
-    "warn-end": ", nicht für bestehende Dokumente.",
     size: {
       title: "Textchunk-Größe",
       description:
@@ -964,7 +964,7 @@ const TRANSLATIONS = {
     username_description:
       "Der Nutzername darf nur kleine Buchstaben, Zahlen, Unterstrich und Bindestriche ohne Leerzeichen.",
     new_password: "Neues Passwort",
-    passwort_description: "Das Passwort muss mindestens 8 Zeichen haben.",
+    password_description: "Das Passwort muss mindestens 8 Zeichen haben.",
     cancel: "Abbrechen",
     update_account: "Account updaten",
     theme: "Bevozugtes Design",

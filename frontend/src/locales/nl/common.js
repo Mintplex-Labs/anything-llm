@@ -61,6 +61,7 @@ const TRANSLATIONS = {
     optional: null,
     yes: null,
     no: null,
+    search: null,
   },
   settings: {
     title: "Instelling Instanties",
@@ -242,6 +243,8 @@ const TRANSLATIONS = {
       query: "query",
       "desc-end":
         "modus, wil je wellicht een aangepaste afwijzingsreactie geven wanneer er geen context wordt gevonden.",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM Temperatuur",
@@ -408,9 +411,6 @@ const TRANSLATIONS = {
       "Soms wil je misschien de standaard manier wijzigen waarop nieuwe documenten worden gesplitst en gechunkt voordat ze in je vector database worden ingevoerd.",
     "desc-end":
       "Je moet deze instelling alleen wijzigen als je begrijpt hoe tekstsplitsing werkt en de bijbehorende effecten.",
-    "warn-start": "Wijzigingen hier zijn alleen van toepassing op",
-    "warn-center": "nieuw ingebedde documenten",
-    "warn-end": ", niet op bestaande documenten.",
     size: {
       title: "Tekst Chunk Grootte",
       description:
@@ -724,7 +724,7 @@ const TRANSLATIONS = {
     username: null,
     username_description: null,
     new_password: null,
-    passwort_description: null,
+    password_description: null,
     cancel: null,
     update_account: null,
     theme: null,

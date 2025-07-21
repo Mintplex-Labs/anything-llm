@@ -69,6 +69,7 @@ const TRANSLATIONS = {
     optional: "任意",
     yes: "はい",
     no: "いいえ",
+    search: null,
   },
   settings: {
     title: "インスタンス設定",
@@ -249,6 +250,8 @@ const TRANSLATIONS = {
       query: "クエリ",
       "desc-end":
         "の場合、コンテキストが見つからないときにカスタム拒否応答を返すことができます。",
+      "tooltip-title": null,
+      "tooltip-description": null,
     },
     temperature: {
       title: "LLM温度",
@@ -413,9 +416,6 @@ const TRANSLATIONS = {
       "新しいドキュメントがベクトルデータベースに挿入される前に、どのように分割およびチャンク化されるかのデフォルトの方法を変更する場合があります。",
     "desc-end":
       "テキスト分割の仕組みとその副作用を理解している場合にのみ、この設定を変更するべきです。",
-    "warn-start": "ここでの変更は、",
-    "warn-center": "新しく埋め込まれるドキュメントにのみ適用されます",
-    "warn-end": "、既存のドキュメントには適用されません。",
     size: {
       title: "テキストチャンクサイズ",
       description: "1つのベクトルに含まれる最大の文字数です。",
@@ -760,7 +760,7 @@ const TRANSLATIONS = {
     username_description:
       "ユーザー名は小文字の英字、数字、アンダースコア、ハイフンのみ使用でき、スペースは使えません",
     new_password: "新しいパスワード",
-    passwort_description: "パスワードは8文字以上である必要があります",
+    password_description: "パスワードは8文字以上である必要があります",
     cancel: "キャンセル",
     update_account: "アカウントを更新",
     theme: "テーマ設定",

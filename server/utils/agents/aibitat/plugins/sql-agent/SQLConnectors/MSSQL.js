@@ -43,8 +43,12 @@ class MSSQLConnector {
       user: parsed?.username,
       password: parsed?.password,
       database: parsed?.endpoint,
-      server: parsed?.hosts[0]?.host,
-      port: parsed?.hosts[0]?.port,
+      server: parsed?.hosts?.[0]?.host,
+      port: parsed?.hosts?.[0]?.port,
+      options: {
+        ...this.connectionConfig.options,
+        encrypt: parsed?.options?.encrypt === "true",
+      },
     };
   }
 
@@ -57,7 +61,7 @@ class MSSQLConnector {
   /**
    *
    * @param {string} queryString the SQL query to be run
-   * @returns {import(".").QueryResult}
+   * @returns {Promise<import(".").QueryResult>}
    */
   async runQuery(queryString = "") {
     const result = { rows: [], count: 0, error: null };
@@ -71,10 +75,22 @@ class MSSQLConnector {
       console.log(this.constructor.name, err);
       result.error = err.message;
     } finally {
-      await this._client.close();
-      this.#connected = false;
+      // Check client is connected before closing since we use this for validation
+      if (this._client) {
+        await this._client.close();
+        this.#connected = false;
+      }
     }
     return result;
+  }
+
+  async validateConnection() {
+    try {
+      const result = await this.runQuery("SELECT 1");
+      return { success: !result.error, error: result.error };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   }
 
   getTablesSql() {

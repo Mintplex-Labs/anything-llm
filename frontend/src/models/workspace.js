@@ -508,6 +508,25 @@ const Workspace = {
     return orderedWorkspaces;
   },
 
+  /**
+   * Searches for workspaces and threads
+   * @param {string} searchTerm
+   * @returns {Promise<{workspaces: [{slug: string, name: string}], threads: [{slug: string, name: string, workspace: {slug: string, name: string}}]}}>}
+   */
+  searchWorkspaceOrThread: async function (searchTerm) {
+    const response = await fetch(`${API_BASE}/workspace/search`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ searchTerm }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { workspaces: [], threads: [] };
+      });
+    return response;
+  },
+
   threads: WorkspaceThread,
 };
 
