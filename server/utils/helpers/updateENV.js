@@ -667,6 +667,22 @@ const KEY_MAPPING = {
     ],
   },
 
+  // Flowise Options
+  FlowiseLLMBasePath: {
+    envKey: "FLOWISE_LLM_BASE_PATH",
+    checks: [isNotEmpty],
+  },
+
+  FlowiseLLMChatflowId: {
+    envKey: "FLOWISE_LLM_CHATFLOW_ID",
+    checks: [isNotEmpty],
+  },
+
+  FlowiseLLMTokenLimit: {
+    envKey: "FLOWISE_LLM_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   // PPIO Options
   PPIOApiKey: {
     envKey: "PPIO_API_KEY",
@@ -784,6 +800,7 @@ function supportedLLM(input = "") {
     "nvidia-nim",
     "ppio",
     "dpais",
+    "flowiseai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
