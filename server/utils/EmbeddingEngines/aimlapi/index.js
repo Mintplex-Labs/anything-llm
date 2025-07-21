@@ -1,7 +1,6 @@
 const { toChunks, maximumChunkLength } = require("../../helpers");
 const {
-  AIMLAPI_HEADERS,
-  AIMLAPI_BASE_URL,
+  AimlApiLLM,
   fetchAimlApiEmbeddingModels,
 } = require("../../AiProviders/aimlapi");
 const fs = require("fs");
@@ -16,12 +15,13 @@ const cacheFolder = path.resolve(
 
 class AimlApiEmbedder {
   constructor() {
-    if (!process.env.AIML_API_KEY) throw new Error("No AI/ML API key was set.");
+    if (!process.env.AIML_EMBEDDER_API_KEY)
+      throw new Error("No AI/ML API key was set.");
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
-      apiKey: process.env.AIML_API_KEY,
-      baseURL: AIMLAPI_BASE_URL,
-      defaultHeaders: AIMLAPI_HEADERS,
+      apiKey: process.env.AIML_EMBEDDER_API_KEY,
+      baseURL: AimlApiLLM.BASE_URL,
+      defaultHeaders: AimlApiLLM.HEADERS,
     });
     this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-ada-002";
     if (!fs.existsSync(cacheFolder))

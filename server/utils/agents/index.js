@@ -186,7 +186,7 @@ class AgentHandler {
           throw new Error("PPIO API Key must be provided to use agents.");
         break;
       case "aimlapi":
-        if (!process.env.AIML_API_KEY)
+        if (!process.env.AIML_LLM_API_KEY)
           throw new Error("AI/ML API key must be provided to use agents.");
         break;
       case "gemini":

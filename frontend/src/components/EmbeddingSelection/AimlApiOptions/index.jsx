@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import System from "@/models/system";
 
 export default function AimlApiOptions({ settings }) {
-  const [inputValue, setInputValue] = useState(settings?.AimlApiKey);
-  const [apiKey, setApiKey] = useState(settings?.AimlApiKey);
+  const [inputValue, setInputValue] = useState(settings?.AimlEmbedderApiKey);
+  const [apiKey, setApiKey] = useState(settings?.AimlEmbedderApiKey);
 
   return (
     <div className="w-full flex flex-col gap-y-4">
@@ -14,10 +14,10 @@ export default function AimlApiOptions({ settings }) {
           </label>
           <input
             type="password"
-            name="AimlApiKey"
+            name="AimlEmbedderApiKey"
             className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="AI/ML API Key"
-            defaultValue={settings?.AimlApiKey ? "*".repeat(20) : ""}
+            defaultValue={settings?.AimlEmbedderApiKey ? "*".repeat(20) : ""}
             required={true}
             autoComplete="off"
             spellCheck={false}

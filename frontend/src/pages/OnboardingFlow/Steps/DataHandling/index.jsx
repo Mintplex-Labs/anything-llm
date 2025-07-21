@@ -388,6 +388,14 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: MistralLogo,
   },
+  aimlapi: {
+    name: "AI/ML API",
+    description: [
+      "Your document text is visible to AI/ML API",
+      "Your documents are not used for training",
+    ],
+    logo: AimlApiLogo,
+  },
   litellm: {
     name: "LiteLLM",
     description: [

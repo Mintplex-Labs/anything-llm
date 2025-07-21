@@ -204,8 +204,8 @@ const KEY_MAPPING = {
   },
 
   // AI/ML API Options
-  AimlApiKey: {
-    envKey: "AIML_API_KEY",
+  AimlLlmApiKey: {
+    envKey: "AIML_LLM_API_KEY",
     checks: [isNotEmpty],
   },
   AimlModelPref: {
@@ -319,6 +319,11 @@ const KEY_MAPPING = {
   GenericOpenAiEmbeddingMaxConcurrentChunks: {
     envKey: "GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS",
     checks: [nonZero],
+  },
+
+  AimlEmbedderApiKey: {
+    envKey: "AIML_EMBEDDER_API_KEY",
+    checks: [isNotEmpty],
   },
 
   // Vector Database Selection Settings

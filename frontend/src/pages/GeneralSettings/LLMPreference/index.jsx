@@ -271,7 +271,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     logo: AimlApiLogo,
     options: (settings) => <AimlApiOptions settings={settings} />,
     description: "Access 300+ AI models with enterprise uptime.",
-    requiredConfig: ["AimlApiKey"],
+    requiredConfig: ["AimlLlmApiKey"],
   },
   {
     name: "PPIO",

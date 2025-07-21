@@ -691,7 +691,7 @@ async function getAimlApiModels(apiKey = null) {
     return { models: [], error: null };
 
   if (Object.keys(knownModels).length > 0 && !!apiKey)
-    process.env.AIML_API_KEY = apiKey;
+    process.env.AIML_LLM_API_KEY = apiKey;
 
   const models = Object.values(knownModels).map((model) => {
     return {
@@ -709,7 +709,7 @@ async function getAimlApiEmbeddingModels(apiKey = null) {
     return { models: [], error: null };
 
   if (Object.keys(knownModels).length > 0 && !!apiKey)
-    process.env.AIML_API_KEY = apiKey;
+    process.env.AIML_EMBEDDER_API_KEY = apiKey;
 
   const models = Object.values(knownModels).map((model) => {
     return {

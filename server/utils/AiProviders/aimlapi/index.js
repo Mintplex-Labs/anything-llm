@@ -10,12 +10,6 @@ const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
 
-const AIMLAPI_BASE_URL = "https://api.aimlapi.com/v1";
-const AIMLAPI_HEADERS = {
-  "HTTP-Referer": "https://anythingllm.com/",
-  "X-Title": "anything",
-};
-
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "aimlapi")
@@ -24,13 +18,19 @@ const cacheFolder = path.resolve(
 const embedCacheFolder = path.resolve(cacheFolder, "embeddings");
 
 class AimlApiLLM {
+  static BASE_URL = "https://api.aimlapi.com/v1";
+  static HEADERS = {
+    "HTTP-Referer": "https://anythingllm.com/",
+    "X-Title": "anything",
+  };
   constructor(embedder = null, modelPreference = null) {
-    if (!process.env.AIML_API_KEY) throw new Error("No AI/ML API key was set.");
+    if (!process.env.AIML_LLM_API_KEY)
+      throw new Error("No AI/ML API key was set.");
     const { OpenAI: OpenAIApi } = require("openai");
     this.openai = new OpenAIApi({
-      apiKey: process.env.AIML_API_KEY,
-      baseURL: AIMLAPI_BASE_URL,
-      defaultHeaders: AIMLAPI_HEADERS,
+      apiKey: process.env.AIML_LLM_API_KEY,
+      baseURL: AimlApiLLM.BASE_URL,
+      defaultHeaders: AimlApiLLM.HEADERS,
     });
     this.model =
       modelPreference || process.env.AIML_MODEL_PREF || "gpt-3.5-turbo";
@@ -222,13 +222,13 @@ class AimlApiLLM {
 }
 
 async function fetchAimlApiModels(providedApiKey = null) {
-  const apiKey = providedApiKey || process.env.AIML_API_KEY || null;
-  return await fetch(`${AIMLAPI_BASE_URL}/models`, {
+  const apiKey = providedApiKey || process.env.AIML_LLM_API_KEY || null;
+  return await fetch(`${AimlApiLLM.BASE_URL}/models`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
-      ...AIMLAPI_HEADERS,
+      ...AimlApiLLM.HEADERS,
     },
   })
     .then((res) => res.json())
@@ -272,13 +272,13 @@ async function fetchAimlApiModels(providedApiKey = null) {
 }
 
 async function fetchAimlApiEmbeddingModels(providedApiKey = null) {
-  const apiKey = providedApiKey || process.env.AIML_API_KEY || null;
-  return await fetch(`${AIMLAPI_BASE_URL}/models`, {
+  const apiKey = providedApiKey || process.env.AIML_EMBEDDER_API_KEY || null;
+  return await fetch(`${AimlApiLLM.BASE_URL}/models`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
-      ...AIMLAPI_HEADERS,
+      ...AimlApiLLM.HEADERS,
     },
   })
     .then((res) => res.json())
@@ -325,6 +325,4 @@ module.exports = {
   AimlApiLLM,
   fetchAimlApiModels,
   fetchAimlApiEmbeddingModels,
-  AIMLAPI_HEADERS,
-  AIMLAPI_BASE_URL,
 };
