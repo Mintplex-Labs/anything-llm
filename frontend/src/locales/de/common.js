@@ -597,8 +597,6 @@ const TRANSLATIONS = {
       "Einbettung ist der Prozess, Text in Vektoren umzuwandeln. Diese Anmeldeinformationen sind erforderlich, um Ihre Dateien und Prompts in ein Format umzuwandeln, das AnythingLLM zur Verarbeitung verwenden kann.",
     provider: {
       title: "Einbettungsanbieter",
-      description:
-        "Bei Verwendung der nativen Einbettungs-Engine von AnythingLLM ist keine Einrichtung erforderlich.",
     },
   },
   text: {

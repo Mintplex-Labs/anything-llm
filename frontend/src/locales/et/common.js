@@ -573,8 +573,6 @@ const TRANSLATIONS = {
       "Embedding muudab teksti vektoriteks. Need võtmed on vajalikud, et AnythingLLM saaks sinu failid ja päringud töödelda.",
     provider: {
       title: "Embedding-i pakkuja",
-      description:
-        "AnythingLLM-i sisseehitatud embedding-mootor ei vaja seadistust.",
     },
   },
   text: {

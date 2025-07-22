@@ -579,8 +579,6 @@ const TRANSLATIONS = {
       "Vínculo é o processo de transformar texto em vetores. Essas credenciais são necessárias para processar arquivos e prompts.",
     provider: {
       title: "Provedor de Vínculo",
-      description:
-        "Nenhuma configuração é necessária ao usar o mecanismo nativo do AnythingLLM.",
     },
   },
   text: {
