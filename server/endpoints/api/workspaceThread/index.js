@@ -611,7 +611,6 @@ function apiWorkspaceThreadEndpoints(app) {
 
         const user = userId ? await User.get({ id: Number(userId) }) : null;
         const engines_session_ids = thread.engines_session_ids || {};
-        console.log("engines_session_ids", engines_session_ids);
 
         // get responses from ai applications engines
         const engine_ids = Object.keys(engines_session_ids);
