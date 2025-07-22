@@ -184,7 +184,14 @@ class Provider {
           apiKey: process.env.GEMINI_API_KEY ?? null,
           ...config,
         });
-
+      case "moonshotai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.moonshot.ai/v1",
+          },
+          apiKey: process.env.MOONSHOT_AI_API_KEY ?? null,
+          ...config,
+        });
       // OSS Model Runners
       // case "anythingllm_ollama":
       //   return new ChatOllama({
