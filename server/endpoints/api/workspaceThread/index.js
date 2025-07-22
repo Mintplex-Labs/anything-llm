@@ -87,11 +87,14 @@ function apiWorkspaceThreadEndpoints(app) {
         // as we don't check if the userID is valid.
         if (!response.locals.multiUserMode && !!userId) userId = null;
 
+        const engines_session_ids = await createSessionForEngines(user_pseudo_id);
+
         const { thread, message } = await WorkspaceThread.new(
           workspace,
           userId ? Number(userId) : null,
           { name, slug },
           user_pseudo_id,
+          engines_session_ids
         );
 
         await Telemetry.sendTelemetry("workspace_thread_created", {
@@ -104,8 +107,8 @@ function apiWorkspaceThreadEndpoints(app) {
         await EventLogs.logEvent("api_workspace_thread_created", {
           workspaceName: workspace?.name || "Unknown Workspace",
         });
-        const engines_session_ids = await createSessionForEngines(user_pseudo_id);
-        response.status(201).json({ thread, message, engines_session_ids });
+        
+        response.status(201).json({ thread, message });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -571,7 +574,6 @@ function apiWorkspaceThreadEndpoints(app) {
           mode = "query",
           userId,
           user_pseudo_id,
-          engines_session_ids,
           attachments = [],
           reset = false,
         } = reqBody(request);
@@ -608,6 +610,8 @@ function apiWorkspaceThreadEndpoints(app) {
         }
 
         const user = userId ? await User.get({ id: Number(userId) }) : null;
+        const engines_session_ids = thread.engines_session_ids || {};
+        console.log("engines_session_ids", engines_session_ids);
 
         // get responses from ai applications engines
         const engine_ids = Object.keys(engines_session_ids);

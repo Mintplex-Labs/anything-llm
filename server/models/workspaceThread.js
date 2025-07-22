@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 
 const WorkspaceThread = {
   defaultName: "Thread",
-  writable: ["name"],
+  writable: ["name", "engines_session_ids"],
 
   /**
    * The default Slugify module requires some additional mapping to prevent downstream issues
@@ -31,7 +31,13 @@ const WorkspaceThread = {
     return slugifyModule(...args);
   },
 
-  new: async function (workspace, userId = null, data = {}, user_pseudo_id = null) {
+  new: async function (
+    workspace,
+    userId = null,
+    data = {},
+    user_pseudo_id = null,
+    engines_session_ids = null
+  ) {
     try {
       const thread = await prisma.workspace_threads.create({
         data: {
@@ -42,6 +48,9 @@ const WorkspaceThread = {
           user_id: userId ? Number(userId) : null,
           workspace_id: workspace.id,
           user_pseudo_id: user_pseudo_id,
+          engines_session_ids: engines_session_ids
+            ? JSON.stringify(engines_session_ids)
+            : null,
         },
       });
 
@@ -81,7 +90,9 @@ const WorkspaceThread = {
       const thread = await prisma.workspace_threads.findFirst({
         where: clause,
       });
-
+      if (thread && thread.engines_session_ids) {
+        thread.engines_session_ids = JSON.parse(thread.engines_session_ids);
+      }
       return thread || null;
     } catch (error) {
       console.error(error.message);
@@ -108,7 +119,13 @@ const WorkspaceThread = {
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
       });
-      return results;
+
+      return results.map((thread) => {
+        if (thread && thread.engines_session_ids) {
+          thread.engines_session_ids = JSON.parse(thread.engines_session_ids);
+        }
+        return thread;
+      });
     } catch (error) {
       console.error(error.message);
       return [];

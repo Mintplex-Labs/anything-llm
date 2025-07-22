@@ -157,6 +157,7 @@ model workspace_threads {
   workspace_id  Int
   user_id       Int?
   user_pseudo_id String?
+  engines_session_ids String?
   createdAt     DateTime   @default(now())
   lastUpdatedAt DateTime   @default(now())
   workspace     workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
