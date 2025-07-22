@@ -6,15 +6,7 @@ const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
-const fs = require("fs");
-const path = require("path");
-const { safeJsonParse } = require("../../http");
-
-const cacheFolder = path.resolve(
-  process.env.STORAGE_DIR
-    ? path.resolve(process.env.STORAGE_DIR, "models", "moonshotai")
-    : path.resolve(__dirname, `../../../storage/models/moonshotai`)
-);
+const { MODEL_MAP } = require("../modelMap");
 
 class MoonshotAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -38,19 +30,13 @@ class MoonshotAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
-
-    if (!fs.existsSync(cacheFolder))
-      fs.mkdirSync(cacheFolder, { recursive: true });
-    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
-    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
-
     this.log(
       `Initialized ${this.model} with context window ${this.promptWindowLimit()}`
     );
   }
 
-  log(message) {
-    console.log(`[Moonshot AI] ${message}`);
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -87,58 +73,12 @@ class MoonshotAiLLM {
     return content.flat();
   }
 
-  // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
-  // from the current date. If it is, then we will refetch the API so that all the models are up
-  // to date.
-  #cacheIsStale() {
-    const MAX_STALE = 6.048e8; // 1 Week in MS
-    if (!fs.existsSync(this.cacheAtPath)) return true;
-    const now = Number(new Date());
-    const timestampMs = Number(fs.readFileSync(this.cacheAtPath));
-    return now - timestampMs > MAX_STALE;
-  }
-
-  // This function fetches the models from the Moonshot AI API and caches them locally.
-  async #syncModels() {
-    if (fs.existsSync(this.cacheModelPath) && !this.#cacheIsStale())
-      return false;
-
-    this.log(
-      "Model cache is not present or stale. Fetching from Moonshot AI API."
-    );
-    await fetchMoonshotAiModels();
-    return;
-  }
-
-  models() {
-    if (!fs.existsSync(this.cacheModelPath)) return {};
-    return safeJsonParse(
-      fs.readFileSync(this.cacheModelPath, { encoding: "utf-8" }),
-      {}
-    );
-  }
-
   streamingEnabled() {
     return true;
   }
 
-  async isValidChatCompletionModel(model) {
-    await this.#syncModels();
-    const availableModels = this.models();
-    return Object.prototype.hasOwnProperty.call(availableModels, model);
-  }
-
   promptWindowLimit() {
-    const availableModels = this.models();
-    const modelInfo = availableModels[this.model];
-    if (!modelInfo) {
-      if (this.model.includes("128k")) return 128000;
-      if (this.model.includes("32k")) return 32000;
-      if (this.model.includes("8k")) return 8000;
-      if (this.model.includes("kimi")) return 128000;
-      return 8000;
-    }
-    return modelInfo.maxLength;
+    return MODEL_MAP.get("moonshot", this.model) ?? 8_192;
   }
 
   constructPrompt({
@@ -169,11 +109,6 @@ class MoonshotAiLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `Moonshot AI chat: ${this.model} is not valid for chat completion!`
-      );
-
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
@@ -205,11 +140,6 @@ class MoonshotAiLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `Moonshot AI chat: ${this.model} is not valid for chat completion!`
-      );
-
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       this.openai.chat.completions.create({
         model: this.model,
@@ -236,59 +166,4 @@ class MoonshotAiLLM {
   }
 }
 
-async function fetchMoonshotAiModels(providedApiKey = null) {
-  const apiKey = providedApiKey || process.env.MOONSHOT_AI_API_KEY || null;
-  if (!apiKey) return {};
-
-  const { OpenAI: OpenAIApi } = require("openai");
-  const openai = new OpenAIApi({
-    baseURL: "https://api.moonshot.ai/v1",
-    apiKey,
-  });
-
-  return await openai.models
-    .list()
-    .then((response) => {
-      const models = {};
-      response.data.forEach((model) => {
-        models[model.id] = {
-          id: model.id,
-          name: model.id,
-          organization: model.owned_by,
-          maxLength: (() => {
-            if (model.id.includes("128k")) return 128000;
-            if (model.id.includes("32k")) return 32000;
-            if (model.id.includes("8k")) return 8000;
-            if (model.id.includes("kimi")) return 128000;
-            return 8000;
-          })(),
-        };
-      });
-
-      // Cache all response information
-      if (!fs.existsSync(cacheFolder))
-        fs.mkdirSync(cacheFolder, { recursive: true });
-      fs.writeFileSync(
-        path.resolve(cacheFolder, "models.json"),
-        JSON.stringify(models),
-        {
-          encoding: "utf-8",
-        }
-      );
-      fs.writeFileSync(
-        path.resolve(cacheFolder, ".cached_at"),
-        String(Number(new Date())),
-        {
-          encoding: "utf-8",
-        }
-      );
-
-      return models;
-    })
-    .catch((e) => {
-      console.error(e);
-      return {};
-    });
-}
-
-module.exports = { MoonshotAiLLM, fetchMoonshotAiModels };
+module.exports = { MoonshotAiLLM };
