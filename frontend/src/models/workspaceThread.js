@@ -20,6 +20,21 @@ const WorkspaceThread = {
 
     return { threads };
   },
+  allArchived: async function (workspaceSlug) {
+    const { threads } = await fetch(
+      `${API_BASE}/workspace/${workspaceSlug}/threads?archived=true`,
+      {
+        method: "GET",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        return { threads: [] };
+      });
+
+    return { threads };
+  },
   new: async function (workspaceSlug) {
     const { thread, error } = await fetch(
       `${API_BASE}/workspace/${workspaceSlug}/thread/new`,
@@ -50,6 +65,28 @@ const WorkspaceThread = {
       });
 
     return { thread, message };
+  },
+  archive: async function (workspaceSlug, threadSlug) {
+    return await fetch(
+      `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/archive`,
+      {
+        method: "PATCH",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
+  restore: async function (workspaceSlug, threadSlug) {
+    return await fetch(
+      `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/restore`,
+      {
+        method: "PATCH",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.ok)
+      .catch(() => false);
   },
   delete: async function (workspaceSlug, threadSlug) {
     return await fetch(
