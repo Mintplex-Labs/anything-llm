@@ -38,6 +38,8 @@ import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import PGVectorLogo from "@/media/vectordbs/pgvector.png";
 import DPAISLogo from "@/media/llmprovider/dpais.png";
+import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
+
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -241,6 +243,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chat contents are only accessible on the computer running Dell Pro AI Studio",
     ],
     logo: DPAISLogo,
+  },
+  moonshotai: {
+    name: "Moonshot AI",
+    description: [
+      "Your chats may be used by Moonshot AI for training and model refinement",
+      "Your prompts and document text used in response creation are visible to Moonshot AI",
+    ],
+    logo: MoonshotAiLogo,
   },
 };
 
