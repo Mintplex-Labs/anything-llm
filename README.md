@@ -102,6 +102,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Novita AI (chat models)](https://novita.ai/model-api/product/llm-api?utm_source=github_anything-llm&utm_medium=github_readme&utm_campaign=link)
 - [PPIO](https://ppinfra.com?utm_source=github_anything-llm)
 - [Moonshot AI](https://www.moonshot.ai/)
+- [Jan AI](https://jan.ai/)
 
 **Embedder models:**
 
