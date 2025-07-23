@@ -121,6 +121,7 @@ jobs:
       # About VEX attestations https://docs.docker.com/scout/explore/exceptions/
       # Justifications https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#status-justifications
       - name: Add VEX attestations
+        if: steps.dockerhub.outputs.enabled == 'true'
         env:
           CVE_EXCEPTIONS: ${{ steps.cve-list.outputs.CVE_EXCEPTIONS }}
         run: |
