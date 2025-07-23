@@ -1,22 +1,27 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
+  LLMPerformanceMonitor,
+} = require("../../helpers/chat/LLMPerformanceMonitor");
+const {
   handleDefaultStreamResponseV2,
   formatChatHistory,
 } = require("../../helpers/chat/responses");
 const { MODEL_MAP } = require("../modelMap");
-const {
-  LLMPerformanceMonitor,
-} = require("../../helpers/chat/LLMPerformanceMonitor");
 
-class OpenAiLLM {
+class MoonshotAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    if (!process.env.OPEN_AI_KEY) throw new Error("No OpenAI API key was set.");
+    if (!process.env.MOONSHOT_AI_API_KEY)
+      throw new Error("No Moonshot AI API key was set.");
     const { OpenAI: OpenAIApi } = require("openai");
 
     this.openai = new OpenAIApi({
-      apiKey: process.env.OPEN_AI_KEY,
+      baseURL: "https://api.moonshot.ai/v1",
+      apiKey: process.env.MOONSHOT_AI_API_KEY,
     });
-    this.model = modelPreference || process.env.OPEN_MODEL_PREF || "gpt-4o";
+    this.model =
+      modelPreference ||
+      process.env.MOONSHOT_AI_MODEL_PREF ||
+      "moonshot-v1-32k";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -34,14 +39,6 @@ class OpenAiLLM {
     console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
-  /**
-   * Check if the model is an o1 model.
-   * @returns {boolean}
-   */
-  get isOTypeModel() {
-    return this.model.startsWith("o");
-  }
-
   #appendContext(contextTexts = []) {
     if (!contextTexts || !contextTexts.length) return "";
     return (
@@ -52,38 +49,6 @@ class OpenAiLLM {
         })
         .join("")
     );
-  }
-
-  streamingEnabled() {
-    // o3-mini is the only o-type model that supports streaming
-    if (this.isOTypeModel && this.model !== "o3-mini") return false;
-    return "streamGetChatCompletion" in this;
-  }
-
-  static promptWindowLimit(modelName) {
-    return MODEL_MAP.get("openai", modelName) ?? 4_096;
-  }
-
-  promptWindowLimit() {
-    return MODEL_MAP.get("openai", this.model) ?? 4_096;
-  }
-
-  // Short circuit if name has 'gpt' since we now fetch models from OpenAI API
-  // via the user API key, so the model must be relevant and real.
-  // and if somehow it is not, chat will fail but that is caught.
-  // we don't want to hit the OpenAI api every chat because it will get spammed
-  // and introduce latency for no reason.
-  async isValidChatCompletionModel(modelName = "") {
-    const isPreset =
-      modelName.toLowerCase().includes("gpt") ||
-      modelName.toLowerCase().startsWith("o");
-    if (isPreset) return true;
-
-    const model = await this.openai.models
-      .retrieve(modelName)
-      .then((modelObj) => modelObj)
-      .catch(() => null);
-    return !!model;
   }
 
   /**
@@ -102,30 +67,29 @@ class OpenAiLLM {
         type: "image_url",
         image_url: {
           url: attachment.contentString,
-          detail: "auto",
         },
       });
     }
     return content.flat();
   }
 
-  /**
-   * Construct the user prompt for this model.
-   * @param {{attachments: import("../../helpers").Attachment[]}} param0
-   * @returns
-   */
+  streamingEnabled() {
+    return true;
+  }
+
+  promptWindowLimit() {
+    return MODEL_MAP.get("moonshot", this.model) ?? 8_192;
+  }
+
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
-    attachments = [], // This is the specific attachment for only this prompt
+    attachments = [],
   }) {
-    // o1 Models do not support the "system" role
-    // in order to combat this, we can use the "user" role as a replacement for now
-    // https://community.openai.com/t/o1-models-do-not-support-system-role-in-chat-completion/953880
     const prompt = {
-      role: this.isOTypeModel ? "user" : "system",
+      role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [
@@ -138,18 +102,19 @@ class OpenAiLLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
-      );
+  async compressMessages(promptArgs = {}, rawHistory = []) {
+    const { messageArrayCompressor } = require("../../helpers/chat");
+    const messageArray = this.constructPrompt(promptArgs);
+    return await messageArrayCompressor(this, messageArray, rawHistory);
+  }
 
+  async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.openai.chat.completions
         .create({
           model: this.model,
           messages,
-          temperature: this.isOTypeModel ? 1 : temperature, // o1 models only accept temperature 1
+          temperature,
         })
         .catch((e) => {
           throw new Error(e.message);
@@ -157,7 +122,7 @@ class OpenAiLLM {
     );
 
     if (
-      !result.output.hasOwnProperty("choices") ||
+      !Object.prototype.hasOwnProperty.call(result.output, "choices") ||
       result.output.choices.length === 0
     )
       return null;
@@ -175,22 +140,14 @@ class OpenAiLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
-      );
-
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
       this.openai.chat.completions.create({
         model: this.model,
         stream: true,
         messages,
-        temperature: this.isOTypeModel ? 1 : temperature, // o1 models only accept temperature 1
+        temperature,
       }),
       messages
-      // runPromptTokenCalculation: true - We manually count the tokens because OpenAI does not provide them in the stream
-      // since we are not using the OpenAI API version that supports this `stream_options` param.
-      // TODO: implement this once we upgrade to the OpenAI API version that supports this param.
     );
 
     return measuredStreamRequest;
@@ -207,14 +164,6 @@ class OpenAiLLM {
   async embedChunks(textChunks = []) {
     return await this.embedder.embedChunks(textChunks);
   }
-
-  async compressMessages(promptArgs = {}, rawHistory = []) {
-    const { messageArrayCompressor } = require("../../helpers/chat");
-    const messageArray = this.constructPrompt(promptArgs);
-    return await messageArrayCompressor(this, messageArray, rawHistory);
-  }
 }
 
-module.exports = {
-  OpenAiLLM,
-};
+module.exports = { MoonshotAiLLM };
