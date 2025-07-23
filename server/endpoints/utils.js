@@ -145,6 +145,9 @@ function getModelTag() {
     case "janai":
       model = process.env.JAN_AI_MODEL_PREF;
       break;
+    case "moonshotai":
+      model = process.env.MOONSHOT_AI_MODEL_PREF;
+      break;
     default:
       model = "--";
       break;

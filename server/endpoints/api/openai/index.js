@@ -13,6 +13,7 @@ const {
   OpenAICompatibleChat,
 } = require("../../../utils/chats/openaiCompatible");
 const { getModelTag } = require("../../utils");
+const { extractTextContent, extractAttachments } = require("./helpers");
 
 function apiOpenAICompatibleEndpoints(app) {
   if (!app) return;
@@ -145,7 +146,8 @@ function apiOpenAICompatibleEndpoints(app) {
             workspace,
             systemPrompt,
             history,
-            prompt: userMessage.content,
+            prompt: extractTextContent(userMessage.content),
+            attachments: extractAttachments(userMessage.content),
             temperature: Number(temperature),
           });
 
@@ -173,7 +175,8 @@ function apiOpenAICompatibleEndpoints(app) {
           workspace,
           systemPrompt,
           history,
-          prompt: userMessage.content,
+          prompt: extractTextContent(userMessage.content),
+          attachments: extractAttachments(userMessage.content),
           temperature: Number(temperature),
           response,
         });

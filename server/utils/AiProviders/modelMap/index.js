@@ -18,6 +18,7 @@ class ContextWindowFinder {
     groq: "groq",
     xai: "xai",
     deepseek: "deepseek",
+    moonshot: "moonshot",
   };
   static expiryMs = 1000 * 60 * 60 * 24 * 3; // 3 days
   static remoteUrl =

@@ -369,7 +369,7 @@ const TRANSLATIONS = {
     snippets: {
       title: "Max Context Snippets",
       description:
-        "This setting controls the maximum amount of context snippets the will be sent to the LLM for per chat or query.",
+        "This setting controls the maximum amount of context snippets that will be sent to the LLM for per chat or query.",
       recommend: "Recommended: 4",
     },
     doc: {
@@ -620,8 +620,6 @@ const TRANSLATIONS = {
       "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
     provider: {
       title: "Embedding Provider",
-      description:
-        "There is no set up required when using AnythingLLM's native embedding engine.",
     },
   },
 
@@ -998,7 +996,7 @@ const TRANSLATIONS = {
     remove_profile_picture: "Remove Profile Picture",
     username: "Username",
     username_description:
-      "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+      "Username must only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
     new_password: "New Password",
     password_description: "Password must be at least 8 characters long",
     cancel: "Cancel",

@@ -203,6 +203,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "ppio":
       const { PPIOLLM } = require("../AiProviders/ppio");
       return new PPIOLLM(embedder, model);
+    case "moonshotai":
+      const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
+      return new MoonshotAiLLM(embedder, model);
     case "dpais":
       const { DellProAiStudioLLM } = require("../AiProviders/dellProAiStudio");
       return new DellProAiStudioLLM(embedder, model);
@@ -359,6 +362,9 @@ function getLLMProviderClass({ provider = null } = {}) {
     case "janai":
       const { JanAiLLM } = require("../AiProviders/janAi");
       return JanAiLLM;
+    case "moonshotai":
+      const { MoonshotAiLLM } = require("../AiProviders/moonshotAi");
+      return MoonshotAiLLM;
     default:
       return null;
   }
@@ -427,6 +433,8 @@ function getBaseLLMProviderModel({ provider = null } = {}) {
       return process.env.DPAIS_LLM_MODEL_PREF;
     case "janai":
       return process.env.JAN_AI_MODEL_PREF;
+    case "moonshotai":
+      return process.env.MOONSHOT_AI_MODEL_PREF;
     default:
       return null;
   }

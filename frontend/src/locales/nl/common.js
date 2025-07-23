@@ -401,8 +401,6 @@ const TRANSLATIONS = {
       "Inbedding is het proces van het omzetten van tekst in vectoren. Deze inloggegevens zijn vereist om je bestanden en prompts om te zetten naar een formaat dat AnythingLLM kan gebruiken om te verwerken.",
     provider: {
       title: "Inbedding Provider",
-      description:
-        "Er is geen instelling vereist bij gebruik van de ingebouwde inbeddingengine van AnythingLLM.",
     },
   },
   text: {

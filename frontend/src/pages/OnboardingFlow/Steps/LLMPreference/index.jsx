@@ -28,6 +28,7 @@ import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
 import JanAiLogo from "@/media/llmprovider/janai.png";
+import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -57,6 +58,7 @@ import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
 import JanAiOptions from "@/components/LLMSelection/JanAiOptions";
+import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -271,6 +273,13 @@ const LLMS = [
     logo: JanAiLogo,
     options: (settings) => <JanAiOptions settings={settings} />,
     description: "Run models from local Jan AI server.",
+  },
+  {
+    name: "Moonshot AI",
+    value: "moonshotai",
+    logo: MoonshotAiLogo,
+    options: (settings) => <MoonshotAiOptions settings={settings} />,
+    description: "Run Moonshot AI's powerful LLMs.",
   },
 ];
 
