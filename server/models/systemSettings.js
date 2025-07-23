@@ -584,6 +584,12 @@ const SystemSettings = {
       NvidiaNimLLMModelPref: process.env.NVIDIA_NIM_LLM_MODEL_PREF,
       NvidiaNimLLMTokenLimit: process.env.NVIDIA_NIM_LLM_MODEL_TOKEN_LIMIT,
 
+      // Jan AI Keys
+      JanAiApiKey: !!process.env.JAN_AI_API_KEY,
+      JanAiBasePath: process.env.JAN_AI_BASE_PATH,
+      JanAiModelPref: process.env.JAN_AI_MODEL_PREF,
+      JanAiModelTokenLimit: process.env.JAN_AI_MODEL_TOKEN_LIMIT,
+
       // PPIO API keys
       PPIOApiKey: !!process.env.PPIO_API_KEY,
       PPIOModelPref: process.env.PPIO_MODEL_PREF,

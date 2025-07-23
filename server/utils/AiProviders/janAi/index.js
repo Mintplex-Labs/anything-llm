@@ -15,8 +15,9 @@ class JanAiLLM {
       throw new Error("No Jan AI API key was set.");
     const { OpenAI: OpenAIApi } = require("openai");
 
+    this.basePath = process.env.JAN_AI_BASE_PATH || "http://127.0.0.1:1337/v1";
     this.openai = new OpenAIApi({
-      baseURL: "http://127.0.0.1:1337/v1",
+      baseURL: this.basePath,
       apiKey: process.env.JAN_AI_API_KEY,
     });
     this.model = modelPreference || process.env.JAN_AI_MODEL_PREF;

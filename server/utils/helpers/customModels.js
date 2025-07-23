@@ -86,7 +86,7 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "dpais":
       return await getDellProAiStudioModels(basePath);
     case "janai":
-      return await getJanAiModels(apiKey);
+      return await getJanAiModels(apiKey, basePath);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -678,7 +678,7 @@ async function getDellProAiStudioModels(basePath = null) {
   }
 }
 
-async function getJanAiModels(_apiKey = null) {
+async function getJanAiModels(_apiKey = null, basePath = null) {
   const apiKey =
     _apiKey === true
       ? process.env.JAN_AI_API_KEY
@@ -686,7 +686,7 @@ async function getJanAiModels(_apiKey = null) {
 
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
-    baseURL: "http://127.0.0.1:1337/v1",
+    baseURL: basePath || process.env.JAN_AI_BASE_PATH || "http://127.0.0.1:1337/v1",
     apiKey,
   });
   const models = await openai.models
@@ -697,7 +697,10 @@ async function getJanAiModels(_apiKey = null) {
       return [];
     });
 
-  if (models.length > 0) process.env.JAN_AI_API_KEY = apiKey;
+  if (models.length > 0) {
+    process.env.JAN_AI_API_KEY = apiKey;
+    if (basePath) process.env.JAN_AI_BASE_PATH = basePath;
+  }
   return { models, error: null };
 }
 
