@@ -686,6 +686,13 @@ const KEY_MAPPING = {
     envKey: "JAN_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  JanAiBasePath: {
+    envKey: "JAN_AI_BASE_PATH",
+    checks: [isValidURL],
+  },
+  JanAiModelTokenLimit: {
+    envKey: "JAN_AI_MODEL_TOKEN_LIMIT",
+  },
 
   // Moonshot AI Options
   MoonshotAiApiKey: {
