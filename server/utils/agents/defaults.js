@@ -5,6 +5,7 @@ const Provider = require("./aibitat/providers/ai-provider");
 const ImportedPlugin = require("./imported");
 const { AgentFlows } = require("../agentFlows");
 const MCPCompatibilityLayer = require("../MCP");
+const { SystemPromptVariables } = require("../../models/systemPromptVariables");
 
 // This is a list of skills that are built-in and default enabled.
 const DEFAULT_SKILLS = [
@@ -23,11 +24,28 @@ const USER_AGENT = {
   },
 };
 
+/**
+ * Resolve system prompt from workspace if valid. fallback to provider/static prompt
+ * @param {Object|null} workspace
+ * @param {number|null} userId
+ * @param {string|null} provider
+ */
+async function resolveSystemPrompt(workspace, userId, provider) {
+  if (workspace?.openAiPrompt) {
+    return await SystemPromptVariables.expandSystemPromptVariables(
+      workspace.openAiPrompt,
+      userId
+    );
+  } else {
+    return Provider.systemPrompt(provider);
+  }
+}
+
 const WORKSPACE_AGENT = {
   name: "@agent",
-  getDefinition: async (provider = null) => {
+  getDefinition: async (provider = null, workspace = null, userId = null) => {
     return {
-      role: Provider.systemPrompt(provider),
+      role: await resolveSystemPrompt(workspace, userId, provider),
       functions: [
         ...(await agentSkillsFromSystemSettings()),
         ...ImportedPlugin.activeImportedPlugins(),
