@@ -1,34 +1,26 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
-import PreLoader from "@/components/Preloader";
 import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
+import { JAN_AI_COMMON_URLS } from "@/utils/constants";
 
 export default function JanAiOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.JanAiApiKey);
   const [apiKey, setApiKey] = useState(settings?.JanAiApiKey);
 
   const {
-    autoDetecting: loading,
     basePath,
     basePathValue,
     showAdvancedControls,
     setShowAdvancedControls,
-    handleAutoDetectClick,
-    runAutoDetect,
   } = useProviderEndpointAutoDiscovery({
     provider: "janai",
-    initialBasePath: settings?.JanAiBasePath,
+    // Falls back to first common URL if no base path is set to prevent auto-detect
+    // from running with no API key (Jan AI always requires an API key)
+    initialBasePath: settings?.JanAiBasePath || JAN_AI_COMMON_URLS[0],
     initialAuthToken: apiKey,
-    ENDPOINTS: ["http://127.0.0.1:1337/v1"],
+    ENDPOINTS: [JAN_AI_COMMON_URLS],
   });
-
-  // Only try auto-discover after API key is set
-  useEffect(() => {
-    if (apiKey && !basePathValue.value) {
-      runAutoDetect();
-    }
-  }, [apiKey]);
 
   return (
     <div className="w-full flex flex-col gap-y-7">
@@ -51,7 +43,11 @@ export default function JanAiOptions({ settings }) {
           />
         </div>
         {!settings?.credentialsOnly && (
-          <JanAiModelSelection settings={settings} apiKey={apiKey} basePath={basePath.value} />
+          <JanAiModelSelection
+            settings={settings}
+            apiKey={apiKey}
+            basePath={basePath.value}
+          />
         )}
       </div>
 
@@ -79,20 +75,6 @@ export default function JanAiOptions({ settings }) {
               <label className="text-white text-sm font-semibold">
                 Jan AI Base URL
               </label>
-              {loading ? (
-                <PreLoader size="6" />
-              ) : (
-                <>
-                  {!basePathValue.value && apiKey && (
-                    <button
-                      onClick={handleAutoDetectClick}
-                      className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
-                    >
-                      Auto-Detect
-                    </button>
-                  )}
-                </>
-              )}
             </div>
             <input
               type="url"
@@ -119,7 +101,9 @@ export default function JanAiOptions({ settings }) {
 function JanAiModelSelection({ apiKey, settings, basePath }) {
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedModel, setSelectedModel] = useState(settings?.JanAiModelPref || '');
+  const [selectedModel, setSelectedModel] = useState(
+    settings?.JanAiModelPref || ""
+  );
 
   useEffect(() => {
     async function findCustomModels() {

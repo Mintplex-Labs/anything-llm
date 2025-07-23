@@ -686,7 +686,7 @@ async function getJanAiModels(_apiKey = null, basePath = null) {
 
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
-    baseURL: basePath || process.env.JAN_AI_BASE_PATH || "http://127.0.0.1:1337/v1",
+    baseURL: basePath || process.env.JAN_AI_BASE_PATH,
     apiKey,
   });
   const models = await openai.models
@@ -697,7 +697,8 @@ async function getJanAiModels(_apiKey = null, basePath = null) {
       return [];
     });
 
-  if (models.length > 0) {
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) {
     process.env.JAN_AI_API_KEY = apiKey;
     if (basePath) process.env.JAN_AI_BASE_PATH = basePath;
   }

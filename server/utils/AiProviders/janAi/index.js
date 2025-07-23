@@ -39,7 +39,7 @@ class JanAiLLM {
   async updateContextWindow() {
     try {
       const { data } = await this.openai.models.list();
-      const model = data.find(m => m.id === this.model);
+      const model = data.find((m) => m.id === this.model);
       if (model?.ctx_len) {
         this.contextWindow = model.ctx_len;
         this.limits = {
@@ -93,7 +93,7 @@ class JanAiLLM {
   async isValidChatCompletionModel(model) {
     try {
       const { data } = await this.openai.models.list();
-      return data.some(m => m.id === model);
+      return data.some((m) => m.id === model);
     } catch (error) {
       console.error("Failed to validate model:", error);
       return false;
@@ -205,7 +205,9 @@ class JanAiLLM {
         const diffMs = now - lastChunkTime;
 
         if (diffMs >= this.timeout) {
-          this.log(`Stream stale for >${this.timeout}ms. Closing response stream.`);
+          this.log(
+            `Stream stale for >${this.timeout}ms. Closing response stream.`
+          );
           writeResponseChunk(response, {
             uuid,
             sources,
