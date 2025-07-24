@@ -626,9 +626,6 @@ function apiWorkspaceThreadEndpoints(app) {
         related_questions = data.related_questions;
         bestReferences = data.bestReferences;
 
-        console.log(answers)
-        console.log(bestReferences)
-        console.log(citationsMapping)
 
         answers["user_query"] = message;
         const main_llm_query = JSON.stringify(answers);
