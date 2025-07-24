@@ -93,7 +93,7 @@ async function handleMobileCommand(request, response) {
       workspaceId: workspace.id,
       thread_id: threadId, // if threadId is null, this will reset the default thread.
     });
-    return response.status(200).end();
+    return response.status(200).json({ success: true });
   }
 
   if (command === "new-thread") {
@@ -138,6 +138,13 @@ async function handleMobileCommand(request, response) {
       reset: false,
     });
     return response.end();
+  }
+
+  if (command === "unregister-device") {
+    if (!response.locals.device)
+      return response.status(200).json({ success: true });
+    await MobileDevice.delete(response.locals.device.id);
+    return response.status(200).json({ success: true });
   }
 
   return response.status(400).json({ error: "Invalid command" });
