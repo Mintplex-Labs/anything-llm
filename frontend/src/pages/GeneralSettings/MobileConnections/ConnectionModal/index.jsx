@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import MobileConnection from "@/models/mobile";
 import PreLoader from "@/components/Preloader";
-import Logo from "@/assets/logo/anything-llm-infinity.png";
+import Logo from "@/media/logo/anything-llm-infinity.png";
 
 export default function MobileConnectModal({ isOpen, onClose }) {
   return (
