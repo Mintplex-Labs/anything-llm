@@ -68,6 +68,35 @@ export default function MobileConnectModal({ isOpen, onClose }) {
   );
 }
 
+/**
+ * Process the connection url to make it absolute if it is a relative path
+ * @param {string} url
+ * @returns {string}
+ */
+function processConnectionUrl(url) {
+  /*
+   * In dev mode, the connectionURL() method uses the `ip` module
+   * see server/models/mobileDevice.js `connectionURL()` method.
+   *
+   * In prod mode, this method returns the absolute path since we will always want to use
+   * the real instance hostname. If the domain changes, we should be able to inherit it from the client side
+   * since the backend has no knowledge of the domain since typically it is run behind a reverse proxy or in a container - or both.
+   * So `ip` is useless in prod mode since it would only resolve to the internal IP address of the container or if non-containerized,
+   * the local IP address may not be the preferred instance access point (eg: using custom domain)
+   *
+   * If the url does not start with http, we assume it is a relative path and add the origin to it.
+   * Then we check if the hostname is localhost, 127.0.0.1, or 0.0.0.0. If it is, we throw an error since that is not
+   * a LAN resolvable address that other devices can use to connect to the instance.
+   */
+  if (url.startsWith("http")) return new URL(url);
+  const connectionUrl = new URL(`${window.location.origin}${url}`);
+  if (["localhost", "127.0.0.1", "0.0.0.0"].includes(connectionUrl.hostname))
+    throw new Error(
+      "Please open this page via your machines private IP address or custom domain. Localhost URLs will not work with the mobile app."
+    );
+  return connectionUrl.toString();
+}
+
 const ConnectionQrCode = ({ isOpen }) => {
   const [connectionInfo, setConnectionInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -79,14 +108,8 @@ const ConnectionQrCode = ({ isOpen }) => {
     MobileConnection.getConnectionInfo()
       .then((res) => {
         if (res.error) throw new Error(res.error);
-        // if the connection url is a relative path, make it absolute by adding the origin
-        const url = new URL(
-          res.connectionUrl.startsWith("http")
-            ? res.connectionUrl
-            : `${window.location.origin}${res.connectionUrl}`
-        );
-        console.log(url.toString());
-        setConnectionInfo(url.toString());
+        const url = processConnectionUrl(res.connectionUrl);
+        setConnectionInfo(url);
       })
       .catch((err) => {
         setError(err.message);
