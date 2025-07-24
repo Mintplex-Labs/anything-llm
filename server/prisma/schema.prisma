@@ -141,13 +141,13 @@ model workspaces {
   agentModel                   String?
   queryRefusalResponse         String?
   vectorSearchMode             String?                        @default("default")
+  useWorkspacePromptForAgents  Boolean                        @default(false)
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
   embed_configs                embed_configs[]
   threads                      workspace_threads[]
   workspace_agent_invocations  workspace_agent_invocations[]
-  useWorkspacePromptForAgents  Boolean  @default(false)
   prompt_history               prompt_history[]
 }
 

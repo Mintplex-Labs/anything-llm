@@ -1752,10 +1752,45 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "workspaces": [
+                      {
+                        "id": 79,
+                        "name": "Sample workspace",
+                        "slug": "sample-workspace",
+                        "createdAt": "2023-08-17 00:45:03",
+                        "openAiTemp": null,
+                        "lastUpdatedAt": "2023-08-17 00:45:03",
+                        "openAiHistory": 20,
+                        "useWorkspacePromptForAgents": false,
+                        "openAiPrompt": null,
+                        "threads": []
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -1782,10 +1817,46 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "workspace": [
+                      {
+                        "id": 79,
+                        "name": "My workspace",
+                        "slug": "my-workspace-123",
+                        "createdAt": "2023-08-17 00:45:03",
+                        "openAiTemp": null,
+                        "lastUpdatedAt": "2023-08-17 00:45:03",
+                        "openAiHistory": 20,
+                        "openAiPrompt": null,
+                        "useWorkspacePromptForAgents": false,
+                        "documents": [],
+                        "threads": []
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
