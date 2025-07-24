@@ -79,7 +79,14 @@ const ConnectionQrCode = ({ isOpen }) => {
     MobileConnection.getConnectionInfo()
       .then((res) => {
         if (res.error) throw new Error(res.error);
-        setConnectionInfo(res.connectionUrl);
+        // if the connection url is a relative path, make it absolute by adding the origin
+        const url = new URL(
+          res.connectionUrl.startsWith("http")
+            ? res.connectionUrl
+            : `${window.location.origin}${res.connectionUrl}`
+        );
+        console.log(url.toString());
+        setConnectionInfo(url.toString());
       })
       .catch((err) => {
         setError(err.message);
