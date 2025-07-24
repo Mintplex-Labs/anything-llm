@@ -21,8 +21,8 @@ const { WORKSPACE_AGENT } = require("../../../utils/agents/defaults");
 const Provider = require("../../../utils/agents/aibitat/providers/ai-provider");
 
 describe("WORKSPACE_AGENT.getDefinition system prompt prioritization", () => {
-  it("uses workspace.openAiPrompt when provided", async () => {
-    const workspace = { openAiPrompt: "Respond only in emoji." };
+  it("uses workspace.openAiPrompt when provided and flag is true", async () => {
+    const workspace = { openAiPrompt: "Respond only in emoji.", useWorkspacePromptForAgents: true };
     const def = await WORKSPACE_AGENT.getDefinition("openai", workspace, null);
     expect(def.role).toBe("Respond only in emoji.");
   });
@@ -32,11 +32,9 @@ describe("WORKSPACE_AGENT.getDefinition system prompt prioritization", () => {
     const def = await WORKSPACE_AGENT.getDefinition("openai", workspace, null);
     expect(def.role).toBe(Provider.systemPrompt("openai"));
   });
-
-  it("expands system prompt variables when present", async () => {
-    const workspace = { openAiPrompt: "Today is {date}" };
+  it("falls back to Provider.systemPrompt when workspace.openAiPrompt provided but flag is false", async () => {
+    const workspace = { openAiPrompt: "Respond only in emoji.", useWorkspacePromptForAgents: false };
     const def = await WORKSPACE_AGENT.getDefinition("openai", workspace, null);
-    expect(def.role).not.toContain("{date}");
-    expect(def.role.startsWith("Today is ")).toBe(true);
+    expect(def.role).toBe(Provider.systemPrompt("openai"));
   });
-}); 
+});

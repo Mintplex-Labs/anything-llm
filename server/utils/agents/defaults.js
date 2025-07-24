@@ -31,7 +31,7 @@ const USER_AGENT = {
  * @param {string|null} provider
  */
 async function resolveSystemPrompt(workspace, userId, provider) {
-  if (workspace?.openAiPrompt) {
+  if (workspace?.useWorkspacePromptForAgents && workspace?.openAiPrompt) {
     return await SystemPromptVariables.expandSystemPromptVariables(
       workspace.openAiPrompt,
       userId
