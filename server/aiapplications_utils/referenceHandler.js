@@ -1,6 +1,15 @@
 const { Storage } = require('@google-cloud/storage');
 const storage = new Storage();
 
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+  }
+
+function isReferenceDoubled(reference, mappings) {
+    const allValues = Object.values(mappings);
+    return allValues.includes(reference);
+}
+
 const getSignedUrlFromUri = async (uri) => {
     const match = uri.match(/^gs:\/\/([a-zA-Z0-9._-]+)\/(.*)$/);
     if (!match) {
@@ -22,16 +31,50 @@ const getSignedUrlFromUri = async (uri) => {
     return url;
 }
 
+const getReferencesSignedUrls = async (citationsMapping) => {
+    const referencesSignedUrls = {};
+    for (const key in citationsMapping) {
+        const signedUrl = await getSignedUrlFromUri(citationsMapping[key]);
+        referencesSignedUrls[key] = signedUrl;
+    }
+    return referencesSignedUrls;
+}
+
+function findMostFrequent(arr) {
+    if (arr.length === 0) {
+      return undefined;
+    }
+  
+    const frequencyMap = new Map();
+    let maxCount = 0;
+    let mostFrequentElement = arr[0];
+  
+    for (const item of arr) {
+      const count = (frequencyMap.get(item) || 0) + 1;
+      frequencyMap.set(item, count);
+  
+      if (count > maxCount) {
+        maxCount = count;
+        mostFrequentElement = item;
+      }
+    }
+  
+    return mostFrequentElement;
+  }
+
 
 
 const parseEngineResponses = async (responses) => {
     const related_questions = {};
     const answers = {};
     const citationsMapping = {};
+    const topReferences = {};
     let i = 0;
     let index = 0;
     
     for (const response of responses) {
+        const sourceName = response.sources[0].split('/')[2];
+        topReferences[sourceName] = [];
         related_questions[`model_${index}`] = response.related_questions;
         const textParts = [];
         let lastIndex = 0;
@@ -46,11 +89,17 @@ const parseEngineResponses = async (responses) => {
                 const refId = Number(source.referenceId);
                 const reference = response.references[refId];
                 const referenceUri = reference.chunkInfo.documentMetadata.uri;
-                const markerSting = `[${i}]`;
-                textParts.push(markerSting);
-                const signedUrl = await getSignedUrlFromUri(referenceUri);
-                citationsMapping[markerSting] = signedUrl;
-                i++;
+                topReferences[sourceName].push(referenceUri);
+                if (isReferenceDoubled(referenceUri, citationsMapping)) {
+                    const markerSting = getKeyByValue(citationsMapping, referenceUri);
+                    textParts.push(markerSting);
+                }
+                else {
+                    const markerSting = `[${i}]`;
+                    textParts.push(markerSting);
+                    citationsMapping[markerSting] = referenceUri;
+                    i++;
+                }
             }
             lastIndex = endIndex;
         }
@@ -60,10 +109,18 @@ const parseEngineResponses = async (responses) => {
         answers[`model_${index}`] = textParts.join('');
         index++;
     };
+    const referencesSignedUrls = await getReferencesSignedUrls(citationsMapping);
+    const bestReferences = {}
+    for (const sourceName in topReferences) {
+        const currentList = topReferences[sourceName];
+        const mostFrequent = findMostFrequent(currentList);
+        bestReferences[sourceName] = mostFrequent;
+    }
     return {
         related_questions,
         answers,
-        citationsMapping
+        referencesSignedUrls,
+        bestReferences
     };
 }
 
