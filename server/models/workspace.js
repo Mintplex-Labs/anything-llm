@@ -29,6 +29,7 @@ function isNullOrNaN(value) {
  * @property {string} agentModel - The agent model of the workspace
  * @property {string} queryRefusalResponse - The query refusal response of the workspace
  * @property {string} vectorSearchMode - The vector search mode of the workspace
+ * @property {boolean} useWorkspacePromptForAgents - Should Use Workspace System Prompt For Agent requests as well
  */
 
 const Workspace = {
@@ -55,9 +56,10 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
     "vectorSearchMode",
+    "useWorkspacePromptForAgents",
   ],
-
   validations: {
+    useWorkspacePromptForAgents: (value) => Boolean(value),
     name: (value) => {
       // If the name is not provided or is not a string then we will use a default name.
       // as the name field is not nullable in the db schema or has a default value.
