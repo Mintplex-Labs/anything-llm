@@ -2,6 +2,7 @@ const prisma = require("../utils/prisma");
 const { v4: uuidv4 } = require("uuid");
 
 const MobileDevice = {
+  platform: "server",
   tablename: "desktop_mobile_devices",
   writable: ["approved"],
   validators: {

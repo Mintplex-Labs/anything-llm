@@ -81,7 +81,14 @@ function mobileEndpoints(app) {
   );
 
   app.get("/mobile/auth", [validDeviceToken], async (_, response) => {
-    return response.status(200).json({ message: "Device authenticated" });
+    try {
+      return response
+        .status(200)
+        .json({ success: true, message: "Device authenticated" });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
+    }
   });
 
   /**
@@ -97,7 +104,9 @@ function mobileEndpoints(app) {
       const result = await MobileDevice.create(body);
       if (result.error)
         return response.status(400).json({ error: result.error });
-      return response.status(200).json({ token: result.device.token });
+      return response
+        .status(200)
+        .json({ token: result.device.token, platform: MobileDevice.platform });
     } catch (e) {
       console.error(e);
       response.sendStatus(500).end();

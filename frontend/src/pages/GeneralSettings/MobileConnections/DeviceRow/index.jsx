@@ -14,7 +14,7 @@ export default function DeviceRow({ device, removeDevice }) {
   };
 
   const handleDeny = async () => {
-    await Mobile.deleteDevice(device.id);
+    await MobileConnection.deleteDevice(device.id);
     showToast("Device access denied", "info");
     setStatus(false);
     removeDevice(device.id);
