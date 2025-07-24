@@ -430,6 +430,7 @@ class GeminiLLM {
       sources = [],
       related_questions = {},
       engine_sources = {},
+      bestReferences = {},
     } = responseProps;
 
     // This is a copy of the handleDefaultStreamResponseV2 function from
@@ -481,6 +482,7 @@ class GeminiLLM {
               error: false,
               related_questions,
               engine_sources,
+              bestReferences,
             });
           }
 
@@ -498,6 +500,7 @@ class GeminiLLM {
               error: false,
               related_questions,
               engine_sources,
+              bestReferences,
             });
             response.removeListener("close", handleAbort);
             stream?.endMeasurement(usage);

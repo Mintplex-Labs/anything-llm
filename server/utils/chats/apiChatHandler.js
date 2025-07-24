@@ -377,6 +377,7 @@ async function streamChat({
   reset = false,
   related_questions = {},
   engine_sources = {},
+  bestReferences = {},
 }) {
   const uuid = uuidv4();
   const chatMode = mode ?? "chat";
@@ -675,6 +676,7 @@ async function streamChat({
       sources,
       related_questions,
       engine_sources,
+      bestReferences,
     });
     metrics = stream.metrics;
   }

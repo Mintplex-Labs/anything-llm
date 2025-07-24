@@ -622,8 +622,13 @@ function apiWorkspaceThreadEndpoints(app) {
         const responses = await Promise.all(promises);
         const data = await parseEngineResponses(responses);
         answers = data.answers;
-        citationsMapping = data.citationsMapping;
+        citationsMapping = data.referencesSignedUrls;
         related_questions = data.related_questions;
+        bestReferences = data.bestReferences;
+
+        console.log(answers)
+        console.log(bestReferences)
+        console.log(citationsMapping)
 
         answers["user_query"] = message;
         const main_llm_query = JSON.stringify(answers);
@@ -647,6 +652,7 @@ function apiWorkspaceThreadEndpoints(app) {
           reset,
           related_questions: related_questions,
           engine_sources: citationsMapping,
+          bestReferences: bestReferences,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
