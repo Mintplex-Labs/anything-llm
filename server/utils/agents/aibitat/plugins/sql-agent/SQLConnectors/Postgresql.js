@@ -9,7 +9,7 @@ class PostgresSQLConnector {
     }
   ) {
     this.connectionString = config.connectionString;
-    this.schema = config.schema || 'public';
+    this.schema = config.schema || "public";
     this._client = new pgSql.Client({
       connectionString: this.connectionString,
     });
