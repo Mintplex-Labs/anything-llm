@@ -298,6 +298,11 @@ const TRANSLATIONS = {
         only: "때만",
         "desc-end": "답변을 제공합니다.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "채팅 기록",

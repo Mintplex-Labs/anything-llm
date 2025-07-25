@@ -292,6 +292,11 @@ const TRANSLATIONS = {
         only: "仅当",
         "desc-end": "找到文档上下文时。",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "聊天历史记录",

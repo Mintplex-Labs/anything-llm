@@ -300,6 +300,11 @@ const TRANSLATIONS = {
         only: "apenas",
         "desc-end": "se contexto for encontrado nos documentos.",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "Histórico de Chat",
