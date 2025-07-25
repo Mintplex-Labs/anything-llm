@@ -65,7 +65,7 @@ function findMostFrequent(arr) {
 
 
 const parseEngineResponses = async (responses) => {
-    const related_questions = {};
+    const related_questions = [];
     const answers = {};
     const citationsMapping = {};
     const topReferences = {};
@@ -75,7 +75,7 @@ const parseEngineResponses = async (responses) => {
     for (const response of responses) {
         const sourceName = response.sources[0].split('/')[2];
         topReferences[sourceName] = [];
-        related_questions[`model_${index}`] = response.related_questions;
+        related_questions.push(...response.related_questions);
         const textParts = [];
         let lastIndex = 0;
         for (const citation of response.citations) {
