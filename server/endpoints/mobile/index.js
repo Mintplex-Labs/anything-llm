@@ -3,6 +3,10 @@ const { MobileDevice } = require("../../models/mobileDevice");
 const { handleMobileCommand } = require("./utils");
 const { validDeviceToken } = require("./middleware");
 const { reqBody } = require("../../utils/http");
+const {
+  flexUserRoleValid,
+  ROLES,
+} = require("../../utils/middleware/multiUserProtected");
 
 function mobileEndpoints(app) {
   if (!app) return;
@@ -12,15 +16,19 @@ function mobileEndpoints(app) {
    * @param {import("express").Request} request
    * @param {import("express").Response} response
    */
-  app.get("/mobile/devices", [validatedRequest], async (_request, response) => {
-    try {
-      const devices = await MobileDevice.where({});
-      return response.status(200).json({ devices });
-    } catch (e) {
-      console.error(e);
-      response.sendStatus(500).end();
+  app.get(
+    "/mobile/devices",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_request, response) => {
+      try {
+        const devices = await MobileDevice.where({});
+        return response.status(200).json({ devices });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   /**
    * Updates the device status via an updates object.
@@ -29,7 +37,7 @@ function mobileEndpoints(app) {
    */
   app.post(
     "/mobile/update/:id",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const body = reqBody(request);
@@ -52,22 +60,28 @@ function mobileEndpoints(app) {
    * @param {import("express").Request} request
    * @param {import("express").Response} response
    */
-  app.delete("/mobile/:id", [validatedRequest], async (request, response) => {
-    try {
-      const device = await MobileDevice.get({ id: Number(request.params.id) });
-      if (!device)
-        return response.status(404).json({ error: "Device not found" });
-      await MobileDevice.delete(device.id);
-      return response.status(200).json({ message: "Device deleted" });
-    } catch (e) {
-      console.error(e);
-      response.sendStatus(500).end();
+  app.delete(
+    "/mobile/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const device = await MobileDevice.get({
+          id: Number(request.params.id),
+        });
+        if (!device)
+          return response.status(404).json({ error: "Device not found" });
+        await MobileDevice.delete(device.id);
+        return response.status(200).json({ message: "Device deleted" });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.get(
     "/mobile/connect-info",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
         return response
@@ -80,6 +94,10 @@ function mobileEndpoints(app) {
     }
   );
 
+  /**
+   * Checks if the device auth token is valid
+   * against approved devices.
+   */
   app.get("/mobile/auth", [validDeviceToken], async (_, response) => {
     try {
       return response
