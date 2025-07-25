@@ -82,6 +82,7 @@ model users {
   temporary_auth_tokens       temporary_auth_tokens[]
   system_prompt_variables     system_prompt_variables[]
   prompt_history              prompt_history[]
+  desktop_mobile_devices      desktop_mobile_devices[]
 }
 
 model recovery_codes {
@@ -355,4 +356,18 @@ model prompt_history {
   user        users?     @relation(fields: [modifiedBy], references: [id])
 
   @@index([workspaceId])
+}
+
+// Schema specific to mobile app <> Desktop app connection
+model desktop_mobile_devices {
+  id         Int      @id @default(autoincrement())
+  deviceOs   String
+  deviceName String
+  token      String   @unique
+  approved   Boolean  @default(false)
+  userId     Int?
+  createdAt  DateTime @default(now())
+  user       users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

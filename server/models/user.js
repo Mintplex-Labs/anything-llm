@@ -216,6 +216,11 @@ const User = {
     }
   },
 
+  /**
+   * Returns a user object based on the clause provided.
+   * @param {Object} clause - The clause to use to find the user.
+   * @returns {Promise<import("@prisma/client").users|null>} The user object or null if not found.
+   */
   get: async function (clause = {}) {
     try {
       const user = await prisma.users.findFirst({ where: clause });

@@ -164,6 +164,9 @@ export default {
     experimental: () => {
       return `/settings/beta-features`;
     },
+    mobileConnections: () => {
+      return `/settings/mobile-connections`;
+    },
   },
   agents: {
     builder: () => {
