@@ -1,7 +1,7 @@
 const { validatedRequest } = require("../../utils/middleware/validatedRequest");
 const { MobileDevice } = require("../../models/mobileDevice");
 const { handleMobileCommand } = require("./utils");
-const { validDeviceToken } = require("./middleware");
+const { validDeviceToken, validRegistrationToken } = require("./middleware");
 const { reqBody } = require("../../utils/http");
 const {
   flexUserRoleValid,
@@ -21,7 +21,9 @@ function mobileEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
-        const devices = await MobileDevice.where({});
+        const devices = await MobileDevice.where({}, null, null, {
+          user: { select: { id: true, username: true } },
+        });
         return response.status(200).json({ devices });
       } catch (e) {
         console.error(e);
@@ -84,9 +86,9 @@ function mobileEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
-        return response
-          .status(200)
-          .json({ connectionUrl: MobileDevice.connectionURL() });
+        return response.status(200).json({
+          connectionUrl: MobileDevice.connectionURL(response.locals?.user),
+        });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
@@ -116,20 +118,30 @@ function mobileEndpoints(app) {
    * @param {import("express").Request} request
    * @param {import("express").Response} response
    */
-  app.post("/mobile/register", async (request, response) => {
-    try {
-      const body = reqBody(request);
-      const result = await MobileDevice.create(body);
-      if (result.error)
-        return response.status(400).json({ error: result.error });
-      return response
-        .status(200)
-        .json({ token: result.device.token, platform: MobileDevice.platform });
-    } catch (e) {
-      console.error(e);
-      response.sendStatus(500).end();
+  app.post(
+    "/mobile/register",
+    [validRegistrationToken],
+    async (request, response) => {
+      try {
+        const body = reqBody(request);
+        const result = await MobileDevice.create({
+          deviceOs: body.deviceOs,
+          deviceName: body.deviceName,
+          userId: response.locals?.user?.id,
+        });
+
+        if (result.error)
+          return response.status(400).json({ error: result.error });
+        return response.status(200).json({
+          token: result.device.token,
+          platform: MobileDevice.platform,
+        });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.post(
     "/mobile/send/:command",
