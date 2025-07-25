@@ -15,7 +15,7 @@ const { User } = require("../../../models/user");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { getModelTag } = require("../../utils");
 const { createSessionForEngines } = require("../../../aiapplications_utils/sessionManagement");
-const { getEngineResponse } = require("../../../aiapplications_utils/responseGenerator");
+const { getEngineResponse, pareseRelatedQuestions } = require("../../../aiapplications_utils/responseGenerator");
 const { parseEngineResponses } = require("../../../aiapplications_utils/referenceHandler");
 
 function apiWorkspaceThreadEndpoints(app) {
@@ -625,7 +625,8 @@ function apiWorkspaceThreadEndpoints(app) {
         citationsMapping = data.referencesSignedUrls;
         related_questions = data.related_questions;
         bestReferences = data.bestReferences;
-
+        // allow only questions that are not related to metabolic
+        related_questions = pareseRelatedQuestions(related_questions);
 
         answers["user_query"] = message;
         const main_llm_query = JSON.stringify(answers);
