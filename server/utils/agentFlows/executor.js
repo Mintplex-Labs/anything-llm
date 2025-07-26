@@ -27,7 +27,8 @@ class FlowExecutor {
   }
 
   attachLogging(introspectFn = null, loggerFn = null) {
-    this.introspect = introspectFn || ((...args) => console.log("[introspect] ", ...args));
+    this.introspect =
+      introspectFn || ((...args) => console.log("[introspect] ", ...args));
     this.logger = loggerFn || console.info;
   }
 
@@ -178,7 +179,7 @@ class FlowExecutor {
       logger: this.logger,
       aibitat: this.aibitat,
       // Only provide read access to variables
-      getVariable: (name) => this.getVariable(name)
+      getVariable: (name) => this.getVariable(name),
     };
 
     switch (step.type) {
@@ -227,8 +228,9 @@ class FlowExecutor {
     await Telemetry.sendTelemetry("agent_flow_execution_started");
 
     // Initialize variables from flow definition
-    const flowVars = (flow.config.steps.find((s) => s.type === "start")?.config?.variables || [])
-      .reduce((acc, v) => ({ ...acc, [v.name]: v.value }), {});
+    const flowVars = (
+      flow.config.steps.find((s) => s.type === "start")?.config?.variables || []
+    ).reduce((acc, v) => ({ ...acc, [v.name]: v.value }), {});
 
     // Set initial variables
     Object.entries(flowVars).forEach(([key, value]) => {
