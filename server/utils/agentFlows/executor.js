@@ -5,6 +5,19 @@ const executeWebScraping = require("./executors/web-scraping");
 const { Telemetry } = require("../../models/telemetry");
 const { safeJsonParse } = require("../http");
 
+/**
+ * FlowExecutor handles the execution of agent flows.
+ *
+ * Variable Handling:
+ * The executor manages two types of variables:
+ * 1. Flow Variables: Defined in the flow's start block
+ * 2. Result Variables: Created/updated by step execution through resultVariable/responseVariable
+ *
+ * Variables are protected against unintended modifications:
+ * - Only the start block can define initial variables
+ * - Steps can only store results in explicitly defined result variables
+ * - All other variable access is read-only through ${varName} syntax
+ */
 class FlowExecutor {
   constructor() {
     this.variables = {};
@@ -14,9 +27,30 @@ class FlowExecutor {
   }
 
   attachLogging(introspectFn = null, loggerFn = null) {
-    this.introspect =
-      introspectFn || ((...args) => console.log("[introspect] ", ...args));
+    this.introspect = introspectFn || ((...args) => console.log("[introspect] ", ...args));
     this.logger = loggerFn || console.info;
+  }
+
+  /**
+   * Gets a variable's value from storage
+   * @param {string} name Variable name
+   * @returns {any} The stored value or undefined
+   */
+  getVariable(name) {
+    return this.variables[name];
+  }
+
+  /**
+   * Updates a variable's value in storage
+   * @param {string} name Variable name
+   * @param {any} value New value
+   */
+  setVariable(name, value) {
+    const oldValue = this.variables[name];
+    if (oldValue !== value) {
+      this.logger(`[FlowExecutor] Variable "${name}" updated: ${value}`);
+    }
+    this.variables[name] = value;
   }
 
   /**
@@ -99,7 +133,8 @@ class FlowExecutor {
   }
 
   /**
-   * Replaces variables in the config with their values
+   * Replaces variables in text with their stored values
+   * This ensures we only use values from storage, not from LLM output
    * @param {Object} config - The config to replace variables in
    * @returns {Object} The config with variables replaced
    */
@@ -107,6 +142,7 @@ class FlowExecutor {
     const deepReplace = (obj) => {
       if (typeof obj === "string") {
         return obj.replace(/\${([^}]+)}/g, (match, varName) => {
+          // Only use values from storage
           const value = this.getValueFromPath(this.variables, varName);
           return value !== undefined ? value : match;
         });
@@ -133,23 +169,25 @@ class FlowExecutor {
    * @returns {Promise<Object>} The result of the step
    */
   async executeStep(step) {
+    // Replace variables with their stored values
     const config = this.replaceVariables(step.config);
     let result;
-    // Create execution context with introspect
+    // Create a read-only context for executors
     const context = {
       introspect: this.introspect,
-      variables: this.variables,
       logger: this.logger,
       aibitat: this.aibitat,
+      // Only provide read access to variables
+      getVariable: (name) => this.getVariable(name)
     };
 
     switch (step.type) {
       case FLOW_TYPES.START.type:
-        // For start blocks, we just initialize variables if they're not already set
+        // Initialize variables from start block
         if (config.variables) {
           config.variables.forEach((v) => {
-            if (v.name && !this.variables[v.name]) {
-              this.variables[v.name] = v.value || "";
+            if (v.name) {
+              this.setVariable(v.name, v.value || "");
             }
           });
         }
@@ -168,10 +206,10 @@ class FlowExecutor {
         throw new Error(`Unknown flow type: ${step.type}`);
     }
 
-    // Store result in variable if specified
+    // Only update variables through explicit resultVariable assignments
     if (config.resultVariable || config.responseVariable) {
       const varName = config.resultVariable || config.responseVariable;
-      this.variables[varName] = result;
+      this.setVariable(varName, result);
     }
 
     // If directOutput is true, mark this result for direct output
@@ -188,14 +226,17 @@ class FlowExecutor {
   async executeFlow(flow, initialVariables = {}, aibitat) {
     await Telemetry.sendTelemetry("agent_flow_execution_started");
 
-    // Initialize variables with both initial values and any passed-in values
-    this.variables = {
-      ...(
-        flow.config.steps.find((s) => s.type === "start")?.config?.variables ||
-        []
-      ).reduce((acc, v) => ({ ...acc, [v.name]: v.value }), {}),
-      ...initialVariables, // This will override any default values with passed-in values
-    };
+    // Initialize variables from flow definition
+    const flowVars = (flow.config.steps.find((s) => s.type === "start")?.config?.variables || [])
+      .reduce((acc, v) => ({ ...acc, [v.name]: v.value }), {});
+
+    // Set initial variables
+    Object.entries(flowVars).forEach(([key, value]) => {
+      this.setVariable(key, value);
+    });
+    Object.entries(initialVariables).forEach(([key, value]) => {
+      this.setVariable(key, value);
+    });
 
     this.aibitat = aibitat;
     this.attachLogging(aibitat?.introspect, aibitat?.handlerProps?.log);
