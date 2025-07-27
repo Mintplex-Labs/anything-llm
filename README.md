@@ -110,6 +110,12 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAI (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
+  - Supports popular embedding models including:
+    - `nomic-embed-text` - High-quality text embeddings (recommended)
+    - `all-minilm` - Lightweight and fast embeddings
+    - `mxbai-embed-large` - Large context embeddings
+    - `snowflake-arctic-embed` - Optimized for retrieval tasks
+  - Use `curl ollama pull <model-name>` to pull models
 - [LM Studio (all)](https://lmstudio.ai)
 - [Cohere](https://cohere.com/)
 
