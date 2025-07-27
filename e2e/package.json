@@ -1,0 +1,15 @@
+{
+  "name": "anythingllm-e2e",
+  "version": "1.0.0",
+  "description": "End-to-end tests for AnythingLLM using Playwright",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.24.0",
+    "ollama": "^1.0.0"
+  }
+}
+

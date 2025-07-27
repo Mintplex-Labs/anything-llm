@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  ollama-mock:
+    image: nginx:alpine
+    container_name: ollama-mock-test
+    ports:
+      - "11434:80"
+    volumes:
+      - ./nginx-mock.conf:/etc/nginx/nginx.conf
+      - ./mock-responses:/usr/share/nginx/html
+    command: ["nginx", "-g", "daemon off;"]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://localhost/api/version"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge

@@ -119,6 +119,7 @@ export default function OllamaEmbeddingOptions({ settings }) {
 function OllamaEmbeddingModelSelection({ settings, basePath = null }) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hasModalitySupport, setHasModalitySupport] = useState(false);
 
   useEffect(() => {
     async function findCustomModels() {
@@ -130,10 +131,44 @@ function OllamaEmbeddingModelSelection({ settings, basePath = null }) {
       setLoading(true);
       try {
         const { models } = await System.customModels("ollama", null, basePath);
-        setCustomModels(models || []);
+        if (models && models.length > 0) {
+          // Transform models to include friendly labels and additional metadata
+          const enhancedModels = models.map((model) => {
+            const modelName = model.id || model.name || model.modelName;
+            
+            // Create friendly label with backward compatibility
+            let friendlyLabel = modelName;
+            if (modelName.includes('mxbai-embed-large')) {
+              friendlyLabel = `MXBAI Embed Large (Ollama) - ${modelName}`;
+            } else if (modelName.includes('all-minilm')) {
+              friendlyLabel = `All-MiniLM (Sentence Transformers) - ${modelName}`;
+            } else if (modelName.includes('text-embedding')) {
+              friendlyLabel = `Text Embedding (OpenAI Compatible) - ${modelName}`;
+            } else if (/bert/i.test(modelName)) {
+              friendlyLabel = `BERT Embedding - ${modelName}`;
+            } else if (/embed/i.test(modelName)) {
+              friendlyLabel = `Embedding Model - ${modelName}`;
+            }
+            
+            return {
+              id: modelName,
+              name: modelName,
+              friendlyLabel,
+              requiresModalityAPI: modelName.includes('mxbai-embed-large') || /embed.*large/i.test(modelName)
+            };
+          });
+          
+          setCustomModels(enhancedModels);
+          // Check if any models require modality API support
+          setHasModalitySupport(enhancedModels.some(model => model.requiresModalityAPI));
+        } else {
+          setCustomModels([]);
+          setHasModalitySupport(false);
+        }
       } catch (error) {
         console.error("Failed to fetch custom models:", error);
         setCustomModels([]);
+        setHasModalitySupport(false);
       }
       setLoading(false);
     }
@@ -183,8 +218,9 @@ function OllamaEmbeddingModelSelection({ settings, basePath = null }) {
                   key={model.id}
                   value={model.id}
                   selected={settings.EmbeddingModelPref === model.id}
+                  title={model.friendlyLabel}
                 >
-                  {model.id}
+                  {model.friendlyLabel}
                 </option>
               );
             })}
@@ -194,6 +230,14 @@ function OllamaEmbeddingModelSelection({ settings, basePath = null }) {
       <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
         Choose the Ollama model you want to use for generating embeddings.
       </p>
+      {hasModalitySupport && (
+        <div className="flex items-center gap-1 mt-2 p-2 bg-blue-900 bg-opacity-20 rounded-md">
+          <span className="text-blue-400 text-xs">ⓘ</span>
+          <p className="text-xs leading-[18px] font-base text-blue-400">
+            Requires Ollama ≥ v0.1.28 for advanced embedding model filtering
+          </p>
+        </div>
+      )}
     </div>
   );
 }

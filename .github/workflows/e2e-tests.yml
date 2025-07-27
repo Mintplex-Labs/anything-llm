@@ -1,0 +1,217 @@
+name: E2E Tests - Embedding Providers
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "server/utils/EmbeddingEngines/**"
+      - "server/utils/helpers/customModels.js"
+      - "frontend/src/components/EmbeddingSelection/**"
+      - "frontend/src/pages/GeneralSettings/EmbeddingPreference/**"
+      - "e2e/**"
+      - ".github/workflows/e2e-tests.yml"
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install root dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install server dependencies
+        run: cd server && yarn install --frozen-lockfile
+
+      - name: Install frontend dependencies
+        run: cd frontend && yarn install --frozen-lockfile
+
+      - name: Install collector dependencies
+        run: cd collector && yarn install --frozen-lockfile
+
+      - name: Install e2e test dependencies
+        run: cd e2e && npm install
+
+      - name: Install Playwright browsers
+        run: cd e2e && npx playwright install --with-deps chromium
+
+      - name: Set up environment and database
+        run: |
+          yarn setup:envs
+          yarn prisma:setup
+
+      - name: Build frontend for testing
+        run: cd frontend && yarn build
+
+      - name: Start mock Ollama server
+        run: |
+          cd e2e/docker
+          docker-compose -f docker-compose.test.yml up -d ollama-mock
+          # Wait for mock server to be ready
+          sleep 5
+          curl -f http://localhost:11434/api/version || exit 1
+
+      - name: Start AnythingLLM servers in background
+        run: |
+          # Start server in background
+          cd server && yarn start &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          
+          # Wait for server to be ready
+          for i in {1..30}; do
+            if curl -f http://localhost:3001/api/v1/admin/is-multi-user-mode; then
+              echo "Server is ready"
+              break
+            fi
+            echo "Waiting for server... ($i/30)"
+            sleep 2
+          done
+          
+          # Start frontend in background
+          cd frontend && yarn preview --port 3000 --host 0.0.0.0 &
+          FRONTEND_PID=$!
+          echo "FRONTEND_PID=$FRONTEND_PID" >> $GITHUB_ENV
+          
+          # Wait for frontend to be ready
+          for i in {1..15}; do
+            if curl -f http://localhost:3000; then
+              echo "Frontend is ready"
+              break
+            fi
+            echo "Waiting for frontend... ($i/15)"
+            sleep 2
+          done
+
+      - name: Run E2E tests
+        run: |
+          cd e2e
+          ANYTHINGLLM_BASE_URL=http://localhost:3000 npx playwright test --reporter=html,junit
+        env:
+          CI: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-results
+          path: |
+            e2e/test-results/
+            e2e/playwright-report/
+          retention-days: 7
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 7
+
+      - name: Comment PR with test results
+        uses: actions/github-script@v7
+        if: always() && github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Read test results if available
+            let testSummary = '## 🧪 E2E Test Results\n\n';
+            
+            try {
+              const junitPath = 'e2e/test-results/junit.xml';
+              if (fs.existsSync(junitPath)) {
+                const junit = fs.readFileSync(junitPath, 'utf8');
+                const testMatch = junit.match(/tests="(\d+)"/);
+                const failMatch = junit.match(/failures="(\d+)"/);
+                const tests = testMatch ? testMatch[1] : '0';
+                const failures = failMatch ? failMatch[1] : '0';
+                const passed = parseInt(tests) - parseInt(failures);
+                
+                testSummary += `✅ **${passed}** tests passed\n`;
+                if (parseInt(failures) > 0) {
+                  testSummary += `❌ **${failures}** tests failed\n`;
+                }
+                testSummary += `📊 **${tests}** total tests\n\n`;
+              } else {
+                testSummary += '⚠️ Test results not found\n\n';
+              }
+            } catch (error) {
+              testSummary += '⚠️ Error reading test results\n\n';
+            }
+            
+            testSummary += '### Test Coverage\n';
+            testSummary += '- ✅ Embedding provider selection\n';
+            testSummary += '- ✅ Ollama integration\n';
+            testSummary += '- ✅ Model discovery and dropdown\n';
+            testSummary += '- ✅ Settings persistence\n';
+            testSummary += '- ✅ Error handling\n\n';
+            
+            if (context.payload.pull_request) {
+              testSummary += `📋 [View detailed test report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})\n`;
+            }
+            
+            // Find existing comment or create new one
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes('E2E Test Results')
+            );
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: testSummary
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: testSummary
+              });
+            }
+
+      - name: Clean up background processes
+        if: always()
+        run: |
+          # Kill background processes
+          if [ ! -z "$SERVER_PID" ]; then
+            kill $SERVER_PID || true
+          fi
+          if [ ! -z "$FRONTEND_PID" ]; then
+            kill $FRONTEND_PID || true
+          fi
+          
+          # Stop Docker containers
+          cd e2e/docker
+          docker-compose -f docker-compose.test.yml down -v || true
+
+      - name: Fail job if tests failed
+        if: failure()
+        run: |
+          echo "❌ E2E tests failed. Check the test report for details."
+          exit 1

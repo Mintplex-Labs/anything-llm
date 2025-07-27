@@ -989,6 +989,105 @@ function systemEndpoints(app) {
     }
   );
 
+  // Endpoint specifically for Ollama embedding models
+  app.get(
+    "/system/embeddings/providers/ollama/models",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { basePath, authToken = null } = request.query;
+        
+        if (!basePath) {
+          return response.status(400).json({
+            models: [],
+            error: "basePath query parameter is required"
+          });
+        }
+
+        const { models, error } = await getCustomModels(
+          "ollama",
+          authToken,
+          basePath
+        );
+
+        // Helper function to determine parameter recommendations based on model name
+        const getParameterRecommendations = (modelName) => {
+          const name = modelName.toLowerCase();
+          
+          // Specific recommendations for known embedding models
+          if (name.includes('mxbai-embed-large')) {
+            return {
+              maxChunkLength: 8192,
+              temperature: 0.1,
+              recommendedDimensions: 1024,
+              description: "High-quality multilingual embedding model"
+            };
+          }
+          
+          if (name.includes('all-minilm')) {
+            return {
+              maxChunkLength: 4096,
+              temperature: 0.1,
+              recommendedDimensions: 384,
+              description: "Lightweight and fast sentence embedding model"
+            };
+          }
+          
+          if (name.includes('text-embedding')) {
+            return {
+              maxChunkLength: 8192,
+              temperature: 0.1,
+              recommendedDimensions: 1536,
+              description: "OpenAI-compatible text embedding model"
+            };
+          }
+          
+          if (name.includes('bert')) {
+            return {
+              maxChunkLength: 2048,
+              temperature: 0.1,
+              recommendedDimensions: 768,
+              description: "BERT-based embedding model"
+            };
+          }
+          
+          // Default recommendations for unknown models
+          return {
+            maxChunkLength: 8192,
+            temperature: 0.1,
+            recommendedDimensions: 768,
+            description: "General purpose embedding model"
+          };
+        };
+
+        // Transform models to include additional metadata for embeddings
+        const embeddingModels = models.map(model => {
+          const parameterRecommendations = getParameterRecommendations(model.id);
+          
+          return {
+            modelName: model.id,
+            parameterRecommendations,
+            label: `${model.id} - ${parameterRecommendations.description}`,
+            provider: "ollama",
+            type: "embedding",
+            isAvailable: true
+          };
+        });
+
+        return response.status(200).json({
+          models: embeddingModels,
+          error,
+        });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({
+          models: [],
+          error: error.message
+        });
+      }
+    }
+  );
+
   app.post(
     "/system/event-logs",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],

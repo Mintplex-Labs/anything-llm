@@ -1,0 +1,84 @@
+{
+  "models": [
+    {
+      "name": "mxbai-embed-large:latest",
+      "model": "mxbai-embed-large:latest",
+      "modified_at": "2024-01-15T10:30:00Z",
+      "size": 1234567890,
+      "digest": "sha256:dummy1hash",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "bert",
+        "families": ["bert"],
+        "parameter_size": "334M",
+        "quantization_level": "Q4_0",
+        "modality": "embedding"
+      }
+    },
+    {
+      "name": "all-minilm:latest",
+      "model": "all-minilm:latest",
+      "modified_at": "2024-01-15T10:25:00Z",
+      "size": 987654321,
+      "digest": "sha256:dummy2hash",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "bert",
+        "families": ["bert"],
+        "parameter_size": "22M",
+        "quantization_level": "Q4_0",
+        "modality": "embedding"
+      }
+    },
+    {
+      "name": "nomic-embed-text:latest",
+      "model": "nomic-embed-text:latest",
+      "modified_at": "2024-01-15T10:20:00Z",
+      "size": 555666777,
+      "digest": "sha256:dummy3hash",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "nomic-bert",
+        "families": ["nomic-bert"],
+        "parameter_size": "137M",
+        "quantization_level": "Q4_0",
+        "modality": "embedding"
+      }
+    },
+    {
+      "name": "e5-large:latest",
+      "model": "e5-large:latest",
+      "modified_at": "2024-01-15T10:15:00Z",
+      "size": 888999000,
+      "digest": "sha256:dummy4hash",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "bert",
+        "families": ["bert"],
+        "parameter_size": "335M",
+        "quantization_level": "Q4_0",
+        "modality": "embedding"
+      }
+    },
+    {
+      "name": "bert-base-uncased:latest",
+      "model": "bert-base-uncased:latest",
+      "modified_at": "2024-01-15T10:10:00Z",
+      "size": 440123456,
+      "digest": "sha256:dummy5hash",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "bert",
+        "families": ["bert"],
+        "parameter_size": "110M",
+        "quantization_level": "Q4_0",
+        "modality": "embedding"
+      }
+    }
+  ]
+}

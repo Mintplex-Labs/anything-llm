@@ -341,7 +341,7 @@ async function getKoboldCPPModels(basePath = null) {
   }
 }
 
-async function ollamaAIModels(basePath = null, _authToken = null) {
+async function getOllamaTags(basePath = null, _authToken = null) {
   let url;
   try {
     let urlPath = basePath ?? process.env.OLLAMA_BASE_PATH;
@@ -350,7 +350,7 @@ async function ollamaAIModels(basePath = null, _authToken = null) {
       throw new Error("BasePath Cannot end in /!");
     url = urlPath;
   } catch {
-    return { models: [], error: "Not a valid URL." };
+    return [];
   }
 
   const authToken = _authToken || process.env.OLLAMA_AUTH_TOKEN || null;
@@ -362,20 +362,48 @@ async function ollamaAIModels(basePath = null, _authToken = null) {
       return res.json();
     })
     .then((data) => data?.models || [])
-    .then((models) =>
-      models.map((model) => {
-        return { id: model.name };
-      })
-    )
     .catch((e) => {
       console.error(e);
       return [];
     });
 
-  // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!authToken)
-    process.env.OLLAMA_AUTH_TOKEN = authToken;
-  return { models, error: null };
+  return models;
+}
+
+async function ollamaAIModels(basePath = null, _authToken = null) {
+  const authToken = _authToken || process.env.OLLAMA_AUTH_TOKEN || null;
+  
+  try {
+    const allModels = await getOllamaTags(basePath, authToken);
+    
+    // Filter for embedding models using new logic
+    const embeddingModels = allModels.filter(
+      m => m.details?.modality === "embedding" || /embed/i.test(m.name)
+    );
+    
+    // Fallback to old BERT filter for backward compatibility
+    const bertModels = allModels.filter(
+      m => /bert/i.test(m.name)
+    );
+    
+    // Merge results and remove duplicates
+    const combinedModels = [...embeddingModels, ...bertModels];
+    const uniqueModels = combinedModels.filter((model, index, self) =>
+      index === self.findIndex(m => m.name === model.name)
+    );
+    
+    const models = uniqueModels.map((model) => {
+      return { id: model.name };
+    });
+
+    // Api Key was successful so lets save it for future uses
+    if (models.length > 0 && !!authToken)
+      process.env.OLLAMA_AUTH_TOKEN = authToken;
+    return { models, error: null };
+  } catch (e) {
+    console.error("ollamaAIModels error:", e);
+    return { models: [], error: e.message };
+  }
 }
 
 async function getTogetherAiModels(apiKey = null) {
@@ -713,4 +741,5 @@ async function getMoonshotAiModels(_apiKey = null) {
 module.exports = {
   getCustomModels,
   SUPPORT_CUSTOM_MODELS,
+  getOllamaTags,
 };
