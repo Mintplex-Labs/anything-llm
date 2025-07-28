@@ -13,7 +13,7 @@ function utilEndpoints(app) {
           : "single-user",
         vectorDB: process.env.VECTOR_DB || "lancedb",
         storage: await getDiskStorage(),
-        version: getDeploymentVersion(),
+        appVersion: getDeploymentVersion(),
       };
       response.status(200).json(metrics);
     } catch (e) {

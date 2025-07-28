@@ -762,7 +762,7 @@ const System = {
         if (!res.ok) throw new Error("Could not fetch app version.");
         return res.json();
       })
-      .then((res) => res?.version)
+      .then((res) => res?.appVersion)
       .catch(() => null);
 
     if (!newVersion) return null;
