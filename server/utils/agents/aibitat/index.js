@@ -643,6 +643,26 @@ ${this.getHistory({ to: route.to })
         `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
       );
 
+      // If this is an agent flow function call replace variables in between function calls
+      if (name.startsWith("flow_")) {
+        // The args will be passed as initialVariables to the flow
+        // so they need to be the raw ${variable} references
+        const result = await fn.handler(args);
+        return await this.handleExecution(
+          provider,
+          [
+            ...messages,
+            {
+              name,
+              role: "function",
+              content: result,
+            },
+          ],
+          functions,
+          byAgent
+        );
+      }
+
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
 
