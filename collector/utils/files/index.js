@@ -129,7 +129,10 @@ function writeToServerDocuments(
 }
 
 function cleanupTempDocuments() {
-  const tempDir = path.resolve(__dirname, "../../../server/storage/temp-documents");
+  const tempDir = path.resolve(
+    __dirname,
+    "../../../server/storage/temp-documents"
+  );
   if (fs.existsSync(tempDir)) {
     fs.rmSync(tempDir, { recursive: true, force: true });
     fs.mkdirSync(tempDir, { recursive: true });

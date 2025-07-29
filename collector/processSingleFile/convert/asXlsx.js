@@ -35,10 +35,7 @@ async function asXlsx({ fullFilePath = "", filename = "", options = {} }) {
   const outFolderPath = options.parseOnly
     ? path.resolve(__dirname, "../../../server/storage/temp-documents")
     : process.env.NODE_ENV === "development"
-    ? path.resolve(
-        __dirname,
-        `../../../server/storage/documents/${folderName}`
-      )
+    ? path.resolve(__dirname, `../../../server/storage/documents/${folderName}`)
     : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
 
   try {

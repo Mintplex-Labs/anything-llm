@@ -71,7 +71,10 @@ app.post(
         success,
         reason,
         documents = [],
-      } = await processSingleFile(targetFilename, { ...options, parseOnly: true });
+      } = await processSingleFile(targetFilename, {
+        ...options,
+        parseOnly: true,
+      });
       response
         .status(200)
         .json({ filename: targetFilename, success, reason, documents });
