@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import _regeneratorRuntime from "regenerator-runtime";
@@ -19,6 +19,8 @@ const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
  * @returns {React.ReactElement} The SpeechToText component
  */
 export default function SpeechToText({ sendCommand }) {
+  const lastTranscriptLength = useRef(0);
+  const insertPosition = useRef(null);
   const {
     transcript,
     listening,
@@ -30,6 +32,7 @@ export default function SpeechToText({ sendCommand }) {
     clearTranscriptOnListen: true,
   });
   const { t } = useTranslation();
+
   function startSTTSession() {
     if (!isMicrophoneAvailable) {
       alert(
@@ -38,6 +41,12 @@ export default function SpeechToText({ sendCommand }) {
       return;
     }
 
+    const textareaElement = document.getElementById("prompt-textarea");
+    if (textareaElement) {
+      insertPosition.current = textareaElement.selectionStart;
+    }
+
+    lastTranscriptLength.current = 0;
     resetTranscript();
     SpeechRecognition.startListening({
       continuous: browserSupportsContinuousListening,
@@ -47,10 +56,8 @@ export default function SpeechToText({ sendCommand }) {
 
   function endSTTSession() {
     SpeechRecognition.stopListening();
-    if (transcript.length > 0) {
-      sendCommand(transcript, Appearance.get("autoSubmitSttInput"));
-    }
-
+    lastTranscriptLength.current = 0;
+    insertPosition.current = null;
     resetTranscript();
     clearTimeout(timeout);
   }
@@ -92,7 +99,24 @@ export default function SpeechToText({ sendCommand }) {
 
   useEffect(() => {
     if (transcript?.length > 0 && listening) {
-      sendCommand(transcript, false);
+      // Keep track of transcript chunks in order to continue inserting at the correct position
+      const newText = transcript.slice(lastTranscriptLength.current);
+      if (newText.length > 0) {
+        const textareaElement = document.getElementById("prompt-textarea");
+        sendCommand(newText, false, [], [], {
+          insertAtCursor: true,
+          cursorPosition: insertPosition.current,
+          textareaRef: textareaElement,
+        });
+
+        // Update position for next chunk if transcribing
+        if (insertPosition.current !== null) {
+          insertPosition.current += newText.length;
+        }
+
+        lastTranscriptLength.current = transcript.length;
+      }
+
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         endSTTSession();

@@ -262,6 +262,7 @@ export default function PromptInput({
             <div className="flex items-center border-b border-theme-chat-input-border mx-3">
               <textarea
                 ref={textareaRef}
+                id="prompt-textarea"
                 onChange={handleChange}
                 onKeyDown={captureEnterOrUndo}
                 onPaste={(e) => {

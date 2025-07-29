@@ -107,10 +107,35 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     command,
     submit = false,
     history = [],
-    attachments = []
+    attachments = [],
+    options = { insertAtCursor: false, cursorPosition: null, textareaRef: null }
   ) => {
     if (!command || command === "") return false;
     if (!submit) {
+      if (options.insertAtCursor) {
+        // Keep track of the cursor position during transcription
+        const textareaElement =
+          options.textareaRef || document.getElementById("prompt-textarea");
+        if (textareaElement) {
+          const start =
+            options.cursorPosition !== null
+              ? options.cursorPosition
+              : textareaElement.selectionStart;
+          const currentValue = textareaElement.value;
+          const newValue =
+            currentValue.slice(0, start) + command + currentValue.slice(start);
+
+          setMessageEmit(newValue);
+
+          // Only set cursor position if not transcribing
+          if (options.cursorPosition === null) {
+            const newCursorPos = start + command.length;
+            textareaElement.selectionStart = newCursorPos;
+            textareaElement.selectionEnd = newCursorPos;
+          }
+          return;
+        }
+      }
       setMessageEmit(command);
       return;
     }
