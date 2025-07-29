@@ -73,6 +73,9 @@ const parseEngineResponses = async (responses) => {
     let index = 0;
     
     for (const response of responses) {
+        if (response.answer === "No results could be found. Try rephrasing the search query.") {
+            continue;
+        }
         const sourceName = response.sources[0].split('/')[2];
         topReferences[sourceName] = [];
         related_questions.push(...response.related_questions);
