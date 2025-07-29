@@ -99,10 +99,13 @@ function createdDate(filepath) {
 function writeToServerDocuments(
   data = {},
   filename,
-  destinationOverride = null
+  destinationOverride = null,
+  options = {}
 ) {
   const destination = destinationOverride
     ? path.resolve(destinationOverride)
+    : options.parseOnly
+    ? path.resolve(__dirname, "../../../server/storage/temp-documents")
     : path.resolve(
         __dirname,
         "../../../server/storage/documents/custom-documents"
@@ -121,7 +124,16 @@ function writeToServerDocuments(
     // that will work since we know the location exists and since we only allow
     // 1-level deep folders this will always work. This still works for integrations like GitHub and YouTube.
     location: destinationFilePath.split("/").slice(-2).join("/"),
+    isTemporary: !!options.parseOnly,
   };
+}
+
+function cleanupTempDocuments() {
+  const tempDir = path.resolve(__dirname, "../../../server/storage/temp-documents");
+  if (fs.existsSync(tempDir)) {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+    fs.mkdirSync(tempDir, { recursive: true });
+  }
 }
 
 // When required we can wipe the entire collector hotdir and tmp storage in case
@@ -199,4 +211,5 @@ module.exports = {
   isWithin,
   sanitizeFileName,
   documentsFolder,
+  cleanupTempDocuments,
 };

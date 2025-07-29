@@ -11,7 +11,7 @@ const { ACCEPTED_MIMES } = require("./utils/constants");
 const { reqBody } = require("./utils/http");
 const { processSingleFile } = require("./processSingleFile");
 const { processLink, getLinkText } = require("./processLink");
-const { wipeCollectorStorage } = require("./utils/files");
+const { wipeCollectorStorage, cleanupTempDocuments } = require("./utils/files");
 const extensions = require("./extensions");
 const { processRawText } = require("./processRawText");
 const { verifyPayloadIntegrity } = require("./middleware/verifyIntegrity");
@@ -42,6 +42,36 @@ app.post(
         reason,
         documents = [],
       } = await processSingleFile(targetFilename, options);
+      response
+        .status(200)
+        .json({ filename: targetFilename, success, reason, documents });
+    } catch (e) {
+      console.error(e);
+      response.status(200).json({
+        filename: filename,
+        success: false,
+        reason: "A processing error occurred.",
+        documents: [],
+      });
+    }
+    return;
+  }
+);
+
+app.post(
+  "/parse",
+  [verifyPayloadIntegrity],
+  async function (request, response) {
+    const { filename, options = {} } = reqBody(request);
+    try {
+      const targetFilename = path
+        .normalize(filename)
+        .replace(/^(\.\.(\/|\\|$))+/, "");
+      const {
+        success,
+        reason,
+        documents = [],
+      } = await processSingleFile(targetFilename, { ...options, parseOnly: true });
       response
         .status(200)
         .json({ filename: targetFilename, success, reason, documents });
@@ -143,6 +173,7 @@ app.all("*", function (_, response) {
 app
   .listen(8888, async () => {
     await wipeCollectorStorage();
+    await cleanupTempDocuments();
     console.log(`Document processor app listening on port 8888`);
   })
   .on("error", function (_) {

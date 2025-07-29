@@ -25,20 +25,21 @@ function convertToCSV(data) {
     .join("\n");
 }
 
-async function asXlsx({ fullFilePath = "", filename = "" }) {
+async function asXlsx({ fullFilePath = "", filename = "", options = {} }) {
   const documents = [];
   const folderName = slugify(`${path.basename(filename)}-${v4().slice(0, 4)}`, {
     lower: true,
     trim: true,
   });
 
-  const outFolderPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(
-          __dirname,
-          `../../../server/storage/documents/${folderName}`
-        )
-      : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
+  const outFolderPath = options.parseOnly
+    ? path.resolve(__dirname, "../../../server/storage/temp-documents")
+    : process.env.NODE_ENV === "development"
+    ? path.resolve(
+        __dirname,
+        `../../../server/storage/documents/${folderName}`
+      )
+    : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
 
   try {
     const workSheetsFromFile = xlsx.parse(fullFilePath);
@@ -73,7 +74,8 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
         const document = writeToServerDocuments(
           sheetData,
           `sheet-${slugify(name)}`,
-          outFolderPath
+          outFolderPath,
+          options
         );
         documents.push(document);
         console.log(

@@ -59,7 +59,9 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
     item++;
     const document = writeToServerDocuments(
       data,
-      `${slugify(filename)}-${data.id}-msg-${item}`
+      `${slugify(filename)}-${data.id}`,
+      null,
+      options
     );
     documents.push(document);
   }
