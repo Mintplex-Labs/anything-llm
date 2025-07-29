@@ -76,6 +76,9 @@ const parseEngineResponses = async (responses) => {
         if (response.answer === "No results could be found. Try rephrasing the search query.") {
             continue;
         }
+        if (!response.sources || response.sources.length === 0) {
+            continue;
+        }
         const sourceName = response.sources[0].split('/')[2];
         topReferences[sourceName] = [];
         related_questions.push(...response.related_questions);
