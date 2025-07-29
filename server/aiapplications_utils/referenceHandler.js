@@ -73,7 +73,6 @@ const parseEngineResponses = async (responses) => {
     let index = 0;
     
     for (const response of responses) {
-        console.log(response);
         if (response.answer === "No results could be found. Try rephrasing the search query.") {
             continue;
         }
