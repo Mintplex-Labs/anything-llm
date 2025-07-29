@@ -111,7 +111,7 @@ async function chatSync({
       .then(async ({ thoughts, textResponse }) => {
         await WorkspaceChats.new({
           workspaceId: workspace.id,
-          prompt: String(message),
+          prompt: String(message_db_save),
           response: {
             text: textResponse,
             sources: [],
@@ -152,7 +152,7 @@ async function chatSync({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: String(message),
+      prompt: String(message_db_save),
       response: {
         text: textResponse,
         sources: [],
@@ -265,7 +265,7 @@ async function chatSync({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: message,
+      prompt: message_db_save,
       response: {
         text: textResponse,
         sources: [],
@@ -323,7 +323,7 @@ async function chatSync({
 
   const { chat } = await WorkspaceChats.new({
     workspaceId: workspace.id,
-    prompt: message,
+    prompt: message_db_save,
     response: {
       text: textResponse,
       sources,
@@ -441,7 +441,7 @@ async function streamChat({
       .then(async ({ thoughts, textResponse }) => {
         await WorkspaceChats.new({
           workspaceId: workspace.id,
-          prompt: String(message),
+          prompt: String(message_db_save),
           response: {
             text: textResponse,
             sources: [],
@@ -684,7 +684,7 @@ async function streamChat({
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: message,
+      prompt: message_db_save,
       response: {
         text: completeText,
         sources,

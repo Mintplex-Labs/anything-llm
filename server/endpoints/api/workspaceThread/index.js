@@ -17,6 +17,7 @@ const { getModelTag } = require("../../utils");
 const { createSessionForEngines } = require("../../../aiapplications_utils/sessionManagement");
 const { getEngineResponse, pareseRelatedQuestions } = require("../../../aiapplications_utils/responseGenerator");
 const { parseEngineResponses } = require("../../../aiapplications_utils/referenceHandler");
+const { performance } = require('perf_hooks');
 
 function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
@@ -262,7 +263,7 @@ function apiWorkspaceThreadEndpoints(app) {
   );
 
   app.get(
-    "/v1/workspace/:slug/thread/:threadSlug/chats",
+    "/v1/workspace/:slug/thread/:threadSlug/chats/:user_pseudo_id",
     [validApiKey],
     async (request, response) => {
       /*
@@ -310,11 +311,12 @@ function apiWorkspaceThreadEndpoints(app) {
       }
       */
       try {
-        const { slug, threadSlug } = request.params;
+        const { slug, threadSlug, user_pseudo_id } = request.params;
         const workspace = await Workspace.get({ slug });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
           workspace_id: workspace.id,
+          user_pseudo_id: user_pseudo_id,
         });
 
         if (!workspace || !thread) {
@@ -484,6 +486,174 @@ function apiWorkspaceThreadEndpoints(app) {
   );
 
   app.post(
+    "/v1/workspace/:slug/thread/shared",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Workspace Threads']
+      #swagger.description = 'Create a new workspace thread'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace',
+          required: true,
+          type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'Optional userId associated with the thread, thread slug and thread name',
+        required: false,
+        content: {
+          "application/json": {
+            example: {
+              userId: 1,
+              name: 'Name',
+              slug: 'thread-slug'
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                thread: {
+                  "id": 1,
+                  "name": "Thread",
+                  "slug": "thread-uuid",
+                  "user_id": 1,
+                  "workspace_id": 1
+                },
+                message: null
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const wslug = request.params.slug;
+        let { userId = null, name = null, slug = null, user_pseudo_id = null, chatId = null, share_uuid = null } = reqBody(request);
+        const chatIdNumber = Number(chatId);
+
+        // check if chat with chatId is shared, return error if not
+        const chat = await WorkspaceChats.get({ id: chatIdNumber, share_uuid: share_uuid });
+        if ( !chat) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `Chat ${chatId} is not shared or the url is not valid.`,
+          });
+          return;
+        }
+
+        const workspace = await Workspace.get({ slug: wslug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        // If the system is not multi-user and you pass in a userId
+        // it needs to be nullified as no users exist. This can still fail validation
+        // as we don't check if the userID is valid.
+        if (!response.locals.multiUserMode && !!userId) userId = null;
+
+        // create new thread
+        const engines_session_ids = await createSessionForEngines(user_pseudo_id);
+
+        const { thread, message } = await WorkspaceThread.new(
+          workspace,
+          userId ? Number(userId) : null,
+          { name, slug },
+          user_pseudo_id,
+          engines_session_ids
+        );
+
+        await Telemetry.sendTelemetry("workspace_thread_created", {
+          multiUserMode: multiUserMode(response),
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          TTSSelection: process.env.TTS_PROVIDER || "native",
+        });
+        await EventLogs.logEvent("api_workspace_thread_created", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+        });
+
+        // add user's and model's messages to the thread
+        await WorkspaceChats.new({
+          workspaceId: workspace.id,
+          thread_id: thread.id,
+          prompt: chat.prompt,
+          response: JSON.parse(chat.response)
+        });
+
+        // send the user message to engines
+        const user_message = chat.prompt;
+        const model_message = JSON.parse(chat.response).text;
+        const engine_ids = Object.keys(engines_session_ids);
+        const promises = engine_ids.map(engine_id => {
+          const session_id = engines_session_ids[engine_id];
+          return getEngineResponse(engine_id, user_message, session_id);
+        });
+        const responses = await Promise.all(promises);
+        
+        response.status(201).json({ thread, user_message, model_message });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // mark chat as shared
+  app.post(
+    "/v1/workspace/:slug/thread/:threadSlug/chat/:chatId/share",
+    [validApiKey],
+    async (request, response) => {
+      const { slug, threadSlug, chatId } = request.params;
+      const { user_pseudo_id } = reqBody(request);
+      const thread = await WorkspaceThread.get({ slug: threadSlug, user_pseudo_id: user_pseudo_id });
+      if (!thread) {
+        response.status(400).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: `Thread ${threadSlug} is not valid.`,
+        });
+        return;
+      }
+      const chatIdNumber = Number(chatId);
+      const chat = await WorkspaceChats.get({ id: chatIdNumber });
+      if (!chat) {
+        response.status(400).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: `Chat ${chatId} is not valid.`,
+        });
+        return;
+      }
+      const share_uuid = uuidv4();
+      await WorkspaceChats._update(chatIdNumber, { share_uuid: share_uuid });
+      response.status(200).json({ share_uuid: share_uuid });
+    }
+  )
+
+  app.post(
     "/v1/workspace/:slug/thread/:threadSlug/stream-chat",
     [validApiKey],
     async (request, response) => {
@@ -612,14 +782,18 @@ function apiWorkspaceThreadEndpoints(app) {
         const user = userId ? await User.get({ id: Number(userId) }) : null;
         const engines_session_ids = thread.engines_session_ids || {};
 
+        const start_engines = performance.now();
         // get responses from ai applications engines
         const engine_ids = Object.keys(engines_session_ids);
         const promises = engine_ids.map(engine_id => {
           const session_id = engines_session_ids[engine_id];
           return getEngineResponse(engine_id, message, session_id);
         });
-
         const responses = await Promise.all(promises);
+        const end_engines = performance.now();
+        console.log(`Time taken to get responses from engines: ${((end_engines - start_engines) / 1000).toFixed(2)} seconds`);
+
+        const start_parse = performance.now();
         const data = await parseEngineResponses(responses);
         answers = data.answers;
         citationsMapping = data.referencesSignedUrls;
@@ -627,6 +801,8 @@ function apiWorkspaceThreadEndpoints(app) {
         bestReferences = data.bestReferences;
         // allow only questions that are not related to metabolic
         related_questions = pareseRelatedQuestions(related_questions);
+        const end_parse = performance.now();
+        console.log(`Time taken to parse responses from engines: ${((end_parse - start_parse) / 1000).toFixed(2)} seconds`);
 
         answers["user_query"] = message;
         const main_llm_query = JSON.stringify(answers);
