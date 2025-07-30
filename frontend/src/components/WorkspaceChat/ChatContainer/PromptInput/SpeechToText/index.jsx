@@ -48,7 +48,10 @@ export default function SpeechToText({ sendCommand }) {
   function endSTTSession() {
     SpeechRecognition.stopListening();
     if (transcript.length > 0) {
-      sendCommand(transcript, Appearance.get("autoSubmitSttInput"));
+      sendCommand({
+        text: transcript,
+        autoSubmit: Appearance.get("autoSubmitSttInput"),
+      });
     }
 
     resetTranscript();
@@ -92,7 +95,7 @@ export default function SpeechToText({ sendCommand }) {
 
   useEffect(() => {
     if (transcript?.length > 0 && listening) {
-      sendCommand(transcript, false);
+      sendCommand({ text: transcript });
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         endSTTSession();

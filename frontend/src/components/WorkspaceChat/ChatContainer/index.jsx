@@ -85,33 +85,34 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     const lastUserMessage = updatedHistory.slice(-1)[0];
     Workspace.deleteChats(workspace.slug, [chatId])
       .then(() =>
-        sendCommand(
-          lastUserMessage.content,
-          true,
-          updatedHistory,
-          lastUserMessage?.attachments
-        )
+        sendCommand({
+          text: lastUserMessage.content,
+          autoSubmit: true,
+          history: updatedHistory,
+          attachments: lastUserMessage?.attachments,
+        })
       )
       .catch((e) => console.error(e));
   };
 
   /**
    * Send a command to the LLM prompt input.
-   * @param {string} command - The command to send to the LLM
-   * @param {boolean} submit - Whether the command was submitted (default: false)
-   * @param {Object[]} history - The history of the chat
-   * @param {Object[]} attachments - The attachments to send to the LLM
-   * @returns {boolean} - Whether the command was sent successfully
+   * @param {Object} options - Arguments to send to the LLM
+   * @param {string} options.text - The text to send to the LLM
+   * @param {boolean} options.autoSubmit - Determines if the text should be sent immediately or if it should be added to the message state (default: false)
+   * @param {Object[]} options.history - The history of the chat prior to this message for overriding the current chat history
+   * @param {Object[import("./DnDWrapper").Attachment]} options.attachments - The attachments to send to the LLM for this message
+   * @returns {void}
    */
-  const sendCommand = async (
-    command,
-    submit = false,
+  const sendCommand = async ({
+    text = "",
+    autoSubmit = false,
     history = [],
-    attachments = []
-  ) => {
-    if (!command || command === "") return false;
-    if (!submit) {
-      setMessageEmit(command);
+    attachments = [],
+  } = {}) => {
+    if (!text || text === "") return false;
+    if (!autoSubmit) {
+      setMessageEmit(text);
       return;
     }
 
@@ -124,7 +125,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           content: "",
           role: "assistant",
           pending: true,
-          userMessage: command,
+          userMessage: text,
           attachments,
           animate: true,
         },
@@ -133,7 +134,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       prevChatHistory = [
         ...chatHistory,
         {
-          content: command,
+          content: text,
           role: "user",
           attachments,
         },
@@ -141,7 +142,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           content: "",
           role: "assistant",
           pending: true,
-          userMessage: command,
+          userMessage: text,
           animate: true,
         },
       ];
