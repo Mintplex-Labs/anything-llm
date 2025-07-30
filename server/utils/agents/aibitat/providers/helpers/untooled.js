@@ -89,9 +89,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     if (
       !functionCall ||
       !functionCall?.hasOwnProperty("name") ||
-      !functionCall?.hasOwnProperty("arguments") ||
-      !functionCall.arguments || // arguments must be an object - even if empty
-      !functionCall.name // name must be a string
+      !functionCall?.hasOwnProperty("arguments")
     ) {
       return {
         valid: false,
