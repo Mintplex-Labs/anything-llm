@@ -45,40 +45,11 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
   }
 
   /**
-   * Check if two arrays of strings or numbers have the same values
-   * @param {string[]|number[]} arr1
-   * @param {string[]|number[]} arr2
-   * @param {Object} [opts]
-   * @param {boolean} [opts.enforceOrder] - By default (false), the order of the values in the arrays doesn't matter.
-   * @return {boolean}
+   * Validate a function call against a list of functions.
+   * @param {{name: string, arguments: Object}} functionCall - The function call to validate.
+   * @param {Object[]} functions - The list of functions definitions to validate against.
+   * @return {{valid: boolean, reason: string|null}} - The validation result.
    */
-  compareArrays(arr1, arr2, opts) {
-    function vKey(i, v) {
-      return (opts?.enforceOrder ? `${i}-` : "") + `${typeof v}-${v}`;
-    }
-
-    if (arr1.length !== arr2.length) return false;
-
-    const d1 = {};
-    const d2 = {};
-    for (let i = arr1.length - 1; i >= 0; i--) {
-      d1[vKey(i, arr1[i])] = true;
-      d2[vKey(i, arr2[i])] = true;
-    }
-
-    for (let i = arr1.length - 1; i >= 0; i--) {
-      const v = vKey(i, arr1[i]);
-      if (d1[v] !== d2[v]) return false;
-    }
-
-    for (let i = arr2.length - 1; i >= 0; i--) {
-      const v = vKey(i, arr2[i]);
-      if (d1[v] !== d2[v]) return false;
-    }
-
-    return true;
-  }
-
   validFuncCall(functionCall = {}, functions = []) {
     if (
       !functionCall ||
@@ -92,14 +63,31 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     }
 
     const foundFunc = functions.find((def) => def.name === functionCall.name);
-    if (!foundFunc) {
+    if (!foundFunc)
       return { valid: false, reason: "Function name does not exist." };
+
+    const schemaProps = Object.keys(foundFunc?.parameters?.properties || {});
+    const requiredProps = foundFunc?.parameters?.required || [];
+    const providedProps = Object.keys(functionCall.arguments);
+
+    for (const requiredProp of requiredProps) {
+      if (!providedProps.includes(requiredProp)) {
+        return {
+          valid: false,
+          reason: `Missing required argument: ${requiredProp}`,
+        };
+      }
     }
 
-    const props = Object.keys(foundFunc.parameters.properties);
-    const fProps = Object.keys(functionCall.arguments);
-    if (!this.compareArrays(props, fProps)) {
-      return { valid: false, reason: "Invalid argument schema match." };
+    // Ensure all provided arguments are valid for the schema
+    // This is to prevent the model from hallucinating or providing invalid additional arguments.
+    for (const providedProp of providedProps) {
+      if (!schemaProps.includes(providedProp)) {
+        return {
+          valid: false,
+          reason: `Unknown argument: ${providedProp} provided but not in schema.`,
+        };
+      }
     }
 
     return { valid: true, reason: null };
