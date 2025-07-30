@@ -62,10 +62,10 @@ async function scrapeGenericUrl({
     token_count_estimate: tokenizeString(content),
   };
 
-  const document = writeToServerDocuments(
+  const document = writeToServerDocuments({
     data,
-    `url-${slugify(filename)}-${data.id}`
-  );
+    filename: `url-${slugify(filename)}-${data.id}`,
+  });
   console.log(`[SUCCESS]: URL ${link} converted & ready for embedding.\n`);
   return { success: true, reason: null, documents: [document] };
 }

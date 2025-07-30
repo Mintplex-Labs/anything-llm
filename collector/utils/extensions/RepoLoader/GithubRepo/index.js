@@ -71,11 +71,11 @@ async function loadGithubRepo(args, response) {
     console.log(
       `[GitHub Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
-    writeToServerDocuments(
+    writeToServerDocuments({
       data,
-      `${slugify(doc.metadata.source)}-${data.id}`,
-      outFolderPath
-    );
+      filename: `${slugify(doc.metadata.source)}-${data.id}`,
+      destinationOverride: outFolderPath,
+    });
   }
 
   return {

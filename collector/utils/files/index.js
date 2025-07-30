@@ -96,11 +96,21 @@ function createdDate(filepath) {
   }
 }
 
-function writeToServerDocuments(
+/**
+ * Writes a document to the server documents folder.
+ * @param {Object} params - The parameters for the function.
+ * @param {Object} params.data - The data to write to the file. Must look like a document object.
+ * @param {string} params.filename - The name of the file to write to.
+ * @param {string|null} params.destinationOverride - A forced destination to write to - will be honored if provided.
+ * @returns {Object} - The data with the location added.
+ */
+function writeToServerDocuments({
   data = {},
-  filename,
-  destinationOverride = null
-) {
+  filename = null,
+  destinationOverride = null,
+}) {
+  if (!filename) throw new Error("Filename is required!");
+
   let destination = null;
   if (destinationOverride) destination = path.resolve(destinationOverride);
   else destination = path.resolve(documentsFolder, "custom-documents");
