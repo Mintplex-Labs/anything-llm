@@ -128,17 +128,6 @@ function writeToServerDocuments(
   };
 }
 
-function cleanupTempDocuments() {
-  const tempDir = path.resolve(
-    __dirname,
-    "../../../server/storage/temp-documents"
-  );
-  if (fs.existsSync(tempDir)) {
-    fs.rmSync(tempDir, { recursive: true, force: true });
-    fs.mkdirSync(tempDir, { recursive: true });
-  }
-}
-
 // When required we can wipe the entire collector hotdir and tmp storage in case
 // there were some large file failures that we unable to be removed a reboot will
 // force remove them.
@@ -214,5 +203,4 @@ module.exports = {
   isWithin,
   sanitizeFileName,
   documentsFolder,
-  cleanupTempDocuments,
 };
