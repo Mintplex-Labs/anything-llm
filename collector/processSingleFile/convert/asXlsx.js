@@ -67,12 +67,12 @@ async function asXlsx({ fullFilePath = "", filename = "", options = {} }) {
           token_count_estimate: tokenizeString(content),
         };
 
-        const document = writeToServerDocuments(
-          sheetData,
-          `sheet-${slugify(name)}`,
-          outFolderPath,
-          options
-        );
+        const document = writeToServerDocuments({
+          data: sheetData,
+          filename: `sheet-${slugify(name)}`,
+          destinationOverride: outFolderPath,
+          options: { parseOnly: options.parseOnly },
+        });
         documents.push(document);
         console.log(
           `[SUCCESS]: Sheet "${name}" converted & ready for embedding.`

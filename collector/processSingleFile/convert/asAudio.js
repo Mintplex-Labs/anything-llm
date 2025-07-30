@@ -59,12 +59,11 @@ async function asAudio({ fullFilePath = "", filename = "", options = {} }) {
     token_count_estimate: tokenizeString(content),
   };
 
-  const document = writeToServerDocuments(
+  const document = writeToServerDocuments({
     data,
-    `${slugify(filename)}-${data.id}`,
-    null,
-    options
-  );
+    filename: `${slugify(filename)}-${data.id}`,
+    options: { parseOnly: options.parseOnly },
+  });
   trashFile(fullFilePath);
   console.log(
     `[SUCCESS]: ${filename} transcribed, converted & ready for embedding.\n`

@@ -57,12 +57,11 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
     };
 
     item++;
-    const document = writeToServerDocuments(
+    const document = writeToServerDocuments({
       data,
-      `${slugify(filename)}-${data.id}-msg-${item}`,
-      null,
-      options
-    );
+      filename: `${slugify(filename)}-${data.id}-msg-${item}`,
+      options: { parseOnly: options.parseOnly },
+    });
     documents.push(document);
   }
 

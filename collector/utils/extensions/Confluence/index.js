@@ -116,7 +116,11 @@ async function loadConfluence(
     const fileName = sanitizeFileName(
       `${slugify(doc.metadata.title)}-${data.id}`
     );
-    writeToServerDocuments(data, fileName, outFolderPath);
+    writeToServerDocuments({
+      data,
+      filename: fileName,
+      destinationOverride: outFolderPath,
+    });
   });
 
   return {
