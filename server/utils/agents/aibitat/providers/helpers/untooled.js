@@ -79,11 +79,19 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     return true;
   }
 
+  /**
+   * Validate a function call against a list of functions.
+   * @param {{name: string, arguments: Object}} functionCall - The function call to validate.
+   * @param {Object[]} functions - The list of functions definitions to validate against.
+   * @return {{valid: boolean, reason: string|null}} - The validation result.
+   */
   validFuncCall(functionCall = {}, functions = []) {
     if (
       !functionCall ||
       !functionCall?.hasOwnProperty("name") ||
-      !functionCall?.hasOwnProperty("arguments")
+      !functionCall?.hasOwnProperty("arguments") ||
+      !functionCall.arguments || // arguments must be an object - even if empty
+      !functionCall.name // name must be a string
     ) {
       return {
         valid: false,
@@ -92,14 +100,31 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     }
 
     const foundFunc = functions.find((def) => def.name === functionCall.name);
-    if (!foundFunc) {
+    if (!foundFunc)
       return { valid: false, reason: "Function name does not exist." };
+
+    const schemaProps = Object.keys(foundFunc?.parameters?.properties || {});
+    const requiredProps = foundFunc?.parameters?.required || [];
+    const providedProps = Object.keys(functionCall.arguments);
+
+    for (const requiredProp of requiredProps) {
+      if (!providedProps.includes(requiredProp)) {
+        return {
+          valid: false,
+          reason: `Missing required argument: ${requiredProp}`,
+        };
+      }
     }
 
-    const props = Object.keys(foundFunc.parameters.properties);
-    const fProps = Object.keys(functionCall.arguments);
-    if (!this.compareArrays(props, fProps)) {
-      return { valid: false, reason: "Invalid argument schema match." };
+    // Ensure all provided arguments are valid for the schema
+    // This is to prevent the model from hallucinating or providing invalid additional arguments.
+    for (const providedProp of providedProps) {
+      if (!schemaProps.includes(providedProp)) {
+        return {
+          valid: false,
+          reason: `Unknown argument: ${providedProp} provided but not in schema.`,
+        };
+      }
     }
 
     return { valid: true, reason: null };
