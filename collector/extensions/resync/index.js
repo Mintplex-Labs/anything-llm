@@ -62,6 +62,8 @@ async function resyncConfluence({ chunkSource }, response) {
       spaceKey: source.searchParams.get('spaceKey'),
       accessToken: source.searchParams.get('token'),
       username: source.searchParams.get('username'),
+      cloud: source.searchParams.get('cloud') === 'true',
+      bypassSSL: source.searchParams.get('bypassSSL') === 'true',
     });
 
     if (!success) throw new Error(`Failed to sync Confluence page content. ${reason}`);
