@@ -45,41 +45,6 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
   }
 
   /**
-   * Check if two arrays of strings or numbers have the same values
-   * @param {string[]|number[]} arr1
-   * @param {string[]|number[]} arr2
-   * @param {Object} [opts]
-   * @param {boolean} [opts.enforceOrder] - By default (false), the order of the values in the arrays doesn't matter.
-   * @return {boolean}
-   */
-  compareArrays(arr1, arr2, opts) {
-    function vKey(i, v) {
-      return (opts?.enforceOrder ? `${i}-` : "") + `${typeof v}-${v}`;
-    }
-
-    if (arr1.length !== arr2.length) return false;
-
-    const d1 = {};
-    const d2 = {};
-    for (let i = arr1.length - 1; i >= 0; i--) {
-      d1[vKey(i, arr1[i])] = true;
-      d2[vKey(i, arr2[i])] = true;
-    }
-
-    for (let i = arr1.length - 1; i >= 0; i--) {
-      const v = vKey(i, arr1[i]);
-      if (d1[v] !== d2[v]) return false;
-    }
-
-    for (let i = arr2.length - 1; i >= 0; i--) {
-      const v = vKey(i, arr2[i]);
-      if (d1[v] !== d2[v]) return false;
-    }
-
-    return true;
-  }
-
-  /**
    * Validate a function call against a list of functions.
    * @param {{name: string, arguments: Object}} functionCall - The function call to validate.
    * @param {Object[]} functions - The list of functions definitions to validate against.
