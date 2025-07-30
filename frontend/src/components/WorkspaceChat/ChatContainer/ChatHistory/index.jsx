@@ -82,10 +82,7 @@ export default function ChatHistory({
   };
 
   const handleSendSuggestedMessage = (heading, message) => {
-    sendCommand({
-      text: `${heading} ${message}`,
-      autoSubmit: true,
-    });
+    sendCommand({ text: `${heading} ${message}`, autoSubmit: true });
   };
 
   const saveEditedMessage = async ({
