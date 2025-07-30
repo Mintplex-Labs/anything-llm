@@ -101,12 +101,10 @@ function writeToServerDocuments(
   filename,
   destinationOverride = null
 ) {
-  const destination = destinationOverride
-    ? path.resolve(destinationOverride)
-    : path.resolve(
-        __dirname,
-        "../../../server/storage/documents/custom-documents"
-      );
+  let destination = null;
+  if (destinationOverride) destination = path.resolve(destinationOverride);
+  else destination = path.resolve(documentsFolder, "custom-documents");
+
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
   const destinationFilePath = path.resolve(destination, filename) + ".json";
