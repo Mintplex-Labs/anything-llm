@@ -48,7 +48,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
    * @param {'replace' | 'append'} writeMode - Replace current text or append to existing text (default: replace)
    */
   function setMessageEmit(messageContent = "", writeMode = "replace") {
-    setMessage(messageContent);
+    if (writeMode === "append") setMessage((prev) => prev + messageContent);
+    else setMessage(messageContent ?? "");
+
+    // Push the update to the PromptInput component (same logic as above to keep in sync)
     window.dispatchEvent(
       new CustomEvent(PROMPT_INPUT_EVENT, {
         detail: { messageContent, writeMode },
