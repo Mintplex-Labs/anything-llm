@@ -66,7 +66,11 @@ async function loadObsidianVault({ files = [] }) {
       const targetFileName = sanitizeFileName(
         `${slugify(file.name)}-${data.id}`
       );
-      writeToServerDocuments(data, targetFileName, outFolderPath);
+      writeToServerDocuments({
+        data,
+        filename: targetFileName,
+        destinationOverride: outFolderPath,
+      });
       results.push({ file: file.path, status: "success" });
     } catch (e) {
       console.error(`Failed to process ${file.path}:`, e);

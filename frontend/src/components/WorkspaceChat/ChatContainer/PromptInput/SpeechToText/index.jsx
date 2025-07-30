@@ -48,7 +48,10 @@ export default function SpeechToText({ sendCommand }) {
   function endSTTSession() {
     SpeechRecognition.stopListening();
     if (transcript.length > 0) {
-      sendCommand(transcript, Appearance.get("autoSubmitSttInput"));
+      sendCommand({
+        text: transcript,
+        autoSubmit: Appearance.get("autoSubmitSttInput"),
+      });
     }
 
     resetTranscript();
@@ -92,7 +95,7 @@ export default function SpeechToText({ sendCommand }) {
 
   useEffect(() => {
     if (transcript?.length > 0 && listening) {
-      sendCommand(transcript, false);
+      sendCommand({ text: transcript });
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         endSTTSession();
@@ -103,8 +106,7 @@ export default function SpeechToText({ sendCommand }) {
   if (!browserSupportsSpeechRecognition) return null;
   return (
     <div
-      id="text-size-btn"
-      data-tooltip-id="tooltip-text-size-btn"
+      data-tooltip-id="tooltip-microphone-btn"
       data-tooltip-content={`${t("chat_window.microphone")} (CTRL + M)`}
       aria-label={t("chat_window.microphone")}
       onClick={listening ? endSTTSession : startSTTSession}
@@ -120,7 +122,7 @@ export default function SpeechToText({ sendCommand }) {
         }`}
       />
       <Tooltip
-        id="tooltip-text-size-btn"
+        id="tooltip-microphone-btn"
         place="top"
         delayShow={300}
         className="tooltip !text-xs z-99"
