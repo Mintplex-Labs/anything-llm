@@ -14,6 +14,7 @@ class ConfluencePagesLoader {
     expand = "body.storage,version",
     personalAccessToken,
     cloud = true,
+    bypassSSL = false,
   }) {
     this.baseUrl = baseUrl;
     this.spaceKey = spaceKey;
@@ -23,6 +24,7 @@ class ConfluencePagesLoader {
     this.expand = expand;
     this.personalAccessToken = personalAccessToken;
     this.cloud = cloud;
+    this.bypassSSL = bypassSSL;
   }
 
   get authorizationHeader() {
@@ -60,9 +62,24 @@ class ConfluencePagesLoader {
       if (authHeader) {
         initialHeaders.Authorization = authHeader;
       }
-      const response = await fetch(url, {
+
+      // Configure fetch options with SSL bypass if enabled
+      const fetchOptions = {
         headers: initialHeaders,
-      });
+      };
+
+      // If SSL bypass is enabled, set the NODE_TLS_REJECT_UNAUTHORIZED environment variable
+      if (this.bypassSSL) {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+      }
+
+      const response = await fetch(url, fetchOptions);
+
+      // Reset the environment variable after the request
+      if (this.bypassSSL) {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+      }
+
       if (!response.ok) {
         throw new Error(
           `Failed to fetch ${url} from Confluence: ${response.status}`
@@ -70,6 +87,10 @@ class ConfluencePagesLoader {
       }
       return await response.json();
     } catch (error) {
+      // Reset the environment variable in case of error
+      if (this.bypassSSL) {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+      }
       throw new Error(`Failed to fetch ${url} from Confluence: ${error}`);
     }
   }
