@@ -6,6 +6,8 @@ const {
   createdDate,
   trashFile,
   writeToServerDocuments,
+  documentsFolder,
+  directUploadsFolder,
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
@@ -31,12 +33,9 @@ async function asXlsx({ fullFilePath = "", filename = "", options = {} }) {
     lower: true,
     trim: true,
   });
-
   const outFolderPath = options.parseOnly
-    ? path.resolve(__dirname, "../../../server/storage/temp-documents")
-    : process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../../server/storage/documents/${folderName}`)
-    : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
+    ? path.resolve(directUploadsFolder, folderName)
+    : path.resolve(documentsFolder, folderName);
 
   try {
     const workSheetsFromFile = xlsx.parse(fullFilePath);

@@ -12,6 +12,16 @@ const documentsFolder =
     : path.resolve(process.env.STORAGE_DIR, `documents`);
 
 /**
+ * The folder where direct uploads are stored to be stored when
+ * processed by the collector. These are files that were DnD'd into UI
+ * and are not to be embedded or selectable from the file picker.
+ */
+const directUploadsFolder =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../../server/storage/direct-uploads`)
+    : path.resolve(process.env.STORAGE_DIR, `direct-uploads`);
+
+/**
  * Checks if a file is text by checking the mime type and then falling back to buffer inspection.
  * This way we can capture all the cases where the mime type is not known but still parseable as text
  * without having to constantly add new mime type overrides.
@@ -102,14 +112,11 @@ function writeToServerDocuments(
   destinationOverride = null,
   options = {}
 ) {
-  const destination = destinationOverride
-    ? path.resolve(destinationOverride)
-    : options.parseOnly
-    ? path.resolve(__dirname, "../../../server/storage/temp-documents")
-    : path.resolve(
-        __dirname,
-        "../../../server/storage/documents/custom-documents"
-      );
+  let destination = null;
+  if (destinationOverride) destination = path.resolve(destinationOverride);
+  else if (options.parseOnly) destination = path.resolve(directUploadsFolder);
+  else destination = path.resolve(documentsFolder, "custom-documents");
+
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
   const destinationFilePath = path.resolve(destination, filename) + ".json";
@@ -124,7 +131,7 @@ function writeToServerDocuments(
     // that will work since we know the location exists and since we only allow
     // 1-level deep folders this will always work. This still works for integrations like GitHub and YouTube.
     location: destinationFilePath.split("/").slice(-2).join("/"),
-    isTemporary: !!options.parseOnly,
+    isDirectUpload: options.parseOnly || false,
   };
 }
 
@@ -203,4 +210,5 @@ module.exports = {
   isWithin,
   sanitizeFileName,
   documentsFolder,
+  directUploadsFolder,
 };
