@@ -107,13 +107,8 @@ export default function SpeechToText({ sendCommand }) {
 
       // Stream just the diff of the new content since transcript is an accumulating string.
       // and not just the new content transcribed.
-      if (newContent.length > 0) {
-        sendCommand({
-          text: newContent,
-          autoSubmit: false,
-          writeMode: "append",
-        });
-      }
+      if (newContent.length > 0)
+        sendCommand({ text: newContent, writeMode: "append" });
 
       previousTranscriptRef.current = transcript;
       clearTimeout(timeout);

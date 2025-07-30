@@ -80,10 +80,7 @@ export function AvailableAgents({
 
   const handleAgentClick = () => {
     setShowing(false);
-    sendCommand({
-      text: "@agent ",
-      autoSubmit: false,
-    });
+    sendCommand({ text: "@agent " });
     promptRef?.current?.focus();
   };
 
