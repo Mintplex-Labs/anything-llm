@@ -106,8 +106,7 @@ export default function SpeechToText({ sendCommand }) {
   if (!browserSupportsSpeechRecognition) return null;
   return (
     <div
-      id="text-size-btn"
-      data-tooltip-id="tooltip-text-size-btn"
+      data-tooltip-id="tooltip-microphone-btn"
       data-tooltip-content={`${t("chat_window.microphone")} (CTRL + M)`}
       aria-label={t("chat_window.microphone")}
       onClick={listening ? endSTTSession : startSTTSession}
@@ -123,7 +122,7 @@ export default function SpeechToText({ sendCommand }) {
         }`}
       />
       <Tooltip
-        id="tooltip-text-size-btn"
+        id="tooltip-microphone-btn"
         place="top"
         delayShow={300}
         className="tooltip !text-xs z-99"
