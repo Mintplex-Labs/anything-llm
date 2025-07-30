@@ -861,6 +861,9 @@ const TRANSLATIONS = {
       token_desc: "Access token for authentication",
       pat_token: "Confluence Personal Access Token",
       pat_token_explained: "Your Confluence personal access token.",
+      bypass_ssl: "Bypass SSL Certificate Validation",
+      bypass_ssl_explained:
+        "Enable this option to bypass SSL certificate validation for self-hosted confluence instances with self-signed certificate",
       task_explained:
         "Once complete, the page content will be available for embedding into workspaces in the document picker.",
     },
