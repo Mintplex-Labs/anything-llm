@@ -1,7 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
-import PromptInput, { PROMPT_INPUT_EVENT } from "./PromptInput";
+import PromptInput, {
+  PROMPT_INPUT_EVENT,
+  PROMPT_INPUT_ID,
+} from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
@@ -38,12 +41,18 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     clearTranscriptOnListen: true,
   });
 
-  // Emit an update to the state of the prompt input without directly
-  // passing a prop in so that it does not re-render constantly.
-  function setMessageEmit(messageContent = "") {
+  /**
+   * Emit an update to the state of the prompt input without directly
+   * passing a prop in so that it does not re-render constantly.
+   * @param {string} messageContent - The message content to set
+   * @param {'replace' | 'append'} writeMode - Replace current text or append to existing text (default: replace)
+   */
+  function setMessageEmit(messageContent = "", writeMode = "replace") {
     setMessage(messageContent);
     window.dispatchEvent(
-      new CustomEvent(PROMPT_INPUT_EVENT, { detail: messageContent })
+      new CustomEvent(PROMPT_INPUT_EVENT, {
+        detail: { messageContent, writeMode },
+      })
     );
   }
 
@@ -85,36 +94,50 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     const lastUserMessage = updatedHistory.slice(-1)[0];
     Workspace.deleteChats(workspace.slug, [chatId])
       .then(() =>
-        sendCommand(
-          lastUserMessage.content,
-          true,
-          updatedHistory,
-          lastUserMessage?.attachments
-        )
+        sendCommand({
+          text: lastUserMessage.content,
+          autoSubmit: true,
+          history: updatedHistory,
+          attachments: lastUserMessage?.attachments,
+        })
       )
       .catch((e) => console.error(e));
   };
 
   /**
    * Send a command to the LLM prompt input.
-   * @param {string} command - The command to send to the LLM
-   * @param {boolean} submit - Whether the command was submitted (default: false)
+   * @param {string} text - The text to send to the LLM
+   * @param {boolean} autoSubmit - Whether the command was submitted (default: false)
    * @param {Object[]} history - The history of the chat
    * @param {Object[]} attachments - The attachments to send to the LLM
+   * @param {'replace' | 'append'} writeMode - Replace current text or append to existing text
    * @returns {boolean} - Whether the command was sent successfully
    */
-  const sendCommand = async (
-    command,
-    submit = false,
+  const sendCommand = async ({
+    text,
+    autoSubmit = false,
     history = [],
-    attachments = []
-  ) => {
-    if (!command || command === "") return false;
-    if (!submit) {
-      setMessageEmit(command);
+    attachments = [],
+    writeMode = "replace",
+  } = {}) => {
+    // If we are not auto-submitting, we can just emit the text to the prompt input.
+    if (!autoSubmit) {
+      setMessageEmit(text, writeMode);
       return;
     }
 
+    // If we are auto-submitting in append mode
+    // than we need to update text with whatever is in the prompt input + the text we are sending.
+    // @note: `message` will not work here since it is not updated yet.
+    // If text is still empty, after this, then we should just return.
+    if (writeMode === "append") {
+      const currentText = document.getElementById(PROMPT_INPUT_ID)?.value;
+      text = currentText + text;
+    }
+
+    if (!text || text === "") return false;
+    // If we are auto-submitting
+    // Then we can replace the current text since this is not accumulating.
     let prevChatHistory;
     if (history.length > 0) {
       // use pre-determined history chain.
@@ -124,7 +147,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           content: "",
           role: "assistant",
           pending: true,
-          userMessage: command,
+          userMessage: text,
           attachments,
           animate: true,
         },
@@ -133,7 +156,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       prevChatHistory = [
         ...chatHistory,
         {
-          content: command,
+          content: text,
           role: "user",
           attachments,
         },
@@ -141,7 +164,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           content: "",
           role: "assistant",
           pending: true,
-          userMessage: command,
+          userMessage: text,
           animate: true,
         },
       ];

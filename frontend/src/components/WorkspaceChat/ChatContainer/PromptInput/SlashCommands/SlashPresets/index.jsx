@@ -119,7 +119,10 @@ export default function SlashPresets({ setShowing, sendCommand, promptRef }) {
           preset={preset}
           onUse={() => {
             setShowing(false);
-            sendCommand(`${preset.command} `, false);
+            sendCommand({
+              text: `${preset.command} `,
+              autoSubmit: false,
+            });
             promptRef?.current?.focus();
           }}
           onEdit={handleEditPreset}
