@@ -8,7 +8,7 @@ export default function EndAgentSession({ setShowing, sendCommand }) {
     <button
       onClick={() => {
         setShowing(false);
-        sendCommand("/exit", true);
+        sendCommand({ text: "/exit", autoSubmit: true });
       }}
       className="border-none w-full hover:cursor-pointer hover:bg-theme-action-menu-item-hover px-2 py-2 rounded-xl flex flex-col justify-start"
     >
