@@ -89,6 +89,9 @@ const CommunityHubImportItem = lazy(
 const SystemPromptVariables = lazy(
   () => import("@/pages/Admin/SystemPromptVariables")
 );
+const MobileConnections = lazy(
+  () => import("@/pages/GeneralSettings/MobileConnections")
+);
 
 export default function App() {
   return (
@@ -263,6 +266,11 @@ export default function App() {
                   <Route
                     path="/settings/community-hub/import-item"
                     element={<AdminRoute Component={CommunityHubImportItem} />}
+                  />
+
+                  <Route
+                    path="/settings/mobile-connections"
+                    element={<ManagerRoute Component={MobileConnections} />}
                   />
                 </Routes>
                 <ToastContainer />
