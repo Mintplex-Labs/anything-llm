@@ -232,6 +232,42 @@ class CollectorApi {
         return { success: false, content: null };
       });
   }
+
+  /**
+   * Parse a document without processing it
+   * - Will append the options to the request body
+   * @param {string} filename - The filename of the document to parse
+   * @returns {Promise<Object>} - The response from the collector API
+   */
+  async parseDocument(filename = "") {
+    if (!filename) return false;
+
+    const data = JSON.stringify({
+      filename,
+      options: this.#attachOptions(),
+    });
+
+    return await fetch(`${this.endpoint}/parse`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
+      },
+      body: data,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Response could not be completed");
+        return res.json();
+      })
+      .then((res) => res)
+      .catch((e) => {
+        this.log(e.message);
+        return { success: false, reason: e.message, documents: [] };
+      });
+  }
 }
 
 module.exports.CollectorApi = CollectorApi;
