@@ -838,6 +838,122 @@
         }
       }
     },
+    "/v1/document/parse": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Parse a file and store it in the workspace_parsed_files table without processing it for embedding. This is useful for pre-parsing files before they are needed.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null,
+                    "file": {
+                      "id": 1,
+                      "filename": "example.txt",
+                      "filepath": "/path/to/file",
+                      "workspaceId": 1,
+                      "userId": 1,
+                      "threadId": null,
+                      "status": "processed",
+                      "metadata": null,
+                      "createdAt": "2024-03-20T00:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": false,
+                    "error": "workspaceId is required"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": false,
+                    "error": "Document processing API is not online. Document will not be parsed."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "File to be parsed along with workspace, user, and thread information.",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file",
+                  "workspaceId"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file to parse"
+                  },
+                  "workspaceId": {
+                    "type": "number",
+                    "description": "ID of the workspace this file belongs to"
+                  },
+                  "userId": {
+                    "type": "number",
+                    "description": "Optional. ID of the user who uploaded the file"
+                  },
+                  "threadId": {
+                    "type": "number",
+                    "description": "Optional. ID of the thread this file is associated with"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/document/upload": {
       "post": {
         "tags": [

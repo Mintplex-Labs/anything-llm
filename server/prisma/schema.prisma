@@ -82,6 +82,7 @@ model users {
   temporary_auth_tokens       temporary_auth_tokens[]
   system_prompt_variables     system_prompt_variables[]
   prompt_history              prompt_history[]
+  workspace_parsed_files      workspace_parsed_files[]
 }
 
 model recovery_codes {
@@ -148,6 +149,7 @@ model workspaces {
   threads                      workspace_threads[]
   workspace_agent_invocations  workspace_agent_invocations[]
   prompt_history               prompt_history[]
+  workspace_parsed_files       workspace_parsed_files[]
 }
 
 model workspace_threads {
@@ -355,4 +357,19 @@ model prompt_history {
   user        users?     @relation(fields: [modifiedBy], references: [id])
 
   @@index([workspaceId])
+}
+
+model workspace_parsed_files {
+  id          Int        @id @default(autoincrement())
+  filename    String     @unique
+  workspaceId Int
+  userId      Int?
+  threadId    Int?
+  metadata    String?
+  createdAt   DateTime   @default(now())
+  workspace   workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        users?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([userId])
 }

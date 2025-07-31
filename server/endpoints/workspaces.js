@@ -36,6 +36,7 @@ const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
+const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -104,6 +105,90 @@ function workspaceEndpoints(app) {
           data
         );
         response.status(200).json({ workspace, message });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/parse",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      handleFileUpload,
+    ],
+    async function (request, response) {
+      try {
+        const { slug = null } = request.params;
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const Collector = new CollectorApi();
+        const { originalname } = request.file;
+        const processingOnline = await Collector.online();
+
+        if (!processingOnline) {
+          response.status(500).json({
+            success: false,
+            error: `Document processing API is not online. Document ${originalname} will not be parsed.`,
+          });
+          return;
+        }
+
+        const { success, reason, documents } =
+          await Collector.parseDocument(originalname);
+        if (!success || !documents?.[0]) {
+          response.status(500).json({
+            success: false,
+            error: reason || "No document returned from collector",
+          });
+          return;
+        }
+
+        // Strip out pageContent
+        const { pageContent, ...metadata } = documents[0];
+        const filename = `${originalname}-${documents[0].id}.json`;
+
+        const { file, error: dbError } = await WorkspaceParsedFiles.create({
+          filename,
+          workspaceId: workspace.id,
+          userId: user?.id || null,
+          metadata: JSON.stringify(metadata),
+        });
+
+        if (dbError) {
+          response.status(500).json({
+            success: false,
+            error: dbError,
+          });
+          return;
+        }
+
+        Collector.log(`Document ${originalname} parsed successfully.`);
+        await Telemetry.sendTelemetry("document_parsed");
+        await EventLogs.logEvent(
+          "document_parsed",
+          {
+            documentName: originalname,
+            workspaceId: workspace.id,
+          },
+          user?.id
+        );
+
+        response.status(200).json({
+          success: true,
+          error: null,
+          file,
+        });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

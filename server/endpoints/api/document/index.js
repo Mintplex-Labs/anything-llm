@@ -13,7 +13,11 @@ const { EventLogs } = require("../../../models/eventLogs");
 const { CollectorApi } = require("../../../utils/collectorApi");
 const fs = require("fs");
 const path = require("path");
+const prisma = require("../../../utils/prisma");
 const { Document } = require("../../../models/documents");
+const {
+  WorkspaceParsedFiles,
+} = require("../../../models/workspaceParsedFiles");
 const { purgeFolder } = require("../../../utils/files/purgeDocument");
 const documentsPath =
   process.env.NODE_ENV === "development"
@@ -22,6 +26,210 @@ const documentsPath =
 
 function apiDocumentEndpoints(app) {
   if (!app) return;
+
+  app.post(
+    "/v1/document/parse",
+    [validApiKey, handleAPIFileUpload],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Documents']
+      #swagger.description = 'Parse a file and store it in the workspace_parsed_files table without processing it for embedding. This is useful for pre-parsing files before they are needed.'
+      #swagger.requestBody = {
+        description: 'File to be parsed along with workspace, user, and thread information.',
+        required: true,
+        content: {
+          "multipart/form-data": {
+            schema: {
+              type: 'object',
+              required: ['file', 'workspaceId'],
+              properties: {
+                file: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The file to parse'
+                },
+                workspaceId: {
+                  type: 'number',
+                  description: 'ID of the workspace this file belongs to'
+                },
+                userId: {
+                  type: 'number',
+                  description: 'Optional. ID of the user who uploaded the file'
+                },
+                threadId: {
+                  type: 'number',
+                  description: 'Optional. ID of the thread this file is associated with'
+                }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                success: true,
+                error: null,
+                file: {
+                  id: 1,
+                  filename: "example.txt",
+                  filepath: "/path/to/file",
+                  workspaceId: 1,
+                  userId: 1,
+                  threadId: null,
+                  status: "processed",
+                  metadata: null,
+                  createdAt: "2024-03-20T00:00:00.000Z"
+                }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[400] = {
+        description: "Bad Request",
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                success: false,
+                error: "workspaceId is required"
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[500] = {
+        description: "Internal Server Error",
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                success: false,
+                error: "Document processing API is not online. Document will not be parsed."
+              }
+            }
+          }
+        }
+      }
+      */
+      try {
+        const { originalname } = request.file;
+        const {
+          workspaceId,
+          userId = null,
+          threadId = null,
+        } = reqBody(request);
+
+        if (!workspaceId) {
+          response.status(400).json({
+            success: false,
+            error: "workspaceId is required",
+          });
+          return;
+        }
+
+        const workspace = await prisma.workspaces.findUnique({
+          where: { id: Number(workspaceId) },
+        });
+
+        if (!workspace) {
+          response.status(404).json({
+            success: false,
+            error: `Workspace with ID ${workspaceId} not found`,
+          });
+          return;
+        }
+
+        if (userId) {
+          const user = await prisma.users.findUnique({
+            where: { id: Number(userId) },
+          });
+
+          if (!user) {
+            response.status(404).json({
+              success: false,
+              error: `User with ID ${userId} not found`,
+            });
+            return;
+          }
+        }
+
+        const Collector = new CollectorApi();
+        const processingOnline = await Collector.online();
+
+        if (!processingOnline) {
+          response.status(500).json({
+            success: false,
+            error: `Document processing API is not online. Document ${originalname} will not be parsed.`,
+          });
+          return;
+        }
+
+        const { success, reason, documents } =
+          await Collector.parseDocument(originalname);
+
+        if (!success || !documents?.[0]) {
+          response.status(500).json({
+            success: false,
+            error: reason || "No document returned from collector",
+          });
+          return;
+        }
+
+        // Strip out pageContent
+        const { pageContent, ...metadata } = documents[0];
+        const filename = `${originalname}-${documents[0].id}.json`;
+
+        const { file, error: dbError } = await WorkspaceParsedFiles.create({
+          filename,
+          workspaceId,
+          userId,
+          threadId,
+          metadata: JSON.stringify(metadata),
+        });
+
+        if (dbError) {
+          response.status(500).json({
+            success: false,
+            error: dbError,
+          });
+          return;
+        }
+
+        Collector.log(`Document ${originalname} parsed successfully.`);
+
+        await Telemetry.sendTelemetry("document_parsed");
+        await EventLogs.logEvent(
+          "document_parsed",
+          {
+            documentName: originalname,
+            workspaceId,
+          },
+          userId
+        );
+
+        response.status(200).json({
+          success: true,
+          error: null,
+          file,
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 
   app.post(
     "/v1/document/upload",
