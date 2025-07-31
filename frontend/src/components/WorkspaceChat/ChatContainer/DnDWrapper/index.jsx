@@ -22,7 +22,9 @@ export const ATTACHMENTS_PROCESSED_EVENT = "ATTACHMENTS_PROCESSED";
  * @property {('in_progress'|'failed'|'success')} status - the automatic upload status.
  * @property {string|null} error - Error message
  * @property {{id:string, location:string}|null} document - uploaded document details
- * @property {('attachment'|'upload')} type - The type of upload. Attachments are chat-specific, uploads go to the workspace.
+ * @property {('attachment'|'upload')} type - The type of upload. Both types will
+ *   be uploaded to the workspace. Attachments are additionally sent with the
+ *   chat prompt.
  */
 
 export function DnDFileUploaderProvider({ workspace, children }) {
@@ -167,7 +169,7 @@ export function DnDFileUploaderProvider({ workspace, children }) {
   }
 
   /**
-   * Embeds attachments that are eligible for embedding - basically files that are not images.
+   * Embed all new attachments into the workspace.
    * @param {Attachment[]} newAttachments
    */
   function embedEligibleAttachments(newAttachments = []) {
@@ -175,8 +177,6 @@ export function DnDFileUploaderProvider({ workspace, children }) {
     const promises = [];
 
     for (const attachment of newAttachments) {
-      // Images/attachments are chat specific.
-      if (attachment.type === "attachment") continue;
 
       const formData = new FormData();
       formData.append("file", attachment.file, attachment.file.name);
