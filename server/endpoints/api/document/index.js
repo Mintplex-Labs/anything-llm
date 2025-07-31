@@ -13,11 +13,7 @@ const { EventLogs } = require("../../../models/eventLogs");
 const { CollectorApi } = require("../../../utils/collectorApi");
 const fs = require("fs");
 const path = require("path");
-const prisma = require("../../../utils/prisma");
 const { Document } = require("../../../models/documents");
-const {
-  WorkspaceParsedFiles,
-} = require("../../../models/workspaceParsedFiles");
 const { purgeFolder } = require("../../../utils/files/purgeDocument");
 const documentsPath =
   process.env.NODE_ENV === "development"
