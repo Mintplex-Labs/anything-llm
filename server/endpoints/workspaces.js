@@ -154,24 +154,24 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        // Strip out pageContent
-        const { pageContent, ...metadata } = documents[0];
-        const filename = `${originalname}-${documents[0].id}.json`;
+        const files = await Promise.all(
+          documents.map(async (doc) => {
+            const metadata = { ...doc };
+            // Strip out pageContent
+            delete metadata.pageContent;
+            const filename = `${originalname}-${doc.id}.json`;
 
-        const { file, error: dbError } = await WorkspaceParsedFiles.create({
-          filename,
-          workspaceId: workspace.id,
-          userId: user?.id || null,
-          metadata: JSON.stringify(metadata),
-        });
+            const { file, error: dbError } = await WorkspaceParsedFiles.create({
+              filename,
+              workspaceId: workspace.id,
+              userId: user?.id || null,
+              metadata: JSON.stringify(metadata),
+            });
 
-        if (dbError) {
-          response.status(500).json({
-            success: false,
-            error: dbError,
-          });
-          return;
-        }
+            if (dbError) throw new Error(dbError);
+            return file;
+          })
+        );
 
         Collector.log(`Document ${originalname} parsed successfully.`);
         await Telemetry.sendTelemetry("document_parsed");
@@ -187,7 +187,7 @@ function workspaceEndpoints(app) {
         response.status(200).json({
           success: true,
           error: null,
-          file,
+          files,
         });
       } catch (e) {
         console.error(e.message, e);

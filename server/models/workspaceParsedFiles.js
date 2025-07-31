@@ -26,22 +26,6 @@ const WorkspaceParsedFiles = {
     }
   },
 
-  update: async function (id, updates = {}) {
-    try {
-      if (!id) throw new Error("No file id provided for update");
-
-      const file = await prisma.workspace_parsed_files.update({
-        where: { id: parseInt(id) },
-        data: updates,
-      });
-
-      return { success: true, error: null, file };
-    } catch (error) {
-      console.error(error.message);
-      return { success: false, error: error.message, file: null };
-    }
-  },
-
   get: async function (clause = {}) {
     try {
       const file = await prisma.workspace_parsed_files.findFirst({
