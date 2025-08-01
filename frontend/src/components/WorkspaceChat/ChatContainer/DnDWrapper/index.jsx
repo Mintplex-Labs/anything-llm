@@ -5,7 +5,6 @@ import { useDropzone } from "react-dropzone";
 import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
 import useUser from "@/hooks/useUser";
-import { useParams } from "react-router-dom";
 
 export const DndUploaderContext = createContext();
 export const REMOVE_ATTACHMENT_EVENT = "ATTACHMENT_REMOVE";
@@ -26,8 +25,11 @@ export const ATTACHMENTS_PROCESSED_EVENT = "ATTACHMENTS_PROCESSED";
  * @property {('attachment'|'upload')} type - The type of upload. Attachments are chat-specific, uploads go to the workspace.
  */
 
-export function DnDFileUploaderProvider({ workspace, children }) {
-  const { threadSlug = null } = useParams();
+export function DnDFileUploaderProvider({
+  workspace,
+  children,
+  threadSlug = null,
+}) {
   const [files, setFiles] = useState([]);
   const [ready, setReady] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -182,7 +184,7 @@ export function DnDFileUploaderProvider({ workspace, children }) {
 
       const formData = new FormData();
       formData.append("file", attachment.file, attachment.file.name);
-      formData.append("threadSlug", threadSlug || "");
+      formData.append("threadSlug", threadSlug || null);
       promises.push(
         Workspace.parseFile(workspace.slug, formData).then(
           async ({ response, data }) => {

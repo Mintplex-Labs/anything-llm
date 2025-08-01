@@ -12,6 +12,7 @@ const WorkspaceParsedFiles = {
     userId = null,
     threadId = null,
     metadata = null,
+    tokenCountEstimate = 0,
   }) {
     try {
       const file = await prisma.workspace_parsed_files.create({
@@ -21,11 +22,12 @@ const WorkspaceParsedFiles = {
           userId: userId ? parseInt(userId) : null,
           threadId: threadId ? parseInt(threadId) : null,
           metadata,
+          tokenCountEstimate,
         },
       });
 
       await EventLogs.logEvent(
-        "workspace_file_parsed",
+        "workspace_file_uploaded",
         {
           filename,
           workspaceId,

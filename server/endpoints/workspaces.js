@@ -188,6 +188,12 @@ function workspaceEndpoints(app) {
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
+      } finally {
+        if (request.params.fileId) {
+          await WorkspaceParsedFiles.delete({
+            id: parseInt(request.params.fileId),
+          });
+        }
       }
     }
   );
@@ -241,6 +247,7 @@ function workspaceEndpoints(app) {
           const thread = await WorkspaceThread.get({
             slug: threadSlug,
             workspace_id: workspace.id,
+            user_id: user?.id || null,
           });
           threadId = thread?.id || null;
         }
@@ -258,6 +265,7 @@ function workspaceEndpoints(app) {
               userId: user?.id || null,
               threadId,
               metadata: JSON.stringify(metadata),
+              tokenCountEstimate: doc.token_count_estimate || 0,
             });
 
             if (dbError) throw new Error(dbError);
