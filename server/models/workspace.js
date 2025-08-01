@@ -438,14 +438,14 @@ const Workspace = {
     try {
       const { User } = require("./user");
       const { ROLES } = require("../utils/middleware/multiUserProtected");
-      const adminCount = await User.count({
+      const adminManagerCount = await User.count({
         id: { in: userIds.map(Number) },
-        role: ROLES.admin,
+        role: { in: [ROLES.admin, ROLES.manager] },
       });
-      if (adminCount === 0) {
+      if (adminManagerCount === 0) {
         return {
           success: false,
-          error: "Workspace must include at least one admin user.",
+          error: "Workspace must include at least one admin or manager user.",
         };
       }
 
