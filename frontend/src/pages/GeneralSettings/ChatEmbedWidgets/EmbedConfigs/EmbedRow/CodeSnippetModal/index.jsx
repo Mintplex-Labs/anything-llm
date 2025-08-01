@@ -54,7 +54,7 @@ https://github.com/Mintplex-Labs/anythingllm-embed/blob/main/README.md
   data-base-api-url="${serverHost}/api/embed"
   src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
 </script>
-<!-- AnythingLLM (https://anythingllm.com) -->
+<!-- OneNew (https://anythingllm.com) -->
 `;
 }
 

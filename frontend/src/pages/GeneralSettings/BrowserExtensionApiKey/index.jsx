@@ -55,7 +55,7 @@ export default function BrowserExtensionApiKeys() {
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
               Manage API keys for browser extensions connecting to your
-              AnythingLLM instance.
+              OneNew instance.
             </p>
           </div>
           <div className="w-full justify-end flex">

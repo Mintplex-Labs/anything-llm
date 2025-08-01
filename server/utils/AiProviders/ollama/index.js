@@ -100,7 +100,7 @@ class OllamaAILLM {
     switch (e.message) {
       case "fetch failed":
         throw new Error(
-          "Your Ollama instance could not be reached or is not responding. Please make sure it is running the API server and your connection information is correct in AnythingLLM."
+          "Your Ollama instance could not be reached or is not responding. Please make sure it is running the API server and your connection information is correct in OneNew."
         );
       default:
         return e;
