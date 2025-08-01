@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
 import useUser from "@/hooks/useUser";
+import { useParams } from "react-router-dom";
 
 export const DndUploaderContext = createContext();
 export const REMOVE_ATTACHMENT_EVENT = "ATTACHMENT_REMOVE";
@@ -26,6 +27,7 @@ export const ATTACHMENTS_PROCESSED_EVENT = "ATTACHMENTS_PROCESSED";
  */
 
 export function DnDFileUploaderProvider({ workspace, children }) {
+  const { threadSlug = null } = useParams();
   const [files, setFiles] = useState([]);
   const [ready, setReady] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -170,7 +172,7 @@ export function DnDFileUploaderProvider({ workspace, children }) {
    * Embeds attachments that are eligible for embedding - basically files that are not images.
    * @param {Attachment[]} newAttachments
    */
-  function embedEligibleAttachments(newAttachments = []) {
+  async function embedEligibleAttachments(newAttachments = []) {
     window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSING_EVENT));
     const promises = [];
 
@@ -180,26 +182,80 @@ export function DnDFileUploaderProvider({ workspace, children }) {
 
       const formData = new FormData();
       formData.append("file", attachment.file, attachment.file.name);
+      formData.append("threadSlug", threadSlug || "");
       promises.push(
-        Workspace.uploadAndEmbedFile(workspace.slug, formData).then(
-          ({ response, data }) => {
+        Workspace.parseFile(workspace.slug, formData).then(
+          async ({ response, data }) => {
+            if (!response.ok) {
+              const updates = {
+                status: "failed",
+                error: data?.error ?? null,
+              };
+              setFiles((prev) =>
+                prev.map(
+                  (
+                    /** @type {Attachment} */
+                    prevFile
+                  ) =>
+                    prevFile.uid !== attachment.uid
+                      ? prevFile
+                      : { ...prevFile, ...updates }
+                )
+              );
+              return;
+            }
+
+            // Check if any file exceeds context window
+            const tokenCount = data.files.reduce(
+              (sum, file) =>
+                sum + JSON.parse(file.metadata).token_count_estimate,
+              0
+            );
+            const contextWindow = 8000; // TODO: Get from workspace or system settings
+            const maxTokens = Math.floor(contextWindow * 0.8);
+
+            if (tokenCount > maxTokens) {
+              // Show alert dialog
+              const choice = window.confirm(
+                `This document exceeds 80% of your context window (${tokenCount} > ${maxTokens} tokens). Would you like to embed it anyway?`
+              );
+
+              if (!choice) {
+                // Delete parsed file and remove from UI
+                await Workspace.deleteParsedFile(
+                  workspace.slug,
+                  data.files[0].id
+                );
+                setFiles((prev) =>
+                  prev.filter((prevFile) => prevFile.uid !== attachment.uid)
+                );
+                return;
+              }
+            }
+
+            // User chose to continue or file is within limits
+            // We already have the file parsed, just need to move and embed it
+            const embedResult = await Workspace.embedParsedFile(
+              workspace.slug,
+              data.files[0].id
+            );
             const updates = {
-              status: response.ok ? "success" : "failed",
-              error: data?.error ?? null,
-              document: data?.document,
+              status: embedResult.response.ok ? "success" : "failed",
+              error: embedResult.data?.error ?? null,
+              document: embedResult.data?.document,
             };
 
-            setFiles((prev) => {
-              return prev.map(
+            setFiles((prev) =>
+              prev.map(
                 (
                   /** @type {Attachment} */
                   prevFile
-                ) => {
-                  if (prevFile.uid !== attachment.uid) return prevFile;
-                  return { ...prevFile, ...updates };
-                }
-              );
-            });
+                ) =>
+                  prevFile.uid !== attachment.uid
+                    ? prevFile
+                    : { ...prevFile, ...updates }
+              )
+            );
           }
         )
       );

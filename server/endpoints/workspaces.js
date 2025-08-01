@@ -32,6 +32,7 @@ const {
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
+
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
@@ -112,6 +113,85 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.delete(
+    "/workspace/:slug/delete-parsed-file/:fileId",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async function (request, response) {
+      try {
+        const { slug = null, fileId = null } = request.params;
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
+
+        if (!workspace || !fileId) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const success = await WorkspaceParsedFiles.delete({
+          id: parseInt(fileId),
+        });
+        response.status(success ? 200 : 500).end();
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/embed-parsed-file/:fileId",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async function (request, response) {
+      try {
+        const { slug = null, fileId = null } = request.params;
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
+
+        if (!workspace || !fileId) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const { success, error, document } =
+          await WorkspaceParsedFiles.moveToDocumentsAndEmbed(
+            fileId,
+            workspace.id
+          );
+
+        if (!success) {
+          response.status(500).json({
+            success: false,
+            error: error || "Failed to embed file",
+          });
+          return;
+        }
+
+        await Telemetry.sendTelemetry("document_embedded");
+        await EventLogs.logEvent(
+          "document_embedded",
+          {
+            documentName: document?.name || "unknown",
+            workspaceId: workspace.id,
+          },
+          user?.id
+        );
+
+        response.status(200).json({
+          success: true,
+          error: null,
+          document,
+        });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.post(
     "/workspace/:slug/parse",
     [
@@ -154,6 +234,17 @@ function workspaceEndpoints(app) {
           return;
         }
 
+        // Get thread ID if we have a slug
+        const { threadSlug } = reqBody(request);
+        let threadId = null;
+        if (threadSlug) {
+          const thread = await WorkspaceThread.get({
+            slug: threadSlug,
+            workspace_id: workspace.id,
+          });
+          threadId = thread?.id || null;
+        }
+
         const files = await Promise.all(
           documents.map(async (doc) => {
             const metadata = { ...doc };
@@ -165,6 +256,7 @@ function workspaceEndpoints(app) {
               filename,
               workspaceId: workspace.id,
               userId: user?.id || null,
+              threadId,
               metadata: JSON.stringify(metadata),
             });
 
