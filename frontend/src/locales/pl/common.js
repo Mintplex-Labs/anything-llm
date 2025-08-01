@@ -667,12 +667,7 @@ const TRANSLATIONS = {
       title: "Ochrona hasłem",
       description:
         "Chroń swoją instancję AnythingLLM hasłem. Jeśli go zapomnisz, nie ma metody odzyskiwania, więc upewnij się, że zapisałeś to hasło.",
-    },
-    instance: {
-      title: "Wystąpienie chronione hasłem",
-      description:
-        "Domyślnie będziesz jedynym administratorem. Jako administrator będziesz musiał utworzyć konta dla wszystkich nowych użytkowników lub administratorów. Nie zgub hasła, ponieważ tylko administrator może je zresetować.",
-      password: "Hasło instancji",
+      "password-label": "Hasło instancji",
     },
   },
   event: {

@@ -1,7 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import ChatHistory from "./ChatHistory";
 import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
-import PromptInput, { PROMPT_INPUT_EVENT } from "./PromptInput";
+import PromptInput, {
+  PROMPT_INPUT_EVENT,
+  PROMPT_INPUT_ID,
+} from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
@@ -38,12 +41,21 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     clearTranscriptOnListen: true,
   });
 
-  // Emit an update to the state of the prompt input without directly
-  // passing a prop in so that it does not re-render constantly.
-  function setMessageEmit(messageContent = "") {
-    setMessage(messageContent);
+  /**
+   * Emit an update to the state of the prompt input without directly
+   * passing a prop in so that it does not re-render constantly.
+   * @param {string} messageContent - The message content to set
+   * @param {'replace' | 'append'} writeMode - Replace current text or append to existing text (default: replace)
+   */
+  function setMessageEmit(messageContent = "", writeMode = "replace") {
+    if (writeMode === "append") setMessage((prev) => prev + messageContent);
+    else setMessage(messageContent ?? "");
+
+    // Push the update to the PromptInput component (same logic as above to keep in sync)
     window.dispatchEvent(
-      new CustomEvent(PROMPT_INPUT_EVENT, { detail: messageContent })
+      new CustomEvent(PROMPT_INPUT_EVENT, {
+        detail: { messageContent, writeMode },
+      })
     );
   }
 
@@ -102,6 +114,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
    * @param {boolean} options.autoSubmit - Determines if the text should be sent immediately or if it should be added to the message state (default: false)
    * @param {Object[]} options.history - The history of the chat prior to this message for overriding the current chat history
    * @param {Object[import("./DnDWrapper").Attachment]} options.attachments - The attachments to send to the LLM for this message
+   * @param {'replace' | 'append'} options.writeMode - Replace current text or append to existing text (default: replace)
    * @returns {void}
    */
   const sendCommand = async ({
@@ -109,13 +122,26 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     autoSubmit = false,
     history = [],
     attachments = [],
+    writeMode = "replace",
   } = {}) => {
-    if (!text || text === "") return false;
+    // If we are not auto-submitting, we can just emit the text to the prompt input.
     if (!autoSubmit) {
-      setMessageEmit(text);
+      setMessageEmit(text, writeMode);
       return;
     }
 
+    // If we are auto-submitting in append mode
+    // than we need to update text with whatever is in the prompt input + the text we are sending.
+    // @note: `message` will not work here since it is not updated yet.
+    // If text is still empty, after this, then we should just return.
+    if (writeMode === "append") {
+      const currentText = document.getElementById(PROMPT_INPUT_ID)?.value;
+      text = currentText + text;
+    }
+
+    if (!text || text === "") return false;
+    // If we are auto-submitting
+    // Then we can replace the current text since this is not accumulating.
     let prevChatHistory;
     if (history.length > 0) {
       // use pre-determined history chain.

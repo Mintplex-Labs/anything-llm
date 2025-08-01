@@ -649,12 +649,7 @@ const TRANSLATIONS = {
       title: "비밀번호 보호",
       description:
         "AnythingLLM 인스턴스를 비밀번호로 보호하십시오. 이 비밀번호를 잊어버리면 복구 방법이 없으므로 반드시 저장하세요.",
-    },
-    instance: {
-      title: "인스턴스 비밀번호 보호",
-      description:
-        "당신은 기본 관리자가 됩니다. 관리자로서 모든 신규 사용자 또는 관리자의 계정을 생성해야 합니다. 비밀번호를 잃어버리면 관리자만 비밀번호를 재설정할 수 있습니다.",
-      password: "인스턴스 비밀번호",
+      "password-label": "인스턴스 비밀번호",
     },
   },
   event: {

@@ -471,12 +471,7 @@ const TRANSLATIONS = {
       title: "Wachtwoordbeveiliging",
       description:
         "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
-    },
-    instance: {
-      title: "Instantie Wachtwoord Beveiligen",
-      description:
-        "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
-      password: "Instantie wachtwoord",
+      "password-label": "Instances wachtwoord",
     },
   },
   event: {
