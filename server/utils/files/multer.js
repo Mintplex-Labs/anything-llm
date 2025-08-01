@@ -4,6 +4,9 @@ const fs = require("fs");
 const { v4 } = require("uuid");
 const { normalizePath } = require(".");
 
+const MAX_UPLOAD_SIZE_MB = parseInt(process.env.MAX_UPLOAD_SIZE_MB || "50", 10);
+const MAX_UPLOAD_BYTES = MAX_UPLOAD_SIZE_MB * 1024 * 1024;
+
 /**
  * Handle File uploads for auto-uploading.
  * Mostly used for internal GUI/API uploads.
@@ -90,16 +93,18 @@ const pfpUploadStorage = multer.diskStorage({
  * @param {NextFunction} next
  */
 function handleFileUpload(request, response, next) {
-  const upload = multer({ storage: fileUploadStorage }).single("file");
+  const upload = multer({
+    storage: fileUploadStorage,
+    limits: { fileSize: MAX_UPLOAD_BYTES },
+  }).single("file");
   upload(request, response, function (err) {
     if (err) {
-      response
-        .status(500)
-        .json({
-          success: false,
-          error: `Invalid file upload. ${err.message}`,
-        })
-        .end();
+      const status = err.code === "LIMIT_FILE_SIZE" ? 413 : 500;
+      const message =
+        err.code === "LIMIT_FILE_SIZE"
+          ? `File exceeds ${MAX_UPLOAD_SIZE_MB}MB limit`
+          : `Invalid file upload. ${err.message}`;
+      response.status(status).json({ success: false, error: message }).end();
       return;
     }
     next();
@@ -114,16 +119,18 @@ function handleFileUpload(request, response, next) {
  * @param {NextFunction} next
  */
 function handleAPIFileUpload(request, response, next) {
-  const upload = multer({ storage: fileAPIUploadStorage }).single("file");
+  const upload = multer({
+    storage: fileAPIUploadStorage,
+    limits: { fileSize: MAX_UPLOAD_BYTES },
+  }).single("file");
   upload(request, response, function (err) {
     if (err) {
-      response
-        .status(500)
-        .json({
-          success: false,
-          error: `Invalid file upload. ${err.message}`,
-        })
-        .end();
+      const status = err.code === "LIMIT_FILE_SIZE" ? 413 : 500;
+      const message =
+        err.code === "LIMIT_FILE_SIZE"
+          ? `File exceeds ${MAX_UPLOAD_SIZE_MB}MB limit`
+          : `Invalid file upload. ${err.message}`;
+      response.status(status).json({ success: false, error: message }).end();
       return;
     }
     next();
