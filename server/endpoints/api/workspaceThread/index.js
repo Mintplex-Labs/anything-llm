@@ -15,7 +15,7 @@ const { User } = require("../../../models/user");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { getModelTag } = require("../../utils");
 const { createSessionForEngines } = require("../../../aiapplications_utils/sessionManagement");
-const { getEngineResponse, pareseRelatedQuestions } = require("../../../aiapplications_utils/responseGenerator");
+const { getEngineResponse, pareseRelatedQuestions, generateRelatedQuestions } = require("../../../aiapplications_utils/responseGenerator");
 const { parseEngineResponses } = require("../../../aiapplications_utils/referenceHandler");
 const { performance } = require('perf_hooks');
 
@@ -795,14 +795,26 @@ function apiWorkspaceThreadEndpoints(app) {
 
         const start_parse = performance.now();
         const data = await parseEngineResponses(responses);
-        answers = data.answers;
-        citationsMapping = data.referencesSignedUrls;
-        related_questions = data.related_questions;
-        bestReferences = data.bestReferences;
+        const answers = data.answers;
+        const citationsMapping = data.referencesSignedUrls;
+        let related_questions = data.related_questions;
+        const bestReferences = data.bestReferences;
         // allow only questions that are not related to metabolic
         related_questions = pareseRelatedQuestions(related_questions);
         const end_parse = performance.now();
         console.log(`Time taken to parse responses from engines: ${((end_parse - start_parse) / 1000).toFixed(2)} seconds`);
+        if (related_questions.length < 3) {
+          try {
+            const startRelatedQuestions = performance.now();
+            const aiGeneratedQuestions = await generateRelatedQuestions(message, JSON.stringify(answers), related_questions);
+            const numQuestions = 3 - related_questions.length;
+            related_questions = related_questions.concat(aiGeneratedQuestions.slice(0, numQuestions));
+            const endRelatedQuestions = performance.now();
+            console.log(`Time taken to generate related questions: ${((endRelatedQuestions - startRelatedQuestions) / 1000).toFixed(2)} seconds`);
+          } catch (e) {
+            console.error(e.message, e);
+          }
+        }
 
         answers["user_query"] = message;
         const main_llm_query = JSON.stringify(answers);
