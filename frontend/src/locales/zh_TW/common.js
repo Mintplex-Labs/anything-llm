@@ -455,12 +455,7 @@ const TRANSLATIONS = {
       title: "密碼保護",
       description:
         "使用密碼保護您的 AnythingLLM 系統。如果您忘記這個密碼，將沒有復原方法，因此請務必儲存此密碼。",
-    },
-    instance: {
-      title: "系統密碼保護",
-      description:
-        "預設情況下，您將是唯一的管理員。身為管理員，您需要為所有新使用者或管理員建立帳號。請勿遺失您的密碼，因為只有管理員使用者可以重設密碼。",
-      password: "系統密碼",
+      "password-label": "實例密碼",
     },
   },
   event: {

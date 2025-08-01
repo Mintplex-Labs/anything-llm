@@ -474,12 +474,7 @@ const TRANSLATIONS = {
       title: "Protezione password",
       description:
         "Proteggi la tua istanza AnythingLLM con una password. Se la dimentichi, non esiste un metodo di recupero, quindi assicurati di salvare questa password.",
-    },
-    instance: {
-      title: "Protezione password istanza",
-      description:
-        "Per impostazione predefinita, sarai l'unico amministratore. Come amministratore dovrai creare account per tutti i nuovi utenti o amministratori. Non perdere la tua password poiché solo un utente amministratore può reimpostare le password.",
-      password: "Password istanza",
+      "password-label": "Password istanza",
     },
   },
   event: {

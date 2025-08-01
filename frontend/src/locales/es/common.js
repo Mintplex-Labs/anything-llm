@@ -475,12 +475,7 @@ const TRANSLATIONS = {
       title: "Protección con contraseña",
       description:
         "Protege tu instancia de AnythingLLM con una contraseña. Si olvidas esta contraseña, no hay método de recuperación, así que asegúrate de guardar esta contraseña.",
-    },
-    instance: {
-      title: "Proteger instancia con contraseña",
-      description:
-        "Por defecto, serás el único administrador. Como administrador, necesitarás crear cuentas para todos los nuevos usuarios o administradores. No pierdas tu contraseña ya que solo un usuario administrador puede restablecer las contraseñas.",
-      password: "Contraseña de la instancia",
+      "password-label": "Contraseña de la instancia",
     },
   },
   event: {
