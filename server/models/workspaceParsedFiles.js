@@ -2,6 +2,8 @@ const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
 const { Document } = require("./documents");
 const { Workspace } = require("./workspace");
+const { documentsPath, directUploadsPath } = require("../utils/files");
+const { safeJsonParse } = require("../utils/http");
 const fs = require("fs");
 const path = require("path");
 
@@ -84,24 +86,16 @@ const WorkspaceParsedFiles = {
       const parsedFile = await this.get({ id: parseInt(fileId) });
       if (!parsedFile) throw new Error("File not found");
 
-      // Parse the metadata to get the actual file location
-      const metadata = JSON.parse(parsedFile.metadata || "{}");
+      // Get file location from metadata
+      const metadata = safeJsonParse(parsedFile.metadata, {});
       const location = metadata.location;
       if (!location) throw new Error("No file location in metadata");
 
-      // Read the file from direct-uploads using the location from metadata
-      const directUploadsPath =
-        process.env.NODE_ENV === "development"
-          ? path.resolve(__dirname, "../storage/direct-uploads")
-          : path.resolve(process.env.STORAGE_DIR, "direct-uploads");
+      // Get file from metadata location
       const sourceFile = path.join(directUploadsPath, location.split("/")[1]);
       if (!fs.existsSync(sourceFile)) throw new Error("Source file not found");
 
-      // Move to documents/custom-documents
-      const documentsPath =
-        process.env.NODE_ENV === "development"
-          ? path.resolve(__dirname, "../storage/documents")
-          : path.resolve(process.env.STORAGE_DIR, "documents");
+      // Move to custom-documents
       const customDocsPath = path.join(documentsPath, "custom-documents");
       if (!fs.existsSync(customDocsPath))
         fs.mkdirSync(customDocsPath, { recursive: true });
@@ -111,7 +105,7 @@ const WorkspaceParsedFiles = {
       fs.copyFileSync(sourceFile, targetPath);
       fs.unlinkSync(sourceFile);
 
-      // Embed file from custom-documents
+      // Embed file
       const workspace = await Workspace.get({ id: parseInt(workspaceId) });
       if (!workspace) throw new Error("Workspace not found");
       const {
@@ -139,6 +133,8 @@ const WorkspaceParsedFiles = {
     } catch (error) {
       console.error("Failed to move and embed file:", error);
       return { success: false, error: error.message, document: null };
+    } finally {
+      await this.delete({ id: parseInt(fileId) });
     }
   },
 };
