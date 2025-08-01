@@ -55,6 +55,8 @@ const TRANSLATIONS = {
       title: "Create your first workspace",
       description:
         "Create your first workspace and get started with AnythingLLM.",
+      adminWarning:
+        "Each workspace must always have at least one admin. Removing all admin users can break workspace features.",
     },
   },
   common: {
@@ -71,6 +73,8 @@ const TRANSLATIONS = {
     yes: "Yes",
     no: "No",
     search: "Search",
+    adminRemoveWarning:
+      "Admins are automatically part of every workspace. Removing all admin users will break workspace features.",
   },
 
   // Setting Sidebar menu items.

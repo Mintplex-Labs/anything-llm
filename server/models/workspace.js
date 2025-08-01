@@ -435,6 +435,19 @@ const Workspace = {
    */
   updateUsers: async function (workspaceId, userIds = []) {
     try {
+      const { User } = require("./user");
+      const { ROLES } = require("../utils/middleware/multiUserProtected");
+      const adminCount = await User.count({
+        id: { in: userIds.map(Number) },
+        role: ROLES.admin,
+      });
+      if (adminCount === 0) {
+        return {
+          success: false,
+          error: "Workspace must include at least one admin user.",
+        };
+      }
+
       await WorkspaceUser.delete({ workspace_id: Number(workspaceId) });
       await WorkspaceUser.createManyUsers(userIds, workspaceId);
       return { success: true, error: null };
