@@ -202,6 +202,7 @@ const Workspace = {
       const workspace = await prisma.workspaces.create({
         data: {
           name: this.validations.name(name),
+          private: true,
           ...this.validateFields(additionalFields),
           slug,
         },

@@ -140,7 +140,7 @@ model workspaces {
   agentProvider                String?
   agentModel                   String?
   queryRefusalResponse         String?
-  private                      Boolean                        @default(false)
+  private                      Boolean                        @default(true)
   vectorSearchMode             String?                        @default("default")
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
