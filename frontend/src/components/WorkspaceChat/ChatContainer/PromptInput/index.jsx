@@ -25,6 +25,7 @@ import useTextSize from "@/hooks/useTextSize";
 import { useTranslation } from "react-i18next";
 import Appearance from "@/models/appearance";
 
+export const PROMPT_INPUT_ID = "primary-prompt-input";
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 const MAX_EDIT_STACK_SIZE = 100;
 
@@ -51,10 +52,12 @@ export default function PromptInput({
    * To prevent too many re-renders we remotely listen for updates from the parent
    * via an event cycle. Otherwise, using message as a prop leads to a re-render every
    * change on the input.
-   * @param {Event} e
+   * @param {{detail: {messageContent: string, writeMode: 'replace' | 'append'}}} e
    */
   function handlePromptUpdate(e) {
-    setPromptInput(e?.detail ?? "");
+    const { messageContent, writeMode = "replace" } = e?.detail ?? {};
+    if (writeMode === "append") setPromptInput((prev) => prev + messageContent);
+    else setPromptInput(messageContent ?? "");
   }
 
   useEffect(() => {
@@ -261,6 +264,7 @@ export default function PromptInput({
             <AttachmentManager attachments={attachments} />
             <div className="flex items-center border-b border-theme-chat-input-border mx-3">
               <textarea
+                id={PROMPT_INPUT_ID}
                 ref={textareaRef}
                 onChange={handleChange}
                 onKeyDown={captureEnterOrUndo}

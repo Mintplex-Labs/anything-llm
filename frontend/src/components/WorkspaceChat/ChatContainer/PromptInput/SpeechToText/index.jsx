@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import _regeneratorRuntime from "regenerator-runtime";
@@ -19,6 +19,7 @@ const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
  * @returns {React.ReactElement} The SpeechToText component
  */
 export default function SpeechToText({ sendCommand }) {
+  const previousTranscriptRef = useRef("");
   const {
     transcript,
     listening,
@@ -39,6 +40,7 @@ export default function SpeechToText({ sendCommand }) {
     }
 
     resetTranscript();
+    previousTranscriptRef.current = "";
     SpeechRecognition.startListening({
       continuous: browserSupportsContinuousListening,
       language: window?.navigator?.language ?? "en-US",
@@ -47,14 +49,19 @@ export default function SpeechToText({ sendCommand }) {
 
   function endSTTSession() {
     SpeechRecognition.stopListening();
-    if (transcript.length > 0) {
+
+    // If auto submit is enabled, send an empty string to the chat window to submit the current transcript
+    // since every chunk of text should have been streamed to the chat window by now.
+    if (Appearance.get("autoSubmitSttInput")) {
       sendCommand({
-        text: transcript,
-        autoSubmit: Appearance.get("autoSubmitSttInput"),
+        text: "",
+        autoSubmit: true,
+        writeMode: "append",
       });
     }
 
     resetTranscript();
+    previousTranscriptRef.current = "";
     clearTimeout(timeout);
   }
 
@@ -95,7 +102,15 @@ export default function SpeechToText({ sendCommand }) {
 
   useEffect(() => {
     if (transcript?.length > 0 && listening) {
-      sendCommand({ text: transcript });
+      const previousTranscript = previousTranscriptRef.current;
+      const newContent = transcript.slice(previousTranscript.length);
+
+      // Stream just the diff of the new content since transcript is an accumulating string.
+      // and not just the new content transcribed.
+      if (newContent.length > 0)
+        sendCommand({ text: newContent, writeMode: "append" });
+
+      previousTranscriptRef.current = transcript;
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         endSTTSession();

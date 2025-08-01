@@ -698,12 +698,7 @@ const TRANSLATIONS = {
       title: "Password Protection",
       description:
         "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
-    },
-    instance: {
-      title: "Password Protect Instance",
-      description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Admin user can reset passwords.",
-      password: "Instance password",
+      "password-label": "Instance Password",
     },
   },
 

@@ -1094,6 +1094,8 @@ function dumpENV() {
     ...Object.values(KEY_MAPPING).map((values) => values.envKey),
     // Manually Add Keys here which are not already defined in KEY_MAPPING
     // and are either managed or manually set ENV key:values.
+    "JWT_EXPIRY",
+
     "STORAGE_DIR",
     "SERVER_PORT",
     // For persistent data encryption
