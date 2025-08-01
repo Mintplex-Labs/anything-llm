@@ -135,18 +135,34 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const workspaces = await Workspace._findMany({
-        where: {},
+      const user = response.locals.user;
+      const baseQuery = {
         include: {
           threads: {
-            select: {
-              user_id: true,
-              slug: true,
-              name: true,
-            },
+            select: { user_id: true, slug: true, name: true },
           },
         },
-      });
+      };
+      let workspaces;
+      if (user) {
+        workspaces = await Workspace._findMany({
+          where:
+            user.role === ROLES.admin
+              ? {
+                  OR: [
+                    { private: false },
+                    { workspace_users: { some: { user_id: user.id } } },
+                  ],
+                }
+              : { workspace_users: { some: { user_id: user.id } } },
+          ...baseQuery,
+        });
+      } else {
+        workspaces = await Workspace._findMany({
+          where: { private: false },
+          ...baseQuery,
+        });
+      }
       response.status(200).json({ workspaces });
     } catch (e) {
       console.error(e.message, e);
@@ -197,19 +213,30 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const { slug } = request.params;
-      const workspace = await Workspace._findMany({
-        where: {
-          slug: String(slug),
-        },
+      const user = response.locals.user;
+      const baseQuery = {
         include: {
           documents: true,
-          threads: {
-            select: {
-              user_id: true,
-              slug: true,
-            },
-          },
+          threads: { select: { user_id: true, slug: true } },
         },
+      };
+      const workspace = await Workspace._findMany({
+        where:
+          user
+            ? user.role === ROLES.admin
+              ? {
+                  slug: String(slug),
+                  OR: [
+                    { private: false },
+                    { workspace_users: { some: { user_id: user.id } } },
+                  ],
+                }
+              : {
+                  slug: String(slug),
+                  workspace_users: { some: { user_id: user.id } },
+                }
+            : { slug: String(slug), private: false },
+        ...baseQuery,
       });
 
       response.status(200).json({ workspace });
