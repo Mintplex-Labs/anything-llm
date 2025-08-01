@@ -219,6 +219,11 @@ const TRANSLATIONS = {
         only: "فقط",
         "desc-end": "إذا وجد المستند في السياق",
       },
+      agent: {
+        title: "Agent",
+        agent_mode: "Agent Mode",
+        desc: "Automatically uses the agent for all messages without requiring @agent prefix.",
+      },
     },
     history: {
       title: "سجل المحادثة",
