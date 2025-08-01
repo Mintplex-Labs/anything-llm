@@ -383,12 +383,20 @@ const Workspace = {
    */
   workspaceUsers: async function (workspaceId) {
     try {
-      const users = (
-        await WorkspaceUser.where({ workspace_id: Number(workspaceId) })
-      ).map((rel) => rel);
-
+      const users = await WorkspaceUser.where({
+        workspace_id: Number(workspaceId),
+      });
       const usersById = await User.where({
-        id: { in: users.map((user) => user.user_id) },
+        id: { in: users.map((u) => u.user_id) },
+      });
+
+      const roleIds = users.map((u) => u.role_id).filter(Boolean);
+      const { Role } = require("./roles");
+      const roles =
+        roleIds.length > 0 ? await Role.where({ id: { in: roleIds } }) : [];
+      const roleMap = {};
+      roles.forEach((r) => {
+        roleMap[r.id] = r;
       });
 
       const userInfo = usersById.map((user) => {
@@ -397,6 +405,9 @@ const Workspace = {
           userId: user.id,
           username: user.username,
           role: user.role,
+          workspaceRole: workspaceUser.role_id
+            ? roleMap[workspaceUser.role_id]?.name || null
+            : null,
           lastUpdatedAt: workspaceUser.lastUpdatedAt,
         };
       });
@@ -418,6 +429,27 @@ const Workspace = {
     try {
       await WorkspaceUser.delete({ workspace_id: Number(workspaceId) });
       await WorkspaceUser.createManyUsers(userIds, workspaceId);
+      return { success: true, error: null };
+    } catch (error) {
+      console.error(error.message);
+      return { success: false, error: error.message };
+    }
+  },
+
+  assignUserRole: async function (workspaceId, userId, roleId) {
+    try {
+      const existing = await WorkspaceUser.get({
+        workspace_id: Number(workspaceId),
+        user_id: Number(userId),
+      });
+      if (!existing) {
+        await WorkspaceUser.create(userId, workspaceId, roleId);
+      } else {
+        await WorkspaceUser.update(
+          { workspace_id: Number(workspaceId), user_id: Number(userId) },
+          { role_id: roleId ? Number(roleId) : null }
+        );
+      }
       return { success: true, error: null };
     } catch (error) {
       console.error(error.message);

@@ -1,13 +1,17 @@
 const prisma = require("../utils/prisma");
 
 const WorkspaceUser = {
-  createMany: async function (userId, workspaceIds = []) {
+  createMany: async function (userId, workspaceIds = [], roleId = null) {
     if (workspaceIds.length === 0) return;
     try {
       await prisma.$transaction(
         workspaceIds.map((workspaceId) =>
           prisma.workspace_users.create({
-            data: { user_id: userId, workspace_id: workspaceId },
+            data: {
+              user_id: userId,
+              workspace_id: workspaceId,
+              role_id: roleId ? Number(roleId) : null,
+            },
           })
         )
       );
@@ -23,7 +27,7 @@ const WorkspaceUser = {
    * @param {number} workspaceId - The ID of the workspace to create workspace users for.
    * @returns {Promise<void>} A promise that resolves when the workspace users are created.
    */
-  createManyUsers: async function (userIds = [], workspaceId) {
+  createManyUsers: async function (userIds = [], workspaceId, roleId = null) {
     if (userIds.length === 0) return;
     try {
       await prisma.$transaction(
@@ -32,6 +36,7 @@ const WorkspaceUser = {
             data: {
               user_id: Number(userId),
               workspace_id: Number(workspaceId),
+              role_id: roleId ? Number(roleId) : null,
             },
           })
         )
@@ -42,10 +47,14 @@ const WorkspaceUser = {
     return;
   },
 
-  create: async function (userId = 0, workspaceId = 0) {
+  create: async function (userId = 0, workspaceId = 0, roleId = null) {
     try {
       await prisma.workspace_users.create({
-        data: { user_id: Number(userId), workspace_id: Number(workspaceId) },
+        data: {
+          user_id: Number(userId),
+          workspace_id: Number(workspaceId),
+          role_id: roleId ? Number(roleId) : null,
+        },
       });
       return true;
     } catch (error) {
@@ -64,6 +73,16 @@ const WorkspaceUser = {
     } catch (error) {
       console.error(error.message);
       return null;
+    }
+  },
+
+  update: async function (clause = {}, data = {}) {
+    try {
+      await prisma.workspace_users.updateMany({ where: clause, data });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
     }
   },
 
