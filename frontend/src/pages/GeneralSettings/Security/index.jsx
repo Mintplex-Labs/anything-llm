@@ -293,7 +293,7 @@ function PasswordProtection() {
               <div className="w-full flex flex-col gap-y-4">
                 <div className="">
                   <label className="mb-2.5 block font-medium text-white">
-                    {t("multi.instance.title")}
+                    {t("multi.password.title")}
                   </label>
 
                   <label className="relative inline-flex cursor-pointer items-center">
@@ -313,7 +313,7 @@ function PasswordProtection() {
                         htmlFor="password"
                         className="block mb-3 font-medium text-white"
                       >
-                        {t("multi.instance.password")}
+                        {t("multi.password.password-label")}
                       </label>
                       <input
                         name="password"
@@ -332,7 +332,7 @@ function PasswordProtection() {
             </div>
             <div className="flex items-center justify-between space-x-14">
               <p className="text-white text-opacity-80 light:text-theme-text text-xs rounded-lg w-96">
-                {t("multi.instance.description")}
+                {t("multi.password.description")}
               </p>
             </div>
           </div>

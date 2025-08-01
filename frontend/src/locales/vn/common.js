@@ -470,12 +470,7 @@ const TRANSLATIONS = {
       title: "Mật khẩu Protection",
       description:
         "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
-    },
-    instance: {
-      title: "Mật khẩu Protect Instance",
-      description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
-      password: "Instance password",
+      "password-label": "Mật khẩu của instance",
     },
   },
   event: {

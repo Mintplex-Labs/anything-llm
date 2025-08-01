@@ -478,12 +478,7 @@ const TRANSLATIONS = {
       title: "Adgangskodebeskyttelse",
       description:
         "Beskyt din AnythingLLM-instans med en adgangskode. Hvis du glemmer den, findes der ingen genoprettelsesmetode, så sørg for at gemme denne adgangskode.",
-    },
-    instance: {
-      title: "Adgangskodebeskyt instansen",
-      description:
-        "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
-      password: "Instansens adgangskode",
+      "password-label": "Instansadgangskode",
     },
   },
   event: {
