@@ -14,7 +14,7 @@ const getSignedUrlFromUri = async (uri) => {
     const match = uri.match(/^gs:\/\/([a-zA-Z0-9._-]+)\/(.*)$/);
     if (!match) {
         console.error('Invalid GCS URI:', uri);
-        return null;
+        return uri;
     }
     const bucketName = match[1];
     const fileName = match[2];
