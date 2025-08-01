@@ -29,6 +29,7 @@ function isNullOrNaN(value) {
  * @property {string} agentModel - The agent model of the workspace
  * @property {string} queryRefusalResponse - The query refusal response of the workspace
  * @property {string} vectorSearchMode - The vector search mode of the workspace
+ * @property {boolean} private - Whether the workspace is private
  */
 
 const Workspace = {
@@ -54,6 +55,7 @@ const Workspace = {
     "agentProvider",
     "agentModel",
     "queryRefusalResponse",
+    "private",
     "vectorSearchMode",
   ],
 
@@ -119,6 +121,9 @@ const Workspace = {
     openAiPrompt: (value) => {
       if (!value || typeof value !== "string") return null;
       return String(value);
+    },
+    private: (value) => {
+      return Boolean(value);
     },
     vectorSearchMode: (value) => {
       if (
@@ -259,18 +264,21 @@ const Workspace = {
   },
 
   getWithUser: async function (user = null, clause = {}) {
-    if ([ROLES.admin].includes(user.role)) return this.get(clause);
-
     try {
+      const baseWhere = { ...clause };
+      if (user) {
+        if (user.role === ROLES.admin) {
+          baseWhere.OR = [
+            { private: false },
+            { workspace_users: { some: { user_id: user.id } } },
+          ];
+        } else {
+          baseWhere.workspace_users = { some: { user_id: user.id } };
+        }
+      }
+
       const workspace = await prisma.workspaces.findFirst({
-        where: {
-          ...clause,
-          workspace_users: {
-            some: {
-              user_id: user?.id,
-            },
-          },
-        },
+        where: baseWhere,
         include: {
           workspace_users: true,
           documents: true,
@@ -337,19 +345,19 @@ const Workspace = {
     limit = null,
     orderBy = null
   ) {
-    if ([ROLES.admin].includes(user.role))
-      return await this.where(clause, limit, orderBy);
-
     try {
+      const baseWhere = { ...clause };
+      if (user.role === ROLES.admin) {
+        baseWhere.OR = [
+          { private: false },
+          { workspace_users: { some: { user_id: user.id } } },
+        ];
+      } else {
+        baseWhere.workspace_users = { some: { user_id: user.id } };
+      }
+
       const workspaces = await prisma.workspaces.findMany({
-        where: {
-          ...clause,
-          workspace_users: {
-            some: {
-              user_id: user.id,
-            },
-          },
-        },
+        where: baseWhere,
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
       });
