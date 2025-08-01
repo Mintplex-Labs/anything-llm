@@ -20,7 +20,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
   }
 
   /**
-   * Convert an MCP server name to an AnythingLLM Agent plugin
+   * Convert an MCP server name to an OneNew Agent plugin
    * @param {string} name - The base name of the MCP server to convert - not the tool name. eg: `docker-mcp` not `docker-mcp:list-containers`
    * @param {Object} aibitat - The aibitat object to pass to the plugin
    * @returns {Promise<{name: string, description: string, plugin: Function}[]|null>} Array of plugin configurations or null if not found

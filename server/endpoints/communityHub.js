@@ -86,7 +86,7 @@ function communityHubEndpoints(app) {
   );
 
   /**
-   * Apply an item to the AnythingLLM instance. Used for simple items like slash commands and system prompts.
+   * Apply an item to the OneNew instance. Used for simple items like slash commands and system prompts.
    */
   app.post(
     "/community-hub/apply",
@@ -123,7 +123,7 @@ function communityHubEndpoints(app) {
   );
 
   /**
-   * Import a bundle item to the AnythingLLM instance by downloading the zip file and importing it.
+   * Import a bundle item to the OneNew instance by downloading the zip file and importing it.
    * or whatever the item type requires. This is not used if the item is a simple text responses like
    * slash commands or system prompts.
    */

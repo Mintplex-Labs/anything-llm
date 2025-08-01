@@ -1,6 +1,6 @@
-# How to deploy a private AnythingLLM instance on GCP
+# How to deploy a private OneNew instance on GCP
 
-With a GCP account you can easily deploy a private AnythingLLM instance on GCP. This will create a url that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys and they will not be exposed - however if you want your instance to be protected it is highly recommend that you set a password once setup is complete.
+With a GCP account you can easily deploy a private OneNew instance on GCP. This will create a url that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys and they will not be exposed - however if you want your instance to be protected it is highly recommend that you set a password once setup is complete.
 
 The output of this cloudformation stack will be:
 - 1 GCP VM

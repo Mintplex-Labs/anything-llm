@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AnythingLLM Agent Skill Plugin Manifest Schema",
+  "title": "OneNew Agent Skill Plugin Manifest Schema",
   "type": "object",
   "properties": {
     "active": {
@@ -13,7 +13,7 @@
     },
     "name": {
       "type": "string",
-      "description": "The human-readable name of the skill displayed in the AnythingLLM UI."
+      "description": "The human-readable name of the skill displayed in the OneNew UI."
     },
     "schema": {
       "type": "string",

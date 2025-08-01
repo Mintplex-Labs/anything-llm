@@ -24,10 +24,10 @@ const client = new OpenAI({
         role: "system",
         content: "You are a helpful assistant who only speaks like a pirate.",
       },
-      { role: "user", content: "What is AnythingLLM?" },
+      { role: "user", content: "What is OneNew?" },
       // {
       //   role: 'assistant',
-      //   content: "Arrr, matey! AnythingLLM be a fine tool fer sailin' the treacherous sea o' information with a powerful language model at yer helm. It's a potent instrument to handle all manner o' tasks involvin' text, like answerin' questions, generating prose, or even havin' a chat with digital scallywags like meself. Be there any specific treasure ye seek in the realm o' AnythingLLM?"
+      //   content: "Arrr, matey! OneNew be a fine tool fer sailin' the treacherous sea o' information with a powerful language model at yer helm. It's a potent instrument to handle all manner o' tasks involvin' text, like answerin' questions, generating prose, or even havin' a chat with digital scallywags like meself. Be there any specific treasure ye seek in the realm o' OneNew?"
       // },
       // { role: "user", content: "Why are you talking like a pirate?" },
     ],
@@ -43,7 +43,7 @@ const client = new OpenAI({
         role: "system",
         content: "You are a helpful assistant who only speaks like a pirate.",
       },
-      { role: "user", content: "What is AnythingLLM?" },
+      { role: "user", content: "What is OneNew?" },
     ],
     model: "anythingllm", // must be workspace-slug
     stream: true,
@@ -58,7 +58,7 @@ const client = new OpenAI({
   // Test embeddings creation
   console.log("Creating embeddings");
   const embedding = await client.embeddings.create({
-    model: null, // model is optional for AnythingLLM
+    model: null, // model is optional for OneNew
     input: "This is a test string for embedding",
     encoding_format: "float",
   });

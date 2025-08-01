@@ -8,7 +8,7 @@ const TRANSLATIONS = {
     llm: {
       title: "LLM-Einstellung",
       description:
-        "AnythingLLM ist mit vielen LLM-Anbietern kompatibel. Der ausgewählte Dienst wird für die Chats verwendet.",
+        "OneNew ist mit vielen LLM-Anbietern kompatibel. Der ausgewählte Dienst wird für die Chats verwendet.",
     },
     userSetup: {
       title: "Benutzer Setup",
@@ -37,15 +37,15 @@ const TRANSLATIONS = {
         "Diese Einstellungen können jederzeit in den Einstellungen angepasst werden.",
     },
     survey: {
-      title: "Willkommen bei AnythingLLM",
+      title: "Willkommen bei OneNew",
       description:
-        "Helfen Sie uns, AnythingLLM an Ihre Bedürfnisse anzupassen. (Optional)",
+        "Helfen Sie uns, OneNew an Ihre Bedürfnisse anzupassen. (Optional)",
       email: "Wie lautet Ihre E-Mail-Adresse?",
-      useCase: "Wofür möchten Sie AnythingLLM verwenden?",
+      useCase: "Wofür möchten Sie OneNew verwenden?",
       useCaseWork: "Beruflich",
       useCasePersonal: "Privat",
       useCaseOther: "Sonstiges",
-      comment: "Wie haben Sie von AnythingLLM erfahren?",
+      comment: "Wie haben Sie von OneNew erfahren?",
       commentPlaceholder:
         "Reddit, Twitter, GitHub, YouTube, etc. – Teilen Sie uns mit, wie Sie uns entdeckt haben!",
       skip: "Umfrage überspringen",
@@ -54,7 +54,7 @@ const TRANSLATIONS = {
     workspace: {
       title: "Ersten Workspace erstellen",
       description:
-        "Erstellen Sie Ihren ersten Workspace und starten Sie AnythingLLM.",
+        "Erstellen Sie Ihren ersten Workspace und starten Sie OneNew.",
     },
   },
   common: {
@@ -129,11 +129,11 @@ const TRANSLATIONS = {
   },
   welcomeMessage: {
     part1:
-      "Willkommen bei AnythingLLM, AnythingLLM ist ein Open-Source-KI-Tool von Mintplex Labs, das alles in einen trainierten Chatbot verwandelt, den Sie abfragen und mit dem Sie chatten können. AnythingLLM ist eine BYOK-Software (Bring-Your-Own-Keys), daher gibt es keine Abonnements, Gebühren oder Kosten für diese Software außerhalb der Dienste, die Sie damit nutzen möchten.",
+      "Willkommen bei OneNew, OneNew ist ein Open-Source-KI-Tool von Mintplex Labs, das alles in einen trainierten Chatbot verwandelt, den Sie abfragen und mit dem Sie chatten können. OneNew ist eine BYOK-Software (Bring-Your-Own-Keys), daher gibt es keine Abonnements, Gebühren oder Kosten für diese Software außerhalb der Dienste, die Sie damit nutzen möchten.",
     part2:
-      "AnythingLLM ist der einfachste Weg, leistungsstarke KI-Produkte wie OpenAI, GPT-4, LangChain, PineconeDB, ChromaDB und andere Dienste in einem übersichtlichen Paket ohne Aufwand zusammenzufassen, um Ihre Produktivität um das 100-fache zu steigern.",
+      "OneNew ist der einfachste Weg, leistungsstarke KI-Produkte wie OpenAI, GPT-4, LangChain, PineconeDB, ChromaDB und andere Dienste in einem übersichtlichen Paket ohne Aufwand zusammenzufassen, um Ihre Produktivität um das 100-fache zu steigern.",
     part3:
-      "AnythingLLM kann vollständig lokal auf Ihrem Computer mit geringem Overhead laufen - Sie werden nicht einmal bemerken, dass es da ist! Keine GPU erforderlich. Cloud- und On-Premises-Installation ist ebenfalls verfügbar.\nDas KI-Tool-Ökosystem wird jeden Tag leistungsfähiger. AnythingLLM macht es einfach, es zu nutzen.",
+      "OneNew kann vollständig lokal auf Ihrem Computer mit geringem Overhead laufen - Sie werden nicht einmal bemerken, dass es da ist! Keine GPU erforderlich. Cloud- und On-Premises-Installation ist ebenfalls verfügbar.\nDas KI-Tool-Ökosystem wird jeden Tag leistungsfähiger. OneNew macht es einfach, es zu nutzen.",
     githubIssue: "Erstellen Sie ein Problem auf GitHub",
     user1: "Wie fange ich an?!",
     part4:
@@ -142,7 +142,7 @@ const TRANSLATIONS = {
     user2:
       "Ist das so eine Art KI-Dropbox oder so? Was ist mit dem Chatten? Es ist doch ein Chatbot, oder?",
     part5:
-      "AnythingLLM ist mehr als eine intelligentere Dropbox.\n\nAnythingLLM bietet zwei Möglichkeiten, mit Ihren Daten zu sprechen:\n\n<i>Abfrage:</i> Ihre Chats geben Daten oder Schlussfolgerungen zurück, die in den Dokumenten Ihres Workspaces gefunden wurden, auf die es Zugriff hat. Je mehr Dokumente Sie dem Workspace hinzufügen, desto intelligenter wird er! \n\n<i>Konversation:</i> Ihre Dokumente + Ihr laufender Chat-Verlauf tragen gleichzeitig zum LLM-Wissen bei. Großartig für das Anhängen von Echtzeit-Textinformationen oder Korrekturen und Missverständnissen, die das LLM haben könnte. \n\nSie können zwischen beiden Modi wechseln \n<i>mitten im Chatten!</i>",
+      "OneNew ist mehr als eine intelligentere Dropbox.\n\nOneNew bietet zwei Möglichkeiten, mit Ihren Daten zu sprechen:\n\n<i>Abfrage:</i> Ihre Chats geben Daten oder Schlussfolgerungen zurück, die in den Dokumenten Ihres Workspaces gefunden wurden, auf die es Zugriff hat. Je mehr Dokumente Sie dem Workspace hinzufügen, desto intelligenter wird er! \n\n<i>Konversation:</i> Ihre Dokumente + Ihr laufender Chat-Verlauf tragen gleichzeitig zum LLM-Wissen bei. Großartig für das Anhängen von Echtzeit-Textinformationen oder Korrekturen und Missverständnissen, die das LLM haben könnte. \n\nSie können zwischen beiden Modi wechseln \n<i>mitten im Chatten!</i>",
     user3: "Wow, das klingt erstaunlich, lass es mich gleich ausprobieren!",
     part6: "Viel Spaß!",
     starOnGitHub: "Stern auf GitHub",
@@ -154,7 +154,7 @@ const TRANSLATIONS = {
     checklist: {
       title: "Erste Schritte",
       tasksLeft: "Aufgaben übrig",
-      completed: "Sie sind auf dem Weg, ein AnythingLLM-Experte zu werden!",
+      completed: "Sie sind auf dem Weg, ein OneNew-Experte zu werden!",
       dismiss: "schließen",
       tasks: {
         create_workspace: {
@@ -260,7 +260,7 @@ const TRANSLATIONS = {
       add: "Neue Nachricht hinzufügen",
       save: "Nachrichten speichern",
       heading: "Erkläre mir",
-      body: "die Vorteile von AnythingLLM",
+      body: "die Vorteile von OneNew",
     },
     pfp: {
       title: "Assistent-Profilbild",
@@ -450,16 +450,16 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "UI Einstellungen",
-      description: "Passen Sie die Benutzeroberfläche von AnythingLLM an.",
+      description: "Passen Sie die Benutzeroberfläche von OneNew an.",
     },
     branding: {
       title: "Branding & Whitelabeling",
       description:
-        "Individualisieren Sie Ihre AnythingLLM-Instanz durch eigenes Branding.",
+        "Individualisieren Sie Ihre OneNew-Instanz durch eigenes Branding.",
     },
     chat: {
       title: "Chat",
-      description: "Passen Sie Ihre Chat-Einstellungen für AnythingLLM an.",
+      description: "Passen Sie Ihre Chat-Einstellungen für OneNew an.",
       auto_submit: {
         title: "Spracheingaben automatisch senden",
         description:
@@ -521,7 +521,7 @@ const TRANSLATIONS = {
         system: "System",
         user: "Benutzer",
         message: "Nachricht",
-        assistant: "AnythingLLM Chat-Assistent",
+        assistant: "OneNew Chat-Assistent",
         "double-click": "Zum Bearbeiten doppelklicken",
         save: "Nachrichten speichern",
       },
@@ -551,7 +551,7 @@ const TRANSLATIONS = {
   api: {
     title: "API-Schlüssel",
     description:
-      "API-Schlüssel ermöglichen es dem Besitzer, programmatisch auf diese AnythingLLM-Instanz zuzugreifen und sie zu verwalten.",
+      "API-Schlüssel ermöglichen es dem Besitzer, programmatisch auf diese OneNew-Instanz zuzugreifen und sie zu verwalten.",
     link: "Lesen Sie die API-Dokumentation",
     generate: "Neuen API-Schlüssel generieren",
     table: {
@@ -563,7 +563,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM-Präferenz",
     description:
-      "Dies sind die Anmeldeinformationen und Einstellungen für Ihren bevorzugten LLM-Chat- und Einbettungsanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind, sonst wird AnythingLLM nicht richtig funktionieren.",
+      "Dies sind die Anmeldeinformationen und Einstellungen für Ihren bevorzugten LLM-Chat- und Einbettungsanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind, sonst wird OneNew nicht richtig funktionieren.",
     provider: "LLM-Anbieter",
     providers: {
       azure_openai: {
@@ -583,7 +583,7 @@ const TRANSLATIONS = {
       "Dies sind die Anmeldeinformationen und Einstellungen für Ihren bevorzugten Transkriptionsmodellanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind, sonst werden Mediendateien und Audio nicht transkribiert.",
     provider: "Transkriptionsanbieter",
     "warn-start":
-      "Die Verwendung des lokalen Whisper-Modells auf Maschinen mit begrenztem RAM oder CPU kann AnythingLLM bei der Verarbeitung von Mediendateien zum Stillstand bringen.",
+      "Die Verwendung des lokalen Whisper-Modells auf Maschinen mit begrenztem RAM oder CPU kann OneNew bei der Verarbeitung von Mediendateien zum Stillstand bringen.",
     "warn-recommend":
       "Wir empfehlen mindestens 2 GB RAM und das Hochladen von Dateien <10 MB.",
     "warn-end":
@@ -594,7 +594,7 @@ const TRANSLATIONS = {
     "desc-start":
       "Bei der Verwendung eines LLM, das keine native Unterstützung für eine Einbettungs-Engine bietet, müssen Sie möglicherweise zusätzlich Anmeldeinformationen für die Texteinbettung angeben.",
     "desc-end":
-      "Einbettung ist der Prozess, Text in Vektoren umzuwandeln. Diese Anmeldeinformationen sind erforderlich, um Ihre Dateien und Prompts in ein Format umzuwandeln, das AnythingLLM zur Verarbeitung verwenden kann.",
+      "Einbettung ist der Prozess, Text in Vektoren umzuwandeln. Diese Anmeldeinformationen sind erforderlich, um Ihre Dateien und Prompts in ein Format umzuwandeln, das OneNew zur Verarbeitung verwenden kann.",
     provider: {
       title: "Einbettungsanbieter",
     },
@@ -620,7 +620,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Vektordatenbank",
     description:
-      "Dies sind die Anmeldeinformationen und Einstellungen für die Funktionsweise Ihrer AnythingLLM-Instanz. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind.",
+      "Dies sind die Anmeldeinformationen und Einstellungen für die Funktionsweise Ihrer OneNew-Instanz. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind.",
     provider: {
       title: "Vektordatenbankanbieter",
       description: "Für LanceDB ist keine Konfiguration erforderlich.",
@@ -666,7 +666,7 @@ const TRANSLATIONS = {
     password: {
       title: "Passwortschutz",
       description:
-        "Schützen Sie Ihre AnythingLLM-Instanz mit einem Passwort. Wenn Sie dieses vergessen, gibt es keine Wiederherstellungsmethode, also stellen Sie sicher, dass Sie dieses Passwort speichern.",
+        "Schützen Sie Ihre OneNew-Instanz mit einem Passwort. Wenn Sie dieses vergessen, gibt es keine Wiederherstellungsmethode, also stellen Sie sicher, dass Sie dieses Passwort speichern.",
     },
     instance: {
       title: "Instanz mit Passwort schützen",
@@ -689,7 +689,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Datenschutz & Datenverarbeitung",
     description:
-      "Dies ist Ihre Konfiguration dafür, wie verbundene Drittanbieter und AnythingLLM Ihre Daten behandeln.",
+      "Dies ist Ihre Konfiguration dafür, wie verbundene Drittanbieter und OneNew Ihre Daten behandeln.",
     llm: "LLM-Auswahl",
     embedding: "Einbettungspräferenz",
     vector: "Vektordatenbank",
@@ -872,7 +872,7 @@ const TRANSLATIONS = {
       fetching: "Wird abgerufen...",
       "fetch-website": "Website abrufen",
       "privacy-notice":
-        "Diese Dateien werden zum Dokumentenprozessor hochgeladen, der auf dieser AnythingLLM-Instanz läuft. Diese Dateien werden nicht an Dritte gesendet oder geteilt.",
+        "Diese Dateien werden zum Dokumentenprozessor hochgeladen, der auf dieser OneNew-Instanz läuft. Diese Dateien werden nicht an Dritte gesendet oder geteilt.",
     },
     pinning: {
       what_pinning: "Was bedeutet es Dokumente anzuheften?",
