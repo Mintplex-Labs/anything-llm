@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
 import useUser from "@/hooks/useUser";
+import FileUploadWarningModal from "./FileUploadWarningModal";
 
 export const DndUploaderContext = createContext();
 export const REMOVE_ATTACHMENT_EVENT = "ATTACHMENT_REMOVE";
@@ -33,7 +34,13 @@ export function DnDFileUploaderProvider({
   const [files, setFiles] = useState([]);
   const [ready, setReady] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState([]);
+  const [tokenCount, setTokenCount] = useState(0);
   const { user } = useUser();
+
+  const contextWindow = 8000; // TODO: Get from workspace or system settings
+  const maxTokens = Math.floor(contextWindow * 0.8);
 
   useEffect(() => {
     System.checkDocumentProcessorOnline().then((status) => setReady(status));
@@ -208,35 +215,25 @@ export function DnDFileUploaderProvider({
             }
 
             // Check if any file exceeds context window
-            const tokenCount = data.files.reduce(
+            const newTokenCount = data.files.reduce(
               (sum, file) =>
                 sum + JSON.parse(file.metadata).token_count_estimate,
               0
             );
-            const contextWindow = 8000; // TODO: Get from workspace or system settings
-            const maxTokens = Math.floor(contextWindow * 0.8);
 
-            if (tokenCount > maxTokens) {
-              // Show alert dialog
-              const choice = window.confirm(
-                `This document exceeds 80% of your context window (${tokenCount} > ${maxTokens} tokens). Would you like to embed it anyway?`
-              );
 
-              if (!choice) {
-                // Delete parsed file and remove from UI
-                await Workspace.deleteParsedFile(
-                  workspace.slug,
-                  data.files[0].id
-                );
-                setFiles((prev) =>
-                  prev.filter((prevFile) => prevFile.uid !== attachment.uid)
-                );
-                return;
-              }
+            if (newTokenCount > maxTokens) {
+              setTokenCount((prev) => prev + newTokenCount);
+              setPendingFiles((prev) => [...prev, {
+                attachment,
+                parsedFileId: data.files[0].id,
+              }]);
+              setShowWarningModal(true);
+              return;
             }
 
-            // User chose to continue or file is within limits
-            // We already have the file parsed, just need to move and embed it
+            // File is within limits, proceed with embedding
+            // TODO: to be replaced with using same logic as pinning documents
             const embedResult = await Workspace.embedParsedFile(
               workspace.slug,
               data.files[0].id
@@ -269,10 +266,96 @@ export function DnDFileUploaderProvider({
     );
   }
 
+  // Handle modal actions
+  const handleCloseModal = async () => {
+    if (!pendingFiles.length) return;
+    // Delete all parsed files and remove them from UI
+    await Promise.all(
+      pendingFiles.map(file => Workspace.deleteParsedFile(workspace.slug, file.parsedFileId))
+    );
+    setFiles((prev) => prev.filter(prevFile =>
+      !pendingFiles.some(file => file.attachment.uid === prevFile.uid)
+    ));
+    setShowWarningModal(false);
+    setPendingFiles([]);
+    setTokenCount(0);
+  };
+
+  const handleContinueAnyway = async () => {
+    // TODO: to be replaced with using same logic as pinning documents
+    if (!pendingFiles.length) return;
+    // Embed all pending files
+    const results = await Promise.all(
+      pendingFiles.map(file =>
+        Workspace.embedParsedFile(workspace.slug, file.parsedFileId)
+      )
+    );
+
+    // Update status for all files
+    const fileUpdates = pendingFiles.map((file, i) => ({
+      uid: file.attachment.uid,
+      updates: {
+        status: results[i].response.ok ? "success" : "failed",
+        error: results[i].data?.error ?? null,
+        document: results[i].data?.document,
+      }
+    }));
+
+    setFiles((prev) =>
+      prev.map((prevFile) => {
+        const update = fileUpdates.find(f => f.uid === prevFile.uid);
+        return update ? { ...prevFile, ...update.updates } : prevFile;
+      })
+    );
+    setShowWarningModal(false);
+    setPendingFiles([]);
+    setTokenCount(0);
+  };
+
+
+  const handleEmbed = async () => {
+    if (!pendingFiles.length) return;
+    // Embed all pending files
+    const results = await Promise.all(
+      pendingFiles.map(file =>
+        Workspace.embedParsedFile(workspace.slug, file.parsedFileId)
+      )
+    );
+
+    // Update status for all files
+    const fileUpdates = pendingFiles.map((file, i) => ({
+      uid: file.attachment.uid,
+      updates: {
+        status: results[i].response.ok ? "success" : "failed",
+        error: results[i].data?.error ?? null,
+        document: results[i].data?.document,
+      }
+    }));
+
+    setFiles((prev) =>
+      prev.map((prevFile) => {
+        const update = fileUpdates.find(f => f.uid === prevFile.uid);
+        return update ? { ...prevFile, ...update.updates } : prevFile;
+      })
+    );
+    setShowWarningModal(false);
+    setPendingFiles([]);
+    setTokenCount(0);
+  };
+
   return (
     <DndUploaderContext.Provider
       value={{ files, ready, dragging, setDragging, onDrop, parseAttachments }}
     >
+      <FileUploadWarningModal
+        show={showWarningModal}
+        onClose={handleCloseModal}
+        onContinue={handleContinueAnyway}
+        onEmbed={handleEmbed}
+        tokenCount={tokenCount}
+        maxTokens={maxTokens}
+        fileCount={pendingFiles.length}
+      />
       {children}
     </DndUploaderContext.Provider>
   );
@@ -303,7 +386,7 @@ export default function DnDFileUploaderWrapper({ children }) {
       >
         <div className="w-full h-full flex justify-center items-center rounded-xl">
           <div className="flex flex-col gap-y-[14px] justify-center items-center">
-            <img src={DndIcon} width={69} height={69} />
+            <img src={DndIcon} width={69} height={69} alt="Drag and drop icon" />
             <p className="text-white text-[24px] font-semibold">
               Add {canUploadAll ? "anything" : "an image"}
             </p>
