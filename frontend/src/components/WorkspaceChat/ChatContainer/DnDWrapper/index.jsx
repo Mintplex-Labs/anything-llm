@@ -221,13 +221,15 @@ export function DnDFileUploaderProvider({
               0
             );
 
-
             if (newTokenCount > maxTokens) {
               setTokenCount((prev) => prev + newTokenCount);
-              setPendingFiles((prev) => [...prev, {
-                attachment,
-                parsedFileId: data.files[0].id,
-              }]);
+              setPendingFiles((prev) => [
+                ...prev,
+                {
+                  attachment,
+                  parsedFileId: data.files[0].id,
+                },
+              ]);
               setShowWarningModal(true);
               return;
             }
@@ -271,11 +273,16 @@ export function DnDFileUploaderProvider({
     if (!pendingFiles.length) return;
     // Delete all parsed files and remove them from UI
     await Promise.all(
-      pendingFiles.map(file => Workspace.deleteParsedFile(workspace.slug, file.parsedFileId))
+      pendingFiles.map((file) =>
+        Workspace.deleteParsedFile(workspace.slug, file.parsedFileId)
+      )
     );
-    setFiles((prev) => prev.filter(prevFile =>
-      !pendingFiles.some(file => file.attachment.uid === prevFile.uid)
-    ));
+    setFiles((prev) =>
+      prev.filter(
+        (prevFile) =>
+          !pendingFiles.some((file) => file.attachment.uid === prevFile.uid)
+      )
+    );
     setShowWarningModal(false);
     setPendingFiles([]);
     setTokenCount(0);
@@ -286,7 +293,7 @@ export function DnDFileUploaderProvider({
     if (!pendingFiles.length) return;
     // Embed all pending files
     const results = await Promise.all(
-      pendingFiles.map(file =>
+      pendingFiles.map((file) =>
         Workspace.embedParsedFile(workspace.slug, file.parsedFileId)
       )
     );
@@ -298,12 +305,12 @@ export function DnDFileUploaderProvider({
         status: results[i].response.ok ? "success" : "failed",
         error: results[i].data?.error ?? null,
         document: results[i].data?.document,
-      }
+      },
     }));
 
     setFiles((prev) =>
       prev.map((prevFile) => {
-        const update = fileUpdates.find(f => f.uid === prevFile.uid);
+        const update = fileUpdates.find((f) => f.uid === prevFile.uid);
         return update ? { ...prevFile, ...update.updates } : prevFile;
       })
     );
@@ -312,12 +319,11 @@ export function DnDFileUploaderProvider({
     setTokenCount(0);
   };
 
-
   const handleEmbed = async () => {
     if (!pendingFiles.length) return;
     // Embed all pending files
     const results = await Promise.all(
-      pendingFiles.map(file =>
+      pendingFiles.map((file) =>
         Workspace.embedParsedFile(workspace.slug, file.parsedFileId)
       )
     );
@@ -329,12 +335,12 @@ export function DnDFileUploaderProvider({
         status: results[i].response.ok ? "success" : "failed",
         error: results[i].data?.error ?? null,
         document: results[i].data?.document,
-      }
+      },
     }));
 
     setFiles((prev) =>
       prev.map((prevFile) => {
-        const update = fileUpdates.find(f => f.uid === prevFile.uid);
+        const update = fileUpdates.find((f) => f.uid === prevFile.uid);
         return update ? { ...prevFile, ...update.updates } : prevFile;
       })
     );
@@ -386,7 +392,12 @@ export default function DnDFileUploaderWrapper({ children }) {
       >
         <div className="w-full h-full flex justify-center items-center rounded-xl">
           <div className="flex flex-col gap-y-[14px] justify-center items-center">
-            <img src={DndIcon} width={69} height={69} alt="Drag and drop icon" />
+            <img
+              src={DndIcon}
+              width={69}
+              height={69}
+              alt="Drag and drop icon"
+            />
             <p className="text-white text-[24px] font-semibold">
               Add {canUploadAll ? "anything" : "an image"}
             </p>
