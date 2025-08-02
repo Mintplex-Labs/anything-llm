@@ -82,6 +82,9 @@ export default function CreateWorkspace({
             autoComplete="off"
             onChange={(e) => setWorkspaceName(e.target.value)}
           />
+          <p className="text-theme-text-secondary text-xs mt-2">
+            {t("onboarding.workspace.adminWarning")}
+          </p>
         </div>
       </div>
       <button

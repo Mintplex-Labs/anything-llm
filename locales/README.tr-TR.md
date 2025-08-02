@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="OneNew logo"></a>
 </p>
 
 <div align='center'>
@@ -9,7 +9,7 @@
 </div>
 
 <p align="center">
-<b>AnythingLLM:</b> Aradığınız hepsi bir arada yapay zeka uygulaması.<br />
+<b>OneNew:</b> Aradığınız hepsi bir arada yapay zeka uygulaması.<br />
 Belgelerinizle sohbet edin, yapay zeka ajanlarını kullanın, son derece özelleştirilebilir, çok kullanıcılı ve zahmetsiz kurulum!
 </p>
 
@@ -34,7 +34,7 @@ Belgelerinizle sohbet edin, yapay zeka ajanlarını kullanın, son derece özell
 
 
 <p align="center">  
-👉 Masaüstü için AnythingLLM (Mac, Windows ve Linux)! <a href="https://anythingllm.com/download" target="_blank"> Şimdi İndir</a>  
+👉 Masaüstü için OneNew (Mac, Windows ve Linux)! <a href="https://anythingllm.com/download" target="_blank"> Şimdi İndir</a>  
 </p>  
 
 Herhangi bir belgeyi, kaynağı veya içeriği sohbet sırasında herhangi bir büyük dil modelinin referans olarak kullanabileceği bir bağlama dönüştürmenizi sağlayan tam kapsamlı bir uygulama. Bu uygulama, kullanmak istediğiniz LLM veya Vektör Veritabanını seçmenize olanak tanırken, çok kullanıcılı yönetim ve yetkilendirme desteği de sunar.
@@ -50,11 +50,11 @@ Herhangi bir belgeyi, kaynağı veya içeriği sohbet sırasında herhangi bir b
 
 ### Ürün Genel Bakışı  
 
-AnythingLLM, ticari hazır büyük dil modellerini veya popüler açık kaynak LLM'leri ve vektör veritabanı çözümlerini kullanarak, hiçbir ödün vermeden özel bir ChatGPT oluşturmanıza olanak tanıyan tam kapsamlı bir uygulamadır. Bu uygulamayı yerel olarak çalıştırabilir veya uzaktan barındırarak sağladığınız belgelerle akıllı sohbetler gerçekleştirebilirsiniz.  
+OneNew, ticari hazır büyük dil modellerini veya popüler açık kaynak LLM'leri ve vektör veritabanı çözümlerini kullanarak, hiçbir ödün vermeden özel bir ChatGPT oluşturmanıza olanak tanıyan tam kapsamlı bir uygulamadır. Bu uygulamayı yerel olarak çalıştırabilir veya uzaktan barındırarak sağladığınız belgelerle akıllı sohbetler gerçekleştirebilirsiniz.  
 
-AnythingLLM, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen nesnelere ayırır. Bir çalışma alanı, bir sohbet dizisi gibi çalışır ancak belgelerinizi kapsülleyen bir yapı sunar. Çalışma alanları belgeleri paylaşabilir, ancak birbirleriyle iletişim kurmaz, böylece her çalışma alanının bağlamını temiz tutabilirsiniz.  
+OneNew, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen nesnelere ayırır. Bir çalışma alanı, bir sohbet dizisi gibi çalışır ancak belgelerinizi kapsülleyen bir yapı sunar. Çalışma alanları belgeleri paylaşabilir, ancak birbirleriyle iletişim kurmaz, böylece her çalışma alanının bağlamını temiz tutabilirsiniz.  
 
-## AnythingLLM’in Harika Özellikleri  
+## OneNew’in Harika Özellikleri  
 
 - 🆕 [**Özel Yapay Zeka Ajanları**](https://docs.anythingllm.com/agent/custom/introduction)  
 - 🆕 [**Kod yazmadan AI Ajanı oluşturma aracı**](https://docs.anythingllm.com/agent-flows/overview)  
@@ -104,7 +104,7 @@ AnythingLLM, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen 
 
 **Embedder modelleri:**
 
-- [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
+- [OneNew Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (all)](https://localai.io/)
@@ -114,7 +114,7 @@ AnythingLLM, belgelerinizi **"çalışma alanları" (workspaces)** adı verilen 
 
 **Ses Transkripsiyon Modelleri:**
 
-- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
+- [OneNew Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
 - [OpenAI](https://openai.com/)
 
 **TTS (text-to-speech) desteği:**
@@ -154,7 +154,7 @@ Bu monorepo üç ana bölümden oluşmaktadır:
 
 ## 🛳 Kendi Sunucunuzda Barındırma  
 
-Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çeşitli dağıtım yöntemleri, betikler ve şablonlar sunmaktadır. Aşağıdaki tabloya göz atarak tercih ettiğiniz ortamda nasıl dağıtım yapabileceğinizi öğrenebilir veya otomatik dağıtım seçeneklerini keşfedebilirsiniz.
+Mintplex Labs ve topluluk, OneNew'i yerel olarak çalıştırmak için çeşitli dağıtım yöntemleri, betikler ve şablonlar sunmaktadır. Aşağıdaki tabloya göz atarak tercih ettiğiniz ortamda nasıl dağıtım yapabileceğinizi öğrenebilir veya otomatik dağıtım seçeneklerini keşfedebilirsiniz.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
@@ -163,7 +163,7 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 | --- | --- | --- |
 | [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] | [![Deploy on Elestio][elestio-btn]][elestio-deploy] |
 
-[veya Docker kullanmadan üretim ortamında AnythingLLM kurun →](../BARE_METAL.md)  
+[veya Docker kullanmadan üretim ortamında OneNew kurun →](../BARE_METAL.md)  
 
 ## Geliştirme İçin Kurulum  
 
@@ -179,22 +179,22 @@ Mintplex Labs ve topluluk, AnythingLLM'i yerel olarak çalıştırmak için çe�
 
 ## Harici Uygulamalar ve Entegrasyonlar  
 
-_Bu uygulamalar Mintplex Labs tarafından yönetilmemektedir, ancak AnythingLLM ile uyumludur. Burada listelenmeleri bir onay anlamına gelmez._  
+_Bu uygulamalar Mintplex Labs tarafından yönetilmemektedir, ancak OneNew ile uyumludur. Burada listelenmeleri bir onay anlamına gelmez._  
 
 - [Midori AI Alt Sistem Yöneticisi](https://io.midori-ai.xyz/subsystem/anythingllm/) - Docker konteyner teknolojisini kullanarak yapay zeka sistemlerini verimli bir şekilde dağıtmanın pratik bir yolu.  
-- [Coolify](https://coolify.io/docs/services/anythingllm/) - Tek tıklamayla AnythingLLM dağıtımı yapmanıza olanak tanır.  
-- [GPTLocalhost for Microsoft Word](https://gptlocalhost.com/demo/) - AnythingLLM’i Microsoft Word içinde kullanmanıza olanak tanıyan yerel bir Word eklentisi.
+- [Coolify](https://coolify.io/docs/services/anythingllm/) - Tek tıklamayla OneNew dağıtımı yapmanıza olanak tanır.  
+- [GPTLocalhost for Microsoft Word](https://gptlocalhost.com/demo/) - OneNew’i Microsoft Word içinde kullanmanıza olanak tanıyan yerel bir Word eklentisi.
 
 ## Telemetri ve Gizlilik  
 
-Mintplex Labs Inc. tarafından geliştirilen AnythingLLM, anonim kullanım bilgilerini toplayan bir telemetri özelliği içermektedir.  
+Mintplex Labs Inc. tarafından geliştirilen OneNew, anonim kullanım bilgilerini toplayan bir telemetri özelliği içermektedir.  
 
 <details>  
-<summary><kbd>AnythingLLM için Telemetri ve Gizlilik hakkında daha fazla bilgi</kbd></summary>  
+<summary><kbd>OneNew için Telemetri ve Gizlilik hakkında daha fazla bilgi</kbd></summary>  
 
 ### Neden?  
 
-Bu bilgileri, AnythingLLM’in nasıl kullanıldığını anlamak, yeni özellikler ve hata düzeltmelerine öncelik vermek ve uygulamanın performansını ve kararlılığını iyileştirmek için kullanıyoruz.  
+Bu bilgileri, OneNew’in nasıl kullanıldığını anlamak, yeni özellikler ve hata düzeltmelerine öncelik vermek ve uygulamanın performansını ve kararlılığını iyileştirmek için kullanıyoruz.  
 
 ### Telemetriden Çıkış Yapma (Opt-Out)  
 

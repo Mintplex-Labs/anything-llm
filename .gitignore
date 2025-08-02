@@ -10,3 +10,8 @@ aws_cf_deploy_anything_llm.json
 yarn.lock
 *.bak
 .idea
+
+# Yarn PnP artifacts
+.pnp.cjs
+.pnp.loader.mjs
+.yarn/

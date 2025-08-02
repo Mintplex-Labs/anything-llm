@@ -140,6 +140,7 @@ model workspaces {
   agentProvider                String?
   agentModel                   String?
   queryRefusalResponse         String?
+  private                      Boolean                        @default(true)
   vectorSearchMode             String?                        @default("default")
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
@@ -212,10 +213,12 @@ model workspace_users {
   id            Int        @id @default(autoincrement())
   user_id       Int
   workspace_id  Int
+  role_id       Int?
   createdAt     DateTime   @default(now())
   lastUpdatedAt DateTime   @default(now())
   workspaces    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   users         users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  roles         roles?     @relation(fields: [role_id], references: [id])
 }
 
 model cache_data {
@@ -355,4 +358,13 @@ model prompt_history {
   user        users?     @relation(fields: [modifiedBy], references: [id])
 
   @@index([workspaceId])
+}
+
+model roles {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  permissions   Json?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @updatedAt
+  workspace_users workspace_users[]
 }

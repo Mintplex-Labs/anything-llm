@@ -8,7 +8,7 @@ const TRANSLATIONS = {
     llm: {
       title: "LLM 偏好",
       description:
-        "AnythingLLM 可以与多家 LLM 提供商合作。这将是处理聊天的服务。",
+        "OneNew 可以与多家 LLM 提供商合作。这将是处理聊天的服务。",
     },
     userSetup: {
       title: "用户设置",
@@ -34,14 +34,14 @@ const TRANSLATIONS = {
       settingsHint: "这些设置可以随时在设置中重新配置。",
     },
     survey: {
-      title: "欢迎使用 AnythingLLM",
-      description: "帮助我们为你的需求打造 AnythingLLM。可选。",
+      title: "欢迎使用 OneNew",
+      description: "帮助我们为你的需求打造 OneNew。可选。",
       email: "你的电子邮件是什么？",
-      useCase: "你将如何使用 AnythingLLM？",
+      useCase: "你将如何使用 OneNew？",
       useCaseWork: "用于工作",
       useCasePersonal: "用于个人使用",
       useCaseOther: "其他",
-      comment: "你是如何听说 AnythingLLM 的？",
+      comment: "你是如何听说 OneNew 的？",
       commentPlaceholder:
         "Reddit，Twitter，GitHub，YouTube 等 - 让我们知道你是如何找到我们的！",
       skip: "跳过调查",
@@ -49,7 +49,7 @@ const TRANSLATIONS = {
     },
     workspace: {
       title: "创建你的第一个工作区",
-      description: "创建你的第一个工作区并开始使用 AnythingLLM。",
+      description: "创建你的第一个工作区并开始使用 OneNew。",
     },
   },
   common: {
@@ -123,11 +123,11 @@ const TRANSLATIONS = {
   },
   welcomeMessage: {
     part1:
-      "欢迎使用 AnythingLLM，这是由 Mintplex Labs 开发的开源 AI 工具，可以将任何东西转换为你可以查询和聊天的训练有素的聊天机器人。AnythingLLM 是一款 BYOK（自带密钥）软件，因此除了你想使用的服务外，此软件不收取订阅费、费用或其他费用。",
+      "欢迎使用 OneNew，这是由 Mintplex Labs 开发的开源 AI 工具，可以将任何东西转换为你可以查询和聊天的训练有素的聊天机器人。OneNew 是一款 BYOK（自带密钥）软件，因此除了你想使用的服务外，此软件不收取订阅费、费用或其他费用。",
     part2:
-      "AnythingLLM 是将强大的 AI 产品（如 OpenAi、GPT-4、LangChain、PineconeDB、ChromaDB 等）整合在一个整洁的包中而无需繁琐操作的最简单方法，可以将你的生产力提高 100 倍。",
+      "OneNew 是将强大的 AI 产品（如 OpenAi、GPT-4、LangChain、PineconeDB、ChromaDB 等）整合在一个整洁的包中而无需繁琐操作的最简单方法，可以将你的生产力提高 100 倍。",
     part3:
-      "AnythingLLM 可以完全在你的本地计算机上运行，几乎没有开销，你甚至不会注意到它的存在！无需 GPU。也可以进行云端和本地安装。\nAI 工具生态系统每天都在变得更强大。AnythingLLM 使其易于使用。",
+      "OneNew 可以完全在你的本地计算机上运行，几乎没有开销，你甚至不会注意到它的存在！无需 GPU。也可以进行云端和本地安装。\nAI 工具生态系统每天都在变得更强大。OneNew 使其易于使用。",
     githubIssue: "在 GitHub 上创建问题",
     user1: "我该如何开始?!",
     part4:
@@ -135,7 +135,7 @@ const TRANSLATIONS = {
     createWorkspace: "创建你的第一个工作区",
     user2: "这像是一个 AI Dropbox 吗？那么聊天呢？它是一个聊天机器人，不是吗？",
     part5:
-      "AnythingLLM 不仅仅是一个更智能的 Dropbox。\n\nAnythingLLM 提供了两种与你的数据交流的方式：\n\n<i>查询：</i> 你的聊天将返回在你的工作区中访问的文档中找到的数据或推论。向工作区添加更多文档会使其更智能！\n\n<i>对话：</i> 你的文档和正在进行的聊天记录同时为 LLM 知识做出贡献。非常适合添加基于文本的实时信息或纠正 LLM 可能存在的误解。\n\n你可以在聊天过程中 <i>切换模式！</i>",
+      "OneNew 不仅仅是一个更智能的 Dropbox。\n\nOneNew 提供了两种与你的数据交流的方式：\n\n<i>查询：</i> 你的聊天将返回在你的工作区中访问的文档中找到的数据或推论。向工作区添加更多文档会使其更智能！\n\n<i>对话：</i> 你的文档和正在进行的聊天记录同时为 LLM 知识做出贡献。非常适合添加基于文本的实时信息或纠正 LLM 可能存在的误解。\n\n你可以在聊天过程中 <i>切换模式！</i>",
     user3: "哇，这听起来很棒，让我马上试试！",
     part6: "玩得开心！",
     starOnGitHub: "在 GitHub 上加星",
@@ -146,7 +146,7 @@ const TRANSLATIONS = {
     checklist: {
       title: "入门指南",
       tasksLeft: "剩余任务",
-      completed: "你正在成为AnythingLLM专家的路上！",
+      completed: "你正在成为OneNew专家的路上！",
       dismiss: "关闭",
       tasks: {
         create_workspace: {
@@ -247,7 +247,7 @@ const TRANSLATIONS = {
       add: "添加新消息",
       save: "保存消息",
       heading: "向我解释",
-      body: "AnythingLLM 的好处",
+      body: "OneNew 的好处",
     },
     pfp: {
       title: "助理头像",
@@ -425,15 +425,15 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "界面偏好设置",
-      description: "设置您的 AnythingLLM 界面偏好。",
+      description: "设置您的 OneNew 界面偏好。",
     },
     branding: {
       title: "品牌与白标设置",
-      description: "使用自定义品牌对白标您的 AnythingLLM 实例。",
+      description: "使用自定义品牌对白标您的 OneNew 实例。",
     },
     chat: {
       title: "聊天",
-      description: "设置您的 AnythingLLM 聊天偏好。",
+      description: "设置您的 OneNew 聊天偏好。",
       auto_submit: {
         title: "自动提交语音输入",
         description: "在静音一段时间后自动提交语音输入",
@@ -470,7 +470,7 @@ const TRANSLATIONS = {
       },
       "display-language": {
         title: "显示语言",
-        description: "选择显示 AnythingLLM 界面所用的语言（若有翻译可用）。",
+        description: "选择显示 OneNew 界面所用的语言（若有翻译可用）。",
       },
       logo: {
         title: "品牌标志",
@@ -487,7 +487,7 @@ const TRANSLATIONS = {
         system: "系统",
         user: "用户",
         message: "信息",
-        assistant: "AnythingLLM 聊天助手",
+        assistant: "OneNew 聊天助手",
         "double-click": "双击进行编辑...",
         save: "保存信息",
       },
@@ -513,7 +513,7 @@ const TRANSLATIONS = {
   },
   api: {
     title: "API 密钥",
-    description: "API 密钥允许持有者以编程方式访问和管理此 AnythingLLM 实例。",
+    description: "API 密钥允许持有者以编程方式访问和管理此 OneNew 实例。",
     link: "阅读 API 文档",
     generate: "生成新的 API 密钥",
     table: {
@@ -525,7 +525,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM 首选项",
     description:
-      "这些是你首选的 LLM 聊天和嵌入提供商的凭据和设置。重要的是，确保这些密钥是最新的和正确的，否则 AnythingLLM 将无法正常运行。",
+      "这些是你首选的 LLM 聊天和嵌入提供商的凭据和设置。重要的是，确保这些密钥是最新的和正确的，否则 OneNew 将无法正常运行。",
     provider: "LLM 提供商",
     providers: {
       azure_openai: {
@@ -545,7 +545,7 @@ const TRANSLATIONS = {
       "这些是你的首选转录模型提供商的凭据和设置。重要的是这些密钥是最新且正确的，否则媒体文件和音频将无法转录。",
     provider: "转录提供商",
     "warn-start":
-      "在 RAM 或 CPU 有限的计算机上使用本地耳语模型可能会在处理媒体文件时停止 AnythingLLM。",
+      "在 RAM 或 CPU 有限的计算机上使用本地耳语模型可能会在处理媒体文件时停止 OneNew。",
     "warn-recommend": "我们建议至少 2GB RAM 并上传 <10Mb 的文件。",
     "warn-end": "内置模型将在首次使用时自动下载。",
   },
@@ -554,7 +554,7 @@ const TRANSLATIONS = {
     "desc-start":
       "当使用本身不支持嵌入引擎的 LLM 时，你可能需要额外指定用于嵌入文本的凭据。",
     "desc-end":
-      "嵌入是将文本转换为矢量的过程。需要这些凭据才能将你的文件和提示转换为 AnythingLLM 可以用来处理的格式。",
+      "嵌入是将文本转换为矢量的过程。需要这些凭据才能将你的文件和提示转换为 OneNew 可以用来处理的格式。",
     provider: {
       title: "嵌入引擎提供商",
     },
@@ -577,7 +577,7 @@ const TRANSLATIONS = {
   vector: {
     title: "向量数据库",
     description:
-      "这些是 AnythingLLM 实例如何运行的凭据和设置。重要的是，这些密钥是最新的和正确的。",
+      "这些是 OneNew 实例如何运行的凭据和设置。重要的是，这些密钥是最新的和正确的。",
     provider: {
       title: "向量数据库提供商",
       description: "LanceDB 不需要任何配置。",
@@ -621,7 +621,7 @@ const TRANSLATIONS = {
     password: {
       title: "密码保护",
       description:
-        "用密码保护你的AnythingLLM实例。如果你忘记了密码，那么没有恢复方法，所以请确保保存这个密码。",
+        "用密码保护你的OneNew实例。如果你忘记了密码，那么没有恢复方法，所以请确保保存这个密码。",
     },
     instance: {
       title: "实例密码保护",
@@ -643,7 +643,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "隐私和数据处理",
     description:
-      "这是你对如何处理连接的第三方提供商和AnythingLLM的数据的配置。",
+      "这是你对如何处理连接的第三方提供商和OneNew的数据的配置。",
     llm: "LLM 选择",
     embedding: "嵌入首选项",
     vector: "向量数据库",
@@ -795,22 +795,22 @@ const TRANSLATIONS = {
       fetching: "正在获取...",
       "fetch-website": "获取网站",
       "privacy-notice":
-        "这些文件将被上传到此 AnythingLLM 实例上的文档处理器。这些文件不会发送或共享给第三方。",
+        "这些文件将被上传到此 OneNew 实例上的文档处理器。这些文件不会发送或共享给第三方。",
     },
     pinning: {
       what_pinning: "什么是文档固定？",
       pin_explained_block1:
-        "当您在 AnythingLLM 中<b>固定</b>一个文档时，我们会将整个文档内容注入到您的提示窗口中，让 LLM 能够完全理解它。",
+        "当您在 OneNew 中<b>固定</b>一个文档时，我们会将整个文档内容注入到您的提示窗口中，让 LLM 能够完全理解它。",
       pin_explained_block2:
         "这在 <b>大上下文模型</b> 或关键的小文件中效果最佳。",
       pin_explained_block3:
-        "如果默认情况下无法从 AnythingLLM 获取满意的答案，固定文档是提高答案质量的好方法。",
+        "如果默认情况下无法从 OneNew 获取满意的答案，固定文档是提高答案质量的好方法。",
       accept: "好的，知道了",
     },
     watching: {
       what_watching: "什么是监控文档？",
       watch_explained_block1:
-        "当您在 AnythingLLM 中<b>监控</b>一个文档时，我们会<i>自动</i>按定期间隔从其原始来源同步文档内容。系统会自动更新在所有使用该文档的工作区中的内容。",
+        "当您在 OneNew 中<b>监控</b>一个文档时，我们会<i>自动</i>按定期间隔从其原始来源同步文档内容。系统会自动更新在所有使用该文档的工作区中的内容。",
       watch_explained_block2:
         "此功能当前仅支持在线内容，不适用于手动上传的文档。",
       watch_explained_block3_start: "您可以在 ",
@@ -980,7 +980,7 @@ const TRANSLATIONS = {
         unauthenticated: {
           title: "需要验证",
           description:
-            "在发布项目之前，您需要通过 AnythingLLM 社区中心进行验证。",
+            "在发布项目之前，您需要通过 OneNew 社区中心进行验证。",
           button: "连接到社区中心",
         },
       },

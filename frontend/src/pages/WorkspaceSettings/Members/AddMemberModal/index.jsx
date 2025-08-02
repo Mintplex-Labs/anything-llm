@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { MagnifyingGlass, X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
+import { useTranslation } from "react-i18next";
 
 export default function AddMemberModal({ closeModal, workspace, users }) {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUsers, setSelectedUsers] = useState(workspace?.userIds || []);
 
@@ -118,6 +120,9 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
               )}
             </table>
           </div>
+          <p className="text-theme-text-secondary text-xs px-5 pb-2">
+            {t("common.adminRemoveWarning")}
+          </p>
           <div className="flex w-full justify-between items-center p-3 space-x-2 border-t rounded-b border-gray-500/50">
             <div className="flex items-center gap-x-2">
               <button

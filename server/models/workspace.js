@@ -29,6 +29,7 @@ function isNullOrNaN(value) {
  * @property {string} agentModel - The agent model of the workspace
  * @property {string} queryRefusalResponse - The query refusal response of the workspace
  * @property {string} vectorSearchMode - The vector search mode of the workspace
+ * @property {boolean} private - Whether the workspace is private
  */
 
 const Workspace = {
@@ -54,6 +55,7 @@ const Workspace = {
     "agentProvider",
     "agentModel",
     "queryRefusalResponse",
+    "private",
     "vectorSearchMode",
   ],
 
@@ -119,6 +121,9 @@ const Workspace = {
     openAiPrompt: (value) => {
       if (!value || typeof value !== "string") return null;
       return String(value);
+    },
+    private: (value) => {
+      return Boolean(value);
     },
     vectorSearchMode: (value) => {
       if (
@@ -197,6 +202,7 @@ const Workspace = {
       const workspace = await prisma.workspaces.create({
         data: {
           name: this.validations.name(name),
+          private: true,
           ...this.validateFields(additionalFields),
           slug,
         },
@@ -263,15 +269,20 @@ const Workspace = {
       return this.get(clause);
 
     try {
+      const baseWhere = { ...clause };
+      if (user) {
+        if (user.role === ROLES.admin) {
+          baseWhere.OR = [
+            { private: false },
+            { workspace_users: { some: { user_id: user.id } } },
+          ];
+        } else {
+          baseWhere.workspace_users = { some: { user_id: user.id } };
+        }
+      }
+
       const workspace = await prisma.workspaces.findFirst({
-        where: {
-          ...clause,
-          workspace_users: {
-            some: {
-              user_id: user?.id,
-            },
-          },
-        },
+        where: baseWhere,
         include: {
           workspace_users: true,
           documents: true,
@@ -340,17 +351,19 @@ const Workspace = {
   ) {
     if ([ROLES.admin].includes(user.role))
       return await this.where(clause, limit, orderBy);
-
     try {
+      const baseWhere = { ...clause };
+      if (user.role === ROLES.admin) {
+        baseWhere.OR = [
+          { private: false },
+          { workspace_users: { some: { user_id: user.id } } },
+        ];
+      } else {
+        baseWhere.workspace_users = { some: { user_id: user.id } };
+      }
+
       const workspaces = await prisma.workspaces.findMany({
-        where: {
-          ...clause,
-          workspace_users: {
-            some: {
-              user_id: user.id,
-            },
-          },
-        },
+        where: baseWhere,
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
       });
@@ -384,12 +397,20 @@ const Workspace = {
    */
   workspaceUsers: async function (workspaceId) {
     try {
-      const users = (
-        await WorkspaceUser.where({ workspace_id: Number(workspaceId) })
-      ).map((rel) => rel);
-
+      const users = await WorkspaceUser.where({
+        workspace_id: Number(workspaceId),
+      });
       const usersById = await User.where({
-        id: { in: users.map((user) => user.user_id) },
+        id: { in: users.map((u) => u.user_id) },
+      });
+
+      const roleIds = users.map((u) => u.role_id).filter(Boolean);
+      const { Role } = require("./roles");
+      const roles =
+        roleIds.length > 0 ? await Role.where({ id: { in: roleIds } }) : [];
+      const roleMap = {};
+      roles.forEach((r) => {
+        roleMap[r.id] = r;
       });
 
       const userInfo = usersById.map((user) => {
@@ -398,6 +419,9 @@ const Workspace = {
           userId: user.id,
           username: user.username,
           role: user.role,
+          workspaceRole: workspaceUser.role_id
+            ? roleMap[workspaceUser.role_id]?.name || null
+            : null,
           lastUpdatedAt: workspaceUser.lastUpdatedAt,
         };
       });
@@ -417,8 +441,42 @@ const Workspace = {
    */
   updateUsers: async function (workspaceId, userIds = []) {
     try {
+      const { User } = require("./user");
+      const { ROLES } = require("../utils/middleware/multiUserProtected");
+      const adminManagerCount = await User.count({
+        id: { in: userIds.map(Number) },
+        role: { in: [ROLES.admin, ROLES.manager] },
+      });
+      if (adminManagerCount === 0) {
+        return {
+          success: false,
+          error: "Workspace must include at least one admin or manager user.",
+        };
+      }
+
       await WorkspaceUser.delete({ workspace_id: Number(workspaceId) });
       await WorkspaceUser.createManyUsers(userIds, workspaceId);
+      return { success: true, error: null };
+    } catch (error) {
+      console.error(error.message);
+      return { success: false, error: error.message };
+    }
+  },
+
+  assignUserRole: async function (workspaceId, userId, roleId) {
+    try {
+      const existing = await WorkspaceUser.get({
+        workspace_id: Number(workspaceId),
+        user_id: Number(userId),
+      });
+      if (!existing) {
+        await WorkspaceUser.create(userId, workspaceId, roleId);
+      } else {
+        await WorkspaceUser.update(
+          { workspace_id: Number(workspaceId), user_id: Number(userId) },
+          { role_id: roleId ? Number(roleId) : null }
+        );
+      }
       return { success: true, error: null };
     } catch (error) {
       console.error(error.message);

@@ -14,13 +14,20 @@ async function validApiKey(request, response, next) {
     return;
   }
 
-  if (!(await ApiKey.get({ secret: bearerKey }))) {
+  const apiKey = await ApiKey.get({ secret: bearerKey });
+  if (!apiKey) {
     response.status(403).json({
       error: "No valid api key found.",
     });
     return;
   }
 
+  if (multiUserMode && apiKey.createdBy) {
+    const { User } = require("../../models/user");
+    response.locals.user = await User.get({ id: apiKey.createdBy });
+  }
+
+  response.locals.apiKey = apiKey;
   next();
 }
 

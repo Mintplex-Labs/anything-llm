@@ -111,7 +111,7 @@ class AgentFlows {
       );
       if (!supportsAllBlocks)
         throw new Error(
-          "This flow includes unsupported blocks. They may not be supported by your version of AnythingLLM or are not available on this platform."
+          "This flow includes unsupported blocks. They may not be supported by your version of OneNew or are not available on this platform."
         );
 
       fs.writeFileSync(filePath, JSON.stringify({ ...config, name }, null, 2));

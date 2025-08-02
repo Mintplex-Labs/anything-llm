@@ -24,7 +24,7 @@ const CommunityHub = {
   },
 
   /**
-   * Apply an item to the AnythingLLM instance. Used for simple items like slash commands and system prompts.
+   * Apply an item to the OneNew instance. Used for simple items like slash commands and system prompts.
    * @param {string} importId - The import ID of the item.
    * @param {object} options - Additional options for applying the item for whatever the item type requires.
    * @returns {Promise<{success: boolean, error: string | null}>}

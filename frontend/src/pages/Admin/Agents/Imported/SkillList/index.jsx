@@ -17,7 +17,7 @@ export default function ImportedSkillList({
             target="_blank"
             className="text-theme-text-secondary underline hover:text-cta-button"
           >
-            AnythingLLM Agent Docs
+            OneNew Agent Docs
           </a>
           .
         </p>

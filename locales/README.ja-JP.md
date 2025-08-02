@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="OneNew logo"></a>
 </p>
 
 <div align='center'>
@@ -9,7 +9,7 @@
 </div>
 
 <p align="center">
-    <b>AnythingLLM:</b> あなたが探していたオールインワンAIアプリ。<br />
+    <b>OneNew:</b> あなたが探していたオールインワンAIアプリ。<br />
     ドキュメントとチャットし、AIエージェントを使用し、高度にカスタマイズ可能で、複数ユーザー対応、面倒な設定は不要です。
 </p>
 
@@ -33,7 +33,7 @@
 </p>
 
 <p align="center">
-👉 デスクトップ用AnythingLLM（Mac、Windows、Linux対応）！<a href="https://anythingllm.com/download" target="_blank">今すぐダウンロード</a>
+👉 デスクトップ用OneNew（Mac、Windows、Linux対応）！<a href="https://anythingllm.com/download" target="_blank">今すぐダウンロード</a>
 </p>
 
 これは、任意のドキュメント、リソース、またはコンテンツの断片を、チャット中にLLMが参照として使用できるコンテキストに変換できるフルスタックアプリケーションです。このアプリケーションを使用すると、使用するLLMまたはベクトルデータベースを選択し、マルチユーザー管理と権限をサポートできます。
@@ -49,11 +49,11 @@
 
 ### 製品概要
 
-AnythingLLMは、市販のLLMや人気のあるオープンソースLLM、およびベクトルDBソリューションを使用して、妥協のないプライベートChatGPTを構築できるフルスタックアプリケーションです。ローカルで実行することも、リモートでホストすることもでき、提供されたドキュメントと知的にチャットできます。
+OneNewは、市販のLLMや人気のあるオープンソースLLM、およびベクトルDBソリューションを使用して、妥協のないプライベートChatGPTを構築できるフルスタックアプリケーションです。ローカルで実行することも、リモートでホストすることもでき、提供されたドキュメントと知的にチャットできます。
 
-AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオブジェクトに分割します。ワークスペースはスレッドのように機能しますが、ドキュメントのコンテナ化が追加されています。ワークスペースはドキュメントを共有できますが、互いに通信することはないため、各ワークスペースのコンテキストをクリーンに保つことができます。
+OneNewは、ドキュメントを`ワークスペース`と呼ばれるオブジェクトに分割します。ワークスペースはスレッドのように機能しますが、ドキュメントのコンテナ化が追加されています。ワークスペースはドキュメントを共有できますが、互いに通信することはないため、各ワークスペースのコンテキストをクリーンに保つことができます。
 
-## AnythingLLMのいくつかのクールな機能
+## OneNewのいくつかのクールな機能
 
 - **マルチユーザーインスタンスのサポートと権限付与**
 - ワークスペース内のエージェント（ウェブを閲覧、コードを実行など）
@@ -94,7 +94,7 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 
 **埋め込みモデル：**
 
-- [AnythingLLMネイティブ埋め込み](/server/storage/models/README.md)（デフォルト）
+- [OneNewネイティブ埋め込み](/server/storage/models/README.md)（デフォルト）
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (すべて)](https://localai.io/)
@@ -104,7 +104,7 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 
 **音声変換モデル：**
 
-- [AnythingLLM内蔵](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription)（デフォルト）
+- [OneNew内蔵](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription)（デフォルト）
 - [OpenAI](https://openai.com/)
 
 **TTS（テキストから音声へ）サポート：**
@@ -141,7 +141,7 @@ AnythingLLMは、ドキュメントを`ワークスペース`と呼ばれるオ�
 
 ## 🛳 セルフホスティング
 
-Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実行できる多数のデプロイメント方法、スクリプト、テンプレートを維持しています。以下の表を参照して、お好みの環境でのデプロイ方法を読むか、自動デプロイを行ってください。
+Mintplex Labsおよびコミュニティは、OneNewをローカルで実行できる多数のデプロイメント方法、スクリプト、テンプレートを維持しています。以下の表を参照して、お好みの環境でのデプロイ方法を読むか、自動デプロイを行ってください。
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----|-----|---------------|------------|
 | [![Docker上でデプロイ][docker-btn]][docker-deploy] | [![AWS上でデプロイ][aws-btn]][aws-deploy] | [![GCP上でデプロイ][gcp-btn]][gcp-deploy] | [![DigitalOcean上でデプロイ][do-btn]][do-deploy] | [![Render.com上でデプロイ][render-btn]][render-deploy] |
@@ -150,7 +150,7 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 | --------------------------------------------------- |
 | [![Railway上でデプロイ][railway-btn]][railway-deploy] |
 
-[Dockerを使用せずに本番環境のAnythingLLMインスタンスを設定する →](../BARE_METAL.md)
+[Dockerを使用せずに本番環境のOneNewインスタンスを設定する →](../BARE_METAL.md)
 
 ## 開発環境のセットアップ方法
 
@@ -172,14 +172,14 @@ Mintplex Labsおよびコミュニティは、AnythingLLMをローカルで実�
 
 ## テレメトリーとプライバシー
 
-Mintplex Labs Inc.によって開発されたAnythingLLMには、匿名の使用情報を収集するテレメトリー機能が含まれています。
+Mintplex Labs Inc.によって開発されたOneNewには、匿名の使用情報を収集するテレメトリー機能が含まれています。
 
 <details>
-<summary><kbd>AnythingLLMのテレメトリーとプライバシーについての詳細</kbd></summary>
+<summary><kbd>OneNewのテレメトリーとプライバシーについての詳細</kbd></summary>
 
 ### なぜ？
 
-この情報を使用して、AnythingLLMの使用方法を理解し、新機能とバグ修正の優先順位を決定し、AnythingLLMのパフォーマンスと安定性を向上させるのに役立てます。
+この情報を使用して、OneNewの使用方法を理解し、新機能とバグ修正の優先順位を決定し、OneNewのパフォーマンスと安定性を向上させるのに役立てます。
 
 ### オプトアウト
 

@@ -29,7 +29,7 @@ class OpenRouterLLM {
       apiKey: process.env.OPENROUTER_API_KEY ?? null,
       defaultHeaders: {
         "HTTP-Referer": "https://anythingllm.com",
-        "X-Title": "AnythingLLM",
+        "X-Title": "OneNew",
       },
     });
     this.model =

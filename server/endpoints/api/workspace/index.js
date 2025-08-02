@@ -135,18 +135,34 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const workspaces = await Workspace._findMany({
-        where: {},
+      const user = response.locals.user;
+      const baseQuery = {
         include: {
           threads: {
-            select: {
-              user_id: true,
-              slug: true,
-              name: true,
-            },
+            select: { user_id: true, slug: true, name: true },
           },
         },
-      });
+      };
+      let workspaces;
+      if (user) {
+        workspaces = await Workspace._findMany({
+          where:
+            user.role === ROLES.admin
+              ? {
+                  OR: [
+                    { private: false },
+                    { workspace_users: { some: { user_id: user.id } } },
+                  ],
+                }
+              : { workspace_users: { some: { user_id: user.id } } },
+          ...baseQuery,
+        });
+      } else {
+        workspaces = await Workspace._findMany({
+          where: { private: false },
+          ...baseQuery,
+        });
+      }
       response.status(200).json({ workspaces });
     } catch (e) {
       console.error(e.message, e);
@@ -197,19 +213,30 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const { slug } = request.params;
-      const workspace = await Workspace._findMany({
-        where: {
-          slug: String(slug),
-        },
+      const user = response.locals.user;
+      const baseQuery = {
         include: {
           documents: true,
-          threads: {
-            select: {
-              user_id: true,
-              slug: true,
-            },
-          },
+          threads: { select: { user_id: true, slug: true } },
         },
+      };
+      const workspace = await Workspace._findMany({
+        where:
+          user
+            ? user.role === ROLES.admin
+              ? {
+                  slug: String(slug),
+                  OR: [
+                    { private: false },
+                    { workspace_users: { some: { user_id: user.id } } },
+                  ],
+                }
+              : {
+                  slug: String(slug),
+                  workspace_users: { some: { user_id: user.id } },
+                }
+            : { slug: String(slug), private: false },
+        ...baseQuery,
       });
 
       response.status(200).json({ workspace });
@@ -388,12 +415,12 @@ function apiWorkspaceEndpoints(app) {
               history: [
                 {
                   "role": "user",
-                  "content": "What is AnythingLLM?",
+                  "content": "What is OneNew?",
                   "sentAt": 1692851630
                 },
                 {
                   "role": "assistant",
-                  "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                  "content": "OneNew is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
                   "sources": [{"source": "object about source document and snippets used"}]
                 }
               ]
@@ -603,7 +630,7 @@ function apiWorkspaceEndpoints(app) {
        content: {
          "application/json": {
            example: {
-             message: "What is AnythingLLM?",
+             message: "What is OneNew?",
              mode: "query | chat",
              sessionId: "identifier-to-partition-chats-by-external-id",
              attachments: [
@@ -728,7 +755,7 @@ function apiWorkspaceEndpoints(app) {
        content: {
          "application/json": {
            example: {
-             message: "What is AnythingLLM?",
+             message: "What is OneNew?",
              mode: "query | chat",
              sessionId: "identifier-to-partition-chats-by-external-id",
              attachments: [

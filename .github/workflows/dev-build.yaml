@@ -1,4 +1,4 @@
-name: AnythingLLM Development Docker image (amd64)
+name: OneNew Development Docker image (amd64)
 
 concurrency:
   group: build-${{ github.ref }}
