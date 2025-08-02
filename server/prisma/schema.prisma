@@ -375,15 +375,16 @@ model desktop_mobile_devices {
 }
 
 model workspace_parsed_files {
-  id          Int        @id @default(autoincrement())
-  filename    String     @unique
-  workspaceId Int
-  userId      Int?
-  threadId    Int?
-  metadata    String?
-  createdAt   DateTime   @default(now())
-  workspace   workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user        users?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id                 Int        @id @default(autoincrement())
+  filename           String     @unique
+  workspaceId        Int
+  userId             Int?
+  threadId           Int?
+  metadata           String?
+  tokenCountEstimate Int?       @default(0)
+  createdAt          DateTime   @default(now())
+  workspace          workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user               users?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([workspaceId])
   @@index([userId])

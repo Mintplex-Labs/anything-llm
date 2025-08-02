@@ -1,4 +1,11 @@
 const prisma = require("../utils/prisma");
+const { EventLogs } = require("./eventLogs");
+const { Document } = require("./documents");
+const { Workspace } = require("./workspace");
+const { documentsPath, directUploadsPath } = require("../utils/files");
+const { safeJsonParse } = require("../utils/http");
+const fs = require("fs");
+const path = require("path");
 
 const WorkspaceParsedFiles = {
   create: async function ({
@@ -7,6 +14,7 @@ const WorkspaceParsedFiles = {
     userId = null,
     threadId = null,
     metadata = null,
+    tokenCountEstimate = 0,
   }) {
     try {
       const file = await prisma.workspace_parsed_files.create({
@@ -16,8 +24,18 @@ const WorkspaceParsedFiles = {
           userId: userId ? parseInt(userId) : null,
           threadId: threadId ? parseInt(threadId) : null,
           metadata,
+          tokenCountEstimate,
         },
       });
+
+      await EventLogs.logEvent(
+        "workspace_file_uploaded",
+        {
+          filename,
+          workspaceId,
+        },
+        userId
+      );
 
       return { file, error: null };
     } catch (error) {
@@ -60,6 +78,63 @@ const WorkspaceParsedFiles = {
     } catch (error) {
       console.error(error.message);
       return false;
+    }
+  },
+
+  moveToDocumentsAndEmbed: async function (fileId, workspaceId) {
+    try {
+      const parsedFile = await this.get({ id: parseInt(fileId) });
+      if (!parsedFile) throw new Error("File not found");
+
+      // Get file location from metadata
+      const metadata = safeJsonParse(parsedFile.metadata, {});
+      const location = metadata.location;
+      if (!location) throw new Error("No file location in metadata");
+
+      // Get file from metadata location
+      const sourceFile = path.join(directUploadsPath, location.split("/")[1]);
+      if (!fs.existsSync(sourceFile)) throw new Error("Source file not found");
+
+      // Move to custom-documents
+      const customDocsPath = path.join(documentsPath, "custom-documents");
+      if (!fs.existsSync(customDocsPath))
+        fs.mkdirSync(customDocsPath, { recursive: true });
+
+      // Copy the file to custom-documents
+      const targetPath = path.join(customDocsPath, location.split("/")[1]);
+      fs.copyFileSync(sourceFile, targetPath);
+      fs.unlinkSync(sourceFile);
+
+      // Embed file
+      const workspace = await Workspace.get({ id: parseInt(workspaceId) });
+      if (!workspace) throw new Error("Workspace not found");
+      const {
+        failedToEmbed = [],
+        errors = [],
+        embedded = [],
+      } = await Document.addDocuments(
+        workspace,
+        [`custom-documents/${location.split("/")[1]}`],
+        parsedFile.userId
+      );
+
+      if (failedToEmbed.length > 0) {
+        throw new Error(errors[0] || "Failed to embed document");
+      }
+
+      await this.delete({ id: parseInt(fileId) });
+
+      const document = await Document.get({
+        workspaceId: parseInt(workspaceId),
+        docpath: embedded[0],
+      });
+
+      return { success: true, error: null, document };
+    } catch (error) {
+      console.error("Failed to move and embed file:", error);
+      return { success: false, error: error.message, document: null };
+    } finally {
+      await this.delete({ id: parseInt(fileId) });
     }
   },
 };

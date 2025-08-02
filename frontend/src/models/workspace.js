@@ -464,6 +464,30 @@ const Workspace = {
     return { response, data };
   },
 
+  deleteParsedFile: async function (slug, fileId) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/delete-parsed-file/${fileId}`,
+      {
+        method: "DELETE",
+        headers: baseHeaders(),
+      }
+    );
+    return response.ok;
+  },
+
+  embedParsedFile: async function (slug, fileId) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/embed-parsed-file/${fileId}`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+      }
+    );
+
+    const data = await response.json();
+    return { response, data };
+  },
+
   /**
    * Deletes and un-embeds a single file in a single call from a workspace
    * @param {string} slug - workspace slug

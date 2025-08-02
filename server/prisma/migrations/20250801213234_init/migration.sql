@@ -6,6 +6,7 @@ CREATE TABLE "workspace_parsed_files" (
     "userId" INTEGER,
     "threadId" INTEGER,
     "metadata" TEXT,
+    "tokenCountEstimate" INTEGER DEFAULT 0,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "workspace_parsed_files_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "workspaces" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "workspace_parsed_files_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE SET NULL ON UPDATE CASCADE
