@@ -66,7 +66,7 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: |
-            ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
+            ${{ steps.dockerhub.outputs.enabled == 'true' && 'akigogikar/onenew' || '' }}
           tags: |
             type=raw,value=dev
 
