@@ -78,6 +78,22 @@ export function validateAndClearStaleCache() {
     reason += (reason ? " and " : "") + `Build version changed from ${storedBuildTime} to ${currentBuildTime}`;
   }
   
+  // Also check for corrupted auth tokens that might cause bcrypt issues
+  const authToken = localStorage.getItem(AUTH_TOKEN);
+  if (authToken) {
+    try {
+      // Basic validation - JWT should have 3 parts separated by dots
+      const parts = authToken.split('.');
+      if (parts.length !== 3) {
+        shouldClearCache = true;
+        reason += (reason ? " and " : "") + "Corrupted auth token detected";
+      }
+    } catch (error) {
+      shouldClearCache = true;
+      reason += (reason ? " and " : "") + "Invalid auth token format";
+    }
+  }
+  
   if (shouldClearCache) {
     console.warn(reason + " - clearing cache");
     const itemsToKeep = [CACHE_KEY, BUILD_KEY]; // Keep the trackers

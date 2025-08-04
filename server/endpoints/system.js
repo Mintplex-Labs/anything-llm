@@ -151,7 +151,48 @@ function systemEndpoints(app) {
           return;
         }
 
-        if (!bcrypt.compareSync(String(password), existingUser.password)) {
+        // Validate password is provided and user has a stored password
+        if (!password || !existingUser.password) {
+          await EventLogs.logEvent(
+            "failed_login_invalid_password",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
+          response.status(200).json({
+            user: null,
+            valid: false,
+            token: null,
+            message: "[002] Invalid login credentials.",
+          });
+          return;
+        }
+
+        let isValidPassword;
+        try {
+          isValidPassword = bcrypt.compareSync(String(password), existingUser.password);
+        } catch (error) {
+          console.error("bcrypt comparison failed in multi user login:", error.message);
+          await EventLogs.logEvent(
+            "failed_login_invalid_password",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
+          response.status(200).json({
+            user: null,
+            valid: false,
+            token: null,
+            message: "[002] Invalid login credentials.",
+          });
+          return;
+        }
+
+        if (!isValidPassword) {
           await EventLogs.logEvent(
             "failed_login_invalid_password",
             {
@@ -232,12 +273,40 @@ function systemEndpoints(app) {
         return;
       } else {
         const { password } = reqBody(request);
-        if (
-          !bcrypt.compareSync(
+        if (!password || !process.env.AUTH_TOKEN) {
+          await EventLogs.logEvent("failed_login_invalid_password", {
+            ip: request.ip || "Unknown IP",
+            multiUserMode: false,
+          });
+          response.status(401).json({
+            valid: false,
+            token: null,
+            message: "[003] Invalid password provided",
+          });
+          return;
+        }
+
+        let isValidPassword;
+        try {
+          isValidPassword = bcrypt.compareSync(
             password,
             bcrypt.hashSync(process.env.AUTH_TOKEN, 10)
-          )
-        ) {
+          );
+        } catch (error) {
+          console.error("bcrypt comparison failed in single user login:", error.message);
+          await EventLogs.logEvent("failed_login_invalid_password", {
+            ip: request.ip || "Unknown IP",
+            multiUserMode: false,
+          });
+          response.status(401).json({
+            valid: false,
+            token: null,
+            message: "[003] Invalid password provided",
+          });
+          return;
+        }
+
+        if (!isValidPassword) {
           await EventLogs.logEvent("failed_login_invalid_password", {
             ip: request.ip || "Unknown IP",
             multiUserMode: false,
