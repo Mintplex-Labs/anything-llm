@@ -37,8 +37,11 @@ Use the Dockerized version of OneNew for a much faster and complete startup of O
 
 Pull in the latest image from docker. Supports both `amd64` and `arm64` CPU architectures.
 
+> [!NOTE]
+> The OneNew image is private. Run `docker login` before pulling the image.
+
 ```shell
-docker pull mintplexlabs/anythingllm
+docker pull akigogikar/onenew
 ```
 
 <table>
@@ -60,7 +63,7 @@ docker run -d -p 3001:3001 \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
-mintplexlabs/anythingllm
+akigogikar/onenew
 ```
 
 </td>
@@ -81,7 +84,7 @@ docker run -d -p 3001:3001 `
 -v "$env:STORAGE_LOCATION`:/app/server/storage" `
 -v "$env:STORAGE_LOCATION\.env:/app/server/.env" `
 -e STORAGE_DIR="/app/server/storage" `
-mintplexlabs/anythingllm;
+akigogikar/onenew;
 ```
 
 </td>
@@ -95,7 +98,7 @@ mintplexlabs/anythingllm;
 version: '3.8'
 services:
   anythingllm:
-    image: mintplexlabs/anythingllm
+    image: akigogikar/onenew
     container_name: anythingllm
     ports:
     - "3001:3001"
