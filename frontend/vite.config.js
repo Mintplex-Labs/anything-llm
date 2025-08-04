@@ -19,10 +19,16 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: "localhost"
+    host: "localhost",
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
   },
   define: {
-    "process.env": process.env
+    "process.env": process.env,
+    __BUILD_TIME__: JSON.stringify(Date.now())
   },
   css: {
     postcss

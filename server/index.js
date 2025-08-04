@@ -79,10 +79,17 @@ if (process.env.NODE_ENV !== "development") {
   app.use(
     express.static(path.resolve(__dirname, "public"), {
       extensions: ["js"],
-      setHeaders: (res) => {
+      setHeaders: (res, path) => {
         // Disable I-framing of entire site UI
         res.removeHeader("X-Powered-By");
         res.setHeader("X-Frame-Options", "DENY");
+        
+        // Set cache control headers to prevent stale cache issues
+        if (path.endsWith('.html') || path.endsWith('.js') || path.endsWith('.css')) {
+          res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+          res.setHeader("Pragma", "no-cache");
+          res.setHeader("Expires", "0");
+        }
       },
     })
   );

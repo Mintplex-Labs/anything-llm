@@ -56,4 +56,77 @@ export function fullApiUrl() {
   return `${window.location.origin}/api`;
 }
 
+// Clear localStorage if API_BASE has changed since last visit
+export function validateAndClearStaleCache() {
+  const CACHE_KEY = "anythingllm_api_base";
+  const BUILD_KEY = "anythingllm_build_time";
+  const currentApiBase = API_BASE;
+  const currentBuildTime = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : Date.now();
+  const storedApiBase = localStorage.getItem(CACHE_KEY);
+  const storedBuildTime = localStorage.getItem(BUILD_KEY);
+  
+  let shouldClearCache = false;
+  let reason = "";
+  
+  if (storedApiBase && storedApiBase !== currentApiBase) {
+    shouldClearCache = true;
+    reason = `API_BASE changed from ${storedApiBase} to ${currentApiBase}`;
+  }
+  
+  if (storedBuildTime && storedBuildTime !== currentBuildTime.toString()) {
+    shouldClearCache = true;
+    reason += (reason ? " and " : "") + `Build version changed from ${storedBuildTime} to ${currentBuildTime}`;
+  }
+  
+  if (shouldClearCache) {
+    console.warn(reason + " - clearing cache");
+    const itemsToKeep = [CACHE_KEY, BUILD_KEY]; // Keep the trackers
+    
+    // Get all localStorage keys
+    const allKeys = Object.keys(localStorage);
+    
+    // Remove all anythingllm related items except the trackers
+    allKeys.forEach(key => {
+      if (key.startsWith('anythingllm_') && !itemsToKeep.includes(key)) {
+        localStorage.removeItem(key);
+      }
+    });
+  }
+  
+  // Update stored values
+  localStorage.setItem(CACHE_KEY, currentApiBase);
+  localStorage.setItem(BUILD_KEY, currentBuildTime.toString());
+}
+
+// Manual cache clearing function for debugging
+export function clearAllAnythingLLMCache() {
+  const allKeys = Object.keys(localStorage);
+  const anythingLLMKeys = allKeys.filter(key => key.startsWith('anythingllm_'));
+  
+  anythingLLMKeys.forEach(key => {
+    localStorage.removeItem(key);
+  });
+  
+  console.log(`Cleared ${anythingLLMKeys.length} AnythingLLM cache items:`, anythingLLMKeys);
+  
+  // Also clear session storage
+  const sessionKeys = Object.keys(sessionStorage);
+  const sessionAnythingLLMKeys = sessionKeys.filter(key => key.startsWith('anythingllm_'));
+  
+  sessionAnythingLLMKeys.forEach(key => {
+    sessionStorage.removeItem(key);
+  });
+  
+  if (sessionAnythingLLMKeys.length > 0) {
+    console.log(`Cleared ${sessionAnythingLLMKeys.length} AnythingLLM session items:`, sessionAnythingLLMKeys);
+  }
+  
+  return anythingLLMKeys.length + sessionAnythingLLMKeys.length;
+}
+
+// Make it available globally for debugging
+if (typeof window !== 'undefined') {
+  window.clearAnythingLLMCache = clearAllAnythingLLMCache;
+}
+
 export const POPUP_BROWSER_EXTENSION_EVENT = "NEW_BROWSER_EXTENSION_CONNECTION";

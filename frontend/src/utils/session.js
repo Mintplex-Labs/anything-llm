@@ -5,7 +5,7 @@ import { baseHeaders } from "./request";
 export default async function validateSessionTokenForUser() {
   const isValidSession = await fetch(`${API_BASE}/system/check-token`, {
     method: "GET",
-    cache: "default",
+    cache: "no-cache",
     headers: baseHeaders(),
   })
     .then((res) => res.status === 200)
