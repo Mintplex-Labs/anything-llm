@@ -18,7 +18,7 @@
 # - Your container will build and boot. You now have OneNew on HuggingFace. Your data is stored in the persistent storage attached.
 # Have Fun 🤗 
 # Have issues? Check the logs on HuggingFace for clues.
-FROM mintplexlabs/anythingllm:render
+FROM akigogikar/onenew:render
 
 USER root
 RUN mkdir -p /data/storage

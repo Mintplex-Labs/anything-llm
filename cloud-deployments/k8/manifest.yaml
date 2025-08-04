@@ -92,7 +92,7 @@ spec:
             memory: "512Mi"
             cpu: "250m"
         imagePullPolicy: IfNotPresent
-        image: "mintplexlabs/anythingllm:render"
+        image: "akigogikar/onenew:render"
         securityContext:                     
           allowPrivilegeEscalation: true                                                                                                                                                                                                                                                 
           capabilities:                                                                                                                                                                                                                                                                  
