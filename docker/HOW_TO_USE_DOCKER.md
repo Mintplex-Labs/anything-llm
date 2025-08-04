@@ -38,7 +38,7 @@ Use the Dockerized version of OneNew for a much faster and complete startup of O
 Pull in the latest image from docker. Supports both `amd64` and `arm64` CPU architectures.
 
 > [!NOTE]
-> Since the image is private, run `docker login` before pulling it.
+> The OneNew image is private. Run `docker login` before pulling the image.
 
 ```shell
 docker pull akigogikar/onenew
