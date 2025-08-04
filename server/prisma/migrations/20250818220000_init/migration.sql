@@ -4,7 +4,7 @@ CREATE TABLE "roles" (
     "name" TEXT NOT NULL,
     "permissions" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "lastUpdatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "lastUpdatedAt" DATETIME NOT NULL
 );
 
 -- CreateTable
