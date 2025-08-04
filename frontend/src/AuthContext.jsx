@@ -1,8 +1,12 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import { validateAndClearStaleCache } from "@/utils/constants";
 
 export const AuthContext = createContext(null);
 export function ContextWrapper(props) {
+  // Validate and clear stale cache before initializing
+  validateAndClearStaleCache();
+  
   const localUser = localStorage.getItem(AUTH_USER);
   const localAuthToken = localStorage.getItem(AUTH_TOKEN);
   const [store, setStore] = useState({
