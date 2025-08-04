@@ -51,7 +51,12 @@ async function recoverAccount(username = "", recoveryCodes = []) {
   const validCodes = uniqueRecoveryCodes.every((code) => {
     let valid = false;
     allUserHashes.forEach((hash) => {
-      if (bcrypt.compareSync(code, hash)) valid = true;
+      try {
+        if (code && hash && bcrypt.compareSync(code, hash)) valid = true;
+      } catch (error) {
+        console.error("bcrypt comparison failed in password recovery:", error.message);
+        // Continue with valid = false
+      }
     });
     return valid;
   });

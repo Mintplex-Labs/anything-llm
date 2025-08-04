@@ -53,12 +53,46 @@ async function validatedRequest(request, response, next) {
   // be unsafe. As a consequence, existing JWTs with invalid `p` values that do not match the regex
   // in ln:44 will be marked invalid so they can be logged out and forced to log back in and obtain an encrypted token.
   // This kind of methodology only applies to single-user password mode.
-  if (
-    !bcrypt.compareSync(
-      EncryptionMgr.decrypt(p),
+  
+  let decryptedPassword;
+  try {
+    decryptedPassword = EncryptionMgr.decrypt(p);
+  } catch (error) {
+    console.error("Failed to decrypt token payload:", error.message);
+    console.error("Token payload 'p' value:", p);
+    response.status(401).json({
+      error: "Token expired or failed validation.",
+    });
+    return;
+  }
+
+  // Validate that we have the required data for bcrypt comparison
+  if (!decryptedPassword || !process.env.AUTH_TOKEN) {
+    console.error("Invalid credentials for bcrypt comparison:");
+    console.error("- decryptedPassword present:", !!decryptedPassword);
+    console.error("- AUTH_TOKEN present:", !!process.env.AUTH_TOKEN);
+    console.error("- Original 'p' value:", p);
+    response.status(401).json({
+      error: "Invalid auth credentials.",
+    });
+    return;
+  }
+
+  let isValidCredentials;
+  try {
+    isValidCredentials = bcrypt.compareSync(
+      decryptedPassword,
       bcrypt.hashSync(process.env.AUTH_TOKEN, 10)
-    )
-  ) {
+    );
+  } catch (error) {
+    console.error("bcrypt comparison failed:", error.message);
+    response.status(401).json({
+      error: "Invalid auth credentials.",
+    });
+    return;
+  }
+
+  if (!isValidCredentials) {
     response.status(401).json({
       error: "Invalid auth credentials.",
     });
