@@ -361,10 +361,10 @@ model prompt_history {
 }
 
 model roles {
-  id            Int      @id @default(autoincrement())
-  name          String   @unique
-  permissions   Json?
-  createdAt     DateTime @default(now())
-  lastUpdatedAt DateTime @updatedAt
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  permissions     String?
+  createdAt       DateTime          @default(now())
+  lastUpdatedAt   DateTime          @updatedAt
   workspace_users workspace_users[]
 }
