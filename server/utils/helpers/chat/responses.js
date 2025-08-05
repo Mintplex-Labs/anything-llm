@@ -124,7 +124,15 @@ function convertToChatHistory(history = []) {
   const formattedHistory = [];
   for (const record of history) {
     const { prompt, response, createdAt, feedbackScore = null, id } = record;
-    const data = JSON.parse(response);
+    let data;
+    try {
+      data = JSON.parse(response);
+    } catch (e) {
+      console.log(
+        `[convertToChatHistory] ChatHistory #${record.id} response is not valid JSON - skipping record.`
+      );
+      continue;
+    }
 
     // In the event that a bad response was stored - we should skip its entire record
     // because it was likely an error and cannot be used in chats and will fail to render on UI.
@@ -173,7 +181,15 @@ function convertToPromptHistory(history = []) {
   const formattedHistory = [];
   for (const record of history) {
     const { prompt, response } = record;
-    const data = JSON.parse(response);
+    let data;
+    try {
+      data = JSON.parse(response);
+    } catch (e) {
+      console.log(
+        `[convertToPromptHistory] ChatHistory #${record.id} response is not valid JSON - skipping record.`
+      );
+      continue;
+    }
 
     // In the event that a bad response was stored - we should skip its entire record
     // because it was likely an error and cannot be used in chats and will fail to render on UI.
