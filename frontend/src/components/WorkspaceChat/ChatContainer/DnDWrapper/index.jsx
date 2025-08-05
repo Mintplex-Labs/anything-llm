@@ -284,14 +284,11 @@ export function DnDFileUploaderProvider({
 
   const handleContinueAnyway = async () => {
     if (!pendingFiles.length) return;
-    // Use direct upload with pinning for all pending files
-    // Files are already in WorkspaceParsedFiles, just return success
     const results = pendingFiles.map((file) => ({
       success: true,
       document: { id: file.parsedFileId },
     }));
 
-    // Update status for all files
     const fileUpdates = pendingFiles.map((file, i) => ({
       uid: file.attachment.uid,
       updates: {
