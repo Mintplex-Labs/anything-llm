@@ -1,10 +1,8 @@
-# This GitHub action is for publishing of the primary image for OneNew
-# It will publish a linux/amd64 and linux/arm64 image at the same time
-# This file should ONLY BY USED FOR `master` BRANCH. 
-# TODO: GitHub now has an ubuntu-24.04-arm64 runner, but we still need
-# to use QEMU to build the arm64 image because Chromium is not available for Linux arm64
-# so builds will still fail, or fail much more often. Its inconsistent and frustrating.
-name: Publish OneNew Primary Docker image (amd64/arm64)
+# GitHub Action: Publish OneNew Docker image (amd64/arm64)
+# Builds and pushes multi-platform Docker images for master branch only.
+# Note: arm64 builds require QEMU due to Chromium limitations on arm64.
+
+name: Publish OneNew Primary Docker Image (amd64/arm64)
 
 concurrency:
   group: build-${{ github.ref }}
@@ -12,7 +10,7 @@ concurrency:
 
 on:
   push:
-    branches: ['master'] # master branch only. Do not modify.
+    branches: ['master']
     paths-ignore:
       - '**.md'
       - '.gitmodules'
@@ -22,61 +20,58 @@ on:
       - '**/.env.example'
       - '.github/ISSUE_TEMPLATE/**/*'
       - '.devcontainer/**/*'
-      - 'embed/**/*' # Embed is submodule
-      - 'browser-extension/**/*' # Chrome extension is submodule
-      - 'server/utils/agents/aibitat/example/**/*' # Do not push new image for local dev testing of new aibitat images.
-      - 'extras/**/*' # Extra is just for news and other local content.
+      - 'embed/**/*'
+      - 'browser-extension/**/*'
+      - 'server/utils/agents/aibitat/example/**/*'
+      - 'extras/**/*'
 
 jobs:
   push_multi_platform_to_registries:
-    name: Push Docker multi-platform image to multiple registries
+    name: Push Docker multi-platform image
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
+
     steps:
-      - name: Check out the repo
+      - name: Check out the repository
         uses: actions/checkout@v4
 
-      - name: Check if DockerHub build needed
+      - name: Check if DockerHub push is needed
+        id: dockerhub
         shell: bash
         run: |
-          # Check if the secret for USERNAME is set (don't even check for the password)
           if [[ -z "${{ secrets.DOCKER_USERNAME }}" ]]; then
-            echo "DockerHub build not needed"
             echo "enabled=false" >> $GITHUB_OUTPUT
           else
-            echo "DockerHub build needed"
             echo "enabled=true" >> $GITHUB_OUTPUT
           fi
-        id: dockerhub
 
-      - name: Set up QEMU
+      - name: Set up QEMU (for arm64 support)
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
           version: v0.22.0
-      
+
       - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
-        # Only login to the Docker Hub if the repo is mintplex/anythingllm, to allow for forks to build on GHCR
-        if: steps.dockerhub.outputs.enabled == 'true' 
+        if: steps.dockerhub.outputs.enabled == 'true'
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      
-      - name: Log in to the Container registry
+
+      - name: Log in to GitHub Container Registry (GHCR)
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Extract metadata (tags, labels) for Docker
+
+      - name: Extract Docker metadata (tags and labels)
         id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        uses: docker/metadata-action@v5
         with:
           images: |
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'akigogikar/onenew' || '' }}
@@ -87,7 +82,7 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
 
-      - name: Build and push multi-platform Docker image
+      - name: Build and Push Docker image (multi-platform)
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -100,14 +95,14 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
-      # For Docker scout there are some intermediary reported CVEs which exists outside
-      # of execution content or are unreachable by an attacker but exist in image.
-      # We create VEX files for these so they don't show in scout summary. 
-      - name: Collect known and verified CVE exceptions
+
+      # --- Non-blocking post-push steps below ---
+
+      - name: Collect known CVE exceptions (VEX files)
         id: cve-list
+        shell: bash
+        continue-on-error: true
         run: |
-          # Collect CVEs from filenames in vex folder
           CVE_NAMES=""
           for file in ./docker/vex/*.vex.json; do
             [ -e "$file" ] || continue
@@ -116,16 +111,17 @@ jobs:
             CVE_NAMES+=" $stripped_filename"
           done
           echo "CVE_EXCEPTIONS=$CVE_NAMES" >> $GITHUB_OUTPUT
-        shell: bash
 
-      - name: Log in to Docker for Scout
-        run: echo "${{ secrets.DOCKER_PAT }}" | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Log in to Docker (for Scout attestation)
+        continue-on-error: true
+        run: |
+          echo "${{ secrets.DOCKER_PAT }}" | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      # About VEX attestations https://docs.docker.com/scout/explore/exceptions/
-      # Justifications https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#status-justifications
-      - name: Add VEX attestations
+      - name: Add VEX attestations (non-blocking)
+        continue-on-error: true
         env:
           CVE_EXCEPTIONS: ${{ steps.cve-list.outputs.CVE_EXCEPTIONS }}
+        shell: bash
         run: |
           echo $CVE_EXCEPTIONS
           curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
@@ -133,9 +129,8 @@ jobs:
             for tag in "${{ join(fromJSON(steps.meta.outputs.json).tags, ' ') }}"; do
               echo "Attaching VEX exception $cve to $tag"
               docker scout attestation add \
-              --file "./docker/vex/$cve.vex.json" \
-              --predicate-type https://openvex.dev/ns/v0.2.0 \
-              $tag
+                --file "./docker/vex/$cve.vex.json" \
+                --predicate-type https://openvex.dev/ns/v0.2.0 \
+                $tag || echo "Skipped $cve on $tag"
             done
           done
-        shell: bash
