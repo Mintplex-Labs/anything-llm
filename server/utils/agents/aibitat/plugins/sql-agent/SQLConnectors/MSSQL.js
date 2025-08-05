@@ -96,6 +96,7 @@ class MSSQLConnector {
   getTablesSql() {
     return `SELECT name FROM sysobjects WHERE xtype='U';`;
   }
+
   getTableSchemaSql(table_name) {
     return `SELECT COLUMN_NAME,COLUMN_DEFAULT,IS_NULLABLE,DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='${table_name}'`;
   }
