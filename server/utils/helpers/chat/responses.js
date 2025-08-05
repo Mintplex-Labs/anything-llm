@@ -10,13 +10,27 @@ function clientAbortedHandler(resolve, fullText) {
 }
 
 /**
- * Handles the default stream response for a chat.
+ * Generic streaming handler that allows provider specific processing hooks.
  * @param {import("express").Response} response
  * @param {import('./LLMPerformanceMonitor').MonitoredStream} stream
  * @param {Object} responseProps
+ * @param {(args: {
+ *  message: any,
+ *  state: object,
+ *  writeResponseChunk: typeof writeResponseChunk,
+ *  uuid: string,
+ *  sources: any[],
+ * }) => { text?: string, usageDelta?: number }} processDelta
+ * @param {() => object} [createState]
  * @returns {Promise<string>}
  */
-function handleDefaultStreamResponseV2(response, stream, responseProps) {
+function handleStreamResponse(
+  response,
+  stream,
+  responseProps,
+  processDelta,
+  createState = () => ({})
+) {
   const { uuid = uuidv4(), sources = [] } = responseProps;
 
   // Why are we doing this?
@@ -34,6 +48,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
 
   return new Promise(async (resolve) => {
     let fullText = "";
+    const state = createState();
 
     // Establish listener to early-abort a streaming response
     // in case things go sideways or the user does not like the response.
@@ -49,7 +64,6 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
     try {
       for await (const chunk of stream) {
         const message = chunk?.choices?.[0];
-        const token = message?.delta?.content;
 
         // If we see usage metrics in the chunk, we can use them directly
         // instead of estimating them, but we only want to assign values if
@@ -69,18 +83,20 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
           }
         }
 
-        if (token) {
-          fullText += token;
-          // If we never saw a usage metric, we can estimate them by number of completion chunks
-          if (!hasUsageMetrics) usage.completion_tokens++;
-          writeResponseChunk(response, {
+        const { text = "", usageDelta = 1 } =
+          processDelta({
+            message,
+            state,
+            writeResponseChunk,
             uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: token,
-            close: false,
-            error: false,
-          });
+            sources,
+            response,
+          }) || {};
+
+        if (text) {
+          fullText += text;
+          // If we never saw a usage metric, we can estimate them by number of completion chunks
+          if (!hasUsageMetrics) usage.completion_tokens += usageDelta;
         }
 
         // LocalAi returns '' and others return null on chunks - the last chunk is not "" or null.
@@ -118,6 +134,44 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
       resolve(fullText); // Return what we currently have - if anything.
     }
   });
+}
+
+function defaultProcessDelta({
+  message,
+  writeResponseChunk,
+  uuid,
+  sources,
+  response,
+}) {
+  const token = message?.delta?.content;
+  if (token) {
+    writeResponseChunk(response, {
+      uuid,
+      sources: [],
+      type: "textResponseChunk",
+      textResponse: token,
+      close: false,
+      error: false,
+    });
+    return { text: token };
+  }
+  return {};
+}
+
+function handleDefaultStreamResponseV2(response, stream, responseProps) {
+  return handleStreamResponse(
+    response,
+    stream,
+    responseProps,
+    ({ message, uuid, sources, writeResponseChunk, response: res }) =>
+      defaultProcessDelta({
+        message,
+        writeResponseChunk,
+        uuid,
+        sources,
+        response: res,
+      })
+  );
 }
 
 function convertToChatHistory(history = []) {
@@ -285,6 +339,7 @@ function formatChatHistory(
 
 module.exports = {
   handleDefaultStreamResponseV2,
+  handleStreamResponse,
   convertToChatHistory,
   convertToPromptHistory,
   writeResponseChunk,
