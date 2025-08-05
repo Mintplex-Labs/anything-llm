@@ -283,11 +283,32 @@ const Workspace = {
       return {
         ...workspace,
         documents: await Document.forWorkspace(workspace.id),
+        contextWindow: this._getContextWindow(workspace),
       };
     } catch (error) {
       console.error(error.message);
       return null;
     }
+  },
+
+  /**
+   * Get the context window size for a workspace based on its provider and model settings.
+   * If the workspace has no provider/model set, falls back to system defaults.
+   * @param {Workspace} workspace - The workspace to get context window for
+   * @returns {number} The context window size in tokens (defaults to 8000 if no provider/model found)
+   * @private
+   */
+  _getContextWindow: function (workspace) {
+    const {
+      getLLMProviderClass,
+      getBaseLLMProviderModel,
+    } = require("../utils/helpers");
+    const provider =
+      workspace.chatProvider || process.env.LLM_PROVIDER || "openai";
+    const LLMProvider = getLLMProviderClass({ provider });
+    const model =
+      workspace.chatModel || getBaseLLMProviderModel({ provider }) || "gpt-4";
+    return LLMProvider?.promptWindowLimit?.(model) || 8000;
   },
 
   get: async function (clause = {}) {
@@ -299,7 +320,12 @@ const Workspace = {
         },
       });
 
-      return workspace || null;
+      if (!workspace) return null;
+
+      return {
+        ...workspace,
+        contextWindow: this._getContextWindow(workspace),
+      };
     } catch (error) {
       console.error(error.message);
       return null;

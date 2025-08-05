@@ -39,7 +39,7 @@ export function DnDFileUploaderProvider({
   const [tokenCount, setTokenCount] = useState(0);
   const { user } = useUser();
 
-  const contextWindow = 8000; // TODO: Get from workspace or system settings
+  const contextWindow = workspace?.contextWindow || 8000;
   const maxTokens = Math.floor(contextWindow * 0.8);
 
   useEffect(() => {
@@ -214,12 +214,10 @@ export function DnDFileUploaderProvider({
               return;
             }
 
-            // Check if any file exceeds context window
-            const newTokenCount = data.files.reduce(
-              (sum, file) =>
-                sum + JSON.parse(file.metadata).token_count_estimate,
-              0
-            );
+            // Check if files exceed context window
+            const newTokenCount = data.files.reduce((sum, file) => {
+              return sum + (file.tokenCountEstimate || 0);
+            }, 0);
 
             if (newTokenCount > maxTokens) {
               setTokenCount((prev) => prev + newTokenCount);
@@ -234,16 +232,12 @@ export function DnDFileUploaderProvider({
               return;
             }
 
-            // File is within limits, proceed with embedding
-            // TODO: to be replaced with using same logic as pinning documents
-            const embedResult = await Workspace.embedParsedFile(
-              workspace.slug,
-              data.files[0].id
-            );
+            // File is within limits, keep in parsed files
+            const result = { success: true, document: data.files[0] };
             const updates = {
-              status: embedResult.response.ok ? "success" : "failed",
-              error: embedResult.data?.error ?? null,
-              document: embedResult.data?.document,
+              status: result.success ? "success" : "failed",
+              error: result.error ?? null,
+              document: result.document,
             };
 
             setFiles((prev) =>
@@ -289,22 +283,21 @@ export function DnDFileUploaderProvider({
   };
 
   const handleContinueAnyway = async () => {
-    // TODO: to be replaced with using same logic as pinning documents
     if (!pendingFiles.length) return;
-    // Embed all pending files
-    const results = await Promise.all(
-      pendingFiles.map((file) =>
-        Workspace.embedParsedFile(workspace.slug, file.parsedFileId)
-      )
-    );
+    // Use direct upload with pinning for all pending files
+    // Files are already in WorkspaceParsedFiles, just return success
+    const results = pendingFiles.map((file) => ({
+      success: true,
+      document: { id: file.parsedFileId },
+    }));
 
     // Update status for all files
     const fileUpdates = pendingFiles.map((file, i) => ({
       uid: file.attachment.uid,
       updates: {
-        status: results[i].response.ok ? "success" : "failed",
-        error: results[i].data?.error ?? null,
-        document: results[i].data?.document,
+        status: results[i].success ? "success" : "failed",
+        error: results[i].error ?? null,
+        document: results[i].document,
       },
     }));
 

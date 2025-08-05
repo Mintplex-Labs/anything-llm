@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
+const { WorkspaceParsedFiles } = require("../../models/workspaceParsedFiles");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const {
@@ -207,6 +208,22 @@ async function chatSync({
         });
       });
     });
+
+  // Inject any parsed files for this workspace/thread/user
+  const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
+    workspace.id,
+    thread?.id || null,
+    user?.id || null
+  );
+  parsedFiles.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
+    });
+  });
 
   const vectorSearchResults =
     embeddingsCount !== 0
@@ -543,6 +560,22 @@ async function streamChat({
         });
       });
     });
+
+  // Inject any parsed files for this workspace/thread/user
+  const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
+    workspace.id,
+    thread?.id || null,
+    user?.id || null
+  );
+  parsedFiles.forEach((doc) => {
+    const { pageContent, ...metadata } = doc;
+    contextTexts.push(doc.pageContent);
+    sources.push({
+      text:
+        pageContent.slice(0, 1_000) + "...continued on in source document...",
+      ...metadata,
+    });
+  });
 
   const vectorSearchResults =
     embeddingsCount !== 0

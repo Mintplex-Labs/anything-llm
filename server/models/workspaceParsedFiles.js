@@ -137,6 +137,40 @@ const WorkspaceParsedFiles = {
       await this.delete({ id: parseInt(fileId) });
     }
   },
+
+  getContextFiles: async function (workspaceId, threadId = null) {
+    try {
+      const files = await this.where({
+        workspaceId: parseInt(workspaceId),
+        threadId: threadId ? parseInt(threadId) : null,
+      });
+
+      const results = [];
+      for (const file of files) {
+        const metadata = safeJsonParse(file.metadata, {});
+        const location = metadata.location;
+        if (!location) continue;
+
+        const sourceFile = path.join(directUploadsPath, location.split("/")[1]);
+        if (!fs.existsSync(sourceFile)) continue;
+
+        const content = fs.readFileSync(sourceFile, "utf-8");
+        const data = safeJsonParse(content, null);
+        if (!data?.pageContent) continue;
+
+        results.push({
+          pageContent: data.pageContent,
+          token_count_estimate: file.tokenCountEstimate,
+          ...metadata,
+        });
+      }
+
+      return results;
+    } catch (error) {
+      console.error("Failed to get context files:", error);
+      return [];
+    }
+  },
 };
 
 module.exports = { WorkspaceParsedFiles };
