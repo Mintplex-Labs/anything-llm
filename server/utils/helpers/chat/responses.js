@@ -55,6 +55,7 @@ function handleStreamResponse(
     // We preserve the generated text but continue as if chat was completed
     // to preserve previously generated content.
     const handleAbort = () => {
+      response.removeListener("close", handleAbort);
       stream?.endMeasurement(usage);
       clientAbortedHandler(resolve, fullText);
     };
