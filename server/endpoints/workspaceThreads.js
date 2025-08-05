@@ -23,6 +23,44 @@ const { getModelTag } = require("./utils");
 function workspaceThreadEndpoints(app) {
   if (!app) return;
 
+  app.patch(
+    "/workspace/:slug/thread/:threadSlug/archive",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      validWorkspaceAndThreadSlug,
+    ],
+    async (request, response) => {
+      try {
+        const thread = response.locals.thread;
+        await WorkspaceThread.update(thread, { archived: true });
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.patch(
+    "/workspace/:slug/thread/:threadSlug/restore",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      validWorkspaceAndThreadSlug,
+    ],
+    async (request, response) => {
+      try {
+        const thread = response.locals.thread;
+        await WorkspaceThread.update(thread, { archived: false });
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.post(
     "/workspace/:slug/thread/new",
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
@@ -67,11 +105,13 @@ function workspaceThreadEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (request, response) => {
       try {
+        const archived = Boolean(request.query.archived);
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
         const threads = await WorkspaceThread.where({
           workspace_id: workspace.id,
           user_id: user?.id || null,
+          archived,
         });
         response.status(200).json({ threads });
       } catch (e) {

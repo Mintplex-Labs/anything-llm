@@ -5,8 +5,10 @@ import {
   ArrowCounterClockwise,
   DotsThree,
   PencilSimple,
+  Archive,
   Trash,
   X,
+  ArrowClockwise,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -19,11 +21,13 @@ export default function ThreadItem({
   workspace,
   thread,
   onRemove,
+  onArchive,
+  onRestore,
   toggleMarkForDeletion,
   hasNext,
   ctrlPressed = false,
 }) {
-  const { slug, threadSlug = null } = useParams();
+  const { slug, threadSlug } = useParams();
   const optionsContainer = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
   const linkTo = !thread.slug
@@ -89,15 +93,24 @@ export default function ThreadItem({
         ) : (
           <a
             href={
-              window.location.pathname === linkTo || ctrlPressed ? "#" : linkTo
+              window.location.pathname === linkTo ||
+              ctrlPressed ||
+              thread.archived
+                ? "#"
+                : linkTo
             }
-            className="w-full pl-2 py-1 overflow-hidden"
+            className={`w-full pl-2 py-1 overflow-hidden ${thread.archived ? "cursor-not-allowed" : ""}`}
             aria-current={isActive ? "page" : ""}
+            onClick={(e) => {
+              if (thread.archived) {
+                e.preventDefault();
+              }
+            }}
           >
             <p
-              className={`text-left text-sm truncate max-w-[150px] ${
+              className={`text-left truncate max-w-[150px] ${
                 isActive ? "font-medium text-white" : "text-theme-text-primary"
-              }`}
+              } ${thread.archived ? "text-xs" : "text-sm"}`}
             >
               {thread.name}
             </p>
@@ -106,7 +119,6 @@ export default function ThreadItem({
         {!!thread.slug && !thread.deleted && (
           <div ref={optionsContainer} className="flex items-center">
             {" "}
-            {/* Added flex and items-center */}
             {ctrlPressed ? (
               <button
                 type="button"
@@ -140,6 +152,8 @@ export default function ThreadItem({
                 workspace={workspace}
                 thread={thread}
                 onRemove={onRemove}
+                onArchive={onArchive}
+                onRestore={onRestore}
                 close={() => setShowOptions(false)}
                 currentThreadSlug={threadSlug}
               />
@@ -156,6 +170,8 @@ function OptionsMenu({
   workspace,
   thread,
   onRemove,
+  onArchive,
+  onRestore,
   close,
   currentThreadSlug,
 }) {
@@ -234,11 +250,48 @@ function OptionsMenu({
     if (success) {
       showToast("Thread deleted successfully!", "success", { clear: true });
       onRemove(thread.id);
+
       // Redirect if deleting the active thread
       if (currentThreadSlug === thread.slug) {
         window.location.href = paths.workspace.chat(workspace.slug);
       }
       return;
+    }
+  };
+
+  const handleRestore = async () => {
+    const success = await Workspace.threads.restore(
+      workspace.slug,
+      thread.slug
+    );
+    if (!success) {
+      showToast("Thread could not be restored!", "error", { clear: true });
+      return;
+    }
+    showToast("Thread restored successfully!", "success", { clear: true });
+    onRestore(thread);
+
+    // Redirect if restoring the active thread
+    if (currentThreadSlug === thread.slug) {
+      window.location.href = paths.workspace.chat(workspace.slug);
+    }
+  };
+
+  const handleArchive = async () => {
+    const success = await Workspace.threads.archive(
+      workspace.slug,
+      thread.slug
+    );
+    if (!success) {
+      showToast("Thread could not be archived!", "error", { clear: true });
+      return;
+    }
+    showToast("Thread archived successfully!", "success", { clear: true });
+    onArchive(thread);
+
+    // Redirect if archiving the active thread
+    if (currentThreadSlug === thread.slug) {
+      window.location.href = paths.workspace.chat(workspace.slug);
     }
   };
 
@@ -255,14 +308,36 @@ function OptionsMenu({
         <PencilSimple size={18} />
         <p className="text-sm">Rename</p>
       </button>
-      <button
-        onClick={handleDelete}
-        type="button"
-        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 light:text-theme-text-primary hover:text-red-100"
-      >
-        <Trash size={18} />
-        <p className="text-sm">Delete Thread</p>
-      </button>
+      {!thread.archived && (
+        <button
+          onClick={handleArchive}
+          type="button"
+          className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-orange-500/20 text-slate-300 light:text-theme-text-primary"
+        >
+          <Archive size={18} />
+          <p className="text-sm">Archive Thread</p>
+        </button>
+      )}
+      {thread.archived && (
+        <button
+          onClick={handleRestore}
+          type="button"
+          className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-green-500/20 text-slate-300 light:text-theme-text-primary"
+        >
+          <ArrowClockwise size={18} />
+          <p className="text-sm">Restore Thread</p>
+        </button>
+      )}
+      {thread.archived && (
+        <button
+          onClick={handleDelete}
+          type="button"
+          className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 light:text-theme-text-primary hover:text-red-100"
+        >
+          <Trash size={18} />
+          <p className="text-sm">Delete Thread</p>
+        </button>
+      )}
     </div>
   );
 }
