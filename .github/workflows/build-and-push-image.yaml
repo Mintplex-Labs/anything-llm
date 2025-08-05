@@ -118,6 +118,9 @@ jobs:
           echo "CVE_EXCEPTIONS=$CVE_NAMES" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Log in to Docker for Scout
+        run: echo "${{ secrets.DOCKER_PAT }}" | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
       # About VEX attestations https://docs.docker.com/scout/explore/exceptions/
       # Justifications https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#status-justifications
       - name: Add VEX attestations
