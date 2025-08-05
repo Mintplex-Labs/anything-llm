@@ -1,7 +1,3 @@
-# GitHub Action: Publish OneNew Docker image (amd64/arm64)
-# Builds and pushes multi-platform Docker images for master branch only.
-# Note: arm64 builds require QEMU due to Chromium limitations on arm64.
-
 name: Publish OneNew Primary Docker Image (amd64/arm64)
 
 concurrency:
@@ -34,55 +30,74 @@ jobs:
       contents: read
 
     steps:
-      - name: Check out the repository
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Check if DockerHub push is needed
+      - name: 🔍 Check if DockerHub secrets are set
         id: dockerhub
         shell: bash
         run: |
-          if [[ -z "${{ secrets.DOCKER_USERNAME }}" ]]; then
+          if [[ -z "${{ secrets.DOCKER_USERNAME }}" || -z "${{ secrets.DOCKER_PASSWORD }}" ]]; then
+            echo "DockerHub secrets not set. Skipping DockerHub push."
             echo "enabled=false" >> $GITHUB_OUTPUT
           else
+            echo "DockerHub secrets present. Enabling DockerHub push."
             echo "enabled=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Set up QEMU (for arm64 support)
+      - name: 🧰 Set up QEMU (for arm64)
         uses: docker/setup-qemu-action@v3
 
-      - name: Set up Docker Buildx
+      - name: 🧱 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
           version: v0.22.0
 
-      - name: Log in to Docker Hub
+      - name: 🔐 Log in to DockerHub
         if: steps.dockerhub.outputs.enabled == 'true'
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Log in to GitHub Container Registry (GHCR)
+      - name: 🔐 Log in to GitHub Container Registry (GHCR)
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata (tags and labels)
-        id: meta
+      - name: 🏷️ Extract metadata for GHCR
+        id: meta_ghcr
         uses: docker/metadata-action@v5
         with:
-          images: |
-            ${{ steps.dockerhub.outputs.enabled == 'true' && 'akigogikar/onenew' || '' }}
-            ghcr.io/${{ github.repository }}
+          images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=ref,event=tag
             type=ref,event=pr
 
-      - name: Build and Push Docker image (multi-platform)
+      - name: 🏷️ Extract metadata for DockerHub
+        if: steps.dockerhub.outputs.enabled == 'true'
+        id: meta_dockerhub
+        uses: docker/metadata-action@v5
+        with:
+          images: akigogikar/onenew
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+
+      - name: 🔍 DEBUG: Show tags that will be pushed
+        run: |
+          echo "GHCR Tags:"
+          echo "${{ steps.meta_ghcr.outputs.tags }}"
+          echo "DockerHub Tags:"
+          echo "${{ steps.meta_dockerhub.outputs.tags }}"
+
+      - name: 🚀 Build and Push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -91,17 +106,21 @@ jobs:
           sbom: true
           provenance: mode=max
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ steps.meta_ghcr.outputs.tags }}
+            ${{ steps.meta_dockerhub.outputs.tags }}
+          labels: |
+            ${{ steps.meta_ghcr.outputs.labels }}
+            ${{ steps.meta_dockerhub.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # --- Non-blocking post-push steps below ---
+      # ---- OPTIONAL NON-BLOCKING SCOUT STUFF BELOW ----
 
-      - name: Collect known CVE exceptions (VEX files)
+      - name: 🛡️ Collect CVE exceptions from VEX files
         id: cve-list
-        shell: bash
         continue-on-error: true
+        shell: bash
         run: |
           CVE_NAMES=""
           for file in ./docker/vex/*.vex.json; do
@@ -112,12 +131,12 @@ jobs:
           done
           echo "CVE_EXCEPTIONS=$CVE_NAMES" >> $GITHUB_OUTPUT
 
-      - name: Log in to Docker (for Scout attestation)
+      - name: 🛡️ Log in to Docker (for Scout)
         continue-on-error: true
         run: |
           echo "${{ secrets.DOCKER_PAT }}" | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - name: Add VEX attestations (non-blocking)
+      - name: 🛡️ Add VEX Attestations (non-blocking)
         continue-on-error: true
         env:
           CVE_EXCEPTIONS: ${{ steps.cve-list.outputs.CVE_EXCEPTIONS }}
@@ -126,11 +145,11 @@ jobs:
           echo $CVE_EXCEPTIONS
           curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
           for cve in $CVE_EXCEPTIONS; do
-            for tag in "${{ join(fromJSON(steps.meta.outputs.json).tags, ' ') }}"; do
+            for tag in "${{ join(fromJSON(steps.meta_ghcr.outputs.json).tags, ' ') }}"; do
               echo "Attaching VEX exception $cve to $tag"
               docker scout attestation add \
                 --file "./docker/vex/$cve.vex.json" \
                 --predicate-type https://openvex.dev/ns/v0.2.0 \
-                $tag || echo "Skipped $cve on $tag"
+                $tag || echo "Warning: Failed to attach $cve to $tag"
             done
           done
