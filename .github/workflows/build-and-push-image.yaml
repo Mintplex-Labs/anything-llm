@@ -33,7 +33,7 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🔍 Check if DockerHub credentials are set
+      - name: 🔍 Check DockerHub credentials
         id: dockerhub
         shell: bash
         run: |
@@ -88,16 +88,18 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
 
-      - name: 🧪 DEBUG: Show tags to be pushed
+      - name: 🧪 DEBUG - Display Tags
         run: |
           echo "GHCR Tags:"
           echo "${{ steps.meta_ghcr.outputs.tags }}"
-          if [ "${{ steps.dockerhub.outputs.enabled }}" == "true" ]; then
+          if [[ "${{ steps.dockerhub.outputs.enabled }}" == "true" ]]; then
             echo "DockerHub Tags:"
             echo "${{ steps.meta_dockerhub.outputs.tags }}"
+          else
+            echo "DockerHub Tags: Skipped (credentials not provided)"
           fi
 
-      - name: 🚀 Build and Push to GHCR
+      - name: 🚀 Build and Push Docker image to GHCR
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -111,7 +113,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: 🚀 Build and Push to DockerHub
+      - name: 🚀 Build and Push Docker image to DockerHub
         if: steps.dockerhub.outputs.enabled == 'true'
         uses: docker/build-push-action@v6
         with:
@@ -126,7 +128,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # ------------------------ Optional Docker Scout Section (non-blocking) ------------------------
+      # ------ Optional Non-Blocking Steps Below ------
 
       - name: 🛡️ Collect CVE Exceptions (VEX files)
         id: cve-list
@@ -141,24 +143,23 @@ jobs:
           done
           echo "CVE_EXCEPTIONS=$CVE_NAMES" >> $GITHUB_OUTPUT
 
-      - name: 🛡️ Log in to Docker (for Scout attestation)
+      - name: 🛡️ Log in to Docker (Scout)
         continue-on-error: true
         run: |
           echo "${{ secrets.DOCKER_PAT }}" | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - name: 🛡️ Add VEX Attestations (non-blocking)
+      - name: 🛡️ Add VEX Attestations (Docker Scout - non-blocking)
         continue-on-error: true
         env:
           CVE_EXCEPTIONS: ${{ steps.cve-list.outputs.CVE_EXCEPTIONS }}
         run: |
-          echo "Attaching VEX for: $CVE_EXCEPTIONS"
+          echo "Attaching VEX exceptions: $CVE_EXCEPTIONS"
           curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
           for cve in $CVE_EXCEPTIONS; do
-            for tag in "${{ join(fromJSON(steps.meta_ghcr.outputs.json).tags, ' ') }}"; do
-              echo "Attaching $cve to $tag"
+            for tag in ${{ steps.meta_ghcr.outputs.tags }}; do
               docker scout attestation add \
                 --file "./docker/vex/$cve.vex.json" \
                 --predicate-type https://openvex.dev/ns/v0.2.0 \
-                $tag || echo "⚠️ Failed to attach $cve to $tag"
+                $tag || echo "Warning: Failed to attach VEX for $cve on $tag"
             done
           done
