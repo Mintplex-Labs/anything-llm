@@ -1,3 +1,4 @@
+// Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
   onboarding: {
     home: {
@@ -18,9 +19,7 @@ const TRANSLATIONS = {
       instancePassword: "סיסמת מופע",
       setPassword: "האם תרצה להגדיר סיסמה?",
       passwordReq: "סיסמאות חייבות להכיל לפחות 8 תווים.",
-      passwordWarn:
-        "חשוב לשמור סיסמה זו מכיוון שאין שיטת שחזור.",
-
+      passwordWarn: "חשוב לשמור סיסמה זו מכיוון שאין שיטת שחזור.",
       adminUsername: "שם משתמש של חשבון מנהל",
       adminUsernameReq:
         "שם המשתמש חייב להכיל לפחות 6 תווים ויכול לכלול רק אותיות קטנות, מספרים, קווים תחתונים ומקפים, ללא רווחים.",
@@ -31,15 +30,13 @@ const TRANSLATIONS = {
     },
     data: {
       title: "טיפול בנתונים ופרטיות",
-      description:
-        "אנו מחויבים לשקיפות ושליטה בכל הנוגע לנתונים האישיים שלך.",
-      settingsHint:
-        "ניתן להגדיר מחדש הגדרות אלה בכל עת בהגדרות.",
+      description: "אנו מחויבים לשקיפות ושליטה בכל הנוגע לנתונים האישיים שלך.",
+      settingsHint: "ניתן להגדיר מחדש הגדרות אלה בכל עת בהגדרות.",
     },
     survey: {
       title: "ברוכים הבאים ל-AnythingLLM",
-      description: "עזרו לנו לבנות את AnythingLLM כך שיתאים לצרכים שלכם. אופציונלי.",
-
+      description:
+        "עזרו לנו לבנות את AnythingLLM כך שיתאים לצרכים שלכם. אופציונלי.",
       email: "מה האימייל שלך?",
       useCase: "לאיזו מטרה תשתמש ב-AnythingLLM?",
       useCaseWork: "לעבודה",
@@ -72,8 +69,6 @@ const TRANSLATIONS = {
     no: "לא",
     search: "חיפוש",
   },
-
-  // Setting Sidebar menu items.
   settings: {
     title: "הגדרות מופע",
     system: "הגדרות כלליות",
@@ -106,8 +101,6 @@ const TRANSLATIONS = {
     contact: "צור קשר עם התמיכה",
     "browser-extension": "תוסף דפדפן",
   },
-
-  // Page Definitions
   login: {
     "multi-user": {
       welcome: "ברוכים הבאים ל",
@@ -124,14 +117,12 @@ const TRANSLATIONS = {
     },
     "password-reset": {
       title: "איפוס סיסמה",
-      description:
-        "ספק את המידע הדרוש למטה כדי לאפס את סיסמתך.",
+      description: "ספק את המידע הדרוש למטה כדי לאפס את סיסמתך.",
       "recovery-codes": "קודיי שחזור",
       "recovery-code": "קוד שחזור {{index}}",
       "back-to-login": "חזרה להתחברות",
     },
   },
-
   welcomeMessage: {
     part1:
       "ברוכים הבאים ל-AnythingLLM, כלי קוד פתוח מבית Mintplex Labs שהופך כל דבר לצ'אטבוט מאומן שאפשר לשאול ולשוחח איתו. AnythingLLM היא תוכנת BYOK (הבא-מפתחות-משלך) כך שאין מנוי, עמלה או חיובים עבור תוכנה זו מלבד השירותים שברצונך להשתמש בהם.",
@@ -142,10 +133,9 @@ const TRANSLATIONS = {
     githubIssue: "צור בעיה ב-GitHub",
     user1: "איך אני מתחיל?!",
     part4:
-      "זה פשוט. כל האוספים מאורגנים בתוך מה שאנו מכנים \"סביבות עבודה\". סביבות עבודה הן מאגרים של קבצים, מסמכים, תמונות, קובצי PDF וקבצים אחרים שיהפכו למשהו שמודלי שפה (LLM) יכולים להבין ולהשתמש בו בשיחה.\n\nתוכל להוסיף ולהסיר קבצים בכל עת.",
+      'זה פשוט. כל האוספים מאורגנים בתוך מה שאנו מכנים "סביבות עבודה". סביבות עבודה הן מאגרים של קבצים, מסמכים, תמונות, קובצי PDF וקבצים אחרים שיהפכו למשהו שמודלי שפה (LLM) יכולים להבין ולהשתמש בו בשיחה.\n\nתוכל להוסיף ולהסיר קבצים בכל עת.',
     createWorkspace: "צור את סביבת העבודה הראשונה שלך",
-    user2:
-      "זה כמו דרופבוקס חכם או משהו? ומה לגבי צ'אט? זה צ'אטבוט, לא?",
+    user2: "זה כמו דרופבוקס חכם או משהו? ומה לגבי צ'אט? זה צ'אטבוט, לא?",
     part5:
       "AnythingLLM הוא יותר מדרופבוקס חכם.\n\nAnythingLLM מציע שתי דרכים לדבר עם הנתונים שלך:\n\n<i>שאילתה:</i> הצ'אטים שלך יחזירו נתונים או מסקנות שנמצאו באמצעות המסמכים בסביבת העבודה שיש לו גישה אליהם. הוספת מסמכים נוספים לסביבת העבודה הופכת אותו לחכם יותר! \n\n<i>שיחה:</i> המסמכים שלך + היסטוריית הצ'אט המתמשכת שלך תורמים שניהם לידע של מודל השפה בו-זמנית. מצוין להוספת מידע טקסטואלי בזמן אמת או תיקונים ואי-הבנות שעלולות להיות למודל השפה. \n\nתוכל לעבור בין שני המצבים \n<i>באמצע השיחה!</i>",
     user3: "וואו, זה נשמע מדהים, תן לי כבר לנסות!",
@@ -153,7 +143,6 @@ const TRANSLATIONS = {
     starOnGitHub: "סמן בכוכב ב-GitHub",
     contact: "צור קשר עם Mintplex Labs",
   },
-
   "main-page": {
     noWorkspaceError: "אנא צור סביבת עבודה לפני התחלת צ'אט.",
     checklist: {
@@ -237,13 +226,10 @@ const TRANSLATIONS = {
       keyboardShortcuts: "קיצורי מקלדת",
     },
   },
-
   "new-workspace": {
     title: "סביבת עבודה חדשה",
     placeholder: "סביבת העבודה שלי",
   },
-
-  // Workspace Settings menu items
   "workspaces—settings": {
     general: "הגדרות כלליות",
     chat: "הגדרות צ'אט",
@@ -251,8 +237,6 @@ const TRANSLATIONS = {
     members: "חברים",
     agent: "תצורת סוכן",
   },
-
-  // General Appearance
   general: {
     vector: {
       title: "ספירת וקטורים",
@@ -263,8 +247,7 @@ const TRANSLATIONS = {
     },
     message: {
       title: "הודעות צ'אט מוצעות",
-      description:
-        "התאם אישית את ההודעות שיוצעו למשתמשי סביבת העבודה שלך.",
+      description: "התאם אישית את ההודעות שיוצעו למשתמשי סביבת העבודה שלך.",
       add: "הוסף הודעה חדשה",
       save: "שמור הודעות",
       heading: "הסבר לי",
@@ -272,8 +255,7 @@ const TRANSLATIONS = {
     },
     pfp: {
       title: "תמונת פרופיל של העוזר",
-      description:
-        "התאם אישית את תמונת הפרופיל של העוזר עבור סביבת עבודה זו.",
+      description: "התאם אישית את תמונת הפרופיל של העוזר עבור סביבת עבודה זו.",
       image: "תמונת סביבת עבודה",
       remove: "הסר תמונת סביבת עבודה",
     },
@@ -288,8 +270,6 @@ const TRANSLATIONS = {
         "סביבת העבודה שלך. פעולה זו תסיר את כל הטמעות הווקטורים ממסד הנתונים הווקטורי שלך.\n\nקבצי המקור המקוריים יישארו ללא שינוי. פעולה זו אינה הפיכה.",
     },
   },
-
-  // Chat Settings
   chat: {
     llm: {
       title: "ספק מודל שפה (LLM) של סביבת העבודה",
@@ -320,8 +300,7 @@ const TRANSLATIONS = {
     },
     history: {
       title: "היסטוריית צ'אט",
-      "desc-start":
-        "מספר הצ'אטים הקודמים שייכללו בזיכרון לטווח קצר של התגובה.",
+      "desc-start": "מספר הצ'אטים הקודמים שייכללו בזיכרון לטווח קצר של התגובה.",
       recommend: "מומלץ 20. ",
       "desc-end":
         "יותר מ-45 צפוי להוביל לכשלים רציפים בצ'אט, תלוי בגודל ההודעה.",
@@ -355,15 +334,12 @@ const TRANSLATIONS = {
     },
     temperature: {
       title: "טמפרטורת LLM",
-      "desc-start":
-        'הגדרה זו שולטת במידת ה"יצירתיות" של תגובות מודל השפה שלך.',
+      "desc-start": 'הגדרה זו שולטת במידת ה"יצירתיות" של תגובות מודל השפה שלך.',
       "desc-end":
         "ככל שהמספר גבוה יותר, כך התגובה יצירתית יותר. עבור מודלים מסוימים, הדבר עלול להוביל לתגובות לא קוהרנטיות כאשר הערך גבוה מדי.",
       hint: "לרוב מודלי ה-LLM יש טווחי ערכים קבילים שונים. עיין במידע של ספק ה-LLM שלך.",
     },
   },
-
-  // Vector Database
   "vector-workspace": {
     identifier: "מזהה מסד נתונים וקטורי",
     snippets: {
@@ -390,8 +366,6 @@ const TRANSLATIONS = {
       success: "מסד הנתונים הווקטורי של סביבת העבודה אופס!",
     },
   },
-
-  // Agent Configuration
   agent: {
     "performance-warning":
       "הביצועים של מודלי שפה שאינם תומכים במפורש בקריאת כלים (tool-calling) תלויים מאוד ביכולות ובדיוק של המודל. ייתכן שיכולות מסוימות יהיו מוגבלות או לא פונקציונליות.",
@@ -411,7 +385,6 @@ const TRANSLATIONS = {
         "מודל ה-LLM הספציפי שישמש עבור סוכן ה-@agent של סביבת עבודה זו.",
       wait: "-- ממתין למודלים --",
     },
-
     skill: {
       title: "כישורי סוכן ברירת מחדל",
       description:
@@ -428,8 +401,7 @@ const TRANSLATIONS = {
       },
       scrape: {
         title: "גירוד אתרי אינטרנט",
-        description:
-          "אפשר לסוכן לבקר ולגרד את התוכן של אתרי אינטרנט.",
+        description: "אפשר לסוכן לבקר ולגרד את התוכן של אתרי אינטרנט.",
       },
       generate: {
         title: "יצירת תרשימים",
@@ -450,8 +422,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // Workspace Chats
   recorded: {
     title: "צ'אטים של סביבת עבודה",
     description:
@@ -466,7 +436,6 @@ const TRANSLATIONS = {
       at: "נשלח ב",
     },
   },
-
   customization: {
     interface: {
       title: "העדפות ממשק משתמש",
@@ -474,16 +443,14 @@ const TRANSLATIONS = {
     },
     branding: {
       title: "מיתוג והתאמה אישית (Whitelabeling)",
-      description:
-        "התאם אישית את מופע ה-AnythingLLM שלך עם מיתוג מותאם אישית.",
+      description: "התאם אישית את מופע ה-AnythingLLM שלך עם מיתוג מותאם אישית.",
     },
     chat: {
       title: "צ'אט",
       description: "הגדר את העדפות הצ'אט שלך עבור AnythingLLM.",
       auto_submit: {
         title: "שליחה אוטומטית של קלט קולי",
-        description:
-          "שלח אוטומטית קלט קולי לאחר פרק זמן של שקט",
+        description: "שלח אוטומטית קלט קולי לאחר פרק זמן של שקט",
       },
       auto_speak: {
         title: "הקראה אוטומטית של תגובות",
@@ -510,13 +477,11 @@ const TRANSLATIONS = {
       },
       "app-name": {
         title: "שם",
-        description:
-          "הגדר שם שיוצג בדף ההתחברות לכל המשתמשים.",
+        description: "הגדר שם שיוצג בדף ההתחברות לכל המשתמשים.",
       },
       "chat-message-alignment": {
         title: "יישור הודעות צ'אט",
-        description:
-          "בחר את מצב יישור ההודעות בעת שימוש בממשק הצ'אט.",
+        description: "בחר את מצב יישור ההודעות בעת שימוש בממשק הצ'אט.",
       },
       "display-language": {
         title: "שפת תצוגה",
@@ -566,8 +531,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
-  // API Keys
   api: {
     title: "מפתחות API",
     description:
@@ -580,7 +543,6 @@ const TRANSLATIONS = {
       created: "נוצר",
     },
   },
-
   llm: {
     title: "העדפות מודל שפה (LLM)",
     description:
@@ -598,7 +560,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
   transcription: {
     title: "העדפות מודל תמלול",
     description:
@@ -608,10 +569,8 @@ const TRANSLATIONS = {
       "שימוש במודל ה-whisper המקומי על מכונות עם זיכרון RAM או מעבד מוגבלים עלול לגרום להאטה של AnythingLLM בעת עיבוד קובצי מדיה.",
     "warn-recommend":
       "אנו ממליצים על לפחות 2GB של זיכרון RAM והעלאת קבצים קטנים מ-10Mb.",
-    "warn-end":
-      "המודל המובנה יורד אוטומטית בשימוש הראשון.",
+    "warn-end": "המודל המובנה יורד אוטומטית בשימוש הראשון.",
   },
-
   embedding: {
     title: "העדפות הטמעה (Embedding)",
     "desc-start":
@@ -622,7 +581,6 @@ const TRANSLATIONS = {
       title: "ספק הטמעה",
     },
   },
-
   text: {
     title: "העדפות פיצול טקסט וחלוקה למקטעים (Chunking)",
     "desc-start":
@@ -631,19 +589,15 @@ const TRANSLATIONS = {
       "עליך לשנות הגדרה זו רק אם אתה מבין כיצד פועל פיצול טקסט ואת תופעות הלוואי שלו.",
     size: {
       title: "גודל מקטע טקסט",
-      description:
-        "זוהי הכמות המרבית של תווים שיכולה להיות בווקטור יחיד.",
+      description: "זוהי הכמות המרבית של תווים שיכולה להיות בווקטור יחיד.",
       recommend: "אורך מרבי של מודל הטמעה הוא",
     },
-
     overlap: {
       title: "חפיפת מקטעי טקסט",
       description:
         "זוהי החפיפה המרבית של תווים המתרחשת במהלך חלוקה למקטעים בין שני מקטעי טקסט סמוכים.",
     },
   },
-
-  // Vector Database
   vector: {
     title: "מסד נתונים וקטורי",
     description:
@@ -653,8 +607,6 @@ const TRANSLATIONS = {
       description: "אין צורך בתצורה עבור LanceDB.",
     },
   },
-
-  // Embeddable Chat Widgets
   embeddable: {
     title: "ווידג'טים של צ'אט להטמעה",
     description:
@@ -667,12 +619,10 @@ const TRANSLATIONS = {
       created: "נוצר",
     },
   },
-
   "embed-chats": {
     title: "היסטוריית צ'אט מוטמע",
     export: "יצא",
-    description:
-      "אלה כל הצ'אטים וההודעות המוקלטים מכל הטמעה שפרסמת.",
+    description: "אלה כל הצ'אטים וההודעות המוקלטים מכל הטמעה שפרסמת.",
     table: {
       embed: "הטמעה",
       sender: "שולח",
@@ -681,7 +631,6 @@ const TRANSLATIONS = {
       at: "נשלח ב",
     },
   },
-
   multi: {
     title: "מצב ריבוי משתמשים",
     description:
@@ -701,12 +650,9 @@ const TRANSLATIONS = {
       "password-label": "סיסמת מופע",
     },
   },
-
-  // Event Logs
   event: {
     title: "יומני אירועים",
-    description:
-      "צפה בכל הפעולות והאירועים המתרחשים במופע זה לצורך ניטור.",
+    description: "צפה בכל הפעולות והאירועים המתרחשים במופע זה לצורך ניטור.",
     clear: "נקה יומני אירועים",
     table: {
       type: "סוג אירוע",
@@ -714,8 +660,6 @@ const TRANSLATIONS = {
       occurred: "התרחש ב",
     },
   },
-
-  // Privacy & Data-Handling
   privacy: {
     title: "פרטיות וטיפול בנתונים",
     description:
@@ -725,7 +669,6 @@ const TRANSLATIONS = {
     vector: "מסד נתונים וקטורי",
     anonymous: "טלמטריה אנונימית מופעלת",
   },
-
   connectors: {
     "search-placeholder": "חפש מחברי נתונים",
     "no-connectors": "לא נמצאו מחברי נתונים.",
@@ -738,15 +681,13 @@ const TRANSLATIONS = {
       selected_files: "נמצאו {{count}} קבצי markdown",
       importing: "מייבא כספת...",
       import_vault: "ייבא כספת",
-      processing_time:
-        "זה עשוי לקחת זמן מה, תלוי בגודל הכספת שלך.",
+      processing_time: "זה עשוי לקחת זמן מה, תלוי בגודל הכספת שלך.",
       vault_warning:
         "כדי למנוע התנגשויות, ודא שכספת ה-Obsidian שלך אינה פתוחה כעת.",
     },
     github: {
       name: "מאגר GitHub",
-      description:
-        "ייבא מאגר GitHub ציבורי או פרטי שלם בלחיצה אחת.",
+      description: "ייבא מאגר GitHub ציבורי או פרטי שלם בלחיצה אחת.",
       URL: "כתובת URL של מאגר GitHub",
       URL_explained: "כתובת ה-URL של מאגר ה-GitHub שברצונך לאסוף.",
       token: "אסימון גישה של GitHub",
@@ -768,20 +709,17 @@ const TRANSLATIONS = {
       branch_explained: "ענף שממנו ברצונך לאסוף קבצים.",
       token_information:
         "ללא מילוי <b>אסימון הגישה של GitHub</b>, מחבר נתונים זה יוכל לאסוף רק את הקבצים ב<b>רמה העליונה</b> של המאגר עקב הגבלות הקצב של ה-API הציבורי של GitHub.",
-      token_personal:
-        "קבל אסימון גישה אישי בחינם עם חשבון GitHub כאן.",
+      token_personal: "קבל אסימון גישה אישי בחינם עם חשבון GitHub כאן.",
     },
     gitlab: {
       name: "מאגר GitLab",
-      description:
-        "ייבא מאגר GitLab ציבורי או פרטי שלם בלחיצה אחת.",
+      description: "ייבא מאגר GitLab ציבורי או פרטי שלם בלחיצה אחת.",
       URL: "כתובת URL של מאגר GitLab",
       URL_explained: "כתובת ה-URL של מאגר ה-GitLab שברצונך לאסוף.",
       token: "אסימון גישה של GitLab",
       optional: "אופציונלי",
       token_explained: "אסימון גישה למניעת הגבלת קצב.",
-      token_description:
-        "בחר ישויות נוספות לאחזור מה-API של GitLab.",
+      token_description: "בחר ישויות נוספות לאחזור מה-API של GitLab.",
       token_explained_start: "ללא ",
       token_explained_link1: "אסימון גישה אישי",
       token_explained_middle:
@@ -799,13 +737,11 @@ const TRANSLATIONS = {
       branch_explained: "ענף שממנו ברצונך לאסוף קבצים.",
       token_information:
         "ללא מילוי <b>אסימון הגישה של GitLab</b>, מחבר נתונים זה יוכל לאסוף רק את הקבצים ב<b>רמה העליונה</b> של המאגר עקב הגבלות הקצב של ה-API הציבורי של GitLab.",
-      token_personal:
-        "קבל אסימון גישה אישי בחינם עם חשבון GitLab כאן.",
+      token_personal: "קבל אסימון גישה אישי בחינם עם חשבון GitLab כאן.",
     },
     youtube: {
       name: "תמלול YouTube",
-      description:
-        "ייבא את התמלול של סרטון YouTube שלם מקישור.",
+      description: "ייבא את התמלול של סרטון YouTube שלם מקישור.",
       URL: "כתובת URL של סרטון YouTube",
       URL_explained_start:
         "הזן את כתובת ה-URL של כל סרטון YouTube כדי לאחזר את התמלול שלו. לסרטון חייבות להיות ",
@@ -814,8 +750,7 @@ const TRANSLATIONS = {
       task_explained:
         "לאחר השלמה, התמלול יהיה זמין להטמעה בסביבות עבודה בבורר המסמכים.",
       language: "שפת התמלול",
-      language_explained:
-        "בחר את שפת התמלול שברצונך לאסוף.",
+      language_explained: "בחר את שפת התמלול שברצונך לאסוף.",
       loading_languages: "-- טוען שפות זמינות --",
     },
     "website-depth": {
@@ -893,8 +828,7 @@ const TRANSLATIONS = {
       "processor-offline-desc":
         "אין באפשרותנו להעלות את הקבצים שלך כרגע מכיוון שמעבד המסמכים אינו מקוון. אנא נסה שוב מאוחר יותר.",
       "click-upload": "לחץ להעלאה או גרור ושחרר",
-      "file-types":
-        "תומך בקבצי טקסט, csv, גיליונות אלקטרוניים, קבצי שמע ועוד!",
+      "file-types": "תומך בקבצי טקסט, csv, גיליונות אלקטרוניים, קבצי שמע ועוד!",
       "or-submit-link": "או שלח קישור",
       "placeholder-link": "https://example.com",
       fetching: "מאחזר...",
@@ -925,7 +859,6 @@ const TRANSLATIONS = {
       accept: "אוקיי, הבנתי",
     },
   },
-
   chat_window: {
     welcome: "ברוכים הבאים לסביבת העבודה החדשה שלך.",
     get_started: "כדי להתחיל, או",
@@ -964,8 +897,7 @@ const TRANSLATIONS = {
     add_new_preset: " הוסף הגדרה קבועה חדשה",
     command: "פקודה",
     your_command: "הפקודה-שלך",
-    placeholder_prompt:
-      "זהו התוכן שיוזרק לפני ההנחיה שלך.",
+    placeholder_prompt: "זהו התוכן שיוזרק לפני ההנחיה שלך.",
     description: "תיאור",
     placeholder_description: "מגיב עם שיר על מודלי שפה.",
     save: "שמור",
@@ -983,7 +915,6 @@ const TRANSLATIONS = {
       missing_credentials_description: "לחץ להגדרת אישורים",
     },
   },
-
   profile_settings: {
     edit_account: "ערוך חשבון",
     profile_picture: "תמונת פרופיל",
@@ -1006,7 +937,6 @@ const TRANSLATIONS = {
     support: "תמיכה",
     signout: "התנתק",
   },
-
   "keyboard-shortcuts": {
     title: "קיצורי מקלדת",
     shortcuts: {
@@ -1025,8 +955,7 @@ const TRANSLATIONS = {
     publish: {
       system_prompt: {
         success_title: "הצלחה!",
-        success_description:
-          "הנחיית המערכת שלך פורסמה במרכז הקהילה!",
+        success_description: "הנחיית המערכת שלך פורסמה במרכז הקהילה!",
         success_thank_you: "תודה על השיתוף בקהילה!",
         view_on_hub: "צפה במרכז הקהילה",
         modal_title: "פרסם הנחיית מערכת",
@@ -1047,16 +976,14 @@ const TRANSLATIONS = {
         submitting: "מפרסם...",
         submit: "פרסם במרכז הקהילה",
         prompt_label: "הנחיה",
-        prompt_description:
-          "זוהי הנחיית המערכת בפועל שתשמש להנחיית מודל השפה.",
+        prompt_description: "זוהי הנחיית המערכת בפועל שתשמש להנחיית מודל השפה.",
         prompt_placeholder: "הזן את הנחיית המערכת שלך כאן...",
       },
       agent_flow: {
         public_description: "זרימות סוכן ציבוריות נראות לכולם.",
         private_description: "זרימות סוכן פרטיות נראות רק לך.",
         success_title: "הצלחה!",
-        success_description:
-          "זרימת הסוכן שלך פורסמה במרכז הקהילה!",
+        success_description: "זרימת הסוכן שלך פורסמה במרכז הקהילה!",
         success_thank_you: "תודה על השיתוף בקהילה!",
         view_on_hub: "צפה במרכז הקהילה",
         modal_title: "פרסם זרימת סוכן",
@@ -1079,8 +1006,7 @@ const TRANSLATIONS = {
       },
       slash_command: {
         success_title: "הצלחה!",
-        success_description:
-          "פקודת הסלאש שלך פורסמה במרכז הקהילה!",
+        success_description: "פקודת הסלאש שלך פורסמה במרכז הקהילה!",
         success_thank_you: "תודה על השיתוף בקהילה!",
         view_on_hub: "צפה במרכז הקהילה",
         modal_title: "פרסם פקודת סלאש",
@@ -1104,8 +1030,7 @@ const TRANSLATIONS = {
         publish_button: "פרסם במרכז הקהילה",
         submitting: "מפרסם...",
         prompt_label: "הנחיה",
-        prompt_description:
-          "זוהי ההנחיה שתשמש כאשר פקודת הסלאש תופעל.",
+        prompt_description: "זוהי ההנחיה שתשמש כאשר פקודת הסלאש תופעל.",
         prompt_placeholder: "הזן את ההנחיה שלך כאן...",
       },
       generic: {
