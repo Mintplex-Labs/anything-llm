@@ -33,19 +33,17 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🔍 Check if DockerHub secrets are set
+      - name: 🔍 Check if DockerHub credentials are set
         id: dockerhub
         shell: bash
         run: |
-          if [[ -z "${{ secrets.DOCKER_USERNAME }}" || -z "${{ secrets.DOCKER_PASSWORD }}" ]]; then
-            echo "DockerHub secrets not set. Skipping DockerHub push."
-            echo "enabled=false" >> $GITHUB_OUTPUT
-          else
-            echo "DockerHub secrets present. Enabling DockerHub push."
+          if [[ -n "${{ secrets.DOCKER_USERNAME }}" && -n "${{ secrets.DOCKER_PASSWORD }}" ]]; then
             echo "enabled=true" >> $GITHUB_OUTPUT
+          else
+            echo "enabled=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: 🧰 Set up QEMU (for arm64)
+      - name: 🧰 Set up QEMU for arm64 emulation
         uses: docker/setup-qemu-action@v3
 
       - name: 🧱 Set up Docker Buildx
@@ -90,14 +88,16 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
 
-      - name: 🔍 DEBUG: Show tags that will be pushed
+      - name: 🧪 DEBUG: Show tags to be pushed
         run: |
           echo "GHCR Tags:"
           echo "${{ steps.meta_ghcr.outputs.tags }}"
-          echo "DockerHub Tags:"
-          echo "${{ steps.meta_dockerhub.outputs.tags }}"
+          if [ "${{ steps.dockerhub.outputs.enabled }}" == "true" ]; then
+            echo "DockerHub Tags:"
+            echo "${{ steps.meta_dockerhub.outputs.tags }}"
+          fi
 
-      - name: 🚀 Build and Push Docker image
+      - name: 🚀 Build and Push to GHCR
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -106,21 +106,31 @@ jobs:
           sbom: true
           provenance: mode=max
           platforms: linux/amd64,linux/arm64
-          tags: |
-            ${{ steps.meta_ghcr.outputs.tags }}
-            ${{ steps.meta_dockerhub.outputs.tags }}
-          labels: |
-            ${{ steps.meta_ghcr.outputs.labels }}
-            ${{ steps.meta_dockerhub.outputs.labels }}
+          tags: ${{ steps.meta_ghcr.outputs.tags }}
+          labels: ${{ steps.meta_ghcr.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # ---- OPTIONAL NON-BLOCKING SCOUT STUFF BELOW ----
+      - name: 🚀 Build and Push to DockerHub
+        if: steps.dockerhub.outputs.enabled == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          push: true
+          sbom: true
+          provenance: mode=max
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta_dockerhub.outputs.tags }}
+          labels: ${{ steps.meta_dockerhub.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: 🛡️ Collect CVE exceptions from VEX files
+      # ------------------------ Optional Docker Scout Section (non-blocking) ------------------------
+
+      - name: 🛡️ Collect CVE Exceptions (VEX files)
         id: cve-list
         continue-on-error: true
-        shell: bash
         run: |
           CVE_NAMES=""
           for file in ./docker/vex/*.vex.json; do
@@ -131,7 +141,7 @@ jobs:
           done
           echo "CVE_EXCEPTIONS=$CVE_NAMES" >> $GITHUB_OUTPUT
 
-      - name: 🛡️ Log in to Docker (for Scout)
+      - name: 🛡️ Log in to Docker (for Scout attestation)
         continue-on-error: true
         run: |
           echo "${{ secrets.DOCKER_PAT }}" | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
@@ -140,16 +150,15 @@ jobs:
         continue-on-error: true
         env:
           CVE_EXCEPTIONS: ${{ steps.cve-list.outputs.CVE_EXCEPTIONS }}
-        shell: bash
         run: |
-          echo $CVE_EXCEPTIONS
+          echo "Attaching VEX for: $CVE_EXCEPTIONS"
           curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
           for cve in $CVE_EXCEPTIONS; do
             for tag in "${{ join(fromJSON(steps.meta_ghcr.outputs.json).tags, ' ') }}"; do
-              echo "Attaching VEX exception $cve to $tag"
+              echo "Attaching $cve to $tag"
               docker scout attestation add \
                 --file "./docker/vex/$cve.vex.json" \
                 --predicate-type https://openvex.dev/ns/v0.2.0 \
-                $tag || echo "Warning: Failed to attach $cve to $tag"
+                $tag || echo "⚠️ Failed to attach $cve to $tag"
             done
           done
