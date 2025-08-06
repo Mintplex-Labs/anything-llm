@@ -10,7 +10,7 @@ import ParsedFilesMenu from "./ParsedFilesMenu";
  * This is a simple proxy component that clicks on the DnD file uploader for the user.
  * @returns
  */
-export default function AttachItem({ workspace }) {
+export default function AttachItem() {
   const { t } = useTranslation();
   const { user } = useUser();
   const tooltipRef = useRef(null);
@@ -53,10 +53,7 @@ export default function AttachItem({ workspace }) {
         }
         className="z-99 !w-[400px] !bg-theme-bg-primary !px-[5px] !rounded-lg !pointer-events-auto light:border-2 light:border-theme-modal-border"
       >
-        <ParsedFilesMenu
-          workspace={workspace}
-          onEmbeddingChange={setIsEmbedding}
-        />
+        <ParsedFilesMenu onEmbeddingChange={setIsEmbedding} />
       </Tooltip>
     </>
   );

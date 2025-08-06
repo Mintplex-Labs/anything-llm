@@ -66,12 +66,15 @@ function workspaceEndpoints(app) {
           ? await WorkspaceThread.get({ slug: threadSlug })
           : null;
 
-        const files = await WorkspaceParsedFiles.getContextMetadata(
-          workspace.id,
-          thread?.id || null
-        );
+        const { files, contextWindow, currentContextTokenCount } =
+          await WorkspaceParsedFiles.getContextMetadataAndLimits(
+            workspace.id,
+            thread?.id || null
+          );
 
-        response.status(200).json({ files });
+        response
+          .status(200)
+          .json({ files, contextWindow, currentContextTokenCount });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -1003,11 +1006,13 @@ function workspaceEndpoints(app) {
 
         // Get threadId we are branching from if that request body is sent
         // and is a valid thread slug.
-        const threadId = threadSlug
-          ? await WorkspaceThread.get({
-              slug: String(threadSlug),
-              workspace_id: workspace.id,
-            }).then((thread) => thread?.id || null)
+        const threadId = !!threadSlug
+          ? (
+              await WorkspaceThread.get({
+                slug: String(threadSlug),
+                workspace_id: workspace.id,
+              })
+            )?.id ?? null
           : null;
         const chatsToFork = await WorkspaceChats.where(
           {
@@ -1042,7 +1047,7 @@ function workspaceEndpoints(app) {
         });
         await WorkspaceChats.bulkCreate(chatsData);
         await WorkspaceThread.update(newThread, {
-          name: lastMessageText
+          name: !!lastMessageText
             ? truncate(lastMessageText, 22)
             : "Forked Thread",
         });

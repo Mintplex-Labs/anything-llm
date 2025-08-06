@@ -35,7 +35,6 @@ export default function PromptInput({
   isStreaming,
   sendCommand,
   attachments = [],
-  workspace,
 }) {
   const { t } = useTranslation();
   const { isDisabled } = useIsDisabled();
@@ -319,7 +318,7 @@ export default function PromptInput({
             </div>
             <div className="flex justify-between py-3.5 mx-3 mb-1">
               <div className="flex gap-x-2">
-                <AttachItem workspace={workspace} />
+                <AttachItem />
                 <SlashCommandsButton
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}

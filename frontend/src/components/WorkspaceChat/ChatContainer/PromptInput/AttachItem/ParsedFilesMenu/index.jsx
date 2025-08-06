@@ -10,19 +10,19 @@ export default function ParsedFilesMenu({ workspace, onEmbeddingChange }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isEmbedding, setIsEmbedding] = useState(false);
   const [embedProgress, setEmbedProgress] = useState(1);
+  const [contextWindow, setContextWindow] = useState(Infinity);
+  const [currentTokens, setCurrentTokens] = useState(0);
 
-  const contextWindow = workspace?.contextWindow || Infinity;
-  const currentTokens = workspace?.currentContextTokenCount || 0;
   const isOverflowing = currentTokens >= contextWindow * 0.8;
 
   useEffect(() => {
     async function fetchFiles() {
       if (!workspace?.slug) return;
-      const parsedFiles = await Workspace.getParsedFiles(
-        workspace.slug,
-        threadSlug
-      );
-      setFiles(parsedFiles);
+      const { files, contextWindow, currentContextTokenCount } =
+        await Workspace.getParsedFiles(workspace.slug, threadSlug);
+      setFiles(files);
+      setContextWindow(contextWindow);
+      setCurrentTokens(currentContextTokenCount);
       setIsLoading(false);
     }
     fetchFiles();
