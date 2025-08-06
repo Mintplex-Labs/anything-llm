@@ -284,11 +284,30 @@ const Workspace = {
         ...workspace,
         documents: await Document.forWorkspace(workspace.id),
         contextWindow: this._getContextWindow(workspace),
+        currentContextTokenCount: await this._getCurrentContextTokenCount(
+          workspace.id
+        ),
       };
     } catch (error) {
       console.error(error.message);
       return null;
     }
+  },
+
+  /**
+   * Get the total token count of all parsed files in a workspace/thread
+   * @param {number} workspaceId - The ID of the workspace
+   * @param {number|null} threadId - Optional thread ID to filter by
+   * @returns {Promise<number>} Total token count of all files
+   * @private
+   */
+  async _getCurrentContextTokenCount(workspaceId, threadId = null) {
+    const { WorkspaceParsedFiles } = require("./workspaceParsedFiles");
+    const files = await WorkspaceParsedFiles.where({
+      workspaceId: Number(workspaceId),
+      threadId: threadId ? Number(threadId) : null,
+    });
+    return files.reduce((sum, file) => sum + (file.tokenCountEstimate || 0), 0);
   },
 
   /**
@@ -303,12 +322,13 @@ const Workspace = {
       getLLMProviderClass,
       getBaseLLMProviderModel,
     } = require("../utils/helpers");
-    const provider =
-      workspace.chatProvider || process.env.LLM_PROVIDER || "openai";
+    const provider = workspace.chatProvider || process.env.LLM_PROVIDER || null;
     const LLMProvider = getLLMProviderClass({ provider });
     const model =
-      workspace.chatModel || getBaseLLMProviderModel({ provider }) || "gpt-4";
-    return LLMProvider?.promptWindowLimit?.(model) || 8000;
+      workspace.chatModel || getBaseLLMProviderModel({ provider }) || null;
+
+    if (!provider || !model) return Number.POSITIVE_INFINITY;
+    return LLMProvider?.promptWindowLimit?.(model) || Number.POSITIVE_INFINITY;
   },
 
   get: async function (clause = {}) {
@@ -325,6 +345,9 @@ const Workspace = {
       return {
         ...workspace,
         contextWindow: this._getContextWindow(workspace),
+        currentContextTokenCount: await this._getCurrentContextTokenCount(
+          workspace.id
+        ),
       };
     } catch (error) {
       console.error(error.message);

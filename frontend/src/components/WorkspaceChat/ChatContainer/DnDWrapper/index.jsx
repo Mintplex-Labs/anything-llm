@@ -39,7 +39,9 @@ export function DnDFileUploaderProvider({
   const [tokenCount, setTokenCount] = useState(0);
   const { user } = useUser();
 
-  const contextWindow = workspace?.contextWindow || 8000;
+  // const contextWindow = workspace?.contextWindow || Number.POSITIVE_INFINITY;
+  const contextWindow = 8000;
+  console.log("workspace", workspace);
   const maxTokens = Math.floor(contextWindow * 0.8);
 
   useEffect(() => {

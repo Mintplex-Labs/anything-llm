@@ -138,6 +138,31 @@ const WorkspaceParsedFiles = {
     }
   },
 
+  getContextMetadata: async function (workspaceId, threadId = null) {
+    try {
+      const files = await this.where({
+        workspaceId: parseInt(workspaceId),
+        threadId: threadId ? parseInt(threadId) : null,
+      });
+
+      const results = [];
+      for (const file of files) {
+        const metadata = safeJsonParse(file.metadata, {});
+        results.push({
+          id: file.id,
+          title: metadata.title || metadata.location,
+          location: metadata.location,
+          token_count_estimate: file.tokenCountEstimate,
+        });
+      }
+
+      return results;
+    } catch (error) {
+      console.error("Failed to get context metadata:", error);
+      return [];
+    }
+  },
+
   getContextFiles: async function (workspaceId, threadId = null) {
     try {
       const files = await this.where({

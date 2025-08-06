@@ -2,22 +2,28 @@ import useUser from "@/hooks/useUser";
 import { PaperclipHorizontal } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
+import { useRef, useState } from "react";
+import { useTheme } from "@/hooks/useTheme";
+import ParsedFilesMenu from "./ParsedFilesMenu";
 
 /**
  * This is a simple proxy component that clicks on the DnD file uploader for the user.
  * @returns
  */
-export default function AttachItem() {
+export default function AttachItem({ workspace }) {
   const { t } = useTranslation();
   const { user } = useUser();
+  const tooltipRef = useRef(null);
+  const { theme } = useTheme();
+  const [isEmbedding, setIsEmbedding] = useState(false);
+
   if (!!user && user.role === "default") return null;
 
   return (
     <>
       <button
         id="attach-item-btn"
-        data-tooltip-id="attach-item-btn"
-        data-tooltip-content={t("chat_window.attach_file")}
+        data-tooltip-id="tooltip-attach-item-btn"
         aria-label={t("chat_window.attach_file")}
         type="button"
         onClick={(e) => {
@@ -33,11 +39,25 @@ export default function AttachItem() {
         />
       </button>
       <Tooltip
-        id="attach-item-btn"
+        ref={tooltipRef}
+        id="tooltip-attach-item-btn"
         place="top"
+        opacity={1}
+        clickable={!isEmbedding}
         delayShow={300}
-        className="tooltip !text-xs z-[99]"
-      />
+        delayHide={isEmbedding ? null : 800}
+        arrowColor={
+          theme === "light"
+            ? "var(--theme-modal-border)"
+            : "var(--theme-bg-primary)"
+        }
+        className="z-99 !w-[400px] !bg-theme-bg-primary !px-[5px] !rounded-lg !pointer-events-auto light:border-2 light:border-theme-modal-border"
+      >
+        <ParsedFilesMenu
+          workspace={workspace}
+          onEmbeddingChange={setIsEmbedding}
+        />
+      </Tooltip>
     </>
   );
 }

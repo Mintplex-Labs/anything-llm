@@ -260,6 +260,17 @@ const Workspace = {
     const data = await response.json();
     return { response, data };
   },
+
+  getParsedFiles: async function (slug, threadSlug = null) {
+    const response = await fetch(`${API_BASE}/workspace/${slug}/parsed-files`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ threadSlug }),
+    });
+
+    const data = await response.json();
+    return data.files || [];
+  },
   uploadLink: async function (slug, link) {
     const response = await fetch(`${API_BASE}/workspace/${slug}/upload-link`, {
       method: "POST",

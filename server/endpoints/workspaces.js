@@ -45,6 +45,41 @@ function workspaceEndpoints(app) {
   const responseCache = new Map();
 
   app.post(
+    "/workspace/:slug/parsed-files",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { slug = null } = request.params;
+        const { threadSlug = null } = reqBody(request);
+        const user = await userFromSession(request, response);
+
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const thread = threadSlug
+          ? await WorkspaceThread.get({ slug: threadSlug })
+          : null;
+
+        const files = await WorkspaceParsedFiles.getContextMetadata(
+          workspace.id,
+          thread?.id || null
+        );
+
+        response.status(200).json({ files });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
     "/workspace/new",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
@@ -968,13 +1003,11 @@ function workspaceEndpoints(app) {
 
         // Get threadId we are branching from if that request body is sent
         // and is a valid thread slug.
-        const threadId = !!threadSlug
-          ? (
-              await WorkspaceThread.get({
-                slug: String(threadSlug),
-                workspace_id: workspace.id,
-              })
-            )?.id ?? null
+        const threadId = threadSlug
+          ? await WorkspaceThread.get({
+              slug: String(threadSlug),
+              workspace_id: workspace.id,
+            }).then((thread) => thread?.id || null)
           : null;
         const chatsToFork = await WorkspaceChats.where(
           {
@@ -1009,7 +1042,7 @@ function workspaceEndpoints(app) {
         });
         await WorkspaceChats.bulkCreate(chatsData);
         await WorkspaceThread.update(newThread, {
-          name: !!lastMessageText
+          name: lastMessageText
             ? truncate(lastMessageText, 22)
             : "Forked Thread",
         });

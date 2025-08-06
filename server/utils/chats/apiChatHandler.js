@@ -209,22 +209,6 @@ async function chatSync({
       });
     });
 
-  // Inject any parsed files for this workspace/thread/user
-  const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
-    workspace.id,
-    thread?.id || null,
-    user?.id || null
-  );
-  parsedFiles.forEach((doc) => {
-    const { pageContent, ...metadata } = doc;
-    contextTexts.push(doc.pageContent);
-    sources.push({
-      text:
-        pageContent.slice(0, 1_000) + "...continued on in source document...",
-      ...metadata,
-    });
-  });
-
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
@@ -560,22 +544,6 @@ async function streamChat({
         });
       });
     });
-
-  // Inject any parsed files for this workspace/thread/user
-  const parsedFiles = await WorkspaceParsedFiles.getContextFiles(
-    workspace.id,
-    thread?.id || null,
-    user?.id || null
-  );
-  parsedFiles.forEach((doc) => {
-    const { pageContent, ...metadata } = doc;
-    contextTexts.push(doc.pageContent);
-    sources.push({
-      text:
-        pageContent.slice(0, 1_000) + "...continued on in source document...",
-      ...metadata,
-    });
-  });
 
   const vectorSearchResults =
     embeddingsCount !== 0
