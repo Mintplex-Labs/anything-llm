@@ -1,4 +1,3 @@
-import useUser from "@/hooks/useUser";
 import { PaperclipHorizontal } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
@@ -9,8 +8,6 @@ import { useTranslation } from "react-i18next";
  */
 export default function AttachItem() {
   const { t } = useTranslation();
-  const { user } = useUser();
-  if (!!user && user.role === "default") return null;
 
   return (
     <>
