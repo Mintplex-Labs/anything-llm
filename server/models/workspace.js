@@ -443,15 +443,33 @@ const Workspace = {
     try {
       const { User } = require("./user");
       const { ROLES } = require("../utils/middleware/multiUserProtected");
-      const adminManagerCount = await User.count({
-        id: { in: userIds.map(Number) },
-        role: { in: [ROLES.admin, ROLES.manager] },
-      });
-      if (adminManagerCount === 0) {
-        return {
-          success: false,
-          error: "Workspace must include at least one admin or manager user.",
-        };
+      const workspace = await this.get({ id: Number(workspaceId) });
+      if (!workspace) {
+        return { success: false, error: "Workspace not found" };
+      }
+
+      if (workspace.private) {
+        const users = await User.where({
+          id: { in: userIds.map(Number) },
+        });
+        const nonAdminUsers = users.filter((u) => u.role !== ROLES.admin);
+        if (nonAdminUsers.length !== 1) {
+          return {
+            success: false,
+            error: "Private workspaces must have exactly one non-admin user.",
+          };
+        }
+      } else {
+        const adminManagerCount = await User.count({
+          id: { in: userIds.map(Number) },
+          role: { in: [ROLES.admin, ROLES.manager] },
+        });
+        if (adminManagerCount === 0) {
+          return {
+            success: false,
+            error: "Workspace must include at least one admin or manager user.",
+          };
+        }
       }
 
       await WorkspaceUser.delete({ workspace_id: Number(workspaceId) });

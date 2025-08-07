@@ -110,6 +110,13 @@ const User = {
             this.validations.dailyMessageLimit(dailyMessageLimit),
         },
       });
+      // Automatically create a private workspace for the new user.
+      try {
+        const { Workspace } = require("./workspace");
+        await Workspace.new(`${user.username}'s Workspace`, user.id);
+      } catch (e) {
+        console.error("FAILED TO CREATE USER WORKSPACE.", e.message);
+      }
       return { user: this.filterFields(user), error: null };
     } catch (error) {
       console.error("FAILED TO CREATE USER.", error.message);
