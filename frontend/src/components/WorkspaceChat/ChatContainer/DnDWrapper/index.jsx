@@ -114,8 +114,6 @@ export function DnDFileUploaderProvider({ workspace, children }) {
           type: "attachment",
         });
       } else {
-        // If the user is a default user, we do not want to allow them to upload files.
-        if (!!user && user.role === "default") continue;
         newAccepted.push({
           uid: v4(),
           file,
@@ -151,8 +149,6 @@ export function DnDFileUploaderProvider({ workspace, children }) {
           type: "attachment",
         });
       } else {
-        // If the user is a default user, we do not want to allow them to upload files.
-        if (!!user && user.role === "default") continue;
         newAccepted.push({
           uid: v4(),
           file,
