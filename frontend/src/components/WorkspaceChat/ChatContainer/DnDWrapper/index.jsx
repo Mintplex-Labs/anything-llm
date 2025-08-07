@@ -4,8 +4,10 @@ import System from "@/models/system";
 import { useDropzone } from "react-dropzone";
 import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
+import showToast from "@/utils/toast";
 import useUser from "@/hooks/useUser";
 import FileUploadWarningModal from "./FileUploadWarningModal";
+import pluralize from "pluralize";
 
 export const DndUploaderContext = createContext();
 export const REMOVE_ATTACHMENT_EVENT = "ATTACHMENT_REMOVE";
@@ -35,12 +37,12 @@ export function DnDFileUploaderProvider({
   const [ready, setReady] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [isEmbedding, setIsEmbedding] = useState(false);
+  const [embedProgress, setEmbedProgress] = useState(0);
   const [pendingFiles, setPendingFiles] = useState([]);
   const [tokenCount, setTokenCount] = useState(0);
+  const [maxTokens, setMaxTokens] = useState(Number.POSITIVE_INFINITY);
   const { user } = useUser();
-
-  const contextWindow = workspace?.contextWindow || Number.POSITIVE_INFINITY;
-  const maxTokens = Math.floor(contextWindow * 0.8);
 
   useEffect(() => {
     System.checkDocumentProcessorOnline().then((status) => setReady(status));
@@ -185,12 +187,13 @@ export function DnDFileUploaderProvider({
     window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSING_EVENT));
     const promises = [];
 
-    // Get current token count first
-    const { currentContextTokenCount } = await Workspace.getParsedFiles(
-      workspace.slug,
-      threadSlug
-    );
+    const { currentContextTokenCount, contextWindow: newContextWindow } =
+      await Workspace.getParsedFiles(workspace.slug, threadSlug);
+    const newMaxTokens = Math.floor(newContextWindow * 0.8);
+    setMaxTokens(newMaxTokens);
+
     let totalTokenCount = currentContextTokenCount;
+    let batchPendingFiles = [];
 
     for (const attachment of newAttachments) {
       // Images/attachments are chat specific.
@@ -221,21 +224,21 @@ export function DnDFileUploaderProvider({
               return;
             }
 
-            // Check if files exceed context window
+            // Add token count for this file
             const newTokenCount = data.files.reduce((sum, file) => {
               return sum + (file.tokenCountEstimate || 0);
             }, 0);
-            totalTokenCount += newTokenCount;
 
-            if (totalTokenCount > maxTokens) {
+            totalTokenCount += newTokenCount;
+            batchPendingFiles.push({
+              attachment,
+              parsedFileId: data.files[0].id,
+              tokenCount: newTokenCount,
+            });
+
+            if (totalTokenCount > newMaxTokens) {
               setTokenCount(totalTokenCount);
-              setPendingFiles((prev) => [
-                ...prev,
-                {
-                  attachment,
-                  parsedFileId: data.files[0].id,
-                },
-              ]);
+              setPendingFiles(batchPendingFiles);
               setShowWarningModal(true);
               return;
             }
@@ -273,10 +276,14 @@ export function DnDFileUploaderProvider({
   // Handle modal actions
   const handleCloseModal = async () => {
     if (!pendingFiles.length) return;
+
+    // Delete all files from this batch
     await Workspace.deleteParsedFiles(
       workspace.slug,
       pendingFiles.map((file) => file.parsedFileId)
     );
+
+    // Remove all files from this batch from the UI
     setFiles((prev) =>
       prev.filter(
         (prevFile) =>
@@ -318,10 +325,20 @@ export function DnDFileUploaderProvider({
 
   const handleEmbed = async () => {
     if (!pendingFiles.length) return;
+    setIsEmbedding(true);
+    setEmbedProgress(0);
+
     // Embed all pending files
+    let completed = 0;
     const results = await Promise.all(
       pendingFiles.map((file) =>
-        Workspace.embedParsedFile(workspace.slug, file.parsedFileId)
+        Workspace.embedParsedFile(workspace.slug, file.parsedFileId).then(
+          (result) => {
+            completed++;
+            setEmbedProgress(completed);
+            return result;
+          }
+        )
       )
     );
 
@@ -344,7 +361,12 @@ export function DnDFileUploaderProvider({
     setShowWarningModal(false);
     setPendingFiles([]);
     setTokenCount(0);
+    setIsEmbedding(false);
     window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT));
+    showToast(
+      `${pendingFiles.length} ${pluralize("file", pendingFiles.length)} embedded successfully`,
+      "success"
+    );
   };
 
   return (
@@ -359,6 +381,8 @@ export function DnDFileUploaderProvider({
         tokenCount={tokenCount}
         maxTokens={maxTokens}
         fileCount={pendingFiles.length}
+        isEmbedding={isEmbedding}
+        embedProgress={embedProgress}
       />
       {children}
     </DndUploaderContext.Provider>

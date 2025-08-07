@@ -1,4 +1,4 @@
-import { X } from "@phosphor-icons/react";
+import { CircleNotch } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import pluralize from "pluralize";
 
@@ -10,8 +10,29 @@ export default function FileUploadWarningModal({
   tokenCount,
   maxTokens,
   fileCount = 1,
+  isEmbedding = false,
+  embedProgress = 0,
 }) {
   if (!show) return null;
+
+  if (isEmbedding) {
+    return (
+      <ModalWrapper isOpen={show}>
+        <div className="relative max-w-[600px] bg-theme-bg-primary rounded-lg shadow border border-theme-modal-border">
+          <div className="p-6 flex flex-col items-center justify-center">
+            <p className="text-white text-lg font-semibold mb-4">
+              Embedding {embedProgress + 1} of {fileCount}{" "}
+              {pluralize("file", fileCount)}
+            </p>
+            <CircleNotch size={32} className="animate-spin text-white" />
+            <p className="text-white/60 text-sm mt-2">
+              Please wait while we embed your files...
+            </p>
+          </div>
+        </div>
+      </ModalWrapper>
+    );
+  }
 
   return (
     <ModalWrapper isOpen={show}>
@@ -21,13 +42,6 @@ export default function FileUploadWarningModal({
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
               Context Window Warning
             </h3>
-            <button
-              onClick={onClose}
-              type="button"
-              className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
-            >
-              <X size={18} weight="bold" className="text-white" />
-            </button>
           </div>
         </div>
 
@@ -57,6 +71,7 @@ export default function FileUploadWarningModal({
           </button>
           <button
             onClick={onEmbed}
+            disabled={isEmbedding}
             type="button"
             className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >

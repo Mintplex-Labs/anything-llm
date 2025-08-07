@@ -46,7 +46,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/parsed-files",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const { slug = null } = request.params;
@@ -68,8 +68,9 @@ function workspaceEndpoints(app) {
 
         const { files, contextWindow, currentContextTokenCount } =
           await WorkspaceParsedFiles.getContextMetadataAndLimits(
-            workspace.id,
-            thread?.id || null
+            workspace,
+            thread || null,
+            multiUserMode(response) ? user : null
           );
 
         response
