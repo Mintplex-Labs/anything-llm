@@ -406,8 +406,6 @@ const TRANSLATIONS = {
       "L'intégration est le processus de transformation du texte en vecteurs. Ces identifiants sont nécessaires pour transformer vos fichiers et invites en un format que AnythingLLM peut utiliser pour traiter.",
     provider: {
       title: "Fournisseur d'intégration",
-      description:
-        "Aucune configuration n'est nécessaire lors de l'utilisation du moteur d'intégration natif de AnythingLLM.",
     },
   },
   text: {
@@ -478,12 +476,7 @@ const TRANSLATIONS = {
       title: "Protection par mot de passe",
       description:
         "Protégez votre instance AnythingLLM avec un mot de passe. Si vous oubliez ce mot de passe, il n'y a pas de méthode de récupération, donc assurez-vous de le sauvegarder.",
-    },
-    instance: {
-      title: "Protéger l'instance par mot de passe",
-      description:
-        "Par défaut, vous serez le seul administrateur. En tant qu'administrateur, vous devrez créer des comptes pour tous les nouveaux utilisateurs ou administrateurs. Ne perdez pas votre mot de passe car seul un utilisateur administrateur peut réinitialiser les mots de passe.",
-      password: "Mot de passe de l'instance",
+      "password-label": "Mot de passe de l'instance",
     },
   },
   event: {

@@ -6,6 +6,7 @@ const {
   createdDate,
   trashFile,
   writeToServerDocuments,
+  documentsFolder,
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
@@ -32,14 +33,7 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
     trim: true,
   });
 
-  const outFolderPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(
-          __dirname,
-          `../../../server/storage/documents/${folderName}`
-        )
-      : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
-
+  const outFolderPath = path.resolve(documentsFolder, folderName);
   try {
     const workSheetsFromFile = xlsx.parse(fullFilePath);
     if (!fs.existsSync(outFolderPath))
@@ -70,11 +64,11 @@ async function asXlsx({ fullFilePath = "", filename = "" }) {
           token_count_estimate: tokenizeString(content),
         };
 
-        const document = writeToServerDocuments(
-          sheetData,
-          `sheet-${slugify(name)}`,
-          outFolderPath
-        );
+        const document = writeToServerDocuments({
+          data: sheetData,
+          filename: `sheet-${slugify(name)}`,
+          destinationOverride: outFolderPath,
+        });
         documents.push(document);
         console.log(
           `[SUCCESS]: Sheet "${name}" converted & ready for embedding.`

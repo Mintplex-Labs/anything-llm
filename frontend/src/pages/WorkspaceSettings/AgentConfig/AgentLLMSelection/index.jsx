@@ -31,6 +31,7 @@ const ENABLED_PROVIDERS = [
   "xai",
   "nvidia-nim",
   "gemini",
+  "moonshotai",
   "flowiseai",
   // TODO: More agent support.
   // "cohere",         // Has tool calling and will need to build explicit support
