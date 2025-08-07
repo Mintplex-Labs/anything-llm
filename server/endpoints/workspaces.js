@@ -152,23 +152,24 @@ function workspaceEndpoints(app) {
   );
 
   app.delete(
-    "/workspace/:slug/delete-parsed-file/:fileId",
+    "/workspace/:slug/delete-parsed-files",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async function (request, response) {
       try {
-        const { slug = null, fileId = null } = request.params;
+        const { slug = null } = request.params;
+        const { fileIds = [] } = reqBody(request);
         const user = await userFromSession(request, response);
         const workspace = multiUserMode(response)
           ? await Workspace.getWithUser(user, { slug })
           : await Workspace.get({ slug });
 
-        if (!workspace || !fileId) {
+        if (!workspace || !fileIds.length) {
           response.sendStatus(400).end();
           return;
         }
 
         const success = await WorkspaceParsedFiles.delete({
-          id: parseInt(fileId),
+          id: { in: fileIds.map((id) => parseInt(id)) },
         });
         response.status(success ? 200 : 500).end();
       } catch (e) {

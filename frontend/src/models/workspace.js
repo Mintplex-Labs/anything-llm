@@ -267,9 +267,8 @@ const Workspace = {
       headers: baseHeaders(),
       body: JSON.stringify({ threadSlug }),
     });
-
     const data = await response.json();
-    return data.files || [];
+    return data;
   },
   uploadLink: async function (slug, link) {
     const response = await fetch(`${API_BASE}/workspace/${slug}/upload-link`, {
@@ -475,12 +474,13 @@ const Workspace = {
     return { response, data };
   },
 
-  deleteParsedFile: async function (slug, fileId) {
+  deleteParsedFiles: async function (slug, fileIds = []) {
     const response = await fetch(
-      `${API_BASE}/workspace/${slug}/delete-parsed-file/${fileId}`,
+      `${API_BASE}/workspace/${slug}/delete-parsed-files`,
       {
         method: "DELETE",
         headers: baseHeaders(),
+        body: JSON.stringify({ fileIds }),
       }
     );
     return response.ok;

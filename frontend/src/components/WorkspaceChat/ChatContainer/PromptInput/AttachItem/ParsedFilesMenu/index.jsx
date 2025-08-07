@@ -1,37 +1,44 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { X, CircleNotch, Warning } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import { nFormatter } from "@/utils/numbers";
+import showToast from "@/utils/toast";
+import pluralize from "pluralize";
 
-export default function ParsedFilesMenu({ workspace, onEmbeddingChange }) {
-  const { threadSlug = null } = useParams();
-  const [files, setFiles] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default function ParsedFilesMenu({
+  onEmbeddingChange,
+  tooltipRef,
+  files,
+  setFiles,
+  currentTokens,
+  setCurrentTokens,
+  contextWindow,
+  isLoading,
+}) {
+  const { slug, threadSlug = null } = useParams();
+
   const [isEmbedding, setIsEmbedding] = useState(false);
   const [embedProgress, setEmbedProgress] = useState(1);
-  const [contextWindow, setContextWindow] = useState(Infinity);
-  const [currentTokens, setCurrentTokens] = useState(0);
 
   const isOverflowing = currentTokens >= contextWindow * 0.8;
 
-  useEffect(() => {
-    async function fetchFiles() {
-      if (!workspace?.slug) return;
-      const { files, contextWindow, currentContextTokenCount } =
-        await Workspace.getParsedFiles(workspace.slug, threadSlug);
-      setFiles(files);
-      setContextWindow(contextWindow);
-      setCurrentTokens(currentContextTokenCount);
-      setIsLoading(false);
-    }
-    fetchFiles();
-  }, [workspace, threadSlug]);
-
-  async function handleRemove(file) {
+  async function handleRemove(e, file) {
+    e.preventDefault();
+    e.stopPropagation();
     if (!file?.id) return;
-    await Workspace.deleteParsedFile(workspace.slug, file.id);
-    setFiles((prev) => prev.filter((f) => f.id !== file.id));
+    const success = await Workspace.deleteParsedFiles(slug, [file.id]);
+    if (success) {
+      setFiles((prev) => prev.filter((f) => f.id !== file.id));
+      showToast("File removed from context window", "success", {
+        clear: true,
+      });
+      const { currentContextTokenCount } = await Workspace.getParsedFiles(
+        slug,
+        threadSlug
+      );
+      setCurrentTokens(currentContextTokenCount);
+    }
   }
 
   async function handleEmbed() {
@@ -43,15 +50,26 @@ export default function ParsedFilesMenu({ workspace, onEmbeddingChange }) {
       let completed = 0;
       await Promise.all(
         files.map((file) =>
-          Workspace.embedParsedFile(workspace.slug, file.id).then(() => {
+          Workspace.embedParsedFile(slug, file.id).then(() => {
             completed++;
             setEmbedProgress(completed + 1);
           })
         )
       );
       setFiles([]);
+      const { currentContextTokenCount } = await Workspace.getParsedFiles(
+        slug,
+        threadSlug
+      );
+      setCurrentTokens(currentContextTokenCount);
+      showToast(
+        `${files.length} ${pluralize("file", files.length)} embedded successfully`,
+        "success"
+      );
+      tooltipRef?.current?.close();
     } catch (error) {
       console.error("Failed to embed files:", error);
+      showToast("Failed to embed files", "error");
     }
     setIsEmbedding(false);
     onEmbeddingChange?.(false);
@@ -62,7 +80,7 @@ export default function ParsedFilesMenu({ workspace, onEmbeddingChange }) {
     <div className="flex flex-col gap-2 p-2">
       <div className="flex items-center justify-between">
         <div className="text-sm font-medium text-theme-text-primary">
-          Current Context
+          Current Context ({files.length} files)
         </div>
         <div className="text-xs text-theme-text-secondary">
           {nFormatter(currentTokens)} / {nFormatter(contextWindow)} tokens
@@ -98,25 +116,26 @@ export default function ParsedFilesMenu({ workspace, onEmbeddingChange }) {
         </div>
       )}
       <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto">
-        {files.map((file, i) => (
-          <div
-            key={i}
-            className={
-              "flex items-center justify-between gap-2 p-2 text-xs bg-theme-bg-secondary rounded"
-            }
-          >
-            <div className="truncate flex-1 text-theme-text-primary">
-              {file.title}
-            </div>
-            <button
-              onClick={() => handleRemove(file)}
-              className="text-theme-text-secondary hover:text-theme-text-primary"
-              disabled={isEmbedding}
+        {files.length > 0 &&
+          files.map((file, i) => (
+            <div
+              key={i}
+              className={
+                "flex items-center justify-between gap-2 p-2 text-xs bg-theme-bg-secondary rounded"
+              }
             >
-              <X size={16} />
-            </button>
-          </div>
-        ))}
+              <div className="truncate flex-1 text-theme-text-primary">
+                {file.title}
+              </div>
+              <button
+                onClick={(e) => handleRemove(e, file)}
+                className="text-theme-text-secondary hover:text-theme-text-primary"
+                disabled={isEmbedding}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ))}
         {isLoading && (
           <div className="flex items-center justify-center gap-2 text-xs text-theme-text-secondary text-center py-2">
             <CircleNotch size={16} className="animate-spin" />

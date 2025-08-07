@@ -1,5 +1,6 @@
 import { X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
+import pluralize from "pluralize";
 
 export default function FileUploadWarningModal({
   show,
@@ -18,8 +19,7 @@ export default function FileUploadWarningModal({
         <div className="relative p-6 border-b border-theme-modal-border">
           <div className="w-full flex gap-x-2 items-center">
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              {fileCount === 1 ? "File" : "Files"} exceed
-              {fileCount === 1 ? "s" : ""} context window
+              Context Window Warning
             </h3>
             <button
               onClick={onClose}
@@ -33,8 +33,10 @@ export default function FileUploadWarningModal({
 
         <div className="py-7 px-9 space-y-4">
           <p className="text-white text-sm">
-            This document exceeds 80% of your context window ({tokenCount} &gt;{" "}
-            {maxTokens} tokens). Choose how you would like to proceed:
+            Your workspace is using {tokenCount} of {maxTokens} available
+            tokens. We recommend keeping usage below 80% to ensure the best chat
+            experience. Adding {fileCount} more {pluralize("file", fileCount)}{" "}
+            would exceed this limit. Choose how you would like to proceed:
           </p>
         </div>
 
@@ -58,7 +60,7 @@ export default function FileUploadWarningModal({
             type="button"
             className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
-            Embed {fileCount === 1 ? "File" : "Files"}
+            Embed {pluralize("File", fileCount)}
           </button>
         </div>
       </div>

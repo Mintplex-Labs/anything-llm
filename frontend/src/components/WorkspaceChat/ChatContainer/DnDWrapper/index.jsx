@@ -20,7 +20,7 @@ export const ATTACHMENTS_PROCESSED_EVENT = "ATTACHMENTS_PROCESSED";
  * @property {string} uid - unique file id.
  * @property {File} file - native File object
  * @property {string|null} contentString - base64 encoded string of file
- * @property {('in_progress'|'failed'|'success')} status - the automatic upload status.
+ * @property {('in_progress'|'failed'|'embedded'|'added_context')} status - the automatic upload status.
  * @property {string|null} error - Error message
  * @property {{id:string, location:string}|null} document - uploaded document details
  * @property {('attachment'|'upload')} type - The type of upload. Attachments are chat-specific, uploads go to the workspace.
@@ -39,9 +39,7 @@ export function DnDFileUploaderProvider({
   const [tokenCount, setTokenCount] = useState(0);
   const { user } = useUser();
 
-  // const contextWindow = workspace?.contextWindow || Number.POSITIVE_INFINITY;
-  const contextWindow = 8000;
-  console.log("workspace", workspace);
+  const contextWindow = workspace?.contextWindow || Number.POSITIVE_INFINITY;
   const maxTokens = Math.floor(contextWindow * 0.8);
 
   useEffect(() => {
@@ -187,6 +185,13 @@ export function DnDFileUploaderProvider({
     window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSING_EVENT));
     const promises = [];
 
+    // Get current token count first
+    const { currentContextTokenCount } = await Workspace.getParsedFiles(
+      workspace.slug,
+      threadSlug
+    );
+    let totalTokenCount = currentContextTokenCount;
+
     for (const attachment of newAttachments) {
       // Images/attachments are chat specific.
       if (attachment.type === "attachment") continue;
@@ -220,9 +225,10 @@ export function DnDFileUploaderProvider({
             const newTokenCount = data.files.reduce((sum, file) => {
               return sum + (file.tokenCountEstimate || 0);
             }, 0);
+            totalTokenCount += newTokenCount;
 
-            if (newTokenCount > maxTokens) {
-              setTokenCount((prev) => prev + newTokenCount);
+            if (totalTokenCount > maxTokens) {
+              setTokenCount(totalTokenCount);
               setPendingFiles((prev) => [
                 ...prev,
                 {
@@ -237,7 +243,7 @@ export function DnDFileUploaderProvider({
             // File is within limits, keep in parsed files
             const result = { success: true, document: data.files[0] };
             const updates = {
-              status: result.success ? "success" : "failed",
+              status: result.success ? "added_context" : "failed",
               error: result.error ?? null,
               document: result.document,
             };
@@ -267,11 +273,9 @@ export function DnDFileUploaderProvider({
   // Handle modal actions
   const handleCloseModal = async () => {
     if (!pendingFiles.length) return;
-    // Delete all parsed files and remove them from UI
-    await Promise.all(
-      pendingFiles.map((file) =>
-        Workspace.deleteParsedFile(workspace.slug, file.parsedFileId)
-      )
+    await Workspace.deleteParsedFiles(
+      workspace.slug,
+      pendingFiles.map((file) => file.parsedFileId)
     );
     setFiles((prev) =>
       prev.filter(
@@ -282,6 +286,7 @@ export function DnDFileUploaderProvider({
     setShowWarningModal(false);
     setPendingFiles([]);
     setTokenCount(0);
+    window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT));
   };
 
   const handleContinueAnyway = async () => {
@@ -324,7 +329,7 @@ export function DnDFileUploaderProvider({
     const fileUpdates = pendingFiles.map((file, i) => ({
       uid: file.attachment.uid,
       updates: {
-        status: results[i].response.ok ? "success" : "failed",
+        status: results[i].response.ok ? "embedded" : "failed",
         error: results[i].data?.error ?? null,
         document: results[i].data?.document,
       },
@@ -339,6 +344,7 @@ export function DnDFileUploaderProvider({
     setShowWarningModal(false);
     setPendingFiles([]);
     setTokenCount(0);
+    window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT));
   };
 
   return (
