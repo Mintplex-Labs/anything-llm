@@ -30,6 +30,7 @@ export default function AttachItem() {
 
   const fetchFiles = () => {
     if (!slug) return;
+    if (isEmbedding) return;
     setIsLoading(true);
     Workspace.getParsedFiles(slug, threadSlug)
       .then(({ files, contextWindow, currentContextTokenCount }) => {
@@ -110,7 +111,7 @@ export default function AttachItem() {
           opacity={1}
           clickable={!isEmbedding}
           delayShow={300}
-          delayHide={isEmbedding ? null : 800}
+          delayHide={isEmbedding ? 999999 : 800} // Prevent tooltip from hiding during embedding
           arrowColor={
             theme === "light"
               ? "var(--theme-modal-border)"
