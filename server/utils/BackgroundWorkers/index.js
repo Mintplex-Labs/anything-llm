@@ -12,7 +12,7 @@ class BackgroundService {
   #alwaysRunJobs = [
     {
       name: "cleanup-orphan-documents",
-      timeout: "10s",
+      timeout: "1m",
       interval: "12hr",
     },
   ];
