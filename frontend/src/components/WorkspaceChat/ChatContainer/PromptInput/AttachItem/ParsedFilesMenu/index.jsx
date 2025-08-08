@@ -6,6 +6,7 @@ import { nFormatter } from "@/utils/numbers";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
 import { PARSED_FILE_ATTACHMENT_REMOVED_EVENT } from "../../../DnDWrapper";
+import useUser from "@/hooks/useUser";
 
 export default function ParsedFilesMenu({
   onEmbeddingChange,
@@ -17,11 +18,16 @@ export default function ParsedFilesMenu({
   contextWindow,
   isLoading,
 }) {
+  const { user } = useUser();
+  const canEmbed = !user || user.role !== "default";
+  const initialContextWindowLimitExceeded =
+    currentTokens >= contextWindow * Workspace.maxContextWindowLimit;
   const { slug, threadSlug = null } = useParams();
   const [isEmbedding, setIsEmbedding] = useState(false);
   const [embedProgress, setEmbedProgress] = useState(1);
-  const contextWindowLimitExceeded =
-    currentTokens >= contextWindow * Workspace.maxContextWindowLimit;
+  const [contextWindowLimitExceeded, setContextWindowLimitExceeded] = useState(
+    initialContextWindowLimitExceeded
+  );
 
   async function handleRemove(e, file) {
     e.preventDefault();
@@ -44,7 +50,11 @@ export default function ParsedFilesMenu({
       slug,
       threadSlug
     );
+    const newContextWindowLimitExceeded =
+      currentContextTokenCount >=
+      contextWindow * Workspace.maxContextWindowLimit;
     setCurrentTokens(currentContextTokenCount);
+    setContextWindowLimitExceeded(newContextWindowLimitExceeded);
   }
 
   /**
@@ -73,6 +83,10 @@ export default function ParsedFilesMenu({
         threadSlug
       );
       setCurrentTokens(currentContextTokenCount);
+      setContextWindowLimitExceeded(
+        currentContextTokenCount >=
+          contextWindow * Workspace.maxContextWindowLimit
+      );
       showToast(
         `${files.length} ${pluralize("file", files.length)} embedded successfully`,
         "success"
@@ -93,11 +107,27 @@ export default function ParsedFilesMenu({
         <div className="text-sm font-medium text-theme-text-primary">
           Current Context ({files.length} files)
         </div>
-        <div className="text-xs text-theme-text-secondary">
-          {nFormatter(currentTokens)} / {nFormatter(contextWindow)} tokens
+        <div
+          // If the user cannot see the embed CTA, show a tooltip
+          {...(contextWindowLimitExceeded &&
+            !canEmbed && {
+              "data-tooltip-id": "context-window-limit-exceeded",
+              "data-tooltip-content":
+                "You have exceeded the context window limit. Some files may be truncated or excluded from chat responses. Responses may hallucinate or lack relevant information.",
+            })}
+          className={`flex items-center gap-x-1 ${contextWindowLimitExceeded && !canEmbed ? "cursor-pointer" : ""}`}
+        >
+          {contextWindowLimitExceeded && (
+            <Warning size={14} className="text-orange-600" />
+          )}
+          <div
+            className={`text-xs ${contextWindowLimitExceeded ? "text-orange-600" : "text-theme-text-secondary"}`}
+          >
+            {nFormatter(currentTokens)} / {nFormatter(contextWindow)} tokens
+          </div>
         </div>
       </div>
-      {contextWindowLimitExceeded && (
+      {contextWindowLimitExceeded && canEmbed && (
         <div className="flex flex-col gap-2 p-2 bg-theme-bg-secondary light:bg-theme-bg-primary rounded">
           <div className="flex items-start gap-2">
             <Warning
@@ -113,7 +143,7 @@ export default function ParsedFilesMenu({
           <button
             onClick={handleEmbed}
             disabled={isEmbedding}
-            className="border-none flex items-center justify-center gap-2 px-3 py-2 text-xs bg-primary-button hover:bg-theme-button-primary-hover text-white font-medium rounded transition-colors shadow-sm"
+            className="border-none disabled:opacity-50 flex items-center justify-center gap-2 px-3 py-2 text-xs bg-primary-button hover:bg-theme-button-primary-hover text-white font-medium rounded transition-colors shadow-sm"
           >
             {isEmbedding ? (
               <>

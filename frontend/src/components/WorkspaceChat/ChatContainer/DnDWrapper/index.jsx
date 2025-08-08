@@ -5,7 +5,6 @@ import { useDropzone } from "react-dropzone";
 import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
-import useUser from "@/hooks/useUser";
 import FileUploadWarningModal from "./FileUploadWarningModal";
 import pluralize from "pluralize";
 
@@ -55,11 +54,10 @@ export function DnDFileUploaderProvider({
   const [pendingFiles, setPendingFiles] = useState([]);
   const [tokenCount, setTokenCount] = useState(0);
   const [maxTokens, setMaxTokens] = useState(Number.POSITIVE_INFINITY);
-  const { user } = useUser();
 
   useEffect(() => {
     System.checkDocumentProcessorOnline().then((status) => setReady(status));
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     window.addEventListener(REMOVE_ATTACHMENT_EVENT, handleRemove);
@@ -158,8 +156,6 @@ export function DnDFileUploaderProvider({
           type: "attachment",
         });
       } else {
-        // If the user is a default user, we do not want to allow them to upload files.
-        if (!!user && user.role === "default") continue;
         newAccepted.push({
           uid: v4(),
           file,
@@ -195,8 +191,6 @@ export function DnDFileUploaderProvider({
           type: "attachment",
         });
       } else {
-        // If the user is a default user, we do not want to allow them to upload files.
-        if (!!user && user.role === "default") continue;
         newAccepted.push({
           uid: v4(),
           file,
@@ -435,8 +429,6 @@ export default function DnDFileUploaderWrapper({ children }) {
     onDragEnter: () => setDragging(true),
     onDragLeave: () => setDragging(false),
   });
-  const { user } = useUser();
-  const canUploadAll = !user || user?.role !== "default";
 
   return (
     <div
@@ -455,21 +447,10 @@ export default function DnDFileUploaderWrapper({ children }) {
               height={69}
               alt="Drag and drop icon"
             />
-            <p className="text-white text-[24px] font-semibold">
-              Add {canUploadAll ? "anything" : "an image"}
-            </p>
+            <p className="text-white text-[24px] font-semibold">Add anything</p>
             <p className="text-white text-[16px] text-center">
-              {canUploadAll ? (
-                <>
-                  Drop your file here to embed it into your <br />
-                  workspace auto-magically.
-                </>
-              ) : (
-                <>
-                  Drop your image here to chat with it <br />
-                  auto-magically.
-                </>
-              )}
+              Drop a file or image here to attach it to your <br />
+              workspace auto-magically.
             </p>
           </div>
         </div>

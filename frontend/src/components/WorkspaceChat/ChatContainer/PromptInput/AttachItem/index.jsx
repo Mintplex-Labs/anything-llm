@@ -18,7 +18,6 @@ import ParsedFilesMenu from "./ParsedFilesMenu";
  */
 export default function AttachItem() {
   const { t } = useTranslation();
-  const { user } = useUser();
   const { theme } = useTheme();
   const { slug, threadSlug = null } = useParams();
   const tooltipRef = useRef(null);
@@ -80,7 +79,6 @@ export default function AttachItem() {
     };
   }, [slug, threadSlug]);
 
-  if (!!user && user.role === "default") return null;
   return (
     <>
       <button

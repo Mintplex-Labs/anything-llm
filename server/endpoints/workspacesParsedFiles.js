@@ -45,11 +45,7 @@ function workspaceParsedFilesEndpoints(app) {
 
   app.delete(
     "/workspace/:slug/delete-parsed-files",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
-      validWorkspaceSlug,
-    ],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async function (request, response) {
       try {
         const { fileIds = [] } = reqBody(request);
@@ -69,6 +65,7 @@ function workspaceParsedFilesEndpoints(app) {
     "/workspace/:slug/embed-parsed-file/:fileId",
     [
       validatedRequest,
+      // Embed is still an admin/manager only feature
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
       validWorkspaceSlug,
     ],
@@ -118,7 +115,7 @@ function workspaceParsedFilesEndpoints(app) {
     "/workspace/:slug/parse",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      flexUserRoleValid([ROLES.all]),
       handleFileUpload,
       validWorkspaceSlug,
     ],
