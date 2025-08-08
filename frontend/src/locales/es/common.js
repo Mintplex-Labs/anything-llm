@@ -38,7 +38,8 @@ const TRANSLATIONS = {
     },
     survey: {
       title: "Bienvenido a AnythingLLM",
-      description: "Ayúdanos a hacer que AnythingLLM se adapte a tus necesidades. Opcional.",
+      description:
+        "Ayúdanos a hacer que AnythingLLM se adapte a tus necesidades. Opcional.",
       email: "¿Cuál es tu correo electrónico?",
       useCase: "¿Para qué usarás AnythingLLM?",
       useCaseWork: "Para el trabajo",
@@ -148,11 +149,13 @@ const TRANSLATIONS = {
     contact: "Contactar con Mintplex Labs",
   },
   "main-page": {
-    noWorkspaceError: "Por favor, crea un espacio de trabajo antes de iniciar un chat.",
+    noWorkspaceError:
+      "Por favor, crea un espacio de trabajo antes de iniciar un chat.",
     checklist: {
       title: "Primeros pasos",
       tasksLeft: "tareas restantes",
-      completed: "¡Estás en camino de convertirte en un experto en AnythingLLM!",
+      completed:
+        "¡Estás en camino de convertirte en un experto en AnythingLLM!",
       dismiss: "cerrar",
       tasks: {
         create_workspace: {
@@ -198,7 +201,8 @@ const TRANSLATIONS = {
       features: {
         customAgents: {
           title: "Agentes de IA personalizados",
-          description: "Crea potentes agentes y automatizaciones de IA sin código.",
+          description:
+            "Crea potentes agentes y automatizaciones de IA sin código.",
           primaryAction: "Chatear usando @agent",
           secondaryAction: "Crear un flujo de agente",
         },
@@ -247,7 +251,8 @@ const TRANSLATIONS = {
       description: "Número total de vectores en tu base de datos vectorial.",
     },
     names: {
-      description: "Esto solo cambiará el nombre para mostrar de tu espacio de trabajo.",
+      description:
+        "Esto solo cambiará el nombre para mostrar de tu espacio de trabajo.",
     },
     message: {
       title: "Mensajes de chat sugeridos",
@@ -293,7 +298,8 @@ const TRANSLATIONS = {
       title: "Modo de chat",
       chat: {
         title: "Chat",
-        "desc-start": "proporcionará respuestas con el conocimiento general del LLM",
+        "desc-start":
+          "proporcionará respuestas con el conocimiento general del LLM",
         and: "y",
         "desc-end": "el contexto del documento que se encuentre.",
       },
@@ -323,7 +329,8 @@ const TRANSLATIONS = {
         restore: "Restaurar",
         delete: "Eliminar",
         publish: "Publicar en el Centro de la Comunidad",
-        deleteConfirm: "¿Estás seguro de que quieres eliminar este elemento del historial?",
+        deleteConfirm:
+          "¿Estás seguro de que quieres eliminar este elemento del historial?",
         clearAllConfirm:
           "¿Estás seguro de que quieres borrar todo el historial? Esta acción no se puede deshacer.",
         expand: "Expandir",
@@ -370,8 +377,10 @@ const TRANSLATIONS = {
       resetting: "Borrando vectores...",
       confirm:
         "Estás a punto de restablecer la base de datos vectorial de este espacio de trabajo. Esto eliminará todas las incrustaciones de vectores actualmente incrustadas.\n\nLos archivos fuente originales permanecerán intactos. Esta acción es irreversible.",
-      error: "¡No se pudo restablecer la base de datos vectorial del espacio de trabajo!",
-      success: "¡La base de datos vectorial del espacio de trabajo se restableció!",
+      error:
+        "¡No se pudo restablecer la base de datos vectorial del espacio de trabajo!",
+      success:
+        "¡La base de datos vectorial del espacio de trabajo se restableció!",
     },
   },
   agent: {
@@ -448,7 +457,8 @@ const TRANSLATIONS = {
   customization: {
     interface: {
       title: "Preferencias de la interfaz de usuario",
-      description: "Establece tus preferencias de la interfaz de usuario para AnythingLLM.",
+      description:
+        "Establece tus preferencias de la interfaz de usuario para AnythingLLM.",
     },
     branding: {
       title: "Marca y marca blanca",
@@ -469,17 +479,20 @@ const TRANSLATIONS = {
       },
       spellcheck: {
         title: "Habilitar corrector ortográfico",
-        description: "Habilitar o deshabilitar el corrector ortográfico en el campo de entrada del chat",
+        description:
+          "Habilitar o deshabilitar el corrector ortográfico en el campo de entrada del chat",
       },
     },
     items: {
       theme: {
         title: "Tema",
-        description: "Selecciona tu tema de color preferido para la aplicación.",
+        description:
+          "Selecciona tu tema de color preferido para la aplicación.",
       },
       "show-scrollbar": {
         title: "Mostrar barra de desplazamiento",
-        description: "Habilitar o deshabilitar la barra de desplazamiento en la ventana de chat.",
+        description:
+          "Habilitar o deshabilitar la barra de desplazamiento en la ventana de chat.",
       },
       "support-email": {
         title: "Correo electrónico de soporte",
@@ -503,7 +516,8 @@ const TRANSLATIONS = {
       },
       logo: {
         title: "Logotipo de la marca",
-        description: "Sube tu logotipo personalizado para mostrarlo en todas las páginas.",
+        description:
+          "Sube tu logotipo personalizado para mostrarlo en todas las páginas.",
         add: "Agregar un logotipo personalizado",
         recommended: "Tamaño recomendado: 800 x 200",
         remove: "Eliminar",
@@ -532,7 +546,8 @@ const TRANSLATIONS = {
         },
         favicon: {
           title: "Favicon",
-          description: "Usa un favicon personalizado para la pestaña del navegador.",
+          description:
+            "Usa un favicon personalizado para la pestaña del navegador.",
         },
       },
       "sidebar-footer": {
@@ -711,7 +726,8 @@ const TRANSLATIONS = {
       URL_explained: "URL del repositorio de GitHub que deseas recopilar.",
       token: "Token de acceso de GitHub",
       optional: "opcional",
-      token_explained: "Token de acceso para evitar la limitación de velocidad.",
+      token_explained:
+        "Token de acceso para evitar la limitación de velocidad.",
       token_explained_start: "Sin un ",
       token_explained_link1: "Token de acceso personal",
       token_explained_middle:
@@ -739,7 +755,8 @@ const TRANSLATIONS = {
       URL_explained: "URL del repositorio de GitLab que deseas recopilar.",
       token: "Token de acceso de GitLab",
       optional: "opcional",
-      token_explained: "Token de acceso para evitar la limitación de velocidad.",
+      token_explained:
+        "Token de acceso para evitar la limitación de velocidad.",
       token_description:
         "Selecciona entidades adicionales para obtener de la API de GitLab.",
       token_explained_start: "Sin un ",
@@ -780,7 +797,8 @@ const TRANSLATIONS = {
     },
     "website-depth": {
       name: "Extractor de enlaces en masa",
-      description: "Extrae un sitio web y sus subenlaces hasta una cierta profundidad.",
+      description:
+        "Extrae un sitio web y sus subenlaces hasta una cierta profundidad.",
       URL: "URL del sitio web",
       URL_explained: "URL del sitio web que deseas extraer.",
       depth: "Profundidad de rastreo",
@@ -793,7 +811,8 @@ const TRANSLATIONS = {
     },
     confluence: {
       name: "Confluence",
-      description: "Importa una página completa de Confluence con un solo clic.",
+      description:
+        "Importa una página completa de Confluence con un solo clic.",
       deployment_type: "Tipo de implementación de Confluence",
       deployment_type_explained:
         "Determina si tu instancia de Confluence está alojada en la nube de Atlassian o es autohospedada.",
@@ -891,7 +910,8 @@ const TRANSLATIONS = {
     get_started_default: "Para comenzar",
     upload: "subir un documento",
     or: "o",
-    attachments_processing: "Los archivos adjuntos se están procesando. Por favor, espera...",
+    attachments_processing:
+      "Los archivos adjuntos se están procesando. Por favor, espera...",
     send_chat: "enviar un chat.",
     send_message: "Enviar un mensaje",
     attach_file: "Adjuntar un archivo a este chat",
@@ -916,10 +936,12 @@ const TRANSLATIONS = {
     edit_prompt: "Editar prompt",
     edit_response: "Editar respuesta",
     at_agent: "@agente",
-    default_agent_description: " - el agente predeterminado para este espacio de trabajo.",
+    default_agent_description:
+      " - el agente predeterminado para este espacio de trabajo.",
     custom_agents_coming_soon: "¡los agentes personalizados llegarán pronto!",
     slash_reset: "/reiniciar",
-    preset_reset_description: "Borra tu historial de chat y comienza un nuevo chat",
+    preset_reset_description:
+      "Borra tu historial de chat y comienza un nuevo chat",
     add_new_preset: " Agregar nuevo preajuste",
     command: "Comando",
     your_command: "tu-comando",
@@ -933,13 +955,17 @@ const TRANSLATIONS = {
     large: "Grande",
     workspace_llm_manager: {
       search: "Buscar proveedores de LLM",
-      loading_workspace_settings: "Cargando la configuración del espacio de trabajo...",
+      loading_workspace_settings:
+        "Cargando la configuración del espacio de trabajo...",
       available_models: "Modelos disponibles para {{provider}}",
-      available_models_description: "Selecciona un modelo para usar en este espacio de trabajo.",
+      available_models_description:
+        "Selecciona un modelo para usar en este espacio de trabajo.",
       save: "Usar este modelo",
-      saving: "Estableciendo el modelo como predeterminado del espacio de trabajo...",
+      saving:
+        "Estableciendo el modelo como predeterminado del espacio de trabajo...",
       missing_credentials: "¡A este proveedor le faltan credenciales!",
-      missing_credentials_description: "Haz clic para configurar las credenciales",
+      missing_credentials_description:
+        "Haz clic para configurar las credenciales",
     },
   },
   profile_settings: {
@@ -988,7 +1014,8 @@ const TRANSLATIONS = {
         view_on_hub: "Ver en el Centro de la Comunidad",
         modal_title: "Publicar prompt del sistema",
         name_label: "Nombre",
-        name_description: "Este es el nombre para mostrar de tu prompt del sistema.",
+        name_description:
+          "Este es el nombre para mostrar de tu prompt del sistema.",
         name_placeholder: "Mi prompt del sistema",
         description_label: "Descripción",
         description_description:
@@ -998,8 +1025,10 @@ const TRANSLATIONS = {
           "Las etiquetas se utilizan para identificar tu prompt del sistema para una búsqueda más fácil. Puedes agregar varias etiquetas. Máximo 5 etiquetas. Máximo 20 caracteres por etiqueta.",
         tags_placeholder: "Escribe y presiona Enter para agregar etiquetas",
         visibility_label: "Visibilidad",
-        public_description: "Los prompts del sistema públicos son visibles para todos.",
-        private_description: "Los prompts del sistema privados solo son visibles para ti.",
+        public_description:
+          "Los prompts del sistema públicos son visibles para todos.",
+        private_description:
+          "Los prompts del sistema privados solo son visibles para ti.",
         publish_button: "Publicar en el Centro de la Comunidad",
         submitting: "Publicando...",
         submit: "Publicar en el Centro de la Comunidad",
@@ -1009,8 +1038,10 @@ const TRANSLATIONS = {
         prompt_placeholder: "Ingresa tu prompt del sistema aquí...",
       },
       agent_flow: {
-        public_description: "Los flujos de agente públicos son visibles para todos.",
-        private_description: "Los flujos de agente privados solo son visibles para ti.",
+        public_description:
+          "Los flujos de agente públicos son visibles para todos.",
+        private_description:
+          "Los flujos de agente privados solo son visibles para ti.",
         success_title: "¡Éxito!",
         success_description:
           "¡Tu flujo de agente ha sido publicado en el Centro de la Comunidad!",
@@ -1018,7 +1049,8 @@ const TRANSLATIONS = {
         view_on_hub: "Ver en el Centro de la Comunidad",
         modal_title: "Publicar flujo de agente",
         name_label: "Nombre",
-        name_description: "Este es el nombre para mostrar de tu flujo de agente.",
+        name_description:
+          "Este es el nombre para mostrar de tu flujo de agente.",
         name_placeholder: "Mi flujo de agente",
         description_label: "Descripción",
         description_description:
@@ -1042,7 +1074,8 @@ const TRANSLATIONS = {
         view_on_hub: "Ver en el Centro de la Comunidad",
         modal_title: "Publicar comando de barra",
         name_label: "Nombre",
-        name_description: "Este es el nombre para mostrar de tu comando de barra.",
+        name_description:
+          "Este es el nombre para mostrar de tu comando de barra.",
         name_placeholder: "Mi comando de barra",
         description_label: "Descripción",
         description_description:
@@ -1056,8 +1089,10 @@ const TRANSLATIONS = {
           "Las etiquetas se utilizan para identificar tu comando de barra para una búsqueda más fácil. Puedes agregar varias etiquetas. Máximo 5 etiquetas. Máximo 20 caracteres por etiqueta.",
         tags_placeholder: "Escribe y presiona Enter para agregar etiquetas",
         visibility_label: "Visibilidad",
-        public_description: "Los comandos de barra públicos son visibles para todos.",
-        private_description: "Los comandos de barra privados solo son visibles para ti.",
+        public_description:
+          "Los comandos de barra públicos son visibles para todos.",
+        private_description:
+          "Los comandos de barra privados solo son visibles para ti.",
         publish_button: "Publicar en el Centro de la Comunidad",
         submitting: "Publicando...",
         prompt_label: "Prompt",
