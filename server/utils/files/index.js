@@ -7,6 +7,10 @@ const documentsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/documents`)
     : path.resolve(process.env.STORAGE_DIR, `documents`);
+const directUploadsPath =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../storage/direct-uploads`)
+    : path.resolve(process.env.STORAGE_DIR, `direct-uploads`);
 const vectorCachePath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/vector-cache`)
@@ -468,6 +472,7 @@ module.exports = {
   normalizePath,
   isWithin,
   documentsPath,
+  directUploadsPath,
   hasVectorCachedFiles,
   purgeEntireVectorCache,
   getDocumentsByFolder,

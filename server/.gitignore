@@ -14,6 +14,7 @@ storage/plugins/agent-flows/*
 storage/plugins/office-extensions/*
 storage/plugins/anythingllm_mcp_servers.json
 !storage/documents/DOCUMENTS.md
+storage/direct-uploads
 logs/server.log
 *.db
 *.db-journal

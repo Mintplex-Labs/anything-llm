@@ -6,7 +6,25 @@ const setLogger = require("../logger");
 class BackgroundService {
   name = "BackgroundWorkerService";
   static _instance = null;
+  documentSyncEnabled = false;
   #root = path.resolve(__dirname, "../../jobs");
+
+  #alwaysRunJobs = [
+    {
+      name: "cleanup-orphan-documents",
+      timeout: "1m",
+      interval: "12hr",
+    },
+  ];
+
+  #documentSyncJobs = [
+    // Job for auto-sync of documents
+    // https://github.com/breejs/bree
+    {
+      name: "sync-watched-documents",
+      interval: "1hr",
+    },
+  ];
 
   constructor() {
     if (BackgroundService._instance) {
@@ -24,16 +42,14 @@ class BackgroundService {
 
   async boot() {
     const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
-    if (!(await DocumentSyncQueue.enabled())) {
-      this.#log("Feature is not enabled and will not be started.");
-      return;
-    }
+    this.documentSyncEnabled = await DocumentSyncQueue.enabled();
+    const jobsToRun = this.jobs();
 
     this.#log("Starting...");
     this.bree = new Bree({
       logger: this.logger,
       root: this.#root,
-      jobs: this.jobs(),
+      jobs: jobsToRun,
       errorHandler: this.onError,
       workerMessageHandler: this.onWorkerMessageHandler,
       runJobsAs: "process",
@@ -41,7 +57,10 @@ class BackgroundService {
     this.graceful = new Graceful({ brees: [this.bree], logger: this.logger });
     this.graceful.listen();
     this.bree.start();
-    this.#log("Service started");
+    this.#log(
+      `Service started with ${jobsToRun.length} jobs`,
+      jobsToRun.map((j) => j.name)
+    );
   }
 
   async stop() {
@@ -54,14 +73,9 @@ class BackgroundService {
 
   /** @returns {import("@mintplex-labs/bree").Job[]} */
   jobs() {
-    return [
-      // Job for auto-sync of documents
-      // https://github.com/breejs/bree
-      {
-        name: "sync-watched-documents",
-        interval: "1hr",
-      },
-    ];
+    const activeJobs = [...this.#alwaysRunJobs];
+    if (this.documentSyncEnabled) activeJobs.push(...this.#documentSyncJobs);
+    return activeJobs;
   }
 
   onError(error, _workerMetadata) {

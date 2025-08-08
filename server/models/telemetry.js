@@ -11,7 +11,7 @@ const Telemetry = {
   pubkey: "phc_9qu7QLpV8L84P3vFmEiZxL020t2EqIubP7HHHxrSsqS",
   stubDevelopmentEvents: true, // [DO NOT TOUCH] Core team only.
   label: "telemetry_id",
-  /* 
+  /*
   Key value pairs of events that should be debounced to prevent spamming the logs.
   This should be used for events that could be triggered in rapid succession that are not useful to atomically log.
   The value is the number of seconds to debounce the event
@@ -27,6 +27,7 @@ const Telemetry = {
     documents_embedded_in_workspace: 30,
     link_uploaded: 30,
     raw_document_uploaded: 30,
+    document_parsed: 30,
   },
 
   id: async function () {

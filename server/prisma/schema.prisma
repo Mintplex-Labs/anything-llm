@@ -83,6 +83,7 @@ model users {
   system_prompt_variables     system_prompt_variables[]
   prompt_history              prompt_history[]
   desktop_mobile_devices      desktop_mobile_devices[]
+  workspace_parsed_files      workspace_parsed_files[]
 }
 
 model recovery_codes {
@@ -149,18 +150,20 @@ model workspaces {
   threads                      workspace_threads[]
   workspace_agent_invocations  workspace_agent_invocations[]
   prompt_history               prompt_history[]
+  workspace_parsed_files       workspace_parsed_files[]
 }
 
 model workspace_threads {
-  id            Int        @id @default(autoincrement())
-  name          String
-  slug          String     @unique
-  workspace_id  Int
-  user_id       Int?
-  createdAt     DateTime   @default(now())
-  lastUpdatedAt DateTime   @default(now())
-  workspace     workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
-  user          users?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id                     Int                      @id @default(autoincrement())
+  name                   String
+  slug                   String                   @unique
+  workspace_id           Int
+  user_id                Int?
+  createdAt              DateTime                 @default(now())
+  lastUpdatedAt          DateTime                 @default(now())
+  workspace              workspaces               @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  user                   users?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  workspace_parsed_files workspace_parsed_files[]
 
   @@index([workspace_id])
   @@index([user_id])
@@ -369,5 +372,22 @@ model desktop_mobile_devices {
   createdAt  DateTime @default(now())
   user       users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+}
+
+model workspace_parsed_files {
+  id                 Int                @id @default(autoincrement())
+  filename           String             @unique
+  workspaceId        Int
+  userId             Int?
+  threadId           Int?
+  metadata           String?
+  tokenCountEstimate Int?               @default(0)
+  createdAt          DateTime           @default(now())
+  workspace          workspaces         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user               users?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  thread             workspace_threads? @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
   @@index([userId])
 }

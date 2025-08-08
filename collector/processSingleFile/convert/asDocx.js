@@ -8,7 +8,7 @@ const {
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
-async function asDocX({ fullFilePath = "", filename = "" }) {
+async function asDocX({ fullFilePath = "", filename = "", options = {} }) {
   const loader = new DocxLoader(fullFilePath);
 
   console.log(`-- Working ${filename} --`);
@@ -48,6 +48,7 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
   const document = writeToServerDocuments({
     data,
     filename: `${slugify(filename)}-${data.id}`,
+    options: { parseOnly: options.parseOnly },
   });
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);

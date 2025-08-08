@@ -60,6 +60,7 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
     const document = writeToServerDocuments({
       data,
       filename: `${slugify(filename)}-${data.id}-msg-${item}`,
+      options: { parseOnly: options.parseOnly },
     });
     documents.push(document);
   }

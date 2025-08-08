@@ -8,7 +8,7 @@ const {
 } = require("../../utils/files");
 const { default: slugify } = require("slugify");
 
-async function asTxt({ fullFilePath = "", filename = "" }) {
+async function asTxt({ fullFilePath = "", filename = "", options = {} }) {
   let content = "";
   try {
     content = fs.readFileSync(fullFilePath, "utf8");
@@ -44,6 +44,7 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
   const document = writeToServerDocuments({
     data,
     filename: `${slugify(filename)}-${data.id}`,
+    options: { parseOnly: options.parseOnly },
   });
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
