@@ -303,11 +303,10 @@ const Workspace = {
    */
   async _getCurrentContextTokenCount(workspaceId, threadId = null) {
     const { WorkspaceParsedFiles } = require("./workspaceParsedFiles");
-    const files = await WorkspaceParsedFiles.where({
+    return await WorkspaceParsedFiles.totalTokenCount({
       workspaceId: Number(workspaceId),
       threadId: threadId ? Number(threadId) : null,
     });
-    return files.reduce((sum, file) => sum + (file.tokenCountEstimate || 0), 0);
   },
 
   /**
@@ -341,7 +340,6 @@ const Workspace = {
       });
 
       if (!workspace) return null;
-
       return {
         ...workspace,
         contextWindow: this._getContextWindow(workspace),

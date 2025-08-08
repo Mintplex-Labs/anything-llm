@@ -81,7 +81,15 @@ const WorkspaceParsedFiles = {
     }
   },
 
-  moveToDocumentsAndEmbed: async function (fileId, workspaceId) {
+  totalTokenCount: async function (clause = {}) {
+    const { _sum } = await prisma.workspace_parsed_files.aggregate({
+      where: clause,
+      _sum: { tokenCountEstimate: true },
+    });
+    return _sum.tokenCountEstimate || 0;
+  },
+
+  moveToDocumentsAndEmbed: async function (fileId, workspace) {
     try {
       const parsedFile = await this.get({ id: parseInt(fileId) });
       if (!parsedFile) throw new Error("File not found");
@@ -105,9 +113,6 @@ const WorkspaceParsedFiles = {
       fs.copyFileSync(sourceFile, targetPath);
       fs.unlinkSync(sourceFile);
 
-      // Embed file
-      const workspace = await Workspace.get({ id: parseInt(workspaceId) });
-      if (!workspace) throw new Error("Workspace not found");
       const {
         failedToEmbed = [],
         errors = [],
@@ -118,22 +123,19 @@ const WorkspaceParsedFiles = {
         parsedFile.userId
       );
 
-      if (failedToEmbed.length > 0) {
+      if (failedToEmbed.length > 0)
         throw new Error(errors[0] || "Failed to embed document");
-      }
-
-      await this.delete({ id: parseInt(fileId) });
 
       const document = await Document.get({
-        workspaceId: parseInt(workspaceId),
+        workspaceId: workspace.id,
         docpath: embedded[0],
       });
-
       return { success: true, error: null, document };
     } catch (error) {
       console.error("Failed to move and embed file:", error);
       return { success: false, error: error.message, document: null };
     } finally {
+      // Always delete the file after processing
       await this.delete({ id: parseInt(fileId) });
     }
   },
@@ -146,8 +148,8 @@ const WorkspaceParsedFiles = {
     try {
       if (!workspace) throw new Error("Workspace is required");
       const files = await this.where({
-        workspaceId: parseInt(workspace.id),
-        threadId: thread?.id ? parseInt(thread.id) : null,
+        workspaceId: workspace.id,
+        threadId: thread?.id || null,
         ...(user ? { userId: user.id } : {}),
       });
 
@@ -183,8 +185,8 @@ const WorkspaceParsedFiles = {
   getContextFiles: async function (workspace, thread = null, user = null) {
     try {
       const files = await this.where({
-        workspaceId: parseInt(workspace.id),
-        threadId: thread?.id ? parseInt(thread.id) : null,
+        workspaceId: workspace.id,
+        threadId: thread?.id || null,
         ...(user ? { userId: user.id } : {}),
       });
 

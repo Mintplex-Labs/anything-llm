@@ -37,51 +37,11 @@ const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
-const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles");
+const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
 
 function workspaceEndpoints(app) {
   if (!app) return;
-
   const responseCache = new Map();
-
-  app.post(
-    "/workspace/:slug/parsed-files",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
-    async (request, response) => {
-      try {
-        const { slug = null } = request.params;
-        const { threadSlug = null } = reqBody(request);
-        const user = await userFromSession(request, response);
-
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
-
-        if (!workspace) {
-          response.sendStatus(400).end();
-          return;
-        }
-
-        const thread = threadSlug
-          ? await WorkspaceThread.get({ slug: threadSlug })
-          : null;
-
-        const { files, contextWindow, currentContextTokenCount } =
-          await WorkspaceParsedFiles.getContextMetadataAndLimits(
-            workspace,
-            thread || null,
-            multiUserMode(response) ? user : null
-          );
-
-        response
-          .status(200)
-          .json({ files, contextWindow, currentContextTokenCount });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
 
   app.post(
     "/workspace/new",
@@ -145,190 +105,6 @@ function workspaceEndpoints(app) {
           data
         );
         response.status(200).json({ workspace, message });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.delete(
-    "/workspace/:slug/delete-parsed-files",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async function (request, response) {
-      try {
-        const { slug = null } = request.params;
-        const { fileIds = [] } = reqBody(request);
-        const user = await userFromSession(request, response);
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
-
-        if (!workspace || !fileIds.length) {
-          response.sendStatus(400).end();
-          return;
-        }
-
-        const success = await WorkspaceParsedFiles.delete({
-          id: { in: fileIds.map((id) => parseInt(id)) },
-        });
-        response.status(success ? 200 : 500).end();
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.post(
-    "/workspace/:slug/embed-parsed-file/:fileId",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async function (request, response) {
-      try {
-        const { slug = null, fileId = null } = request.params;
-        const user = await userFromSession(request, response);
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
-
-        if (!workspace || !fileId) {
-          response.sendStatus(400).end();
-          return;
-        }
-
-        const { success, error, document } =
-          await WorkspaceParsedFiles.moveToDocumentsAndEmbed(
-            fileId,
-            workspace.id
-          );
-
-        if (!success) {
-          response.status(500).json({
-            success: false,
-            error: error || "Failed to embed file",
-          });
-          return;
-        }
-
-        await Telemetry.sendTelemetry("document_embedded");
-        await EventLogs.logEvent(
-          "document_embedded",
-          {
-            documentName: document?.name || "unknown",
-            workspaceId: workspace.id,
-          },
-          user?.id
-        );
-
-        response.status(200).json({
-          success: true,
-          error: null,
-          document,
-        });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      } finally {
-        if (request.params.fileId) {
-          await WorkspaceParsedFiles.delete({
-            id: parseInt(request.params.fileId),
-          });
-        }
-      }
-    }
-  );
-
-  app.post(
-    "/workspace/:slug/parse",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
-      handleFileUpload,
-    ],
-    async function (request, response) {
-      try {
-        const { slug = null } = request.params;
-        const user = await userFromSession(request, response);
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
-
-        if (!workspace) {
-          response.sendStatus(400).end();
-          return;
-        }
-
-        const Collector = new CollectorApi();
-        const { originalname } = request.file;
-        const processingOnline = await Collector.online();
-
-        if (!processingOnline) {
-          response.status(500).json({
-            success: false,
-            error: `Document processing API is not online. Document ${originalname} will not be parsed.`,
-          });
-          return;
-        }
-
-        const { success, reason, documents } =
-          await Collector.parseDocument(originalname);
-        if (!success || !documents?.[0]) {
-          response.status(500).json({
-            success: false,
-            error: reason || "No document returned from collector",
-          });
-          return;
-        }
-
-        // Get thread ID if we have a slug
-        const { threadSlug } = reqBody(request);
-        let threadId = null;
-        if (threadSlug) {
-          const thread = await WorkspaceThread.get({
-            slug: threadSlug,
-            workspace_id: workspace.id,
-            user_id: user?.id || null,
-          });
-          threadId = thread?.id || null;
-        }
-
-        const files = await Promise.all(
-          documents.map(async (doc) => {
-            const metadata = { ...doc };
-            // Strip out pageContent
-            delete metadata.pageContent;
-            const filename = `${originalname}-${doc.id}.json`;
-
-            const { file, error: dbError } = await WorkspaceParsedFiles.create({
-              filename,
-              workspaceId: workspace.id,
-              userId: user?.id || null,
-              threadId,
-              metadata: JSON.stringify(metadata),
-              tokenCountEstimate: doc.token_count_estimate || 0,
-            });
-
-            if (dbError) throw new Error(dbError);
-            return file;
-          })
-        );
-
-        Collector.log(`Document ${originalname} parsed successfully.`);
-        await Telemetry.sendTelemetry("document_parsed");
-        await EventLogs.logEvent(
-          "document_parsed",
-          {
-            documentName: originalname,
-            workspaceId: workspace.id,
-          },
-          user?.id
-        );
-
-        response.status(200).json({
-          success: true,
-          error: null,
-          files,
-        });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -1285,6 +1061,9 @@ function workspaceEndpoints(app) {
       }
     }
   );
+
+  // Parsed Files in separate endpoint just to keep the workspace endpoints clean
+  workspaceParsedFilesEndpoints(app);
 }
 
 module.exports = { workspaceEndpoints };
