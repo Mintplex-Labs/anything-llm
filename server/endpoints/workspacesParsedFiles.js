@@ -10,7 +10,6 @@ const { EventLogs } = require("../models/eventLogs");
 const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { CollectorApi } = require("../utils/collectorApi");
 const { WorkspaceThread } = require("../models/workspaceThread");
-
 const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles");
 
 function workspaceParsedFilesEndpoints(app) {

@@ -113,7 +113,7 @@ export default function ParsedFilesMenu({
           <button
             onClick={handleEmbed}
             disabled={isEmbedding}
-            className="flex items-center justify-center gap-2 px-3 py-2 text-xs bg-primary-button hover:bg-theme-button-primary-hover text-white font-medium rounded transition-colors shadow-sm"
+            className="border-none flex items-center justify-center gap-2 px-3 py-2 text-xs bg-primary-button hover:bg-theme-button-primary-hover text-white font-medium rounded transition-colors shadow-sm"
           >
             {isEmbedding ? (
               <>
@@ -140,7 +140,7 @@ export default function ParsedFilesMenu({
               </div>
               <button
                 onClick={(e) => handleRemove(e, file)}
-                className="text-theme-text-secondary hover:text-theme-text-primary"
+                className="border-none text-theme-text-secondary hover:text-theme-text-primary"
                 disabled={isEmbedding}
               >
                 <X size={16} />
