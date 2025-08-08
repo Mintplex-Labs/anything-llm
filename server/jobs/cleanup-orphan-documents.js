@@ -35,11 +35,12 @@ async function batchDeleteFiles(filesToDelete, batchSize = 500) {
 
 (async () => {
   try {
+    const filesToDelete = [];
     const knownFiles = await WorkspaceParsedFiles
       .where({}, null, null, { filename: true })
       .then(files => new Set(files.map(f => f.filename)));
 
-    const filesToDelete = [];
+    if (!fs.existsSync(directUploadsPath)) return log('No direct uploads path found - exiting.');
     const filesInDirectUploadsPath = fs.readdirSync(directUploadsPath);
     if (filesInDirectUploadsPath.length === 0) return;
 
