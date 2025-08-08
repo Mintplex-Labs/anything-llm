@@ -34,6 +34,8 @@ const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const { Workspace } = require("../models/workspace");
+const prisma = require("../utils/prisma");
 const {
   flexUserRoleValid,
   ROLES,
@@ -61,6 +63,22 @@ const {
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
+
+async function workspaceIdsCreatedBy(userId) {
+  const workspaces = await Workspace.where({
+    workspace_users: { some: { user_id: Number(userId) } },
+  });
+
+  const createdIds = [];
+  for (const ws of workspaces) {
+    const firstUser = await prisma.workspace_users.findFirst({
+      where: { workspace_id: ws.id },
+      orderBy: { createdAt: "asc" },
+    });
+    if (firstUser?.user_id === Number(userId)) createdIds.push(ws.id);
+  }
+  return createdIds;
+}
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -1038,16 +1056,24 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);
+        const user = await userFromSession(request, response);
+
+        let clause = {};
+        if (user.role === ROLES.manager) {
+          const workspaceIds = await workspaceIdsCreatedBy(user.id);
+          clause.workspaceId = { in: workspaceIds };
+        }
+
         const chats = await WorkspaceChats.whereWithData(
-          {},
+          clause,
           limit,
           offset * limit,
           { id: "desc" }
         );
-        const totalChats = await WorkspaceChats.count();
+        const totalChats = await WorkspaceChats.count(clause);
         const hasPages = totalChats > (offset + 1) * limit;
 
-        response.status(200).json({ chats: chats, hasPages, totalChats });
+        response.status(200).json({ chats, hasPages, totalChats });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
@@ -1061,8 +1087,23 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
+        const user = await userFromSession(request, response);
+
+        if (user.role === ROLES.manager) {
+          if (Number(id) === -1) return response.sendStatus(403).end();
+
+          const chat = (
+            await WorkspaceChats.where({ id: Number(id) }, 1)
+          )[0];
+          if (!chat) return response.sendStatus(404).end();
+
+          const workspaceIds = await workspaceIdsCreatedBy(user.id);
+          if (!workspaceIds.includes(chat.workspaceId))
+            return response.sendStatus(403).end();
+        }
+
         Number(id) === -1
-          ? await WorkspaceChats.delete({}, true)
+          ? await WorkspaceChats.delete({})
           : await WorkspaceChats.delete({ id: Number(id) });
         response.json({ success: true, error: null });
       } catch (e) {
