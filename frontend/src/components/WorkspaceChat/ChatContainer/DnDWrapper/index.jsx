@@ -42,8 +42,8 @@ export const PARSED_FILE_ATTACHMENT_REMOVED_EVENT =
 
 export function DnDFileUploaderProvider({
   workspace,
-  children,
   threadSlug = null,
+  children,
 }) {
   const [files, setFiles] = useState([]);
   const [ready, setReady] = useState(false);
