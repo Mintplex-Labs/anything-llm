@@ -211,6 +211,13 @@ export default {
     },
   },
 
+  // TODO: Migrate all docs.anythingllm.com links to the new docs.
+  documentation: {
+    contextWindows: () => {
+      return "https://docs.anythingllm.com/features/context-windows";
+    },
+  },
+
   experimental: {
     liveDocumentSync: {
       manage: () => `/settings/beta-features/live-document-sync/manage`,

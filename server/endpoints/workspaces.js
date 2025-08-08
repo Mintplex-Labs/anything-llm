@@ -32,15 +32,15 @@ const {
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
+
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
-const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles");
+const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
 
 function workspaceEndpoints(app) {
   if (!app) return;
-
   const responseCache = new Map();
 
   app.post(
@@ -105,90 +105,6 @@ function workspaceEndpoints(app) {
           data
         );
         response.status(200).json({ workspace, message });
-      } catch (e) {
-        console.error(e.message, e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.post(
-    "/workspace/:slug/parse",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
-      handleFileUpload,
-    ],
-    async function (request, response) {
-      try {
-        const { slug = null } = request.params;
-        const user = await userFromSession(request, response);
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
-
-        if (!workspace) {
-          response.sendStatus(400).end();
-          return;
-        }
-
-        const Collector = new CollectorApi();
-        const { originalname } = request.file;
-        const processingOnline = await Collector.online();
-
-        if (!processingOnline) {
-          response.status(500).json({
-            success: false,
-            error: `Document processing API is not online. Document ${originalname} will not be parsed.`,
-          });
-          return;
-        }
-
-        const { success, reason, documents } =
-          await Collector.parseDocument(originalname);
-        if (!success || !documents?.[0]) {
-          response.status(500).json({
-            success: false,
-            error: reason || "No document returned from collector",
-          });
-          return;
-        }
-
-        const files = await Promise.all(
-          documents.map(async (doc) => {
-            const metadata = { ...doc };
-            // Strip out pageContent
-            delete metadata.pageContent;
-            const filename = `${originalname}-${doc.id}.json`;
-
-            const { file, error: dbError } = await WorkspaceParsedFiles.create({
-              filename,
-              workspaceId: workspace.id,
-              userId: user?.id || null,
-              metadata: JSON.stringify(metadata),
-            });
-
-            if (dbError) throw new Error(dbError);
-            return file;
-          })
-        );
-
-        Collector.log(`Document ${originalname} parsed successfully.`);
-        await Telemetry.sendTelemetry("document_parsed");
-        await EventLogs.logEvent(
-          "document_parsed",
-          {
-            documentName: originalname,
-            workspaceId: workspace.id,
-          },
-          user?.id
-        );
-
-        response.status(200).json({
-          success: true,
-          error: null,
-          files,
-        });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
@@ -1145,6 +1061,9 @@ function workspaceEndpoints(app) {
       }
     }
   );
+
+  // Parsed Files in separate endpoint just to keep the workspace endpoints clean
+  workspaceParsedFilesEndpoints(app);
 }
 
 module.exports = { workspaceEndpoints };

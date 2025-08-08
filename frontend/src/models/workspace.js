@@ -7,6 +7,8 @@ import { ABORT_STREAM_EVENT } from "@/utils/chat";
 
 const Workspace = {
   workspaceOrderStorageKey: "anythingllm-workspace-order",
+  /** The maximum percentage of the context window that can be used for attachments */
+  maxContextWindowLimit: 0.8,
 
   new: async function (data = {}) {
     const { workspace, message } = await fetch(`${API_BASE}/workspace/new`, {
@@ -260,6 +262,16 @@ const Workspace = {
     const data = await response.json();
     return { response, data };
   },
+
+  getParsedFiles: async function (slug, threadSlug = null) {
+    const response = await fetch(`${API_BASE}/workspace/${slug}/parsed-files`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ threadSlug }),
+    });
+    const data = await response.json();
+    return data;
+  },
   uploadLink: async function (slug, link) {
     const response = await fetch(`${API_BASE}/workspace/${slug}/upload-link`, {
       method: "POST",
@@ -456,6 +468,31 @@ const Workspace = {
       {
         method: "POST",
         body: formData,
+        headers: baseHeaders(),
+      }
+    );
+
+    const data = await response.json();
+    return { response, data };
+  },
+
+  deleteParsedFiles: async function (slug, fileIds = []) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/delete-parsed-files`,
+      {
+        method: "DELETE",
+        headers: baseHeaders(),
+        body: JSON.stringify({ fileIds }),
+      }
+    );
+    return response.ok;
+  },
+
+  embedParsedFile: async function (slug, fileId) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/embed-parsed-file/${fileId}`,
+      {
+        method: "POST",
         headers: baseHeaders(),
       }
     );
