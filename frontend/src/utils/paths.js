@@ -214,7 +214,7 @@ export default {
   // TODO: Migrate all docs.anythingllm.com links to the new docs.
   documentation: {
     contextWindows: () => {
-      return "https://docs.anythingllm.com/features/context-windows";
+      return "https://docs.anythingllm.com/chatting-with-documents/introduction#you-exceed-the-context-window---what-now";
     },
   },
 
