@@ -1,7 +1,6 @@
 const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
 const { Document } = require("./documents");
-const { Workspace } = require("./workspace");
 const { documentsPath, directUploadsPath } = require("../utils/files");
 const { safeJsonParse } = require("../utils/http");
 const fs = require("fs");
@@ -56,11 +55,18 @@ const WorkspaceParsedFiles = {
     }
   },
 
-  where: async function (clause = {}, limit = null) {
+  where: async function (
+    clause = {},
+    limit = null,
+    orderBy = null,
+    select = null
+  ) {
     try {
       const files = await prisma.workspace_parsed_files.findMany({
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
+        ...(select !== null ? { select } : {}),
       });
       return files;
     } catch (error) {
