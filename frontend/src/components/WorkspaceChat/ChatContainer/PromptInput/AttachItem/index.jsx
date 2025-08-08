@@ -1,4 +1,3 @@
-import useUser from "@/hooks/useUser";
 import { PaperclipHorizontal } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
