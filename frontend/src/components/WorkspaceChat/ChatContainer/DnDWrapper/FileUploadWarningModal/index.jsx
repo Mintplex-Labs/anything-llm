@@ -1,6 +1,7 @@
 import { CircleNotch } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import pluralize from "pluralize";
+import { numberWithCommas } from "@/utils/numbers";
 
 export default function FileUploadWarningModal({
   show,
@@ -47,10 +48,11 @@ export default function FileUploadWarningModal({
 
         <div className="py-7 px-9 space-y-4">
           <p className="text-white text-sm">
-            Your workspace is using {tokenCount} of {maxTokens} available
-            tokens. We recommend keeping usage below 80% to ensure the best chat
-            experience. Adding {fileCount} more {pluralize("file", fileCount)}{" "}
-            would exceed this limit. Choose how you would like to proceed:
+            Your workspace is using {numberWithCommas(tokenCount)} of{" "}
+            {numberWithCommas(maxTokens)} available tokens. We recommend keeping
+            usage below 80% to ensure the best chat experience. Adding{" "}
+            {fileCount} more {pluralize("file", fileCount)} would exceed this
+            limit. Choose how you would like to proceed:
           </p>
         </div>
 
@@ -58,14 +60,14 @@ export default function FileUploadWarningModal({
           <button
             onClick={onClose}
             type="button"
-            className="transition-all duration-300 bg-theme-modal-border text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+            className="border-none transition-all duration-300 bg-theme-modal-border text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
             Cancel
           </button>
           <button
             onClick={onContinue}
             type="button"
-            className="transition-all duration-300 bg-theme-modal-border text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+            className="border-none transition-all duration-300 bg-theme-modal-border text-white hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
             Continue Anyway
           </button>
@@ -73,7 +75,7 @@ export default function FileUploadWarningModal({
             onClick={onEmbed}
             disabled={isEmbedding}
             type="button"
-            className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+            className="border-none transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
           >
             Embed {pluralize("File", fileCount)}
           </button>

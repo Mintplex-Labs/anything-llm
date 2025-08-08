@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { nFormatter } from "@/utils/numbers";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
+import { PARSED_FILE_ATTACHMENT_REMOVED_EVENT } from "../../../DnDWrapper";
 
 export default function ParsedFilesMenu({
   onEmbeddingChange,
@@ -17,30 +18,40 @@ export default function ParsedFilesMenu({
   isLoading,
 }) {
   const { slug, threadSlug = null } = useParams();
-
   const [isEmbedding, setIsEmbedding] = useState(false);
   const [embedProgress, setEmbedProgress] = useState(1);
-
-  const isOverflowing = currentTokens >= contextWindow * 0.8;
+  const contextWindowLimitExceeded =
+    currentTokens >= contextWindow * Workspace.maxContextWindowLimit;
 
   async function handleRemove(e, file) {
     e.preventDefault();
     e.stopPropagation();
     if (!file?.id) return;
+
     const success = await Workspace.deleteParsedFiles(slug, [file.id]);
-    if (success) {
-      setFiles((prev) => prev.filter((f) => f.id !== file.id));
-      showToast("File removed from context window", "success", {
-        clear: true,
-      });
-      const { currentContextTokenCount } = await Workspace.getParsedFiles(
-        slug,
-        threadSlug
-      );
-      setCurrentTokens(currentContextTokenCount);
-    }
+    if (!success) return;
+
+    // Update the local files list and current tokens
+    setFiles((prev) => prev.filter((f) => f.id !== file.id));
+
+    // Dispatch an event to the DnDFileUploaderWrapper to update the files list in attachment manager if it exists
+    window.dispatchEvent(
+      new CustomEvent(PARSED_FILE_ATTACHMENT_REMOVED_EVENT, {
+        detail: { document: file },
+      })
+    );
+    const { currentContextTokenCount } = await Workspace.getParsedFiles(
+      slug,
+      threadSlug
+    );
+    setCurrentTokens(currentContextTokenCount);
   }
 
+  /**
+   * Handles the embedding of the files when the user exceeds the context window limit
+   * and opts to embed the files into the workspace instead.
+   * @returns {Promise<void>}
+   */
   async function handleEmbed() {
     if (!files.length) return;
     setIsEmbedding(true);
@@ -86,7 +97,7 @@ export default function ParsedFilesMenu({
           {nFormatter(currentTokens)} / {nFormatter(contextWindow)} tokens
         </div>
       </div>
-      {isOverflowing && (
+      {contextWindowLimitExceeded && (
         <div className="flex flex-col gap-2 p-2 bg-theme-bg-secondary light:bg-theme-bg-primary rounded">
           <div className="flex items-start gap-2">
             <Warning

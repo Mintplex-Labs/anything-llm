@@ -7,6 +7,8 @@ import { ABORT_STREAM_EVENT } from "@/utils/chat";
 
 const Workspace = {
   workspaceOrderStorageKey: "anythingllm-workspace-order",
+  /** The maximum percentage of the context window that can be used for attachments */
+  maxContextWindowLimit: 0.8,
 
   new: async function (data = {}) {
     const { workspace, message } = await fetch(`${API_BASE}/workspace/new`, {

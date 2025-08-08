@@ -15,6 +15,8 @@ export const CLEAR_ATTACHMENTS_EVENT = "ATTACHMENT_CLEAR";
 export const PASTE_ATTACHMENT_EVENT = "ATTACHMENT_PASTED";
 export const ATTACHMENTS_PROCESSING_EVENT = "ATTACHMENTS_PROCESSING";
 export const ATTACHMENTS_PROCESSED_EVENT = "ATTACHMENTS_PROCESSED";
+export const PARSED_FILE_ATTACHMENT_REMOVED_EVENT =
+  "PARSED_FILE_ATTACHMENT_REMOVED";
 
 /**
  * File Attachment for automatic upload on the chat container page.
@@ -26,6 +28,17 @@ export const ATTACHMENTS_PROCESSED_EVENT = "ATTACHMENTS_PROCESSED";
  * @property {string|null} error - Error message
  * @property {{id:string, location:string}|null} document - uploaded document details
  * @property {('attachment'|'upload')} type - The type of upload. Attachments are chat-specific, uploads go to the workspace.
+ */
+
+/**
+ * @typedef {Object} ParsedFile
+ * @property {number} id - The id of the parsed file.
+ * @property {string} filename - The name of the parsed file.
+ * @property {number} workspaceId - The id of the workspace the parsed file belongs to.
+ * @property {string|null} userId - The id of the user the parsed file belongs to.
+ * @property {string|null} threadId - The id of the thread the parsed file belongs to.
+ * @property {string} metadata - The metadata of the parsed file.
+ * @property {number} tokenCountEstimate - The estimated token count of the parsed file.
  */
 
 export function DnDFileUploaderProvider({
@@ -52,16 +65,36 @@ export function DnDFileUploaderProvider({
     window.addEventListener(REMOVE_ATTACHMENT_EVENT, handleRemove);
     window.addEventListener(CLEAR_ATTACHMENTS_EVENT, resetAttachments);
     window.addEventListener(PASTE_ATTACHMENT_EVENT, handlePastedAttachment);
+    window.addEventListener(
+      PARSED_FILE_ATTACHMENT_REMOVED_EVENT,
+      handleRemoveParsedFile
+    );
 
     return () => {
       window.removeEventListener(REMOVE_ATTACHMENT_EVENT, handleRemove);
       window.removeEventListener(CLEAR_ATTACHMENTS_EVENT, resetAttachments);
+      window.removeEventListener(
+        PARSED_FILE_ATTACHMENT_REMOVED_EVENT,
+        handleRemoveParsedFile
+      );
       window.removeEventListener(
         PASTE_ATTACHMENT_EVENT,
         handlePastedAttachment
       );
     };
   }, []);
+
+  /**
+   * Handles the removal of a parsed file attachment from the uploader queue.
+   * Only uses the document id to remove the file from the queue
+   * @param {CustomEvent<{document: ParsedFile}>} event
+   */
+  async function handleRemoveParsedFile(event) {
+    const { document } = event.detail;
+    setFiles((prev) =>
+      prev.filter((prevFile) => prevFile.document.id !== document.id)
+    );
+  }
 
   /**
    * Remove file from uploader queue.
@@ -189,7 +222,9 @@ export function DnDFileUploaderProvider({
 
     const { currentContextTokenCount, contextWindow: newContextWindow } =
       await Workspace.getParsedFiles(workspace.slug, threadSlug);
-    const newMaxTokens = Math.floor(newContextWindow * 0.8);
+    const newMaxTokens = Math.floor(
+      newContextWindow * Workspace.maxContextWindowLimit
+    );
     setMaxTokens(newMaxTokens);
 
     let totalTokenCount = currentContextTokenCount;
@@ -223,17 +258,17 @@ export function DnDFileUploaderProvider({
               );
               return;
             }
+            // Will always be one file in the array
+            /** @type {ParsedFile} */
+            const file = data.files[0];
 
             // Add token count for this file
-            const newTokenCount = data.files.reduce((sum, file) => {
-              return sum + (file.tokenCountEstimate || 0);
-            }, 0);
-
-            totalTokenCount += newTokenCount;
+            // and add it to the batch pending files
+            totalTokenCount += file.tokenCountEstimate;
             batchPendingFiles.push({
               attachment,
-              parsedFileId: data.files[0].id,
-              tokenCount: newTokenCount,
+              parsedFileId: file.id,
+              tokenCount: file.tokenCountEstimate,
             });
 
             if (totalTokenCount > newMaxTokens) {
@@ -244,7 +279,7 @@ export function DnDFileUploaderProvider({
             }
 
             // File is within limits, keep in parsed files
-            const result = { success: true, document: data.files[0] };
+            const result = { success: true, document: file };
             const updates = {
               status: result.success ? "added_context" : "failed",
               error: result.error ?? null,
