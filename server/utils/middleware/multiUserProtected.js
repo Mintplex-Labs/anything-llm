@@ -67,6 +67,37 @@ function flexUserRoleValid(allowedRoles = DEFAULT_ROLES) {
       next();
       return;
     }
+
+    // Allow default users to act as managers on their own private workspace
+    if (
+      allowedRoles.includes(ROLES.manager) &&
+      user?.role === ROLES.default &&
+      request.params?.slug
+    ) {
+      try {
+        const { Workspace } = require("../../models/workspace");
+        const { WorkspaceUser } = require("../../models/workspaceUsers");
+        const { User } = require("../../models/user");
+
+        const workspace = await Workspace.get({ slug: request.params.slug });
+        if (workspace?.private) {
+          const wUsers = await WorkspaceUser.where({
+            workspace_id: Number(workspace.id),
+          });
+          const userIds = wUsers.map((wu) => wu.user_id);
+          const nonAdmins = await User.where({
+            id: { in: userIds.map(Number) },
+            role: { not: ROLES.admin },
+          });
+          if (nonAdmins.length === 1 && nonAdmins[0].id === user.id) {
+            next();
+            return;
+          }
+        }
+      } catch (e) {
+        console.error(e.message);
+      }
+    }
     return response.sendStatus(401).end();
   };
 }
