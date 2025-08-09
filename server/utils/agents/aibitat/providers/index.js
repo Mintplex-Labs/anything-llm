@@ -23,6 +23,7 @@ const NvidiaNimProvider = require("./nvidiaNim.js");
 const PPIOProvider = require("./ppio.js");
 const GeminiProvider = require("./gemini.js");
 const DellProAiStudioProvider = require("./dellProAiStudio.js");
+const JanAiProvider = require("./janAi.js");
 const MoonshotAiProvider = require("./moonshotAi.js");
 
 module.exports = {
@@ -51,5 +52,6 @@ module.exports = {
   PPIOProvider,
   GeminiProvider,
   DellProAiStudioProvider,
+  JanAiProvider,
   MoonshotAiProvider,
 };

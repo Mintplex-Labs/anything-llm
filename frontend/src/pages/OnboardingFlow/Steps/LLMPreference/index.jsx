@@ -27,6 +27,7 @@ import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import PPIOLogo from "@/media/llmprovider/ppio.png";
 import DellProAiStudioLogo from "@/media/llmprovider/dpais.png";
+import JanAiLogo from "@/media/llmprovider/janai.png";
 import MoonshotAiLogo from "@/media/llmprovider/moonshotai.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -56,6 +57,7 @@ import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
 import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 import PPIOLLMOptions from "@/components/LLMSelection/PPIOLLMOptions";
 import DellProAiStudioOptions from "@/components/LLMSelection/DPAISOptions";
+import JanAiOptions from "@/components/LLMSelection/JanAiOptions";
 import MoonshotAiOptions from "@/components/LLMSelection/MoonshotAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
@@ -264,6 +266,13 @@ const LLMS = [
     logo: XAILogo,
     options: (settings) => <XAILLMOptions settings={settings} />,
     description: "Run xAI's powerful LLMs like Grok-2 and more.",
+  },
+  {
+    name: "Jan AI",
+    value: "janai",
+    logo: JanAiLogo,
+    options: (settings) => <JanAiOptions settings={settings} />,
+    description: "Run models from local Jan AI server.",
   },
   {
     name: "Moonshot AI",

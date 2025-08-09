@@ -677,6 +677,23 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Jan AI Options
+  JanAiApiKey: {
+    envKey: "JAN_AI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  JanAiModelPref: {
+    envKey: "JAN_AI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  JanAiBasePath: {
+    envKey: "JAN_AI_BASE_PATH",
+    checks: [isValidURL],
+  },
+  JanAiModelTokenLimit: {
+    envKey: "JAN_AI_MODEL_TOKEN_LIMIT",
+  },
+
   // Moonshot AI Options
   MoonshotAiApiKey: {
     envKey: "MOONSHOT_AI_API_KEY",
@@ -794,6 +811,7 @@ function supportedLLM(input = "") {
     "nvidia-nim",
     "ppio",
     "dpais",
+    "janai",
     "moonshotai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
