@@ -9,6 +9,7 @@ function FileUploadProgressComponent({
   slug,
   uuid,
   file,
+  policy = "replace",
   setFiles,
   rejected = false,
   reason = null,
@@ -42,6 +43,7 @@ function FileUploadProgressComponent({
       const start = Number(new Date());
       const formData = new FormData();
       formData.append("file", file, file.name);
+      formData.append("policy", policy);
       const pathName = file.path || file.webkitRelativePath;
       if (pathName) {
         const dirs = pathName.split(/[\\/]/).slice(0, -1);

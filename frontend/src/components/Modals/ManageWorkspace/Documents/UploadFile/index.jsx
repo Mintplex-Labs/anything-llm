@@ -113,6 +113,7 @@ export default function UploadFile({
           <FileUploadProgress
             key={left.uid}
             file={left.file}
+            policy={left.policy}
             uuid={left.uid}
             setFiles={setFiles}
             slug={slug}
@@ -128,6 +129,7 @@ export default function UploadFile({
           <FileUploadProgress
             key={right.uid}
             file={right.file}
+            policy={right.policy}
             uuid={right.uid}
             setFiles={setFiles}
             slug={slug}

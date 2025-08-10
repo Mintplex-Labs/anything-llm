@@ -56,6 +56,7 @@ model workspace_documents {
   watched              Boolean?              @default(false)
   createdAt            DateTime              @default(now())
   lastUpdatedAt        DateTime              @default(now())
+  version              Int                   @default(1)
   documentId           Int?
   parentId             Int?
   embedProfileId       Int?
@@ -65,9 +66,21 @@ model workspace_documents {
   workspace            workspaces            @relation(fields: [workspaceId], references: [id])
   document_sync_queues document_sync_queues?
   document             documents?            @relation(fields: [documentId], references: [id])
+  file_versions        file_versions[]
 
   @@index([workspaceId, parentId, filename])
   @@index([documentId, workspaceId])
+}
+
+model file_versions {
+  id               Int                 @id @default(autoincrement())
+  workspaceDocId   Int
+  version          Int
+  docpath          String
+  createdAt        DateTime            @default(now())
+  workspaceDoc     workspace_documents @relation(fields: [workspaceDocId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceDocId, version], name: "file_versions_workspaceDocId_version_idx")
 }
 
 model invites {
