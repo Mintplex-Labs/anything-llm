@@ -7,6 +7,7 @@ const {
   getDocumentsByFolder,
   normalizePath,
   isWithin,
+  resolveMultipartPath,
 } = require("../../../utils/files");
 const { reqBody } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
@@ -90,7 +91,15 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const Collector = new CollectorApi();
-        const { originalname } = request.file;
+        let targetName;
+        try {
+          targetName = resolveMultipartPath(request);
+        } catch (err) {
+          return response
+            .status(400)
+            .json({ success: false, error: err.message })
+            .end();
+        }
         const { addToWorkspaces = "" } = reqBody(request);
         const processingOnline = await Collector.online();
 
@@ -99,14 +108,14 @@ function apiDocumentEndpoints(app) {
             .status(500)
             .json({
               success: false,
-              error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
+              error: `Document processing API is not online. Document ${targetName} will not be processed automatically.`,
             })
             .end();
           return;
         }
 
         const { success, reason, documents } =
-          await Collector.processDocument(originalname);
+          await Collector.processDocument(targetName);
         if (!success) {
           response
             .status(500)
@@ -116,11 +125,11 @@ function apiDocumentEndpoints(app) {
         }
 
         Collector.log(
-          `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
+          `Document ${targetName} uploaded processed and successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("document_uploaded");
         await EventLogs.logEvent("api_document_uploaded", {
-          documentName: originalname,
+          documentName: targetName,
         });
 
         if (!!addToWorkspaces)
@@ -220,7 +229,15 @@ function apiDocumentEndpoints(app) {
       }
       */
       try {
-        const { originalname } = request.file;
+        let targetName;
+        try {
+          targetName = resolveMultipartPath(request);
+        } catch (err) {
+          return response
+            .status(400)
+            .json({ success: false, error: err.message })
+            .end();
+        }
         const { addToWorkspaces = "" } = reqBody(request);
         let folder = request.params?.folderName || "custom-documents";
         folder = normalizePath(folder);
@@ -240,7 +257,7 @@ function apiDocumentEndpoints(app) {
             .status(500)
             .json({
               success: false,
-              error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
+              error: `Document processing API is not online. Document ${targetName} will not be processed automatically.`,
             })
             .end();
           return;
@@ -248,7 +265,7 @@ function apiDocumentEndpoints(app) {
 
         // Process the uploaded document
         const { success, reason, documents } =
-          await Collector.processDocument(originalname);
+          await Collector.processDocument(targetName);
         if (!success) {
           response
             .status(500)
@@ -284,12 +301,12 @@ function apiDocumentEndpoints(app) {
         }
 
         Collector.log(
-          `Document ${originalname} uploaded, processed, and moved to folder ${folder} successfully.`
+          `Document ${targetName} uploaded, processed, and moved to folder ${folder} successfully.`
         );
 
         await Telemetry.sendTelemetry("document_uploaded");
         await EventLogs.logEvent("api_document_uploaded", {
-          documentName: originalname,
+          documentName: targetName,
           folder,
         });
 

@@ -432,6 +432,32 @@ async function fileToPickerData({
   };
 }
 
+/**
+ * Resolve a multipart file upload's desired destination using provided `path[]` fields.
+ * Moves the uploaded file into the requested subdirectory while ensuring the path
+ * stays within the upload root.
+ *
+ * @param {import("express").Request} request - Express request containing the file and body.
+ * @returns {string} Relative filepath including the filename inside the upload root.
+ */
+function resolveMultipartPath(request) {
+  const bodyPath = request.body?.path || request.body?.["path[]"]; // path[] may be array
+  const parts = Array.isArray(bodyPath) ? bodyPath : bodyPath ? [bodyPath] : [];
+  const segments = parts.filter(Boolean).map((p) => normalizePath(p));
+  if (segments.length === 0) return request.file.originalname;
+
+  const uploadRoot = path.dirname(request.file.path);
+  const destDir = path.join(uploadRoot, ...segments);
+  if (!isWithin(uploadRoot, destDir)) throw new Error("Invalid path provided.");
+
+  fs.mkdirSync(destDir, { recursive: true });
+  const destPath = path.join(destDir, request.file.originalname);
+  fs.renameSync(request.file.path, destPath);
+  request.file.path = destPath;
+
+  return path.join(...segments, request.file.originalname);
+}
+
 const REQUIRED_FILE_OBJECT_FIELDS = [
   "name",
   "type",
@@ -467,6 +493,7 @@ module.exports = {
   fileData,
   normalizePath,
   isWithin,
+  resolveMultipartPath,
   documentsPath,
   hasVectorCachedFiles,
   purgeEntireVectorCache,

@@ -15,7 +15,9 @@ export default function PreflightModal({
   const totalSize = files.reduce((sum, f) => sum + (f.size || 0), 0);
 
   const tree = useMemo(() => {
-    const paths = files.slice(0, 50).map((f) => f.path || f.name);
+    const paths = files
+      .slice(0, 50)
+      .map((f) => f.path || f.webkitRelativePath || f.name);
     const root = {};
     paths.forEach((p) => {
       const parts = p.split(/[\\/]/).filter(Boolean);

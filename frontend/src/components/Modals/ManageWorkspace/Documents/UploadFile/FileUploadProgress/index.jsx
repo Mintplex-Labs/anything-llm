@@ -21,6 +21,7 @@ function FileUploadProgressComponent({
   const [status, setStatus] = useState("pending");
   const [error, setError] = useState("");
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const pathLabel = file.path || file.webkitRelativePath || file.name;
 
   const fadeOut = (cb) => {
     setIsFadingOut(true);
@@ -41,8 +42,9 @@ function FileUploadProgressComponent({
       const start = Number(new Date());
       const formData = new FormData();
       formData.append("file", file, file.name);
-      if (file.path) {
-        const dirs = file.path.split(/[\\/]/).slice(0, -1);
+      const pathName = file.path || file.webkitRelativePath;
+      if (pathName) {
+        const dirs = pathName.split(/[\\/]/).slice(0, -1);
         dirs.forEach((d) => formData.append("path[]", d));
       }
       const timer = setInterval(() => {
@@ -87,7 +89,7 @@ function FileUploadProgressComponent({
         </div>
         <div className="flex flex-col">
           <p className="text-white light:text-red-600 text-xs font-semibold">
-            {truncate(file.path || file.name, 30)}
+            {truncate(pathLabel, 30)}
           </p>
           <p className="text-red-100 light:text-red-600 text-xs font-medium">
             {reason || "this file failed to upload"}
@@ -112,7 +114,7 @@ function FileUploadProgressComponent({
         </div>
         <div className="flex flex-col">
           <p className="text-white light:text-red-600 text-xs font-semibold">
-            {truncate(file.path || file.name, 30)}
+            {truncate(pathLabel, 30)}
           </p>
           <p className="text-red-100 light:text-red-600 text-xs font-medium">
             {error}
@@ -142,7 +144,7 @@ function FileUploadProgressComponent({
       </div>
       <div className="flex flex-col">
         <p className="text-white light:text-theme-text-primary text-xs font-medium">
-          {truncate(file.path || file.name, 30)}
+          {truncate(pathLabel, 30)}
         </p>
         <p className="text-white/80 light:text-theme-text-secondary text-xs font-medium">
           {humanFileSize(file.size)} | {milliToHms(timerMs)}
