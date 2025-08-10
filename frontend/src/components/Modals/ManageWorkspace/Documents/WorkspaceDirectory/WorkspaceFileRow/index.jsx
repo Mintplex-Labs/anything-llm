@@ -8,6 +8,7 @@ import { ArrowUUpLeft, Eye, File, PushPin } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
+import StatusBadge from "@/components/StatusBadge";
 
 export default function WorkspaceFileRow({
   item,
@@ -98,7 +99,9 @@ export default function WorkspaceFileRow({
         </p>
       </div>
       <div className="col-span-2 flex justify-end items-center">
-        {hasChanges ? (
+        {item?.status ? (
+          <StatusBadge status={item.status} />
+        ) : hasChanges ? (
           <div className="w-4 h-4 ml-2 flex-shrink-0" />
         ) : (
           <div className="flex gap-x-2 items-center">
