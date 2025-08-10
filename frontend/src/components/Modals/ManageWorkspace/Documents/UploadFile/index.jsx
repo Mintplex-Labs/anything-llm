@@ -6,6 +6,7 @@ import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
 import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
+import PreflightModal from "./PreflightModal";
 import Workspace from "../../../../../models/workspace";
 import debounce from "lodash.debounce";
 
@@ -18,6 +19,8 @@ export default function UploadFile({
   const { t } = useTranslation();
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
+  const [pendingFiles, setPendingFiles] = useState({});
+  const [showPreflight, setShowPreflight] = useState(false);
   const [fetchingUrl, setFetchingUrl] = useState(false);
 
   const handleSendLink = async (e) => {
@@ -49,21 +52,40 @@ export default function UploadFile({
   const handleUploadError = () => debouncedFetchKeys();
 
   const onDrop = async (acceptedFiles, rejections) => {
-    const newAccepted = acceptedFiles.map((file) => {
-      return {
-        uid: v4(),
-        file,
-      };
-    });
-    const newRejected = rejections.map((file) => {
-      return {
+    setPendingFiles({ accepted: acceptedFiles, rejected: rejections });
+    if (acceptedFiles.length > 0) {
+      setShowPreflight(true);
+    } else {
+      const newRejected = rejections.map((file) => ({
         uid: v4(),
         file: file.file,
         rejected: true,
         reason: file.errors[0].code,
-      };
-    });
+      }));
+      setFiles(newRejected);
+    }
+  };
+
+  const confirmUpload = (policy) => {
+    const newAccepted = (pendingFiles.accepted || []).map((file) => ({
+      uid: v4(),
+      file,
+      policy,
+    }));
+    const newRejected = (pendingFiles.rejected || []).map((file) => ({
+      uid: v4(),
+      file: file.file,
+      rejected: true,
+      reason: file.errors[0].code,
+    }));
     setFiles([...newAccepted, ...newRejected]);
+    setPendingFiles({});
+    setShowPreflight(false);
+  };
+
+  const cancelUpload = () => {
+    setPendingFiles({});
+    setShowPreflight(false);
   };
 
   useEffect(() => {
@@ -74,7 +96,7 @@ export default function UploadFile({
     checkProcessorOnline();
   }, []);
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
     disabled: !ready,
   });
@@ -130,6 +152,14 @@ export default function UploadFile({
           </div>
         )}
       </div>
+      <button
+        type="button"
+        onClick={open}
+        disabled={!ready}
+        className="mt-3 w-[560px] bg-primary-button text-white rounded-lg py-2 disabled:opacity-50"
+      >
+        {t("connectors.upload.upload-button", "Upload")}
+      </button>
       <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
         {t("connectors.upload.or-submit-link")}
       </div>
@@ -155,6 +185,13 @@ export default function UploadFile({
       <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
         {t("connectors.upload.privacy-notice")}
       </div>
+      {showPreflight && (
+        <PreflightModal
+          files={pendingFiles.accepted || []}
+          onConfirm={confirmUpload}
+          onCancel={cancelUpload}
+        />
+      )}
     </div>
   );
 }
