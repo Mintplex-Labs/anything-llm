@@ -2,9 +2,15 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { humanFileSize } from "../../../../../../utils/numbers";
 
-export default function PreflightModal({ files = [], onConfirm, onCancel }) {
+export default function PreflightModal({
+  files = [],
+  onConfirm,
+  onCancel,
+  libraryEnabled = false,
+}) {
   const { t } = useTranslation();
   const [policy, setPolicy] = useState("overwrite");
+  const [addToLibrary, setAddToLibrary] = useState(true);
 
   const totalSize = files.reduce((sum, f) => sum + (f.size || 0), 0);
 
@@ -77,6 +83,19 @@ export default function PreflightModal({ files = [], onConfirm, onCancel }) {
             {t("connectors.upload.preflight.skip", "Skip it")}
           </label>
         </div>
+        {libraryEnabled && (
+          <label className="flex items-center gap-x-2 text-white light:text-theme-text-primary text-sm mb-6">
+            <input
+              type="checkbox"
+              checked={addToLibrary}
+              onChange={() => setAddToLibrary(!addToLibrary)}
+            />
+            {t(
+              "connectors.upload.preflight.add_to_library",
+              "Also add to Library"
+            )}
+          </label>
+        )}
         <div className="flex justify-end gap-x-2">
           <button
             type="button"
@@ -88,7 +107,7 @@ export default function PreflightModal({ files = [], onConfirm, onCancel }) {
           <button
             type="button"
             className="bg-primary-button text-white rounded-md px-4 py-1 text-sm disabled:opacity-50"
-            onClick={() => onConfirm(policy)}
+            onClick={() => onConfirm(policy, addToLibrary)}
           >
             {t("common.confirm", "Upload")}
           </button>

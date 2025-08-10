@@ -53,6 +53,10 @@ OneNew is a full-stack application where you can use commercial off-the-shelf LL
 
 OneNew divides your documents into objects called `workspaces`. A Workspace functions a lot like a thread, but with the addition of containerization of your documents. Workspaces can share documents, but they do not talk to each other so you can keep your context for each workspace clean.
 
+### Migration Note
+
+The legacy global file list has been removed from the primary navigation. To expose an organization-wide Library instead, enable `flag.library`.
+
 ## Cool features of OneNew
 
 - 🆕 [**Full MCP-compatibility**](https://docs.anythingllm.com/mcp-compatibility/overview)

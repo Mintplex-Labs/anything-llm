@@ -5,6 +5,7 @@ import System from "../../../../models/system";
 import showToast from "../../../../utils/toast";
 import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
+import UploadFile from "./UploadFile";
 
 // OpenAI Cost per token
 // ref: https://openai.com/pricing#:~:text=%C2%A0/%201K%20tokens-,Embedding%20models,-Build%20advanced%20search
@@ -16,6 +17,7 @@ const MODEL_COSTS = {
 };
 
 export default function DocumentSettings({ workspace, systemSettings }) {
+  const libraryEnabled = systemSettings?.feature_flags?.library;
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
   const [availableDocs, setAvailableDocs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -191,40 +193,58 @@ export default function DocumentSettings({ workspace, systemSettings }) {
   };
 
   return (
-    <div className="flex upload-modal -mt-6 z-10 relative">
-      <Directory
-        files={availableDocs}
-        setFiles={setAvailableDocs}
-        loading={loading}
-        loadingMessage={loadingMessage}
-        setLoading={setLoading}
-        workspace={workspace}
-        fetchKeys={fetchKeys}
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        updateWorkspace={updateWorkspace}
-        highlightWorkspace={highlightWorkspace}
-        setHighlightWorkspace={setHighlightWorkspace}
-        moveToWorkspace={moveSelectedItemsToWorkspace}
-        setLoadingMessage={setLoadingMessage}
-      />
-      <div className="upload-modal-arrow">
-        <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
+    <>
+      <div className="flex upload-modal -mt-6 z-10 relative">
+        {libraryEnabled && (
+          <>
+            <Directory
+              files={availableDocs}
+              setFiles={setAvailableDocs}
+              loading={loading}
+              loadingMessage={loadingMessage}
+              setLoading={setLoading}
+              workspace={workspace}
+              fetchKeys={fetchKeys}
+              selectedItems={selectedItems}
+              setSelectedItems={setSelectedItems}
+              updateWorkspace={updateWorkspace}
+              highlightWorkspace={highlightWorkspace}
+              setHighlightWorkspace={setHighlightWorkspace}
+              moveToWorkspace={moveSelectedItemsToWorkspace}
+              setLoadingMessage={setLoadingMessage}
+              libraryEnabled={libraryEnabled}
+            />
+            <div className="upload-modal-arrow">
+              <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
+            </div>
+          </>
+        )}
+        <WorkspaceDirectory
+          workspace={workspace}
+          files={workspaceDocs}
+          highlightWorkspace={highlightWorkspace}
+          loading={loading}
+          loadingMessage={loadingMessage}
+          setLoadingMessage={setLoadingMessage}
+          setLoading={setLoading}
+          fetchKeys={fetchKeys}
+          hasChanges={hasChanges}
+          saveChanges={updateWorkspace}
+          embeddingCosts={embeddingsCost}
+          movedItems={movedItems}
+        />
       </div>
-      <WorkspaceDirectory
-        workspace={workspace}
-        files={workspaceDocs}
-        highlightWorkspace={highlightWorkspace}
-        loading={loading}
-        loadingMessage={loadingMessage}
-        setLoadingMessage={setLoadingMessage}
-        setLoading={setLoading}
-        fetchKeys={fetchKeys}
-        hasChanges={hasChanges}
-        saveChanges={updateWorkspace}
-        embeddingCosts={embeddingsCost}
-        movedItems={movedItems}
-      />
-    </div>
+      {!libraryEnabled && (
+        <div className="flex justify-center mt-6">
+          <UploadFile
+            workspace={workspace}
+            fetchKeys={fetchKeys}
+            setLoading={setLoading}
+            setLoadingMessage={setLoadingMessage}
+            libraryEnabled={libraryEnabled}
+          />
+        </div>
+      )}
+    </>
   );
 }
