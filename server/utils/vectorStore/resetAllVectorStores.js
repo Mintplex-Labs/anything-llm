@@ -3,7 +3,7 @@ const { Document } = require("../../models/documents");
 const { DocumentVectors } = require("../../models/vectors");
 const { EventLogs } = require("../../models/eventLogs");
 const { purgeEntireVectorCache } = require("../files");
-const { getVectorDbClass } = require("../helpers");
+const { getVectorDbClass, workspaceVectorNamespace } = require("../helpers");
 
 /**
  * Resets all vector database and associated content:
@@ -42,7 +42,8 @@ async function resetAllVectorStores({ vectorDbKey }) {
     } else {
       for (const workspace of workspaces) {
         try {
-          await VectorDb["delete-namespace"]({ namespace: workspace.slug });
+          const namespace = workspaceVectorNamespace(workspace);
+          await VectorDb["delete-namespace"]({ namespace });
         } catch (e) {
           console.error(e.message);
         }

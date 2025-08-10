@@ -1,5 +1,9 @@
 const { v4 } = require("uuid");
-const { getVectorDbClass, getLLMProvider } = require("../../../helpers");
+const {
+  getVectorDbClass,
+  getLLMProvider,
+  workspaceVectorNamespace,
+} = require("../../../helpers");
 const { Deduplicator } = require("../utils/dedupe");
 
 const memory = {
@@ -89,9 +93,10 @@ const memory = {
                 model: workspace?.chatModel,
               });
               const vectorDB = getVectorDbClass();
+              const namespace = workspaceVectorNamespace(workspace);
               const { contextTexts = [] } =
                 await vectorDB.performSimilaritySearch({
-                  namespace: workspace.slug,
+                  namespace,
                   input: query,
                   LLMConnector,
                   topN: workspace?.topN ?? 4,
@@ -123,8 +128,9 @@ const memory = {
             try {
               const workspace = this.super.handlerProps.invocation.workspace;
               const vectorDB = getVectorDbClass();
+              const namespace = workspaceVectorNamespace(workspace);
               const { error } = await vectorDB.addDocumentToNamespace(
-                workspace.slug,
+                namespace,
                 {
                   docId: v4(),
                   id: v4(),

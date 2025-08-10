@@ -11,6 +11,7 @@ const { WorkspaceChats } = require("../models/workspaceChats");
 const {
   getVectorDbClass,
   getEmbeddingEngineSelection,
+  workspaceVectorNamespace,
 } = require("../utils/helpers");
 const {
   validRoleSelection,
@@ -314,7 +315,8 @@ function adminEndpoints(app) {
         await Document.delete({ workspaceId: Number(workspace.id) });
         await Workspace.delete({ id: Number(workspace.id) });
         try {
-          await VectorDb["delete-namespace"]({ namespace: workspace.slug });
+          const namespace = workspaceVectorNamespace(workspace);
+          await VectorDb["delete-namespace"]({ namespace });
         } catch (e) {
           console.error(e.message);
         }

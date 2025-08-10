@@ -11,7 +11,10 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { getVectorDbClass } = require("../utils/helpers");
+const {
+  getVectorDbClass,
+  workspaceVectorNamespace,
+} = require("../utils/helpers");
 const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
@@ -279,7 +282,8 @@ function workspaceEndpoints(app) {
         );
 
         try {
-          await VectorDb["delete-namespace"]({ namespace: slug });
+          const namespace = workspaceVectorNamespace(workspace);
+          await VectorDb["delete-namespace"]({ namespace });
         } catch (e) {
           console.error(e.message);
         }
@@ -320,7 +324,8 @@ function workspaceEndpoints(app) {
         );
 
         try {
-          await VectorDb["delete-namespace"]({ namespace: slug });
+          const namespace = workspaceVectorNamespace(workspace);
+          await VectorDb["delete-namespace"]({ namespace });
         } catch (e) {
           console.error(e.message);
         }

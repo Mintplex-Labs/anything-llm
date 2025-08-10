@@ -4,7 +4,11 @@ const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../../../utils/helpers");
+const {
+  getVectorDbClass,
+  getLLMProvider,
+  workspaceVectorNamespace,
+} = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { VALID_CHAT_MODE } = require("../../../utils/chats/stream");
@@ -223,21 +227,20 @@ function apiWorkspaceEndpoints(app) {
         },
       };
       const workspace = await Workspace._findMany({
-        where:
-          user
-            ? user.role === ROLES.admin
-              ? {
-                  slug: String(slug),
-                  OR: [
-                    { private: false },
-                    { workspace_users: { some: { user_id: user.id } } },
-                  ],
-                }
-              : {
-                  slug: String(slug),
-                  workspace_users: { some: { user_id: user.id } },
-                }
-            : { slug: String(slug), private: false },
+        where: user
+          ? user.role === ROLES.admin
+            ? {
+                slug: String(slug),
+                OR: [
+                  { private: false },
+                  { workspace_users: { some: { user_id: user.id } } },
+                ],
+              }
+            : {
+                slug: String(slug),
+                workspace_users: { some: { user_id: user.id } },
+              }
+          : { slug: String(slug), private: false },
         ...baseQuery,
       });
 
@@ -287,7 +290,8 @@ function apiWorkspaceEndpoints(app) {
           workspaceName: workspace?.name || "Unknown Workspace",
         });
         try {
-          await VectorDb["delete-namespace"]({ namespace: slug });
+          const namespace = workspaceVectorNamespace(workspace);
+          await VectorDb["delete-namespace"]({ namespace });
         } catch (e) {
           console.error(e.message);
         }
@@ -970,8 +974,9 @@ function apiWorkspaceEndpoints(app) {
           });
 
         const VectorDb = getVectorDbClass();
-        const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
-        const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+        const namespace = workspaceVectorNamespace(workspace);
+        const hasVectorizedSpace = await VectorDb.hasNamespace(namespace);
+        const embeddingsCount = await VectorDb.namespaceCount(namespace);
 
         if (!hasVectorizedSpace || embeddingsCount === 0)
           return response.status(200).json({
@@ -993,7 +998,7 @@ function apiWorkspaceEndpoints(app) {
         };
 
         const results = await VectorDb.performSimilaritySearch({
-          namespace: workspace.slug,
+          namespace,
           input: String(query),
           LLMConnector: getLLMProvider(),
           similarityThreshold: parseSimilarityThreshold(),
@@ -1063,10 +1068,8 @@ function apiWorkspaceEndpoints(app) {
           }
 
           const document = documents[0];
-          const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
-            workspace,
-            [document.location]
-          );
+          const { failedToEmbed = [], errors = [] } =
+            await Document.addDocuments(workspace, [document.location]);
           if (failedToEmbed.length > 0) {
             items.push({
               filename: originalname,

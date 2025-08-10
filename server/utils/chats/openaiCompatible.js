@@ -1,7 +1,11 @@
 const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const {
+  getVectorDbClass,
+  getLLMProvider,
+  workspaceVectorNamespace,
+} = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
 const { chatPrompt, sourceIdentifier } = require("./index");
 
@@ -22,8 +26,9 @@ async function chatSync({
     model: workspace?.chatModel,
   });
   const VectorDb = getVectorDbClass();
-  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
-  const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+  const namespace = workspaceVectorNamespace(workspace);
+  const hasVectorizedSpace = await VectorDb.hasNamespace(namespace);
+  const embeddingsCount = await VectorDb.namespaceCount(namespace);
 
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
@@ -85,7 +90,7 @@ async function chatSync({
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
-          namespace: workspace.slug,
+          namespace,
           input: String(prompt),
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
@@ -225,8 +230,9 @@ async function streamChat({
     model: workspace?.chatModel,
   });
   const VectorDb = getVectorDbClass();
-  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
-  const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+  const namespace = workspaceVectorNamespace(workspace);
+  const hasVectorizedSpace = await VectorDb.hasNamespace(namespace);
+  const embeddingsCount = await VectorDb.namespaceCount(namespace);
 
   // We don't want to write a new method for every LLM to support openAI calls
   // via the `handleStreamResponseV2` method handler. So here we create a passthrough
@@ -311,7 +317,7 @@ async function streamChat({
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
-          namespace: workspace.slug,
+          namespace,
           input: String(prompt),
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,

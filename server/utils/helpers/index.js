@@ -116,6 +116,30 @@ function getVectorDbClass(getExactly = null) {
 }
 
 /**
+ * Build a vector namespace for a workspace and optional embed profile.
+ * Historically the system used the workspace slug for namespacing which meant
+ * vectors were shared when slugs changed or documents moved.  Namespacing by
+ * workspace id (and profile) ensures embeddings remain isolated per
+ * workspace/profile pair.
+ *
+ * @param {object|number|string} workspace - Workspace object or id value.
+ * @param {number|null} embedProfileId - Optional embed profile id.
+ * @returns {string}
+ */
+function workspaceVectorNamespace(workspace, embedProfileId = null) {
+  const id =
+    typeof workspace === "object"
+      ? workspace?.id ?? workspace?.workspaceId
+      : workspace;
+  const profile =
+    embedProfileId ??
+    (typeof workspace === "object" ? workspace?.embedProfileId : null);
+  if (id === undefined || id === null)
+    throw new Error("Invalid workspace identifier for namespace");
+  return profile ? `${id}-${profile}` : String(id);
+}
+
+/**
  * Returns the LLMProvider with its embedder attached via system or via defined provider.
  * @param {{provider: string | null, model: string | null} | null} params - Initialize params for LLMs provider
  * @returns {BaseLLMProvider}
@@ -459,5 +483,6 @@ module.exports = {
   getLLMProviderClass,
   getBaseLLMProviderModel,
   getLLMProvider,
+  workspaceVectorNamespace,
   toChunks,
 };
