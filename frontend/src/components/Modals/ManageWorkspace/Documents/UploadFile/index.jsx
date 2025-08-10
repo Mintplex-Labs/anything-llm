@@ -1,10 +1,11 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
 import { v4 } from "uuid";
+import { FixedSizeList as List } from "react-window";
 import FileUploadProgress from "./FileUploadProgress";
 import PreflightModal from "./PreflightModal";
 import Workspace from "../../../../../models/workspace";
@@ -101,6 +102,48 @@ export default function UploadFile({
     disabled: !ready,
   });
 
+  const Row = ({ index, style, data }) => {
+    const { files, slug, setFiles, handleUploadSuccess, handleUploadError, setLoading, setLoadingMessage } = data;
+    const left = files[index * 2];
+    const right = files[index * 2 + 1];
+    return (
+      <div style={style} className="flex gap-2 px-1">
+        {left && (
+          <FileUploadProgress
+            key={left.uid}
+            file={left.file}
+            uuid={left.uid}
+            setFiles={setFiles}
+            slug={slug}
+            rejected={left?.rejected}
+            reason={left?.reason}
+            onUploadSuccess={handleUploadSuccess}
+            onUploadError={handleUploadError}
+            setLoading={setLoading}
+            setLoadingMessage={setLoadingMessage}
+          />
+        )}
+        {right && (
+          <FileUploadProgress
+            key={right.uid}
+            file={right.file}
+            uuid={right.uid}
+            setFiles={setFiles}
+            slug={slug}
+            rejected={right?.rejected}
+            reason={right?.reason}
+            onUploadSuccess={handleUploadSuccess}
+            onUploadError={handleUploadError}
+            setLoading={setLoading}
+            setLoadingMessage={setLoadingMessage}
+          />
+        )}
+      </div>
+    );
+  };
+
+  const rowCount = useMemo(() => Math.ceil(files.length / 2), [files]);
+
   return (
     <div>
       <div
@@ -111,7 +154,7 @@ export default function UploadFile({
         }`}
         {...getRootProps()}
       >
-        <input {...getInputProps()} />
+        <input {...getInputProps({ webkitdirectory: true })} />
         {ready === false ? (
           <div className="flex flex-col items-center justify-center h-full">
             <CloudArrowUp className="w-8 h-8 text-white/80 light:invert" />
@@ -133,23 +176,24 @@ export default function UploadFile({
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[180px] p-1 overflow-y-scroll no-scroll">
-            {files.map((file) => (
-              <FileUploadProgress
-                key={file.uid}
-                file={file.file}
-                uuid={file.uid}
-                setFiles={setFiles}
-                slug={workspace.slug}
-                rejected={file?.rejected}
-                reason={file?.reason}
-                onUploadSuccess={handleUploadSuccess}
-                onUploadError={handleUploadError}
-                setLoading={setLoading}
-                setLoadingMessage={setLoadingMessage}
-              />
-            ))}
-          </div>
+          <List
+            height={180}
+            itemCount={rowCount}
+            itemSize={64}
+            width={560}
+            itemData={{
+              files,
+              slug: workspace.slug,
+              setFiles,
+              handleUploadSuccess,
+              handleUploadError,
+              setLoading,
+              setLoadingMessage,
+            }}
+            className="overflow-auto no-scroll"
+          >
+            {Row}
+          </List>
         )}
       </div>
       <button
