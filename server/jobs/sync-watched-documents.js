@@ -3,7 +3,10 @@ const { DocumentSyncQueue } = require('../models/documentSyncQueue.js');
 const { CollectorApi } = require('../utils/collectorApi');
 const { fileData } = require("../utils/files");
 const { log, conclude, updateSourceDocument } = require('./helpers/index.js');
-const { getVectorDbClass } = require('../utils/helpers/index.js');
+const {
+  getVectorDbClass,
+  workspaceVectorNamespace,
+} = require('../utils/helpers/index.js');
 const { DocumentSyncRun } = require('../models/documentSyncRun.js');
 
 (async () => {
@@ -90,9 +93,10 @@ const { DocumentSyncRun } = require('../models/documentSyncRun.js');
       // update the defined document and workspace vectorDB with the latest information
       // it will skip cache and create a new vectorCache file.
       const vectorDatabase = getVectorDbClass();
-      await vectorDatabase.deleteDocumentFromNamespace(workspace.slug, document.docId);
+      const namespace = workspaceVectorNamespace(workspace);
+      await vectorDatabase.deleteDocumentFromNamespace(namespace, document.docId);
       await vectorDatabase.addDocumentToNamespace(
-        workspace.slug,
+        namespace,
         { ...currentDocumentData, pageContent: newContent, docId: document.docId },
         document.docpath,
         true
@@ -123,9 +127,10 @@ const { DocumentSyncRun } = require('../models/documentSyncRun.js');
           const additionalWorkspace = additionalDocumentRef.workspace;
           workspacesModified.push(additionalWorkspace.slug);
 
-          await vectorDatabase.deleteDocumentFromNamespace(additionalWorkspace.slug, additionalDocumentRef.docId);
+          const addNamespace = workspaceVectorNamespace(additionalWorkspace);
+          await vectorDatabase.deleteDocumentFromNamespace(addNamespace, additionalDocumentRef.docId);
           await vectorDatabase.addDocumentToNamespace(
-            additionalWorkspace.slug,
+            addNamespace,
             { ...currentDocumentData, pageContent: newContent, docId: additionalDocumentRef.docId },
             additionalDocumentRef.docpath,
           );

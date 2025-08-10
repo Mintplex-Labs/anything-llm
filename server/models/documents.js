@@ -1,5 +1,8 @@
 const { v4: uuidv4 } = require("uuid");
-const { getVectorDbClass } = require("../utils/helpers");
+const {
+  getVectorDbClass,
+  workspaceVectorNamespace,
+} = require("../utils/helpers");
 const prisma = require("../utils/prisma");
 const { Telemetry } = require("./telemetry");
 const { EventLogs } = require("./eventLogs");
@@ -102,8 +105,9 @@ const Document = {
         metadata: JSON.stringify(metadata),
       };
 
+      const namespace = workspaceVectorNamespace(workspace);
       const { vectorized, error } = await VectorDb.addDocumentToNamespace(
-        workspace.slug,
+        namespace,
         { ...data, docId },
         path
       );
@@ -148,16 +152,14 @@ const Document = {
     const VectorDb = getVectorDbClass();
     if (removals.length === 0) return;
 
+    const namespace = workspaceVectorNamespace(workspace);
     for (const path of removals) {
       const document = await this.get({
         docpath: path,
         workspaceId: workspace.id,
       });
       if (!document) continue;
-      await VectorDb.deleteDocumentFromNamespace(
-        workspace.slug,
-        document.docId
-      );
+      await VectorDb.deleteDocumentFromNamespace(namespace, document.docId);
 
       try {
         await prisma.workspace_documents.delete({
