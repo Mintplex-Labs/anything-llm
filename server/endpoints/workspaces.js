@@ -6,7 +6,7 @@ const {
   userFromSession,
   safeJsonParse,
 } = require("../utils/http");
-const { normalizePath, isWithin } = require("../utils/files");
+const { normalizePath, isWithin, resolveMultipartPath } = require("../utils/files");
 const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
@@ -38,21 +38,6 @@ const { WorkspaceThread } = require("../models/workspaceThread");
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
-
-function resolveMultipartPath(request) {
-  const bodyPath = request.body?.path || request.body?.["path[]"]; // path[] may be array
-  const parts = Array.isArray(bodyPath) ? bodyPath : bodyPath ? [bodyPath] : [];
-  const segments = parts.filter(Boolean).map((p) => normalizePath(p));
-  if (segments.length === 0) return request.file.originalname;
-  const uploadRoot = path.dirname(request.file.path);
-  const destDir = path.join(uploadRoot, ...segments);
-  if (!isWithin(uploadRoot, destDir)) throw new Error("Invalid path provided.");
-  fs.mkdirSync(destDir, { recursive: true });
-  const destPath = path.join(destDir, request.file.originalname);
-  fs.renameSync(request.file.path, destPath);
-  request.file.path = destPath;
-  return path.join(...segments, request.file.originalname);
-}
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 
 function workspaceEndpoints(app) {
