@@ -61,6 +61,11 @@ class BackgroundService {
         name: "sync-watched-documents",
         interval: "1hr",
       },
+      // Job for cleaning up archived documents
+      {
+        name: "cleanup-archived-documents",
+        interval: "24hr", // Run daily
+      },
     ];
   }
 

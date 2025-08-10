@@ -207,6 +207,36 @@ const DataConnector = {
         });
     },
   },
+  googledrive: {
+    collect: async function ({
+      folderId,
+      serviceAccount,
+      syncFrequency,
+      enableAutoSync,
+      includeSubfolders,
+    }) {
+      return await fetch(`${API_BASE}/ext/googledrive`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({
+          folderId,
+          serviceAccount,
+          syncFrequency,
+          enableAutoSync,
+          includeSubfolders,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
 };
 
 export default DataConnector;
