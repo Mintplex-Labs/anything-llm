@@ -911,6 +911,9 @@ const TRANSLATIONS = {
       "fetch-website": "Fetch website",
       "privacy-notice":
         "These files will be uploaded to the document processor running on this OneNew instance. These files are not sent or shared with a third party.",
+      preflight: {
+        "add_to_library": "Also add to Library",
+      },
     },
     pinning: {
       what_pinning: "What is document pinning?",

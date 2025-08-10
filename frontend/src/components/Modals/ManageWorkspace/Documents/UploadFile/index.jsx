@@ -15,6 +15,7 @@ export default function UploadFile({
   fetchKeys,
   setLoading,
   setLoadingMessage,
+  libraryEnabled = false,
 }) {
   const { t } = useTranslation();
   const [ready, setReady] = useState(false);
@@ -190,6 +191,7 @@ export default function UploadFile({
           files={pendingFiles.accepted || []}
           onConfirm={confirmUpload}
           onCancel={cancelUpload}
+          libraryEnabled={libraryEnabled}
         />
       )}
     </div>

@@ -30,6 +30,7 @@ function Directory({
   moveToWorkspace,
   setLoadingMessage,
   loadingMessage,
+  libraryEnabled,
 }) {
   const { t } = useTranslation();
   const [amountSelected, setAmountSelected] = useState(0);
@@ -316,6 +317,7 @@ function Directory({
             fetchKeys={fetchKeys}
             setLoading={setLoading}
             setLoadingMessage={setLoadingMessage}
+            libraryEnabled={libraryEnabled}
           />
         </div>
         {isFolderModalOpen && (
