@@ -138,6 +138,33 @@ function handleAPIFileUpload(request, response, next) {
 }
 
 /**
+ * Handle API multi-file upload as documents without manipulating filenames.
+ * Accepts an array field named `files`.
+ * @param {Request} request
+ * @param {Response} response
+ * @param {NextFunction} next
+ */
+function handleAPIMultiFileUpload(request, response, next) {
+  const upload = multer({
+    storage: fileAPIUploadStorage,
+    limits: { fileSize: MAX_UPLOAD_BYTES },
+  }).array("files");
+
+  upload(request, response, function (err) {
+    if (err) {
+      const status = err.code === "LIMIT_FILE_SIZE" ? 413 : 500;
+      const message =
+        err.code === "LIMIT_FILE_SIZE"
+          ? `File exceeds ${MAX_UPLOAD_SIZE_MB}MB limit`
+          : `Invalid file upload. ${err.message}`;
+      response.status(status).json({ success: false, error: message }).end();
+      return;
+    }
+    next();
+  });
+}
+
+/**
  * Handle logo asset uploads
  */
 function handleAssetUpload(request, response, next) {
@@ -180,6 +207,7 @@ function handlePfpUpload(request, response, next) {
 module.exports = {
   handleFileUpload,
   handleAPIFileUpload,
+  handleAPIMultiFileUpload,
   handleAssetUpload,
   handlePfpUpload,
 };

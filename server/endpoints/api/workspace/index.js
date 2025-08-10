@@ -15,6 +15,8 @@ const {
 } = require("../../../utils/helpers/chat/responses");
 const { ApiChatHandler } = require("../../../utils/chats/apiChatHandler");
 const { getModelTag } = require("../../utils");
+const { CollectorApi } = require("../../../utils/collectorApi");
+const { handleAPIMultiFileUpload } = require("../../../utils/files/multer");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -1018,6 +1020,76 @@ function apiWorkspaceEndpoints(app) {
             score: source.score,
           })),
         });
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/v1/workspaces/:wid/uploads",
+    [validApiKey, handleAPIMultiFileUpload],
+    async (request, response) => {
+      try {
+        const { wid } = request.params;
+        const workspace =
+          (await Workspace.get({ slug: wid })) ||
+          (await Workspace.get({ id: Number(wid) }));
+        if (!workspace) {
+          response.status(404).json({ error: "Workspace not found" });
+          return;
+        }
+
+        const Collector = new CollectorApi();
+        const processingOnline = await Collector.online();
+        if (!processingOnline) {
+          response
+            .status(500)
+            .json({ error: "Document processing API is not online." })
+            .end();
+          return;
+        }
+
+        const files = request.files || [];
+        const items = [];
+        for (const file of files) {
+          const { originalname } = file;
+          const { success, reason, documents } =
+            await Collector.processDocument(originalname);
+          if (!success || documents?.length === 0) {
+            items.push({ filename: originalname, error: reason });
+            continue;
+          }
+
+          const document = documents[0];
+          const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
+            workspace,
+            [document.location]
+          );
+          if (failedToEmbed.length > 0) {
+            items.push({
+              filename: originalname,
+              embedStatus: "failed",
+              error: errors?.[0],
+            });
+            continue;
+          }
+
+          const record = await Document.get({
+            docpath: document.location,
+            workspaceId: workspace.id,
+          });
+
+          items.push({
+            workspaceDocumentId: record?.id || null,
+            documentId: record?.docId || null,
+            embedStatus: "embedded",
+            filename: record?.filename || originalname,
+          });
+        }
+
+        response.status(201).json({ items });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();
