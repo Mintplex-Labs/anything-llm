@@ -33,6 +33,18 @@ const Document = {
         return { success: false, error: e.message };
       });
   },
+  crossWorkspace: async (ops) => {
+    return await fetch(`${API_BASE}/files/cross-workspace`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ ops }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default Document;
