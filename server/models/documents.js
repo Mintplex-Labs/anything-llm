@@ -102,7 +102,7 @@ const Document = {
         filename: path.split("/")[1],
         docpath: path,
         workspaceId: workspace.id,
-        metadata: JSON.stringify(metadata),
+        metadata: JSON.stringify({ ...metadata, version: 1 }),
       };
 
       const namespace = workspaceVectorNamespace(workspace);
@@ -146,6 +146,55 @@ const Document = {
       userId
     );
     return { failedToEmbed, errors: Array.from(errors), embedded };
+  },
+
+  /**
+   * Replace an existing workspace document with a new version. Previous version
+   * is stored in file_versions table.
+   * @param {number} id - workspace_documents id
+   * @param {string} newDocpath - relative path to new document
+   * @returns {Promise<import("@prisma/client").workspace_documents|null>}
+   */
+  replace: async function (id = null, newDocpath = null) {
+    if (!id || !newDocpath) return null;
+    return await prisma.$transaction(async (tx) => {
+      const existing = await tx.workspace_documents.findUnique({ where: { id } });
+      if (!existing) return null;
+
+      await tx.file_versions.create({
+        data: {
+          workspaceDocId: existing.id,
+          version: existing.version,
+          docpath: existing.docpath,
+        },
+      });
+
+      const updated = await tx.workspace_documents.update({
+        where: { id: existing.id },
+        data: {
+          docpath: newDocpath,
+          version: existing.version + 1,
+        },
+      });
+      return updated;
+    });
+  },
+
+  /**
+   * Returns docpath for a specific version of a workspace document.
+   * @param {number} id - workspace_documents id
+   * @param {number} version - desired version
+   * @returns {Promise<string|null>}
+   */
+  docpathForVersion: async function (id = null, version = 1) {
+    if (!id) return null;
+    const current = await prisma.workspace_documents.findUnique({ where: { id } });
+    if (!current) return null;
+    if (current.version === version) return current.docpath;
+    const historic = await prisma.file_versions.findFirst({
+      where: { workspaceDocId: id, version },
+    });
+    return historic?.docpath || null;
   },
 
   removeDocuments: async function (workspace, removals = [], userId = null) {
@@ -228,13 +277,18 @@ const Document = {
       return false;
     }
   },
-  content: async function (docId) {
+  content: async function (docId, version = null) {
     if (!docId) throw new Error("No workspace docId provided!");
     const document = await this.get({ docId: String(docId) });
     if (!document) throw new Error(`Could not find a document by id ${docId}`);
 
+    const docpath =
+      version === null
+        ? document.docpath
+        : await this.docpathForVersion(document.id, version);
+
     const { fileData } = require("../utils/files");
-    const data = await fileData(document.docpath);
+    const data = await fileData(docpath);
     return { title: data.title, content: data.pageContent };
   },
   contentByDocPath: async function (docPath) {

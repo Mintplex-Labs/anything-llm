@@ -912,6 +912,12 @@ const TRANSLATIONS = {
       "privacy-notice":
         "These files will be uploaded to the document processor running on this OneNew instance. These files are not sent or shared with a third party.",
       preflight: {
+        title: "Ready to upload?",
+        summary: "{{count}} files, total size {{size}}",
+        conflict: "If a file exists:",
+        replace: "Replace",
+        keep_both: "Keep both",
+        skip: "Skip",
         "add_to_library": "Also add to Library",
       },
     },

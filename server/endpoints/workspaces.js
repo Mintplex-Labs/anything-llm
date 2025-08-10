@@ -6,7 +6,12 @@ const {
   userFromSession,
   safeJsonParse,
 } = require("../utils/http");
-const { normalizePath, isWithin, resolveMultipartPath } = require("../utils/files");
+const {
+  normalizePath,
+  isWithin,
+  resolveMultipartPath,
+  fileData,
+} = require("../utils/files");
 const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
@@ -927,6 +932,41 @@ function workspaceEndpoints(app) {
           return;
         }
 
+        const { policy = "replace" } = request.body || {};
+
+        const filename = path.basename(targetName);
+        const existingDoc = await Document.get({
+          filename,
+          workspaceId: currWorkspace.id,
+        });
+
+        if (existingDoc && policy === "skip") {
+          return response
+            .status(200)
+            .json({ success: true, skipped: true, document: null });
+        }
+
+        if (existingDoc && policy === "keep-both") {
+          let counter = 1;
+          const parsed = path.parse(filename);
+          let newFilename;
+          do {
+            newFilename = `${parsed.name} (${counter})${parsed.ext}`;
+            counter += 1;
+          } while (
+            (await Document.get({
+              filename: newFilename,
+              workspaceId: currWorkspace.id,
+            })) !== null
+          );
+          const newPath = path.join(path.dirname(targetName), newFilename);
+          fs.renameSync(
+            path.join(path.dirname(request.file.path), filename),
+            path.join(path.dirname(request.file.path), newFilename)
+          );
+          targetName = newPath;
+        }
+
         const { success, reason, documents } =
           await Collector.processDocument(targetName);
         if (!success || documents?.length === 0) {
@@ -947,16 +987,33 @@ function workspaceEndpoints(app) {
         );
 
         const document = documents[0];
-        const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
-          currWorkspace,
-          [document.location],
-          response.locals?.user?.id
-        );
+        if (existingDoc && policy === "replace") {
+          const VectorDb = getVectorDbClass();
+          const namespace = workspaceVectorNamespace(currWorkspace);
+          const data = await fileData(document.location);
+          const { vectorized, error } = await VectorDb.addDocumentToNamespace(
+            namespace,
+            { ...data, docId: existingDoc.docId, version: existingDoc.version + 1 },
+            document.location
+          );
+          if (!vectorized)
+            return response
+              .status(500)
+              .json({ success: false, error, document: null });
 
-        if (failedToEmbed.length > 0)
-          return response
-            .status(200)
-            .json({ success: false, error: errors?.[0], document: null });
+          await Document.replace(existingDoc.id, document.location);
+        } else {
+          const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
+            currWorkspace,
+            [document.location],
+            response.locals?.user?.id
+          );
+
+          if (failedToEmbed.length > 0)
+            return response
+              .status(200)
+              .json({ success: false, error: errors?.[0], document: null });
+        }
 
         response.status(200).json({
           success: true,

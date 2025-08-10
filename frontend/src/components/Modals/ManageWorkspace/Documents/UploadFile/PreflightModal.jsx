@@ -9,7 +9,7 @@ export default function PreflightModal({
   libraryEnabled = false,
 }) {
   const { t } = useTranslation();
-  const [policy, setPolicy] = useState("overwrite");
+  const [policy, setPolicy] = useState("replace");
   const [addToLibrary, setAddToLibrary] = useState(true);
 
   const totalSize = files.reduce((sum, f) => sum + (f.size || 0), 0);
@@ -68,11 +68,21 @@ export default function PreflightModal({
             <input
               type="radio"
               name="conflictPolicy"
-              value="overwrite"
-              checked={policy === "overwrite"}
-              onChange={() => setPolicy("overwrite")}
+              value="replace"
+              checked={policy === "replace"}
+              onChange={() => setPolicy("replace")}
             />
-            {t("connectors.upload.preflight.overwrite", "Overwrite it")}
+            {t("connectors.upload.preflight.replace", "Replace")}
+          </label>
+          <label className="flex items-center gap-x-2 text-white light:text-theme-text-primary text-sm mt-2">
+            <input
+              type="radio"
+              name="conflictPolicy"
+              value="keep-both"
+              checked={policy === "keep-both"}
+              onChange={() => setPolicy("keep-both")}
+            />
+            {t("connectors.upload.preflight.keep_both", "Keep both")}
           </label>
           <label className="flex items-center gap-x-2 text-white light:text-theme-text-primary text-sm mt-2">
             <input

@@ -28,12 +28,13 @@ class DocumentManager {
 
   async pinnedDocs() {
     if (!this.workspace) return [];
-    const docPaths = (await this.pinnedDocuments()).map((doc) => doc.docpath);
-    if (docPaths.length === 0) return [];
+    const docRecords = await this.pinnedDocuments();
+    if (docRecords.length === 0) return [];
 
     let tokens = 0;
     const pinnedDocs = [];
-    for await (const docPath of docPaths) {
+    for await (const record of docRecords) {
+      const docPath = record.docpath;
       try {
         const filePath = path.resolve(this.documentStoragePath, docPath);
         const data = JSON.parse(
@@ -57,7 +58,7 @@ class DocumentManager {
           continue;
         }
 
-        pinnedDocs.push(data);
+        pinnedDocs.push({ ...data, version: record.version });
         tokens += data.token_count_estimate || 0;
       } catch {}
     }
