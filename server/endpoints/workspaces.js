@@ -38,6 +38,21 @@ const { WorkspaceThread } = require("../models/workspaceThread");
 const truncate = require("truncate");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
+
+function resolveMultipartPath(request) {
+  const bodyPath = request.body?.path || request.body?.["path[]"]; // path[] may be array
+  const parts = Array.isArray(bodyPath) ? bodyPath : bodyPath ? [bodyPath] : [];
+  const segments = parts.filter(Boolean).map((p) => normalizePath(p));
+  if (segments.length === 0) return request.file.originalname;
+  const uploadRoot = path.dirname(request.file.path);
+  const destDir = path.join(uploadRoot, ...segments);
+  if (!isWithin(uploadRoot, destDir)) throw new Error("Invalid path provided.");
+  fs.mkdirSync(destDir, { recursive: true });
+  const destPath = path.join(destDir, request.file.originalname);
+  fs.renameSync(request.file.path, destPath);
+  request.file.path = destPath;
+  return path.join(...segments, request.file.originalname);
+}
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 
 function workspaceEndpoints(app) {
@@ -124,7 +139,15 @@ function workspaceEndpoints(app) {
     async function (request, response) {
       try {
         const Collector = new CollectorApi();
-        const { originalname } = request.file;
+        let targetName;
+        try {
+          targetName = resolveMultipartPath(request);
+        } catch (err) {
+          return response
+            .status(400)
+            .json({ success: false, error: err.message })
+            .end();
+        }
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -132,27 +155,27 @@ function workspaceEndpoints(app) {
             .status(500)
             .json({
               success: false,
-              error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
+              error: `Document processing API is not online. Document ${targetName} will not be processed automatically.`,
             })
             .end();
           return;
         }
 
         const { success, reason } =
-          await Collector.processDocument(originalname);
+          await Collector.processDocument(targetName);
         if (!success) {
           response.status(500).json({ success: false, error: reason }).end();
           return;
         }
 
         Collector.log(
-          `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
+          `Document ${targetName} uploaded processed and successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("document_uploaded");
         await EventLogs.logEvent(
           "document_uploaded",
           {
-            documentName: originalname,
+            documentName: targetName,
           },
           response.locals?.user?.id
         );
@@ -897,7 +920,15 @@ function workspaceEndpoints(app) {
         }
 
         const Collector = new CollectorApi();
-        const { originalname } = request.file;
+        let targetName;
+        try {
+          targetName = resolveMultipartPath(request);
+        } catch (err) {
+          return response
+            .status(400)
+            .json({ success: false, error: err.message })
+            .end();
+        }
         const processingOnline = await Collector.online();
 
         if (!processingOnline) {
@@ -905,27 +936,27 @@ function workspaceEndpoints(app) {
             .status(500)
             .json({
               success: false,
-              error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
+              error: `Document processing API is not online. Document ${targetName} will not be processed automatically.`,
             })
             .end();
           return;
         }
 
         const { success, reason, documents } =
-          await Collector.processDocument(originalname);
+          await Collector.processDocument(targetName);
         if (!success || documents?.length === 0) {
           response.status(500).json({ success: false, error: reason }).end();
           return;
         }
 
         Collector.log(
-          `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
+          `Document ${targetName} uploaded processed and successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("document_uploaded");
         await EventLogs.logEvent(
           "document_uploaded",
           {
-            documentName: originalname,
+            documentName: targetName,
           },
           response.locals?.user?.id
         );
