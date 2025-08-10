@@ -15,6 +15,28 @@ datasource db {
   url      = "file:../storage/anythingllm.db"
 }
 
+model binaries {
+  id          Int      @id @default(autoincrement())
+  contentHash String   @unique
+  size        Int
+  mime        String
+  storageUrl  String
+  createdAt   DateTime @default(now())
+  documents   documents[]
+}
+
+model documents {
+  id        Int      @id @default(autoincrement())
+  binaryId  Int
+  filename  String
+  ext       String?
+  ownerId   Int?
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  binary    binaries @relation(fields: [binaryId], references: [id], onDelete: Cascade)
+  workspace_documents workspace_documents[]
+}
+
 model api_keys {
   id            Int      @id @default(autoincrement())
   secret        String?  @unique
@@ -34,8 +56,18 @@ model workspace_documents {
   watched              Boolean?              @default(false)
   createdAt            DateTime              @default(now())
   lastUpdatedAt        DateTime              @default(now())
+  documentId           Int?
+  parentId             Int?
+  embedProfileId       Int?
+  embedStatus          String?
+  chunkCount           Int?                  @default(0)
+  lastIndexedAt        DateTime?
   workspace            workspaces            @relation(fields: [workspaceId], references: [id])
   document_sync_queues document_sync_queues?
+  document             documents?            @relation(fields: [documentId], references: [id])
+
+  @@index([workspaceId, parentId, filename])
+  @@index([documentId, workspaceId])
 }
 
 model invites {
