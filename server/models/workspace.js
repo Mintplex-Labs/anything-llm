@@ -313,7 +313,7 @@ const Workspace = {
    * Get the context window size for a workspace based on its provider and model settings.
    * If the workspace has no provider/model set, falls back to system defaults.
    * @param {Workspace} workspace - The workspace to get context window for
-   * @returns {number} The context window size in tokens (defaults to 8000 if no provider/model found)
+   * @returns {number|null} The context window size in tokens (defaults to null if no provider/model found)
    * @private
    */
   _getContextWindow: function (workspace) {
@@ -326,8 +326,8 @@ const Workspace = {
     const model =
       workspace.chatModel || getBaseLLMProviderModel({ provider }) || null;
 
-    if (!provider || !model) return Number.POSITIVE_INFINITY;
-    return LLMProvider?.promptWindowLimit?.(model) || Number.POSITIVE_INFINITY;
+    if (!provider || !model) return null;
+    return LLMProvider?.promptWindowLimit?.(model) || null;
   },
 
   get: async function (clause = {}) {

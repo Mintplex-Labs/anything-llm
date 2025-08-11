@@ -214,12 +214,12 @@ export function DnDFileUploaderProvider({
     window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSING_EVENT));
     const promises = [];
 
-    const { currentContextTokenCount, contextWindow: newContextWindow } =
+    const { currentContextTokenCount, contextWindow } =
       await Workspace.getParsedFiles(workspace.slug, threadSlug);
-    const newMaxTokens = Math.floor(
-      newContextWindow * Workspace.maxContextWindowLimit
-    );
-    setMaxTokens(newMaxTokens);
+    const workspaceContextWindow = contextWindow
+      ? Math.floor(contextWindow * Workspace.maxContextWindowLimit)
+      : Number.POSITIVE_INFINITY;
+    setMaxTokens(workspaceContextWindow);
 
     let totalTokenCount = currentContextTokenCount;
     let batchPendingFiles = [];
@@ -265,7 +265,7 @@ export function DnDFileUploaderProvider({
               tokenCount: file.tokenCountEstimate,
             });
 
-            if (totalTokenCount > newMaxTokens) {
+            if (totalTokenCount > workspaceContextWindow) {
               setTokenCount(totalTokenCount);
               setPendingFiles(batchPendingFiles);
               setShowWarningModal(true);

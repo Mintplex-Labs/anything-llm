@@ -15,16 +15,16 @@ const { WorkspaceParsedFiles } = require("../models/workspaceParsedFiles");
 function workspaceParsedFilesEndpoints(app) {
   if (!app) return;
 
-  app.post(
+  app.get(
     "/workspace/:slug/parsed-files",
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (request, response) => {
       try {
-        const { threadSlug = null } = reqBody(request);
+        const threadSlug = request.query.threadSlug || null;
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
         const thread = threadSlug
-          ? await WorkspaceThread.get({ slug: threadSlug })
+          ? await WorkspaceThread.get({ slug: String(threadSlug) })
           : null;
         const { files, contextWindow, currentContextTokenCount } =
           await WorkspaceParsedFiles.getContextMetadataAndLimits(

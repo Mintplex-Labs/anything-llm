@@ -21,6 +21,7 @@ export default function ParsedFilesMenu({
   const { user } = useUser();
   const canEmbed = !user || user.role !== "default";
   const initialContextWindowLimitExceeded =
+    contextWindow &&
     currentTokens >= contextWindow * Workspace.maxContextWindowLimit;
   const { slug, threadSlug = null } = useParams();
   const [isEmbedding, setIsEmbedding] = useState(false);
@@ -51,8 +52,9 @@ export default function ParsedFilesMenu({
       threadSlug
     );
     const newContextWindowLimitExceeded =
+      contextWindow &&
       currentContextTokenCount >=
-      contextWindow * Workspace.maxContextWindowLimit;
+        contextWindow * Workspace.maxContextWindowLimit;
     setCurrentTokens(currentContextTokenCount);
     setContextWindowLimitExceeded(newContextWindowLimitExceeded);
   }
@@ -123,7 +125,8 @@ export default function ParsedFilesMenu({
           <div
             className={`text-xs ${contextWindowLimitExceeded ? "text-orange-600" : "text-theme-text-secondary"}`}
           >
-            {nFormatter(currentTokens)} / {nFormatter(contextWindow)} tokens
+            {nFormatter(currentTokens)} /{" "}
+            {contextWindow ? nFormatter(contextWindow) : "--"} tokens
           </div>
         </div>
       </div>

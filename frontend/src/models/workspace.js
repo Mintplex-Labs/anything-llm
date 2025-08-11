@@ -264,11 +264,13 @@ const Workspace = {
   },
 
   getParsedFiles: async function (slug, threadSlug = null) {
-    const response = await fetch(`${API_BASE}/workspace/${slug}/parsed-files`, {
-      method: "POST",
+    const basePath = new URL(`${API_BASE}/workspace/${slug}/parsed-files`);
+    if (threadSlug) basePath.searchParams.set("threadSlug", threadSlug);
+    const response = await fetch(basePath, {
+      method: "GET",
       headers: baseHeaders(),
-      body: JSON.stringify({ threadSlug }),
     });
+
     const data = await response.json();
     return data;
   },
