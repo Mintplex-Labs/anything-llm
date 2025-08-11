@@ -705,7 +705,7 @@ const webBrowsing = {
               data.push({
                 title,
                 link: url,
-                snippet: text ? text.substring(0, 200) + "..." : "",
+                snippet: text,
                 publishedDate,
               });
             });

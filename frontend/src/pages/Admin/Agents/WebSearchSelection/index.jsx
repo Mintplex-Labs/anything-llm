@@ -9,7 +9,7 @@ import SerplySearchIcon from "./icons/serply.png";
 import SearXNGSearchIcon from "./icons/searxng.png";
 import TavilySearchIcon from "./icons/tavily.svg";
 import DuckDuckGoIcon from "./icons/duckduckgo.png";
-import ExaIcon from "./icons/exa.svg";
+import ExaIcon from "./icons/exa.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -44,8 +44,7 @@ const SEARCH_PROVIDERS = [
     value: "duckduckgo-engine",
     logo: DuckDuckGoIcon,
     options: () => <DuckDuckGoOptions />,
-    description:
-      "Free and privacy-focused web search using DuckDuckGo's HTML interface.",
+    description: "Free and privacy-focused web search using DuckDuckGo.",
   },
   {
     name: "Google Search Engine",
@@ -107,8 +106,7 @@ const SEARCH_PROVIDERS = [
     value: "exa-search",
     logo: ExaIcon,
     options: (settings) => <ExaSearchOptions settings={settings} />,
-    description:
-      "AI-powered search engine optimized for LLM use cases. Provides high-quality, embeddings-based search results.",
+    description: "AI-powered search engine optimized for LLM use cases.",
   },
 ];
 
