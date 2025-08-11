@@ -54,6 +54,7 @@ const TRANSLATIONS = {
       title: "Создайте ваше первое рабочее пространство",
       description:
         "Создайте ваше первое рабочее пространство и начните работу с OneNew.",
+      adminWarning: null,
     },
   },
   common: {
@@ -70,6 +71,8 @@ const TRANSLATIONS = {
     yes: "Да",
     no: "Нет",
     search: null,
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "Настройки экземпляра",
@@ -668,6 +671,15 @@ const TRANSLATIONS = {
       "fetch-website": "Получить сайт",
       "privacy-notice":
         "Эти файлы будут загружены в процессор документов на этом экземпляре OneNew. Файлы не отправляются и не передаются третьим лицам.",
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: "Что такое закрепление документа?",

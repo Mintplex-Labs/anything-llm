@@ -50,6 +50,7 @@ const TRANSLATIONS = {
     workspace: {
       title: "创建你的第一个工作区",
       description: "创建你的第一个工作区并开始使用 OneNew。",
+      adminWarning: null,
     },
   },
   common: {
@@ -66,6 +67,8 @@ const TRANSLATIONS = {
     yes: "是",
     no: "否",
     search: "搜索",
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "设置",
@@ -796,6 +799,15 @@ const TRANSLATIONS = {
       "fetch-website": "获取网站",
       "privacy-notice":
         "这些文件将被上传到此 OneNew 实例上的文档处理器。这些文件不会发送或共享给第三方。",
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: "什么是文档固定？",

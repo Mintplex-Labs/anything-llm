@@ -54,6 +54,7 @@ const TRANSLATIONS = {
       title: "最初のワークスペースを作成する",
       description:
         "最初のワークスペースを作成して、OneNewを始めましょう。",
+      adminWarning: null,
     },
   },
   common: {
@@ -70,6 +71,8 @@ const TRANSLATIONS = {
     yes: "はい",
     no: "いいえ",
     search: null,
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "インスタンス設定",
@@ -660,6 +663,15 @@ const TRANSLATIONS = {
       "fetch-website": "ウェブサイトを取得",
       "privacy-notice":
         "これらのファイルは、このOneNewインスタンス上のドキュメント処理機能にアップロードされます。第三者に送信・共有されることはありません。",
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: "ドキュメントのピン留めとは？",

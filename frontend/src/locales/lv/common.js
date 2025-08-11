@@ -54,6 +54,7 @@ const TRANSLATIONS = {
       title: "Izveidojiet savu pirmo darba telpu",
       description:
         "Izveidojiet savu pirmo darba telpu un sāciet darbu ar OneNew.",
+      adminWarning: null,
     },
   },
   common: {
@@ -70,6 +71,8 @@ const TRANSLATIONS = {
     yes: "Jā",
     no: "Nē",
     search: null,
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "Instances iestatījumi",
@@ -865,6 +868,15 @@ const TRANSLATIONS = {
       "fetch-website": "Iegūt vietni",
       "privacy-notice":
         "Šie faili tiks augšupielādēti dokumentu apstrādātājā, kas darbojas šajā OneNew instancē. Šie faili netiek nosūtīti vai kopīgoti ar trešo pusi.",
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: "Kas ir dokumentu piespraušana?",
