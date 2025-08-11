@@ -46,6 +46,42 @@ export default function ChromaDBOptions({ settings }) {
           />
         </div>
       </div>
+
+      <div className="w-full flex items-center gap-[36px] mt-1.5">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Tenant
+            <span className="text-xs text-theme-text-secondary font-normal ml-2">
+              (optional, for Chroma Cloud)
+            </span>
+          </label>
+          <input
+            name="ChromaTenant"
+            autoComplete="off"
+            type="text"
+            defaultValue={settings?.ChromaTenant}
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="default_tenant"
+          />
+        </div>
+
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Database Name
+            <span className="text-xs text-theme-text-secondary font-normal ml-2">
+              (optional, for Chroma Cloud)
+            </span>
+          </label>
+          <input
+            name="ChromaDatabaseName"
+            autoComplete="off"
+            type="text"
+            defaultValue={settings?.ChromaDatabaseName}
+            className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="default_database"
+          />
+        </div>
+      </div>
     </div>
   );
 }

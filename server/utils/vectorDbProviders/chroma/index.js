@@ -71,6 +71,8 @@ const Chroma = {
             },
           }
         : {}),
+      ...(process.env.CHROMA_TENANT ? { tenant: process.env.CHROMA_TENANT } : {}),
+      ...(process.env.CHROMA_DATABASE_NAME ? { database: process.env.CHROMA_DATABASE_NAME } : {}),
     });
 
     const isAlive = await client.heartbeat();

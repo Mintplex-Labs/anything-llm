@@ -331,6 +331,14 @@ const KEY_MAPPING = {
     envKey: "CHROMA_API_KEY",
     checks: [],
   },
+  ChromaTenant: {
+    envKey: "CHROMA_TENANT",
+    checks: [],
+  },
+  ChromaDatabaseName: {
+    envKey: "CHROMA_DATABASE_NAME",
+    checks: [],
+  },
 
   // Weaviate Options
   WeaviateEndpoint: {
