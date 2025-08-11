@@ -113,6 +113,7 @@ const SystemSettings = {
             "searxng-engine",
             "tavily-search",
             "duckduckgo-engine",
+            "exa-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -282,6 +283,7 @@ const SystemSettings = {
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
+      AgentExaApiKey: !!process.env.AGENT_EXA_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings

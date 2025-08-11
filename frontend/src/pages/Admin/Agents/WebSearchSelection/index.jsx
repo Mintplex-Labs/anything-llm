@@ -9,6 +9,7 @@ import SerplySearchIcon from "./icons/serply.png";
 import SearXNGSearchIcon from "./icons/searxng.png";
 import TavilySearchIcon from "./icons/tavily.svg";
 import DuckDuckGoIcon from "./icons/duckduckgo.png";
+import ExaIcon from "./icons/exa.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -26,6 +27,7 @@ import {
   SearXNGOptions,
   TavilySearchOptions,
   DuckDuckGoOptions,
+  ExaSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -42,8 +44,7 @@ const SEARCH_PROVIDERS = [
     value: "duckduckgo-engine",
     logo: DuckDuckGoIcon,
     options: () => <DuckDuckGoOptions />,
-    description:
-      "Free and privacy-focused web search using DuckDuckGo's HTML interface.",
+    description: "Free and privacy-focused web search using DuckDuckGo.",
   },
   {
     name: "Google Search Engine",
@@ -99,6 +100,13 @@ const SEARCH_PROVIDERS = [
     options: (settings) => <TavilySearchOptions settings={settings} />,
     description:
       "Tavily Search API. Offers a free tier with 1000 queries per month.",
+  },
+  {
+    name: "Exa Search",
+    value: "exa-search",
+    logo: ExaIcon,
+    options: (settings) => <ExaSearchOptions settings={settings} />,
+    description: "AI-powered search engine optimized for LLM use cases.",
   },
 ];
 
