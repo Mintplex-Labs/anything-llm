@@ -1,4 +1,4 @@
-import { API_BASE } from "@/utils/constants";
+import { API_BASE, fullApiUrl } from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import WorkspaceThread from "@/models/workspaceThread";
@@ -264,7 +264,7 @@ const Workspace = {
   },
 
   getParsedFiles: async function (slug, threadSlug = null) {
-    const basePath = new URL(`${API_BASE}/workspace/${slug}/parsed-files`);
+    const basePath = new URL(`${fullApiUrl()}/workspace/${slug}/parsed-files`);
     if (threadSlug) basePath.searchParams.set("threadSlug", threadSlug);
     const response = await fetch(basePath, {
       method: "GET",
