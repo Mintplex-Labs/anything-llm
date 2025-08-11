@@ -1,1002 +1,951 @@
 // Anything with "null" requires a translation. Contribute to translation via a PR!
 const TRANSLATIONS = {
-  onboarding: {
-    survey: {
-      email: null,
-      useCase: null,
-      useCaseWork: null,
-      useCasePersonal: null,
-      useCaseOther: null,
-      comment: null,
-      commentPlaceholder: null,
-      skip: null,
-      thankYou: null,
-      title: null,
-      description: null,
+  "onboarding": {
+    "survey": {
+      "email": null,
+      "useCase": null,
+      "useCaseWork": null,
+      "useCasePersonal": null,
+      "useCaseOther": null,
+      "comment": null,
+      "commentPlaceholder": null,
+      "skip": null,
+      "thankYou": null,
+      "title": null,
+      "description": null
     },
-    home: {
-      title: null,
-      getStarted: null,
+    "home": {
+      "title": null,
+      "getStarted": null
     },
-    llm: {
-      title: null,
-      description: null,
+    "llm": {
+      "title": null,
+      "description": null
     },
-    userSetup: {
-      title: null,
-      description: null,
-      howManyUsers: null,
-      justMe: null,
-      myTeam: null,
-      instancePassword: null,
-      setPassword: null,
-      passwordReq: null,
-      passwordWarn: null,
-      adminUsername: null,
-      adminUsernameReq: null,
-      adminPassword: null,
-      adminPasswordReq: null,
-      teamHint: null,
+    "userSetup": {
+      "title": null,
+      "description": null,
+      "howManyUsers": null,
+      "justMe": null,
+      "myTeam": null,
+      "instancePassword": null,
+      "setPassword": null,
+      "passwordReq": null,
+      "passwordWarn": null,
+      "adminUsername": null,
+      "adminUsernameReq": null,
+      "adminPassword": null,
+      "adminPasswordReq": null,
+      "teamHint": null
     },
-    data: {
-      title: null,
-      description: null,
-      settingsHint: null,
+    "data": {
+      "title": null,
+      "description": null,
+      "settingsHint": null
     },
-    workspace: {
-      title: null,
-      description: null,
-    },
+    "workspace": {
+      "title": null,
+      "description": null
+    }
   },
-  common: {
+  "common": {
     "workspaces-name": "Tên không gian làm việc",
-    error: "Lỗi",
-    success: "Thành công",
-    user: "Người dùng",
-    selection: "Lựa chọn mô hình",
-    saving: "Đang lưu...",
-    save: "Lưu thay đổi",
-    previous: "Trang trước",
-    next: "Trang tiếp theo",
-    optional: null,
-    yes: null,
-    no: null,
-    search: null,
+    "error": "Lỗi",
+    "success": "Thành công",
+    "user": "Người dùng",
+    "selection": "Lựa chọn mô hình",
+    "saving": "Đang lưu...",
+    "save": "Lưu thay đổi",
+    "previous": "Trang trước",
+    "next": "Trang tiếp theo",
+    "optional": null,
+    "yes": null,
+    "no": null,
+    "search": null
   },
-  settings: {
-    title: "Cài đặt hệ thống",
-    system: "Cài đặt chung",
-    invites: "Lời mời",
-    users: "Người dùngs",
-    workspaces: "Không gian làm việc",
+  "settings": {
+    "title": "Cài đặt hệ thống",
+    "system": "Cài đặt chung",
+    "invites": "Lời mời",
+    "users": "Người dùngs",
+    "workspaces": "Không gian làm việc",
     "workspace-chats": "Hội thoại không gian làm việc",
-    customization: "Tùy chỉnh",
+    "customization": "Tùy chỉnh",
     "api-keys": "API nhà phát triển",
-    llm: "LLM",
-    transcription: "Chuyển đổi giọng nói",
-    embedder: "Nhúng dữ liệu",
+    "llm": "LLM",
+    "transcription": "Chuyển đổi giọng nói",
+    "embedder": "Nhúng dữ liệu",
     "text-splitting": "Chia nhỏ & Tách văn bản",
     "voice-speech": "Giọng nói & Phát âm",
     "vector-database": "Cơ sở dữ liệu Vector",
-    embeds: "Nhúng hội thoại",
+    "embeds": "Nhúng hội thoại",
     "embed-chats": "Nhúng hội thoại History",
-    security: "Bảo mật",
+    "security": "Bảo mật",
     "event-logs": "Nhật ký sự kiện",
-    privacy: "Quyền riêng tư & Dữ liệu",
+    "privacy": "Quyền riêng tư & Dữ liệu",
     "ai-providers": "Nhà cung cấp AI",
     "agent-skills": "Kỹ năng của Agent",
-    admin: "Quản trị viên",
-    tools: "Công cụ",
+    "admin": "Quản trị viên",
+    "tools": "Công cụ",
     "experimental-features": "Tính năng thử nghiệm",
-    contact: "Liên hệ hỗ trợ",
+    "contact": "Liên hệ hỗ trợ",
     "browser-extension": "Tiện ích trình duyệt",
     "system-prompt-variables": null,
-    interface: null,
-    branding: null,
-    chat: null,
+    "interface": null,
+    "branding": null,
+    "chat": null
   },
-  login: {
+  "login": {
     "multi-user": {
-      welcome: "Chào mừng đến với",
+      "welcome": "Chào mừng đến với",
       "placeholder-username": "Người dùngname",
       "placeholder-password": "Mật khẩu",
-      login: "Đăng nhập",
-      validating: "Đang xác thực...",
+      "login": "Đăng nhập",
+      "validating": "Đang xác thực...",
       "forgot-pass": "Quên mật khẩu",
-      reset: "Đặt lại",
+      "reset": "Đặt lại"
     },
     "sign-in": {
-      start: "Đăng nhập vào",
-      end: "tài khoản của bạn.",
+      "start": "Đăng nhập vào",
+      "end": "tài khoản của bạn."
     },
     "password-reset": {
-      title: "Mật khẩu Đặt lại",
-      description: "Cung cấp thông tin cần thiết dưới đây để đặt lại mật khẩu.",
+      "title": "Mật khẩu Đặt lại",
+      "description": "Cung cấp thông tin cần thiết dưới đây để đặt lại mật khẩu.",
       "recovery-codes": "Mã khôi phục",
       "recovery-code": "Mã khôi phục {{index}}",
-      "back-to-login": "Back to Đăng nhập",
-    },
+      "back-to-login": "Back to Đăng nhập"
+    }
   },
-  welcomeMessage: {
-    part1:
-      "Chào mừng đến với AnythingLLM, AnythingLLM is an open-source AI tool by Mintplex Labs that turns anything into a trained chatbot you can query and chat with. AnythingLLM is a BYOK (bring-your-own-keys) software so there is no subscription, fee, or charges for this software outside of the services you want to use with it.",
-    part2:
-      "AnythingLLM is the easiest way to put powerful AI products like OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services together in a neat package with no fuss to increase your productivity by 100x.",
-    part3:
-      "AnythingLLM can run totally locally on your machine with little overhead you wont even notice it's there! No GPU needed. Cloud and on-premises installation is available as well.\nThe AI tooling ecosystem gets more powerful everyday. AnythingLLM makes it easy to use.",
-    githubIssue: "Create an issue on GitHub",
-    user1: "How do I get started?!",
-    part4:
-      "It's simple. All collections are organized into buckets we call \"Không gian làm việc\". Không gian làm việc are buckets of files, documents, images, PDFs, and other files which will be transformed into something LLM's can understand and use in conversation.\n\nYou can add and remove files at anytime.",
-    createWorkspace: "Create your first workspace",
-    user2:
-      "Is this like an AI dropbox or something? What about chatting? It is a chatbot isn't it?",
-    part5:
-      "AnythingLLM is more than a smarter Dropbox.\n\nAnythingLLM offers two ways of talking with your data:\n\n<i>Query:</i> Your chats will return data or inferences found with the documents in your workspace it has access to. Adding more documents to the Workspace make it smarter! \n\n<i>Conversational:</i> Your documents + your on-going chat history both contribute to the LLM knowledge at the same time. Great for appending real-time text-based info or corrections and misunderstandings the LLM might have. \n\nYou can toggle between either mode \n<i>in the middle of chatting!</i>",
-    user3: "Wow, this sounds amazing, let me try it out already!",
-    part6: "Have Fun!",
-    starOnGitHub: "Star on GitHub",
-    contact: "Contact Mintplex Labs",
+  "welcomeMessage": {
+    "part1": "Chào mừng đến với AnythingLLM, AnythingLLM is an open-source AI tool by Mintplex Labs that turns anything into a trained chatbot you can query and chat with. AnythingLLM is a BYOK (bring-your-own-keys) software so there is no subscription, fee, or charges for this software outside of the services you want to use with it.",
+    "part2": "AnythingLLM is the easiest way to put powerful AI products like OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services together in a neat package with no fuss to increase your productivity by 100x.",
+    "part3": "AnythingLLM can run totally locally on your machine with little overhead you wont even notice it's there! No GPU needed. Cloud and on-premises installation is available as well.\nThe AI tooling ecosystem gets more powerful everyday. AnythingLLM makes it easy to use.",
+    "githubIssue": "Create an issue on GitHub",
+    "user1": "How do I get started?!",
+    "part4": "It's simple. All collections are organized into buckets we call \"Không gian làm việc\". Không gian làm việc are buckets of files, documents, images, PDFs, and other files which will be transformed into something LLM's can understand and use in conversation.\n\nYou can add and remove files at anytime.",
+    "createWorkspace": "Create your first workspace",
+    "user2": "Is this like an AI dropbox or something? What about chatting? It is a chatbot isn't it?",
+    "part5": "AnythingLLM is more than a smarter Dropbox.\n\nAnythingLLM offers two ways of talking with your data:\n\n<i>Query:</i> Your chats will return data or inferences found with the documents in your workspace it has access to. Adding more documents to the Workspace make it smarter! \n\n<i>Conversational:</i> Your documents + your on-going chat history both contribute to the LLM knowledge at the same time. Great for appending real-time text-based info or corrections and misunderstandings the LLM might have. \n\nYou can toggle between either mode \n<i>in the middle of chatting!</i>",
+    "user3": "Wow, this sounds amazing, let me try it out already!",
+    "part6": "Have Fun!",
+    "starOnGitHub": "Star on GitHub",
+    "contact": "Contact Mintplex Labs"
   },
   "new-workspace": {
-    title: "Không gian làm việc mới",
-    placeholder: "Không gian làm việc của tôi",
+    "title": "Không gian làm việc mới",
+    "placeholder": "Không gian làm việc của tôi"
   },
   "workspaces—settings": {
-    general: "Cài đặt chung",
-    chat: "Chat Settings",
-    vector: "Cơ sở dữ liệu Vector",
-    members: "Members",
-    agent: "Agent Configuration",
+    "general": "Cài đặt chung",
+    "chat": "Chat Settings",
+    "vector": "Cơ sở dữ liệu Vector",
+    "members": "Members",
+    "agent": "Agent Configuration"
   },
-  general: {
-    vector: {
-      title: "Vector Count",
-      description: "Total number of vectors in your vector database.",
+  "general": {
+    "vector": {
+      "title": "Vector Count",
+      "description": "Total number of vectors in your vector database."
     },
-    names: {
-      description: "This will only change the display name of your workspace.",
+    "names": {
+      "description": "This will only change the display name of your workspace."
     },
-    message: {
-      title: "Tin nhắn trò chuyện được gợi ý",
-      description:
-        "Customize the messages that will be suggested to your workspace users.",
-      add: "Add new message",
-      save: "Save Messages",
-      heading: "Explain to me",
-      body: "the benefits of AnythingLLM",
+    "message": {
+      "title": "Tin nhắn trò chuyện được gợi ý",
+      "description": "Customize the messages that will be suggested to your workspace users.",
+      "add": "Add new message",
+      "save": "Save Messages",
+      "heading": "Explain to me",
+      "body": "the benefits of AnythingLLM"
     },
-    pfp: {
-      title: "Hình đại diện trợ lý",
-      description:
-        "Customize the profile image of the assistant for this workspace.",
-      image: "Workspace Image",
-      remove: "Remove Workspace Image",
+    "pfp": {
+      "title": "Hình đại diện trợ lý",
+      "description": "Customize the profile image of the assistant for this workspace.",
+      "image": "Workspace Image",
+      "remove": "Remove Workspace Image"
     },
-    delete: {
-      title: "Xóa không gian làm việc",
-      description:
-        "Delete this workspace and all of its data. This will delete the workspace for all users.",
-      delete: "Xóa không gian làm việc",
-      deleting: "Deleting Workspace...",
+    "delete": {
+      "title": "Xóa không gian làm việc",
+      "description": "Delete this workspace and all of its data. This will delete the workspace for all users.",
+      "delete": "Xóa không gian làm việc",
+      "deleting": "Deleting Workspace...",
       "confirm-start": "You are about to delete your entire",
-      "confirm-end":
-        "workspace. This will remove all vector embeddings in your vector database.\n\nThe original source files will remain untouched. This action is irreversible.",
-    },
+      "confirm-end": "workspace. This will remove all vector embeddings in your vector database.\n\nThe original source files will remain untouched. This action is irreversible."
+    }
   },
-  chat: {
-    llm: {
-      title: "Workspace LLM Provider",
-      description:
-        "The specific LLM provider & model that will be used for this workspace. By default, it uses the system LLM provider and settings.",
-      search: "Search all LLM providers",
+  "chat": {
+    "llm": {
+      "title": "Workspace LLM Provider",
+      "description": "The specific LLM provider & model that will be used for this workspace. By default, it uses the system LLM provider and settings.",
+      "search": "Search all LLM providers"
     },
-    model: {
-      title: "Workspace Chat model",
-      description:
-        "The specific chat model that will be used for this workspace. If empty, will use the system LLM preference.",
-      wait: "-- waiting for models --",
+    "model": {
+      "title": "Workspace Chat model",
+      "description": "The specific chat model that will be used for this workspace. If empty, will use the system LLM preference.",
+      "wait": "-- waiting for models --"
     },
-    mode: {
-      title: "Chat mode",
-      chat: {
-        title: "Chat",
+    "mode": {
+      "title": "Chat mode",
+      "chat": {
+        "title": "Chat",
         "desc-start": "will provide answers with the LLM's general knowledge",
-        and: "and",
-        "desc-end": "document context that is found.",
+        "and": "and",
+        "desc-end": "document context that is found."
       },
-      query: {
-        title: "Query",
+      "query": {
+        "title": "Query",
         "desc-start": "will provide answers",
-        only: "only",
-        "desc-end": "if document context is found.",
-      },
+        "only": "only",
+        "desc-end": "if document context is found."
+      }
     },
-    history: {
-      title: "Chat History",
-      "desc-start":
-        "The number of previous chats that will be included in the response's short-term memory.",
-      recommend: "Recommend 20. ",
-      "desc-end":
-        "Anything more than 45 is likely to lead to continuous chat failures depending on message size.",
+    "history": {
+      "title": "Chat History",
+      "desc-start": "The number of previous chats that will be included in the response's short-term memory.",
+      "recommend": "Recommend 20. ",
+      "desc-end": "Anything more than 45 is likely to lead to continuous chat failures depending on message size."
     },
-    prompt: {
-      title: "Prompt",
-      description:
-        "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
-      history: {
-        title: null,
-        clearAll: null,
-        noHistory: null,
-        restore: null,
-        delete: null,
-        deleteConfirm: null,
-        clearAllConfirm: null,
-        expand: null,
-        publish: null,
-      },
+    "prompt": {
+      "title": "Prompt",
+      "description": "The prompt that will be used on this workspace. Define the context and instructions for the AI to generate a response. You should to provide a carefully crafted prompt so the AI can generate a relevant and accurate response.",
+      "history": {
+        "title": null,
+        "clearAll": null,
+        "noHistory": null,
+        "restore": null,
+        "delete": null,
+        "deleteConfirm": null,
+        "clearAllConfirm": null,
+        "expand": null,
+        "publish": null
+      }
     },
-    refusal: {
-      title: "Query mode refusal response",
+    "refusal": {
+      "title": "Query mode refusal response",
       "desc-start": "When in",
-      query: "query",
-      "desc-end":
-        "mode, you may want to return a custom refusal response when no context is found.",
+      "query": "query",
+      "desc-end": "mode, you may want to return a custom refusal response when no context is found.",
       "tooltip-title": null,
-      "tooltip-description": null,
+      "tooltip-description": null
     },
-    temperature: {
-      title: "LLM Temperature",
-      "desc-start":
-        'This setting controls how "creative" your LLM responses will be.',
-      "desc-end":
-        "The higher the number the more creative. For some models this can lead to incoherent responses when set too high.",
-      hint: "Most LLMs have various acceptable ranges of valid values. Consult your LLM provider for that information.",
-    },
+    "temperature": {
+      "title": "LLM Temperature",
+      "desc-start": "This setting controls how \"creative\" your LLM responses will be.",
+      "desc-end": "The higher the number the more creative. For some models this can lead to incoherent responses when set too high.",
+      "hint": "Most LLMs have various acceptable ranges of valid values. Consult your LLM provider for that information."
+    }
   },
   "vector-workspace": {
-    identifier: "Vector database identifier",
-    snippets: {
-      title: "Max Context Snippets",
-      description:
-        "This setting controls the maximum amount of context snippets that will be sent to the LLM for per chat or query.",
-      recommend: "Recommended: 4",
+    "identifier": "Vector database identifier",
+    "snippets": {
+      "title": "Max Context Snippets",
+      "description": "This setting controls the maximum amount of context snippets that will be sent to the LLM for per chat or query.",
+      "recommend": "Recommended: 4"
     },
-    doc: {
-      title: "Document similarity threshold",
-      description:
-        "The minimum similarity score required for a source to be considered related to the chat. The higher the number, the more similar the source must be to the chat.",
-      zero: "No restriction",
-      low: "Low (similarity score ≥ .25)",
-      medium: "Medium (similarity score ≥ .50)",
-      high: "High (similarity score ≥ .75)",
+    "doc": {
+      "title": "Document similarity threshold",
+      "description": "The minimum similarity score required for a source to be considered related to the chat. The higher the number, the more similar the source must be to the chat.",
+      "zero": "No restriction",
+      "low": "Low (similarity score ≥ .25)",
+      "medium": "Medium (similarity score ≥ .50)",
+      "high": "High (similarity score ≥ .75)"
     },
-    reset: {
-      reset: "Đặt lại Cơ sở dữ liệu Vector",
-      resetting: "Clearing vectors...",
-      confirm:
-        "You are about to reset this workspace's vector database. This will remove all vector embeddings currently embedded.\n\nThe original source files will remain untouched. This action is irreversible.",
-      error: "Workspace vector database could not be reset!",
-      success: "Workspace vector database was reset!",
-    },
+    "reset": {
+      "reset": "Đặt lại Cơ sở dữ liệu Vector",
+      "resetting": "Clearing vectors...",
+      "confirm": "You are about to reset this workspace's vector database. This will remove all vector embeddings currently embedded.\n\nThe original source files will remain untouched. This action is irreversible.",
+      "error": "Workspace vector database could not be reset!",
+      "success": "Workspace vector database was reset!"
+    }
   },
-  agent: {
-    "performance-warning":
-      "Performance of LLMs that do not explicitly support tool-calling is highly dependent on the model's capabilities and accuracy. Some abilities may be limited or non-functional.",
-    provider: {
-      title: "Workspace Agent LLM Provider",
-      description:
-        "The specific LLM provider & model that will be used for this workspace's @agent agent.",
+  "agent": {
+    "performance-warning": "Performance of LLMs that do not explicitly support tool-calling is highly dependent on the model's capabilities and accuracy. Some abilities may be limited or non-functional.",
+    "provider": {
+      "title": "Workspace Agent LLM Provider",
+      "description": "The specific LLM provider & model that will be used for this workspace's @agent agent."
     },
-    mode: {
-      chat: {
-        title: "Workspace Agent Chat model",
-        description:
-          "The specific chat model that will be used for this workspace's @agent agent.",
+    "mode": {
+      "chat": {
+        "title": "Workspace Agent Chat model",
+        "description": "The specific chat model that will be used for this workspace's @agent agent."
       },
-      title: "Workspace Agent model",
-      description:
-        "The specific LLM model that will be used for this workspace's @agent agent.",
-      wait: "-- waiting for models --",
+      "title": "Workspace Agent model",
+      "description": "The specific LLM model that will be used for this workspace's @agent agent.",
+      "wait": "-- waiting for models --"
     },
-    skill: {
-      title: "Default agent skills",
-      description:
-        "Improve the natural abilities of the default agent with these pre-built skills. This set up applies to all workspaces.",
-      rag: {
-        title: "RAG & long-term memory",
-        description:
-          'Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.',
+    "skill": {
+      "title": "Default agent skills",
+      "description": "Improve the natural abilities of the default agent with these pre-built skills. This set up applies to all workspaces.",
+      "rag": {
+        "title": "RAG & long-term memory",
+        "description": "Allow the agent to leverage your local documents to answer a query or ask the agent to \"remember\" pieces of content for long-term memory retrieval."
       },
-      view: {
-        title: "View & summarize documents",
-        description:
-          "Allow the agent to list and summarize the content of workspace files currently embedded.",
+      "view": {
+        "title": "View & summarize documents",
+        "description": "Allow the agent to list and summarize the content of workspace files currently embedded."
       },
-      scrape: {
-        title: "Scrape websites",
-        description:
-          "Allow the agent to visit and scrape the content of websites.",
+      "scrape": {
+        "title": "Scrape websites",
+        "description": "Allow the agent to visit and scrape the content of websites."
       },
-      generate: {
-        title: "Generate charts",
-        description:
-          "Enable the default agent to generate various types of charts from data provided or given in chat.",
+      "generate": {
+        "title": "Generate charts",
+        "description": "Enable the default agent to generate various types of charts from data provided or given in chat."
       },
-      save: {
-        title: "Generate & save files to browser",
-        description:
-          "Enable the default agent to generate and write to files that save and can be downloaded in your browser.",
+      "save": {
+        "title": "Generate & save files to browser",
+        "description": "Enable the default agent to generate and write to files that save and can be downloaded in your browser."
       },
-      web: {
-        title: "Live web search and browsing",
-        "desc-start":
-          "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider.",
-        "desc-end":
-          "Web search during agent sessions will not work until this is set up.",
-      },
-    },
+      "web": {
+        "title": "Live web search and browsing",
+        "desc-start": "Enable your agent to search the web to answer your questions by connecting to a web-search (SERP) provider.",
+        "desc-end": "Web search during agent sessions will not work until this is set up."
+      }
+    }
   },
-  recorded: {
-    title: "Hội thoại không gian làm việc",
-    description:
-      "These are all the recorded chats and messages that have been sent by users ordered by their creation date.",
-    export: "Export",
-    table: {
-      id: "Id",
-      by: "Sent By",
-      workspace: "Workspace",
-      prompt: "Prompt",
-      response: "Response",
-      at: "Sent At",
-    },
+  "recorded": {
+    "title": "Hội thoại không gian làm việc",
+    "description": "These are all the recorded chats and messages that have been sent by users ordered by their creation date.",
+    "export": "Export",
+    "table": {
+      "id": "Id",
+      "by": "Sent By",
+      "workspace": "Workspace",
+      "prompt": "Prompt",
+      "response": "Response",
+      "at": "Sent At"
+    }
   },
-  api: {
-    title: "Khóa API",
-    description:
-      "API keys allow the holder to programmatically access and manage this AnythingLLM instance.",
-    link: "Read the API documentation",
-    generate: "Generate New API Key",
-    table: {
-      key: "API Key",
-      by: "Created By",
-      created: "Created",
-    },
+  "api": {
+    "title": "Khóa API",
+    "description": "API keys allow the holder to programmatically access and manage this AnythingLLM instance.",
+    "link": "Read the API documentation",
+    "generate": "Generate New API Key",
+    "table": {
+      "key": "API Key",
+      "by": "Created By",
+      "created": "Created"
+    }
   },
-  llm: {
-    title: "LLM Preference",
-    description:
-      "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else AnythingLLM will not function properly.",
-    provider: "LLM Provider",
-    providers: {
-      azure_openai: {
-        azure_service_endpoint: null,
-        api_key: null,
-        chat_deployment_name: null,
-        chat_model_token_limit: null,
-        model_type: null,
-        default: null,
-        reasoning: null,
-      },
-    },
+  "llm": {
+    "title": "LLM Preference",
+    "description": "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else AnythingLLM will not function properly.",
+    "provider": "LLM Provider",
+    "providers": {
+      "azure_openai": {
+        "azure_service_endpoint": null,
+        "api_key": null,
+        "chat_deployment_name": null,
+        "chat_model_token_limit": null,
+        "model_type": null,
+        "default": null,
+        "reasoning": null
+      }
+    }
   },
-  transcription: {
-    title: "Chuyển đổi giọng nói Model Preference",
-    description:
-      "These are the credentials and settings for your preferred transcription model provider. Its important these keys are current and correct or else media files and audio will not transcribe.",
-    provider: "Chuyển đổi giọng nói Provider",
-    "warn-start":
-      "Using the local whisper model on machines with limited RAM or CPU can stall AnythingLLM when processing media files.",
-    "warn-recommend":
-      "We recommend at least 2GB of RAM and upload files <10Mb.",
-    "warn-end":
-      "The built-in model will automatically download on the first use.",
+  "transcription": {
+    "title": "Chuyển đổi giọng nói Model Preference",
+    "description": "These are the credentials and settings for your preferred transcription model provider. Its important these keys are current and correct or else media files and audio will not transcribe.",
+    "provider": "Chuyển đổi giọng nói Provider",
+    "warn-start": "Using the local whisper model on machines with limited RAM or CPU can stall AnythingLLM when processing media files.",
+    "warn-recommend": "We recommend at least 2GB of RAM and upload files <10Mb.",
+    "warn-end": "The built-in model will automatically download on the first use."
   },
-  embedding: {
-    title: "Tùy chọn nhúng",
-    "desc-start":
-      "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials to for embedding text.",
-    "desc-end":
-      "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
-    provider: {
-      title: "Embedding Provider",
-    },
+  "embedding": {
+    "title": "Tùy chọn nhúng",
+    "desc-start": "When using an LLM that does not natively support an embedding engine - you may need to additionally specify credentials to for embedding text.",
+    "desc-end": "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
+    "provider": {
+      "title": "Embedding Provider"
+    }
   },
-  text: {
-    title: "Tùy chọn chia nhỏ và tách văn bản",
-    "desc-start":
-      "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
-    "desc-end":
-      "You should only modify this setting if you understand how text splitting works and it's side effects.",
-    size: {
-      title: "Text Chunk Size",
-      description:
-        "This is the maximum length of characters that can be present in a single vector.",
-      recommend: "Embed model maximum length is",
+  "text": {
+    "title": "Tùy chọn chia nhỏ và tách văn bản",
+    "desc-start": "Sometimes, you may want to change the default way that new documents are split and chunked before being inserted into your vector database.",
+    "desc-end": "You should only modify this setting if you understand how text splitting works and it's side effects.",
+    "size": {
+      "title": "Text Chunk Size",
+      "description": "This is the maximum length of characters that can be present in a single vector.",
+      "recommend": "Embed model maximum length is"
     },
-    overlap: {
-      title: "Text Chunk Overlap",
-      description:
-        "This is the maximum overlap of characters that occurs during chunking between two adjacent text chunks.",
-    },
+    "overlap": {
+      "title": "Text Chunk Overlap",
+      "description": "This is the maximum overlap of characters that occurs during chunking between two adjacent text chunks."
+    }
   },
-  vector: {
-    title: "Cơ sở dữ liệu Vector",
-    description:
-      "These are the credentials and settings for how your AnythingLLM instance will function. It's important these keys are current and correct.",
-    provider: {
-      title: "Cơ sở dữ liệu Vector Provider",
-      description: "There is no configuration needed for LanceDB.",
-    },
+  "vector": {
+    "title": "Cơ sở dữ liệu Vector",
+    "description": "These are the credentials and settings for how your AnythingLLM instance will function. It's important these keys are current and correct.",
+    "provider": {
+      "title": "Cơ sở dữ liệu Vector Provider",
+      "description": "There is no configuration needed for LanceDB."
+    }
   },
-  embeddable: {
-    title: "Tiện ích hội thoại nhúng",
-    description:
-      "Embeddable chat widgets are public facing chat interfaces that are tied to a single workspace. These allow you to build workspaces that then you can publish to the world.",
-    create: "Tạo nhúng",
-    table: {
-      workspace: "Workspace",
-      chats: "Sent Chats",
-      active: "Active Domains",
-      created: null,
-    },
+  "embeddable": {
+    "title": "Tiện ích hội thoại nhúng",
+    "description": "Embeddable chat widgets are public facing chat interfaces that are tied to a single workspace. These allow you to build workspaces that then you can publish to the world.",
+    "create": "Tạo nhúng",
+    "table": {
+      "workspace": "Workspace",
+      "chats": "Sent Chats",
+      "active": "Active Domains",
+      "created": null
+    }
   },
   "embed-chats": {
-    title: "Embed Chats",
-    export: "Export",
-    description:
-      "These are all the recorded chats and messages from any embed that you have published.",
-    table: {
-      embed: "Embed",
-      sender: "Sender",
-      message: "Message",
-      response: "Response",
-      at: "Sent At",
-    },
+    "title": "Embed Chats",
+    "export": "Export",
+    "description": "These are all the recorded chats and messages from any embed that you have published.",
+    "table": {
+      "embed": "Embed",
+      "sender": "Sender",
+      "message": "Message",
+      "response": "Response",
+      "at": "Sent At"
+    }
   },
-  multi: {
-    title: "Multi-Người dùng Mode",
-    description:
-      "Set up your instance to support your team by activating Multi-Người dùng Mode.",
-    enable: {
-      "is-enable": "Multi-Người dùng Mode is Enabled",
-      enable: "Enable Multi-Người dùng Mode",
-      description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
-      username: "Quản trị viên account username",
-      password: "Quản trị viên account password",
-    },
-    password: {
-      title: "Mật khẩu Protection",
-      description:
-        "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
-      "password-label": "Mật khẩu của instance",
-    },
+  "event": {
+    "title": "Nhật ký sự kiện",
+    "description": "View all actions and events happening on this instance for monitoring.",
+    "clear": "Clear Nhật ký sự kiện",
+    "table": {
+      "type": "Event Type",
+      "user": "Người dùng",
+      "occurred": "Occurred At"
+    }
   },
-  event: {
-    title: "Nhật ký sự kiện",
-    description:
-      "View all actions and events happening on this instance for monitoring.",
-    clear: "Clear Nhật ký sự kiện",
-    table: {
-      type: "Event Type",
-      user: "Người dùng",
-      occurred: "Occurred At",
-    },
+  "privacy": {
+    "title": "Quyền riêng tư & Dữ liệu-Handling",
+    "description": "This is your configuration for how connected third party providers and AnythingLLM handle your data.",
+    "llm": "LLM Selection",
+    "embedding": "Tùy chọn nhúng",
+    "vector": "Cơ sở dữ liệu Vector",
+    "anonymous": "Anonymous Telemetry Enabled"
   },
-  privacy: {
-    title: "Quyền riêng tư & Dữ liệu-Handling",
-    description:
-      "This is your configuration for how connected third party providers and AnythingLLM handle your data.",
-    llm: "LLM Selection",
-    embedding: "Tùy chọn nhúng",
-    vector: "Cơ sở dữ liệu Vector",
-    anonymous: "Anonymous Telemetry Enabled",
-  },
-  connectors: {
+  "connectors": {
     "search-placeholder": null,
     "no-connectors": null,
-    github: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      token: null,
-      optional: null,
-      token_explained: null,
-      token_explained_start: null,
-      token_explained_link1: null,
-      token_explained_middle: null,
-      token_explained_link2: null,
-      token_explained_end: null,
-      ignores: null,
-      git_ignore: null,
-      task_explained: null,
-      branch: null,
-      branch_loading: null,
-      branch_explained: null,
-      token_information: null,
-      token_personal: null,
+    "github": {
+      "name": null,
+      "description": null,
+      "URL": null,
+      "URL_explained": null,
+      "token": null,
+      "optional": null,
+      "token_explained": null,
+      "token_explained_start": null,
+      "token_explained_link1": null,
+      "token_explained_middle": null,
+      "token_explained_link2": null,
+      "token_explained_end": null,
+      "ignores": null,
+      "git_ignore": null,
+      "task_explained": null,
+      "branch": null,
+      "branch_loading": null,
+      "branch_explained": null,
+      "token_information": null,
+      "token_personal": null
     },
-    gitlab: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      token: null,
-      optional: null,
-      token_explained: null,
-      token_description: null,
-      token_explained_start: null,
-      token_explained_link1: null,
-      token_explained_middle: null,
-      token_explained_link2: null,
-      token_explained_end: null,
-      fetch_issues: null,
-      ignores: null,
-      git_ignore: null,
-      task_explained: null,
-      branch: null,
-      branch_loading: null,
-      branch_explained: null,
-      token_information: null,
-      token_personal: null,
+    "gitlab": {
+      "name": null,
+      "description": null,
+      "URL": null,
+      "URL_explained": null,
+      "token": null,
+      "optional": null,
+      "token_explained": null,
+      "token_description": null,
+      "token_explained_start": null,
+      "token_explained_link1": null,
+      "token_explained_middle": null,
+      "token_explained_link2": null,
+      "token_explained_end": null,
+      "fetch_issues": null,
+      "ignores": null,
+      "git_ignore": null,
+      "task_explained": null,
+      "branch": null,
+      "branch_loading": null,
+      "branch_explained": null,
+      "token_information": null,
+      "token_personal": null
     },
-    youtube: {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained_start: null,
-      URL_explained_link: null,
-      URL_explained_end: null,
-      task_explained: null,
-      language: null,
-      language_explained: null,
-      loading_languages: null,
+    "youtube": {
+      "name": null,
+      "description": null,
+      "URL": null,
+      "URL_explained_start": null,
+      "URL_explained_link": null,
+      "URL_explained_end": null,
+      "task_explained": null,
+      "language": null,
+      "language_explained": null,
+      "loading_languages": null
     },
     "website-depth": {
-      name: null,
-      description: null,
-      URL: null,
-      URL_explained: null,
-      depth: null,
-      depth_explained: null,
-      max_pages: null,
-      max_pages_explained: null,
-      task_explained: null,
+      "name": null,
+      "description": null,
+      "URL": null,
+      "URL_explained": null,
+      "depth": null,
+      "depth_explained": null,
+      "max_pages": null,
+      "max_pages_explained": null,
+      "task_explained": null
     },
-    confluence: {
-      name: null,
-      description: null,
-      deployment_type: null,
-      deployment_type_explained: null,
-      base_url: null,
-      base_url_explained: null,
-      space_key: null,
-      space_key_explained: null,
-      username: null,
-      username_explained: null,
-      auth_type: null,
-      auth_type_explained: null,
-      auth_type_username: null,
-      auth_type_personal: null,
-      token: null,
-      token_explained_start: null,
-      token_explained_link: null,
-      token_desc: null,
-      pat_token: null,
-      pat_token_explained: null,
-      task_explained: null,
+    "confluence": {
+      "name": null,
+      "description": null,
+      "deployment_type": null,
+      "deployment_type_explained": null,
+      "base_url": null,
+      "base_url_explained": null,
+      "space_key": null,
+      "space_key_explained": null,
+      "username": null,
+      "username_explained": null,
+      "auth_type": null,
+      "auth_type_explained": null,
+      "auth_type_username": null,
+      "auth_type_personal": null,
+      "token": null,
+      "token_explained_start": null,
+      "token_explained_link": null,
+      "token_desc": null,
+      "pat_token": null,
+      "pat_token_explained": null,
+      "task_explained": null
     },
-    manage: {
-      documents: null,
+    "manage": {
+      "documents": null,
       "data-connectors": null,
       "desktop-only": null,
-      dismiss: null,
-      editing: null,
+      "dismiss": null,
+      "editing": null
     },
-    directory: {
+    "directory": {
       "my-documents": null,
       "new-folder": null,
       "search-document": null,
       "no-documents": null,
       "move-workspace": null,
-      name: null,
+      "name": null,
       "delete-confirmation": null,
       "removing-message": null,
       "move-success": null,
-      date: null,
-      type: null,
-      no_docs: null,
-      select_all: null,
-      deselect_all: null,
-      remove_selected: null,
-      costs: null,
-      save_embed: null,
+      "date": null,
+      "type": null,
+      "no_docs": null,
+      "select_all": null,
+      "deselect_all": null,
+      "remove_selected": null,
+      "costs": null,
+      "save_embed": null
     },
-    upload: {
+    "upload": {
       "processor-offline": null,
       "processor-offline-desc": null,
       "click-upload": null,
       "file-types": null,
       "or-submit-link": null,
       "placeholder-link": null,
-      fetching: null,
+      "fetching": null,
       "fetch-website": null,
-      "privacy-notice": null,
+      "privacy-notice": null
     },
-    pinning: {
-      what_pinning: null,
-      pin_explained_block1: null,
-      pin_explained_block2: null,
-      pin_explained_block3: null,
-      accept: null,
+    "pinning": {
+      "what_pinning": null,
+      "pin_explained_block1": null,
+      "pin_explained_block2": null,
+      "pin_explained_block3": null,
+      "accept": null
     },
-    watching: {
-      what_watching: null,
-      watch_explained_block1: null,
-      watch_explained_block2: null,
-      watch_explained_block3_start: null,
-      watch_explained_block3_link: null,
-      watch_explained_block3_end: null,
-      accept: null,
+    "watching": {
+      "what_watching": null,
+      "watch_explained_block1": null,
+      "watch_explained_block2": null,
+      "watch_explained_block3_start": null,
+      "watch_explained_block3_link": null,
+      "watch_explained_block3_end": null,
+      "accept": null
     },
-    obsidian: {
-      name: null,
-      description: null,
-      vault_location: null,
-      vault_description: null,
-      selected_files: null,
-      importing: null,
-      import_vault: null,
-      processing_time: null,
-      vault_warning: null,
-    },
+    "obsidian": {
+      "name": null,
+      "description": null,
+      "vault_location": null,
+      "vault_description": null,
+      "selected_files": null,
+      "importing": null,
+      "import_vault": null,
+      "processing_time": null,
+      "vault_warning": null
+    }
   },
-  chat_window: {
-    welcome: null,
-    get_started: null,
-    get_started_default: null,
-    upload: null,
-    or: null,
-    send_chat: null,
-    send_message: null,
-    attach_file: null,
-    slash: null,
-    agents: null,
-    text_size: null,
-    microphone: null,
-    send: null,
-    attachments_processing: null,
-    tts_speak_message: null,
-    copy: null,
-    regenerate: null,
-    regenerate_response: null,
-    good_response: null,
-    more_actions: null,
-    hide_citations: null,
-    show_citations: null,
-    pause_tts_speech_message: null,
-    fork: null,
-    delete: null,
-    save_submit: null,
-    cancel: null,
-    edit_prompt: null,
-    edit_response: null,
-    at_agent: null,
-    default_agent_description: null,
-    custom_agents_coming_soon: null,
-    slash_reset: null,
-    preset_reset_description: null,
-    add_new_preset: null,
-    command: null,
-    your_command: null,
-    placeholder_prompt: null,
-    description: null,
-    placeholder_description: null,
-    save: null,
-    small: null,
-    normal: null,
-    large: null,
-    workspace_llm_manager: {
-      search: null,
-      loading_workspace_settings: null,
-      available_models: null,
-      available_models_description: null,
-      save: null,
-      saving: null,
-      missing_credentials: null,
-      missing_credentials_description: null,
-    },
+  "chat_window": {
+    "welcome": null,
+    "get_started": null,
+    "get_started_default": null,
+    "upload": null,
+    "or": null,
+    "send_chat": null,
+    "send_message": null,
+    "attach_file": null,
+    "slash": null,
+    "agents": null,
+    "text_size": null,
+    "microphone": null,
+    "send": null,
+    "attachments_processing": null,
+    "tts_speak_message": null,
+    "copy": null,
+    "regenerate": null,
+    "regenerate_response": null,
+    "good_response": null,
+    "more_actions": null,
+    "hide_citations": null,
+    "show_citations": null,
+    "pause_tts_speech_message": null,
+    "fork": null,
+    "delete": null,
+    "save_submit": null,
+    "cancel": null,
+    "edit_prompt": null,
+    "edit_response": null,
+    "at_agent": null,
+    "default_agent_description": null,
+    "custom_agents_coming_soon": null,
+    "slash_reset": null,
+    "preset_reset_description": null,
+    "add_new_preset": null,
+    "command": null,
+    "your_command": null,
+    "placeholder_prompt": null,
+    "description": null,
+    "placeholder_description": null,
+    "save": null,
+    "small": null,
+    "normal": null,
+    "large": null,
+    "workspace_llm_manager": {
+      "search": null,
+      "loading_workspace_settings": null,
+      "available_models": null,
+      "available_models_description": null,
+      "save": null,
+      "saving": null,
+      "missing_credentials": null,
+      "missing_credentials_description": null
+    }
   },
-  profile_settings: {
-    edit_account: null,
-    profile_picture: null,
-    remove_profile_picture: null,
-    username: null,
-    username_description: null,
-    new_password: null,
-    password_description: null,
-    cancel: null,
-    update_account: null,
-    theme: null,
-    language: null,
-    failed_upload: null,
-    upload_success: null,
-    failed_remove: null,
-    profile_updated: null,
-    failed_update_user: null,
-    account: null,
-    support: null,
-    signout: null,
+  "profile_settings": {
+    "edit_account": null,
+    "profile_picture": null,
+    "remove_profile_picture": null,
+    "username": null,
+    "username_description": null,
+    "new_password": null,
+    "password_description": null,
+    "cancel": null,
+    "update_account": null,
+    "theme": null,
+    "language": null,
+    "failed_upload": null,
+    "upload_success": null,
+    "failed_remove": null,
+    "profile_updated": null,
+    "failed_update_user": null,
+    "account": null,
+    "support": null,
+    "signout": null
   },
-  customization: {
-    interface: {
-      title: null,
-      description: null,
+  "customization": {
+    "interface": {
+      "title": null,
+      "description": null
     },
-    branding: {
-      title: null,
-      description: null,
+    "branding": {
+      "title": null,
+      "description": null
     },
-    chat: {
-      title: null,
-      description: null,
-      auto_submit: {
-        title: null,
-        description: null,
+    "chat": {
+      "title": null,
+      "description": null,
+      "auto_submit": {
+        "title": null,
+        "description": null
       },
-      auto_speak: {
-        title: null,
-        description: null,
+      "auto_speak": {
+        "title": null,
+        "description": null
       },
-      spellcheck: {
-        title: null,
-        description: null,
-      },
+      "spellcheck": {
+        "title": null,
+        "description": null
+      }
     },
-    items: {
-      theme: {
-        title: null,
-        description: null,
+    "items": {
+      "theme": {
+        "title": null,
+        "description": null
       },
       "show-scrollbar": {
-        title: null,
-        description: null,
+        "title": null,
+        "description": null
       },
       "support-email": {
-        title: null,
-        description: null,
+        "title": null,
+        "description": null
       },
       "app-name": {
-        title: null,
-        description: null,
+        "title": null,
+        "description": null
       },
       "chat-message-alignment": {
-        title: null,
-        description: null,
+        "title": null,
+        "description": null
       },
       "display-language": {
-        title: null,
-        description: null,
+        "title": null,
+        "description": null
       },
-      logo: {
-        title: null,
-        description: null,
-        add: null,
-        recommended: null,
-        remove: null,
-        replace: null,
+      "logo": {
+        "title": null,
+        "description": null,
+        "add": null,
+        "recommended": null,
+        "remove": null,
+        "replace": null
       },
       "welcome-messages": {
-        title: null,
-        description: null,
-        new: null,
-        system: null,
-        user: null,
-        message: null,
-        assistant: null,
+        "title": null,
+        "description": null,
+        "new": null,
+        "system": null,
+        "user": null,
+        "message": null,
+        "assistant": null,
         "double-click": null,
-        save: null,
+        "save": null
       },
       "browser-appearance": {
-        title: null,
-        description: null,
-        tab: {
-          title: null,
-          description: null,
+        "title": null,
+        "description": null,
+        "tab": {
+          "title": null,
+          "description": null
         },
-        favicon: {
-          title: null,
-          description: null,
-        },
+        "favicon": {
+          "title": null,
+          "description": null
+        }
       },
       "sidebar-footer": {
-        title: null,
-        description: null,
-        icon: null,
-        link: null,
-      },
-    },
+        "title": null,
+        "description": null,
+        "icon": null,
+        "link": null
+      }
+    }
   },
   "main-page": {
-    noWorkspaceError: null,
-    checklist: {
-      title: null,
-      tasksLeft: null,
-      completed: null,
-      dismiss: null,
-      tasks: {
-        create_workspace: {
-          title: null,
-          description: null,
-          action: null,
+    "noWorkspaceError": null,
+    "checklist": {
+      "title": null,
+      "tasksLeft": null,
+      "completed": null,
+      "dismiss": null,
+      "tasks": {
+        "create_workspace": {
+          "title": null,
+          "description": null,
+          "action": null
         },
-        send_chat: {
-          title: null,
-          description: null,
-          action: null,
+        "send_chat": {
+          "title": null,
+          "description": null,
+          "action": null
         },
-        embed_document: {
-          title: null,
-          description: null,
-          action: null,
+        "embed_document": {
+          "title": null,
+          "description": null,
+          "action": null
         },
-        setup_system_prompt: {
-          title: null,
-          description: null,
-          action: null,
+        "setup_system_prompt": {
+          "title": null,
+          "description": null,
+          "action": null
         },
-        define_slash_command: {
-          title: null,
-          description: null,
-          action: null,
+        "define_slash_command": {
+          "title": null,
+          "description": null,
+          "action": null
         },
-        visit_community: {
-          title: null,
-          description: null,
-          action: null,
+        "visit_community": {
+          "title": null,
+          "description": null,
+          "action": null
+        }
+      }
+    },
+    "quickLinks": {
+      "title": null,
+      "sendChat": null,
+      "embedDocument": null,
+      "createWorkspace": null
+    },
+    "exploreMore": {
+      "title": null,
+      "features": {
+        "customAgents": {
+          "title": null,
+          "description": null,
+          "primaryAction": null,
+          "secondaryAction": null
         },
+        "slashCommands": {
+          "title": null,
+          "description": null,
+          "primaryAction": null,
+          "secondaryAction": null
+        },
+        "systemPrompts": {
+          "title": null,
+          "description": null,
+          "primaryAction": null,
+          "secondaryAction": null
+        }
+      }
+    },
+    "announcements": {
+      "title": null
+    },
+    "resources": {
+      "title": null,
+      "links": {
+        "docs": null,
+        "star": null
       },
-    },
-    quickLinks: {
-      title: null,
-      sendChat: null,
-      embedDocument: null,
-      createWorkspace: null,
-    },
-    exploreMore: {
-      title: null,
-      features: {
-        customAgents: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        slashCommands: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-        systemPrompts: {
-          title: null,
-          description: null,
-          primaryAction: null,
-          secondaryAction: null,
-        },
-      },
-    },
-    announcements: {
-      title: null,
-    },
-    resources: {
-      title: null,
-      links: {
-        docs: null,
-        star: null,
-      },
-      keyboardShortcuts: null,
-    },
+      "keyboardShortcuts": null
+    }
   },
   "keyboard-shortcuts": {
-    title: null,
-    shortcuts: {
-      settings: null,
-      workspaceSettings: null,
-      home: null,
-      workspaces: null,
-      apiKeys: null,
-      llmPreferences: null,
-      chatSettings: null,
-      help: null,
-      showLLMSelector: null,
-    },
+    "title": null,
+    "shortcuts": {
+      "settings": null,
+      "workspaceSettings": null,
+      "home": null,
+      "workspaces": null,
+      "apiKeys": null,
+      "llmPreferences": null,
+      "chatSettings": null,
+      "help": null,
+      "showLLMSelector": null
+    }
   },
-  community_hub: {
-    publish: {
-      system_prompt: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
+  "community_hub": {
+    "publish": {
+      "system_prompt": {
+        "success_title": null,
+        "success_description": null,
+        "success_thank_you": null,
+        "view_on_hub": null,
+        "modal_title": null,
+        "name_label": null,
+        "name_description": null,
+        "name_placeholder": null,
+        "description_label": null,
+        "description_description": null,
+        "tags_label": null,
+        "tags_description": null,
+        "tags_placeholder": null,
+        "visibility_label": null,
+        "public_description": null,
+        "private_description": null,
+        "publish_button": null,
+        "submitting": null,
+        "submit": null,
+        "prompt_label": null,
+        "prompt_description": null,
+        "prompt_placeholder": null
       },
-      agent_flow: {
-        public_description: null,
-        private_description: null,
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        publish_button: null,
-        submitting: null,
-        submit: null,
-        privacy_note: null,
+      "agent_flow": {
+        "public_description": null,
+        "private_description": null,
+        "success_title": null,
+        "success_description": null,
+        "success_thank_you": null,
+        "view_on_hub": null,
+        "modal_title": null,
+        "name_label": null,
+        "name_description": null,
+        "name_placeholder": null,
+        "description_label": null,
+        "description_description": null,
+        "tags_label": null,
+        "tags_description": null,
+        "tags_placeholder": null,
+        "visibility_label": null,
+        "publish_button": null,
+        "submitting": null,
+        "submit": null,
+        "privacy_note": null
       },
-      generic: {
-        unauthenticated: {
-          title: null,
-          description: null,
-          button: null,
-        },
+      "generic": {
+        "unauthenticated": {
+          "title": null,
+          "description": null,
+          "button": null
+        }
       },
-      slash_command: {
-        success_title: null,
-        success_description: null,
-        success_thank_you: null,
-        view_on_hub: null,
-        modal_title: null,
-        name_label: null,
-        name_description: null,
-        name_placeholder: null,
-        description_label: null,
-        description_description: null,
-        command_label: null,
-        command_description: null,
-        command_placeholder: null,
-        tags_label: null,
-        tags_description: null,
-        tags_placeholder: null,
-        visibility_label: null,
-        public_description: null,
-        private_description: null,
-        publish_button: null,
-        submitting: null,
-        prompt_label: null,
-        prompt_description: null,
-        prompt_placeholder: null,
-      },
-    },
+      "slash_command": {
+        "success_title": null,
+        "success_description": null,
+        "success_thank_you": null,
+        "view_on_hub": null,
+        "modal_title": null,
+        "name_label": null,
+        "name_description": null,
+        "name_placeholder": null,
+        "description_label": null,
+        "description_description": null,
+        "command_label": null,
+        "command_description": null,
+        "command_placeholder": null,
+        "tags_label": null,
+        "tags_description": null,
+        "tags_placeholder": null,
+        "visibility_label": null,
+        "public_description": null,
+        "private_description": null,
+        "publish_button": null,
+        "submitting": null,
+        "prompt_label": null,
+        "prompt_description": null,
+        "prompt_placeholder": null
+      }
+    }
   },
-};
+  "security": {
+    "title": null,
+    "multiuser": {
+      "title": null,
+      "description": null,
+      "enable": {
+        "is-enable": null,
+        "enable": null,
+        "description": null,
+        "username": null,
+        "password": null
+      }
+    },
+    "password": {
+      "title": null,
+      "description": null,
+      "password-label": null
+    }
+  }
+}
 
 export default TRANSLATIONS;
