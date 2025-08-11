@@ -50,6 +50,7 @@ const TRANSLATIONS = {
     workspace: {
       title: "創建您的第一個工作區",
       description: "創建您的第一個工作區並開始使用 OneNew。",
+      adminWarning: null,
     },
   },
   common: {
@@ -66,6 +67,8 @@ const TRANSLATIONS = {
     yes: "是",
     no: "否",
     search: "搜尋",
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "系統設定",
@@ -629,6 +632,15 @@ const TRANSLATIONS = {
       "fetch-website": "擷取網站",
       "privacy-notice":
         "這些檔案將上傳到此 OneNew 實例中的文件處理器。這些檔案不會發送或共享給第三方。",
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: "什麼是文件固定？",

@@ -55,6 +55,7 @@ const TRANSLATIONS = {
       title: "Opret dit første arbejdsområde",
       description:
         "Opret dit første arbejdsområde og kom i gang med OneNew.",
+      adminWarning: null,
     },
   },
   common: {
@@ -71,6 +72,8 @@ const TRANSLATIONS = {
     yes: "Ja",
     no: "Nej",
     search: null,
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "Instansindstillinger",
@@ -667,6 +670,15 @@ const TRANSLATIONS = {
       "fetch-website": "Hent hjemmeside",
       "privacy-notice":
         "Disse filer vil blive uploadet til dokumentbehandleren, der kører på denne OneNew-instans. Filene sendes ikke eller deles med en tredjepart.",
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: "Hvad er dokumentfastlåsning?",

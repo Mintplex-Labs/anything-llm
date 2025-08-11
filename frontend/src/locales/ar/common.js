@@ -53,6 +53,7 @@ const TRANSLATIONS = {
       title: "قم بإنشاء مساحة العمل الأولى الخاصة بك",
       description:
         "قم بإنشاء مساحة العمل الأولى الخاصة بك وابدأ مع إيني ثينك إلْلْمْ.",
+      adminWarning: null,
     },
   },
   common: {
@@ -69,6 +70,8 @@ const TRANSLATIONS = {
     yes: "نعم",
     no: "لا",
     search: null,
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "إعدادات المثيل",
@@ -635,6 +638,15 @@ const TRANSLATIONS = {
       fetching: null,
       "fetch-website": null,
       "privacy-notice": null,
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: null,

@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     workspace: {
       title: "Crie seu primeiro workspace",
       description: "Crie seu primeiro workspace e comece a usar o OneNew.",
+      adminWarning: null,
     },
   },
   common: {
@@ -69,6 +70,8 @@ const TRANSLATIONS = {
     yes: "Sim",
     no: "Não",
     search: null,
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "Configurações da Instância",
@@ -845,6 +848,15 @@ const TRANSLATIONS = {
       "fetch-website": "Buscar site",
       "privacy-notice":
         "Esses arquivos são enviados ao processador local do OneNew. Não são compartilhados com terceiros.",
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: "O que é fixar documento?",

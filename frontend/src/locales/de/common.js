@@ -55,6 +55,7 @@ const TRANSLATIONS = {
       title: "Ersten Workspace erstellen",
       description:
         "Erstellen Sie Ihren ersten Workspace und starten Sie OneNew.",
+      adminWarning: null,
     },
   },
   common: {
@@ -71,6 +72,8 @@ const TRANSLATIONS = {
     yes: "Ja",
     no: "Nein",
     search: null,
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "Instanzeinstellungen",
@@ -873,6 +876,15 @@ const TRANSLATIONS = {
       "fetch-website": "Website abrufen",
       "privacy-notice":
         "Diese Dateien werden zum Dokumentenprozessor hochgeladen, der auf dieser OneNew-Instanz läuft. Diese Dateien werden nicht an Dritte gesendet oder geteilt.",
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: "Was bedeutet es Dokumente anzuheften?",

@@ -46,6 +46,7 @@ const TRANSLATIONS = {
     workspace: {
       title: null,
       description: null,
+      adminWarning: null,
     },
   },
   common: {
@@ -62,6 +63,8 @@ const TRANSLATIONS = {
     yes: null,
     no: null,
     search: null,
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "تنظیمات سامانه",
@@ -627,6 +630,15 @@ const TRANSLATIONS = {
       fetching: null,
       "fetch-website": null,
       "privacy-notice": null,
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: null,

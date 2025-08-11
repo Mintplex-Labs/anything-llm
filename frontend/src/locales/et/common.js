@@ -53,6 +53,7 @@ const TRANSLATIONS = {
     workspace: {
       title: "Loo oma esimene tööruum",
       description: "Loo esimene tööruum ja alusta OneNew-iga.",
+      adminWarning: null,
     },
   },
   common: {
@@ -69,6 +70,8 @@ const TRANSLATIONS = {
     yes: "Jah",
     no: "Ei",
     search: null,
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "Instantsi seaded",
@@ -834,6 +837,15 @@ const TRANSLATIONS = {
       "fetch-website": "Tõmba veebisait",
       "privacy-notice":
         "Failid laetakse üles selle instantsi dokumenditöötlejasse ega jagata kolmandatele osapooltele.",
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: "Mis on dokumendi kinnitamine?",

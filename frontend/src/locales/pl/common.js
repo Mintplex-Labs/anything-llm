@@ -55,6 +55,7 @@ const TRANSLATIONS = {
       title: "Utwórz swój pierwszy obszar roboczy",
       description:
         "Stwórz swój pierwszy obszar roboczy i zacznij korzystać z OneNew.",
+      adminWarning: null,
     },
   },
   common: {
@@ -71,6 +72,8 @@ const TRANSLATIONS = {
     yes: "Tak",
     no: "Nie",
     search: null,
+    adminRemoveWarning:
+      "Admins and managers are automatically part of every workspace. Removing all elevated users will break workspace features.",
   },
   settings: {
     title: "Ustawienia instancji",
@@ -869,6 +872,15 @@ const TRANSLATIONS = {
       "fetch-website": "Pobierz zawartość strony",
       "privacy-notice":
         "Pliki zostaną przetworzone w obrębie danej instancji OneNew. Pliki te nie będą udostępniane innym podmiotom.",
+      preflight: {
+        title: null,
+        summary: null,
+        conflict: null,
+        replace: null,
+        keep_both: null,
+        skip: null,
+        "add_to_library": null,
+      },
     },
     pinning: {
       what_pinning: "Czym jest przypinanie dokumentów?",
