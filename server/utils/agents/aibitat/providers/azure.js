@@ -18,6 +18,11 @@ class AzureOpenAiProvider extends Provider {
     this.model = config.model ?? process.env.OPEN_MODEL_PREF;
     this.verbose = true;
   }
+
+  get supportsAgentStreaming() {
+    return true;
+  }
+
   /**
    * Create a completion based on the received messages.
    *
