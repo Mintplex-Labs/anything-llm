@@ -5,7 +5,6 @@
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
-  "private": false,
   "engines": {
     "node": ">=18.12.1"
   },
@@ -76,6 +75,7 @@
     "swagger-autogen": "^2.23.5",
     "swagger-ui-express": "^5.0.0",
     "truncate": "^3.0.0",
+    "tus-node-server": "^0.9.0",
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
