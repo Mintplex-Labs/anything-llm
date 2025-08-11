@@ -65,6 +65,7 @@ async function asPdf({ fullFilePath = "", filename = "", options = {} }) {
   const document = writeToServerDocuments({
     data,
     filename: `${slugify(filename)}-${data.id}`,
+    options: { parseOnly: options.parseOnly },
   });
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
