@@ -573,8 +573,6 @@ const TRANSLATIONS = {
       "Embedding muudab teksti vektoriteks. Need võtmed on vajalikud, et AnythingLLM saaks sinu failid ja päringud töödelda.",
     provider: {
       title: "Embedding-i pakkuja",
-      description:
-        "AnythingLLM-i sisseehitatud embedding-mootor ei vaja seadistust.",
     },
   },
   text: {
@@ -641,12 +639,7 @@ const TRANSLATIONS = {
       title: "Paroolikaitse",
       description:
         "Kaitse oma instantsi parooliga. Kui unustad selle, taastamisvõimalust ei ole.",
-    },
-    instance: {
-      title: "Kaitse instants parooliga",
-      description:
-        "Adminid peavad looma kontod uutele kasutajatele. Parooli kaotus = taastada saab vaid admin.",
-      password: "Instantsi parool",
+      "password-label": "Instantsi parool",
     },
   },
   event: {

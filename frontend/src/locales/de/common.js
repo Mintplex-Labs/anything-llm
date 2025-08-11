@@ -453,7 +453,7 @@ const TRANSLATIONS = {
       description: "Passen Sie die Benutzeroberfläche von AnythingLLM an.",
     },
     branding: {
-      title: "Branding & Whitelabeling“",
+      title: "Branding & Whitelabeling",
       description:
         "Individualisieren Sie Ihre AnythingLLM-Instanz durch eigenes Branding.",
     },
@@ -495,7 +495,7 @@ const TRANSLATIONS = {
           "Geben Sie einen Anwendungsnamen ein, der auf der Login-Seite erscheint.",
       },
       "chat-message-alignment": {
-        title: "Nachrichtenanordnung im Chatd",
+        title: "Nachrichtenanordnung im Chat",
         description:
           "Bestimmen Sie den Ausrichtungsmodus der Chat-Nachrichten.",
       },
@@ -597,8 +597,6 @@ const TRANSLATIONS = {
       "Einbettung ist der Prozess, Text in Vektoren umzuwandeln. Diese Anmeldeinformationen sind erforderlich, um Ihre Dateien und Prompts in ein Format umzuwandeln, das AnythingLLM zur Verarbeitung verwenden kann.",
     provider: {
       title: "Einbettungsanbieter",
-      description:
-        "Bei Verwendung der nativen Einbettungs-Engine von AnythingLLM ist keine Einrichtung erforderlich.",
     },
   },
   text: {
@@ -669,12 +667,7 @@ const TRANSLATIONS = {
       title: "Passwortschutz",
       description:
         "Schützen Sie Ihre AnythingLLM-Instanz mit einem Passwort. Wenn Sie dieses vergessen, gibt es keine Wiederherstellungsmethode, also stellen Sie sicher, dass Sie dieses Passwort speichern.",
-    },
-    instance: {
-      title: "Instanz mit Passwort schützen",
-      description:
-        "Standardmäßig sind Sie der einzige Administrator. Als Administrator müssen Sie Konten für alle neuen Benutzer oder Administratoren erstellen. Verlieren Sie Ihr Passwort nicht, da nur ein Administrator-Benutzer Passwörter zurücksetzen kann.",
-      password: "Instanz-Passwort",
+      "password-label": "Instanzpasswort",
     },
   },
   event: {
@@ -933,7 +926,7 @@ const TRANSLATIONS = {
     default_agent_description: "– Standardagent für diesen Workspace.",
     custom_agents_coming_soon: "Eigene Agenten bald verfügbar!",
     slash_reset: "/reset",
-    preset_reset_description: "hatverlauf löschen und neuen Chat starten",
+    preset_reset_description: "Chatverlauf löschen und neuen Chat starten",
     add_new_preset: "Neues Preset anlegen",
     command: "Befehl",
     your_command: "dein-befehl",
@@ -962,12 +955,12 @@ const TRANSLATIONS = {
     remove_profile_picture: "Profilbild entfernen",
     username: "Nutzername",
     username_description:
-      "Der Nutzername darf nur kleine Buchstaben, Zahlen, Unterstrich und Bindestriche ohne Leerzeichen.",
+      "Der Nutzername darf nur kleine Buchstaben, Zahlen, Unterstriche und Bindestriche ohne Leerzeichen enthalten.",
     new_password: "Neues Passwort",
     password_description: "Das Passwort muss mindestens 8 Zeichen haben.",
     cancel: "Abbrechen",
     update_account: "Account updaten",
-    theme: "Bevozugtes Design",
+    theme: "Bevorzugtes Design",
     language: "Bevorzugte Sprache",
     failed_upload: "Profilbild konnte nicht hochgeladen werden: {{error}}",
     upload_success: "Profilbild hochgeladen.",

@@ -592,8 +592,6 @@ const TRANSLATIONS = {
       "Iegulšana ir process, ar kuru teksts tiek pārveidots vektoros. Šie akreditācijas dati ir nepieciešami, lai pārveidotu jūsu failus un vaicājumus formātā, kuru AnythingLLM var izmantot apstrādei.",
     provider: {
       title: "Iegulšanas pakalpojuma sniedzējs",
-      description:
-        "Nav nepieciešama iestatīšana, izmantojot AnythingLLM iebūvēto iegulšanas dzinēju.",
     },
   },
   text: {
@@ -664,12 +662,7 @@ const TRANSLATIONS = {
       title: "Aizsardzība ar paroli",
       description:
         "Aizsargājiet savu AnythingLLM instanci ar paroli. Ja aizmirsīsiet šo paroli, nav atgūšanas metodes, tāpēc pārliecinieties, ka saglabājat šo paroli.",
-    },
-    instance: {
-      title: "Aizsargāt instanci ar paroli",
-      description:
-        "Pēc noklusējuma jūs būsiet vienīgais administrators. Kā administrators jums būs jāizveido konti visiem jaunajiem lietotājiem vai administratoriem. Nezaudējiet savu paroli, jo tikai administratora lietotājs var atiestatīt paroles.",
-      password: "Instances parole",
+      "password-label": "Instances paroles",
     },
   },
   event: {

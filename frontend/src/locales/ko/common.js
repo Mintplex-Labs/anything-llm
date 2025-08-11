@@ -581,8 +581,6 @@ const TRANSLATIONS = {
       "임베딩은 텍스트를 벡터로 변환하는 과정입니다. 파일과 프롬프트를 AnythingLLM이 처리할 수 있는 형식으로 변환하려면 이러한 인증이 필요합니다.",
     provider: {
       title: "임베딩 제공자",
-      description:
-        "AnythingLLM의 기본 임베딩 엔진을 사용할 때는 설정이 필요하지 않습니다.",
     },
   },
   text: {
@@ -651,12 +649,7 @@ const TRANSLATIONS = {
       title: "비밀번호 보호",
       description:
         "AnythingLLM 인스턴스를 비밀번호로 보호하십시오. 이 비밀번호를 잊어버리면 복구 방법이 없으므로 반드시 저장하세요.",
-    },
-    instance: {
-      title: "인스턴스 비밀번호 보호",
-      description:
-        "당신은 기본 관리자가 됩니다. 관리자로서 모든 신규 사용자 또는 관리자의 계정을 생성해야 합니다. 비밀번호를 잃어버리면 관리자만 비밀번호를 재설정할 수 있습니다.",
-      password: "인스턴스 비밀번호",
+      "password-label": "인스턴스 비밀번호",
     },
   },
   event: {

@@ -259,7 +259,7 @@ const TRANSLATIONS = {
     snippets: {
       title: "Max Context Snippets",
       description:
-        "This setting controls the maximum amount of context snippets the will be sent to the LLM for per chat or query.",
+        "This setting controls the maximum amount of context snippets that will be sent to the LLM for per chat or query.",
       recommend: "Recommended: 4",
     },
     doc: {
@@ -400,8 +400,6 @@ const TRANSLATIONS = {
       "Embedding is the process of turning text into vectors. These credentials are required to turn your files and prompts into a format which AnythingLLM can use to process.",
     provider: {
       title: "Embedding Provider",
-      description:
-        "There is no set up required when using AnythingLLM's native embedding engine.",
     },
   },
   text: {
@@ -472,12 +470,7 @@ const TRANSLATIONS = {
       title: "Mật khẩu Protection",
       description:
         "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
-    },
-    instance: {
-      title: "Mật khẩu Protect Instance",
-      description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
-      password: "Instance password",
+      "password-label": "Mật khẩu của instance",
     },
   },
   event: {

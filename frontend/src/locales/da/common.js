@@ -408,8 +408,6 @@ const TRANSLATIONS = {
       "Indlejring er processen med at omdanne tekst til vektorer. Disse legitimationsoplysninger er nødvendige for at omdanne dine filer og prompts til et format, som AnythingLLM kan bruge til behandling.",
     provider: {
       title: "Indlejringsudbyder",
-      description:
-        "Ingen opsætning er nødvendig, når du bruger AnythingLLM's indbyggede indlejringsmotor.",
     },
   },
   text: {
@@ -480,12 +478,7 @@ const TRANSLATIONS = {
       title: "Adgangskodebeskyttelse",
       description:
         "Beskyt din AnythingLLM-instans med en adgangskode. Hvis du glemmer den, findes der ingen genoprettelsesmetode, så sørg for at gemme denne adgangskode.",
-    },
-    instance: {
-      title: "Adgangskodebeskyt instansen",
-      description:
-        "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
-      password: "Instansens adgangskode",
+      "password-label": "Instansadgangskode",
     },
   },
   event: {

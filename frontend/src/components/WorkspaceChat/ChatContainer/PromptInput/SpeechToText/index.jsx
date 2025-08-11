@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import _regeneratorRuntime from "regenerator-runtime";
@@ -19,6 +19,7 @@ const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
  * @returns {React.ReactElement} The SpeechToText component
  */
 export default function SpeechToText({ sendCommand }) {
+  const previousTranscriptRef = useRef("");
   const {
     transcript,
     listening,
@@ -39,6 +40,7 @@ export default function SpeechToText({ sendCommand }) {
     }
 
     resetTranscript();
+    previousTranscriptRef.current = "";
     SpeechRecognition.startListening({
       continuous: browserSupportsContinuousListening,
       language: window?.navigator?.language ?? "en-US",
@@ -47,11 +49,19 @@ export default function SpeechToText({ sendCommand }) {
 
   function endSTTSession() {
     SpeechRecognition.stopListening();
-    if (transcript.length > 0) {
-      sendCommand(transcript, Appearance.get("autoSubmitSttInput"));
+
+    // If auto submit is enabled, send an empty string to the chat window to submit the current transcript
+    // since every chunk of text should have been streamed to the chat window by now.
+    if (Appearance.get("autoSubmitSttInput")) {
+      sendCommand({
+        text: "",
+        autoSubmit: true,
+        writeMode: "append",
+      });
     }
 
     resetTranscript();
+    previousTranscriptRef.current = "";
     clearTimeout(timeout);
   }
 
@@ -92,7 +102,15 @@ export default function SpeechToText({ sendCommand }) {
 
   useEffect(() => {
     if (transcript?.length > 0 && listening) {
-      sendCommand(transcript, false);
+      const previousTranscript = previousTranscriptRef.current;
+      const newContent = transcript.slice(previousTranscript.length);
+
+      // Stream just the diff of the new content since transcript is an accumulating string.
+      // and not just the new content transcribed.
+      if (newContent.length > 0)
+        sendCommand({ text: newContent, writeMode: "append" });
+
+      previousTranscriptRef.current = transcript;
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         endSTTSession();
@@ -103,8 +121,7 @@ export default function SpeechToText({ sendCommand }) {
   if (!browserSupportsSpeechRecognition) return null;
   return (
     <div
-      id="text-size-btn"
-      data-tooltip-id="tooltip-text-size-btn"
+      data-tooltip-id="tooltip-microphone-btn"
       data-tooltip-content={`${t("chat_window.microphone")} (CTRL + M)`}
       aria-label={t("chat_window.microphone")}
       onClick={listening ? endSTTSession : startSTTSession}
@@ -120,7 +137,7 @@ export default function SpeechToText({ sendCommand }) {
         }`}
       />
       <Tooltip
-        id="tooltip-text-size-btn"
+        id="tooltip-microphone-btn"
         place="top"
         delayShow={300}
         className="tooltip !text-xs z-99"

@@ -199,6 +199,10 @@ class AgentHandler {
             "Dell Pro AI Studio model must be set to use agents."
           );
         break;
+      case "moonshotai":
+        if (!process.env.MOONSHOT_AI_MODEL_PREF)
+          throw new Error("Moonshot AI model must be set to use agents.");
+        break;
 
       default:
         throw new Error(
@@ -254,6 +258,8 @@ class AgentHandler {
         return process.env.DEEPSEEK_MODEL_PREF ?? "deepseek-chat";
       case "litellm":
         return process.env.LITE_LLM_MODEL_PREF ?? null;
+      case "moonshotai":
+        return process.env.MOONSHOT_AI_MODEL_PREF ?? "moonshot-v1-32k";
       case "apipie":
         return process.env.APIPIE_LLM_MODEL_PREF ?? null;
       case "xai":

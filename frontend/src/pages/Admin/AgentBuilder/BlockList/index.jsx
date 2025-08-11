@@ -180,8 +180,7 @@ export default function BlockList({
               <p className="text-xs text-theme-text-secondary">
                 The output of this block will be returned directly to the chat.
                 <br />
-                This will prevent any further tool calls from being also being
-                executed.
+                This will prevent any further tool calls from being executed.
               </p>
             </div>
             <label className="relative inline-flex cursor-pointer items-center">
