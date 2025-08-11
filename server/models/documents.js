@@ -87,6 +87,7 @@ const Document = {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
     const { fileData } = require("../utils/files");
+    const crypto = require("crypto");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
@@ -97,20 +98,47 @@ const Document = {
 
       const docId = uuidv4();
       const { pageContent, ...metadata } = data;
+      const parentId = metadata.parentId || null;
+      const contentHash = crypto
+        .createHash("sha256")
+        .update(pageContent)
+        .digest("hex");
+
+      const existing = await prisma.workspace_documents.findFirst({
+        where: {
+          workspaceId: workspace.id,
+          parentId: parentId,
+          contentHash,
+        },
+      });
+      if (existing) {
+        console.log("Duplicate upload detected. Skipping", path);
+        continue;
+      }
+
       const newDoc = {
         docId,
         filename: path.split("/")[1],
         docpath: path,
         workspaceId: workspace.id,
         metadata: JSON.stringify({ ...metadata, version: 1 }),
+        contentHash,
       };
 
       const namespace = workspaceVectorNamespace(workspace);
-      const { vectorized, error } = await VectorDb.addDocumentToNamespace(
-        namespace,
-        { ...data, docId },
-        path
-      );
+      let vectorized = false;
+      let error = null;
+      for (let attempt = 0; attempt < 5 && !vectorized; attempt++) {
+        ({ vectorized, error } = await VectorDb.addDocumentToNamespace(
+          namespace,
+          { ...data, docId },
+          path
+        ));
+        if (!vectorized) {
+          const delay = Math.pow(2, attempt) * 1000;
+          await new Promise((r) => setTimeout(r, delay));
+        }
+      }
 
       if (!vectorized) {
         console.error(

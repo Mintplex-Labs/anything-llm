@@ -59,6 +59,7 @@ model workspace_documents {
   version              Int                   @default(1)
   documentId           Int?
   parentId             Int?
+  contentHash          String?
   embedProfileId       Int?
   embedStatus          String?
   chunkCount           Int?                  @default(0)
@@ -70,6 +71,7 @@ model workspace_documents {
 
   @@index([workspaceId, parentId, filename])
   @@index([documentId, workspaceId])
+  @@index([workspaceId, parentId, contentHash])
 }
 
 model file_versions {
