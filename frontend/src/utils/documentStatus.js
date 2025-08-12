@@ -1,4 +1,4 @@
-const DOCUMENT_JOB_STATUSES = [
+export const DOCUMENT_JOB_STATUSES = [
   "PENDING",
   "DOWNLOADING",
   "CHUNKING",
@@ -8,7 +8,7 @@ const DOCUMENT_JOB_STATUSES = [
   "FAILED",
 ];
 
-const DOCUMENT_STATUS_LABELS = {
+export const DOCUMENT_STATUS_LABELS = {
   PENDING: "Pending",
   DOWNLOADING: "Downloading",
   CHUNKING: "Chunking",
@@ -18,7 +18,7 @@ const DOCUMENT_STATUS_LABELS = {
   FAILED: "Failed",
 };
 
-function isProcessingStatus(status) {
+export function isProcessingStatus(status) {
   return (
     status &&
     !["READY", "FAILED"].includes(status.toUpperCase()) &&
@@ -26,8 +26,3 @@ function isProcessingStatus(status) {
   );
 }
 
-module.exports = {
-  DOCUMENT_JOB_STATUSES,
-  DOCUMENT_STATUS_LABELS,
-  isProcessingStatus,
-};

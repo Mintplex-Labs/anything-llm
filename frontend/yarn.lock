@@ -1306,10 +1306,12 @@ __metadata:
     react-window: "npm:1.8.8"
     recharts: "npm:^2.12.5"
     recharts-to-png: "npm:^2.3.1"
+    regenerator-runtime: "npm:^0.14.1"
     rollup-plugin-visualizer: "npm:^5.9.0"
     tailwindcss: "npm:^3.3.1"
     text-case: "npm:^1.0.9"
     truncate: "npm:^3.0.0"
+    tslib: "npm:^2.8.1"
     uuid: "npm:^9.0.0"
     vite: "npm:^4.3.0"
   languageName: unknown
@@ -5104,7 +5106,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:^0.14.0":
+"regenerator-runtime@npm:^0.14.0, regenerator-runtime@npm:^0.14.1":
   version: 0.14.1
   resolution: "regenerator-runtime@npm:0.14.1"
   checksum: 10c0/1b16eb2c4bceb1665c89de70dcb64126a22bc8eb958feef3cd68fe11ac6d2a4899b5cd1b80b0774c7c03591dc57d16631a7f69d2daa2ec98100e2f29f7ec4cc4
@@ -5969,6 +5971,13 @@ __metadata:
   version: 2.6.3
   resolution: "tslib@npm:2.6.3"
   checksum: 10c0/2598aef53d9dbe711af75522464b2104724d6467b26a60f2bdac8297d2b5f1f6b86a71f61717384aa8fd897240467aaa7bcc36a0700a0faf751293d1331db39a
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.8.1":
+  version: 2.8.1
+  resolution: "tslib@npm:2.8.1"
+  checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
   languageName: node
   linkType: hard
 

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { humanFileSize } from "../../../../../../utils/numbers";
+import { humanFileSize } from "@/utils/numbers";
 
 export default function PreflightModal({
   files = [],
