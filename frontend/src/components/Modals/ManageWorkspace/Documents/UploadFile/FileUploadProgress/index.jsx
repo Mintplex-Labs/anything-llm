@@ -46,7 +46,10 @@ function FileUploadProgressComponent({
       formData.append("policy", policy);
       const pathName = file.path || file.webkitRelativePath;
       if (pathName) {
-        const dirs = pathName.split(/[\\/]/).slice(0, -1);
+        const dirs = pathName
+          .split(/[\\/]/)
+          .slice(0, -1)
+          .filter((d) => d && d !== ".");
         dirs.forEach((d) => formData.append("path[]", d));
       }
       const timer = setInterval(() => {
@@ -54,7 +57,10 @@ function FileUploadProgressComponent({
       }, 100);
 
       // Chunk streaming not working in production so we just sit and wait
-      const { response, data } = await Workspace.uploadAndEmbedFile(slug, formData);
+      const { response, data } = await Workspace.uploadAndEmbedFile(
+        slug,
+        formData
+      );
       if (!response.ok) {
         setStatus("failed");
         clearInterval(timer);
