@@ -271,6 +271,14 @@ export const VECTOR_DB_PRIVACY = {
     ],
     logo: ChromaLogo,
   },
+  chromacloud: {
+    name: "Chroma Cloud",
+    description: [
+      "Your vectors and document text are stored on Chroma's cloud service",
+      "Access to your data is managed by Chroma",
+    ],
+    logo: ChromaLogo,
+  },
   pinecone: {
     name: "Pinecone",
     description: [
