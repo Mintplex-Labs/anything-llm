@@ -292,6 +292,20 @@ class Provider {
     return false;
   }
 
+  functionFormatFunctions(functions = []) {
+    return functions.map((fn) => ({
+      type: "function",
+      function: {
+        name: fn.name,
+        description: fn.description,
+        parameters: {
+          type: "object",
+          properties: fn.parameters.properties,
+        },
+      },
+    }));
+  }
+
   /**
    * Stream a chat completion from the LLM with tool calling
    * Note: This using the OpenAI API format and may need to be adapted for other providers.

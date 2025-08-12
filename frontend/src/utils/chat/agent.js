@@ -54,12 +54,32 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
     socket.supportsAgentStreaming = true;
 
     return setChatHistory((prev) => {
+      if (data.content.type === "removeStatusResponse")
+        return [...prev.filter((msg) => msg.uuid !== data.content.uuid)];
+
       const knownMessage = data.content.uuid
         ? prev.find((msg) => msg.uuid === data.content.uuid)
         : null;
       if (!knownMessage) {
+        if (data.content.type === "fullTextResponse") {
+          return [
+            ...prev.filter((msg) => !!msg.content),
+            {
+              uuid: data.content.uuid,
+              type: "textResponse",
+              content: data.content.content,
+              role: "assistant",
+              sources: [],
+              closed: true,
+              error: null,
+              animate: false,
+              pending: false,
+            },
+          ];
+        }
+
         return [
-          ...prev,
+          ...prev.filter((msg) => !!msg.content),
           {
             uuid: data.content.uuid,
             type: "statusResponse",
@@ -87,39 +107,22 @@ export default function handleSocketResponse(socket, event, setChatHistory) {
         }
 
         if (type === "textResponseChunk") {
-          let knownMessage = prev.find((msg) => msg.uuid === uuid);
-          if (!knownMessage) {
-            return [
-              ...prev,
-              {
-                uuid,
-                type: "textResponse",
-                content,
-                role: "assistant",
-                sources: [],
-                closed: false,
-                error: null,
-                animate: false,
-                pending: false,
-              },
-            ];
-          } else {
-            return prev
-              .map((msg) =>
-                msg.uuid === uuid
-                  ? {
-                      ...msg,
-                      type: "textResponse",
-                      content: msg.content + content,
-                    }
-                  : msg?.content
-                    ? msg
-                    : null
-              )
-              .filter((msg) => !!msg);
-          }
+          return prev
+            .map((msg) =>
+              msg.uuid === uuid
+                ? {
+                    ...msg,
+                    type: "textResponse",
+                    content: msg.content + content,
+                  }
+                : msg?.content
+                  ? msg
+                  : null
+            )
+            .filter((msg) => !!msg);
         }
 
+        // Generic text response - will be put in the agent thought bubble
         return prev.map((msg) =>
           msg.uuid === data.content.uuid
             ? { ...msg, content: msg.content + data.content.content }
