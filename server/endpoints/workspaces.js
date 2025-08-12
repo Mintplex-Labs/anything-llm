@@ -739,7 +739,10 @@ function workspaceEndpoints(app) {
         });
       } catch (error) {
         console.error("Error processing the profile picture upload:", error);
-        response.status(500).json({ message: "Internal server error" });
+        const isPathError = /Invalid path/.test(error.message);
+        response
+          .status(isPathError ? 400 : 500)
+          .json({ message: isPathError ? error.message : "Internal server error" });
       }
     }
   );
@@ -783,7 +786,10 @@ function workspaceEndpoints(app) {
         });
       } catch (error) {
         console.error("Error processing the profile picture removal:", error);
-        response.status(500).json({ message: "Internal server error" });
+        const isPathError = /Invalid path/.test(error.message);
+        response
+          .status(isPathError ? 400 : 500)
+          .json({ message: isPathError ? error.message : "Internal server error" });
       }
     }
   );

@@ -907,7 +907,8 @@ function apiDocumentEndpoints(app) {
         response.status(200).json({ success: true, message: null });
       } catch (e) {
         console.error(e);
-        response.status(500).json({
+        const isPathError = /Invalid path/.test(e.message);
+        response.status(isPathError ? 400 : 500).json({
           success: false,
           message: `Failed to create folder: ${e.message}`,
         });
