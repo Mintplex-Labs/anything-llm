@@ -984,7 +984,6 @@ const TRANSLATIONS = {
       },
     },
   },
-
   security: {
     title: null,
     multiuser: {
