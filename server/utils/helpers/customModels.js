@@ -754,6 +754,7 @@ async function getMoonshotAiModels(_apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0) process.env.MOONSHOT_AI_API_KEY = apiKey;
+  return { models, error: null };
 }
 
 module.exports = {
