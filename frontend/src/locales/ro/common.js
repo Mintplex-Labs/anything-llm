@@ -564,7 +564,8 @@ const TRANSLATIONS = {
     manage: {
       documents: "Documente",
       "data-connectors": "Conectori de date",
-      "desktop-only": "Editarea acestor setări este disponibilă doar pe un dispozitiv desktop. Te rugăm să accesezi această pagină de pe desktop pentru a continua.",
+      "desktop-only":
+        "Editarea acestor setări este disponibilă doar pe un dispozitiv desktop. Te rugăm să accesezi această pagină de pe desktop pentru a continua.",
       dismiss: "Ignoră",
       editing: "Se editează",
     },
@@ -575,8 +576,10 @@ const TRANSLATIONS = {
       "no-documents": "Niciun document",
       "move-workspace": "Mută în spațiul de lucru",
       name: "Nume",
-      "delete-confirmation": "Ești sigur că vrei să ștergi aceste fișiere și foldere?\nAcest lucru va elimina fișierele din sistem și le va elimina automat din orice spațiu de lucru existent.\nAceastă acțiune este ireversibilă.",
-      "removing-message": "Se elimină {{count}} documente și {{folderCount}} foldere. Te rugăm să aștepți.",
+      "delete-confirmation":
+        "Ești sigur că vrei să ștergi aceste fișiere și foldere?\nAcest lucru va elimina fișierele din sistem și le va elimina automat din orice spațiu de lucru existent.\nAceastă acțiune este ireversibilă.",
+      "removing-message":
+        "Se elimină {{count}} documente și {{folderCount}} foldere. Te rugăm să aștepți.",
       "move-success": "S-au mutat cu succes {{count}} documente.",
       date: "Dată",
       type: "Tip",
@@ -589,27 +592,36 @@ const TRANSLATIONS = {
     },
     upload: {
       "processor-offline": "Procesorul de documente este offline",
-      "processor-offline-desc": "Nu putem încărca fișierele tale acum deoarece procesorul de documente este offline. Te rugăm să încerci din nou mai târziu.",
+      "processor-offline-desc":
+        "Nu putem încărca fișierele tale acum deoarece procesorul de documente este offline. Te rugăm să încerci din nou mai târziu.",
       "click-upload": "Clic pentru a încărca sau trage și plasa",
-      "file-types": "suportă fișiere text, CSV-uri, foi de calcul, fișiere audio și multe altele!",
+      "file-types":
+        "suportă fișiere text, CSV-uri, foi de calcul, fișiere audio și multe altele!",
       "or-submit-link": "sau trimite un link",
       "placeholder-link": "https://exemplu.com",
       fetching: "Se preia...",
       "fetch-website": "Preluare site web",
-      "privacy-notice": "Aceste fișiere vor fi încărcate în procesorul de documente care rulează pe această instanță AnythingLLM. Aceste fișiere nu sunt trimise sau partajate cu o terță parte.",
+      "privacy-notice":
+        "Aceste fișiere vor fi încărcate în procesorul de documente care rulează pe această instanță AnythingLLM. Aceste fișiere nu sunt trimise sau partajate cu o terță parte.",
     },
     pinning: {
       what_pinning: "Ce este fixarea documentelor?",
-      pin_explained_block1: "Când **fixezi** un document în AnythingLLM, vom injecta întregul conținut al documentului în fereastra de prompt pentru ca LLM-ul tău să-l înțeleagă pe deplin.",
-      pin_explained_block2: "Acest lucru funcționează cel mai bine cu **modele cu context mare** sau fișiere mici care sunt critice pentru baza sa de cunoștințe.",
-      pin_explained_block3: "Dacă nu obții răspunsurile dorite de la AnythingLLM în mod implicit, atunci fixarea este o modalitate excelentă de a obține răspunsuri de calitate superioară dintr-un clic.",
+      pin_explained_block1:
+        "Când **fixezi** un document în AnythingLLM, vom injecta întregul conținut al documentului în fereastra de prompt pentru ca LLM-ul tău să-l înțeleagă pe deplin.",
+      pin_explained_block2:
+        "Acest lucru funcționează cel mai bine cu **modele cu context mare** sau fișiere mici care sunt critice pentru baza sa de cunoștințe.",
+      pin_explained_block3:
+        "Dacă nu obții răspunsurile dorite de la AnythingLLM în mod implicit, atunci fixarea este o modalitate excelentă de a obține răspunsuri de calitate superioară dintr-un clic.",
       accept: "Ok, am înțeles",
     },
     watching: {
       what_watching: "Ce face vizualizarea unui document?",
-      watch_explained_block1: "Când **urmărești** un document în AnythingLLM, vom sincroniza *automat* conținutul documentului tău din sursa originală la intervale regulate. Acest lucru va actualiza automat conținutul în fiecare spațiu de lucru unde acest fișier este gestionat.",
-      watch_explained_block2: "Această funcție suportă în prezent conținutul online și nu va fi disponibilă pentru documentele încărcate manual.",
-      watch_explained_block3_start: "Poți gestiona ce documente sunt urmărite din vizualizarea de administrator a ",
+      watch_explained_block1:
+        "Când **urmărești** un document în AnythingLLM, vom sincroniza *automat* conținutul documentului tău din sursa originală la intervale regulate. Acest lucru va actualiza automat conținutul în fiecare spațiu de lucru unde acest fișier este gestionat.",
+      watch_explained_block2:
+        "Această funcție suportă în prezent conținutul online și nu va fi disponibilă pentru documentele încărcate manual.",
+      watch_explained_block3_start:
+        "Poți gestiona ce documente sunt urmărite din vizualizarea de administrator a ",
       watch_explained_block3_link: "Managerului de fișiere",
       watch_explained_block3_end: ".",
       accept: "Ok, am înțeles",
@@ -722,7 +734,8 @@ const TRANSLATIONS = {
         view_on_hub: "Vezi pe Community Hub",
         modal_title: "Publică System Prompt ",
         name_label: "Nume",
-        name_description: "Acesta este numele afișat al System Prompt-ului tău.",
+        name_description:
+          "Acesta este numele afișat al System Prompt-ului tău.",
         name_placeholder: "",
         description_label: "Descriere",
         description_description: "Descrie scopul System Prompt-ului tău.",
@@ -798,7 +811,8 @@ const TRANSLATIONS = {
       generic: {
         unauthenticated: {
           title: "Autentificare necesară",
-          description: "Trebuie să te autentifici cu AnythingLLM Community Hub înainte de a publica elemente.",
+          description:
+            "Trebuie să te autentifici cu AnythingLLM Community Hub înainte de a publica elemente.",
           button: "Conectează-te la Community Hub",
         },
       },
@@ -808,12 +822,14 @@ const TRANSLATIONS = {
     identifier: "Identificator bază de date vectorială",
     snippets: {
       title: "Număr maxim de fragmente de context",
-      description: "Această setare controlează cantitatea maximă de fragmente de context care vor fi trimise către LLM per chat sau interogare (query).",
+      description:
+        "Această setare controlează cantitatea maximă de fragmente de context care vor fi trimise către LLM per chat sau interogare (query).",
       recommend: "Recomandat",
     },
     doc: {
       title: "Prag de similaritate document",
-      description: "Scorul minim de similaritate necesar pentru ca o sursă să fie considerată relevantă pentru conversație (chat). Cu cât numărul este mai mare, cu atât sursa trebuie să fie mai asemănătoare cu conversația (chat).",
+      description:
+        "Scorul minim de similaritate necesar pentru ca o sursă să fie considerată relevantă pentru conversație (chat). Cu cât numărul este mai mare, cu atât sursa trebuie să fie mai asemănătoare cu conversația (chat).",
       zero: "Fără restricții",
       low: "Scăzut (scor de similaritate ≥ .25)",
       medium: "Mediu (scor de similaritate ≥ .50)",
@@ -822,59 +838,74 @@ const TRANSLATIONS = {
     reset: {
       reset: "Resetează baza de date vectorială",
       resetting: "Se șterg vectorii...",
-      confirm: "Sunteți pe cale să resetați baza de date vectorială a acestui spațiu de lucru. Această acțiune va elimina toate încorporările vectoriale aflate în prezent în bază.\n\nFișierele sursă originale vor rămâne intacte. Această acțiune este ireversibilă.",
-      error: "Baza de date vectorială a spațiului de lucru nu a putut fi resetată!",
+      confirm:
+        "Sunteți pe cale să resetați baza de date vectorială a acestui spațiu de lucru. Această acțiune va elimina toate încorporările vectoriale aflate în prezent în bază.\n\nFișierele sursă originale vor rămâne intacte. Această acțiune este ireversibilă.",
+      error:
+        "Baza de date vectorială a spațiului de lucru nu a putut fi resetată!",
       success: "Baza de date vectorială a spațiului de lucru a fost resetată!",
     },
   },
   agent: {
-    "performance-warning": "Performanța LLM-urilor care nu suportă explicit apelarea de instrumente depinde în mare măsură de capabilitățile și acuratețea modelului. Unele abilități pot fi limitate sau nefuncționale.",
+    "performance-warning":
+      "Performanța LLM-urilor care nu suportă explicit apelarea de instrumente depinde în mare măsură de capabilitățile și acuratețea modelului. Unele abilități pot fi limitate sau nefuncționale.",
     provider: {
       title: "Furnizor LLM agent spațiu de lucru",
-      description: "Furnizorul LLM și modelul specific care vor fi utilizate pentru agentul @agent al acestui spațiu de lucru.",
+      description:
+        "Furnizorul LLM și modelul specific care vor fi utilizate pentru agentul @agent al acestui spațiu de lucru.",
     },
     mode: {
       chat: {
         title: "Model de chat agent spațiu de lucru",
-        description: "Modelul de chat specific care va fi utilizat pentru agentul @agent al acestui spațiu de lucru.",
+        description:
+          "Modelul de chat specific care va fi utilizat pentru agentul @agent al acestui spațiu de lucru.",
       },
       title: "Model agent spațiu de lucru",
-      description: "Modelul LLM specific care va fi utilizat pentru agentul @agent al acestui spațiu de lucru.",
+      description:
+        "Modelul LLM specific care va fi utilizat pentru agentul @agent al acestui spațiu de lucru.",
       wait: "-- se așteaptă modele --",
     },
     skill: {
       title: "Abilități implicite ale agentului",
-      description: "Îmbunătățește abilitățile naturale ale agentului implicit cu aceste abilități predefinite. Această configurație se aplică tuturor spațiilor de lucru.",
+      description:
+        "Îmbunătățește abilitățile naturale ale agentului implicit cu aceste abilități predefinite. Această configurație se aplică tuturor spațiilor de lucru.",
       rag: {
         title: "RAG & memorie pe termen lung",
-        description: "Permite agentului să valorifice documentele dumneavoastră locale pentru a răspunde la o interogare sau cereți-i agentului să „rețină” fragmente de conținut pentru a le putea recupera ulterior din memoria pe termen lung.",
+        description:
+          "Permite agentului să valorifice documentele dumneavoastră locale pentru a răspunde la o interogare sau cereți-i agentului să „rețină” fragmente de conținut pentru a le putea recupera ulterior din memoria pe termen lung.",
       },
       view: {
         title: "Vizualizează & rezumă documente",
-        description: "Permite agentului să listeze și să rezume conținutul fișierelor din spațiul de lucru încorporate în prezent.",
+        description:
+          "Permite agentului să listeze și să rezume conținutul fișierelor din spațiul de lucru încorporate în prezent.",
       },
       scrape: {
         title: "Extrage date de pe site-uri web (prin web scraping)",
-        description: "Permite agentului să viziteze și să extragă conținutul site-urilor web (prin web scraping).",
+        description:
+          "Permite agentului să viziteze și să extragă conținutul site-urilor web (prin web scraping).",
       },
       generate: {
         title: "Generează grafice",
-        description: "Permite agentului implicit să genereze diverse tipuri de grafice din datele furnizate sau date în chat.",
+        description:
+          "Permite agentului implicit să genereze diverse tipuri de grafice din datele furnizate sau date în chat.",
       },
       save: {
         title: "Generează & salvează fișiere în browser",
-        description: "Permite agentului implicit să genereze și să scrie fișiere care se salvează și pot fi descărcate în browserul tău.",
+        description:
+          "Permite agentului implicit să genereze și să scrie fișiere care se salvează și pot fi descărcate în browserul tău.",
       },
       web: {
         title: "Căutare și navigare web live",
-        "desc-start": "Permite-i agentului tău să caute pe web pentru a-ți răspunde la întrebări prin conectarea la un furnizor de căutare web (SERP).",
-        "desc-end": "Căutarea web în timpul sesiunilor agentului nu va funcționa până nu este configurată.",
+        "desc-start":
+          "Permite-i agentului tău să caute pe web pentru a-ți răspunde la întrebări prin conectarea la un furnizor de căutare web (SERP).",
+        "desc-end":
+          "Căutarea web în timpul sesiunilor agentului nu va funcționa până nu este configurată.",
       },
     },
   },
   recorded: {
     title: "Conversații spațiu de lucru",
-    description: "Acestea sunt toate conversațiile și mesajele înregistrate care au fost trimise de utilizatori, ordonate după data creării.",
+    description:
+      "Acestea sunt toate conversațiile și mesajele înregistrate care au fost trimise de utilizatori, ordonate după data creării.",
     export: "Exportă",
     table: {
       id: "ID",
@@ -892,14 +923,16 @@ const TRANSLATIONS = {
     },
     branding: {
       title: "Branding & White-labeling",
-      description: "Personalizează-ți instanța AnythingLLM cu branding personalizat.",
+      description:
+        "Personalizează-ți instanța AnythingLLM cu branding personalizat.",
     },
     chat: {
       title: "Chat",
       description: "Setează preferințele de chat pentru AnythingLLM.",
       auto_submit: {
         title: "Trimite automat intrarea vocală",
-        description: "Trimite automat intrarea vocală după o perioadă de liniște",
+        description:
+          "Trimite automat intrarea vocală după o perioadă de liniște",
       },
       auto_speak: {
         title: "Rostește automat răspunsurile",
@@ -907,7 +940,8 @@ const TRANSLATIONS = {
       },
       spellcheck: {
         title: "Activează verificarea ortografică",
-        description: "Activează sau dezactivează verificarea ortografică în câmpul de introducere a chatului",
+        description:
+          "Activează sau dezactivează verificarea ortografică în câmpul de introducere a chatului",
       },
     },
     items: {
@@ -917,27 +951,33 @@ const TRANSLATIONS = {
       },
       "show-scrollbar": {
         title: "Arată bara de derulare",
-        description: "Activează sau dezactivează bara de derulare în fereastra de chat.",
+        description:
+          "Activează sau dezactivează bara de derulare în fereastra de chat.",
       },
       "support-email": {
         title: "Email de suport",
-        description: "Setează adresa de email de suport care ar trebui să fie accesibilă utilizatorilor atunci când au nevoie de ajutor.",
+        description:
+          "Setează adresa de email de suport care ar trebui să fie accesibilă utilizatorilor atunci când au nevoie de ajutor.",
       },
       "app-name": {
         title: "Nume aplicație",
-        description: "Setează un nume care este afișat pe pagina de autentificare tuturor utilizatorilor.",
+        description:
+          "Setează un nume care este afișat pe pagina de autentificare tuturor utilizatorilor.",
       },
       "chat-message-alignment": {
         title: "Alinierea mesajelor de chat",
-        description: "Selectează modul de aliniere a mesajelor când folosești interfața de chat.",
+        description:
+          "Selectează modul de aliniere a mesajelor când folosești interfața de chat.",
       },
       "display-language": {
         title: "Limba de afișare",
-        description: "Selectează limba preferată pentru a reda interfața AnythingLLM - atunci când traducerile sunt disponibile.",
+        description:
+          "Selectează limba preferată pentru a reda interfața AnythingLLM - atunci când traducerile sunt disponibile.",
       },
       logo: {
         title: "Logo brand",
-        description: "Încarcă logo-ul tău personalizat pentru a fi afișat pe toate paginile.",
+        description:
+          "Încarcă logo-ul tău personalizat pentru a fi afișat pe toate paginile.",
         add: "Adaugă un logo personalizat",
         recommended: "Dimensiune recomandată: 800 x 200",
         remove: "Elimină",
@@ -945,7 +985,8 @@ const TRANSLATIONS = {
       },
       "welcome-messages": {
         title: "Mesaje de bun venit",
-        description: "Personalizează mesajele de bun venit afișate utilizatorilor tăi. Doar utilizatorii non-admin vor vedea aceste mesaje.",
+        description:
+          "Personalizează mesajele de bun venit afișate utilizatorilor tăi. Doar utilizatorii non-admin vor vedea aceste mesaje.",
         new: "Nou",
         system: "sistem",
         user: "utilizator",
@@ -956,19 +997,23 @@ const TRANSLATIONS = {
       },
       "browser-appearance": {
         title: "Aspect browser",
-        description: "Personalizează aspectul tabului și titlului browserului când aplicația este deschisă.",
+        description:
+          "Personalizează aspectul tabului și titlului browserului când aplicația este deschisă.",
         tab: {
           title: "Titlu",
-          description: "Setează un titlu personalizat pentru tab când aplicația este deschisă într-un browser.",
+          description:
+            "Setează un titlu personalizat pentru tab când aplicația este deschisă într-un browser.",
         },
         favicon: {
           title: "Favicon",
-          description: "Folosește un favicon personalizat pentru tabul browserului.",
+          description:
+            "Folosește un favicon personalizat pentru tabul browserului.",
         },
       },
       "sidebar-footer": {
         title: "Elemente subsol bară laterală",
-        description: "Personalizează elementele din subsol afișate în partea de jos a barei laterale.",
+        description:
+          "Personalizează elementele din subsol afișate în partea de jos a barei laterale.",
         icon: "Iconiță",
         link: "Link",
       },
@@ -976,7 +1021,8 @@ const TRANSLATIONS = {
   },
   api: {
     title: "Chei API",
-    description: "Cheile API permit deținătorului să acceseze și să gestioneze programatic această instanță AnythingLLM.",
+    description:
+      "Cheile API permit deținătorului să acceseze și să gestioneze programatic această instanță AnythingLLM.",
     link: "Citește documentația API",
     generate: "Generează o nouă cheie API",
     table: {
@@ -987,7 +1033,8 @@ const TRANSLATIONS = {
   },
   llm: {
     title: "Preferința LLM",
-    description: "Acestea sunt credențialele și setările pentru furnizorul tău preferat de chat și embedding LLM. Este important ca aceste chei să fie actuale și corecte, altfel AnythingLLM nu va funcționa corect.",
+    description:
+      "Acestea sunt credențialele și setările pentru furnizorul tău preferat de chat și embedding LLM. Este important ca aceste chei să fie actuale și corecte, altfel AnythingLLM nu va funcționa corect.",
     provider: "Furnizor LLM",
     providers: {
       azure_openai: {
@@ -1003,32 +1050,41 @@ const TRANSLATIONS = {
   },
   transcription: {
     title: "Preferința modelului de transcriere",
-    description: "Acestea sunt credențialele și setările pentru furnizorul tău preferat de model de transcriere. Este important ca aceste chei să fie actuale și corecte, altfel fișierele media și audio nu vor fi transcrise.",
+    description:
+      "Acestea sunt credențialele și setările pentru furnizorul tău preferat de model de transcriere. Este important ca aceste chei să fie actuale și corecte, altfel fișierele media și audio nu vor fi transcrise.",
     provider: "Furnizor transcriere",
-    "warn-start": "Utilizarea modelului local Whisper pe mașini cu RAM sau CPU limitat poate bloca AnythingLLM la procesarea fișierelor media.",
-    "warn-recommend": "Recomandăm cel puțin 2GB de RAM și încărcarea fișierelor <10Mb.",
+    "warn-start":
+      "Utilizarea modelului local Whisper pe mașini cu RAM sau CPU limitat poate bloca AnythingLLM la procesarea fișierelor media.",
+    "warn-recommend":
+      "Recomandăm cel puțin 2GB de RAM și încărcarea fișierelor <10Mb.",
     "warn-end": "Modelul încorporat se va descărca automat la prima utilizare.",
   },
   embedding: {
     title: "Preferință embedding",
-    "desc-start": "Atunci când utilizați un LLM care nu suportă nativ un motor de embedding - s-ar putea să fie necesar să specificați credențiale suplimentare pentru embedding text.",
-    "desc-end": "Embedding-ul este procesul de transformare a textului în vectori. Aceste credențiale sunt necesare pentru a transforma fișierele și prompturile dvs. într-un format pe care AnythingLLM îl poate utiliza pentru procesare.",
+    "desc-start":
+      "Atunci când utilizați un LLM care nu suportă nativ un motor de embedding - s-ar putea să fie necesar să specificați credențiale suplimentare pentru embedding text.",
+    "desc-end":
+      "Embedding-ul este procesul de transformare a textului în vectori. Aceste credențiale sunt necesare pentru a transforma fișierele și prompturile dvs. într-un format pe care AnythingLLM îl poate utiliza pentru procesare.",
     provider: {
       title: "Furnizor embedding",
     },
   },
   text: {
     title: "Preferințe de împărțire și fragmentare text",
-    "desc-start": "Uneori, s-ar putea să doriți să modificați modul implicit în care documentele noi sunt împărțite și fragmentate înainte de a fi inserate în baza de date vectorială.",
-    "desc-end": "Ar trebui să modificați această setare doar dacă înțelegeți cum funcționează împărțirea textului și efectele sale secundare.",
+    "desc-start":
+      "Uneori, s-ar putea să doriți să modificați modul implicit în care documentele noi sunt împărțite și fragmentate înainte de a fi inserate în baza de date vectorială.",
+    "desc-end":
+      "Ar trebui să modificați această setare doar dacă înțelegeți cum funcționează împărțirea textului și efectele sale secundare.",
     size: {
       title: "Dimensiune fragment text",
-      description: "Aceasta este lungimea maximă de caractere care poate fi prezentă într-un singur vector.",
+      description:
+        "Aceasta este lungimea maximă de caractere care poate fi prezentă într-un singur vector.",
       recommend: "Lungimea maximă a modelului de embedding este",
     },
     overlap: {
       title: "Suprapunere fragment text",
-      description: "Aceasta este suprapunerea maximă de caractere care apare în timpul fragmentării între două fragmente de text adiacente.",
+      description:
+        "Aceasta este suprapunerea maximă de caractere care apare în timpul fragmentării între două fragmente de text adiacente.",
     },
   },
 };
