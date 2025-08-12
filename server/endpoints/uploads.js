@@ -14,10 +14,10 @@ function uploadEndpoints(app) {
 
   const tusServer = new TusServer({
     path: "/uploads",
-    // FileStore expects a `directory` option pointing to the upload folder.
-    // Passing `path` results in an undefined directory and crashes on startup.
-    datastore: new FileStore({ directory: uploadDir }),
   });
+  // FileStore expects a `directory` option pointing to the upload folder.
+  // Passing `path` results in an undefined directory and crashes on startup.
+  tusServer.datastore = new FileStore({ directory: uploadDir });
 
   app.all("/uploads/*", (req, res) => {
     tusServer.handle(req, res);
