@@ -979,20 +979,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "حالت چند کاربره",
+      description:
+        "نمونه خود را برای پشتیبانی از تیم خود با فعال‌سازی حالت چند کاربره تنظیم کنید.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "حالت چند کاربره فعال است",
+        enable: "فعال‌سازی حالت چند کاربره",
+        description:
+          "به طور پیش‌فرض، شما تنها مدیر خواهید بود. به عنوان مدیر، باید برای تمام کاربران یا مدیران جدید حساب کاربری ایجاد کنید. رمز عبور خود را گم نکنید زیرا فقط یک کاربر مدیر می‌تواند رمزهای عبور را بازنشانی کند.",
+        username: "نام کاربری حساب مدیر",
+        password: "رمز عبور حساب مدیر",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "حفاظت با رمز عبور",
+      description:
+        "از نمونه AnythingLLM خود با رمز عبور محافظت کنید. اگر این رمز را فراموش کنید هیچ روش بازیابی وجود ندارد، پس حتماً این رمز عبور را ذخیره کنید.",
+      "password-label": "رمز عبور نمونه",
     },
   },
 };

@@ -997,20 +997,22 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "多使用者模式",
+      description: "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "多使用者模式已啟用",
+        enable: "啟用多使用者模式",
+        description:
+          "預設情況下，您將是唯一的管理員。身為管理員，您需要為所有新使用者或管理員建立帳號。請勿遺失您的密碼，因為只有管理員使用者可以重設密碼。",
+        username: "管理員帳號使用者名稱",
+        password: "管理員帳號密碼",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "密碼保護",
+      description:
+        "使用密碼保護您的 AnythingLLM 系統。如果您忘記這個密碼，將沒有復原方法，因此請務必儲存此密碼。",
+      "password-label": "實例密碼",
     },
   },
 };

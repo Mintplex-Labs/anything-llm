@@ -982,20 +982,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "Multi-Gebruikersmodus",
+      description:
+        "Stel je instantie in om je team te ondersteunen door Multi-Gebruikersmodus in te schakelen.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "Multi-Gebruikersmodus is Ingeschakeld",
+        enable: "Schakel Multi-Gebruikersmodus In",
+        description:
+          "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
+        username: "Beheerdersaccount gebruikersnaam",
+        password: "Beheerdersaccount wachtwoord",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "Wachtwoordbeveiliging",
+      description:
+        "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
+      "password-label": "Instances wachtwoord",
     },
   },
 };

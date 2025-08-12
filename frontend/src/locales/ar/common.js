@@ -984,23 +984,27 @@ const TRANSLATIONS = {
       },
     },
   },
+
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "وضعية المستعملين المتعددين",
+      description:
+        "قم بإعداد مثيلك لدعم فريقك من خلال تنشيط وضعية المستعملين المتعددين.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "تم تمكين وضعية المستعملين المتعددين",
+        enable: "تمكين وضعية المستعملين المتعددين",
+        description:
+          "افتراضيًا، ستكون أنت المشرف الوحيد. وبصفتك مشرفا ستحتاج إلى إنشاء حسابات لجميع المستعملين أو المشرفين الجدد. لا تفقد كلمة مرورك، حيث يمكن فقط للمستعمل المشرف إعادة تعيين كلمات المرور.",
+        username: "اسم المستعمل لحساب المشرف",
+        password: "كلمة مرور حساب المشرف",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "حماية كلمة المرور",
+      description:
+        "إحم مثيل إني ثينك إلْلْمْ بكلمة المرور. إذا نسيتها فلا يوجد طريقة لاستردادها، فاحرص على حفظها.",
+      "password-label": "كلمة مرور المثيل",
     },
   },
 };

@@ -1027,20 +1027,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "מצב ריבוי משתמשים",
+      description:
+        "הגדר את המופע שלך לתמיכה בצוות שלך על ידי הפעלת מצב ריבוי משתמשים.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "מצב ריבוי משתמשים מופעל",
+        enable: "הפעל מצב ריבוי משתמשים",
+        description:
+          "כברירת מחדל, אתה תהיה המנהל היחיד. כמנהל תצטרך ליצור חשבונות לכל המשתמשים או המנהלים החדשים. אל תאבד את סיסמתך, מכיוון שרק משתמש מנהל יכול לאפס סיסמאות.",
+        username: "שם משתמש של חשבון מנהל",
+        password: "סיסמת חשבון מנהל",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "הגנת סיסמה",
+      description:
+        "הגן על מופע ה-AnythingLLM שלך באמצעות סיסמה. אם תשכח אותה, אין שיטת שחזור, אז ודא שאתה שומר סיסמה זו.",
+      "password-label": "סיסמת מופע",
     },
   },
 };

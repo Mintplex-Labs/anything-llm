@@ -981,20 +981,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "Multi-Người dùng Mode",
+      description:
+        "Set up your instance to support your team by activating Multi-Người dùng Mode.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "Multi-Người dùng Mode is Enabled",
+        enable: "Enable Multi-Người dùng Mode",
+        description:
+          "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
+        username: "Quản trị viên account username",
+        password: "Quản trị viên account password",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "Mật khẩu Protection",
+      description:
+        "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
+      "password-label": "Mật khẩu của instance",
     },
   },
 };

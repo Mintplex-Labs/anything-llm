@@ -1094,20 +1094,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "Modo multiusuario",
+      description:
+        "Configura tu instancia para que sea compatible con tu equipo activando el modo multiusuario.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "El modo multiusuario está habilitado",
+        enable: "Habilitar modo multiusuario",
+        description:
+          "Por defecto, serás el único administrador. Como administrador, deberás crear cuentas para todos los nuevos usuarios o administradores. No pierdas tu contraseña, ya que solo un usuario administrador puede restablecer las contraseñas.",
+        username: "Nombre de usuario de la cuenta de administrador",
+        password: "Contraseña de la cuenta de administrador",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "Protección con contraseña",
+      description:
+        "Protege tu instancia de AnythingLLM con una contraseña. Si la olvidas, no hay método de recuperación, así que asegúrate de guardar esta contraseña.",
+      "password-label": "Contraseña de la instancia",
     },
   },
 };

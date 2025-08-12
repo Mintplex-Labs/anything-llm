@@ -982,20 +982,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "Çoklu Kullanıcı Modu",
+      description:
+        "Takımınızı desteklemek için örneğinizi yapılandırın ve Çoklu Kullanıcı Modunu etkinleştirin.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "Çoklu Kullanıcı Modu Etkin",
+        enable: "Çoklu Kullanıcı Modunu Etkinleştir",
+        description:
+          "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
+        username: "Yönetici hesap kullanıcı adı",
+        password: "Yönetici hesap şifresi",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "Şifre Koruması",
+      description:
+        "AnythingLLM örneğinizi bir şifre ile koruyun. Bu şifreyi unutmanız hâlinde kurtarma yöntemi yoktur, bu yüzden mutlaka güvende saklayın.",
+      "password-label": "Örnek şifresi",
     },
   },
 };

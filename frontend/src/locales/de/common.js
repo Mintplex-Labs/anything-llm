@@ -1052,20 +1052,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "Mehrbenutzer-Modus",
+      description:
+        "Richten Sie Ihre Instanz ein, um Ihr Team zu unterstützen, indem Sie den Mehrbenutzer-Modus aktivieren.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "Mehrbenutzer-Modus ist aktiviert",
+        enable: "Mehrbenutzer-Modus aktivieren",
+        description:
+          "Standardmäßig sind Sie der einzige Administrator. Als Administrator müssen Sie Konten für alle neuen Benutzer oder Administratoren erstellen. Verlieren Sie Ihr Passwort nicht, da nur ein Administrator-Benutzer Passwörter zurücksetzen kann.",
+        username: "Administrator-Kontoname",
+        password: "Administrator-Kontopasswort",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "Passwortschutz",
+      description:
+        "Schützen Sie Ihre AnythingLLM-Instanz mit einem Passwort. Wenn Sie dieses vergessen, gibt es keine Wiederherstellungsmethode, also stellen Sie sicher, dass Sie dieses Passwort speichern.",
+      "password-label": "Instanzpasswort",
     },
   },
 };

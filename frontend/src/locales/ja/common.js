@@ -1021,20 +1021,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "マルチユーザーモード",
+      description:
+        "マルチユーザーモードを有効にして、チームをサポートするようにインスタンスを設定します。",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "マルチユーザーモードが有効です",
+        enable: "マルチユーザーモードを有効にする",
+        description:
+          "デフォルトでは、あなたが唯一の管理者になります。管理者として、すべての新しいユーザーまたは管理者のアカウントを作成する必要があります。管理者ユーザーのみがパスワードをリセットできるため、パスワードを紛失しないでください。",
+        username: "管理者アカウントのユーザー名",
+        password: "管理者アカウントのパスワード",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "パスワード保護",
+      description:
+        "AnythingLLMインスタンスをパスワードで保護します。これを忘れた場合、回復方法はないため、このパスワードを必ず保存してください。",
+      "password-label": "インスタンスパスワード",
     },
   },
 };

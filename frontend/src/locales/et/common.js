@@ -1019,20 +1019,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "Mitme kasutaja režiim",
+      description:
+        "Lülita mitme kasutaja tugi sisse, et meeskond saaks instantsi kasutada.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "Mitme kasutaja režiim on sisse lülitatud",
+        enable: "Lülita sisse",
+        description:
+          "Vaikimisi oled ainus administraator. Adminid loovad uued kasutajad ja paroole.",
+        username: "Admini kasutajanimi",
+        password: "Admini parool",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "Paroolikaitse",
+      description:
+        "Kaitse oma instantsi parooliga. Kui unustad selle, taastamisvõimalust ei ole.",
+      "password-label": "Instantsi parool",
     },
   },
 };

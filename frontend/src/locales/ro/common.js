@@ -1015,20 +1015,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "Mod multi-utilizator",
+      description:
+        "Configurează instanța ta să suporte echipa activând modul multi-utilizator.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "Modul multi-utilizator este activat",
+        enable: "Activează modul multi-utilizator",
+        description:
+          "Implicit, vei fi singurul administrator. Ca administrator, va trebui să creezi conturi pentru toți utilizatorii sau administratorii noi. Nu pierde parola, deoarece doar un utilizator administrator poate reseta parolele.",
+        username: "Numele contului de administrator",
+        password: "Parola contului de administrator",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "Protecție prin parolă",
+      description:
+        "Protejează instanța AnythingLLM cu o parolă. Dacă o uiți, nu există metode de recuperare, deci asigură-te că o salvezi.",
+      "password-label": "Parola instanței",
     },
   },
 };

@@ -1042,20 +1042,23 @@ const TRANSLATIONS = {
   security: {
     title: null,
     multiuser: {
-      title: null,
-      description: null,
+      title: "다중 사용자 모드",
+      description:
+        "다중 사용자 모드를 활성화하여 인스턴스가 팀 사용을 지원하도록 설정합니다.",
       enable: {
-        "is-enable": null,
-        enable: null,
-        description: null,
-        username: null,
-        password: null,
+        "is-enable": "다중 사용자 모드가 활성화되었습니다",
+        enable: "다중 사용자 모드 활성화",
+        description:
+          "당신은 기본 관리자가 됩니다. 관리자로서 모든 신규 사용자 또는 관리자의 계정을 생성해야 합니다. 비밀번호를 잃어버리면 관리자만 비밀번호를 재설정할 수 있습니다.",
+        username: "관리자 계정 사용자 이름",
+        password: "관리자 계정 비밀번호",
       },
     },
     password: {
-      title: null,
-      description: null,
-      "password-label": null,
+      title: "비밀번호 보호",
+      description:
+        "AnythingLLM 인스턴스를 비밀번호로 보호하십시오. 이 비밀번호를 잊어버리면 복구 방법이 없으므로 반드시 저장하세요.",
+      "password-label": "인스턴스 비밀번호",
     },
   },
 };
