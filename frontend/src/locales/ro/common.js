@@ -8,15 +8,15 @@ const TRANSLATIONS = {
     llm: {
       title: "Preferința LLM",
       description:
-        "AnythingLLM poate funcționa cu mulți furnizori LLM. Acesta va fi serviciul care gestionează conversațiile.",
+        "AnythingLLM poate funcționa cu mai mulți furnizori LLM. Acesta va fi serviciul care gestionează conversațiile.",
     },
     userSetup: {
       title: "Configurare Utilizator",
       description: "Configurează setările utilizatorului tău.",
-      howManyUsers: "Câți utilizatori vor folosi această instanță?",
+      howManyUsers: "Câți utilizatori vor folosi această resursă?",
       justMe: "Doar eu",
       myTeam: "Echipa mea",
-      instancePassword: "Parola Instanței",
+      instancePassword: "Parola Resursei",
       setPassword: "Dorești să setezi o parolă?",
       passwordReq: "Parolele trebuie să aibă cel puțin 8 caractere.",
       passwordWarn:
@@ -134,7 +134,7 @@ const TRANSLATIONS = {
       "AnythingLLM este cea mai simplă modalitate de a combina produse AI puternice precum OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB și alte servicii într-un pachet ordonat care îți crește productivitatea de 100x.",
     part3:
       "AnythingLLM poate rula complet local pe calculatorul tău cu un consum redus de resurse, pe care nici nu îl vei observa! Nu este necesar GPU. Instalarea în cloud sau local este, de asemenea, disponibilă.\nEcosistemul de unelte AI devine tot mai puternic zilnic. AnythingLLM face aceste tehnologii ușor de folosit.",
-    githubIssue: "Creează un issue pe GitHub",
+    githubIssue: "Creează un tichet de problemă pe GitHub",
     user1: "Cum încep?!",
     part4:
       'Este simplu. Toate colecțiile sunt organizate în bucket-uri pe care le numim "Spații de Lucru". Acestea sunt containere de fișiere, documente, imagini, PDF-uri și alte fișiere care vor fi transformate într-un format pe care LLM-urile îl pot înțelege și folosi în conversație.\n\nPoți adăuga și elimina fișiere oricând.',
@@ -277,7 +277,7 @@ const TRANSLATIONS = {
       deleting: "Se șterge spațiul de lucru...",
       "confirm-start": "Ești pe cale să ștergi întregul tău",
       "confirm-end":
-        "spațiu de lucru. Aceasta va elimina toate vectorii integrați în baza vectorială.\n\nFișierele originale rămân neatinse. Această acțiune este ireversibilă.",
+        "spațiu de lucru. Această acțiune va elimina toate încorporările vectoriale (vector embeddings) din baza dumneavoastră de date vectorială.\n\nFișierele originale rămân neatinse. Această acțiune este ireversibilă.",
     },
   },
   chat: {
@@ -290,7 +290,7 @@ const TRANSLATIONS = {
     model: {
       title: "Modelul de chat al spațiului de lucru",
       description:
-        "Modelul specific chat folosit de acest spațiu de lucru. Dacă e gol, folosește preferința LLM a sistemului.",
+        "Modelul specific chat folosit de acest spațiu de lucru. Dacă e lăsat gol, folosește preferința LLM a sistemului.",
       wait: "-- așteptare modele --",
     },
     mode: {
@@ -304,7 +304,7 @@ const TRANSLATIONS = {
       },
       query: {
         title: "Interogare",
-        "desc-start": "oferă răspuns doar",
+        "desc-start": "oferă răspunsuri",
         only: "doar",
         "desc-end": "dacă contextul documentului este găsit.",
       },
@@ -341,7 +341,7 @@ const TRANSLATIONS = {
       "desc-end": ", poți personaliza răspunsul când nu se găsește context.",
       "tooltip-title": "De ce văd asta?",
       "tooltip-description":
-        "Ești în modul interogare, care folosește doar informațiile din documente. Treci la chat pentru conversații mai flexibile sau vizitează documentația pentru mai multe detalii.",
+        "Ești în modul interogare (query), care folosește doar informațiile din documente. Treci pe modul chat pentru conversații mai flexibile sau vizitează documentația pentru mai multe detalii.",
     },
     temperature: {
       title: "Temperatura LLM",
@@ -362,10 +362,10 @@ const TRANSLATIONS = {
     },
   },
   embeddable: {
-    title: "Widget-uri chat embeddable",
+    title: "Widget-uri chat integrabile (embeddable)",
     description:
-      "Widget-urile chat embeddable sunt interfețe chat destinate publicului, legate de un singur spațiu de lucru. Acestea îți permit să construiești spații de lucru pe care apoi le poți publica în lume.",
-    create: "Creează embed",
+      "Widgeturile de chat integrabile sunt interfețe de chat publice, asociate unui singur spațiu de lucru. Acestea vă permit să creați spații de lucru pe care le puteți apoi publica pentru întreaga lume.",
+    create: "Generează cod embed",
     table: {
       workspace: "Spațiu de lucru",
       chats: "Chaturi trimise",
@@ -389,7 +389,7 @@ const TRANSLATIONS = {
   multi: {
     title: "Mod multi-utilizator",
     description:
-      "Configurează instanța ta să suporte echipa activând modul multi-utilizator.",
+      "Configurează resursa ta să suporte echipa activând modul multi-utilizator.",
     enable: {
       "is-enable": "Modul multi-utilizator este activat",
       enable: "Activează modul multi-utilizator",
@@ -401,14 +401,14 @@ const TRANSLATIONS = {
     password: {
       title: "Protecție prin parolă",
       description:
-        "Protejează instanța AnythingLLM cu o parolă. Dacă o uiți, nu există metode de recuperare, deci asigură-te că o salvezi.",
+        "Protejează resursa AnythingLLM cu o parolă. Dacă o uiți, nu există metode de recuperare, deci asigură-te că o salvezi.",
       "password-label": "Parola instanței",
     },
   },
   event: {
     title: "Jurnale de evenimente",
     description:
-      "Vizualizează toate acțiunile și evenimentele care au loc pe această instanță pentru monitorizare.",
+      "Vizualizează toate acțiunile și evenimentele care au loc pe această resursă pentru monitorizare.",
     clear: "Șterge jurnalele",
     table: {
       type: "Tip eveniment",
@@ -521,7 +521,7 @@ const TRANSLATIONS = {
     "website-depth": {
       name: "Bulk Link Scraper",
       description:
-        "Culege o pagină web și link-urile sale din subpaginile până la o anumită adâncime.",
+        "Extrage o pagină web și link-urile sale din subpaginile până la o anumită adâncime.",
       URL: "URL site web",
       URL_explained: "URL-ul site-ului pe care dorești să îl culegi.",
       depth: "Adâncime crawl",
@@ -537,13 +537,13 @@ const TRANSLATIONS = {
       description: "Importă o pagină Confluence cu un singur click.",
       deployment_type: "Tip implementare Confluence",
       deployment_type_explained:
-        "Determină dacă instanța ta Confluence este găzduită în cloud Atlassian sau self-hosted.",
+        "Determină dacă resursa ta Confluence este găzduită în cloud Atlassian sau self-hosted.",
       base_url: "URL de bază Confluence",
       base_url_explained:
         "Acesta este URL-ul de bază al spațiului tău Confluence.",
       space_key: "Cheie spațiu Confluence",
       space_key_explained:
-        "Cheia spațiului din instanța ta Confluence care va fi folosită. De obicei începe cu ~",
+        "Cheia spațiului din resursa ta Confluence care va fi folosită. De obicei începe cu ~",
       username: "Nume utilizator Confluence",
       username_explained: "Numele tău de utilizator Confluence",
       auth_type: "Tip autentificare Confluence",
@@ -562,57 +562,69 @@ const TRANSLATIONS = {
         "Odată complet, conținutul paginii va fi disponibil pentru embedding în spații de lucru în selectorul de documente.",
     },
     manage: {
-      documents: null,
-      "data-connectors": null,
-      "desktop-only": null,
-      dismiss: null,
-      editing: null,
+      documents: "Documente",
+      "data-connectors": "Conectori de date",
+      "desktop-only":
+        "Editarea acestor setări este disponibilă doar pe un dispozitiv desktop. Te rugăm să accesezi această pagină de pe desktop pentru a continua.",
+      dismiss: "Ignoră",
+      editing: "Se editează",
     },
     directory: {
-      "my-documents": null,
-      "new-folder": null,
-      "search-document": null,
-      "no-documents": null,
-      "move-workspace": null,
-      name: null,
-      "delete-confirmation": null,
-      "removing-message": null,
-      "move-success": null,
-      date: null,
-      type: null,
-      no_docs: null,
-      select_all: null,
-      deselect_all: null,
-      remove_selected: null,
-      costs: null,
-      save_embed: null,
+      "my-documents": "Documentele mele",
+      "new-folder": "Folder nou",
+      "search-document": "Căută document",
+      "no-documents": "Niciun document",
+      "move-workspace": "Mută în spațiul de lucru",
+      name: "Nume",
+      "delete-confirmation":
+        "Ești sigur că vrei să ștergi aceste fișiere și foldere?\nAcest lucru va elimina fișierele din sistem și le va elimina automat din orice spațiu de lucru existent.\nAceastă acțiune este ireversibilă.",
+      "removing-message":
+        "Se elimină {{count}} documente și {{folderCount}} foldere. Te rugăm să aștepți.",
+      "move-success": "S-au mutat cu succes {{count}} documente.",
+      date: "Dată",
+      type: "Tip",
+      no_docs: "Niciun document",
+      select_all: "Selectează tot",
+      deselect_all: "Deselectează tot",
+      remove_selected: "Elimină selectate",
+      costs: "*Cost unic pentru embeddings",
+      save_embed: "Salvează și încorporează",
     },
     upload: {
-      "processor-offline": null,
-      "processor-offline-desc": null,
-      "click-upload": null,
-      "file-types": null,
-      "or-submit-link": null,
-      "placeholder-link": null,
-      fetching: null,
-      "fetch-website": null,
-      "privacy-notice": null,
+      "processor-offline": "Procesorul de documente este offline",
+      "processor-offline-desc":
+        "Nu putem încărca fișierele tale acum deoarece procesorul de documente este offline. Te rugăm să încerci din nou mai târziu.",
+      "click-upload": "Clic pentru a încărca sau trage și plasa",
+      "file-types":
+        "suportă fișiere text, CSV-uri, foi de calcul, fișiere audio și multe altele!",
+      "or-submit-link": "sau trimite un link",
+      "placeholder-link": "https://exemplu.com",
+      fetching: "Se preia...",
+      "fetch-website": "Preluare site web",
+      "privacy-notice":
+        "Aceste fișiere vor fi încărcate în procesorul de documente care rulează pe această instanță AnythingLLM. Aceste fișiere nu sunt trimise sau partajate cu o terță parte.",
     },
     pinning: {
-      what_pinning: null,
-      pin_explained_block1: null,
-      pin_explained_block2: null,
-      pin_explained_block3: null,
-      accept: null,
+      what_pinning: "Ce este fixarea documentelor?",
+      pin_explained_block1:
+        "Când **fixezi** un document în AnythingLLM, vom injecta întregul conținut al documentului în fereastra de prompt pentru ca LLM-ul tău să-l înțeleagă pe deplin.",
+      pin_explained_block2:
+        "Acest lucru funcționează cel mai bine cu **modele cu context mare** sau fișiere mici care sunt critice pentru baza sa de cunoștințe.",
+      pin_explained_block3:
+        "Dacă nu obții răspunsurile dorite de la AnythingLLM în mod implicit, atunci fixarea este o modalitate excelentă de a obține răspunsuri de calitate superioară dintr-un clic.",
+      accept: "Ok, am înțeles",
     },
     watching: {
-      what_watching: null,
-      watch_explained_block1: null,
-      watch_explained_block2: null,
-      watch_explained_block3_start: null,
-      watch_explained_block3_link: null,
-      watch_explained_block3_end: null,
-      accept: null,
+      what_watching: "Ce face vizualizarea unui document?",
+      watch_explained_block1:
+        "Când **urmărești** un document în AnythingLLM, vom sincroniza *automat* conținutul documentului tău din sursa originală la intervale regulate. Acest lucru va actualiza automat conținutul în fiecare spațiu de lucru unde acest fișier este gestionat.",
+      watch_explained_block2:
+        "Această funcție suportă în prezent conținutul online și nu va fi disponibilă pentru documentele încărcate manual.",
+      watch_explained_block3_start:
+        "Poți gestiona ce documente sunt urmărite din vizualizarea de administrator a ",
+      watch_explained_block3_link: "Managerului de fișiere",
+      watch_explained_block3_end: ".",
+      accept: "Ok, am înțeles",
     },
   },
   chat_window: {
@@ -720,15 +732,16 @@ const TRANSLATIONS = {
           "Promptul sistemului tău a fost publicat în Comunitate!",
         success_thank_you: "Mulțumim pentru contribuția ta!",
         view_on_hub: "Vezi pe Community Hub",
-        modal_title: "Publică prompt sistem",
+        modal_title: "Publică System Prompt ",
         name_label: "Nume",
-        name_description: "Acesta este numele afișat al promptului tău sistem.",
-        name_placeholder: "Promptul meu sistem",
+        name_description:
+          "Acesta este numele afișat al System Prompt-ului tău.",
+        name_placeholder: "",
         description_label: "Descriere",
-        description_description: "Descrie scopul promptului tău sistem.",
+        description_description: "Descrie scopul System Prompt-ului tău.",
         tags_label: "Etichete",
         tags_description:
-          "Etichetele ajută la căutarea promptului. Max 5 etichete, max 20 caractere fiecare.",
+          "Etichetele ajută la căutarea Promptului. Max 5 etichete, max 20 caractere fiecare.",
         tags_placeholder: "Tastează și apasă Enter pentru a adăuga etichete",
         visibility_label: "Vizibilitate",
         public_description: "Prompturile publice sunt vizibile tuturor.",
@@ -739,7 +752,7 @@ const TRANSLATIONS = {
         prompt_label: "Prompt",
         prompt_description:
           "Acesta este promptul efectiv folosit pentru a ghida LLM-ul.",
-        prompt_placeholder: "Introdu promptul sistemului aici...",
+        prompt_placeholder: "Introdu System Prompt-ul aici...",
       },
       agent_flow: {
         public_description: "Fluxurile agent publice sunt vizibile tuturor.",
@@ -797,238 +810,281 @@ const TRANSLATIONS = {
       },
       generic: {
         unauthenticated: {
-          title: null,
-          description: null,
-          button: null,
+          title: "Autentificare necesară",
+          description:
+            "Trebuie să te autentifici cu AnythingLLM Community Hub înainte de a publica elemente.",
+          button: "Conectează-te la Community Hub",
         },
       },
     },
   },
   "vector-workspace": {
-    identifier: null,
+    identifier: "Identificator bază de date vectorială",
     snippets: {
-      title: null,
-      description: null,
-      recommend: null,
+      title: "Număr maxim de fragmente de context",
+      description:
+        "Această setare controlează cantitatea maximă de fragmente de context care vor fi trimise către LLM per chat sau interogare (query).",
+      recommend: "Recomandat",
     },
     doc: {
-      title: null,
-      description: null,
-      zero: null,
-      low: null,
-      medium: null,
-      high: null,
+      title: "Prag de similaritate document",
+      description:
+        "Scorul minim de similaritate necesar pentru ca o sursă să fie considerată relevantă pentru conversație (chat). Cu cât numărul este mai mare, cu atât sursa trebuie să fie mai asemănătoare cu conversația (chat).",
+      zero: "Fără restricții",
+      low: "Scăzut (scor de similaritate ≥ .25)",
+      medium: "Mediu (scor de similaritate ≥ .50)",
+      high: "Înalt (scor de similaritate ≥ .75)",
     },
     reset: {
-      reset: null,
-      resetting: null,
-      confirm: null,
-      error: null,
-      success: null,
+      reset: "Resetează baza de date vectorială",
+      resetting: "Se șterg vectorii...",
+      confirm:
+        "Sunteți pe cale să resetați baza de date vectorială a acestui spațiu de lucru. Această acțiune va elimina toate încorporările vectoriale aflate în prezent în bază.\n\nFișierele sursă originale vor rămâne intacte. Această acțiune este ireversibilă.",
+      error:
+        "Baza de date vectorială a spațiului de lucru nu a putut fi resetată!",
+      success: "Baza de date vectorială a spațiului de lucru a fost resetată!",
     },
   },
   agent: {
-    "performance-warning": null,
+    "performance-warning":
+      "Performanța LLM-urilor care nu suportă explicit apelarea de instrumente depinde în mare măsură de capabilitățile și acuratețea modelului. Unele abilități pot fi limitate sau nefuncționale.",
     provider: {
-      title: null,
-      description: null,
+      title: "Furnizor LLM agent spațiu de lucru",
+      description:
+        "Furnizorul LLM și modelul specific care vor fi utilizate pentru agentul @agent al acestui spațiu de lucru.",
     },
     mode: {
       chat: {
-        title: null,
-        description: null,
+        title: "Model de chat agent spațiu de lucru",
+        description:
+          "Modelul de chat specific care va fi utilizat pentru agentul @agent al acestui spațiu de lucru.",
       },
-      title: null,
-      description: null,
-      wait: null,
+      title: "Model agent spațiu de lucru",
+      description:
+        "Modelul LLM specific care va fi utilizat pentru agentul @agent al acestui spațiu de lucru.",
+      wait: "-- se așteaptă modele --",
     },
     skill: {
-      title: null,
-      description: null,
+      title: "Abilități implicite ale agentului",
+      description:
+        "Îmbunătățește abilitățile naturale ale agentului implicit cu aceste abilități predefinite. Această configurație se aplică tuturor spațiilor de lucru.",
       rag: {
-        title: null,
-        description: null,
+        title: "RAG & memorie pe termen lung",
+        description:
+          "Permite agentului să valorifice documentele dumneavoastră locale pentru a răspunde la o interogare sau cereți-i agentului să „rețină” fragmente de conținut pentru a le putea recupera ulterior din memoria pe termen lung.",
       },
       view: {
-        title: null,
-        description: null,
+        title: "Vizualizează & rezumă documente",
+        description:
+          "Permite agentului să listeze și să rezume conținutul fișierelor din spațiul de lucru încorporate în prezent.",
       },
       scrape: {
-        title: null,
-        description: null,
+        title: "Extrage date de pe site-uri web (prin web scraping)",
+        description:
+          "Permite agentului să viziteze și să extragă conținutul site-urilor web (prin web scraping).",
       },
       generate: {
-        title: null,
-        description: null,
+        title: "Generează grafice",
+        description:
+          "Permite agentului implicit să genereze diverse tipuri de grafice din datele furnizate sau date în chat.",
       },
       save: {
-        title: null,
-        description: null,
+        title: "Generează & salvează fișiere în browser",
+        description:
+          "Permite agentului implicit să genereze și să scrie fișiere care se salvează și pot fi descărcate în browserul tău.",
       },
       web: {
-        title: null,
-        "desc-start": null,
-        "desc-end": null,
+        title: "Căutare și navigare web live",
+        "desc-start":
+          "Permite-i agentului tău să caute pe web pentru a-ți răspunde la întrebări prin conectarea la un furnizor de căutare web (SERP).",
+        "desc-end":
+          "Căutarea web în timpul sesiunilor agentului nu va funcționa până nu este configurată.",
       },
     },
   },
   recorded: {
-    title: null,
-    description: null,
-    export: null,
+    title: "Conversații spațiu de lucru",
+    description:
+      "Acestea sunt toate conversațiile și mesajele înregistrate care au fost trimise de utilizatori, ordonate după data creării.",
+    export: "Exportă",
     table: {
-      id: null,
-      by: null,
-      workspace: null,
-      prompt: null,
-      response: null,
-      at: null,
+      id: "ID",
+      by: "Trimis de",
+      workspace: "Spațiu de lucru",
+      prompt: "Prompt",
+      response: "Răspuns",
+      at: "Trimis la",
     },
   },
   customization: {
     interface: {
-      title: null,
-      description: null,
+      title: "Preferințe UI",
+      description: "Setează preferințele UI pentru AnythingLLM.",
     },
     branding: {
-      title: null,
-      description: null,
+      title: "Branding & White-labeling",
+      description:
+        "Personalizează-ți instanța AnythingLLM cu branding personalizat.",
     },
     chat: {
-      title: null,
-      description: null,
+      title: "Chat",
+      description: "Setează preferințele de chat pentru AnythingLLM.",
       auto_submit: {
-        title: null,
-        description: null,
+        title: "Trimite automat intrarea vocală",
+        description:
+          "Trimite automat intrarea vocală după o perioadă de liniște",
       },
       auto_speak: {
-        title: null,
-        description: null,
+        title: "Rostește automat răspunsurile",
+        description: "Rostește automat răspunsurile de la AI",
       },
       spellcheck: {
-        title: null,
-        description: null,
+        title: "Activează verificarea ortografică",
+        description:
+          "Activează sau dezactivează verificarea ortografică în câmpul de introducere a chatului",
       },
     },
     items: {
       theme: {
-        title: null,
-        description: null,
+        title: "Temă",
+        description: "Selectează tema de culoare preferată pentru aplicație.",
       },
       "show-scrollbar": {
-        title: null,
-        description: null,
+        title: "Arată bara de derulare",
+        description:
+          "Activează sau dezactivează bara de derulare în fereastra de chat.",
       },
       "support-email": {
-        title: null,
-        description: null,
+        title: "Email de suport",
+        description:
+          "Setează adresa de email de suport care ar trebui să fie accesibilă utilizatorilor atunci când au nevoie de ajutor.",
       },
       "app-name": {
-        title: null,
-        description: null,
+        title: "Nume aplicație",
+        description:
+          "Setează un nume care este afișat pe pagina de autentificare tuturor utilizatorilor.",
       },
       "chat-message-alignment": {
-        title: null,
-        description: null,
+        title: "Alinierea mesajelor de chat",
+        description:
+          "Selectează modul de aliniere a mesajelor când folosești interfața de chat.",
       },
       "display-language": {
-        title: null,
-        description: null,
+        title: "Limba de afișare",
+        description:
+          "Selectează limba preferată pentru a reda interfața AnythingLLM - atunci când traducerile sunt disponibile.",
       },
       logo: {
-        title: null,
-        description: null,
-        add: null,
-        recommended: null,
-        remove: null,
-        replace: null,
+        title: "Logo brand",
+        description:
+          "Încarcă logo-ul tău personalizat pentru a fi afișat pe toate paginile.",
+        add: "Adaugă un logo personalizat",
+        recommended: "Dimensiune recomandată: 800 x 200",
+        remove: "Elimină",
+        replace: "Înlocuiește",
       },
       "welcome-messages": {
-        title: null,
-        description: null,
-        new: null,
-        system: null,
-        user: null,
-        message: null,
-        assistant: null,
-        "double-click": null,
-        save: null,
+        title: "Mesaje de bun venit",
+        description:
+          "Personalizează mesajele de bun venit afișate utilizatorilor tăi. Doar utilizatorii non-admin vor vedea aceste mesaje.",
+        new: "Nou",
+        system: "sistem",
+        user: "utilizator",
+        message: "mesaj",
+        assistant: "Asistent Chat AnythingLLM",
+        "double-click": "Dublu clic pentru a edita...",
+        save: "Salvează mesajele",
       },
       "browser-appearance": {
-        title: null,
-        description: null,
+        title: "Aspect browser",
+        description:
+          "Personalizează aspectul tabului și titlului browserului când aplicația este deschisă.",
         tab: {
-          title: null,
-          description: null,
+          title: "Titlu",
+          description:
+            "Setează un titlu personalizat pentru tab când aplicația este deschisă într-un browser.",
         },
         favicon: {
-          title: null,
-          description: null,
+          title: "Favicon",
+          description:
+            "Folosește un favicon personalizat pentru tabul browserului.",
         },
       },
       "sidebar-footer": {
-        title: null,
-        description: null,
-        icon: null,
-        link: null,
+        title: "Elemente subsol bară laterală",
+        description:
+          "Personalizează elementele din subsol afișate în partea de jos a barei laterale.",
+        icon: "Iconiță",
+        link: "Link",
       },
     },
   },
   api: {
-    title: null,
-    description: null,
-    link: null,
-    generate: null,
+    title: "Chei API",
+    description:
+      "Cheile API permit deținătorului să acceseze și să gestioneze programatic această instanță AnythingLLM.",
+    link: "Citește documentația API",
+    generate: "Generează o nouă cheie API",
     table: {
-      key: null,
-      by: null,
-      created: null,
+      key: "Cheie API",
+      by: "Creat de",
+      created: "Creat la",
     },
   },
   llm: {
-    title: null,
-    description: null,
-    provider: null,
+    title: "Preferința LLM",
+    description:
+      "Acestea sunt credențialele și setările pentru furnizorul tău preferat de chat și embedding LLM. Este important ca aceste chei să fie actuale și corecte, altfel AnythingLLM nu va funcționa corect.",
+    provider: "Furnizor LLM",
     providers: {
       azure_openai: {
-        azure_service_endpoint: null,
-        api_key: null,
-        chat_deployment_name: null,
-        chat_model_token_limit: null,
-        model_type: null,
-        default: null,
-        reasoning: null,
+        azure_service_endpoint: "Endpoint serviciu Azure",
+        api_key: "Cheie API",
+        chat_deployment_name: "Nume implementare chat",
+        chat_model_token_limit: "Limita token model chat",
+        model_type: "Tip model",
+        default: "Implicit",
+        reasoning: "Raționament",
       },
     },
   },
   transcription: {
-    title: null,
-    description: null,
-    provider: null,
-    "warn-start": null,
-    "warn-recommend": null,
-    "warn-end": null,
+    title: "Preferința modelului de transcriere",
+    description:
+      "Acestea sunt credențialele și setările pentru furnizorul tău preferat de model de transcriere. Este important ca aceste chei să fie actuale și corecte, altfel fișierele media și audio nu vor fi transcrise.",
+    provider: "Furnizor transcriere",
+    "warn-start":
+      "Utilizarea modelului local Whisper pe mașini cu RAM sau CPU limitat poate bloca AnythingLLM la procesarea fișierelor media.",
+    "warn-recommend":
+      "Recomandăm cel puțin 2GB de RAM și încărcarea fișierelor <10Mb.",
+    "warn-end": "Modelul încorporat se va descărca automat la prima utilizare.",
   },
   embedding: {
-    title: null,
-    "desc-start": null,
-    "desc-end": null,
+    title: "Preferință embedding",
+    "desc-start":
+      "Atunci când utilizați un LLM care nu suportă nativ un motor de embedding - s-ar putea să fie necesar să specificați credențiale suplimentare pentru embedding text.",
+    "desc-end":
+      "Embedding-ul este procesul de transformare a textului în vectori. Aceste credențiale sunt necesare pentru a transforma fișierele și prompturile dvs. într-un format pe care AnythingLLM îl poate utiliza pentru procesare.",
     provider: {
-      title: null,
+      title: "Furnizor embedding",
     },
   },
   text: {
-    title: null,
-    "desc-start": null,
-    "desc-end": null,
+    title: "Preferințe de împărțire și fragmentare text",
+    "desc-start":
+      "Uneori, s-ar putea să doriți să modificați modul implicit în care documentele noi sunt împărțite și fragmentate înainte de a fi inserate în baza de date vectorială.",
+    "desc-end":
+      "Ar trebui să modificați această setare doar dacă înțelegeți cum funcționează împărțirea textului și efectele sale secundare.",
     size: {
-      title: null,
-      description: null,
-      recommend: null,
+      title: "Dimensiune fragment text",
+      description:
+        "Aceasta este lungimea maximă de caractere care poate fi prezentă într-un singur vector.",
+      recommend: "Lungimea maximă a modelului de embedding este",
     },
     overlap: {
-      title: null,
-      description: null,
+      title: "Suprapunere fragment text",
+      description:
+        "Aceasta este suprapunerea maximă de caractere care apare în timpul fragmentării între două fragmente de text adiacente.",
     },
   },
 };
