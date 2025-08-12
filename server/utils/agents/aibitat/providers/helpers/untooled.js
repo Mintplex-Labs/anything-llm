@@ -297,9 +297,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         );
         const msgUUID = v4();
         completion = { content: "" };
-        const stream = await this.client.chat.completions.create({
-          model: this.model,
-          stream: true,
+        const stream = await chatCallback({
           messages: this.cleanMsgs(messages),
         });
 
@@ -368,8 +366,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         this.providerLog(
           "Will assume chat completion without tool call inputs."
         );
-        const response = await this.client.chat.completions.create({
-          model: this.model,
+        const response = await chatCallback({
           messages: this.cleanMsgs(messages),
         });
         completion = response.choices[0].message;
