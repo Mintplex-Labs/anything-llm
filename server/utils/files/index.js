@@ -443,7 +443,9 @@ async function fileToPickerData({
 function resolveMultipartPath(request) {
   const bodyPath = request.body?.path || request.body?.["path[]"]; // path[] may be array
   const parts = Array.isArray(bodyPath) ? bodyPath : bodyPath ? [bodyPath] : [];
-  const segments = parts.filter(Boolean).map((p) => normalizePath(p));
+  const segments = parts
+    .filter((p) => p && p !== "." && p !== "./")
+    .map((p) => normalizePath(p));
   if (segments.length === 0) return request.file.originalname;
 
   const uploadRoot = path.dirname(request.file.path);
