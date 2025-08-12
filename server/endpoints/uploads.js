@@ -1,23 +1,25 @@
-const { Server: TusServer, EVENTS, FileStore } = require('tus-node-server');
-const path = require('path');
-const fs = require('fs');
-const { Document } = require('../models/documents');
-const { Workspace } = require('../models/workspace');
+const { Server: TusServer, EVENTS, FileStore } = require("tus-node-server");
+const path = require("path");
+const fs = require("fs");
+const { Document } = require("../models/documents");
+const { Workspace } = require("../models/workspace");
 
 function uploadEndpoints(app) {
   if (!app) return;
   const uploadDir =
-    process.env.NODE_ENV === 'development'
-      ? path.resolve(__dirname, '../storage/uploads')
-      : path.resolve(process.env.STORAGE_DIR, 'uploads');
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, "../storage/uploads")
+      : path.resolve(process.env.STORAGE_DIR, "uploads");
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
   const tusServer = new TusServer({
-    path: '/uploads',
-    datastore: new FileStore({ path: uploadDir }),
+    path: "/uploads",
+    // FileStore expects a `directory` option pointing to the upload folder.
+    // Passing `path` results in an undefined directory and crashes on startup.
+    datastore: new FileStore({ directory: uploadDir }),
   });
 
-  app.all('/uploads/*', (req, res) => {
+  app.all("/uploads/*", (req, res) => {
     tusServer.handle(req, res);
   });
 
@@ -25,9 +27,9 @@ function uploadEndpoints(app) {
     try {
       const filePath = path.join(uploadDir, event.file.id);
       const documentsDir =
-        process.env.NODE_ENV === 'development'
-          ? path.resolve(__dirname, '../storage/documents')
-          : path.resolve(process.env.STORAGE_DIR, 'documents');
+        process.env.NODE_ENV === "development"
+          ? path.resolve(__dirname, "../storage/documents")
+          : path.resolve(process.env.STORAGE_DIR, "documents");
       if (!fs.existsSync(documentsDir))
         fs.mkdirSync(documentsDir, { recursive: true });
       const targetPath = path.join(documentsDir, `${event.file.id}.json`);
@@ -42,7 +44,7 @@ function uploadEndpoints(app) {
 
       await Document.addDocuments(workspace, [`${event.file.id}.json`]);
     } catch (e) {
-      console.error('Error processing upload', e);
+      console.error("Error processing upload", e);
     }
   });
 }
