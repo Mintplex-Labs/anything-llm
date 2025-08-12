@@ -12,8 +12,10 @@ function uploadEndpoints(app) {
       : path.resolve(process.env.STORAGE_DIR, 'uploads');
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-  const tusServer = new TusServer();
-  tusServer.datastore = new FileStore({ path: uploadDir });
+  const tusServer = new TusServer({
+    path: '/uploads',
+    datastore: new FileStore({ path: uploadDir }),
+  });
 
   app.all('/uploads/*', (req, res) => {
     tusServer.handle(req, res);
