@@ -992,7 +992,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "用户与安全",
     multiuser: {
       title: "多用户模式",
       description: "通过激活多用户模式来设置你的实例以支持你的团队。",

@@ -995,7 +995,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "安全性設定",
     multiuser: {
       title: "多使用者模式",
       description: "透過啟用多使用者模式來設定您的系統，以支援您的團隊。",

@@ -1019,7 +1019,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "セキュリティ",
     multiuser: {
       title: "マルチユーザーモード",
       description:

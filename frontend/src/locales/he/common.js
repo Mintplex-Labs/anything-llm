@@ -1025,7 +1025,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "אבטחה",
     multiuser: {
       title: "מצב ריבוי משתמשים",
       description:

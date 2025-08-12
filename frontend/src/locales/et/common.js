@@ -1017,7 +1017,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "Turvalisus",
     multiuser: {
       title: "Mitme kasutaja režiim",
       description:

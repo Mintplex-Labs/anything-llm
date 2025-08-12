@@ -980,7 +980,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "Veiligheid",
     multiuser: {
       title: "Multi-Gebruikersmodus",
       description:

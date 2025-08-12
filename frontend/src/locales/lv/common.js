@@ -1041,7 +1041,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "Drošība",
     multiuser: {
       title: "Vairāklietotāju režīms",
       description:

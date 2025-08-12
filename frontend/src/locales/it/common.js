@@ -983,7 +983,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "Sicurezza",
     multiuser: {
       title: "Modalità multi-utente",
       description:

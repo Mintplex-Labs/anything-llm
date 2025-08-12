@@ -1013,7 +1013,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "Securitate",
     multiuser: {
       title: "Mod multi-utilizator",
       description:

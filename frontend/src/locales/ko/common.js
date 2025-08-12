@@ -1040,7 +1040,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "보안",
     multiuser: {
       title: "다중 사용자 모드",
       description:

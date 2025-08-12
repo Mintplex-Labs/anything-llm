@@ -1050,7 +1050,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "Sicherheit",
     multiuser: {
       title: "Mehrbenutzer-Modus",
       description:

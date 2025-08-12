@@ -1025,7 +1025,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "Безопасность",
     multiuser: {
       title: "Многопользовательский режим",
       description:

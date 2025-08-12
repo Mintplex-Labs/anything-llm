@@ -977,7 +977,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "امنیت",
     multiuser: {
       title: "حالت چند کاربره",
       description:

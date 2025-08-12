@@ -980,7 +980,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "Güvenlik",
     multiuser: {
       title: "Çoklu Kullanıcı Modu",
       description:

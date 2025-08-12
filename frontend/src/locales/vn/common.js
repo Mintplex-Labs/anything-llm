@@ -979,7 +979,7 @@ const TRANSLATIONS = {
     },
   },
   security: {
-    title: null,
+    title: "Bảo mật",
     multiuser: {
       title: "Multi-Người dùng Mode",
       description:
