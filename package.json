@@ -7,7 +7,7 @@
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "scripts": {
     "test": "jest",
