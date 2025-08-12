@@ -54,6 +54,7 @@
     "extract-json-from-string": "^1.0.1",
     "fast-levenshtein": "^3.0.0",
     "graphql": "^16.7.1",
+    "ip": "^2.0.1",
     "joi": "^17.11.0",
     "joi-password-complexity": "^5.2.0",
     "js-tiktoken": "^1.0.8",

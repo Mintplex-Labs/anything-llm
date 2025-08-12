@@ -579,8 +579,6 @@ const TRANSLATIONS = {
       "Vínculo é o processo de transformar texto em vetores. Essas credenciais são necessárias para processar arquivos e prompts.",
     provider: {
       title: "Provedor de Vínculo",
-      description:
-        "Nenhuma configuração é necessária ao usar o mecanismo nativo do AnythingLLM.",
     },
   },
   text: {
@@ -648,12 +646,7 @@ const TRANSLATIONS = {
       title: "Proteção por Senha",
       description:
         "Proteja sua instância com uma senha. Não há recuperação, então salve esta senha.",
-    },
-    instance: {
-      title: "Proteger Instância",
-      description:
-        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
-      password: "Senha da instância",
+      "password-label": "Senha da instância",
     },
   },
   event: {

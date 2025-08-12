@@ -8,6 +8,7 @@ const prisma = require("../utils/prisma");
 const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
+const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
 const { getBaseLLMProviderModel } = require("../utils/helpers");
 
 function isNullOrNaN(value) {
@@ -112,6 +113,7 @@ const SystemSettings = {
             "searxng-engine",
             "tavily-search",
             "duckduckgo-engine",
+            "exa-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -194,6 +196,7 @@ const SystemSettings = {
     const { hasVectorCachedFiles } = require("../utils/files");
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
+    const embeddingEngine = process.env.EMBEDDING_ENGINE ?? "native";
     return {
       // --------------------------------------------------------
       // General Settings
@@ -208,11 +211,14 @@ const SystemSettings = {
       // --------------------------------------------------------
       // Embedder Provider Selection Settings & Configs
       // --------------------------------------------------------
-      EmbeddingEngine: process.env.EMBEDDING_ENGINE,
+      EmbeddingEngine: embeddingEngine,
       HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
       HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
-      EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+      EmbeddingModelPref:
+        embeddingEngine === "native"
+          ? NativeEmbedder._getEmbeddingModel()
+          : process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
@@ -278,6 +284,7 @@ const SystemSettings = {
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
+      AgentExaApiKey: !!process.env.AGENT_EXA_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -544,6 +551,11 @@ const SystemSettings = {
       LiteLLMTokenLimit: process.env.LITE_LLM_MODEL_TOKEN_LIMIT,
       LiteLLMBasePath: process.env.LITE_LLM_BASE_PATH,
       LiteLLMApiKey: !!process.env.LITE_LLM_API_KEY,
+
+      // Moonshot AI Keys
+      MoonshotAiApiKey: !!process.env.MOONSHOT_AI_API_KEY,
+      MoonshotAiModelPref:
+        process.env.MOONSHOT_AI_MODEL_PREF || "moonshot-v1-32k",
 
       // Generic OpenAI Keys
       GenericOpenAiBasePath: process.env.GENERIC_OPEN_AI_BASE_PATH,

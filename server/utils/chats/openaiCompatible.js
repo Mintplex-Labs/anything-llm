@@ -12,6 +12,7 @@ async function chatSync({
   systemPrompt = null,
   history = [],
   prompt = null,
+  attachments = [],
   temperature = null,
 }) {
   const uuid = uuidv4();
@@ -38,6 +39,7 @@ async function chatSync({
         text: textResponse,
         sources: [],
         type: chatMode,
+        attachments,
       },
       include: false,
     });
@@ -84,7 +86,7 @@ async function chatSync({
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: prompt,
+          input: String(prompt),
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
@@ -125,11 +127,12 @@ async function chatSync({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: prompt,
+      prompt: String(prompt),
       response: {
         text: textResponse,
         sources: [],
         type: chatMode,
+        attachments,
       },
       include: false,
     });
@@ -151,9 +154,10 @@ async function chatSync({
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages({
     systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
-    userPrompt: prompt,
+    userPrompt: String(prompt),
     contextTexts,
     chatHistory: history,
+    attachments,
   });
 
   // Send the text completion.
@@ -181,8 +185,14 @@ async function chatSync({
 
   const { chat } = await WorkspaceChats.new({
     workspaceId: workspace.id,
-    prompt: prompt,
-    response: { text: textResponse, sources, type: chatMode, metrics },
+    prompt: String(prompt),
+    response: {
+      text: textResponse,
+      sources,
+      type: chatMode,
+      metrics,
+      attachments,
+    },
   });
 
   return formatJSON(
@@ -205,6 +215,7 @@ async function streamChat({
   systemPrompt = null,
   history = [],
   prompt = null,
+  attachments = [],
   temperature = null,
 }) {
   const uuid = uuidv4();
@@ -250,6 +261,7 @@ async function streamChat({
         text: textResponse,
         sources: [],
         type: chatMode,
+        attachments,
       },
       include: false,
     });
@@ -300,7 +312,7 @@ async function streamChat({
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
           namespace: workspace.slug,
-          input: prompt,
+          input: String(prompt),
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
@@ -345,11 +357,12 @@ async function streamChat({
 
     await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: prompt,
+      prompt: String(prompt),
       response: {
         text: textResponse,
         sources: [],
         type: chatMode,
+        attachments,
       },
       include: false,
     });
@@ -375,9 +388,10 @@ async function streamChat({
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages({
     systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
-    userPrompt: prompt,
+    userPrompt: String(prompt),
     contextTexts,
     chatHistory: history,
+    attachments,
   });
 
   if (!LLMConnector.streamingEnabled()) {
@@ -418,12 +432,13 @@ async function streamChat({
   if (completeText?.length > 0) {
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
-      prompt: prompt,
+      prompt: String(prompt),
       response: {
         text: completeText,
         sources,
         type: chatMode,
         metrics: stream.metrics,
+        attachments,
       },
     });
 

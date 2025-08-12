@@ -24,6 +24,7 @@ const PPIOProvider = require("./ppio.js");
 const GeminiProvider = require("./gemini.js");
 const DellProAiStudioProvider = require("./dellProAiStudio.js");
 const AimlApiProvider = require("./aimlapi.js");
+const MoonshotAiProvider = require("./moonshotAi.js");
 
 module.exports = {
   OpenAIProvider,
@@ -52,4 +53,5 @@ module.exports = {
   GeminiProvider,
   DellProAiStudioProvider,
   AimlApiProvider,
+  MoonshotAiProvider,
 };

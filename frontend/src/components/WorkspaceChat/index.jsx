@@ -79,7 +79,7 @@ export default function WorkspaceChat({ loading, workspace }) {
   setEventDelegatorForCodeSnippets();
   return (
     <TTSProvider>
-      <DnDFileUploaderProvider workspace={workspace}>
+      <DnDFileUploaderProvider workspace={workspace} threadSlug={threadSlug}>
         <ChatContainer workspace={workspace} knownHistory={history} />
       </DnDFileUploaderProvider>
     </TTSProvider>

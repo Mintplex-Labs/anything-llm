@@ -51,9 +51,9 @@ class AWSBedrockProvider extends InheritMultiple([Provider, UnTooled]) {
       // IAM role is used for long-term credentials implied by system process
       // is filled by the AWS SDK automatically if we pass in no credentials
       case "iam_role":
-        return {};
+        return undefined;
       default:
-        return {};
+        return undefined;
     }
   }
 

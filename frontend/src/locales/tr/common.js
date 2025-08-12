@@ -401,8 +401,6 @@ const TRANSLATIONS = {
       "Gömme, metni vektörlere dönüştürme sürecidir. Dosyalarınızın ve komutlarınızın işlenebilmesi için AnythingLLM, bu kimlik bilgilerine ihtiyaç duyar.",
     provider: {
       title: "Embedding Sağlayıcısı",
-      description:
-        "AnythingLLM'nin yerel gömme motoru kullanıldığında ek bir kurulum gerekmez.",
     },
   },
   text: {
@@ -473,12 +471,7 @@ const TRANSLATIONS = {
       title: "Şifre Koruması",
       description:
         "AnythingLLM örneğinizi bir şifre ile koruyun. Bu şifreyi unutmanız hâlinde kurtarma yöntemi yoktur, bu yüzden mutlaka güvende saklayın.",
-    },
-    instance: {
-      title: "Örneği Şifreyle Koru",
-      description:
-        "Varsayılan olarak tek yönetici sizsiniz. Yönetici olarak yeni kullanıcılar veya yöneticiler için hesap oluşturmanız gerekir. Şifrenizi kaybetmeyin çünkü yalnızca bir Yönetici kullanıcı şifreleri sıfırlayabilir.",
-      password: "Örnek Şifresi",
+      "password-label": "Örnek şifresi",
     },
   },
   event: {

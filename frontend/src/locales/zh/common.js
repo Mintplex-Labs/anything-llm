@@ -557,7 +557,6 @@ const TRANSLATIONS = {
       "嵌入是将文本转换为矢量的过程。需要这些凭据才能将你的文件和提示转换为 AnythingLLM 可以用来处理的格式。",
     provider: {
       title: "嵌入引擎提供商",
-      description: "使用 AnythingLLM 的本机嵌入引擎时不需要设置。",
     },
   },
   text: {
@@ -623,12 +622,7 @@ const TRANSLATIONS = {
       title: "密码保护",
       description:
         "用密码保护你的AnythingLLM实例。如果你忘记了密码，那么没有恢复方法，所以请确保保存这个密码。",
-    },
-    instance: {
-      title: "实例密码保护",
-      description:
-        "默认情况下，你将是唯一的管理员。作为管理员，你需要为所有新用户或管理员创建账户。不要丢失你的密码，因为只有管理员用户可以重置密码。",
-      password: "实例密码",
+      "password-label": "实例密码",
     },
   },
   event: {
