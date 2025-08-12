@@ -386,25 +386,6 @@ const TRANSLATIONS = {
       at: "Trimis la",
     },
   },
-  multi: {
-    title: "Mod multi-utilizator",
-    description:
-      "Configurează resursa ta să suporte echipa activând modul multi-utilizator.",
-    enable: {
-      "is-enable": "Modul multi-utilizator este activat",
-      enable: "Activează modul multi-utilizator",
-      description:
-        "Implicit, vei fi singurul administrator. Ca administrator, va trebui să creezi conturi pentru toți utilizatorii sau administratorii noi. Nu pierde parola, deoarece doar un utilizator administrator poate reseta parolele.",
-      username: "Numele contului de administrator",
-      password: "Parola contului de administrator",
-    },
-    password: {
-      title: "Protecție prin parolă",
-      description:
-        "Protejează resursa AnythingLLM cu o parolă. Dacă o uiți, nu există metode de recuperare, deci asigură-te că o salvezi.",
-      "password-label": "Parola instanței",
-    },
-  },
   event: {
     title: "Jurnale de evenimente",
     description:
@@ -1085,6 +1066,28 @@ const TRANSLATIONS = {
       title: "Suprapunere fragment text",
       description:
         "Aceasta este suprapunerea maximă de caractere care apare în timpul fragmentării între două fragmente de text adiacente.",
+    },
+  },
+  security: {
+    title: "Securitate",
+    multiuser: {
+      title: "Mod multi-utilizator",
+      description:
+        "Configurează instanța ta să suporte echipa activând modul multi-utilizator.",
+      enable: {
+        "is-enable": "Modul multi-utilizator este activat",
+        enable: "Activează modul multi-utilizator",
+        description:
+          "Implicit, vei fi singurul administrator. Ca administrator, va trebui să creezi conturi pentru toți utilizatorii sau administratorii noi. Nu pierde parola, deoarece doar un utilizator administrator poate reseta parolele.",
+        username: "Numele contului de administrator",
+        password: "Parola contului de administrator",
+      },
+    },
+    password: {
+      title: "Protecție prin parolă",
+      description:
+        "Protejează instanța AnythingLLM cu o parolă. Dacă o uiți, nu există metode de recuperare, deci asigură-te că o salvezi.",
+      "password-label": "Parola instanței",
     },
   },
 };

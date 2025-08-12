@@ -455,25 +455,6 @@ const TRANSLATIONS = {
       at: "Verzonden Om",
     },
   },
-  multi: {
-    title: "Multi-Gebruikersmodus",
-    description:
-      "Stel je instantie in om je team te ondersteunen door Multi-Gebruikersmodus in te schakelen.",
-    enable: {
-      "is-enable": "Multi-Gebruikersmodus is Ingeschakeld",
-      enable: "Schakel Multi-Gebruikersmodus In",
-      description:
-        "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
-      username: "Beheerdersaccount gebruikersnaam",
-      password: "Beheerdersaccount wachtwoord",
-    },
-    password: {
-      title: "Wachtwoordbeveiliging",
-      description:
-        "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
-      "password-label": "Instances wachtwoord",
-    },
-  },
   event: {
     title: "Gebeurtenislogboeken",
     description:
@@ -996,6 +977,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Veiligheid",
+    multiuser: {
+      title: "Multi-Gebruikersmodus",
+      description:
+        "Stel je instantie in om je team te ondersteunen door Multi-Gebruikersmodus in te schakelen.",
+      enable: {
+        "is-enable": "Multi-Gebruikersmodus is Ingeschakeld",
+        enable: "Schakel Multi-Gebruikersmodus In",
+        description:
+          "Standaard ben je de enige beheerder. Als beheerder moet je accounts aanmaken voor alle nieuwe gebruikers of beheerders. Verlies je wachtwoord niet, want alleen een beheerdersgebruiker kan wachtwoorden resetten.",
+        username: "Beheerdersaccount gebruikersnaam",
+        password: "Beheerdersaccount wachtwoord",
+      },
+    },
+    password: {
+      title: "Wachtwoordbeveiliging",
+      description:
+        "Bescherm je AnythingLLM-instantie met een wachtwoord. Als je dit vergeet, is er geen herstelmethode, dus zorg ervoor dat je dit wachtwoord opslaat.",
+      "password-label": "Instances wachtwoord",
     },
   },
 };

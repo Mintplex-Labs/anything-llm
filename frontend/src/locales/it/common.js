@@ -458,25 +458,6 @@ const TRANSLATIONS = {
       at: "Inviato a",
     },
   },
-  multi: {
-    title: "Modalità multi-utente",
-    description:
-      "Imposta la tua istanza per supportare il tuo team attivando la modalità multi-utente.",
-    enable: {
-      "is-enable": "La modalità multi-utente è abilitata",
-      enable: "Abilita la modalità multi-utente",
-      description:
-        "Per impostazione predefinita, sarai l'unico amministratore. Come amministratore dovrai creare account per tutti i nuovi utenti o amministratori. Non perdere la tua password poiché solo un utente amministratore può reimpostare le password.",
-      username: "Nome utente account amministratore",
-      password: "Password account amministratore",
-    },
-    password: {
-      title: "Protezione password",
-      description:
-        "Proteggi la tua istanza AnythingLLM con una password. Se la dimentichi, non esiste un metodo di recupero, quindi assicurati di salvare questa password.",
-      "password-label": "Password istanza",
-    },
-  },
   event: {
     title: "Registro eventi",
     description:
@@ -999,6 +980,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Sicurezza",
+    multiuser: {
+      title: "Modalità multi-utente",
+      description:
+        "Imposta la tua istanza per supportare il tuo team attivando la modalità multi-utente.",
+      enable: {
+        "is-enable": "La modalità multi-utente è abilitata",
+        enable: "Abilita la modalità multi-utente",
+        description:
+          "Per impostazione predefinita, sarai l'unico amministratore. Come amministratore dovrai creare account per tutti i nuovi utenti o amministratori. Non perdere la tua password poiché solo un utente amministratore può reimpostare le password.",
+        username: "Nome utente account amministratore",
+        password: "Password account amministratore",
+      },
+    },
+    password: {
+      title: "Protezione password",
+      description:
+        "Proteggi la tua istanza AnythingLLM con una password. Se la dimentichi, non esiste un metodo di recupero, quindi assicurati di salvare questa password.",
+      "password-label": "Password istanza",
     },
   },
 };

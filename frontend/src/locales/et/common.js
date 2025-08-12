@@ -623,25 +623,6 @@ const TRANSLATIONS = {
       at: "Saadetud",
     },
   },
-  multi: {
-    title: "Mitme kasutaja režiim",
-    description:
-      "Lülita mitme kasutaja tugi sisse, et meeskond saaks instantsi kasutada.",
-    enable: {
-      "is-enable": "Mitme kasutaja režiim on sisse lülitatud",
-      enable: "Lülita sisse",
-      description:
-        "Vaikimisi oled ainus administraator. Adminid loovad uued kasutajad ja paroole.",
-      username: "Admini kasutajanimi",
-      password: "Admini parool",
-    },
-    password: {
-      title: "Paroolikaitse",
-      description:
-        "Kaitse oma instantsi parooliga. Kui unustad selle, taastamisvõimalust ei ole.",
-      "password-label": "Instantsi parool",
-    },
-  },
   event: {
     title: "Sündmuste logid",
     description: "Vaata instantsis toimuvaid tegevusi ja jälgi sündmusi.",
@@ -1033,6 +1014,28 @@ const TRANSLATIONS = {
           button: "Ühendu Community Hubiga",
         },
       },
+    },
+  },
+  security: {
+    title: "Turvalisus",
+    multiuser: {
+      title: "Mitme kasutaja režiim",
+      description:
+        "Lülita mitme kasutaja tugi sisse, et meeskond saaks instantsi kasutada.",
+      enable: {
+        "is-enable": "Mitme kasutaja režiim on sisse lülitatud",
+        enable: "Lülita sisse",
+        description:
+          "Vaikimisi oled ainus administraator. Adminid loovad uued kasutajad ja paroole.",
+        username: "Admini kasutajanimi",
+        password: "Admini parool",
+      },
+    },
+    password: {
+      title: "Paroolikaitse",
+      description:
+        "Kaitse oma instantsi parooliga. Kui unustad selle, taastamisvõimalust ei ole.",
+      "password-label": "Instantsi parool",
     },
   },
 };

@@ -630,25 +630,6 @@ const TRANSLATIONS = {
       at: "Enviado Em",
     },
   },
-  multi: {
-    title: "Modo Multi-Usuário",
-    description:
-      "Configure sua instância para suportar sua equipe ativando o modo multi-usuário.",
-    enable: {
-      "is-enable": "Modo Multi-Usuário Ativo",
-      enable: "Ativar Modo Multi-Usuário",
-      description:
-        "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
-      username: "Nome de usuário admin",
-      password: "Senha de admin",
-    },
-    password: {
-      title: "Proteção por Senha",
-      description:
-        "Proteja sua instância com uma senha. Não há recuperação, então salve esta senha.",
-      "password-label": "Senha da instância",
-    },
-  },
   event: {
     title: "Logs de Eventos",
     description:
@@ -1038,6 +1019,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Segurança",
+    multiuser: {
+      title: "Modo Multi-Usuário",
+      description:
+        "Configure sua instância para suportar sua equipe ativando o modo multi-usuário.",
+      enable: {
+        "is-enable": "Modo Multi-Usuário Ativo",
+        enable: "Ativar Modo Multi-Usuário",
+        description:
+          "Por padrão, você será o único administrador. Como administrador, você precisará criar contas para novos usuários. Não perca sua senha, pois apenas administradores podem redefini-la.",
+        username: "Nome de usuário admin",
+        password: "Senha de admin",
+      },
+    },
+    password: {
+      title: "Proteção por Senha",
+      description:
+        "Proteja sua instância com uma senha. Não há recuperação, então salve esta senha.",
+      "password-label": "Senha da instância",
     },
   },
 };
