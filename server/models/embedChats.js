@@ -194,6 +194,21 @@ const EmbedChats = {
       return 0;
     }
   },
+
+  uniqueSessionIds: async function () {
+    try {
+      const result = await prisma.embed_chats.findMany({
+        distinct: ["session_id"],
+        select: {
+          session_id: true,
+        },
+      });
+      return result.map((item) => item.session_id);
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
 };
 
 module.exports = { EmbedChats };

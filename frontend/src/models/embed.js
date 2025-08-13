@@ -52,11 +52,23 @@ const Embed = {
         return { success: true, error: e.message };
       });
   },
-  chats: async (offset = 0) => {
+  sessions: async () => {
+    return await fetch(`${API_BASE}/embeds/sessions`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.sessionIds || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  chats: async (offset = 0, sessionId = null) => {
     return await fetch(`${API_BASE}/embed/chats`, {
       method: "POST",
       headers: baseHeaders(),
-      body: JSON.stringify({ offset }),
+      body: JSON.stringify({ offset, sessionId }),
     })
       .then((res) => res.json())
       .catch((e) => {
