@@ -795,7 +795,7 @@ ${this.getHistory({ to: route.to })
       );
     }
 
-    return completion?.result;
+    return completion?.textResponse;
   }
 
   /**

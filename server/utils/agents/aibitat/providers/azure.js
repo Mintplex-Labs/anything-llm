@@ -68,7 +68,7 @@ class AzureOpenAiProvider extends Provider {
 
         // console.log(completion, { functionArgs })
         return {
-          result: null,
+          textResponse: null,
           functionCall: {
             name: completion.function_call.name,
             arguments: functionArgs,
@@ -78,7 +78,7 @@ class AzureOpenAiProvider extends Provider {
       }
 
       return {
-        result: completion.content,
+        textResponse: completion.content,
         cost,
       };
     } catch (error) {

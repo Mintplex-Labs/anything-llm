@@ -72,7 +72,7 @@ class OpenAIProvider extends Provider {
         }
 
         return {
-          result: null,
+          textResponse: null,
           functionCall: {
             name: completion.function_call.name,
             arguments: functionArgs,
@@ -82,7 +82,7 @@ class OpenAIProvider extends Provider {
       }
 
       return {
-        result: completion.content,
+        textResponse: completion.content,
         cost,
       };
     } catch (error) {

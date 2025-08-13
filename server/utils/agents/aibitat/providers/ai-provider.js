@@ -316,6 +316,7 @@ class Provider {
    * @returns {Promise<{ functionCall: any, textResponse: string }>} - The result of the chat completion.
    */
   async stream(messages, functions = [], eventHandler = null) {
+    this.providerLog("Provider.stream - will process this chat completion.");
     const msgUUID = v4();
     const stream = await this.client.chat.completions.create({
       model: this.model,
@@ -364,7 +365,11 @@ class Provider {
         result.functionCall.arguments,
         {}
       );
-    return result;
+
+    return {
+      textResponse: result.textResponse,
+      functionCall: result.functionCall,
+    };
   }
 }
 

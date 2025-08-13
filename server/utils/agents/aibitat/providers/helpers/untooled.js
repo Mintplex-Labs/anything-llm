@@ -339,7 +339,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
   async complete(messages, functions = [], chatCallback = null) {
     this.providerLog("Untooled.complete - will process this chat completion.");
     try {
-      let completion;
+      let completion = { content: "" };
       if (functions.length > 0) {
         const { toolCall, text } = await this.functionCall(
           messages,
@@ -359,7 +359,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
             cost: 0,
           };
         }
-        completion = { content: text };
+        completion.content = text;
       }
 
       if (!completion?.content) {
@@ -377,7 +377,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       // _but_ we should enable it to call previously used tools in a new chat interaction.
       this.deduplicator.reset("runs");
       return {
-        result: completion.content,
+        textResponse: completion.content,
         cost: 0,
       };
     } catch (error) {
