@@ -297,6 +297,8 @@ const SystemSettings = {
       // --------------------------------------------------------
       SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
       SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
+      SimpleSSONoLoginRedirectUrl:
+        process.env.SIMPLE_SSO_NO_LOGIN_REDIRECT_URL || null,
     };
   },
 
