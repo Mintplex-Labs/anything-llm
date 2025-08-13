@@ -454,30 +454,6 @@ const TRANSLATIONS = {
       at: "Sent At",
     },
   },
-  multi: {
-    title: "Multi-Người dùng Mode",
-    description:
-      "Set up your instance to support your team by activating Multi-Người dùng Mode.",
-    enable: {
-      "is-enable": "Multi-Người dùng Mode is Enabled",
-      enable: "Enable Multi-Người dùng Mode",
-      description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
-      username: "Quản trị viên account username",
-      password: "Quản trị viên account password",
-    },
-    password: {
-      title: "Mật khẩu Protection",
-      description:
-        "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
-    },
-    instance: {
-      title: "Mật khẩu Protect Instance",
-      description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
-      password: "Instance password",
-    },
-  },
   event: {
     title: "Nhật ký sự kiện",
     description:
@@ -1000,6 +976,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Bảo mật",
+    multiuser: {
+      title: "Multi-Người dùng Mode",
+      description:
+        "Set up your instance to support your team by activating Multi-Người dùng Mode.",
+      enable: {
+        "is-enable": "Multi-Người dùng Mode is Enabled",
+        enable: "Enable Multi-Người dùng Mode",
+        description:
+          "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Quản trị viên user can reset passwords.",
+        username: "Quản trị viên account username",
+        password: "Quản trị viên account password",
+      },
+    },
+    password: {
+      title: "Mật khẩu Protection",
+      description:
+        "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
+      "password-label": "Mật khẩu của instance",
     },
   },
 };

@@ -90,6 +90,9 @@ const webBrowsing = {
               case "duckduckgo-engine":
                 engine = "_duckDuckGoEngine";
                 break;
+              case "exa-search":
+                engine = "_exaSearch";
+                break;
               default:
                 engine = "_googleSearchEngine";
             }
@@ -642,6 +645,73 @@ const webBrowsing = {
             if (data.length === 0) {
               return `No information was found online for the search query.`;
             }
+
+            const result = JSON.stringify(data);
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - reviewing the results now. (~${this.countTokens(result)} tokens)`
+            );
+            return result;
+          },
+          _exaSearch: async function (query) {
+            if (!process.env.AGENT_EXA_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Exa searching because the user has not defined the required API key.\nVisit: https://exa.ai to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Exa to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const url = "https://api.exa.ai/search";
+            const { response, error } = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": process.env.AGENT_EXA_API_KEY,
+              },
+              body: JSON.stringify({
+                query: query,
+                type: "auto",
+                numResults: 10,
+                contents: {
+                  text: true,
+                },
+              }),
+            })
+              .then((res) => {
+                if (res.ok) return res.json();
+                throw new Error(
+                  `${res.status} - ${res.statusText}. params: ${JSON.stringify({ auth: this.middleTruncate(process.env.AGENT_EXA_API_KEY, 5), q: query })}`
+                );
+              })
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                this.super.handlerProps.log(`Exa Search Error: ${e.message}`);
+                return { response: null, error: e.message };
+              });
+
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response.results?.forEach((searchResult) => {
+              const { title, url, text, publishedDate } = searchResult;
+              data.push({
+                title,
+                link: url,
+                snippet: text,
+                publishedDate,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
 
             const result = JSON.stringify(data);
             this.super.introspect(

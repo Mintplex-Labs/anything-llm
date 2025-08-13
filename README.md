@@ -136,7 +136,7 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 - [PGVector](https://github.com/pgvector/pgvector)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
-- [Chroma](https://trychroma.com)
+- [Chroma & ChromaCloud](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
 - [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)

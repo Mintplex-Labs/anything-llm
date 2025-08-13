@@ -113,6 +113,7 @@ const SystemSettings = {
             "searxng-engine",
             "tavily-search",
             "duckduckgo-engine",
+            "exa-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -282,6 +283,7 @@ const SystemSettings = {
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
+      AgentExaApiKey: !!process.env.AGENT_EXA_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -425,6 +427,11 @@ const SystemSettings = {
       ChromaEndpoint: process.env.CHROMA_ENDPOINT,
       ChromaApiHeader: process.env.CHROMA_API_HEADER,
       ChromaApiKey: !!process.env.CHROMA_API_KEY,
+
+      // ChromaCloud DB Keys
+      ChromaCloudApiKey: !!process.env.CHROMACLOUD_API_KEY,
+      ChromaCloudTenant: process.env.CHROMACLOUD_TENANT,
+      ChromaCloudDatabase: process.env.CHROMACLOUD_DATABASE,
 
       // Weaviate DB Keys
       WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,

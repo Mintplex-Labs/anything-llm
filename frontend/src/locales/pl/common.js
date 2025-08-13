@@ -651,30 +651,6 @@ const TRANSLATIONS = {
       at: "Wysłane o",
     },
   },
-  multi: {
-    title: "Tryb wielu użytkowników",
-    description:
-      "Skonfiguruj swoją instancję do obsługi zespołu, aktywując tryb wielu użytkowników.",
-    enable: {
-      "is-enable": "Tryb wielu użytkowników jest włączony",
-      enable: "Włącz tryb wielu użytkowników",
-      description:
-        "Domyślnie będziesz jedynym administratorem. Jako administrator będziesz musiał utworzyć konta dla wszystkich nowych użytkowników lub administratorów. Nie zgub hasła, ponieważ tylko administrator może je zresetować.",
-      username: "Nazwa użytkownika konta administratora",
-      password: "Hasło konta administratora",
-    },
-    password: {
-      title: "Ochrona hasłem",
-      description:
-        "Chroń swoją instancję AnythingLLM hasłem. Jeśli go zapomnisz, nie ma metody odzyskiwania, więc upewnij się, że zapisałeś to hasło.",
-    },
-    instance: {
-      title: "Wystąpienie chronione hasłem",
-      description:
-        "Domyślnie będziesz jedynym administratorem. Jako administrator będziesz musiał utworzyć konta dla wszystkich nowych użytkowników lub administratorów. Nie zgub hasła, ponieważ tylko administrator może je zresetować.",
-      password: "Hasło instancji",
-    },
-  },
   event: {
     title: "Dzienniki zdarzeń",
     description: "Wyświetl wszystkie akcje i zdarzenia.",
@@ -1088,6 +1064,28 @@ const TRANSLATIONS = {
           button: "Połączenie z centrum społeczności",
         },
       },
+    },
+  },
+  security: {
+    title: "Bezpieczeństwo",
+    multiuser: {
+      title: "Tryb wielu użytkowników",
+      description:
+        "Skonfiguruj swoją instancję do obsługi zespołu, aktywując tryb wielu użytkowników.",
+      enable: {
+        "is-enable": "Tryb wielu użytkowników jest włączony",
+        enable: "Włącz tryb wielu użytkowników",
+        description:
+          "Domyślnie będziesz jedynym administratorem. Jako administrator będziesz musiał utworzyć konta dla wszystkich nowych użytkowników lub administratorów. Nie zgub hasła, ponieważ tylko administrator może je zresetować.",
+        username: "Nazwa użytkownika konta administratora",
+        password: "Hasło konta administratora",
+      },
+    },
+    password: {
+      title: "Ochrona hasłem",
+      description:
+        "Chroń swoją instancję AnythingLLM hasłem. Jeśli go zapomnisz, nie ma metody odzyskiwania, więc upewnij się, że zapisałeś to hasło.",
+      "password-label": "Hasło instancji",
     },
   },
 };

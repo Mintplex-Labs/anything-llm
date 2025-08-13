@@ -682,28 +682,26 @@ const TRANSLATIONS = {
     },
   },
 
-  multi: {
-    title: "Multi-User Mode",
-    description:
-      "Set up your instance to support your team by activating Multi-User Mode.",
-    enable: {
-      "is-enable": "Multi-User Mode is Enabled",
-      enable: "Enable Multi-User Mode",
+  security: {
+    title: "Security",
+    multiuser: {
+      title: "Multi-User Mode",
       description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Admin user can reset passwords.",
-      username: "Admin account username",
-      password: "Admin account password",
+        "Set up your instance to support your team by activating Multi-User Mode.",
+      enable: {
+        "is-enable": "Multi-User Mode is Enabled",
+        enable: "Enable Multi-User Mode",
+        description:
+          "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Admin user can reset passwords.",
+        username: "Admin account username",
+        password: "Admin account password",
+      },
     },
     password: {
       title: "Password Protection",
       description:
         "Protect your AnythingLLM instance with a password. If you forget this there is no recovery method so ensure you save this password.",
-    },
-    instance: {
-      title: "Password Protect Instance",
-      description:
-        "By default, you will be the only admin. As an admin you will need to create accounts for all new users or admins. Do not lose your password as only an Admin user can reset passwords.",
-      password: "Instance password",
+      "password-label": "Instance Password",
     },
   },
 

@@ -460,30 +460,6 @@ const TRANSLATIONS = {
       at: "Envoyé à",
     },
   },
-  multi: {
-    title: "Mode multi-utilisateurs",
-    description:
-      "Configurez votre instance pour prendre en charge votre équipe en activant le mode multi-utilisateurs.",
-    enable: {
-      "is-enable": "Le mode multi-utilisateurs est activé",
-      enable: "Activer le mode multi-utilisateurs",
-      description:
-        "Par défaut, vous serez le seul administrateur. En tant qu'administrateur, vous devrez créer des comptes pour tous les nouveaux utilisateurs ou administrateurs. Ne perdez pas votre mot de passe car seul un utilisateur administrateur peut réinitialiser les mots de passe.",
-      username: "Nom d'utilisateur du compte administrateur",
-      password: "Mot de passe du compte administrateur",
-    },
-    password: {
-      title: "Protection par mot de passe",
-      description:
-        "Protégez votre instance AnythingLLM avec un mot de passe. Si vous oubliez ce mot de passe, il n'y a pas de méthode de récupération, donc assurez-vous de le sauvegarder.",
-    },
-    instance: {
-      title: "Protéger l'instance par mot de passe",
-      description:
-        "Par défaut, vous serez le seul administrateur. En tant qu'administrateur, vous devrez créer des comptes pour tous les nouveaux utilisateurs ou administrateurs. Ne perdez pas votre mot de passe car seul un utilisateur administrateur peut réinitialiser les mots de passe.",
-      password: "Mot de passe de l'instance",
-    },
-  },
   event: {
     title: "Journaux d'événements",
     description:
@@ -1006,6 +982,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Sécurité",
+    multiuser: {
+      title: "Mode multi-utilisateurs",
+      description:
+        "Configurez votre instance pour prendre en charge votre équipe en activant le mode multi-utilisateurs.",
+      enable: {
+        "is-enable": "Le mode multi-utilisateurs est activé",
+        enable: "Activer le mode multi-utilisateurs",
+        description:
+          "Par défaut, vous serez le seul administrateur. En tant qu'administrateur, vous devrez créer des comptes pour tous les nouveaux utilisateurs ou administrateurs. Ne perdez pas votre mot de passe car seul un utilisateur administrateur peut réinitialiser les mots de passe.",
+        username: "Nom d'utilisateur du compte administrateur",
+        password: "Mot de passe du compte administrateur",
+      },
+    },
+    password: {
+      title: "Protection par mot de passe",
+      description:
+        "Protégez votre instance AnythingLLM avec un mot de passe. Si vous oubliez ce mot de passe, il n'y a pas de méthode de récupération, donc assurez-vous de le sauvegarder.",
+      "password-label": "Mot de passe de l'instance",
     },
   },
 };

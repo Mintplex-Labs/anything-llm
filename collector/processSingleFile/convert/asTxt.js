@@ -8,7 +8,7 @@ const {
 } = require("../../utils/files");
 const { default: slugify } = require("slugify");
 
-async function asTxt({ fullFilePath = "", filename = "" }) {
+async function asTxt({ fullFilePath = "", filename = "", options = {} }) {
   let content = "";
   try {
     content = fs.readFileSync(fullFilePath, "utf8");
@@ -41,10 +41,11 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
     token_count_estimate: tokenizeString(content),
   };
 
-  const document = writeToServerDocuments(
+  const document = writeToServerDocuments({
     data,
-    `${slugify(filename)}-${data.id}`
-  );
+    filename: `${slugify(filename)}-${data.id}`,
+    options: { parseOnly: options.parseOnly },
+  });
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
   return { success: true, reason: null, documents: [document] };
