@@ -20,8 +20,14 @@ export default function Login() {
   const { loading, requiresAuth, mode } = usePasswordModal(!!query.get("nt"));
 
   if (loading || ssoLoading) return <FullScreenLoader />;
-  if (ssoConfig.enabled && ssoConfig.noLogin)
-    return <Navigate to={paths.sso.login()} />;
+  if (ssoConfig.enabled && ssoConfig.noLogin) {
+    const redirectTarget = ssoConfig.redirectUrl || paths.sso.login();
+    if (/^https?:\/\//i.test(redirectTarget)) {
+      window.location.replace(redirectTarget);
+      return <FullScreenLoader />;
+    }
+    return <Navigate to={redirectTarget} />;
+  }
   if (requiresAuth === false) return <Navigate to={paths.home()} />;
 
   return <PasswordModal mode={mode} />;
