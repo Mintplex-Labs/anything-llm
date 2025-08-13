@@ -10,6 +10,7 @@ export default function useSimpleSSO() {
   const [ssoConfig, setSsoConfig] = useState({
     enabled: false,
     noLogin: false,
+    redirectUrl: null,
   });
 
   useEffect(() => {
@@ -19,6 +20,7 @@ export default function useSimpleSSO() {
         setSsoConfig({
           enabled: settings?.SimpleSSOEnabled,
           noLogin: settings?.SimpleSSONoLogin,
+          redirectUrl: settings?.SimpleSSONoLoginRedirectUrl || null,
         });
       } catch (e) {
         console.error(e);
