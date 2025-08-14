@@ -2295,7 +2295,8 @@
                     "contentString": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
                 ],
-                "reset": false
+                "reset": false,
+                "includeSources": true
               }
             }
           }
@@ -2398,7 +2399,8 @@
                     "contentString": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                   }
                 ],
-                "reset": false
+                "reset": false,
+                "includeSources": true
               }
             }
           }

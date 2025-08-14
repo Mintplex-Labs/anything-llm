@@ -613,7 +613,8 @@ function apiWorkspaceEndpoints(app) {
                  contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
              ],
-             reset: false
+             reset: false,
+             includeSources: true
            }
          }
        }
@@ -649,6 +650,7 @@ function apiWorkspaceEndpoints(app) {
           sessionId = null,
           attachments = [],
           reset = false,
+          includeSources = true,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
@@ -687,6 +689,7 @@ function apiWorkspaceEndpoints(app) {
           sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
           reset,
+          includeSources,
         });
 
         await Telemetry.sendTelemetry("sent_chat", {
@@ -738,7 +741,8 @@ function apiWorkspaceEndpoints(app) {
                  contentString: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
                }
              ],
-             reset: false
+             reset: false,
+             includeSources: true
            }
          }
        }
@@ -795,6 +799,7 @@ function apiWorkspaceEndpoints(app) {
           sessionId = null,
           attachments = [],
           reset = false,
+          includeSources = true,
         } = reqBody(request);
         const workspace = await Workspace.get({ slug: String(slug) });
 
@@ -840,6 +845,7 @@ function apiWorkspaceEndpoints(app) {
           sessionId: !!sessionId ? String(sessionId) : null,
           attachments,
           reset,
+          includeSources,
         });
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection:
