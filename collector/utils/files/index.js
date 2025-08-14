@@ -131,7 +131,9 @@ function writeToServerDocuments({
 
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
-  const destinationFilePath = path.resolve(destination, filename) + ".json";
+  const destinationFilePath = normalizePath(
+    path.resolve(destination, filename) + ".json"
+  );
 
   fs.writeFileSync(destinationFilePath, JSON.stringify(data, null, 4), {
     encoding: "utf-8",
