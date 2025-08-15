@@ -1,10 +1,13 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Admin from "@/models/admin";
 import paths from "@/utils/paths";
-import { LinkSimple, Trash } from "@phosphor-icons/react";
+import { LinkSimple, Trash, Users } from "@phosphor-icons/react";
+import ManageUsersModal from "./ManageUsersModal";
 
 export default function WorkspaceRow({ workspace, users }) {
   const rowRef = useRef(null);
+  const [showManageUsers, setShowManageUsers] = useState(false);
+
   const handleDelete = async () => {
     if (
       !window.confirm(
@@ -36,15 +39,23 @@ export default function WorkspaceRow({ workspace, users }) {
           </a>
         </td>
         <td className="px-6">
-          <a
-            href={paths.workspace.settings.members(workspace.slug)}
-            className="text-white flex items-center underline"
+          <button
+            onClick={() => setShowManageUsers(true)}
+            className="text-white flex items-center underline hover:text-blue-300"
+            title="Manage workspace users"
           >
-            {workspace.userIds?.length}
-          </a>
+            {workspace.userIds?.length || 0}
+          </button>
         </td>
         <td className="px-6">{workspace.createdAt}</td>
         <td className="px-6 flex items-center gap-x-6 h-full mt-1">
+          <button
+            onClick={() => setShowManageUsers(true)}
+            className="text-xs font-medium text-white/80 light:text-black/80 hover:text-blue-300 rounded-lg px-2 py-1 hover:bg-white hover:bg-opacity-10"
+            title="Manage users"
+          >
+            <Users className="h-5 w-5" />
+          </button>
           <button
             onClick={handleDelete}
             className="text-xs font-medium text-white/80 light:text-black/80 hover:light:text-red-500 hover:text-red-300 rounded-lg px-2 py-1 hover:bg-white hover:light:bg-red-50 hover:bg-opacity-10"
@@ -53,6 +64,13 @@ export default function WorkspaceRow({ workspace, users }) {
           </button>
         </td>
       </tr>
+      {showManageUsers && (
+        <ManageUsersModal
+          workspace={workspace}
+          users={users}
+          closeModal={() => setShowManageUsers(false)}
+        />
+      )}
     </>
   );
 }
