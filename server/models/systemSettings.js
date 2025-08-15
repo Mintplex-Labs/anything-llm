@@ -428,6 +428,11 @@ const SystemSettings = {
       ChromaApiHeader: process.env.CHROMA_API_HEADER,
       ChromaApiKey: !!process.env.CHROMA_API_KEY,
 
+      // ChromaCloud DB Keys
+      ChromaCloudApiKey: !!process.env.CHROMACLOUD_API_KEY,
+      ChromaCloudTenant: process.env.CHROMACLOUD_TENANT,
+      ChromaCloudDatabase: process.env.CHROMACLOUD_DATABASE,
+
       // Weaviate DB Keys
       WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
       WeaviateApiKey: process.env.WEAVIATE_API_KEY,

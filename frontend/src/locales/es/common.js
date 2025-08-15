@@ -662,25 +662,6 @@ const TRANSLATIONS = {
       at: "Enviado el",
     },
   },
-  multi: {
-    title: "Modo multiusuario",
-    description:
-      "Configura tu instancia para que sea compatible con tu equipo activando el modo multiusuario.",
-    enable: {
-      "is-enable": "El modo multiusuario está habilitado",
-      enable: "Habilitar modo multiusuario",
-      description:
-        "Por defecto, serás el único administrador. Como administrador, deberás crear cuentas para todos los nuevos usuarios o administradores. No pierdas tu contraseña, ya que solo un usuario administrador puede restablecer las contraseñas.",
-      username: "Nombre de usuario de la cuenta de administrador",
-      password: "Contraseña de la cuenta de administrador",
-    },
-    password: {
-      title: "Protección con contraseña",
-      description:
-        "Protege tu instancia de AnythingLLM con una contraseña. Si la olvidas, no hay método de recuperación, así que asegúrate de guardar esta contraseña.",
-      "password-label": "Contraseña de la instancia",
-    },
-  },
   event: {
     title: "Registros de eventos",
     description:
@@ -1108,6 +1089,28 @@ const TRANSLATIONS = {
           button: "Conectar al Centro de la Comunidad",
         },
       },
+    },
+  },
+  security: {
+    title: "Seguridad",
+    multiuser: {
+      title: "Modo multiusuario",
+      description:
+        "Configura tu instancia para que sea compatible con tu equipo activando el modo multiusuario.",
+      enable: {
+        "is-enable": "El modo multiusuario está habilitado",
+        enable: "Habilitar modo multiusuario",
+        description:
+          "Por defecto, serás el único administrador. Como administrador, deberás crear cuentas para todos los nuevos usuarios o administradores. No pierdas tu contraseña, ya que solo un usuario administrador puede restablecer las contraseñas.",
+        username: "Nombre de usuario de la cuenta de administrador",
+        password: "Contraseña de la cuenta de administrador",
+      },
+    },
+    password: {
+      title: "Protección con contraseña",
+      description:
+        "Protege tu instancia de AnythingLLM con una contraseña. Si la olvidas, no hay método de recuperación, así que asegúrate de guardar esta contraseña.",
+      "password-label": "Contraseña de la instancia",
     },
   },
 };

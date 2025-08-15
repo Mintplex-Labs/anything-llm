@@ -10,6 +10,7 @@ import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
 
 export default function GeneralSecurity() {
+  const { t } = useTranslation();
   return (
     <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
       <Sidebar />
@@ -17,6 +18,11 @@ export default function GeneralSecurity() {
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll p-4 md:p-0"
       >
+        <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:pt-6">
+          <p className="text-lg leading-6 font-bold text-theme-text-primary md-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10 py-4">
+            {t("security.title")}
+          </p>
+        </div>
         <MultiUserMode />
         <PasswordProtection />
       </div>
@@ -86,17 +92,17 @@ function MultiUserMode() {
     <form
       onSubmit={handleSubmit}
       onChange={() => setHasChanges(true)}
-      className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16"
+      className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px]"
     >
-      <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
-        <div className="w-full flex flex-col gap-y-1 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10 pb-8">
+      <div className="w-full flex flex-col gap-y-1 w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
+        <div className="w-full flex flex-col gap-y-1">
           <div className="items-center flex gap-x-4">
-            <p className="text-lg leading-6 font-bold text-white">
-              {t("multi.title")}
+            <p className="text-base font-bold text-white mt-6">
+              {t("security.multiuser.title")}
             </p>
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-            {t("multi.description")}
+            {t("security.multiuser.description")}
           </p>
         </div>
         {hasChanges && (
@@ -115,10 +121,10 @@ function MultiUserMode() {
             <div className="space-y-6 flex h-full w-full">
               <div className="w-full flex flex-col gap-y-4">
                 <div className="">
-                  <label className="mb-2.5 block font-medium text-white">
+                  <label className="text-white text-sm font-semibold block mb-3">
                     {multiUserModeEnabled
-                      ? t("multi.enable.is-enable")
-                      : t("multi.enable.enable")}
+                      ? t("security.multiuser.enable.is-enable")
+                      : t("security.multiuser.enable.enable")}
                   </label>
 
                   <label className="relative inline-flex cursor-pointer items-center">
@@ -139,9 +145,9 @@ function MultiUserMode() {
                     <div className="w-80">
                       <label
                         htmlFor="username"
-                        className="block mb-3 font-medium text-white"
+                        className="text-white text-sm font-semibold block mb-3"
                       >
-                        {t("multi.enable.username")}
+                        {t("security.multiuser.enable.username")}
                       </label>
                       <input
                         name="username"
@@ -158,9 +164,9 @@ function MultiUserMode() {
                     <div className="mt-4 w-80">
                       <label
                         htmlFor="password"
-                        className="block mb-3 font-medium text-white"
+                        className="text-white text-sm font-semibold block mb-3"
                       >
-                        {t("multi.enable.password")}
+                        {t("security.multiuser.enable.password")}
                       </label>
                       <input
                         name="password"
@@ -179,7 +185,7 @@ function MultiUserMode() {
             </div>
             <div className="flex items-center justify-between space-x-14">
               <p className="text-white text-opacity-80 text-xs rounded-lg w-96">
-                {t("multi.enable.description")}
+                {t("security.multiuser.enable.description")}
               </p>
             </div>
           </div>
@@ -263,17 +269,17 @@ function PasswordProtection() {
     <form
       onSubmit={handleSubmit}
       onChange={() => setHasChanges(true)}
-      className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16"
+      className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px]"
     >
       <div className="w-full flex flex-col gap-y-1 pb-6 border-white light:border-theme-sidebar-border border-b-2 border-opacity-10">
         <div className="w-full flex flex-col gap-y-1">
           <div className="items-center flex gap-x-4">
-            <p className="text-lg leading-6 font-bold text-white">
-              {t("multi.password.title")}
+            <p className="text-base font-bold text-white mt-6">
+              {t("security.password.title")}
             </p>
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-            {t("multi.password.description")}
+            {t("security.password.description")}
           </p>
         </div>
         {hasChanges && (
@@ -292,8 +298,8 @@ function PasswordProtection() {
             <div className="space-y-6 flex h-full w-full">
               <div className="w-full flex flex-col gap-y-4">
                 <div className="">
-                  <label className="mb-2.5 block font-medium text-white">
-                    {t("multi.password.title")}
+                  <label className="text-white text-sm font-semibold block mb-3">
+                    {t("security.password.title")}
                   </label>
 
                   <label className="relative inline-flex cursor-pointer items-center">
@@ -311,9 +317,9 @@ function PasswordProtection() {
                     <div className="mt-4 w-80">
                       <label
                         htmlFor="password"
-                        className="block mb-3 font-medium text-white"
+                        className="text-white text-sm font-semibold block mb-3"
                       >
-                        {t("multi.password.password-label")}
+                        {t("security.password.password-label")}
                       </label>
                       <input
                         name="password"
@@ -332,7 +338,7 @@ function PasswordProtection() {
             </div>
             <div className="flex items-center justify-between space-x-14">
               <p className="text-white text-opacity-80 light:text-theme-text text-xs rounded-lg w-96">
-                {t("multi.password.description")}
+                {t("security.password.description")}
               </p>
             </div>
           </div>

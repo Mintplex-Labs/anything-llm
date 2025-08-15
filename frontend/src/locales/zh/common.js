@@ -607,24 +607,6 @@ const TRANSLATIONS = {
       at: "发送时间",
     },
   },
-  multi: {
-    title: "多用户模式",
-    description: "通过激活多用户模式来设置你的实例以支持你的团队。",
-    enable: {
-      "is-enable": "多用户模式已启用",
-      enable: "启用多用户模式",
-      description:
-        "默认情况下，你将是唯一的管理员。作为管理员，你需要为所有新用户或管理员创建账户。不要丢失你的密码，因为只有管理员用户可以重置密码。",
-      username: "管理员账户用户名",
-      password: "管理员账户密码",
-    },
-    password: {
-      title: "密码保护",
-      description:
-        "用密码保护你的AnythingLLM实例。如果你忘记了密码，那么没有恢复方法，所以请确保保存这个密码。",
-      "password-label": "实例密码",
-    },
-  },
   event: {
     title: "事件日志",
     description: "查看此实例上发生的所有操作和事件以进行监控。",
@@ -1007,6 +989,27 @@ const TRANSLATIONS = {
         prompt_description: "这是触发斜线指令时将使用的提示。",
         prompt_placeholder: "在此输入您的提示...",
       },
+    },
+  },
+  security: {
+    title: "用户与安全",
+    multiuser: {
+      title: "多用户模式",
+      description: "通过激活多用户模式来设置你的实例以支持你的团队。",
+      enable: {
+        "is-enable": "多用户模式已启用",
+        enable: "启用多用户模式",
+        description:
+          "默认情况下，你将是唯一的管理员。作为管理员，你需要为所有新用户或管理员创建账户。不要丢失你的密码，因为只有管理员用户可以重置密码。",
+        username: "管理员账户用户名",
+        password: "管理员账户密码",
+      },
+    },
+    password: {
+      title: "密码保护",
+      description:
+        "用密码保护你的AnythingLLM实例。如果你忘记了密码，那么没有恢复方法，所以请确保保存这个密码。",
+      "password-label": "实例密码",
     },
   },
 };
