@@ -10,7 +10,7 @@ resources:
           boot: true  
           autoDelete: true  
           initializeParams:  
-            sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts  
+            sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-2204-lts  
             diskSizeGb: 10  
       networkInterfaces:  
         - network: global/networks/default  
