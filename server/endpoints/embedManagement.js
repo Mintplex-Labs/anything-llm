@@ -31,6 +31,20 @@ function embedManagementEndpoints(app) {
     }
   );
 
+  app.get(
+    "/embeds/sessions",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_, response) => {
+      try {
+        const sessionIds = await EmbedChats.uniqueSessionIds();
+        response.status(200).json({ sessionIds });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.post(
     "/embeds/new",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
@@ -95,14 +109,15 @@ function embedManagementEndpoints(app) {
     [chatHistoryViewable, validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { offset = 0, limit = 20 } = reqBody(request);
+        const { offset = 0, limit = 20, sessionId = null } = reqBody(request);
+        const where = !!sessionId ? { session_id: sessionId } : {};
         const embedChats = await EmbedChats.whereWithEmbedAndWorkspace(
-          {},
+          where,
           limit,
           { id: "desc" },
           offset * limit
         );
-        const totalChats = await EmbedChats.count();
+        const totalChats = await EmbedChats.count(where);
         const hasPages = totalChats > (offset + 1) * limit;
         response.status(200).json({ chats: embedChats, hasPages, totalChats });
       } catch (e) {
