@@ -3410,22 +3410,19 @@
                 "schema": {
                   "type": "object",
                   "example": {
-                    "models": [
+                    "object": "list",
+                    "data": [
                       {
-                        "name": "Sample workspace",
-                        "model": "sample-workspace",
-                        "llm": {
-                          "provider": "ollama",
-                          "model": "llama3:8b"
-                        }
+                        "id": "model-id-0",
+                        "object": "model",
+                        "created": 1686935002,
+                        "owned_by": "organization-owner"
                       },
                       {
-                        "name": "Second workspace",
-                        "model": "workspace-2",
-                        "llm": {
-                          "provider": "openai",
-                          "model": "gpt-3.5-turbo"
-                        }
+                        "id": "model-id-1",
+                        "object": "model",
+                        "created": 1686935002,
+                        "owned_by": "organization-owner"
                       }
                     ]
                   }
