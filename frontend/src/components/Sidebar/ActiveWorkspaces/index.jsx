@@ -89,7 +89,6 @@ export default function ActiveWorkspaces() {
                   key={workspace.id}
                   draggableId={workspace.id.toString()}
                   index={index}
-                  isDragDisabled={false}
                 >
                   {(provided, snapshot) => (
                     <div
