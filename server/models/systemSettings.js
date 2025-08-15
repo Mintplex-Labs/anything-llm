@@ -227,6 +227,7 @@ const SystemSettings = {
       GenericOpenAiEmbeddingMaxConcurrentChunks:
         process.env.GENERIC_OPEN_AI_EMBEDDING_MAX_CONCURRENT_CHUNKS || 500,
       GeminiEmbeddingApiKey: !!process.env.GEMINI_EMBEDDING_API_KEY,
+      AimlEmbedderApiKey: !!process.env.AIML_EMBEDDER_API_KEY,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
@@ -604,6 +605,10 @@ const SystemSettings = {
       // PPIO API keys
       PPIOApiKey: !!process.env.PPIO_API_KEY,
       PPIOModelPref: process.env.PPIO_MODEL_PREF,
+
+      // AI/ML API Keys
+      AimlLlmApiKey: !!process.env.AIML_LLM_API_KEY,
+      AimlModelPref: process.env.AIML_MODEL_PREF,
 
       // Dell Pro AI Studio Keys
       DellProAiStudioBasePath: process.env.DPAIS_LLM_BASE_PATH,
