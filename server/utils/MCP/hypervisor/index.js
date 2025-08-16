@@ -259,18 +259,21 @@ class MCPHypervisor {
       const shell = process.env.SHELL || "/bin/bash";
       const command = `${shell} -l -c 'env'`;
       const { stdout } = await execAsync(command, { timeout: 5000 });
-      
+
       const env = {};
-      stdout.split('\n').forEach(line => {
+      stdout.split("\n").forEach((line) => {
         const match = line.match(/^([^=]+)=(.*)$/);
         if (match) {
           env[match[1]] = match[2];
         }
       });
-      
+
       return env;
     } catch (error) {
-      console.warn("Failed to load shell environment, using process.env:", error.message);
+      console.warn(
+        "Failed to load shell environment, using process.env:",
+        error.message
+      );
       return process.env;
     }
   }
@@ -284,11 +287,17 @@ class MCPHypervisor {
   async #buildMCPServerENV(server) {
     // Load shell environment for desktop applications
     const shellEnv = await this.#loadShellEnvironment();
-    
+
     // Start with essential environment variables, inheriting from shell environment
     let baseEnv = {
-      PATH: shellEnv.PATH || process.env.PATH || "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
-      NODE_PATH: shellEnv.NODE_PATH || process.env.NODE_PATH || "/usr/local/lib/node_modules",
+      PATH:
+        shellEnv.PATH ||
+        process.env.PATH ||
+        "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+      NODE_PATH:
+        shellEnv.NODE_PATH ||
+        process.env.NODE_PATH ||
+        "/usr/local/lib/node_modules",
       ...shellEnv, // Include all shell environment variables
     };
 
@@ -365,15 +374,16 @@ class MCPHypervisor {
       try {
         new URL(server.url);
       } catch (error) {
-        throw new Error(
-          `MCP server "${name}": invalid URL "${server.url}"`
-        );
+        throw new Error(`MCP server "${name}": invalid URL "${server.url}"`);
       }
       return;
     }
 
     if (type === "stdio") {
-      if (Object.prototype.hasOwnProperty.call(server, "args") && !Array.isArray(server.args))
+      if (
+        Object.prototype.hasOwnProperty.call(server, "args") &&
+        !Array.isArray(server.args)
+      )
         throw new Error("MCP server args must be an array");
     }
 
@@ -415,7 +425,7 @@ class MCPHypervisor {
     // If the server block has a type property then use that to determine the transport type
     switch (server.type) {
       case "streamable":
-      case "http":  // Add explicit support for http type
+      case "http": // Add explicit support for http type
         return new StreamableHTTPClientTransport(url, {
           requestInit: {
             headers: server.headers,
@@ -457,12 +467,15 @@ class MCPHypervisor {
     // Connect and await the connection with a timeout
     this.mcps[name] = mcp;
     const connectionPromise = mcp.connect(transport);
-    
+
     let timeoutId;
     const timeoutPromise = new Promise((_, reject) => {
-      timeoutId = setTimeout(() => reject(new Error("Connection timeout")), 30_000);
+      timeoutId = setTimeout(
+        () => reject(new Error("Connection timeout")),
+        30_000
+      );
     });
-    
+
     try {
       await Promise.race([connectionPromise, timeoutPromise]);
       // Clear timeout if connection succeeds to prevent memory leak
@@ -489,7 +502,10 @@ class MCPHypervisor {
     const serverDefinitions = this.mcpServerConfigs;
     for (const { name, server } of serverDefinitions) {
       if (
-        Object.prototype.hasOwnProperty.call(server.anythingllm || {}, "autoStart") &&
+        Object.prototype.hasOwnProperty.call(
+          server.anythingllm || {},
+          "autoStart"
+        ) &&
         server.anythingllm.autoStart === false
       ) {
         this.log(
