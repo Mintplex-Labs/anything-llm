@@ -33,6 +33,7 @@ const {
  */
 class MCPHypervisor {
   static _instance;
+  static _instanceLock = false;
   /**
    * The path to the JSON file containing the MCP server definitions.
    * @type {string}
@@ -52,9 +53,22 @@ class MCPHypervisor {
 
   constructor() {
     if (MCPHypervisor._instance) return MCPHypervisor._instance;
+
+    if (MCPHypervisor._instanceLock) {
+      const waitForInstance = () => {
+        if (MCPHypervisor._instance) return MCPHypervisor._instance;
+        return new Promise((resolve) =>
+          setTimeout(() => resolve(waitForInstance()), 10)
+        );
+      };
+      return waitForInstance();
+    }
+
+    MCPHypervisor._instanceLock = true;
     MCPHypervisor._instance = this;
     this.log("Initializing MCP Hypervisor - subsequent calls will boot faster");
     this.#setupConfigFile();
+    MCPHypervisor._instanceLock = false;
     return this;
   }
 

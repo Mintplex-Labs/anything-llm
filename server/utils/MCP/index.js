@@ -2,11 +2,26 @@ const MCPHypervisor = require("./hypervisor");
 
 class MCPCompatibilityLayer extends MCPHypervisor {
   static _instance;
+  static _instanceLock = false;
 
   constructor() {
-    super();
     if (MCPCompatibilityLayer._instance) return MCPCompatibilityLayer._instance;
+
+    if (MCPCompatibilityLayer._instanceLock) {
+      const waitForInstance = () => {
+        if (MCPCompatibilityLayer._instance)
+          return MCPCompatibilityLayer._instance;
+        return new Promise((resolve) =>
+          setTimeout(() => resolve(waitForInstance()), 10)
+        );
+      };
+      return waitForInstance();
+    }
+
+    MCPCompatibilityLayer._instanceLock = true;
+    super();
     MCPCompatibilityLayer._instance = this;
+    MCPCompatibilityLayer._instanceLock = false;
   }
 
   /**
