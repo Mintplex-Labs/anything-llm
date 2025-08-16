@@ -323,7 +323,19 @@ class MCPHypervisor {
    * @returns {MCPServerTypes | null} - The server type
    */
   #parseServerType(server) {
+    // Explicit type takes precedence (for SSE/Streamable/HTTP)
+    if (
+      server.type === "sse" ||
+      server.type === "streamable" ||
+      server.type === "http"
+    ) {
+      return "http"; // All are HTTP-based transports
+    }
+
+    // Default to stdio if command is present
     if (server.hasOwnProperty("command")) return "stdio";
+
+    // Fallback to http if url is present
     if (server.hasOwnProperty("url")) return "http";
     return "sse";
   }
@@ -331,11 +343,35 @@ class MCPHypervisor {
   /**
    * Validate the server definition by type
    * - Will throw an error if the server definition is invalid
+   * @param {string} name - The name of the MCP server
    * @param {Object} server - The server definition
    * @param {MCPServerTypes} type - The server type
    * @returns {void}
    */
-  #validateServerDefinitionByType(server, type) {
+  #validateServerDefinitionByType(name, server, type) {
+    // For SSE/Streamable/HTTP servers
+    if (
+      server.type === "sse" ||
+      server.type === "streamable" ||
+      server.type === "http"
+    ) {
+      if (!server.url) {
+        throw new Error(
+          `MCP server "${name}": missing required "url" for ${server.type} transport`
+        );
+      }
+
+      // Validate URL is absolute
+      try {
+        new URL(server.url);
+      } catch (error) {
+        throw new Error(
+          `MCP server "${name}": invalid URL "${server.url}"`
+        );
+      }
+      return;
+    }
+
     if (type === "stdio") {
       if (server.hasOwnProperty("args") && !Array.isArray(server.args))
         throw new Error("MCP server args must be an array");
@@ -379,6 +415,7 @@ class MCPHypervisor {
     // If the server block has a type property then use that to determine the transport type
     switch (server.type) {
       case "streamable":
+      case "http":  // Add explicit support for http type
         return new StreamableHTTPClientTransport(url, {
           requestInit: {
             headers: server.headers,
@@ -405,7 +442,7 @@ class MCPHypervisor {
     const serverType = this.#parseServerType(server);
     if (!serverType) throw new Error("MCP server command or url is required");
 
-    this.#validateServerDefinitionByType(server, serverType);
+    this.#validateServerDefinitionByType(name, server, serverType);
     this.log(`Attempting to start MCP server: ${name}`);
     const mcp = new Client({ name: name, version: "1.0.0" });
     const transport = await this.#setupServerTransport(server, serverType);
