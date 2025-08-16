@@ -2,11 +2,26 @@ const MCPHypervisor = require("./hypervisor");
 
 class MCPCompatibilityLayer extends MCPHypervisor {
   static _instance;
+  static _instanceLock = false;
 
   constructor() {
-    super();
     if (MCPCompatibilityLayer._instance) return MCPCompatibilityLayer._instance;
+
+    if (MCPCompatibilityLayer._instanceLock) {
+      const waitForInstance = () => {
+        if (MCPCompatibilityLayer._instance)
+          return MCPCompatibilityLayer._instance;
+        return new Promise((resolve) =>
+          setTimeout(() => resolve(waitForInstance()), 10)
+        );
+      };
+      return waitForInstance();
+    }
+
+    MCPCompatibilityLayer._instanceLock = true;
+    super();
     MCPCompatibilityLayer._instance = this;
+    MCPCompatibilityLayer._instanceLock = false;
   }
 
   /**
@@ -26,11 +41,20 @@ class MCPCompatibilityLayer extends MCPHypervisor {
    * @returns {Promise<{name: string, description: string, plugin: Function}[]|null>} Array of plugin configurations or null if not found
    */
   async convertServerToolsToPlugins(name, _aibitat = null) {
+    // eslint-disable-line no-unused-vars
     const mcp = this.mcps[name];
     if (!mcp) return null;
 
-    const tools = (await mcp.listTools()).tools;
-    if (!tools.length) return null;
+    let tools;
+    try {
+      const response = await mcp.listTools();
+      tools = response.tools;
+    } catch (error) {
+      console.error(`Failed to list tools for MCP server ${name}:`, error);
+      return null;
+    }
+
+    if (!tools || !tools.length) return null;
 
     const plugins = [];
     for (const tool of tools) {
@@ -53,6 +77,16 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                 },
                 handler: async function (args = {}) {
                   try {
+                    // Get fresh MCP reference to avoid stale connections
+                    const mcpLayer = new MCPCompatibilityLayer();
+                    const currentMcp = mcpLayer.mcps[name];
+
+                    if (!currentMcp) {
+                      throw new Error(
+                        `MCP server ${name} is not currently running`
+                      );
+                    }
+
                     aibitat.handlerProps.log(
                       `Executing MCP server: ${name}:${tool.name} with args:`,
                       args
@@ -60,7 +94,8 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                     aibitat.introspect(
                       `Executing MCP server: ${name} with ${JSON.stringify(args, null, 2)}`
                     );
-                    const result = await mcp.callTool({
+
+                    const result = await currentMcp.callTool({
                       name: tool.name,
                       arguments: args,
                     });
@@ -71,9 +106,23 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                     aibitat.introspect(
                       `MCP server: ${name}:${tool.name} completed successfully`
                     );
-                    return typeof result === "object"
-                      ? JSON.stringify(result)
-                      : String(result);
+                    // Safe JSON stringify with circular reference handling
+                    if (typeof result === "object") {
+                      try {
+                        return JSON.stringify(result);
+                      } catch (e) {
+                        // Fallback for circular references
+                        const seen = new WeakSet();
+                        return JSON.stringify(result, (key, value) => {
+                          if (typeof value === "object" && value !== null) {
+                            if (seen.has(value)) return "[Circular]";
+                            seen.add(value);
+                          }
+                          return value;
+                        });
+                      }
+                    }
+                    return String(result);
                   } catch (error) {
                     aibitat.handlerProps.log(
                       `MCP server: ${name}:${tool.name} failed with error:`,
@@ -133,8 +182,20 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         continue;
       }
 
-      const online = !!(await mcp.ping());
-      const tools = online ? (await mcp.listTools()).tools : [];
+      let online = false;
+      let tools = [];
+
+      try {
+        online = !!(await mcp.ping());
+        if (online) {
+          const response = await mcp.listTools();
+          tools = response.tools || [];
+        }
+      } catch (error) {
+        console.error(`Error checking MCP server ${name} status:`, error);
+        online = false;
+        tools = [];
+      }
       servers.push({
         name,
         config: config?.server || null,
@@ -162,7 +223,17 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         error: `MCP server ${name} not found in config file.`,
       };
     const mcp = this.mcps[name];
-    const online = !!mcp ? !!(await mcp.ping()) : false; // If the server is not in the mcps object, it is not running
+    let online = false;
+
+    // Safely check if server is online
+    if (mcp) {
+      try {
+        online = !!(await mcp.ping());
+      } catch (error) {
+        console.error(`Error pinging MCP server ${name}:`, error);
+        online = false;
+      }
+    }
 
     if (online) {
       const killed = this.pruneMCPServer(name);
@@ -190,8 +261,26 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       };
 
     const mcp = this.mcps[name];
-    const online = !!mcp ? !!(await mcp.ping()) : false; // If the server is not in the mcps object, it is not running
-    if (online) this.pruneMCPServer(name);
+    let online = false;
+
+    // Safely check if server is online
+    if (mcp) {
+      try {
+        online = !!(await mcp.ping());
+      } catch (error) {
+        // If ping fails, still try to clean up the server
+        console.error(
+          `Error pinging MCP server ${name} during deletion:`,
+          error
+        );
+        online = true; // Assume it needs cleanup if ping fails
+      }
+    }
+
+    // Always attempt cleanup regardless of ping result
+    if (mcp || online) {
+      this.pruneMCPServer(name);
+    }
     this.removeMCPServerFromConfig(name);
 
     delete this.mcps[name];
