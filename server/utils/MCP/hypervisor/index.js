@@ -193,7 +193,7 @@ class MCPHypervisor {
     this.log(`Pruning MCP server: ${name}`);
     const mcp = this.mcps[name];
     const childProcess = mcp.transport._process;
-    if (childProcess) childProcess.kill(1);
+    if (childProcess) childProcess.kill("SIGTERM");
     mcp.transport.close();
 
     delete this.mcps[name];
@@ -217,7 +217,7 @@ class MCPHypervisor {
       const childProcess = mcp.transport._process;
       if (childProcess)
         this.log(`Killing MCP ${name} (PID: ${childProcess.pid})`, {
-          killed: childProcess.kill(1),
+          killed: childProcess.kill("SIGTERM"),
         });
 
       mcp.transport.close();
