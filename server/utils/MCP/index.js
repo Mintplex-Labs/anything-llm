@@ -68,6 +68,16 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                 },
                 handler: async function (args = {}) {
                   try {
+                    // Get fresh MCP reference to avoid stale connections
+                    const mcpLayer = new MCPCompatibilityLayer();
+                    const currentMcp = mcpLayer.mcps[name];
+
+                    if (!currentMcp) {
+                      throw new Error(
+                        `MCP server ${name} is not currently running`
+                      );
+                    }
+
                     aibitat.handlerProps.log(
                       `Executing MCP server: ${name}:${tool.name} with args:`,
                       args
@@ -75,7 +85,8 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                     aibitat.introspect(
                       `Executing MCP server: ${name} with ${JSON.stringify(args, null, 2)}`
                     );
-                    const result = await mcp.callTool({
+
+                    const result = await currentMcp.callTool({
                       name: tool.name,
                       arguments: args,
                     });
