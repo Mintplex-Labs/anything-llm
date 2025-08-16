@@ -86,9 +86,23 @@ class MCPCompatibilityLayer extends MCPHypervisor {
                     aibitat.introspect(
                       `MCP server: ${name}:${tool.name} completed successfully`
                     );
-                    return typeof result === "object"
-                      ? JSON.stringify(result)
-                      : String(result);
+                    // Safe JSON stringify with circular reference handling
+                    if (typeof result === "object") {
+                      try {
+                        return JSON.stringify(result);
+                      } catch (e) {
+                        // Fallback for circular references
+                        const seen = new WeakSet();
+                        return JSON.stringify(result, (key, value) => {
+                          if (typeof value === "object" && value !== null) {
+                            if (seen.has(value)) return "[Circular]";
+                            seen.add(value);
+                          }
+                          return value;
+                        });
+                      }
+                    }
+                    return String(result);
                   } catch (error) {
                     aibitat.handlerProps.log(
                       `MCP server: ${name}:${tool.name} failed with error:`,
