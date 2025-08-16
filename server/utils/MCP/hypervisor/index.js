@@ -1,6 +1,9 @@
 const { safeJsonParse } = require("../../http");
 const path = require("path");
 const fs = require("fs");
+const { exec } = require("child_process");
+const { promisify } = require("util");
+const execAsync = promisify(exec);
 const { Client } = require("@modelcontextprotocol/sdk/client/index.js");
 const {
   StdioClientTransport,
@@ -242,17 +245,51 @@ class MCPHypervisor {
   }
 
   /**
+   * Load shell environment for desktop applications.
+   * GUI applications on macOS and Linux don't inherit login shell environment.
+   * @returns {Promise<{[key: string]: string}>} - Environment variables from shell
+   */
+  async #loadShellEnvironment() {
+    try {
+      if (process.platform === "win32") {
+        return process.env; // Windows doesn't have this issue
+      }
+
+      // Try to load shell environment
+      const shell = process.env.SHELL || "/bin/bash";
+      const command = `${shell} -l -c 'env'`;
+      const { stdout } = await execAsync(command, { timeout: 5000 });
+      
+      const env = {};
+      stdout.split('\n').forEach(line => {
+        const match = line.match(/^([^=]+)=(.*)$/);
+        if (match) {
+          env[match[1]] = match[2];
+        }
+      });
+      
+      return env;
+    } catch (error) {
+      console.warn("Failed to load shell environment, using process.env:", error.message);
+      return process.env;
+    }
+  }
+
+  /**
    * Build the MCP server environment variables - ensures proper PATH and NODE_PATH
    * inheritance across all platforms and deployment scenarios.
    * @param {Object} server - The server definition
    * @returns {{env: { [key: string]: string } | {}}} - The environment variables
    */
-  #buildMCPServerENV(server) {
-    // Start with essential environment variables, inheriting from current process
-    // This ensures GUI applications on macOS/Linux get proper PATH inheritance
+  async #buildMCPServerENV(server) {
+    // Load shell environment for desktop applications
+    const shellEnv = await this.#loadShellEnvironment();
+    
+    // Start with essential environment variables, inheriting from shell environment
     let baseEnv = {
-      PATH: process.env.PATH || "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
-      NODE_PATH: process.env.NODE_PATH || "/usr/local/lib/node_modules",
+      PATH: shellEnv.PATH || process.env.PATH || "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+      NODE_PATH: shellEnv.NODE_PATH || process.env.NODE_PATH || "/usr/local/lib/node_modules",
+      ...shellEnv, // Include all shell environment variables
     };
 
     // Docker-specific environment setup
@@ -317,16 +354,17 @@ class MCPHypervisor {
    * Setup the server transport by type and server definition
    * @param {Object} server - The server definition
    * @param {MCPServerTypes} type - The server type
-   * @returns {StdioClientTransport | StreamableHTTPClientTransport | SSEClientTransport} - The server transport
+   * @returns {Promise<StdioClientTransport | StreamableHTTPClientTransport | SSEClientTransport>} - The server transport
    */
-  #setupServerTransport(server, type) {
+  async #setupServerTransport(server, type) {
     // if not stdio then it is http or sse
     if (type !== "stdio") return this.createHttpTransport(server);
 
+    const envConfig = await this.#buildMCPServerENV(server);
     return new StdioClientTransport({
       command: server.command,
       args: server?.args ?? [],
-      ...this.#buildMCPServerENV(server),
+      ...envConfig,
     });
   }
 
@@ -370,7 +408,7 @@ class MCPHypervisor {
     this.#validateServerDefinitionByType(server, serverType);
     this.log(`Attempting to start MCP server: ${name}`);
     const mcp = new Client({ name: name, version: "1.0.0" });
-    const transport = this.#setupServerTransport(server, serverType);
+    const transport = await this.#setupServerTransport(server, serverType);
 
     // Add connection event listeners
     transport.onclose = () => this.log(`${name} - Transport closed`);
