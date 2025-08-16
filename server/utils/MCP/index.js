@@ -44,8 +44,16 @@ class MCPCompatibilityLayer extends MCPHypervisor {
     const mcp = this.mcps[name];
     if (!mcp) return null;
 
-    const tools = (await mcp.listTools()).tools;
-    if (!tools.length) return null;
+    let tools;
+    try {
+      const response = await mcp.listTools();
+      tools = response.tools;
+    } catch (error) {
+      console.error(`Failed to list tools for MCP server ${name}:`, error);
+      return null;
+    }
+
+    if (!tools || !tools.length) return null;
 
     const plugins = [];
     for (const tool of tools) {
@@ -173,8 +181,20 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         continue;
       }
 
-      const online = !!(await mcp.ping());
-      const tools = online ? (await mcp.listTools()).tools : [];
+      let online = false;
+      let tools = [];
+
+      try {
+        online = !!(await mcp.ping());
+        if (online) {
+          const response = await mcp.listTools();
+          tools = response.tools || [];
+        }
+      } catch (error) {
+        console.error(`Error checking MCP server ${name} status:`, error);
+        online = false;
+        tools = [];
+      }
       servers.push({
         name,
         config: config?.server || null,
@@ -202,7 +222,17 @@ class MCPCompatibilityLayer extends MCPHypervisor {
         error: `MCP server ${name} not found in config file.`,
       };
     const mcp = this.mcps[name];
-    const online = !!mcp ? !!(await mcp.ping()) : false; // If the server is not in the mcps object, it is not running
+    let online = false;
+
+    // Safely check if server is online
+    if (mcp) {
+      try {
+        online = !!(await mcp.ping());
+      } catch (error) {
+        console.error(`Error pinging MCP server ${name}:`, error);
+        online = false;
+      }
+    }
 
     if (online) {
       const killed = this.pruneMCPServer(name);
@@ -230,8 +260,26 @@ class MCPCompatibilityLayer extends MCPHypervisor {
       };
 
     const mcp = this.mcps[name];
-    const online = !!mcp ? !!(await mcp.ping()) : false; // If the server is not in the mcps object, it is not running
-    if (online) this.pruneMCPServer(name);
+    let online = false;
+
+    // Safely check if server is online
+    if (mcp) {
+      try {
+        online = !!(await mcp.ping());
+      } catch (error) {
+        // If ping fails, still try to clean up the server
+        console.error(
+          `Error pinging MCP server ${name} during deletion:`,
+          error
+        );
+        online = true; // Assume it needs cleanup if ping fails
+      }
+    }
+
+    // Always attempt cleanup regardless of ping result
+    if (mcp || online) {
+      this.pruneMCPServer(name);
+    }
     this.removeMCPServerFromConfig(name);
 
     delete this.mcps[name];
