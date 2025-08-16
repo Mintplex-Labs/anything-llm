@@ -382,10 +382,21 @@ class MCPHypervisor {
     // Connect and await the connection with a timeout
     this.mcps[name] = mcp;
     const connectionPromise = mcp.connect(transport);
+    
+    let timeoutId;
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Connection timeout")), 30_000); // 30 second timeout
+      timeoutId = setTimeout(() => reject(new Error("Connection timeout")), 30_000);
     });
-    await Promise.race([connectionPromise, timeoutPromise]);
+    
+    try {
+      await Promise.race([connectionPromise, timeoutPromise]);
+      // Clear timeout if connection succeeds to prevent memory leak
+      if (timeoutId) clearTimeout(timeoutId);
+    } catch (error) {
+      // Clear timeout on error as well
+      if (timeoutId) clearTimeout(timeoutId);
+      throw error;
+    }
     return true;
   }
 
