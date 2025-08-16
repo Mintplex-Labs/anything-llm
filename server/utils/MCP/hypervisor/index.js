@@ -333,10 +333,10 @@ class MCPHypervisor {
     }
 
     // Default to stdio if command is present
-    if (server.hasOwnProperty("command")) return "stdio";
+    if (Object.prototype.hasOwnProperty.call(server, "command")) return "stdio";
 
     // Fallback to http if url is present
-    if (server.hasOwnProperty("url")) return "http";
+    if (Object.prototype.hasOwnProperty.call(server, "url")) return "http";
     return "sse";
   }
 
@@ -373,7 +373,7 @@ class MCPHypervisor {
     }
 
     if (type === "stdio") {
-      if (server.hasOwnProperty("args") && !Array.isArray(server.args))
+      if (Object.prototype.hasOwnProperty.call(server, "args") && !Array.isArray(server.args))
         throw new Error("MCP server args must be an array");
     }
 
@@ -489,7 +489,7 @@ class MCPHypervisor {
     const serverDefinitions = this.mcpServerConfigs;
     for (const { name, server } of serverDefinitions) {
       if (
-        server.anythingllm?.hasOwnProperty("autoStart") &&
+        Object.prototype.hasOwnProperty.call(server.anythingllm || {}, "autoStart") &&
         server.anythingllm.autoStart === false
       ) {
         this.log(

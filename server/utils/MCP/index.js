@@ -40,7 +40,7 @@ class MCPCompatibilityLayer extends MCPHypervisor {
    * @param {Object} aibitat - The aibitat object to pass to the plugin
    * @returns {Promise<{name: string, description: string, plugin: Function}[]|null>} Array of plugin configurations or null if not found
    */
-  async convertServerToolsToPlugins(name, _aibitat = null) {
+  async convertServerToolsToPlugins(name, _aibitat = null) { // eslint-disable-line no-unused-vars
     const mcp = this.mcps[name];
     if (!mcp) return null;
 
