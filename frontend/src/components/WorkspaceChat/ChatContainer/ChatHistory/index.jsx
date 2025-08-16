@@ -174,10 +174,6 @@ export default function ChatHistory({
           key={`status-group-${index}`}
           messages={item}
           isThinking={!hasSubsequentMessages && lastMessageInfo.isAnimating}
-          showCheckmark={
-            hasSubsequentMessages ||
-            (!lastMessageInfo.isAnimating && !lastMessageInfo.isStatusResponse)
-          }
         />
       );
     },
