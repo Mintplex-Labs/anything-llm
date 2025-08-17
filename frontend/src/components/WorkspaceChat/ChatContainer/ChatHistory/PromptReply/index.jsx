@@ -67,10 +67,12 @@ const PromptReply = ({
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <WorkspaceProfileImage workspace={workspace} />
-          <RenderAssistantChatContent
-            key={`${uuid}-prompt-reply-content`}
-            message={reply}
-          />
+          <div className="onenew-card p-3 md:p-4">
+            <RenderAssistantChatContent
+              key={`${uuid}-prompt-reply-content`}
+              message={reply}
+            />
+          </div>
         </div>
         <Citations sources={sources} />
       </div>

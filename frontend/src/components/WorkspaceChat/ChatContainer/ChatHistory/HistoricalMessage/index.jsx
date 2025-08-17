@@ -111,7 +111,17 @@ const HistoricalMessage = ({
               saveChanges={saveEditedMessage}
             />
           ) : (
-            <div className="break-words">
+            <div
+              className="break-words onenew-card p-3 md:p-4"
+              style={
+                role === "user"
+                  ? {
+                      background:
+                        "color-mix(in srgb, var(--accent), var(--surface) 94%)",
+                    }
+                  : undefined
+              }
+            >
               <RenderChatContent
                 role={role}
                 message={message}
