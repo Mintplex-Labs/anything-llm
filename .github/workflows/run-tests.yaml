@@ -72,6 +72,9 @@ jobs:
       - name: Run test suites
         run: yarn test
 
+      - name: Check for legacy color usage
+        run: bash scripts/check-legacy-colors.sh
+
       - name: Fail job on error
         if: failure()
         run: exit 1
