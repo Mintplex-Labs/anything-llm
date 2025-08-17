@@ -31,6 +31,7 @@
     "normalize:translations": "cd frontend/src/locales && node normalizeEn.mjs && cd ../../.. && yarn lint && yarn verify:translations"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "concurrently": "^9.1.2",
     "jest": "^29.7.0"
   }
