@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import useQuery from "@/hooks/useQuery";
@@ -56,32 +56,6 @@ export default function EmbedChatsView() {
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
   const [showThinking, setShowThinking] = useState(false);
-  const [selectedSessionId, setSelectedSessionId] = useState(null);
-  const [allSessionIds, setAllSessionIds] = useState([]);
-
-  const sessionColors = useMemo(() => {
-    const colors = [
-      "bg-red-500",
-      "bg-blue-500",
-      "bg-green-500",
-      "bg-yellow-500",
-      "bg-purple-500",
-    ];
-    const sessionColorMap = new Map();
-    let colorIndex = 0;
-    chats.forEach((chat) => {
-      if (!sessionColorMap.has(chat.session_id)) {
-        sessionColorMap.set(chat.session_id, colors[colorIndex % colors.length]);
-        colorIndex++;
-      }
-    });
-    return sessionColorMap;
-  }, [chats]);
-
-  const filteredChats = useMemo(() => {
-    if (!selectedSessionId) return chats;
-    return chats.filter((chat) => chat.session_id === selectedSessionId);
-  }, [chats, selectedSessionId]);
 
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType, "embed");
@@ -118,26 +92,15 @@ export default function EmbedChatsView() {
   }, []);
 
   useEffect(() => {
-    async function fetchAllSessionIds() {
-      const sessionIds = await Embed.sessions();
-      setAllSessionIds(sessionIds);
-    }
-    fetchAllSessionIds();
-  }, []);
-
-  useEffect(() => {
     async function fetchChats() {
       setLoading(true);
-      const { chats: _chats, hasPages = false } = await Embed.chats(
-        offset,
-        selectedSessionId
-      );
+      const { chats: _chats, hasPages = false } = await Embed.chats(offset);
       setChats(_chats);
       setCanNext(hasPages);
       setLoading(false);
     }
     fetchChats();
-  }, [offset, selectedSessionId]);
+  }, [offset]);
 
   const handlePrevious = () => {
     setOffset(Math.max(offset - 1, 0));
@@ -172,29 +135,13 @@ export default function EmbedChatsView() {
           <p className="text-lg leading-6 font-bold text-theme-text-primary">
             {t("embed-chats.title")}
           </p>
-          <div className="flex items-center gap-x-4">
-            <div className="flex items-center">
-              <label className="text-sm mr-2">Show "thinking"</label>
-              <input
-                type="checkbox"
-                checked={showThinking}
-                onChange={(e) => setShowThinking(e.target.checked)}
-              />
-            </div>
-            <div className="relative">
-              <select
-                value={selectedSessionId || ""}
-                onChange={(e) => setSelectedSessionId(e.target.value || null)}
-                className="bg-theme-bg-secondary text-white rounded-lg px-4 py-2 text-sm"
-              >
-                <option value="">All Sessions</option>
-                {allSessionIds.map((sessionId) => (
-                  <option key={sessionId} value={sessionId}>
-                    {sessionId}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="flex items-center">
+            <label className="text-sm mr-2">Show "thinking"</label>
+            <input
+              type="checkbox"
+              checked={showThinking}
+              onChange={(e) => setShowThinking(e.target.checked)}
+            />
           </div>
           <div className="relative">
             <button
@@ -258,13 +205,12 @@ export default function EmbedChatsView() {
             </tr>
           </thead>
           <tbody>
-            {filteredChats.map((chat) => (
+            {chats.map((chat) => (
               <ChatRow
                 key={chat.id}
                 chat={chat}
                 onDelete={handleDeleteChat}
                 showThinking={showThinking}
-                sessionColor={sessionColors.get(chat.session_id)}
               />
             ))}
           </tbody>

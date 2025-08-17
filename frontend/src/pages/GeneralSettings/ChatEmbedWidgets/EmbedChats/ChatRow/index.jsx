@@ -6,7 +6,7 @@ import paths from "@/utils/paths";
 import Embed from "@/models/embed";
 import MarkdownRenderer from "../MarkdownRenderer";
 
-export default function ChatRow({ chat, onDelete, showThinking, sessionColor }) {
+export default function ChatRow({ chat, onDelete, showThinking }) {
   const {
     isOpen: isPromptOpen,
     openModal: openPromptModal,
@@ -51,10 +51,7 @@ export default function ChatRow({ chat, onDelete, showThinking, sessionColor }) 
           onClick={openConnectionDetailsModal}
           className="px-6 cursor-pointer hover:shadow-lg"
         >
-          <div className="flex items-center">
-            <div
-              className={`w-3 h-3 rounded-full mr-2 ${sessionColor}`}
-            ></div>
+          <div className="flex flex-col">
             <p>{truncate(chat.session_id, 20)}</p>
           </div>
         </td>

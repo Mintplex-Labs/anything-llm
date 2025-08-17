@@ -53,7 +53,7 @@ export default function MarkdownRenderer({ content, showThinking }) {
           return (
             <div key={index}>
               <div
-                className="text-blue-500"
+                style={{ color: "var(--theme-button-cta)" }}
                 dangerouslySetInnerHTML={{ __html: html }}
               />
               <br />
