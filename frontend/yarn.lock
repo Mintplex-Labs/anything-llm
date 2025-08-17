@@ -1274,6 +1274,7 @@ __metadata:
     file-saver: "npm:^2.0.5"
     flow-bin: "npm:^0.217.0"
     flow-remove-types: "npm:^2.217.1"
+    focus-trap-react: "npm:^11.0.4"
     globals: "npm:^13.21.0"
     he: "npm:^1.2.0"
     hermes-eslint: "npm:^0.15.0"
@@ -2747,6 +2748,30 @@ __metadata:
     flow-node: flow-node
     flow-remove-types: flow-remove-types
   checksum: 10c0/d2dbf9322ee180cc1ed336694e73707a2367f2c26f0381e3799746cb8a606354c892b7354d08b8cfa9a8c17bb8841261645adf5eaccfc5a55d89867ed73e74ed
+  languageName: node
+  linkType: hard
+
+"focus-trap-react@npm:^11.0.4":
+  version: 11.0.4
+  resolution: "focus-trap-react@npm:11.0.4"
+  dependencies:
+    focus-trap: "npm:^7.6.5"
+    tabbable: "npm:^6.2.0"
+  peerDependencies:
+    "@types/react": ^18.0.0 || ^19.0.0
+    "@types/react-dom": ^18.0.0 || ^19.0.0
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  checksum: 10c0/c1b5bd29e8b226715e697202c540f28fa2cd47974b88d15b144e84422bcd199dab1bc461a491d7d36c97744d91087fc949984ddf71ddc867f4f971af0bf0aa30
+  languageName: node
+  linkType: hard
+
+"focus-trap@npm:^7.6.5":
+  version: 7.6.5
+  resolution: "focus-trap@npm:7.6.5"
+  dependencies:
+    tabbable: "npm:^6.2.0"
+  checksum: 10c0/36cac0d9b05fe5824733675bb49792842dae4704286ef7e17c736ee0c9c14701e874e6821449e78b70c17e42ba1b2c98ef10434bfe644b9d7654d8ef7f1c8faf
   languageName: node
   linkType: hard
 
@@ -5619,7 +5644,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tabbable@npm:^6.0.1":
+"tabbable@npm:^6.0.1, tabbable@npm:^6.2.0":
   version: 6.2.0
   resolution: "tabbable@npm:6.2.0"
   checksum: 10c0/ced8b38f05f2de62cd46836d77c2646c42b8c9713f5bd265daf0e78ff5ac73d3ba48a7ca45f348bafeef29b23da7187c72250742d37627883ef89cbd7fa76898
