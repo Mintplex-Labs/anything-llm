@@ -3,8 +3,7 @@ import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
 import { FullScreenLoader } from "@/components/Preloader";
 import Home from "./Home";
 import DefaultChatContainer from "@/components/DefaultChat";
-import { isMobile } from "react-device-detect";
-import Sidebar, { SidebarMobileHeader } from "@/components/Sidebar";
+import AppShell from "@/layouts/AppShell";
 import { userFromStorage } from "@/utils/request";
 
 export default function Main() {
@@ -16,9 +15,8 @@ export default function Main() {
 
   const user = userFromStorage();
   return (
-    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
-      {!isMobile ? <Sidebar /> : <SidebarMobileHeader />}
+    <AppShell>
       {!!user && user?.role !== "admin" ? <DefaultChatContainer /> : <Home />}
-    </div>
+    </AppShell>
   );
 }
