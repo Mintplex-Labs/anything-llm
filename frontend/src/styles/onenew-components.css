@@ -1,0 +1,121 @@
+/* OneNew utility layer */
+.onenew-page {
+  background:
+    radial-gradient(
+      1200px 1200px at -10% -10%,
+      rgba(68, 195, 247, 0.18),
+      transparent 55%
+    ),
+    radial-gradient(
+      1200px 1200px at 110% 110%,
+      rgba(134, 85, 255, 0.18),
+      transparent 55%
+    ),
+    var(--bg);
+  color: var(--text);
+}
+
+.onenew-card {
+  background: var(--surface);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--elev);
+}
+
+.onenew-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  outline: 0;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+}
+.dark .onenew-input {
+  background: rgba(255, 255, 255, 0.06);
+}
+.onenew-input:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 4px var(--ring);
+}
+.onenew-input::placeholder {
+  color: color-mix(in srgb, var(--text), transparent 55%);
+}
+
+.onenew-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--text);
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.6rem 0.9rem;
+  font-weight: 600;
+  transition:
+    transform 0.06s,
+    box-shadow 0.2s,
+    opacity 0.2s;
+}
+.onenew-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.18);
+}
+.onenew-btn:active {
+  transform: translateY(0);
+}
+.onenew-btn--primary {
+  background: var(--grad);
+  color: #fff;
+}
+.onenew-btn--secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.onenew-btn--danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.onenew-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent), transparent 88%);
+  border: 1px solid color-mix(in srgb, var(--accent), transparent 76%);
+}
+
+.onenew-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.onenew-table th {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+.onenew-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Scrollbars (webkit) */
+*::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  border-radius: 20px;
+}
