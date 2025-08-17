@@ -207,7 +207,7 @@ function Directory({
                 type="search"
                 placeholder={t("connectors.directory.search-document")}
                 onChange={handleSearch}
-                className="border-none search-input bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder focus:outline-primary-button active:outline-primary-button outline-none text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px] light:border-theme-modal-border light:border"
+                className="onenew-input pl-9 w-[250px] h-[32px]"
               />
               <MagnifyingGlass
                 size={14}
@@ -216,7 +216,7 @@ function Directory({
               />
             </div>
             <button
-              className="border-none flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-theme-sidebar-subitem-hover z-20 relative"
+              className="onenew-btn onenew-btn-secondary flex items-center gap-x-2 px-[14px] py-[7px] -mr-[14px] z-20 relative"
               onClick={openFolderModal}
             >
               <Plus
@@ -277,7 +277,7 @@ function Directory({
                       onClick={moveToWorkspace}
                       onMouseEnter={() => setHighlightWorkspace(true)}
                       onMouseLeave={() => setHighlightWorkspace(false)}
-                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
+                      className="onenew-btn onenew-btn-secondary h-[30px] px-2.5"
                     >
                       {t("connectors.directory.move-workspace")}
                     </button>
@@ -286,7 +286,7 @@ function Directory({
                         onClick={() =>
                           setShowFolderSelection(!showFolderSelection)
                         }
-                        className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center group"
+                        className="onenew-btn onenew-btn-secondary h-[32px] w-[32px] flex justify-center items-center group"
                       >
                         <MoveToFolderIcon className="text-dark-text light:text-[#026AA2] group-hover:text-white" />
                       </button>
@@ -302,7 +302,7 @@ function Directory({
                     </div>
                     <button
                       onClick={deleteFiles}
-                      className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white flex justify-center items-center"
+                      className="onenew-btn onenew-btn-secondary h-[32px] w-[32px] flex justify-center items-center"
                     >
                       <Trash size={18} weight="bold" />
                     </button>
