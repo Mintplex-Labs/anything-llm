@@ -54,7 +54,7 @@ function AttachmentItem({ attachment }) {
   if (isProcessingStatus(status)) {
     const label = STATUS_TEXT[status.toUpperCase()] || "Processing...";
     return (
-      <div className="relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px] group">
+      <div className="relative onenew-chip flex items-center gap-x-1 bg-theme-attachment-bg w-[180px] group">
         <div
           className={`bg-theme-attachment-icon-spinner-bg rounded-md flex items-center justify-center flex-shrink-0 h-[32px] w-[32px] m-1`}
         >
@@ -82,7 +82,7 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-error`}
           data-tooltip-content={error}
-          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-error-bg border-none w-[180px] group`}
+          className={`relative onenew-chip flex items-center gap-x-1 bg-theme-attachment-error-bg w-[180px] group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
@@ -137,7 +137,7 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-success`}
           data-tooltip-content={`${file.name} will be attached to this prompt. It will not be embedded into the workspace permanently.`}
-          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-success-bg border-none w-[180px] group`}
+          className={`relative onenew-chip flex items-center gap-x-1 bg-theme-attachment-success-bg w-[180px] group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button
@@ -186,7 +186,7 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-success`}
           data-tooltip-content={`${file.name} was uploaded and embedded into this workspace. It will be available for RAG chat now.`}
-          className={`relative flex items-center gap-x-1 rounded-lg bg-theme-attachment-bg border-none w-[180px] group`}
+          className={`relative onenew-chip flex items-center gap-x-1 bg-theme-attachment-bg w-[180px] group`}
         >
           <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
             <button

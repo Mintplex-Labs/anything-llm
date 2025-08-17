@@ -664,12 +664,36 @@ dialog::backdrop {
   }
 }
 
-.tooltip {
-  @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
+.tooltip,
+.allm-tooltip {
+  @apply !py-2 !px-3 !rounded-md;
+  background: var(--surface-2) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
 }
 
 .Toastify__toast-body {
   white-space: pre-line;
+}
+
+.Toastify__toast {
+  @apply onenew-card border-l-4;
+}
+
+.Toastify__toast--success {
+  border-left-color: var(--ok);
+}
+
+.Toastify__toast--warning {
+  border-left-color: var(--warn);
+}
+
+.Toastify__toast--error {
+  border-left-color: var(--danger);
+}
+
+.Toastify__toast--info {
+  border-left-color: var(--accent);
 }
 
 @keyframes slideDown {
@@ -690,6 +714,60 @@ dialog::backdrop {
 
 .input-label {
   @apply text-[14px] font-bold text-white;
+}
+
+@layer components {
+  .onenew-card {
+    @apply rounded-md border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text)];
+  }
+
+  .onenew-chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text)] px-2 py-1 text-xs;
+  }
+
+  .empty-state {
+    @apply onenew-card p-8 text-center;
+  }
+
+  .empty-state a {
+    color: var(--accent);
+  }
+
+  .onenew-tabs [aria-selected="true"] {
+    color: var(--text);
+  }
+
+  .onenew-tabs .tab-indicator {
+    background: var(--accent);
+  }
+
+  .onenew-pagination [aria-current="page"] {
+    color: var(--text);
+  }
+
+  .onenew-pagination .indicator {
+    background: var(--accent);
+  }
+}
+
+@keyframes onenew-skeleton {
+  0% {
+    background-color: color-mix(in srgb, var(--text), transparent 92%);
+  }
+
+  50% {
+    background-color: color-mix(in srgb, var(--text), transparent 85%);
+  }
+
+  100% {
+    background-color: color-mix(in srgb, var(--text), transparent 92%);
+  }
+}
+
+.react-loading-skeleton,
+.onenew-skeleton {
+  background: color-mix(in srgb, var(--text), transparent 92%);
+  animation: onenew-skeleton 1.5s ease-in-out infinite;
 }
 
 /**
