@@ -1,0 +1,4 @@
+# Paths that are allowed to use legacy color classes or raw hex values.
+# These should only include third-party assets or content where
+# migrating to theme tokens is not feasible.
+frontend/src/**
