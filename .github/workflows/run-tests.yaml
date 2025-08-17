@@ -10,6 +10,7 @@ on:
     paths:
       - "server/**.js"
       - "collector/**.js"
+      - "frontend/**"
 
 jobs:
   run-script:
