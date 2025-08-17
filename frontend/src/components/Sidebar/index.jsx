@@ -108,7 +108,7 @@ export function SidebarMobileHeader() {
     <>
       <div
         aria-label="Show sidebar"
-        className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-white text-slate-200 shadow-lg h-16"
+        className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar text-[var(--text)] shadow-lg h-16"
       >
         <button
           onClick={() => setShowSidebar(true)}
@@ -156,7 +156,7 @@ export function SidebarMobileHeader() {
                 />
               </div>
               {(!user || user?.role !== "default") && (
-                <div className="flex gap-x-2 items-center text-slate-500 shink-0">
+                <div className="flex gap-x-2 items-center text-[var(--text-muted)] shink-0">
                   <SettingsButton />
                 </div>
               )}
@@ -193,7 +193,7 @@ function NewWorkspaceButton({ user, showNewWsModal }) {
     <div className="flex gap-x-2 items-center justify-between">
       <button
         onClick={showNewWsModal}
-        className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+        className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 onenew-card text-[var(--text)] justify-center items-center hover:bg-opacity-80 transition-all duration-300"
       >
         <Plus className="h-5 w-5" />
         <p className="text-sidebar text-sm font-semibold">
