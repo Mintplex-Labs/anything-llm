@@ -18,19 +18,20 @@ export default function TextSizeButton() {
 
   return (
     <>
-      <div
+      <button
         id="text-size-btn"
+        type="button"
         data-tooltip-id="tooltip-text-size-btn"
         aria-label={t("chat_window.text_size")}
         onClick={toggleTooltip}
-        className="border-none flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer"
+        className="border-none flex justify-center items-center opacity-60 hover:opacity-100 light:opacity-100 light:hover:opacity-60 cursor-pointer h-10 w-10 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-button focus-visible:ring-offset-2 focus-visible:ring-offset-theme-bg-chat"
       >
         <TextT
           color="var(--theme-sidebar-footer-icon-fill)"
           weight="fill"
           className="w-[22px] h-[22px] pointer-events-none text-white"
         />
-      </div>
+      </button>
       <Tooltip
         ref={tooltipRef}
         id="tooltip-text-size-btn"
@@ -72,7 +73,7 @@ function TextSizeMenu({ tooltipRef }) {
           e.preventDefault();
           handleTextSizeChange("small");
         }}
-        className={`border-none w-full hover:cursor-pointer px-2 py-2 rounded-md flex items-center group ${
+        className={`border-none w-full hover:cursor-pointer px-2 py-2 rounded-md flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-button focus-visible:ring-offset-2 focus-visible:ring-offset-theme-bg-primary ${
           selectedSize === "small"
             ? "bg-theme-action-menu-item-hover"
             : "hover:bg-theme-action-menu-item-hover"
@@ -88,7 +89,7 @@ function TextSizeMenu({ tooltipRef }) {
           e.preventDefault();
           handleTextSizeChange("normal");
         }}
-        className={`border-none w-full hover:cursor-pointer px-2 py-2 rounded-md flex items-center group ${
+        className={`border-none w-full hover:cursor-pointer px-2 py-2 rounded-md flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-button focus-visible:ring-offset-2 focus-visible:ring-offset-theme-bg-primary ${
           selectedSize === "normal"
             ? "bg-theme-action-menu-item-hover"
             : "hover:bg-theme-action-menu-item-hover"
@@ -104,7 +105,7 @@ function TextSizeMenu({ tooltipRef }) {
           e.preventDefault();
           handleTextSizeChange("large");
         }}
-        className={`border-none w-full hover:cursor-pointer px-2 py-2 rounded-md flex items-center group ${
+        className={`border-none w-full hover:cursor-pointer px-2 py-2 rounded-md flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-button focus-visible:ring-offset-2 focus-visible:ring-offset-theme-bg-primary ${
           selectedSize === "large"
             ? "bg-theme-action-menu-item-hover"
             : "hover:bg-theme-action-menu-item-hover"
