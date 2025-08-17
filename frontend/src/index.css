@@ -219,6 +219,20 @@
   --theme-button-delete-hover-bg: #fee4e2;
 }
 
+@layer utilities {
+  .bg-theme-bg-primary {
+    background-color: var(--theme-bg-primary);
+  }
+
+  .bg-theme-bg-secondary {
+    background-color: var(--theme-bg-secondary);
+  }
+
+  .bg-theme-settings-input-bg {
+    background-color: var(--theme-settings-input-bg);
+  }
+}
+
 [data-theme="light"] .text-white {
   color: var(--theme-text-primary);
 }
