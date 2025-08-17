@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+// Sidebar navigation styled with the OneNew theme.
 import { List, Plus } from "@phosphor-icons/react";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
@@ -13,6 +14,7 @@ import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
 import { useSidebarToggle, ToggleSidebarButton } from "./SidebarToggle";
 import SearchBox from "./SearchBox";
+import { cn } from "@/lib/utils";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -28,12 +30,12 @@ export default function Sidebar() {
 
   return (
     <>
-      <div
+      <aside
         style={{
           width: showSidebar ? "292px" : "0px",
           paddingLeft: showSidebar ? "0px" : "16px",
         }}
-        className="transition-all duration-500"
+        className="onenew-card h-full p-3 md:p-4 transition-all duration-500"
       >
         <div className="flex shrink-0 w-full justify-center my-[18px]">
           <div className="flex justify-between w-[250px] min-w-[250px]">
@@ -41,7 +43,10 @@ export default function Sidebar() {
               <img
                 src={logo}
                 alt="Logo"
-                className={`rounded max-h-[24px] object-contain transition-opacity duration-500 ${showSidebar ? "opacity-100" : "opacity-0"}`}
+                className={cn(
+                  "h-8 w-auto rounded object-contain transition-opacity duration-500",
+                  showSidebar ? "opacity-100" : "opacity-0"
+                )}
               />
             </Link>
             {canToggleSidebar && (
@@ -52,10 +57,7 @@ export default function Sidebar() {
             )}
           </div>
         </div>
-        <div
-          ref={sidebarRef}
-          className="relative m-[16px] rounded-[16px] bg-theme-bg-sidebar border-[2px] border-theme-sidebar-border light:border-none min-w-[250px] p-[10px] h-[calc(100%-76px)]"
-        >
+        <div ref={sidebarRef} className="flex flex-col h-[calc(100%-76px)]">
           <div className="flex flex-col h-full overflow-x-hidden">
             <div className="flex-grow flex flex-col min-w-[235px]">
               <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
@@ -64,14 +66,14 @@ export default function Sidebar() {
                   <ActiveWorkspaces />
                 </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 z-1">
+              <div className="mt-auto pt-4 pb-3 absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 z-1">
                 <Footer />
               </div>
             </div>
           </div>
         </div>
         {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
-      </div>
+      </aside>
     </>
   );
 }
@@ -108,7 +110,7 @@ export function SidebarMobileHeader() {
     <>
       <div
         aria-label="Show sidebar"
-        className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar light:bg-white text-slate-200 shadow-lg h-16"
+        className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-theme-bg-sidebar text-[var(--text)] shadow-lg h-16"
       >
         <button
           onClick={() => setShowSidebar(true)}
@@ -120,8 +122,7 @@ export function SidebarMobileHeader() {
           <img
             src={logo}
             alt="Logo"
-            className="block mx-auto h-6 w-auto"
-            style={{ maxHeight: "40px", objectFit: "contain" }}
+            className="block mx-auto h-8 w-auto"
           />
         </div>
         <div className="w-12"></div>
@@ -156,7 +157,7 @@ export function SidebarMobileHeader() {
                 />
               </div>
               {(!user || user?.role !== "default") && (
-                <div className="flex gap-x-2 items-center text-slate-500 shink-0">
+                <div className="flex gap-x-2 items-center text-[var(--text-muted)] shink-0">
                   <SettingsButton />
                 </div>
               )}
@@ -193,7 +194,7 @@ function NewWorkspaceButton({ user, showNewWsModal }) {
     <div className="flex gap-x-2 items-center justify-between">
       <button
         onClick={showNewWsModal}
-        className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+        className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 onenew-card text-[var(--text)] justify-center items-center hover:bg-opacity-80 transition-all duration-300"
       >
         <Plus className="h-5 w-5" />
         <p className="text-sidebar text-sm font-semibold">

@@ -29,14 +29,14 @@ export default function ShowScrollbar() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-y-0.5 my-4">
-      <p className="text-sm leading-6 font-semibold text-white">
+    <div className="onenew-card p-5 mb-4">
+      <p className="text-[var(--text)] font-medium">
         {t("customization.items.show-scrollbar.title")}
       </p>
-      <p className="text-xs text-white/60">
+      <p className="text-sm text-[var(--text-muted)]">
         {t("customization.items.show-scrollbar.description")}
       </p>
-      <div className="flex items-center gap-x-4">
+      <div className="flex items-center gap-x-4 mt-2">
         <label className="relative inline-flex cursor-pointer items-center">
           <input
             id="show_scrollbar"
@@ -48,7 +48,7 @@ export default function ShowScrollbar() {
             disabled={saving}
             className="peer sr-only"
           />
-          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-[#CFCFD0] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border-none after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-[#32D583] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-transparent"></div>
+          <div className="h-6 w-11 rounded-full bg-[color-mix(in_srgb,var(--accent),transparent_85%)] peer-checked:bg-[var(--accent)] transition-colors peer-focus-visible:[box-shadow:0_0_0_3px_var(--ring)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-full"></div>
         </label>
       </div>
     </div>

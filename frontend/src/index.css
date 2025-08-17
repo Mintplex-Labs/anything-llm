@@ -44,6 +44,12 @@
   --theme-settings-input-text: #ffffff;
   --theme-modal-border: #3f3f42;
 
+  --bg: var(--theme-bg-primary);
+  --card: var(--theme-bg-secondary);
+  --text: var(--theme-text-primary);
+  --text-muted: var(--theme-text-secondary);
+  --border: var(--theme-modal-border);
+
   --theme-button-primary: #46c8ff;
   --theme-button-primary-hover: #434343;
 
@@ -146,6 +152,12 @@
   --theme-settings-input-active: rgb(0 0 0 / 0.2);
   --theme-settings-input-text: #0e0f0f;
   --theme-modal-border: #d3d3d3;
+
+  --bg: var(--theme-bg-primary);
+  --card: var(--theme-bg-secondary);
+  --text: var(--theme-text-primary);
+  --text-muted: var(--theme-text-secondary);
+  --border: var(--theme-modal-border);
 
   --theme-button-primary: #0ba5ec;
   --theme-button-primary-hover: #dedede;
@@ -662,14 +674,46 @@ dialog::backdrop {
   .radio-container:has(input:checked) {
     @apply border-blue-500 bg-blue-400/10 text-blue-800;
   }
+
+  .onenew-page {
+    @apply bg-[var(--bg)] text-[var(--text)];
+  }
+
+  .onenew-card {
+    @apply bg-[var(--card)] border border-[var(--border)] rounded-lg;
+  }
 }
 
-.tooltip {
-  @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
+.tooltip,
+.allm-tooltip {
+  @apply !py-2 !px-3 !rounded-md;
+  background: var(--surface-2) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
 }
 
 .Toastify__toast-body {
   white-space: pre-line;
+}
+
+.Toastify__toast {
+  @apply onenew-card border-l-4;
+}
+
+.Toastify__toast--success {
+  border-left-color: var(--ok);
+}
+
+.Toastify__toast--warning {
+  border-left-color: var(--warn);
+}
+
+.Toastify__toast--error {
+  border-left-color: var(--danger);
+}
+
+.Toastify__toast--info {
+  border-left-color: var(--accent);
 }
 
 @keyframes slideDown {
@@ -689,7 +733,61 @@ dialog::backdrop {
 }
 
 .input-label {
-  @apply text-[14px] font-bold text-white;
+  @apply text-[var(--text)] font-medium;
+}
+
+@layer components {
+  .onenew-card {
+    @apply rounded-md border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text)];
+  }
+
+  .onenew-chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--surface-1)] text-[var(--text)] px-2 py-1 text-xs;
+  }
+
+  .empty-state {
+    @apply onenew-card p-8 text-center;
+  }
+
+  .empty-state a {
+    color: var(--accent);
+  }
+
+  .onenew-tabs [aria-selected="true"] {
+    color: var(--text);
+  }
+
+  .onenew-tabs .tab-indicator {
+    background: var(--accent);
+  }
+
+  .onenew-pagination [aria-current="page"] {
+    color: var(--text);
+  }
+
+  .onenew-pagination .indicator {
+    background: var(--accent);
+  }
+}
+
+@keyframes onenew-skeleton {
+  0% {
+    background-color: color-mix(in srgb, var(--text), transparent 92%);
+  }
+
+  50% {
+    background-color: color-mix(in srgb, var(--text), transparent 85%);
+  }
+
+  100% {
+    background-color: color-mix(in srgb, var(--text), transparent 92%);
+  }
+}
+
+.react-loading-skeleton,
+.onenew-skeleton {
+  background: color-mix(in srgb, var(--text), transparent 92%);
+  animation: onenew-skeleton 1.5s ease-in-out infinite;
 }
 
 /**

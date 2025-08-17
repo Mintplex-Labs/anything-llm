@@ -7,23 +7,15 @@ export default function StatusBadge({ status }) {
   const label = DOCUMENT_STATUS_LABELS[upper] || upper;
 
   if (upper === "READY") {
-    return (
-      <span className="bg-green-600 text-white text-[10px] px-2 py-0.5 rounded-3xl">
-        {label}
-      </span>
-    );
+    return <span className="onenew-chip bg-green-600 text-white text-[10px] px-2 py-0.5">{label}</span>;
   }
   if (upper === "FAILED") {
-    return (
-      <span className="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-3xl">
-        {label}
-      </span>
-    );
+    return <span className="onenew-chip bg-red-600 text-white text-[10px] px-2 py-0.5">{label}</span>;
   }
 
   if (isProcessingStatus(upper)) {
     return (
-      <span className="flex items-center gap-1 text-[10px] text-white">
+      <span className="onenew-chip flex items-center gap-1 text-[10px] text-white">
         <CircleNotch size={10} className="animate-spin" />
         {label}
       </span>
