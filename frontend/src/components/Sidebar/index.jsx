@@ -64,7 +64,7 @@ export default function Sidebar() {
                   <ActiveWorkspaces />
                 </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-1">
+              <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-theme-bg-sidebar bg-opacity-80 z-1">
                 <Footer />
               </div>
             </div>
@@ -173,7 +173,7 @@ export function SidebarMobileHeader() {
                   <ActiveWorkspaces />
                 </div>
               </div>
-              <div className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-theme-bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
+              <div className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-theme-bg-sidebar bg-opacity-80">
                 <Footer />
               </div>
             </div>
