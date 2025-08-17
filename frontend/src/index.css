@@ -709,7 +709,7 @@ dialog::backdrop {
 }
 
 .input-label {
-  @apply text-[14px] font-bold text-white;
+  @apply text-[var(--text)] font-medium;
 }
 
 /**
