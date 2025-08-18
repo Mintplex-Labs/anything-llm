@@ -18,6 +18,10 @@ const KEY_MAPPING = {
     envKey: "OPEN_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  OpenAiMaxTokens: {
+    envKey: "OPEN_AI_MAX_TOKENS",
+    checks: [],
+  },
   // Azure OpenAI Settings
   AzureOpenAiEndpoint: {
     envKey: "AZURE_OPENAI_ENDPOINT",

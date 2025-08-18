@@ -23,6 +23,11 @@ class OpenAiLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
+    // Set max tokens if specified in environment
+    this.maxTokens = process.env.OPEN_AI_MAX_TOKENS
+      ? parseInt(process.env.OPEN_AI_MAX_TOKENS)
+      : null;
+
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.log(
@@ -40,6 +45,33 @@ class OpenAiLLM {
    */
   get isOTypeModel() {
     return this.model.startsWith("o");
+  }
+
+  /**
+   * Check if the model is a gpt-5 model that requires max_completion_tokens.
+   * @returns {boolean}
+   */
+  get isGpt5Model() {
+    return this.model.startsWith("gpt-5");
+  }
+
+  /**
+   * Construct the appropriate parameters for the API request based on model type.
+   * @param {Object} baseParams - Base parameters for the request
+   * @param {number} maxTokens - Maximum tokens for response
+   * @returns {Object} Parameters with correct token limit key
+   */
+  #constructRequestParams(baseParams, maxTokens = null) {
+    const params = { ...baseParams };
+
+    // gpt-5 models use max_completion_tokens instead of max_tokens
+    if (maxTokens && this.isGpt5Model) {
+      params.max_completion_tokens = maxTokens;
+    } else if (maxTokens) {
+      params.max_tokens = maxTokens;
+    }
+
+    return params;
   }
 
   #appendContext(contextTexts = []) {
@@ -144,16 +176,21 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
+    const baseParams = {
+      model: this.model,
+      messages,
+      temperature: this.isOTypeModel ? 1 : temperature, // o1 models only accept temperature 1
+    };
+
+    const requestParams = this.#constructRequestParams(
+      baseParams,
+      this.maxTokens
+    );
+
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
-      this.openai.chat.completions
-        .create({
-          model: this.model,
-          messages,
-          temperature: this.isOTypeModel ? 1 : temperature, // o1 models only accept temperature 1
-        })
-        .catch((e) => {
-          throw new Error(e.message);
-        })
+      this.openai.chat.completions.create(requestParams).catch((e) => {
+        throw new Error(e.message);
+      })
     );
 
     if (
@@ -180,13 +217,20 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
+    const baseParams = {
+      model: this.model,
+      stream: true,
+      messages,
+      temperature: this.isOTypeModel ? 1 : temperature, // o1 models only accept temperature 1
+    };
+
+    const requestParams = this.#constructRequestParams(
+      baseParams,
+      this.maxTokens
+    );
+
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream(
-      this.openai.chat.completions.create({
-        model: this.model,
-        stream: true,
-        messages,
-        temperature: this.isOTypeModel ? 1 : temperature, // o1 models only accept temperature 1
-      }),
+      this.openai.chat.completions.create(requestParams),
       messages
       // runPromptTokenCalculation: true - We manually count the tokens because OpenAI does not provide them in the stream
       // since we are not using the OpenAI API version that supports this `stream_options` param.

@@ -53,6 +53,36 @@ class OpenAIProvider extends Provider {
     super(client);
 
     this.model = model;
+    this.maxTokens = process.env.OPEN_AI_MAX_TOKENS
+      ? parseInt(process.env.OPEN_AI_MAX_TOKENS)
+      : null;
+  }
+
+  /**
+   * Check if the model is a gpt-5 model that requires max_completion_tokens.
+   * @returns {boolean}
+   */
+  get isGpt5Model() {
+    return this.model.startsWith("gpt-5");
+  }
+
+  /**
+   * Construct the appropriate parameters for the API request based on model type.
+   * @param {Object} baseParams - Base parameters for the request
+   * @param {number} maxTokens - Maximum tokens for response
+   * @returns {Object} Parameters with correct token limit key
+   */
+  #constructRequestParams(baseParams, maxTokens = null) {
+    const params = { ...baseParams };
+
+    // gpt-5 models use max_completion_tokens instead of max_tokens
+    if (maxTokens && this.isGpt5Model) {
+      params.max_completion_tokens = maxTokens;
+    } else if (maxTokens) {
+      params.max_tokens = maxTokens;
+    }
+
+    return params;
   }
 
   /**
@@ -64,14 +94,21 @@ class OpenAIProvider extends Provider {
    */
   async complete(messages, functions = []) {
     try {
-      const response = await this.client.chat.completions.create({
+      const baseParams = {
         model: this.model,
         // stream: true,
         messages,
         ...(Array.isArray(functions) && functions?.length > 0
           ? { functions }
           : {}),
-      });
+      };
+
+      const requestParams = this.#constructRequestParams(
+        baseParams,
+        this.maxTokens
+      );
+
+      const response = await this.client.chat.completions.create(requestParams);
 
       // Right now, we only support one completion,
       // so we just take the first one in the list
