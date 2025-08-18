@@ -31,6 +31,12 @@
   </head>
 
   <body>
+    <script>
+      const storedTheme = localStorage.getItem("theme");
+      const theme = storedTheme === "default" ? "dark" : storedTheme || "light";
+      document.documentElement.setAttribute("data-theme", theme);
+      if (theme === "light") document.body.classList.add("light");
+    </script>
     <div id="root" class="h-screen"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

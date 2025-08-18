@@ -13,7 +13,7 @@ export function LogoProvider({ children }) {
   const [loginLogo, setLoginLogo] = useState("");
   const [isCustomLogo, setIsCustomLogo] = useState(false);
   const DefaultLoginLogo =
-    localStorage.getItem("theme") !== "default"
+    localStorage.getItem("theme") === "light"
       ? DefaultLoginLogoDark
       : DefaultLoginLogoLight;
 
@@ -25,14 +25,14 @@ export function LogoProvider({ children }) {
         setLoginLogo(isCustomLogo ? logoURL : DefaultLoginLogo);
         setIsCustomLogo(isCustomLogo);
       } else {
-        localStorage.getItem("theme") !== "default"
+        localStorage.getItem("theme") === "light"
           ? setLogo(OneNewDark)
           : setLogo(OneNew);
         setLoginLogo(DefaultLoginLogo);
         setIsCustomLogo(false);
       }
     } catch (err) {
-      localStorage.getItem("theme") !== "default"
+      localStorage.getItem("theme") === "light"
         ? setLogo(OneNewDark)
         : setLogo(OneNew);
       setLoginLogo(DefaultLoginLogo);
