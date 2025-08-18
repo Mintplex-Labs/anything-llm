@@ -5,7 +5,6 @@
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
-  "private": false,
   "engines": {
     "node": ">=18.12.1"
   },
@@ -48,8 +47,8 @@
     "youtubei.js": "^9.1.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nodemon": "^2.0.22",
-    "prettier": "^2.4.1",
-    "cross-env": "^7.0.3"
+    "prettier": "^2.4.1"
   }
 }
