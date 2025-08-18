@@ -462,25 +462,6 @@ const TRANSLATIONS = {
       at: "Sendt kl.",
     },
   },
-  multi: {
-    title: "Multi-brugertilstand",
-    description:
-      "Opsæt din instans til at understøtte dit team ved at aktivere multi-brugertilstand.",
-    enable: {
-      "is-enable": "Multi-brugertilstand er aktiveret",
-      enable: "Aktivér multi-brugertilstand",
-      description:
-        "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
-      username: "Brugernavn til admin-konto",
-      password: "Adgangskode til admin-konto",
-    },
-    password: {
-      title: "Adgangskodebeskyttelse",
-      description:
-        "Beskyt din AnythingLLM-instans med en adgangskode. Hvis du glemmer den, findes der ingen genoprettelsesmetode, så sørg for at gemme denne adgangskode.",
-      "password-label": "Instansadgangskode",
-    },
-  },
   event: {
     title: "Hændelseslog",
     description:
@@ -1040,6 +1021,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Sikkerhed",
+    multiuser: {
+      title: "Multi-brugertilstand",
+      description:
+        "Opsæt din instans til at understøtte dit team ved at aktivere multi-brugertilstand.",
+      enable: {
+        "is-enable": "Multi-brugertilstand er aktiveret",
+        enable: "Aktivér multi-brugertilstand",
+        description:
+          "Som standard vil du være den eneste administrator. Som administrator skal du oprette konti til alle nye brugere eller administratorer. Glem ikke din adgangskode, da kun en administrator kan nulstille adgangskoder.",
+        username: "Brugernavn til admin-konto",
+        password: "Adgangskode til admin-konto",
+      },
+    },
+    password: {
+      title: "Adgangskodebeskyttelse",
+      description:
+        "Beskyt din AnythingLLM-instans med en adgangskode. Hvis du glemmer den, findes der ingen genoprettelsesmetode, så sørg for at gemme denne adgangskode.",
+      "password-label": "Instansadgangskode",
     },
   },
 };

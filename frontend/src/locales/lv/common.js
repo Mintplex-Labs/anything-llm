@@ -646,25 +646,6 @@ const TRANSLATIONS = {
       at: "Nosūtīts",
     },
   },
-  multi: {
-    title: "Vairāklietotāju režīms",
-    description:
-      "Iestatiet savu instanci, lai atbalstītu jūsu komandu, aktivizējot vairāklietotāju režīmu.",
-    enable: {
-      "is-enable": "Vairāklietotāju režīms ir iespējots",
-      enable: "Iespējot vairāklietotāju režīmu",
-      description:
-        "Pēc noklusējuma jūs būsiet vienīgais administrators. Kā administrators jums būs jāizveido konti visiem jaunajiem lietotājiem vai administratoriem. Nezaudējiet savu paroli, jo tikai administratora lietotājs var atiestatīt paroles.",
-      username: "Administratora konta lietotājvārds",
-      password: "Administratora konta parole",
-    },
-    password: {
-      title: "Aizsardzība ar paroli",
-      description:
-        "Aizsargājiet savu AnythingLLM instanci ar paroli. Ja aizmirsīsiet šo paroli, nav atgūšanas metodes, tāpēc pārliecinieties, ka saglabājat šo paroli.",
-      "password-label": "Instances paroles",
-    },
-  },
   event: {
     title: "Notikumu žurnāli",
     description:
@@ -1057,6 +1038,28 @@ const TRANSLATIONS = {
         prompt_description: null,
         prompt_placeholder: null,
       },
+    },
+  },
+  security: {
+    title: "Drošība",
+    multiuser: {
+      title: "Vairāklietotāju režīms",
+      description:
+        "Iestatiet savu instanci, lai atbalstītu jūsu komandu, aktivizējot vairāklietotāju režīmu.",
+      enable: {
+        "is-enable": "Vairāklietotāju režīms ir iespējots",
+        enable: "Iespējot vairāklietotāju režīmu",
+        description:
+          "Pēc noklusējuma jūs būsiet vienīgais administrators. Kā administrators jums būs jāizveido konti visiem jaunajiem lietotājiem vai administratoriem. Nezaudējiet savu paroli, jo tikai administratora lietotājs var atiestatīt paroles.",
+        username: "Administratora konta lietotājvārds",
+        password: "Administratora konta parole",
+      },
+    },
+    password: {
+      title: "Aizsardzība ar paroli",
+      description:
+        "Aizsargājiet savu AnythingLLM instanci ar paroli. Ja aizmirsīsiet šo paroli, nav atgūšanas metodes, tāpēc pārliecinieties, ka saglabājat šo paroli.",
+      "password-label": "Instances paroles",
     },
   },
 };

@@ -18,7 +18,7 @@ const { extractTextContent, extractAttachments } = require("./helpers");
 function apiOpenAICompatibleEndpoints(app) {
   if (!app) return;
 
-  app.get("/v1/openai/models", [validApiKey], async (request, response) => {
+  app.get("/v1/openai/models", [validApiKey], async (_, response) => {
     /*
     #swagger.tags = ['OpenAI Compatible Endpoints']
     #swagger.description = 'Get all available "models" which are workspaces you can use for chatting.'
@@ -28,22 +28,19 @@ function apiOpenAICompatibleEndpoints(app) {
           "schema": {
             "type": "object",
             "example": {
-              "models": [
+              "object": "list",
+              "data": [
                 {
-                  "name": "Sample workspace",
-                  "model": "sample-workspace",
-                  "llm": {
-                    "provider": "ollama",
-                    "model": "llama3:8b"
-                  }
+                  "id": "model-id-0",
+                  "object": "model",
+                  "created": 1686935002,
+                  "owned_by": "organization-owner"
                 },
                 {
-                  "name": "Second workspace",
-                  "model": "workspace-2",
-                  "llm": {
-                    "provider": "openai",
-                    "model": "gpt-3.5-turbo"
-                  }
+                  "id": "model-id-1",
+                  "object": "model",
+                  "created": 1686935002,
+                  "owned_by": "organization-owner"
                 }
               ]
             }
@@ -67,15 +64,16 @@ function apiOpenAICompatibleEndpoints(app) {
           model: workspace?.chatModel,
         });
         data.push({
-          name: workspace.name,
-          model: workspace.slug,
-          llm: {
-            provider: provider,
-            model: LLMProvider.model,
-          },
+          id: workspace.slug,
+          object: "model",
+          created: Math.floor(Number(new Date(workspace.createdAt)) / 1000),
+          owned_by: `${provider}-${LLMProvider.model}`,
         });
       }
-      return response.status(200).json({ data });
+      return response.status(200).json({
+        object: "list",
+        data,
+      });
     } catch (e) {
       console.error(e.message, e);
       response.sendStatus(500).end();
