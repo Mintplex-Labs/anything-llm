@@ -1,50 +1,36 @@
 /* OneNew utility layer */
 .onenew-page {
   background:
-    radial-gradient(
-      1200px 1200px at -10% -10%,
-      rgba(68, 195, 247, 0.18),
-      transparent 55%
-    ),
-    radial-gradient(
-      1200px 1200px at 110% 110%,
-      rgba(134, 85, 255, 0.18),
-      transparent 55%
-    ),
-    var(--bg);
+    radial-gradient(1200px 1200px at -10% 10%,
+      color-mix(in srgb, var(--accent), transparent 82%), transparent 55%),
+    radial-gradient(1200px 1200px at 110% 10%,
+      color-mix(in srgb, var(--primary), transparent 92%), transparent 55%);
   color: var(--text);
 }
 
 .onenew-card {
-  background: var(--surface);
-  backdrop-filter: blur(18px) saturate(120%);
-  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: var(--elev);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px var(--shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.25rem;
 }
 
 .onenew-input {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--text);
+  background: var(--input);
   border: 1px solid var(--border);
+  color: var(--text);
   border-radius: 12px;
-  padding: 0.6rem 0.8rem;
-  outline: 0;
-  transition:
-    box-shadow 0.2s,
-    border-color 0.2s;
-}
-.dark .onenew-input {
-  background: rgba(255, 255, 255, 0.06);
-}
-.onenew-input:focus {
-  border-color: transparent;
-  box-shadow: 0 0 0 4px var(--ring);
+  padding: 0.65rem 0.8rem;
 }
 .onenew-input::placeholder {
   color: color-mix(in srgb, var(--text), transparent 55%);
+}
+.onenew-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--ring);
 }
 
 .onenew-btn {
@@ -52,36 +38,28 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: var(--text);
-  color: #fff;
-  border-radius: 12px;
-  padding: 0.6rem 0.9rem;
   font-weight: 600;
-  transition:
-    transform 0.06s,
-    box-shadow 0.2s,
-    opacity 0.2s;
+  padding: 0.7rem 1.2rem;
+  border-radius: 12px;
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid var(--primary);
+  transition: transform 60ms ease, box-shadow 200ms ease;
+  box-shadow: 0 2px 4px var(--shadow);
 }
 .onenew-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.18);
+  box-shadow: 0 4px 10px var(--shadow);
 }
-.onenew-btn:active {
-  transform: translateY(0);
+.onenew-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
-.onenew-btn--primary {
-  background: var(--grad);
-  color: #fff;
-}
-.onenew-btn--secondary {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-.onenew-btn--danger {
-  background: var(--danger);
-  color: #fff;
-}
+
+/* Onboarding progress */
+.onb-progress { display: flex; gap: 8px; margin-bottom: 12px; }
+.onb-dot { width: 10px; height: 10px; border-radius: 999px; background: var(--border); }
+.onb-dot.active { background: var(--primary); }
 
 .onenew-chip {
   display: inline-flex;
