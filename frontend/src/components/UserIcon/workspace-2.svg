@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" width="33" height="33" viewBox="0 0 33 33" fill="none">
+<ns0:g transform="matrix(0.3548387096774194,0,0,0.3548387096774194,0.0,0.0)"><ns0:defs>
+    
+    <ns0:linearGradient id="grad-brand" x1="0" y1="0" x2="1" y2="1">
+      <ns0:stop offset="0%" stop-color="#0048A6" />
+      <ns0:stop offset="60%" stop-color="#0078FF" />
+      <ns0:stop offset="100%" stop-color="#00CFFF" />
+    </ns0:linearGradient>
+
+    
+    <ns0:filter id="shadow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <ns0:feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0A143E" flood-opacity="0.25" />
+    </ns0:filter>
+
+    
+    <ns0:linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <ns0:stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.60" />
+      <ns0:stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.16" />
+      <ns0:stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.04" />
+    </ns0:linearGradient>
+
+    
+    <ns0:radialGradient id="centerGlow" cx="50%" cy="50%" r="60%">
+      <ns0:stop offset="0%" stop-color="#00CFFF" stop-opacity="0.35" />
+      <ns0:stop offset="100%" stop-color="#00CFFF" stop-opacity="0" />
+    </ns0:radialGradient>
+  </ns0:defs>
+
+  
+  <ns0:rect x="0.5" y="0.5" width="92" height="92" rx="16" fill="#FFFFFF" stroke="#EEF1F6" />
+
+  
+  <ns0:g filter="url(#shadow)">
+    <ns0:rect x="10" y="10" width="73" height="73" rx="18" fill="#FFFFFF" />
+    <ns0:rect x="10" y="10" width="73" height="73" rx="18" fill="url(#glass)" />
+  </ns0:g>
+
+  
+  <ns0:g transform="translate(22,22)">
+    
+    <ns0:rect x="0" y="0" width="49" height="49" rx="14" fill="url(#grad-brand)" />
+    
+    <ns0:rect x="0" y="0" width="49" height="49" rx="14" fill="url(#centerGlow)" />
+
+    
+    <ns0:circle cx="24.5" cy="24.5" r="12" fill="#FFFFFF" opacity="0.92" />
+  </ns0:g>
+</ns0:g></ns0:svg>
