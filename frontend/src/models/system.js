@@ -350,7 +350,7 @@ const System = {
     const url = new URL(`${fullApiUrl()}/system/logo`);
     url.searchParams.append(
       "theme",
-      localStorage.getItem("theme") || "default"
+      localStorage.getItem("theme") || "light"
     );
 
     return await fetch(url, {
