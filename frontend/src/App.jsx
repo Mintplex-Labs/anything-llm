@@ -18,6 +18,7 @@ import { LogoProvider } from "./LogoContext";
 import { FullScreenLoader } from "./components/Preloader";
 import { ThemeProvider } from "./ThemeContext";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
+import "./styles/onenew-theme-shim.css";
 
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
@@ -92,13 +93,14 @@ const SystemPromptVariables = lazy(
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <Suspense fallback={<FullScreenLoader />}>
-        <ContextWrapper>
-          <LogoProvider>
-            <PfpProvider>
-              <I18nextProvider i18n={i18n}>
-                <Routes>
+    <div id="root" className="theme-onenew dark">
+      <ThemeProvider>
+        <Suspense fallback={<FullScreenLoader />}>
+          <ContextWrapper>
+            <LogoProvider>
+              <PfpProvider>
+                <I18nextProvider i18n={i18n}>
+                  <Routes>
                   <Route path="/" element={<PrivateRoute Component={Main} />} />
                   <Route path="/login" element={<Login />} />
                   <Route
@@ -273,5 +275,6 @@ export default function App() {
         </ContextWrapper>
       </Suspense>
     </ThemeProvider>
+  </div>
   );
 }
