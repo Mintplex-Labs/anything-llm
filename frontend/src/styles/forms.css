@@ -1,3 +1,7 @@
+::placeholder {
+  color: var(--muted);
+}
+
 .select {
   appearance: none;
   background: var(--elev)
