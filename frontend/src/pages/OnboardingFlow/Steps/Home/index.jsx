@@ -26,37 +26,33 @@ export default function OnboardingHome() {
   const srcSet = IMG_SRCSET?.[theme] || IMG_SRCSET.default;
 
   return (
-    <>
-      <div className="relative w-screen h-screen flex overflow-hidden bg-theme-bg-primary">
-        <div
-          className="hidden md:block fixed bottom-10 left-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
-          style={{ backgroundImage: `url(${srcSet.l})` }}
-        ></div>
+    <div className="onenew-page relative min-h-screen flex overflow-hidden p-6">
+      <div
+        className="hidden md:block fixed bottom-10 left-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
+        style={{ backgroundImage: `url(${srcSet.l})` }}
+      ></div>
 
-        <div
-          className="hidden md:block fixed top-10 right-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
-          style={{ backgroundImage: `url(${srcSet.r})` }}
-        ></div>
+      <div
+        className="hidden md:block fixed top-10 right-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
+        style={{ backgroundImage: `url(${srcSet.r})` }}
+      ></div>
 
-        <div className="relative flex justify-center items-center m-auto">
-          <div className="flex flex-col justify-center items-center">
-            <p className="text-theme-text-primary font-thin text-[24px]">
-              {t("onboarding.home.title")}
-            </p>
-            <img
-              src={OneNewLogo}
-              alt="OneNew"
-              className="md:h-[50px] flex-shrink-0 max-w-[300px] light:invert"
-            />
-            <button
-              onClick={() => navigate(paths.onboarding.llmPreference())}
-              className="border-[2px] border-theme-text-primary animate-pulse light:animate-none w-full md:max-w-[350px] md:min-w-[300px] text-center py-3 bg-theme-button-primary hover:bg-theme-bg-secondary text-theme-text-primary font-semibold text-sm my-10 rounded-md "
-            >
-              {t("onboarding.home.getStarted")}
-            </button>
-          </div>
+      <div className="relative flex justify-center items-center m-auto">
+        <div className="onenew-card flex flex-col justify-center items-center">
+          <p className="font-thin text-[24px]">{t("onboarding.home.title")}</p>
+          <img
+            src={OneNewLogo}
+            alt="OneNew"
+            className="md:h-[50px] flex-shrink-0 max-w-[300px] light:invert"
+          />
+          <button
+            onClick={() => navigate(paths.onboarding.llmPreference())}
+            className="onenew-btn w-full md:max-w-[350px] md:min-w-[300px] mt-10 animate-pulse light:animate-none"
+          >
+            {t("onboarding.home.getStarted")}
+          </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

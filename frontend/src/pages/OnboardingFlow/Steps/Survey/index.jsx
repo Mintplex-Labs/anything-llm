@@ -107,49 +107,40 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
 
   if (!!window?.localStorage?.getItem(COMPLETE_QUESTIONNAIRE)) {
     return (
-      <div className="w-full flex justify-center items-center py-40">
-        <div className="w-full flex items-center justify-center px-1 md:px-8 py-4">
-          <div className="w-auto flex flex-col gap-y-1 items-center">
-            <CheckCircle size={60} className="text-green-500" />
-            <p className="text-white text-lg">
-              {t("onboarding.survey.thankYou")}
-            </p>
-            <a
-              href={paths.mailToMintplex()}
-              className="text-sky-400 underline text-xs"
-            >
-              team@mintplexlabs.com
-            </a>
-          </div>
+      <div className="onenew-page p-6 flex justify-center items-center">
+        <div className="onenew-card flex flex-col gap-y-1 items-center">
+          <CheckCircle size={60} className="text-green-500" />
+          <p className="text-lg">{t("onboarding.survey.thankYou")}</p>
+          <a href={paths.mailToMintplex()} className="text-sky-400 underline text-xs">
+            team@mintplexlabs.com
+          </a>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full flex justify-center bo">
-      <form onSubmit={handleSubmit} ref={formRef} className="">
-        <div className="md:min-w-[400px]">
-          <label
-            htmlFor="email"
-            className="text-theme-text-primary text-base font-medium"
-          >
-            {t("onboarding.survey.email")}{" "}
-          </label>
-          <input
-            name="email"
-            type="email"
-            placeholder="you@gmail.com"
-            required={true}
-            className="mt-2 bg-theme-settings-input-bg text-white focus:outline-primary-button active:outline-primary-button placeholder:text-theme-settings-input-placeholder outline-none text-sm font-medium font-['Plus Jakarta Sans'] leading-tight w-full h-11 p-2.5 bg-theme-settings-input-bg rounded-lg"
-          />
-        </div>
+    <div className="onenew-page p-6 flex justify-center">
+      <div className="onenew-card">
+        <form onSubmit={handleSubmit} ref={formRef} className="">
+          <div className="md:min-w-[400px]">
+            <label
+              htmlFor="email"
+              className="text-base font-medium"
+            >
+              {t("onboarding.survey.email")}{" "}
+            </label>
+            <input
+              name="email"
+              type="email"
+              placeholder="you@gmail.com"
+              required={true}
+              className="onenew-input mt-2 w-full h-11"
+            />
+          </div>
 
         <div className="mt-8">
-          <label
-            className="text-theme-text-primary text-base font-medium"
-            htmlFor="use_case"
-          >
+          <label className="text-base font-medium" htmlFor="use_case">
             {t("onboarding.survey.useCase")}{" "}
           </label>
           <div className="mt-2 gap-y-3 flex flex-col">
@@ -235,7 +226,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
         </div>
 
         <div className="mt-8">
-          <label htmlFor="comment" className="text-white text-base font-medium">
+          <label htmlFor="comment" className="text-base font-medium">
             {t("onboarding.survey.comment")}{" "}
             <span className="text-neutral-400 text-base font-light">
               ({t("common.optional")})
@@ -244,7 +235,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           <textarea
             name="comment"
             rows={5}
-            className="mt-2 bg-theme-settings-input-bg text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button placeholder:text-theme-settings-input-placeholder outline-none block w-full p-2.5"
+            className="onenew-input mt-2 w-full"
             placeholder={t("onboarding.survey.commentPlaceholder")}
             wrap="soft"
             autoComplete="off"
@@ -261,12 +252,13 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           <button
             type="button"
             onClick={skipSurvey}
-            className="text-white text-base font-medium text-opacity-30 hover:text-opacity-100 hover:text-teal mt-8"
+            className="onenew-btn mt-8"
           >
             {t("onboarding.survey.skip")}
           </button>
         </div>
       </form>
     </div>
+  </div>
   );
 }
