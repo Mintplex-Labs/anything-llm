@@ -1,0 +1,16 @@
+.msg {
+  max-width: 68ch;
+  padding: 12px 14px;
+  border-radius: 14px;
+  overflow-wrap: anywhere;
+}
+
+.msg.user {
+  background: #2a3340;
+  margin-left: auto;
+}
+
+.msg.bot {
+  background: #1c232c;
+  margin-right: auto;
+}
